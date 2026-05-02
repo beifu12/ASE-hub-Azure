@@ -9,6 +9,10 @@ from app.auth import (
 )
 from app.database import get_db
 from app.models import Bookmark, User as UserModel
+from app.schemas import (
+    LoginRequest, AdminCreateUserRequest,
+    ReportCreateRequest, MeetingCreateRequest, BookmarkCreateRequest,
+)
 
 router = APIRouter()
 
@@ -33,11 +37,8 @@ async def api_register():
 
 
 @router.post("/auth/login")
-async def api_login(request: Request, db: AsyncSession = Depends(get_db)):
-    body = await request.json()
-    username = body.get("username", "").strip()
-    password = body.get("password", "")
-    user = await authenticate_user(db, username, password)
+async def api_login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
+    user = await authenticate_user(db, body.username, body.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password")
     token = create_access_token(user["id"], user["username"])
@@ -80,18 +81,13 @@ async def admin_list_users(
 
 @router.post("/admin/users")
 async def admin_create_user(
-    request: Request,
+    body: AdminCreateUserRequest,
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    body = await request.json()
-    username = body.get("username", "").strip()
-    password = body.get("password", "")
-    display_name = body.get("display_name", username)
-    if not username or not password:
-        raise HTTPException(status_code=400, detail="Username and password required")
-    if len(username) < 2 or len(password) < 4:
-        raise HTTPException(status_code=400, detail="Username >=2 chars, password >=4 chars")
+    username = body.username.strip()
+    password = body.password
+    display_name = body.display_name or username
     try:
         new_user = await create_user(db, username, password, display_name)
         return {"user": new_user}
@@ -190,9 +186,8 @@ async def api_get_reports(user: dict = Depends(get_current_user)):
 
 
 @router.post("/reports")
-async def api_create_report(request: Request, user: dict = Depends(get_current_user)):
-    body = await request.json()
-    return await reports.create_report(body, user["user_id"])
+async def api_create_report(body: ReportCreateRequest, user: dict = Depends(get_current_user)):
+    return await reports.create_report(body.model_dump(), user["user_id"])
 
 
 @router.get("/reports/{report_id}/markdown")
@@ -206,9 +201,8 @@ async def api_get_meetings(user: dict = Depends(get_current_user)):
 
 
 @router.post("/meetings")
-async def api_create_meeting(request: Request, user: dict = Depends(get_current_user)):
-    body = await request.json()
-    return await meetings.create_meeting(body, user["user_id"])
+async def api_create_meeting(body: MeetingCreateRequest, user: dict = Depends(get_current_user)):
+    return await meetings.create_meeting(body.model_dump(), user["user_id"])
 
 
 @router.get("/meetings/{meeting_id}/markdown")
@@ -237,16 +231,15 @@ async def api_get_bookmarks(
 
 @router.post("/bookmarks")
 async def api_create_bookmark(
-    request: Request,
+    body: BookmarkCreateRequest,
     user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    body = await request.json()
     bm = Bookmark(
         user_id=user["user_id"],
-        title=body.get("title", ""),
-        url=body.get("url", ""),
-        description=body.get("description", ""),
+        title=body.title,
+        url=body.url,
+        description=body.description,
     )
     db.add(bm)
     await db.commit()

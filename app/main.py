@@ -57,6 +57,9 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
+from app.middleware import rate_limit_middleware
+app.middleware("http")(rate_limit_middleware)
+
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
