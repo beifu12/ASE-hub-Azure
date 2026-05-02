@@ -1,0 +1,14 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+packages:
+  - docker.io
+  - docker-compose-v2
+
+runcmd:
+  - systemctl enable docker
+  - systemctl start docker
+  - az login --identity --allow-no-subscriptions
+  - az acr login --name ${acr_login_server}
+  - docker pull ${acr_login_server}/ase-hub:latest
+  - docker run -d --name ase-hub --restart always -p 8000:8000 ${acr_login_server}/ase-hub:latest

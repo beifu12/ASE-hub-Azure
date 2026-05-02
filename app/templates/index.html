@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASE Hub - Azure Solutions Engineer Hub</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Auth Guard -->
+    <script>
+        if (!localStorage.getItem('ase_token')) {
+            window.location.href = '/login';
+        }
+    </script>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">ASE<span>Hub</span></div>
+            <div class="user-info" id="sidebar-user">
+                <span class="user-avatar">👤</span>
+                <span class="user-name" id="user-name-display">...</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <button class="nav-item active" data-section="dashboard">
+                <span class="icon">📊</span> <span data-i18n="dashboard">Dashboard</span>
+            </button>
+            <button class="nav-item" data-section="pricing">
+                <span class="icon">💰</span> <span data-i18n="pricing">Pricing</span>
+            </button>
+            <button class="nav-item" data-section="docs">
+                <span class="icon">📚</span> <span data-i18n="docs">Docs</span>
+            </button>
+            <button class="nav-item" data-section="updates">
+                <span class="icon">📡</span> <span data-i18n="updates">Updates</span>
+            </button>
+            <button class="nav-item" data-section="reports">
+                <span class="icon">📝</span> <span data-i18n="reports">Reports</span>
+            </button>
+            <button class="nav-item" data-section="meetings">
+                <span class="icon">🤝</span> <span data-i18n="meetings">Meetings</span>
+            </button>
+            <button class="nav-item" data-section="snippets">
+                <span class="icon">⚡</span> <span data-i18n="snippets">Snippets</span>
+            </button>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="lang-toggle">
+                <span>🌐</span>
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="zh">中文</button>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()" title="退出登录">🚪</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- === DASHBOARD === -->
+        <section class="section active" id="section-dashboard">
+            <div class="page-header">
+                <h1 data-i18n="dashboard">📊 Dashboard</h1>
+            </div>
+            <div class="grid grid-3" id="dashboard-stats">
+                <div class="stat-card"><div class="value" id="stat-status">--</div><div class="label" data-i18n="azure_status">Azure Status</div></div>
+                <div class="stat-card"><div class="value" id="stat-updates">--</div><div class="label" data-i18n="recent_updates">Recent Updates</div></div>
+                <div class="stat-card"><div class="value" id="stat-bookmarks">--</div><div class="label" data-i18n="bookmarks">Bookmarks</div></div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <span>🟢 <span data-i18n="azure_status">Azure Service Status</span></span>
+                        <button class="btn btn-sm" onclick="loadStatus()" data-i18n="refresh">🔄 Refresh</button>
+                    </div>
+                    <div id="status-list"><div class="loading"><div class="spinner"></div></div></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span>📡 <span data-i18n="latest_updates">Latest Azure Updates</span></span>
+                        <button class="btn btn-sm" onclick="loadUpdatesSummary()" data-i18n="refresh">🔄 Refresh</button>
+                    </div>
+                    <div id="updates-summary"><div class="loading"><div class="spinner"></div></div></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>🔖 <span data-i18n="quick_links">Quick Links</span></span>
+                </div>
+                <div class="grid grid-3">
+                    <div class="quick-link"><a href="https://portal.azure.com" target="_blank" rel="noopener">Azure Portal</a></div>
+                    <div class="quick-link"><a href="https://learn.microsoft.com/en-us/azure/" target="_blank" rel="noopener">Azure Docs</a></div>
+                    <div class="quick-link"><a href="https://azure.microsoft.com/en-us/updates/" target="_blank" rel="noopener">Azure Updates</a></div>
+                    <div class="quick-link"><a href="https://azure.status.microsoft/" target="_blank" rel="noopener">Azure Status</a></div>
+                    <div class="quick-link"><a href="https://azurecharts.com/" target="_blank" rel="noopener">Azure Charts</a></div>
+                    <div class="quick-link"><a href="https://azure.microsoft.com/en-us/pricing/calculator/" target="_blank" rel="noopener">Pricing Calculator</a></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>🔖 <span data-i18n="bookmarks">Saved Bookmarks</span></span>
+                    <button class="btn btn-sm" onclick="loadBookmarks()" data-i18n="refresh">🔄 Refresh</button>
+                </div>
+                <div id="bookmarks-list"><div class="loading"><div class="spinner"></div></div></div>
+            </div>
+        </section>
+
+        <!-- === PRICING === -->
+        <section class="section" id="section-pricing">
+            <div class="page-header">
+                <h1 data-i18n="pricing">💰 Azure Pricing Query</h1>
+            </div>
+            <div class="card">
+                <div class="search-box">
+                    <input type="text" id="pricing-keyword" placeholder="Service name (e.g. Virtual Machines)" data-i18n-placeholder="search_service">
+                    <select id="pricing-region" style="width:200px">
+                        <option value="" data-i18n="all_regions">All Regions</option>
+                        <option value="eastasia">East Asia</option>
+                        <option value="southeastasia">Southeast Asia</option>
+                        <option value="eastus">East US</option>
+                        <option value="westus">West US</option>
+                        <option value="westeurope">West Europe</option>
+                        <option value="northeurope">North Europe</option>
+                        <option value="japaneast">Japan East</option>
+                        <option value="australiaeast">Australia East</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="searchPricing()">🔍 <span data-i18n="search">Search</span></button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span data-i18n="results">Results</span> <span id="pricing-count"></span></div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="service">Service</th>
+                                <th data-i18n="product">Product</th>
+                                <th data-i18n="meter">Meter</th>
+                                <th data-i18n="region">Region</th>
+                                <th data-i18n="unit_price">Unit Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pricing-results">
+                            <tr><td colspan="5" style="text-align:center;color:var(--text-secondary)"><span data-i18n="search_pricing_hint">Enter a service name to search pricing</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- === DOCS === -->
+        <section class="section" id="section-docs">
+            <div class="page-header">
+                <h1 data-i18n="docs">📚 Documentation Search</h1>
+            </div>
+            <div class="card">
+                <div class="search-box">
+                    <input type="text" id="docs-query" placeholder="Search Azure documentation..." data-i18n-placeholder="search_docs" onkeydown="if(event.key==='Enter')searchDocs()">
+                    <button class="btn btn-primary" onclick="searchDocs()">🔍 <span data-i18n="search">Search</span></button>
+                </div>
+            </div>
+            <div id="docs-results"></div>
+        </section>
+
+        <!-- === UPDATES === -->
+        <section class="section" id="section-updates">
+            <div class="page-header">
+                <h1 data-i18n="updates">📡 Azure Updates Feed</h1>
+                <div class="actions">
+                    <select id="updates-category" onchange="loadUpdates()">
+                        <option value="" data-i18n="all_categories">All Categories</option>
+                        <option value="compute">Compute</option>
+                        <option value="networking">Networking</option>
+                        <option value="storage">Storage</option>
+                        <option value="ai">AI + ML</option>
+                        <option value="database">Database</option>
+                        <option value="security">Security</option>
+                        <option value="devops">DevOps</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="loadUpdates()">🔄 <span data-i18n="refresh">Refresh</span></button>
+                </div>
+            </div>
+            <div id="updates-list"><div class="loading"><div class="spinner"></div></div></div>
+        </section>
+
+        <!-- === REPORTS === -->
+        <section class="section" id="section-reports">
+            <div class="page-header">
+                <h1 data-i18n="reports">📝 Daily Work Reports</h1>
+            </div>
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-header"><span data-i18n="new_report">New Report</span></div>
+                    <div style="display:flex;flex-direction:column;gap:10px">
+                        <input type="date" id="report-date" data-i18n-placeholder="date">
+                        <input type="text" id="report-project" placeholder="Project name" data-i18n-placeholder="project">
+                        <textarea id="report-tasks" placeholder="Tasks completed (one per line)" data-i18n-placeholder="tasks_completed"></textarea>
+                        <textarea id="report-blockers" placeholder="Blockers" data-i18n-placeholder="blockers"></textarea>
+                        <textarea id="report-next" placeholder="Next steps" data-i18n-placeholder="next_steps"></textarea>
+                        <button class="btn btn-primary" onclick="saveReport()">💾 <span data-i18n="save_report">Save Report</span></button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span data-i18n="saved_reports">Saved Reports</span>
+                        <button class="btn btn-sm" onclick="loadReports()">🔄</button>
+                    </div>
+                    <div id="reports-list"><div class="empty-state"><span data-i18n="no_reports">No reports yet</span></div></div>
+                </div>
+            </div>
+            <div class="card" id="md-preview-card" style="display:none">
+                <div class="card-header"><span data-i18n="markdown_export">Markdown Export</span></div>
+                <pre class="md-preview" id="md-preview-content"></pre>
+            </div>
+        </section>
+
+        <!-- === MEETINGS === -->
+        <section class="section" id="section-meetings">
+            <div class="page-header">
+                <h1 data-i18n="meetings">🤝 Meeting Summaries</h1>
+            </div>
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-header"><span data-i18n="new_meeting">New Meeting</span></div>
+                    <div style="display:flex;flex-direction:column;gap:10px">
+                        <input type="text" id="meeting-title" placeholder="Meeting title" data-i18n-placeholder="meeting_title">
+                        <input type="date" id="meeting-date" data-i18n-placeholder="date">
+                        <input type="text" id="meeting-attendees" placeholder="Attendees" data-i18n-placeholder="attendees">
+                        <textarea id="meeting-notes" placeholder="Meeting notes (AI summary will be generated)" data-i18n-placeholder="meeting_notes" rows="4"></textarea>
+                        <textarea id="meeting-actions" placeholder="Action items (one per line)" data-i18n-placeholder="action_items" rows="3"></textarea>
+                        <button class="btn btn-primary" onclick="saveMeeting()">💾 <span data-i18n="save_meeting">Save Meeting</span></button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span data-i18n="saved_meetings">Saved Meetings</span>
+                        <button class="btn btn-sm" onclick="loadMeetings()">🔄</button>
+                    </div>
+                    <div id="meetings-list"><div class="empty-state"><span data-i18n="no_meetings">No meetings yet</span></div></div>
+                </div>
+            </div>
+            <div class="card" id="meeting-md-preview-card" style="display:none">
+                <div class="card-header"><span data-i18n="markdown_export">Markdown Export</span></div>
+                <pre class="md-preview" id="meeting-md-preview-content"></pre>
+            </div>
+        </section>
+
+        <!-- === SNIPPETS === -->
+        <section class="section" id="section-snippets">
+            <div class="page-header">
+                <h1 data-i18n="snippets">⚡ Azure CLI & Bicep Cheat Sheet</h1>
+                <div class="actions">
+                    <select id="snippets-category" onchange="loadSnippets()">
+                        <option value="" data-i18n="all_categories">All Categories</option>
+                        <option value="compute">Compute</option>
+                        <option value="networking">Networking</option>
+                        <option value="storage">Storage</option>
+                        <option value="kubernetes">Kubernetes</option>
+                        <option value="database">Database</option>
+                        <option value="monitoring">Monitoring</option>
+                        <option value="bicep">Bicep</option>
+                    </select>
+                    <input type="text" id="snippets-search" placeholder="Search snippets..." data-i18n-placeholder="search_snippets" style="width:200px" oninput="filterSnippets()">
+                </div>
+            </div>
+            <div id="snippets-list"><div class="loading"><div class="spinner"></div></div></div>
+        </section>
+    </main>
+
+    <script src="/static/js/app.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/pricing.js"></script>
+    <script src="/static/js/docs.js"></script>
+    <script src="/static/js/reports.js"></script>
+    <script src="/static/js/meetings.js"></script>
+</body>
+</html>
