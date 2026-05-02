@@ -11,7 +11,9 @@ from app.database import get_db
 from app.models import Bookmark, User as UserModel
 from app.schemas import (
     LoginRequest, AdminCreateUserRequest,
-    ReportCreateRequest, MeetingCreateRequest, BookmarkCreateRequest,
+    ReportCreateRequest, ReportUpdateRequest,
+    MeetingCreateRequest, MeetingUpdateRequest,
+    BookmarkCreateRequest,
 )
 
 router = APIRouter()
@@ -190,6 +192,17 @@ async def api_create_report(body: ReportCreateRequest, user: dict = Depends(get_
     return await reports.create_report(body.model_dump(), user["user_id"])
 
 
+@router.put("/reports/{report_id}")
+async def api_update_report(report_id: str, body: ReportUpdateRequest, user: dict = Depends(get_current_user)):
+    return await reports.update_report(report_id, body.model_dump(exclude_none=True), user["user_id"])
+
+
+@router.delete("/reports/{report_id}")
+async def api_delete_report(report_id: str, user: dict = Depends(get_current_user)):
+    return await reports.delete_report(report_id, user["user_id"])
+
+
+
 @router.get("/reports/{report_id}/markdown")
 async def api_report_markdown(report_id: str, user: dict = Depends(get_current_user)):
     return await reports.export_report_markdown(report_id, user["user_id"])
@@ -203,6 +216,17 @@ async def api_get_meetings(user: dict = Depends(get_current_user)):
 @router.post("/meetings")
 async def api_create_meeting(body: MeetingCreateRequest, user: dict = Depends(get_current_user)):
     return await meetings.create_meeting(body.model_dump(), user["user_id"])
+
+
+@router.put("/meetings/{meeting_id}")
+async def api_update_meeting(meeting_id: str, body: MeetingUpdateRequest, user: dict = Depends(get_current_user)):
+    return await meetings.update_meeting(meeting_id, body.model_dump(exclude_none=True), user["user_id"])
+
+
+@router.delete("/meetings/{meeting_id}")
+async def api_delete_meeting(meeting_id: str, user: dict = Depends(get_current_user)):
+    return await meetings.delete_meeting(meeting_id, user["user_id"])
+
 
 
 @router.get("/meetings/{meeting_id}/markdown")

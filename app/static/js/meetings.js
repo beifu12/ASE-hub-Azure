@@ -1,6 +1,7 @@
 // ASE Hub - Meetings
 
 async function saveMeeting() {
+    const editingId = document.getElementById('editing-meeting-id')?.value;
     const title = document.getElementById('meeting-title').value.trim();
     const date = document.getElementById('meeting-date').value;
     const attendees = document.getElementById('meeting-attendees').value.trim();
@@ -14,17 +15,30 @@ async function saveMeeting() {
     
     const actionItems = actionsRaw ? actionsRaw.split('\n').map(a => a.trim()).filter(a => a) : [];
     
-    const data = await apiPost('/api/meetings', {
-        title, date, attendees, notes, action_items: actionItems
-    });
+    let data;
+    if (editingId) {
+        data = await apiPut('/api/meetings/' + editingId, {
+            title, date, attendees, notes, action_items: actionItems
+        });
+    } else {
+        data = await apiPost('/api/meetings', {
+            title, date, attendees, notes, action_items: actionItems
+        });
+    }
     
-    if (data) {
-        showToast('Meeting saved with AI summary!', 'success');
+    if (data && !data.error) {
+        showToast(editingId ? 'Meeting updated!' : 'Meeting saved with AI summary!', 'success');
         document.getElementById('meeting-title').value = '';
         document.getElementById('meeting-attendees').value = '';
         document.getElementById('meeting-notes').value = '';
         document.getElementById('meeting-actions').value = '';
+        if (document.getElementById('editing-meeting-id')) {
+            document.getElementById('editing-meeting-id').value = '';
+        }
+        document.getElementById('meeting-submit-btn').textContent = '💾 Save Meeting';
         loadMeetings();
+    } else if (data && data.error) {
+        showToast(data.error, 'warning');
     }
 }
 
@@ -46,14 +60,46 @@ async function loadMeetings() {
     
     let html = '';
     data.items.slice().reverse().forEach(m => {
-        html += `<div class="report-card">
+        html += `<div class="report-card" id="meeting-${m.id}">
             <div class="project">${m.title || 'Untitled'}</div>
             <div class="date">${m.date || ''} — ${m.attendees || ''}</div>
-            <div style="margin-top:4px;font-size:12px;color:var(--text-secondary)">${(m.summary || '').substring(0, 120)}</div>
-            <button class="btn btn-sm" style="margin-top:4px" onclick="exportMeetingMd('${m.id}')">📥 ${t('export_md')}</button>
+            <div style="margin-top:4px;font-size:12px;color:var(--text-secondary)">${(m.notes || m.summary || '').substring(0, 120)}</div>
+            <div style="margin-top:6px;display:flex;gap:4px">
+                <button class="btn btn-sm" onclick="exportMeetingMd('${m.id}')">📥 ${t('export_md')}</button>
+                <button class="btn btn-sm" onclick="editMeeting('${m.id}')">✏️ ${t('edit') || 'Edit'}</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteMeeting('${m.id}')">🗑️ ${t('delete') || 'Delete'}</button>
+            </div>
         </div>`;
     });
     el.innerHTML = html;
+}
+
+async function editMeeting(id) {
+    const card = document.getElementById('meeting-' + id);
+    if (!card) return;
+    const titleEl = card.querySelector('.project');
+    const dateEl = card.querySelector('.date');
+    if (!titleEl || !dateEl) return;
+    const title = titleEl.textContent || '';
+    const date = dateEl.textContent.split(' — ')[0] || '';
+    document.getElementById('meeting-title').value = title;
+    document.getElementById('meeting-date').value = date;
+    document.getElementById('meeting-attendees').value = '';
+    document.getElementById('meeting-notes').value = '';
+    document.getElementById('meeting-actions').value = '';
+    document.getElementById('editing-meeting-id').value = id;
+    document.getElementById('meeting-submit-btn').textContent = '✏️ Update Meeting';
+    document.getElementById('section-meetings').scrollIntoView({ behavior: 'smooth' });
+    showToast('Editing meeting — modify and click Update', 'info');
+}
+
+async function deleteMeeting(id) {
+    if (!confirm('Delete this meeting? This cannot be undone.')) return;
+    const data = await apiDelete('/api/meetings/' + id);
+    if (data && data.deleted) {
+        showToast('Meeting deleted', 'success');
+        loadMeetings();
+    }
 }
 
 async function exportMeetingMd(id) {

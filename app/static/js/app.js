@@ -232,6 +232,37 @@ async function apiPost(path, data) {
     }
 }
 
+async function apiPut(path, data) {
+    try {
+        const res = await fetch(path, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+            body: JSON.stringify(data)
+        });
+        if (res.status === 401) { handleUnauthorized(); return null; }
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return await res.json();
+    } catch (e) {
+        showToast('API error: ' + e.message, 'error');
+        return null;
+    }
+}
+
+async function apiDelete(path) {
+    try {
+        const res = await fetch(path, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+        if (res.status === 401) { handleUnauthorized(); return null; }
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return await res.json();
+    } catch (e) {
+        showToast('API error: ' + e.message, 'error');
+        return null;
+    }
+}
+
 // Auth helpers
 function handleUnauthorized() {
     localStorage.removeItem('ase_token');

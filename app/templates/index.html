@@ -212,7 +212,8 @@
                         <textarea id="report-tasks" placeholder="Tasks completed (one per line)" data-i18n-placeholder="tasks_completed"></textarea>
                         <textarea id="report-blockers" placeholder="Blockers" data-i18n-placeholder="blockers"></textarea>
                         <textarea id="report-next" placeholder="Next steps" data-i18n-placeholder="next_steps"></textarea>
-                        <button class="btn btn-primary" onclick="saveReport()">💾 <span data-i18n="save_report">Save Report</span></button>
+                        <input type="hidden" id="editing-report-id" value="">
+                        <button class="btn btn-primary" id="report-submit-btn" onclick="saveReport()">💾 <span data-i18n="save_report">Save Report</span></button>
                     </div>
                 </div>
                 <div class="card">
@@ -243,7 +244,8 @@
                         <input type="text" id="meeting-attendees" placeholder="Attendees" data-i18n-placeholder="attendees">
                         <textarea id="meeting-notes" placeholder="Meeting notes (AI summary will be generated)" data-i18n-placeholder="meeting_notes" rows="4"></textarea>
                         <textarea id="meeting-actions" placeholder="Action items (one per line)" data-i18n-placeholder="action_items" rows="3"></textarea>
-                        <button class="btn btn-primary" onclick="saveMeeting()">💾 <span data-i18n="save_meeting">Save Meeting</span></button>
+                        <input type="hidden" id="editing-meeting-id" value="">
+                        <button class="btn btn-primary" id="meeting-submit-btn" onclick="saveMeeting()">💾 <span data-i18n="save_meeting">Save Meeting</span></button>
                     </div>
                 </div>
                 <div class="card">

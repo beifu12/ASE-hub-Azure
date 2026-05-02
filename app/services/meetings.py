@@ -41,6 +41,35 @@ async def create_meeting(meeting: dict, user_id: str) -> dict:
         return _serialize(mtg)
 
 
+async def update_meeting(meeting_id: str, updates: dict, user_id: str) -> dict:
+    async with async_session() as db:
+        result = await db.execute(
+            select(Meeting).where(Meeting.id == meeting_id, Meeting.user_id == user_id)
+        )
+        m = result.scalars().first()
+        if not m:
+            return {"error": "Meeting not found or not yours"}
+        for field in ("title", "date", "attendees", "notes", "action_items"):
+            if field in updates and updates[field] is not None:
+                setattr(m, field, updates[field])
+        await db.commit()
+        await db.refresh(m)
+        return _serialize(m)
+
+
+async def delete_meeting(meeting_id: str, user_id: str) -> dict:
+    async with async_session() as db:
+        result = await db.execute(
+            select(Meeting).where(Meeting.id == meeting_id, Meeting.user_id == user_id)
+        )
+        m = result.scalars().first()
+        if not m:
+            return {"error": "Meeting not found or not yours"}
+        await db.delete(m)
+        await db.commit()
+        return {"deleted": True, "id": meeting_id}
+
+
 async def export_meeting_markdown(meeting_id: str, user_id: str) -> dict:
     async with async_session() as db:
         result = await db.execute(

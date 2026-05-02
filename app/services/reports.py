@@ -42,6 +42,35 @@ async def create_report(report: dict, user_id: str) -> dict:
         return _serialize(rpt)
 
 
+async def update_report(report_id: str, updates: dict, user_id: str) -> dict:
+    async with async_session() as db:
+        result = await db.execute(
+            select(Report).where(Report.id == report_id, Report.user_id == user_id)
+        )
+        r = result.scalars().first()
+        if not r:
+            return {"error": "Report not found or not yours"}
+        for field in ("date", "project", "tasks", "blockers", "next_steps"):
+            if field in updates and updates[field] is not None:
+                setattr(r, field, updates[field])
+        await db.commit()
+        await db.refresh(r)
+        return _serialize(r)
+
+
+async def delete_report(report_id: str, user_id: str) -> dict:
+    async with async_session() as db:
+        result = await db.execute(
+            select(Report).where(Report.id == report_id, Report.user_id == user_id)
+        )
+        r = result.scalars().first()
+        if not r:
+            return {"error": "Report not found or not yours"}
+        await db.delete(r)
+        await db.commit()
+        return {"deleted": True, "id": report_id}
+
+
 async def export_report_markdown(report_id: str, user_id: str) -> dict:
     async with async_session() as db:
         result = await db.execute(
