@@ -154,8 +154,8 @@ async def api_snippets(category: Optional[str] = None, user: dict = Depends(get_
 
 
 @router.get("/bookmarks")
-async def api_get_bookmarks(user: dict = Depends(get_current_user)):
-    bookmarks = _load_bookmarks(user["user_id"])
+async def api_get_bookmarks(user: dict | None = Depends(get_optional_user)):
+    bookmarks = _load_bookmarks(user["user_id"] if user else "")
     return {"items": bookmarks, "count": len(bookmarks)}
 
 
