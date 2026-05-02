@@ -119,8 +119,20 @@ async def admin_delete_user(
 # ═══════════ PUBLIC ═══════════
 
 @router.get("/health")
-async def api_health():
-    return {"status": "healthy", "service": "ASE Hub", "version": "2.0.0"}
+async def api_health(db: AsyncSession = Depends(get_db)):
+    db_ok = False
+    try:
+        from sqlalchemy import text
+        await db.execute(text("SELECT 1"))
+        db_ok = True
+    except Exception:
+        pass
+    return {
+        "status": "healthy" if db_ok else "degraded",
+        "database": "ok" if db_ok else "error",
+        "service": "ASE Hub",
+        "version": "2.1.0"
+    }
 
 
 @router.get("/pricing")

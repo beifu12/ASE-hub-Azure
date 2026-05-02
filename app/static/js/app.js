@@ -138,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (section === 'snippets') { loadSnippets(); }
                 if (section === 'reports') { loadReports(); }
                 if (section === 'meetings') { loadMeetings(); }
+                if (section === 'migration') { loadMigrationStats(); }
             }
             // Close sidebar on mobile
             if (window.innerWidth < 768) {
@@ -252,4 +253,66 @@ function initUserInfo() {
     } else if (nameEl && user.username) {
         nameEl.textContent = user.username;
     }
+}
+
+// ═══════════ MIGRATION GUIDE ═══════════
+
+async function loadMigrationStats() {
+    const data = await apiGet('/api/migration/services');
+    if (!data) return;
+    const total = data.count;
+    const unsupported = data.items.filter(s => !s.crossSubscriptionMove).length;
+    const supported = total - unsupported;
+    document.getElementById('mig-total').textContent = total;
+    document.getElementById('mig-unsupported').textContent = unsupported;
+    document.getElementById('mig-supported').textContent = supported;
+    if (!document.getElementById('migration-results').querySelector('.migration-card')) {
+        loadMigrationServices();
+    }
+}
+
+async function loadMigrationServices() {
+    const data = await apiGet('/api/migration/services');
+    if (!data) return;
+    renderMigrationResults(data.items);
+}
+
+async function loadUnsupportedOnly() {
+    const data = await apiGet('/api/migration/services?unsupported_only=true');
+    if (!data) return;
+    renderMigrationResults(data.items);
+}
+
+async function searchMigration() {
+    const kw = document.getElementById('migration-keyword').value.trim();
+    if (!kw) { loadMigrationServices(); return; }
+    const data = await apiGet('/api/migration/search?keyword=' + encodeURIComponent(kw));
+    if (!data) return;
+    renderMigrationResults(data.items);
+}
+
+function renderMigrationResults(items) {
+    document.getElementById('migration-count').textContent = items.length + ' results';
+    const container = document.getElementById('migration-results');
+    if (!items.length) {
+        container.innerHTML = '<div class="empty-state">No services found</div>';
+        return;
+    }
+    container.innerHTML = items.map(s => {
+        const movable = s.crossSubscriptionMove;
+        const badge = movable
+            ? '<span style="background:#4ade8020;color:#4ade80;padding:2px 8px;border-radius:4px;font-size:12px">✅ Movable</span>'
+            : '<span style="background:#f8717120;color:#f87171;padding:2px 8px;border-radius:4px;font-size:12px">⚠️ Cannot Move</span>';
+        const restrictions = s.restrictions ? s.restrictions.map(r => '<li>' + r + '</li>').join('') : '';
+        const practices = s.bestPractices ? s.bestPractices.map(p => '<li>' + p + '</li>').join('') : '';
+        return '<div class="migration-card" style="background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">' +
+            '<strong style="font-size:16px">' + s.serviceName + '</strong>' + badge +
+            '</div>' +
+            '<p style="color:var(--text-secondary);font-size:14px;margin-bottom:8px">' + (s.notes || '') + '</p>' +
+            (restrictions ? '<div style="font-size:13px;margin-bottom:8px"><strong style="color:#f87171">⚠️ Restrictions:</strong><ul style="margin:4px 0 0 16px">' + restrictions + '</ul></div>' : '') +
+            (practices ? '<div style="font-size:13px;margin-bottom:8px"><strong style="color:#4ade80">✅ Best Practices:</strong><ul style="margin:4px 0 0 16px">' + practices + '</ul></div>' : '') +
+            (s.officialDoc ? '<a href="' + s.officialDoc + '" target="_blank" rel="noopener" style="font-size:12px;color:#4fc3f7">📖 Official documentation →</a>' : '') +
+            '</div>';
+    }).join('');
 }

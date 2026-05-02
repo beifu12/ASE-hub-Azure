@@ -51,6 +51,9 @@
             <button class="nav-item" data-section="snippets">
                 <span class="icon">⚡</span> <span data-i18n="snippets">Snippets</span>
             </button>
+            <button class="nav-item" data-section="migration">
+                <span class="icon">🔄</span> <span>Migration</span>
+            </button>
         </nav>
         <div class="sidebar-footer">
             <div class="lang-toggle">
@@ -276,6 +279,30 @@
                 </div>
             </div>
             <div id="snippets-list"><div class="loading"><div class="spinner"></div></div></div>
+        </section>
+
+        <!-- === MIGRATION === -->
+        <section class="section" id="section-migration">
+            <div class="page-header">
+                <h1>🔄 Cross-Subscription Migration Guide</h1>
+            </div>
+            <div class="grid grid-3" id="migration-stats">
+                <div class="stat-card"><div class="value" id="mig-total">--</div><div class="label">Total Services</div></div>
+                <div class="stat-card" style="border-left:3px solid #f87171"><div class="value" id="mig-unsupported">--</div><div class="label" style="color:#f87171">⚠️ Cannot Move</div></div>
+                <div class="stat-card" style="border-left:3px solid #4ade80"><div class="value" id="mig-supported">--</div><div class="label" style="color:#4ade80">✅ Can Move</div></div>
+            </div>
+            <div class="card">
+                <div class="search-box">
+                    <input type="text" id="migration-keyword" placeholder="Search service (e.g. Key Vault, AKS)..." onkeydown="if(event.key==='Enter')searchMigration()">
+                    <button class="btn btn-primary" onclick="searchMigration()">🔍 Search</button>
+                    <button class="btn btn-sm" onclick="loadMigrationServices()">📋 All Services</button>
+                    <button class="btn btn-sm" style="background:#f8717120;color:#f87171" onclick="loadUnsupportedOnly()">⚠️ Cannot Move Only</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span>Service Details</span> <span id="migration-count"></span></div>
+                <div id="migration-results"><div class="empty-state">Search for an Azure service to see migration support status</div></div>
+            </div>
         </section>
     </main>
 

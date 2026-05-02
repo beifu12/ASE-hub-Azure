@@ -31,12 +31,20 @@ async function searchPricing() {
     
     let html = '';
     data.items.forEach(item => {
+        const mw = item.migrationWarning;
+        let migCell = '<td style="color:var(--text-secondary)">—</td>';
+        if (mw && mw.type === 'restricted') {
+            migCell = `<td style="color:#f87171" title="${(mw.details||[]).join('; ')}">⚠️ Cannot Move</td>`;
+        } else if (mw && mw.type === 'info') {
+            migCell = `<td style="color:#4ade80" title="${(mw.bestPractices||[]).join('; ')}">✅ Movable</td>`;
+        }
         html += `<tr>
             <td>${item.serviceName || ''}</td>
             <td>${(item.productName || '').substring(0, 50)}</td>
             <td>${(item.meterName || '').substring(0, 60)}</td>
             <td>${item.armRegionName || ''}</td>
             <td>${item.unitPrice} ${item.currencyCode || 'USD'}</td>
+            ${migCell}
         </tr>`;
     });
     tbody.innerHTML = html;

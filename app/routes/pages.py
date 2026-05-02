@@ -25,13 +25,19 @@ async def login_page():
 @router.get("/register", response_class=HTMLResponse)
 async def register_page():
     return HTMLResponse("""
-    <html><body style="background:#1a1a2e;color:#e0e0e0;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
-    <div style="text-align:center"><h2>🚫 注册已关闭</h2><p>这是私有实例，请联系管理员。</p><p><a href="/login" style="color:#4fc3f7">返回登录</a></p></div>
+    <html><body style="background:#0d1117;color:#e6edf3;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
+    <div style="text-align:center"><h2>🚫 注册已关闭</h2><p style="color:#8b949e">这是私有实例，请联系管理员添加账号。</p><p style="margin-top:20px"><a href="/login" style="color:#4fc3f7;text-decoration:none">← 返回登录</a></p></div>
     </body></html>
     """)
 
 
 @router.get("/admin", response_class=HTMLResponse)
-async def admin_page():
+async def admin_page(user: dict | None = Depends(get_optional_user)):
+    if not user:
+        return HTMLResponse("""
+        <html><body style="background:#0d1117;color:#e6edf3;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
+        <div style="text-align:center"><h2>🔒 需要登录</h2><p style="color:#8b949e">请先登录再访问管理面板。</p><p style="margin-top:20px"><a href="/login" style="color:#4fc3f7;text-decoration:none">← 去登录</a></p></div>
+        </body></html>
+        """)
     admin_path = TEMPLATE_DIR / "admin.html"
     return admin_path.read_text(encoding="utf-8")

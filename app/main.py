@@ -2,7 +2,9 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy import select
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy import select, text
 
 from app.database import init_db, async_session
 from app.models import Snippet
@@ -43,7 +45,25 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="ASE Hub", version="2.0.0", lifespan=lifespan)
+app = FastAPI(title="ASE Hub", version="2.1.0", lifespan=lifespan)
+
+# ═══════════ Security ═══════════
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://ase.hefuzh.com", "http://localhost:8000", "http://localhost:8001"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Authorization", "Content-Type"],
+)
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
+
+
+# ═══════════ Routes ═══════════
 
 static_dir = Path(__file__).resolve().parent / "static"
 app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
