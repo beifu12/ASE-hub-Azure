@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASE Hub · 管理员</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; }
+  .container { max-width: 700px; margin: 0 auto; padding: 2rem; }
+  h1 { font-size: 1.5rem; color: #0078d4; margin-bottom: 0.5rem; }
+  .subtitle { color: #888; font-size: 0.85rem; margin-bottom: 2rem; }
+  .card { background: #16213e; border: 1px solid #0f3460; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .card h2 { font-size: 1.1rem; margin-bottom: 1rem; color: #4fc3f7; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid #0f3460; }
+  th { color: #888; font-weight: 500; font-size: 0.8rem; text-transform: uppercase; }
+  .form-group { margin-bottom: 1rem; }
+  label { display: block; margin-bottom: 0.3rem; font-size: 0.85rem; color: #aaa; }
+  input { width: 100%; padding: 0.5rem 0.75rem; background: #0f3460; border: 1px solid #1a4a8a; border-radius: 4px; color: #e0e0e0; font-size: 0.9rem; }
+  input:focus { outline: none; border-color: #0078d4; }
+  .btn { padding: 0.5rem 1.2rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+  .btn-primary { background: #0078d4; color: white; }
+  .btn-danger { background: #d32f2f; color: white; margin-left: 0.5rem; }
+  .btn-primary:hover { background: #005a9e; }
+  .btn-danger:hover { background: #b71c1c; }
+  .msg { padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.85rem; }
+  .msg-success { background: #1b5e20; color: #a5d6a7; }
+  .msg-error { background: #b71c1c; color: #ffcdd2; }
+  .loading { color: #888; }
+  .nav { margin-top: 2rem; }
+  .nav a { color: #4fc3f7; text-decoration: none; font-size: 0.85rem; }
+  .nav a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>⚙️ ASE Hub 管理员</h1>
+  <p class="subtitle">用户管理 · 手动添加账号</p>
+
+  <div id="msg"></div>
+
+  <div class="card">
+    <h2>➕ 添加用户</h2>
+    <div class="form-group">
+      <label>用户名</label>
+      <input type="text" id="newUsername" placeholder="至少2个字符" minlength="2">
+    </div>
+    <div class="form-group">
+      <label>显示名称</label>
+      <input type="text" id="newDisplayName" placeholder="可选">
+    </div>
+    <div class="form-group">
+      <label>密码</label>
+      <input type="password" id="newPassword" placeholder="至少4个字符" minlength="4">
+    </div>
+    <button class="btn btn-primary" onclick="createUser()">创建用户</button>
+  </div>
+
+  <div class="card">
+    <h2>👥 用户列表</h2>
+    <table id="userTable">
+      <thead><tr><th>用户名</th><th>显示名</th><th>创建时间</th><th>操作</th></tr></thead>
+      <tbody id="userList"><tr><td colspan="4" class="loading">加载中…</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="nav">
+    <a href="/">← 返回主页</a>
+  </div>
+</div>
+
+<script>
+const TOKEN = localStorage.getItem('ase_token') || '';
+
+function showMsg(text, type) {
+  const el = document.getElementById('msg');
+  el.innerHTML = `<div class="msg msg-${type}">${text}</div>`;
+  setTimeout(() => el.innerHTML = '', 4000);
+}
+
+async function loadUsers() {
+  try {
+    const res = await fetch('/api/admin/users', { headers: { 'Authorization': `Bearer ${TOKEN}` } });
+    if (res.status === 401) { location.href = '/login'; return; }
+    const data = await res.json();
+    const tbody = document.getElementById('userList');
+    tbody.innerHTML = data.items.map(u => `
+      <tr>
+        <td>${u.username}</td>
+        <td>${u.display_name || '-'}</td>
+        <td>${u.created_at ? new Date(u.created_at).toLocaleDateString('zh-CN') : '-'}</td>
+        <td><button class="btn btn-danger" onclick="deleteUser('${u.id}')">删除</button></td>
+      </tr>
+    `).join('');
+    if (!data.items.length) tbody.innerHTML = '<tr><td colspan="4" style="color:#888">暂无用户</td></tr>';
+  } catch(e) {
+    showMsg('加载失败：' + e.message, 'error');
+  }
+}
+
+async function createUser() {
+  const username = document.getElementById('newUsername').value.trim();
+  const password = document.getElementById('newPassword').value;
+  const display_name = document.getElementById('newDisplayName').value.trim() || username;
+  if (!username || !password) return showMsg('请填写用户名和密码', 'error');
+  try {
+    const res = await fetch('/api/admin/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` },
+      body: JSON.stringify({ username, password, display_name })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showMsg(`✅ 用户 ${data.user.username} 创建成功`, 'success');
+      document.getElementById('newUsername').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('newDisplayName').value = '';
+      loadUsers();
+    } else {
+      showMsg(data.detail || '创建失败', 'error');
+    }
+  } catch(e) {
+    showMsg('创建失败：' + e.message, 'error');
+  }
+}
+
+async function deleteUser(id) {
+  if (!confirm('确定删除此用户？')) return;
+  try {
+    const res = await fetch(`/api/admin/users/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${TOKEN}` }
+    });
+    if (res.ok) {
+      showMsg('✅ 用户已删除', 'success');
+      loadUsers();
+    } else {
+      const data = await res.json();
+      showMsg(data.detail || '删除失败', 'error');
+    }
+  } catch(e) {
+    showMsg('删除失败：' + e.message, 'error');
+  }
+}
+
+if (!TOKEN) { location.href = '/login'; } else { loadUsers(); }
+</script>
+</body>
+</html>

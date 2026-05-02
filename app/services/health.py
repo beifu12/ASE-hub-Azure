@@ -1,9 +1,12 @@
 import httpx
+from app.cache import health_cache
 
 AZURE_STATUS_FEED = "https://azure.status.microsoft/en-us/status/feed/"
 
 
 async def get_service_health() -> dict:
+    if "health" in health_cache:
+        return health_cache["health"]
     async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
         try:
             resp = await client.get(AZURE_STATUS_FEED)
@@ -26,7 +29,9 @@ async def get_service_health() -> dict:
                     "published": "",
                 })
             
-            return {"status": "ok", "services": results}
+            result = {"status": "ok", "services": results}
+            health_cache["health"] = result
+            return result
         except Exception as e:
             return {
                 "status": "ok",

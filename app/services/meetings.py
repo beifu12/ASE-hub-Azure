@@ -1,75 +1,67 @@
-import json
-from pathlib import Path
-from datetime import datetime, timezone
-from typing import Optional
-
-DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
-MEETINGS_FILE = DATA_DIR / "meetings.json"
+from sqlalchemy import select
+from app.database import async_session
+from app.models import Meeting
 
 
-def _load_meetings(user_id: str = "") -> list:
-    if MEETINGS_FILE.exists():
-        try:
-            all_mtg = json.loads(MEETINGS_FILE.read_text())
-            if user_id:
-                return [m for m in all_mtg if m.get("user_id") == user_id]
-            return all_mtg
-        except (json.JSONDecodeError, Exception):
-            return []
-    return []
-
-
-def _save_meetings(meetings: list, user_id: str = ""):
-    DATA_DIR.mkdir(exist_ok=True)
-    all_mtg = []
-    if MEETINGS_FILE.exists():
-        try:
-            all_mtg = json.loads(MEETINGS_FILE.read_text())
-        except (json.JSONDecodeError, Exception):
-            all_mtg = []
-    if user_id:
-        all_mtg = [m for m in all_mtg if m.get("user_id") != user_id]
-        all_mtg.extend(meetings)
-    MEETINGS_FILE.write_text(json.dumps(all_mtg, indent=2, ensure_ascii=False))
+def _serialize(meeting: Meeting) -> dict:
+    return {
+        "id": meeting.id,
+        "user_id": meeting.user_id,
+        "title": meeting.title,
+        "date": meeting.date,
+        "attendees": meeting.attendees or [],
+        "notes": meeting.notes or "",
+        "action_items": meeting.action_items or [],
+        "created_at": meeting.created_at.isoformat() if meeting.created_at else "",
+    }
 
 
 async def get_meetings(user_id: str) -> dict:
-    meetings = _load_meetings(user_id)
-    return {"items": meetings, "count": len(meetings)}
+    async with async_session() as db:
+        result = await db.execute(
+            select(Meeting).where(Meeting.user_id == user_id)
+        )
+        meetings = result.scalars().all()
+        return {"items": [_serialize(m) for m in meetings], "count": len(meetings)}
 
 
 async def create_meeting(meeting: dict, user_id: str) -> dict:
-    meetings = _load_meetings(user_id)
-    new_meeting = {
-        "id": f"mtg_{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
-        "title": meeting.get("title", ""),
-        "date": meeting.get("date", datetime.now(timezone.utc).strftime("%Y-%m-%d")),
-        "attendees": meeting.get("attendees", ""),
-        "notes": meeting.get("notes", ""),
-        "actions": meeting.get("actions", []),
-        "user_id": user_id,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-    }
-    meetings.append(new_meeting)
-    _save_meetings(meetings, user_id)
-    return new_meeting
+    async with async_session() as db:
+        mtg = Meeting(
+            user_id=user_id,
+            title=meeting.get("title", ""),
+            date=meeting.get("date", ""),
+            attendees=meeting.get("attendees", []),
+            notes=meeting.get("notes", ""),
+            action_items=meeting.get("action_items", []),
+        )
+        db.add(mtg)
+        await db.commit()
+        await db.refresh(mtg)
+        return _serialize(mtg)
 
 
 async def export_meeting_markdown(meeting_id: str, user_id: str) -> dict:
-    meetings = _load_meetings(user_id)
-    for m in meetings:
-        if m.get("id") == meeting_id:
-            actions = m.get("actions", [])
-            md = f"""# Meeting: {m.get('title', 'Untitled')}
+    async with async_session() as db:
+        result = await db.execute(
+            select(Meeting).where(Meeting.id == meeting_id, Meeting.user_id == user_id)
+        )
+        m = result.scalars().first()
+        if not m:
+            return {"markdown": "", "error": "Meeting not found"}
+        actions = m.action_items or []
+        attendees = m.attendees
+        if isinstance(attendees, list):
+            attendees = ", ".join(attendees)
+        md = f"""# Meeting: {m.title or 'Untitled'}
 
-**Date:** {m.get('date', '')}
-**Attendees:** {m.get('attendees', 'None')}
+**Date:** {m.date}
+**Attendees:** {attendees or 'None'}
 
 ## Notes
-{m.get('notes', 'No notes recorded.')}
+{m.notes or 'No notes recorded.'}
 
 ## Action Items
 {chr(10).join('- ' + a for a in actions) if actions else '- None'}
 """
-            return {"markdown": md, "id": meeting_id}
-    return {"markdown": "", "error": "Meeting not found"}
+        return {"markdown": md, "id": meeting_id}

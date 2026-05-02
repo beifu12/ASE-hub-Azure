@@ -1,11 +1,7 @@
-import json
-from pathlib import Path
-from typing import Optional
+from sqlalchemy import select
+from app.database import async_session
+from app.models import Snippet
 
-DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
-SNIPPETS_FILE = DATA_DIR / "snippets.json"
-
-# Default shared snippets
 DEFAULT_SNIPPETS = [
     {"id": "snip_001", "category": "compute", "title": "List VMs", "command": "az vm list --resource-group <rg> --output table", "description": "List all VMs in a resource group", "user_id": "shared"},
     {"id": "snip_002", "category": "compute", "title": "Create VM", "command": "az vm create --resource-group <rg> --name <name> --image Ubuntu2204 --admin-username azureuser --generate-ssh-keys", "description": "Create a new Ubuntu VM with SSH keys", "user_id": "shared"},
@@ -22,18 +18,22 @@ DEFAULT_SNIPPETS = [
 ]
 
 
-def _load_snippets() -> list:
-    if SNIPPETS_FILE.exists():
-        try:
-            return json.loads(SNIPPETS_FILE.read_text())
-        except (json.JSONDecodeError, Exception):
-            return DEFAULT_SNIPPETS
-    return DEFAULT_SNIPPETS
-
-
 async def get_snippets(category: str = "", user_id: str = "") -> dict:
-    """Returns snippets. user_id is for future user-specific snippet creation."""
-    snippets = _load_snippets()
-    if category and category != "all":
-        snippets = [s for s in snippets if s.get("category") == category]
-    return {"items": snippets, "count": len(snippets)}
+    async with async_session() as db:
+        query = select(Snippet)
+        if category and category != "all":
+            query = query.where(Snippet.category == category)
+        result = await db.execute(query)
+        snippets = result.scalars().all()
+        items = [
+            {
+                "id": s.id,
+                "category": s.category,
+                "title": s.title,
+                "command": s.command,
+                "description": s.description,
+                "user_id": s.user_id,
+            }
+            for s in snippets
+        ]
+        return {"items": items, "count": len(items)}

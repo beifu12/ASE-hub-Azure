@@ -11,21 +11,21 @@ async function searchPricing() {
         return;
     }
     
-    tbody.innerHTML = '<tr><td colspan="5"><div class="loading"><div class="spinner"></div></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6"><div class="loading"><div class="spinner"></div></div></td></tr>';
     
     let url = '/api/pricing?keyword=' + encodeURIComponent(keyword);
     if (region) url += '&region=' + encodeURIComponent(region);
     
     const data = await apiGet(url);
     if (!data) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Error loading data</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Error loading data</td></tr>';
         return;
     }
     
     countEl.textContent = '(' + data.count + ' items)';
     
     if (!data.items || data.items.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-secondary)">No results found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-secondary)">No results found</td></tr>';
         return;
     }
     

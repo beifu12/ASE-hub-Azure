@@ -24,5 +24,14 @@ async def login_page():
 
 @router.get("/register", response_class=HTMLResponse)
 async def register_page():
-    reg_path = TEMPLATE_DIR / "register.html"
-    return reg_path.read_text(encoding="utf-8")
+    return HTMLResponse("""
+    <html><body style="background:#1a1a2e;color:#e0e0e0;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
+    <div style="text-align:center"><h2>🚫 注册已关闭</h2><p>这是私有实例，请联系管理员。</p><p><a href="/login" style="color:#4fc3f7">返回登录</a></p></div>
+    </body></html>
+    """)
+
+
+@router.get("/admin", response_class=HTMLResponse)
+async def admin_page():
+    admin_path = TEMPLATE_DIR / "admin.html"
+    return admin_path.read_text(encoding="utf-8")

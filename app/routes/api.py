@@ -1,97 +1,126 @@
-import json
-from pathlib import Path
 from typing import Optional
-from fastapi import APIRouter, Depends, Query, Request, HTTPException
-from app.services import pricing, docs, updates, health, reports, meetings, snippets
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends, Request, HTTPException
+from app.services import pricing, docs, updates, health, reports, meetings, snippets, migration
 from app.auth import (
     get_current_user, get_optional_user,
     get_user_by_username, create_user, authenticate_user, create_access_token,
 )
+from app.database import get_db
+from app.models import Bookmark, User as UserModel
 
 router = APIRouter()
 
-DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
-BOOKMARKS_FILE = DATA_DIR / "bookmarks.json"
+
+def _serialize_bookmark(b: Bookmark) -> dict:
+    return {
+        "id": b.id, "title": b.title, "url": b.url,
+        "description": b.description, "user_id": b.user_id,
+    }
 
 
-def _load_bookmarks(user_id: str = "") -> list:
-    if BOOKMARKS_FILE.exists():
-        try:
-            all_bm = json.loads(BOOKMARKS_FILE.read_text())
-            if user_id:
-                return [b for b in all_bm if b.get("user_id") == user_id]
-            return all_bm
-        except (json.JSONDecodeError, Exception):
-            return []
-    return []
+# ═══════════ AUTH STATUS ═══════════
 
+@router.get("/auth/status")
+async def api_auth_status():
+    return {"registration_open": False, "instance_type": "private"}
 
-def _save_bookmarks(bookmarks: list, user_id: str = ""):
-    DATA_DIR.mkdir(exist_ok=True)
-    # Merge: keep bookmarks from other users, replace current user's
-    all_bm = []
-    if BOOKMARKS_FILE.exists():
-        try:
-            all_bm = json.loads(BOOKMARKS_FILE.read_text())
-        except (json.JSONDecodeError, Exception):
-            all_bm = []
-    if user_id:
-        all_bm = [b for b in all_bm if b.get("user_id") != user_id]
-        all_bm.extend(bookmarks)
-    BOOKMARKS_FILE.write_text(json.dumps(all_bm, indent=2, ensure_ascii=False))
-
-
-# ═══════════ AUTH ═══════════
 
 @router.post("/auth/register")
-async def api_register(request: Request):
-    body = await request.json()
-    username = body.get("username", "").strip()
-    password = body.get("password", "")
-    display_name = body.get("display_name", username)
-
-    if not username or not password:
-        raise HTTPException(status_code=400, detail="Username and password required")
-    if len(username) < 2:
-        raise HTTPException(status_code=400, detail="Username must be at least 2 characters")
-    if len(password) < 4:
-        raise HTTPException(status_code=400, detail="Password must be at least 4 characters")
-
-    try:
-        user = create_user(username, password, display_name)
-        token = create_access_token(user["id"], user["username"])
-        return {"user": user, "access_token": token, "token_type": "bearer"}
-    except ValueError as e:
-        raise HTTPException(status_code=409, detail=str(e))
+async def api_register():
+    raise HTTPException(status_code=403, detail="Registration is closed. Use admin panel.")
 
 
 @router.post("/auth/login")
-async def api_login(request: Request):
+async def api_login(request: Request, db: AsyncSession = Depends(get_db)):
     body = await request.json()
     username = body.get("username", "").strip()
     password = body.get("password", "")
-
-    user = authenticate_user(username, password)
+    user = await authenticate_user(db, username, password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password")
-
     token = create_access_token(user["id"], user["username"])
     return {"user": user, "access_token": token, "token_type": "bearer"}
 
 
 @router.get("/auth/me")
-async def api_me(user: dict = Depends(get_current_user)):
-    full_user = get_user_by_username(user["username"])
+async def api_me(
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    full_user = await get_user_by_username(db, user["username"])
     if full_user:
-        return {k: v for k, v in full_user.items() if k != "password_hash"}
+        return {
+            "id": full_user.id, "username": full_user.username,
+            "display_name": full_user.display_name,
+            "created_at": full_user.created_at.isoformat(),
+        }
     return user
 
 
-# ═══════════ PUBLIC (no auth) ═══════════
+# ═══════════ ADMIN ═══════════
+
+@router.get("/admin/users")
+async def admin_list_users(
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(UserModel))
+    users = result.scalars().all()
+    return {
+        "items": [{
+            "id": u.id, "username": u.username,
+            "display_name": u.display_name,
+            "created_at": u.created_at.isoformat() if u.created_at else "",
+        } for u in users],
+        "count": len(users),
+    }
+
+
+@router.post("/admin/users")
+async def admin_create_user(
+    request: Request,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    body = await request.json()
+    username = body.get("username", "").strip()
+    password = body.get("password", "")
+    display_name = body.get("display_name", username)
+    if not username or not password:
+        raise HTTPException(status_code=400, detail="Username and password required")
+    if len(username) < 2 or len(password) < 4:
+        raise HTTPException(status_code=400, detail="Username >=2 chars, password >=4 chars")
+    try:
+        new_user = await create_user(db, username, password, display_name)
+        return {"user": new_user}
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+
+@router.delete("/admin/users/{user_id}")
+async def admin_delete_user(
+    user_id: str,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    if user_id == user["user_id"]:
+        raise HTTPException(status_code=400, detail="Cannot delete yourself")
+    result = await db.execute(select(UserModel).where(UserModel.id == user_id))
+    target = result.scalars().first()
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+    await db.delete(target)
+    await db.commit()
+    return {"deleted": True, "user_id": user_id}
+
+
+# ═══════════ PUBLIC ═══════════
 
 @router.get("/health")
 async def api_health():
-    return {"status": "healthy", "service": "ASE Hub", "version": "1.0.0"}
+    return {"status": "healthy", "service": "ASE Hub", "version": "2.0.0"}
 
 
 @router.get("/pricing")
@@ -114,7 +143,34 @@ async def api_status():
     return await health.get_service_health()
 
 
-# ═══════════ PROTECTED (require auth) ═══════════
+@router.get("/migration/services")
+async def api_migration_services(unsupported_only: bool = False):
+    if unsupported_only:
+        services = await migration.get_unsupported_services()
+        return {"items": services, "count": len(services)}
+    services = await migration.get_all_services()
+    return {"items": services, "count": len(services)}
+
+
+@router.get("/migration/check")
+async def api_migration_check(service: str = ""):
+    if not service:
+        return {"error": "service parameter required"}
+    result = await migration.check_service(service)
+    if result:
+        return {"found": True, "service": result}
+    return {"found": False, "service": service, "message": "Service not found in migration knowledge base"}
+
+
+@router.get("/migration/search")
+async def api_migration_search(keyword: str = ""):
+    if not keyword:
+        return {"items": [], "count": 0}
+    results = await migration.search_services(keyword)
+    return {"items": results, "count": len(results)}
+
+
+# ═══════════ PROTECTED ═══════════
 
 @router.get("/reports")
 async def api_get_reports(user: dict = Depends(get_current_user)):
@@ -154,22 +210,33 @@ async def api_snippets(category: Optional[str] = None, user: dict = Depends(get_
 
 
 @router.get("/bookmarks")
-async def api_get_bookmarks(user: dict | None = Depends(get_optional_user)):
-    bookmarks = _load_bookmarks(user["user_id"] if user else "")
-    return {"items": bookmarks, "count": len(bookmarks)}
+async def api_get_bookmarks(
+    user: dict | None = Depends(get_optional_user),
+    db: AsyncSession = Depends(get_db),
+):
+    query = select(Bookmark)
+    if user:
+        query = query.where(Bookmark.user_id == user["user_id"])
+    result = await db.execute(query)
+    bookmarks = result.scalars().all()
+    items = [_serialize_bookmark(b) for b in bookmarks]
+    return {"items": items, "count": len(items)}
 
 
 @router.post("/bookmarks")
-async def api_create_bookmark(request: Request, user: dict = Depends(get_current_user)):
-    bookmarks = _load_bookmarks(user["user_id"])
+async def api_create_bookmark(
+    request: Request,
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
     body = await request.json()
-    new_bm = {
-        "id": f"bm_{len(bookmarks) + 1}_{user['user_id'][:6]}",
-        "title": body.get("title", ""),
-        "url": body.get("url", ""),
-        "description": body.get("description", ""),
-        "user_id": user["user_id"],
-    }
-    bookmarks.append(new_bm)
-    _save_bookmarks(bookmarks, user["user_id"])
-    return new_bm
+    bm = Bookmark(
+        user_id=user["user_id"],
+        title=body.get("title", ""),
+        url=body.get("url", ""),
+        description=body.get("description", ""),
+    )
+    db.add(bm)
+    await db.commit()
+    await db.refresh(bm)
+    return _serialize_bookmark(bm)

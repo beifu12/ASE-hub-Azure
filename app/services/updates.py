@@ -1,11 +1,15 @@
 import httpx
 import feedparser
 from typing import Optional
+from app.cache import updates_cache
 
 UPDATES_FEED_URL = "https://azure.microsoft.com/en-us/updates/feed/"
 
 
 async def get_updates(category: Optional[str] = None) -> dict:
+    cache_key = f"updates:{category or 'all'}"
+    if cache_key in updates_cache:
+        return updates_cache[cache_key]
     async with httpx.AsyncClient(timeout=15.0, follow_redirects=True) as client:
         try:
             resp = await client.get(UPDATES_FEED_URL)
@@ -51,7 +55,9 @@ async def get_updates(category: Optional[str] = None) -> dict:
                     "published": published,
                 })
             
-            return {"items": results[:20], "count": len(results[:20])}
+            result = {"items": results[:20], "count": len(results[:20])}
+            updates_cache[cache_key] = result
+            return result
         except Exception as e:
             fallback = _get_fallback_updates(category)
             return {"items": fallback, "count": len(fallback), "error": str(e)}
