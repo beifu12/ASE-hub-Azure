@@ -269,40 +269,33 @@
         <!-- === GLOSSARY === -->
         <section class="section" id="section-glossary">
             <div class="page-header">
-                <h1 data-i18n="glossary">📖 Azure Glossary & TTS</h1>
+                <h1 data-i18n="glossary">📖 Azure Glossary</h1>
             </div>
 
-            <!-- Quick Translate -->
-            <div class="card" style="margin-bottom:16px">
-                <div class="card-header">🔤 Translate & Pronounce</div>
-                <div style="display:flex;flex-direction:column;gap:10px;padding:4px 0">
-                    <div style="display:flex;gap:8px;align-items:center">
-                        <input type="text" id="glossary-input" placeholder="Enter English term (e.g. availability set)" style="flex:1" data-i18n-placeholder="search_glossary">
-                        <button class="btn btn-primary" onclick="doTranslate()">🔍 <span data-i18n="search">Search</span></button>
-                    </div>
-                    <div style="display:flex;gap:8px;align-items:center;font-size:13px">
-                        <label>Voice:</label>
-                        <select id="tts-voice-select" onchange="changeVoice()" style="width:auto;padding:4px 8px">
-                            <option value="en-US-JennyNeural">Jenny (US)</option>
-                        </select>
-                    </div>
-                    <div id="translate-result"></div>
+            <div class="glossary-v3">
+                <!-- Search area -->
+                <div class="gv3-search">
+                    <input type="text" id="glossary-input" placeholder="Enter English term..." 
+                           oninput="onGlossaryInput()" onkeydown="onGlossaryEnter(event)"
+                           autocomplete="off" autofocus>
+                    <div id="suggestions-dropdown" class="gv3-suggestions"></div>
                 </div>
-            </div>
 
-            <!-- Glossary Browser -->
-            <div class="card">
-                <div class="card-header">
-                    <span>📚 Glossary Browser (148 Azure terms)</span>
-                    <button class="btn btn-sm" onclick="loadGlossary()">🔄</button>
+                <!-- Result area -->
+                <div id="glossary-result">
+                    <div class="empty-state">Type an English Azure term above</div>
                 </div>
-                <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-                    <input type="text" id="glossary-search" placeholder="Filter by keyword..." style="flex:1;min-width:200px" onkeyup="loadGlossary()">
-                    <select id="glossary-categories" onchange="filterByCategory()" style="width:auto;min-width:140px">
-                        <option value="">All Categories</option>
-                    </select>
+
+                <!-- History -->
+                <div class="card">
+                    <div class="card-header">
+                        <span>🕐 Recent Searches</span>
+                        <button class="btn btn-sm" onclick="renderHistory()">🔄</button>
+                    </div>
+                    <div id="glossary-history">
+                        <div class="empty-state">Search history will appear here</div>
+                    </div>
                 </div>
-                <div id="glossary-list"><div class="empty-state">Loading...</div></div>
             </div>
         </section>
 

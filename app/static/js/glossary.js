@@ -1,172 +1,228 @@
-// ASE Hub — Azure Glossary & TTS
+// ASE Hub — Azure Glossary (v3 simplified)
+// Core: translate + pronounce + history (50) + favorites
+// No hot words, no category browser, no service grid
 
-let currentVoice = 'en-US-JennyNeural';
-let currentAudio = null;
+let _debounceTimer = null;
+let _recentSearches = [];
+let _favorites = [];
+const MAX_HISTORY = 50;
+const STORAGE_KEY_HISTORY = 'ase_glossary_history';
+const STORAGE_KEY_FAVORITES = 'ase_glossary_favorites';
 
-// ═══════════ TRANSLATE ═══════════
+// ═══════════ Init ═══════════
 
-async function doTranslate() {
-    const input = document.getElementById('glossary-input');
-    const result = document.getElementById('translate-result');
-    const q = input.value.trim();
-    if (!q) return;
+function initGlossary() {
+    try { _recentSearches = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]'); } catch (e) { _recentSearches = []; }
+    try { _favorites = JSON.parse(localStorage.getItem(STORAGE_KEY_FAVORITES) || '[]'); } catch (e) { _favorites = []; }
+    loadVoices();
+    renderHistory();
+}
 
-    result.innerHTML = '<div class="loading">🔍 Searching glossary...</div>';
+// ═══════════ Search with suggestions ═══════════
 
+function onGlossaryInput() {
+    clearTimeout(_debounceTimer);
+    const q = document.getElementById('glossary-input').value.trim();
+    if (!q || q.length < 2) {
+        document.getElementById('suggestions-dropdown').style.display = 'none';
+        return;
+    }
+    _debounceTimer = setTimeout(() => fetchSuggestions(q), 250);
+}
+
+async function fetchSuggestions(q) {
     const data = await apiGet('/api/translate?q=' + encodeURIComponent(q));
-    if (!data) { result.innerHTML = '<div class="error">API error</div>'; return; }
+    const dd = document.getElementById('suggestions-dropdown');
+    if (!dd) return;
 
-    if (data.found) {
-        const phonetic = data.phonetic ? `<span class="phonetic">${data.phonetic}</span>` : '';
-        result.innerHTML = `
-            <div class="translate-card found">
-                <div class="tc-term">${data.query}</div>
-                <div class="tc-cn">${data.cn}</div>
-                ${phonetic}
-                <div class="tc-scene">📂 ${data.scene}</div>
-                <div class="tc-actions">
-                    <button class="btn btn-primary btn-sm" onclick="speakText('${data.query.replace(/'/g, "\\'")}')">🔊 Pronounce</button>
-                    <span class="tc-match-type">${data.match_type} match</span>
-                </div>
-            </div>`;
-    } else if (data.suggestions && data.suggestions.length > 0) {
-        let html = `<div class="translate-card not-found">
-            <div class="tc-term">${data.query} <span class="tc-notfound">— not found</span></div>
-            <div class="tc-hint">${data.hint}</div>
-            <div class="suggestions">`;
+    if (data && data.found) {
+        // Show single result + suggestion list
+        showResult(data);
+        dd.style.display = 'none';
+        addToHistory(data.query, data.cn);
+        return;
+    }
+
+    if (data && data.suggestions && data.suggestions.length > 0) {
+        let html = '';
         data.suggestions.forEach(s => {
-            html += `<div class="sug-item" onclick="document.getElementById('glossary-input').value='${s.term}'; doTranslate();">
+            html += `<div class="sug-row" onclick="selectSuggestion('${s.term.replace(/'/g, "\\'")}')">
                 <span class="sug-term">${s.term}</span>
+                <span class="sug-arrow">→</span>
                 <span class="sug-cn">${s.cn}</span>
-                <button class="btn btn-sm" onclick="event.stopPropagation(); speakText('${s.term.replace(/'/g, "\\'")}')">🔊</button>
             </div>`;
         });
-        html += '</div></div>';
-        result.innerHTML = html;
+        dd.innerHTML = html;
+        dd.style.display = 'block';
     } else {
-        result.innerHTML = `<div class="translate-card not-found">
-            <div class="tc-term">${data.query} <span class="tc-notfound">— not in glossary</span></div>
-            <div class="tc-hint">${data.hint || 'Try a different term'}</div>
-            <button class="btn btn-sm" style="margin-top:8px" onclick="speakText('${data.query.replace(/'/g, "\\'")}')">🔊 Pronounce anyway</button>
-        </div>`;
+        dd.innerHTML = '<div class="sug-row no-match">No matches in glossary</div>';
+        dd.style.display = 'block';
     }
 }
 
-// ═══════════ TTS ═══════════
-
-async function speakText(text) {
-    if (!text) return;
-    const btn = event?.target;
-    if (btn) { btn.textContent = '⏳ Generating...'; btn.disabled = true; }
-
-    const data = await apiPost('/api/tts', { text, voice: currentVoice });
-    if (!data || data.error) {
-        showToast(data?.error || 'TTS failed', 'error');
-        if (btn) { btn.textContent = '🔊 Pronounce'; btn.disabled = false; }
-        return;
+async function selectSuggestion(term) {
+    document.getElementById('glossary-input').value = term;
+    document.getElementById('suggestions-dropdown').style.display = 'none';
+    const data = await apiGet('/api/translate?q=' + encodeURIComponent(term));
+    if (data && data.found) {
+        showResult(data);
+        addToHistory(data.query, data.cn);
     }
-
-    // Play audio
-    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-    const audio = new Audio(data.url);
-    currentAudio = audio;
-    audio.onended = () => { if (btn) { btn.textContent = '🔊 Pronounce'; btn.disabled = false; } };
-    audio.onerror = () => { showToast('Audio playback failed', 'error'); if (btn) { btn.textContent = '🔊 Pronounce'; btn.disabled = false; } };
-    audio.play();
-    if (btn) { btn.textContent = '🔊 Playing...'; }
 }
 
-async function loadVoices() {
-    const data = await apiGet('/api/tts/voices');
-    if (!data || !data.voices) return;
-    const sel = document.getElementById('tts-voice-select');
-    if (!sel) return;
-    sel.innerHTML = data.voices.map(v =>
-        `<option value="${v.id}" ${v.id === currentVoice ? 'selected' : ''}>${v.name}</option>`
-    ).join('');
+function onGlossaryEnter(e) {
+    if (e.key !== 'Enter') return;
+    document.getElementById('suggestions-dropdown').style.display = 'none';
+    const q = document.getElementById('glossary-input').value.trim();
+    if (!q) return;
+    doDirectSearch(q);
 }
 
-function changeVoice() {
-    currentVoice = document.getElementById('tts-voice-select')?.value || 'en-US-JennyNeural';
+async function doDirectSearch(q) {
+    const data = await apiGet('/api/translate?q=' + encodeURIComponent(q));
+    if (data && data.found) {
+        showResult(data);
+        addToHistory(data.query, data.cn);
+    } else if (data && data.suggestions && data.suggestions.length > 0) {
+        // Pick first suggestion
+        const first = data.suggestions[0];
+        document.getElementById('glossary-input').value = first.term;
+        const d2 = await apiGet('/api/translate?q=' + encodeURIComponent(first.term));
+        if (d2 && d2.found) { showResult(d2); addToHistory(d2.query, d2.cn); }
+    } else {
+        document.getElementById('glossary-result').innerHTML = '<div class="empty-state">Not found in glossary</div>';
+    }
 }
 
-// ═══════════ GLOSSARY BROWSER ═══════════
+// ═══════════ Result display ═══════════
 
-async function loadGlossary() {
-    const el = document.getElementById('glossary-list');
-    if (!el) return;
-    el.innerHTML = '<div class="loading">Loading glossary...</div>';
+function showResult(data) {
+    const el = document.getElementById('glossary-result');
+    const isFav = _favorites.includes(data.query);
+    const phonetic = data.phonetic ? `<div class="gr-phonetic">${data.phonetic}</div>` : '';
+    const scene = data.scene ? `<div class="gr-scene">📂 ${data.scene}</div>` : '';
 
-    const kw = document.getElementById('glossary-search')?.value || '';
-    const data = await apiGet('/api/glossary?keyword=' + encodeURIComponent(kw) + '&limit=200');
-    if (!data || !data.items) {
-        el.innerHTML = '<div class="empty-state">No terms found</div>';
-        return;
-    }
-
-    if (data.items.length === 0) {
-        el.innerHTML = '<div class="empty-state">No matching terms</div>';
-        return;
-    }
-
-    let html = `<div class="glossary-header">📖 ${data.items.length} of ${data.total} terms</div><div class="glossary-grid">`;
-    data.items.forEach(item => {
-        const phonetic = item.phonetic ? `<span class="phonetic-small">${item.phonetic}</span>` : '';
-        html += `<div class="glossary-item">
-            <div class="gi-term" onclick="document.getElementById('glossary-input').value='${item.term}'; doTranslate(); document.getElementById('section-glossary').scrollIntoView({behavior:'smooth'})">
-                ${item.term}
+    el.innerHTML = `
+        <div class="gr-result-card">
+            <div class="gr-term-row">
+                <span class="gr-en">${data.query}</span>
+                <div class="gr-speak-btns">
+                    <button class="btn btn-sm" onclick="speakText('${data.query.replace(/'/g, "\\'")}', 'en-US-JennyNeural', this)" title="US pronunciation">🔊 US</button>
+                    <button class="btn btn-sm" onclick="speakText('${data.query.replace(/'/g, "\\'")}', 'en-GB-SoniaNeural', this)" title="UK pronunciation">🔊 UK</button>
+                </div>
             </div>
-            <div class="gi-cn">${item.cn}</div>
             ${phonetic}
-            <div class="gi-scene">${item.scene}</div>
-            <button class="btn btn-sm" onclick="speakText('${item.term.replace(/'/g, "\\'")}')">🔊</button>
+            <div class="gr-cn">${data.cn}</div>
+            ${scene}
+            <div class="gr-actions">
+                <button class="btn btn-sm ${isFav ? 'btn-warning' : ''}" onclick="toggleFavorite('${data.query.replace(/'/g, "\\'")}', this)" id="fav-btn">
+                    ${isFav ? '⭐' : '☆'} ${isFav ? 'Favorited' : 'Favorite'}
+                </button>
+                <button class="btn btn-sm" onclick="copyToClipboard('${data.cn.replace(/'/g, "\\'")}', this)">📋 Copy</button>
+            </div>
+        </div>`;
+}
+
+// ═══════════ History (50 recent) ═══════════
+
+function addToHistory(term, cn) {
+    _recentSearches = _recentSearches.filter(h => h.term !== term);
+    _recentSearches.unshift({ term, cn, time: Date.now() });
+    if (_recentSearches.length > MAX_HISTORY) _recentSearches = _recentSearches.slice(0, MAX_HISTORY);
+    localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(_recentSearches));
+    renderHistory();
+}
+
+function renderHistory() {
+    const el = document.getElementById('glossary-history');
+    if (!el) return;
+    if (_recentSearches.length === 0) {
+        el.innerHTML = '<div class="empty-state">Search history will appear here</div>';
+        return;
+    }
+    let html = '<div class="gh-header">Recent searches (' + _recentSearches.length + ')</div>';
+    _recentSearches.forEach((h, i) => {
+        const isFav = _favorites.includes(h.term);
+        html += `<div class="gh-row" onclick="reSearch('${h.term.replace(/'/g, "\\'")}')">
+            <button class="btn btn-sm" onclick="event.stopPropagation(); speakText('${h.term.replace(/'/g, "\\'")}', 'en-US-JennyNeural', this)">🔊</button>
+            <span class="gh-term">${h.term}</span>
+            <span class="gh-arrow">→</span>
+            <span class="gh-cn">${h.cn || '...'}</span>
+            <span class="gh-fav ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite('${h.term.replace(/'/g, "\\'")}')">${isFav ? '⭐' : '☆'}</span>
         </div>`;
     });
-    html += '</div>';
     el.innerHTML = html;
 }
 
-async function loadCategories() {
-    const data = await apiGet('/api/glossary/categories');
-    if (!data || !data.categories) return;
-    const el = document.getElementById('glossary-categories');
-    if (!el) return;
-    el.innerHTML = '<option value="">All Categories</option>' +
-        data.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+async function reSearch(term) {
+    document.getElementById('glossary-input').value = term;
+    const data = await apiGet('/api/translate?q=' + encodeURIComponent(term));
+    if (data && data.found) {
+        showResult(data);
+        addToHistory(data.query, data.cn);
+    }
+    document.getElementById('section-glossary').scrollIntoView({ behavior: 'smooth' });
 }
 
-function filterByCategory() {
-    const cat = document.getElementById('glossary-categories')?.value || '';
-    // Reload with category filter
-    const el = document.getElementById('glossary-list');
-    if (!el) return;
-    el.innerHTML = '<div class="loading">Filtering...</div>';
-    apiGet('/api/glossary?category=' + encodeURIComponent(cat) + '&limit=200').then(data => {
-        if (!data || !data.items) { el.innerHTML = '<div class="empty-state">No terms</div>'; return; }
-        let html = `<div class="glossary-header">📖 ${data.items.length} terms in "${cat || 'all'}"</div><div class="glossary-grid">`;
-        data.items.forEach(item => {
-            html += `<div class="glossary-item">
-                <div class="gi-term">${item.term}</div>
-                <div class="gi-cn">${item.cn}</div>
-                <div class="gi-scene">${item.scene}</div>
-                <button class="btn btn-sm" onclick="speakText('${item.term.replace(/'/g, "\\'")}')">🔊</button>
-            </div>`;
-        });
-        html += '</div>';
-        el.innerHTML = html;
+// ═══════════ Favorites ═══════════
+
+function toggleFavorite(term, btn) {
+    const idx = _favorites.indexOf(term);
+    if (idx >= 0) {
+        _favorites.splice(idx, 1);
+        if (btn) { btn.innerHTML = '☆ Favorite'; btn.classList.remove('btn-warning'); }
+    } else {
+        _favorites.push(term);
+        if (btn) { btn.innerHTML = '⭐ Favorited'; btn.classList.add('btn-warning'); }
+    }
+    localStorage.setItem(STORAGE_KEY_FAVORITES, JSON.stringify(_favorites));
+    renderHistory();
+    // Update result card fav button if visible
+    const fb = document.getElementById('fav-btn');
+    if (fb) {
+        const isFav = _favorites.includes(term);
+        fb.innerHTML = (isFav ? '⭐' : '☆') + ' ' + (isFav ? 'Favorited' : 'Favorite');
+        if (isFav) fb.classList.add('btn-warning'); else fb.classList.remove('btn-warning');
+    }
+}
+
+// ═══════════ Copy ═══════════
+
+function copyToClipboard(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+        if (btn) { const orig = btn.textContent; btn.textContent = '✅ Copied!'; setTimeout(() => btn.textContent = orig, 1500); }
     });
 }
 
-// Init on page load
-document.addEventListener('DOMContentLoaded', () => {
-    loadVoices();
-    loadCategories();
-    loadGlossary();
-});
+// ═══════════ TTS (shared with old code) ═══════════
 
-// Enter key in input
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && document.activeElement?.id === 'glossary-input') {
-        doTranslate();
+let currentAudio = null;
+
+async function speakText(text, voice, btn) {
+    if (!text) return;
+    if (btn) { btn.textContent = '⏳...'; btn.disabled = true; }
+    const data = await apiPost('/api/tts', { text, voice: voice || 'en-US-JennyNeural' });
+    if (!data || data.error) {
+        if (btn) { btn.textContent = '🔊'; btn.disabled = false; }
+        return;
+    }
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+    const audio = new Audio(data.url);
+    currentAudio = audio;
+    audio.onended = () => { if (btn) { btn.textContent = '🔊'; btn.disabled = false; } };
+    audio.onerror = () => { if (btn) { btn.textContent = '🔊'; btn.disabled = false; } };
+    audio.play();
+}
+
+async function loadVoices() {} // No-op: voice is hardcoded per button
+
+// Hide suggestions on outside click
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('#glossary-input') && !e.target.closest('#suggestions-dropdown')) {
+        const dd = document.getElementById('suggestions-dropdown');
+        if (dd) dd.style.display = 'none';
     }
 });
+
+// Init
+document.addEventListener('DOMContentLoaded', initGlossary);
