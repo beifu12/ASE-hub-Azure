@@ -5,6 +5,7 @@
 let _debounceTimer = null;
 let _recentSearches = [];
 let _favorites = [];
+let _lastResult = null;
 const MAX_HISTORY = 50;
 const STORAGE_KEY_HISTORY = 'ase_glossary_history';
 const STORAGE_KEY_FAVORITES = 'ase_glossary_favorites';
@@ -97,6 +98,7 @@ async function doDirectSearch(q) {
 // ═══════════ Result display ═══════════
 
 function showResult(data) {
+    _lastResult = data;
     const el = document.getElementById('glossary-result');
     const isFav = _favorites.includes(data.query);
     const phonetic = data.phonetic ? `<div class="gr-phonetic">${data.phonetic}</div>` : '';
@@ -119,6 +121,7 @@ function showResult(data) {
                     ${isFav ? '⭐' : '☆'} ${isFav ? 'Favorited' : 'Favorite'}
                 </button>
                 <button class="btn btn-sm" onclick="copyToClipboard('${data.cn.replace(/'/g, "\\'")}', this)">📋 Copy</button>
+                <button class="btn btn-sm btn-primary" onclick="openGlossaryBlade('${data.query.replace(/'/g, "\\'")}')">ℹ️ Details</button>
             </div>
         </div>`;
 }
@@ -215,6 +218,30 @@ async function speakText(text, voice, btn) {
 }
 
 async function loadVoices() {} // No-op: voice is hardcoded per button
+
+// ═══════════ Blade detail ═══════════
+
+function openGlossaryBlade(term) {
+    let data = null;
+    if (_lastResult && _lastResult.query === term) {
+        data = _lastResult;
+    } else {
+        data = _recentSearches.find(h => h.term === term);
+    }
+    if (!data) return;
+    const phonetic = data.phonetic ? `<div class="blade-detail__phonetic">${data.phonetic}</div>` : '';
+    const scene = data.scene ? `<div class="blade-detail__scene">${data.scene}</div>` : '';
+    const desc = data.desc ? `<div class="blade-detail__desc">${data.desc}</div>` : '';
+    const html = `
+        <div class="blade-detail">
+            <div class="blade-detail__term">${data.query || data.term}</div>
+            ${phonetic}
+            <div class="blade-detail__cn">${data.cn || ''}</div>
+            ${scene}
+            ${desc}
+        </div>`;
+    openBlade(data.query || data.term, html);
+}
 
 // Hide suggestions on outside click
 document.addEventListener('click', (e) => {

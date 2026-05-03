@@ -1,10 +1,11 @@
 # 🏗️ ASE Hub — Azure Solutions Engineer Hub
 
 [![Deploy](https://img.shields.io/badge/deploy-ASE%20Hub-blue)](https://ase.hefuzh.com)
-[![Version](https://img.shields.io/badge/version-2.0.0-blue)](https://github.com/beifu12/ASE-hub-Azure)
+[![Version](https://img.shields.io/badge/version-3.0.0-blue)](https://github.com/beifu12/ASE-hub-Azure)
+[![CI](https://img.shields.io/badge/CI-pytest-brightgreen)](.github/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-A self-hosted dashboard for Azure Solutions Engineers — pricing lookup, documentation search, update feeds, work reports, meeting summaries, CLI cheat sheets, and **cross-subscription migration intelligence**.
+A self-hosted **Azure Portal-style dashboard** for Azure Solutions Engineers — pricing lookup, documentation search, update feeds, work reports, meeting summaries, CLI cheat sheets, **cross-subscription migration intelligence**, and **Blade slide-in panels**.
 
 > **Live:** https://ase.hefuzh.com
 
@@ -20,7 +21,8 @@ A self-hosted dashboard for Azure Solutions Engineers — pricing lookup, docume
 
 | Module | Description |
 |---|---|
-| 📊 **Dashboard** | Azure service health status, latest updates, quick links |
+| 📊 **Dashboard Tile Grid** | 7 Azure Portal-style tiles — status, VM info, user count, service health, updates, quick links, bookmarks |
+| 🔲 **Blade Panels** | Azure Portal-style slide-in detail panels (open from tiles, ESC to close) |
 | 💰 **Pricing** | Search Azure Retail Prices API with **migration warnings** |
 | 🔄 **Migration Guide** | 70+ Azure services — cross-subscription move support, restrictions, best practices |
 | 📚 **Docs** | Search Microsoft Azure documentation |
@@ -30,6 +32,7 @@ A self-hosted dashboard for Azure Solutions Engineers — pricing lookup, docume
 | ⚡ **Snippets** | Azure CLI & Bicep cheat sheets (12+ built-in snippets) |
 | 🔖 **Bookmarks** | Save useful Azure links |
 | ⚙️ **Admin Panel** | User management — add/remove accounts via web UI |
+| 🧪 **CI/CD** | GitHub Actions + pytest (7 tests, automated on push/PR) |
 
 ### 🔐 Authentication
 
@@ -131,13 +134,30 @@ ase-hub/
 │   ├── data/
 │   │   └── migration_kb.json  # 70 Azure services migration data
 │   ├── templates/
-│   │   ├── index.html       # Main dashboard
+│   │   ├── index.html       # Main dashboard (3-column tile grid + blade panel)
 │   │   ├── login.html       # Login page
 │   │   ├── register.html    # Registration (disabled — redirect to admin)
 │   │   └── admin.html       # Admin user management panel
-│   └── static/
-│       ├── css/style.css
-│       └── js/              # app.js, dashboard.js, pricing.js, docs.js, reports.js, meetings.js
+│   ├── static/
+│   │   ├── css/
+│   │   │   ├── base.css        # CSS variables, reset, typography
+│   │   │   ├── components.css  # Buttons, inputs, cards, toggles, modals
+│   │   │   ├── topbar.css      # Top navigation bar
+│   │   │   ├── sidebar.css     # Collapsible sidebar with groups
+│   │   │   ├── breadcrumb.css  # Breadcrumb navigation
+│   │   │   ├── tiles.css       # Dashboard tile grid (1x1, 2x1, 3x1)
+│   │   │   ├── blade.css       # Slide-in blade panel (Azure Portal style)
+│   │   │   ├── glossary.css    # Glossary terms
+│   │   │   ├── responsive.css  # Mobile responsive breakpoints
+│   │   │   └── style.css       # Legacy (kept for backward compat)
+│   │   └── js/
+│   │       ├── app.js, dashboard.js, nav.js   # Core dashboard
+│   │       ├── blade.js       # Blade panel open/close + ESC key
+│   │       ├── pricing.js, docs.js, glossary.js, reports.js, meetings.js
+│   ├── tests/
+│   │   ├── __init__.py
+│   │   ├── conftest.py        # Fixtures: TestClient, in-memory SQLite, admin user
+│   │   └── test_api.py        # 7 tests: health, login, unauthorized, translate, status, updates
 ├── scripts/
 │   ├── create_admin.py      # CLI: create initial admin user
 │   └── migrate_json_to_sqlite.py  # One-off: migrate old JSON data → SQLite
@@ -214,14 +234,39 @@ ase-hub/
 - **Auth:** JWT (python-jose), bcrypt
 - **Cache:** cachetools (TTLCache)
 - **API Clients:** httpx, feedparser
-- **Frontend:** Vanilla JS, CSS (Azure dark theme)
+- **Frontend:** Vanilla JS, CSS (Azure dark theme, componentized 10 files)
 - **Database:** SQLite (WAL mode)
+- **Testing:** pytest + GitHub Actions CI
 - **Infra:** Terraform, Docker, Azure VM + ACR
 - **CDN/Proxy:** Cloudflare
 
 ---
 
 ## 📝 Changelog
+
+### v3.0.0 (2026-05-02) — Azure Portal Dashboard
+- **Blade panels:** Slide-in detail panels (Azure Portal style), ESC to close
+- **CSS componentization:** 10 modular CSS files (base, components, topbar, sidebar, breadcrumb, tiles, blade, glossary, responsive, legacy)
+- **CI/CD:** GitHub Actions pipeline + pytest (7 tests: health, auth, endpoints)
+- **Testing:** In-memory SQLite fixtures, JWT-authenticated API tests
+- **Tile Grid v3:** 7 tiles (1x1/2x1), BEM naming, status borders, mobile responsive
+
+### v2.7.0 (2026-05-02) — Dashboard Tile Grid
+- **Tile layout:** 7 tiles in 3-column CSS Grid — system status, VM info, user count, service health (2-col), updates (2-col), quick links, bookmarks
+- **Dashboard.js rewrite:** JavaScript-driven tile rendering with API integration
+- **Status borders:** Tile border colors — green (ok), yellow (warning), red (error)
+- **Mobile responsive:** Single-column layout on small screens
+
+### v2.6.0 (2026-05-02) — Navigation Overhaul
+- **Topbar:** Azure-style top navigation bar with hamburger toggle
+- **Sidebar:** Collapsible sidebar with grouped sections, collapse/expand state persistence
+- **Breadcrumb:** Dynamic breadcrumb navigation
+- **nav.js:** Centralized navigation logic — `navigateTo()`, recent tracking, localStorage persistence
+
+### v2.5.0 (2026-05-02) — Azure Fluent Design
+- **Azure dark theme:** Background `#0D1117`, cards `#161B22`, primary `#0078D4`, 4px border-radius
+- **Fluent components:** Focus rings, input focus glow, card header/footer separators
+- **CSS variables:** Unified design tokens for colors, spacing, typography
 
 ### v2.0.0 (2026-05-02)
 - **Data layer:** JSON files → SQLite + SQLAlchemy 2.0 (async)

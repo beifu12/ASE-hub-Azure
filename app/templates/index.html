@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASE Hub - Azure Solutions Engineer Hub</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=2">
+    <link rel="stylesheet" href="/static/css/base.css?v=3">
+    <link rel="stylesheet" href="/static/css/components.css?v=3">
+    <link rel="stylesheet" href="/static/css/topbar.css?v=3">
+    <link rel="stylesheet" href="/static/css/sidebar.css?v=3">
+    <link rel="stylesheet" href="/static/css/breadcrumb.css?v=3">
+    <link rel="stylesheet" href="/static/css/tiles.css?v=3">
+    <link rel="stylesheet" href="/static/css/blade.css?v=3">
+    <link rel="stylesheet" href="/static/css/glossary.css?v=3">
+    <link rel="stylesheet" href="/static/css/responsive.css?v=3">
 </head>
 <body>
     <!-- Toast Container -->
@@ -480,6 +488,20 @@
         </section>
     </main>
 
+    <!-- Blade Overlay -->
+    <div class="blade-overlay" id="blade-overlay" onclick="closeBlade()"></div>
+
+    <!-- Blade Panel -->
+    <aside class="blade" id="blade">
+        <div class="blade__header">
+            <h2 class="blade__title" id="blade-title">Details</h2>
+            <button class="blade__close" onclick="closeBlade()">✕</button>
+        </div>
+        <div class="blade__body" id="blade-body">
+            <!-- Dynamic content -->
+        </div>
+    </aside>
+
     <script src="/static/js/nav.js?v=2"></script>
     <script src="/static/js/app.js?v=2"></script>
     <script src="/static/js/dashboard.js?v=2"></script>
@@ -488,5 +510,6 @@
     <script src="/static/js/reports.js?v=2"></script>
     <script src="/static/js/meetings.js?v=2"></script>
     <script src="/static/js/glossary.js?v=2"></script>
+    <script src="/static/js/blade.js?v=2"></script>
 </body>
 </html>
