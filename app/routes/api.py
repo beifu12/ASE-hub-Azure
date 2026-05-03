@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, Request, HTTPException
 from app.services import pricing, docs, updates, health, reports, meetings, snippets, migration
 from app.services import translator  # Azure glossary
+from app.services import universal_translator  # MyMemory universal
 from app.auth import (
     get_current_user, get_optional_user,
     get_user_by_username, create_user, authenticate_user, create_access_token,
@@ -317,3 +318,21 @@ async def api_tts_voices():
     """List available TTS voices."""
     from app.services import tts_service
     return {"voices": tts_service.get_tts_voices()}
+
+
+# ═══════════ UNIVERSAL TRANSLATION (MyMemory) ═══════════
+
+@router.get("/translate/zh")
+async def api_translate_en2zh(q: str = "", email: str = ""):
+    """Translate English to Simplified Chinese via MyMemory."""
+    if not q.strip():
+        return {"error": "Query parameter 'q' required"}
+    return universal_translator.translate_en2zh(q.strip(), email or None)
+
+
+@router.get("/translate/en")
+async def api_translate_zh2en(q: str = "", email: str = ""):
+    """Translate Simplified Chinese to English via MyMemory."""
+    if not q.strip():
+        return {"error": "Query parameter 'q' required"}
+    return universal_translator.translate_zh2en(q.strip(), email or None)

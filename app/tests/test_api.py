@@ -39,7 +39,33 @@ def test_unauthorized_access(client):
     assert response.status_code == 401
 
 
+def test_translate_zh_endpoint(client):
+    """Test universal EN→ZH translation endpoint."""
+    token = _login_admin(client)
+    response = client.get(
+        "/api/translate/zh?q=hello",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    # Either translated or error (API may be unreachable in CI)
+    assert "translated" in data or "error" in data
+
+
+def test_translate_zh_empty(client):
+    """Test universal translation with empty query."""
+    token = _login_admin(client)
+    response = client.get(
+        "/api/translate/zh?q=",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert "error" in data
+
+
 def test_translate_endpoint(client):
+    """Test Azure glossary translate (existing)."""
     token = _login_admin(client)
     response = client.get(
         "/api/translate?q=availability",

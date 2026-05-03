@@ -48,6 +48,10 @@ def setup_db(monkeypatch):
     import asyncio
     asyncio.get_event_loop().run_until_complete(_init())
 
+    # Clear rate limits between tests to avoid 429 cascade
+    from app.middleware import _attempts
+    _attempts.clear()
+
     yield
 
     asyncio.get_event_loop().run_until_complete(engine.dispose())
