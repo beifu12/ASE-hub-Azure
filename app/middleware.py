@@ -32,3 +32,37 @@ async def rate_limit_middleware(request: Request, call_next):
         _attempts[ip].append((time.time(), request.url.path))
 
     return await call_next(request)
+
+
+# ═══════════ LOGIN GATE ═══════════
+
+from fastapi.responses import RedirectResponse, JSONResponse as GateJSON
+
+async def login_gate_middleware(request: Request, call_next):
+    """Require authentication for all non-public paths."""
+    PUBLIC = ["/login", "/api/auth/login", "/api/auth/status", "/api/health", "/static/"]
+    path = request.url.path
+    if any(path.startswith(p) for p in PUBLIC):
+        return await call_next(request)
+
+    # Check cookie first, then Authorization header
+    token = request.cookies.get("ase_token")
+    if not token:
+        auth = request.headers.get("Authorization", "")
+        if auth.startswith("Bearer "):
+            token = auth[7:]
+
+    if not token:
+        if path.startswith("/api/"):
+            return GateJSON({"detail": "Authentication required"}, status_code=401)
+        return RedirectResponse(url="/login", status_code=302)
+
+    from app.auth import decode_token
+    payload = decode_token(token)
+    if payload is None:
+        if path.startswith("/api/"):
+            return GateJSON({"detail": "Invalid or expired token"}, status_code=401)
+        return RedirectResponse(url="/login", status_code=302)
+
+    request.state.user = payload
+    return await call_next(request)

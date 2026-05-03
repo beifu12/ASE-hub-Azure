@@ -45,7 +45,10 @@ async def api_login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password")
     token = create_access_token(user["id"], user["username"])
-    return {"user": user, "access_token": token, "token_type": "bearer"}
+    from fastapi.responses import JSONResponse as LoginResponse
+    response = LoginResponse({"user": user, "access_token": token, "token_type": "bearer"})
+    response.set_cookie(key="ase_token", value=token, httponly=True, samesite="lax", max_age=604800, path="/")
+    return response
 
 
 @router.get("/auth/me")
