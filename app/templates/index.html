@@ -57,7 +57,7 @@
                 <a class="nav-item" data-section="glossary" onclick="navigateTo('glossary')">
                     <span class="icon">📖</span> <span data-i18n="glossary">Glossary</span>
                 </a>
-                <a class="nav-item" href="/translator">
+                <a class="nav-item" data-section="translate" onclick="navigateTo('translate')">
                     <span class="icon">🌐</span> <span data-i18n="translate">Translate</span>
                 </a>
             </nav>
@@ -409,6 +409,32 @@
                 <div class="card-header"><span data-i18n="markdown_export">Markdown Export</span></div>
                 <pre class="md-preview" id="meeting-md-preview-content"></pre>
             </div>
+        </section>
+
+
+        <!-- === TRANSLATE === -->
+        <section class="section" id="section-translate">
+            <div class="page-header">
+                <h1>🌐 通用翻译</h1>
+            </div>
+
+            <div class="translate-widget">
+                <div class="translate-controls">
+                    <div class="lang-switch">
+                        <button class="lang-opt active" onclick="setTranslateDir('en2zh', this)">EN → 中文</button>
+                        <button class="lang-opt" onclick="setTranslateDir('zh2en', this)">中文 → EN</button>
+                    </div>
+                </div>
+                <textarea id="translate-input" placeholder="输入要翻译的英文内容…&#10;&#10;支持邮件、文章、段落等" oninput="updateCharCount()"></textarea>
+                <div class="translate-actions">
+                    <button class="btn btn-primary" id="translate-btn" onclick="doTranslate()">翻 译</button>
+                    <button class="btn btn-secondary" onclick="clearTranslate()">清空</button>
+                    <span class="char-count" id="char-count">0 / 500</span>
+                </div>
+                <div class="translate-result" id="translate-result"></div>
+                <div class="translate-meta" id="translate-meta"></div>
+            </div>
+            <p class="engine-note">翻译引擎：MyMemory · 免费匿名使用 · 每次最长 500 字符</p>
         </section>
 
 

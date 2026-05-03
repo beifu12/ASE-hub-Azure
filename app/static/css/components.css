@@ -333,3 +333,114 @@ tr:hover td { background: rgba(255,255,255,0.03); }
     cursor: pointer;
     font-size: 20px;
 }
+
+
+/* ═══════════ Translate Widget ═══════════ */
+
+.translate-widget {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.lang-switch {
+    display: inline-flex;
+    gap: 0;
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.lang-opt {
+    padding: 6px 16px;
+    border: none;
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+}
+
+.lang-opt.active {
+    background: var(--color-accent);
+    color: #fff;
+}
+
+.lang-opt:hover:not(.active) {
+    color: var(--color-text-primary);
+}
+
+#translate-input {
+    width: 100%;
+    min-height: 160px;
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    color: var(--color-text-primary);
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#translate-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(0,120,212,0.15);
+}
+
+#translate-input::placeholder {
+    color: var(--color-text-muted);
+}
+
+.translate-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.char-count {
+    margin-left: auto;
+    color: var(--color-text-muted);
+    font-size: 12px;
+}
+
+.translate-result {
+    margin-top: 20px;
+    padding: 16px;
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: var(--color-text-primary);
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    display: none;
+}
+
+.translate-result.show {
+    display: block;
+}
+
+.translate-meta {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--color-text-muted);
+    display: none;
+}
+
+.translate-meta.show {
+    display: block;
+}
+
+.engine-note {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 12px;
+    margin-top: 24px;
+}

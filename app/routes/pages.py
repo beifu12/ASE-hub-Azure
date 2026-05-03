@@ -41,10 +41,3 @@ async def admin_page(user: dict | None = Depends(get_optional_user)):
         """)
     admin_path = TEMPLATE_DIR / "admin.html"
     return admin_path.read_text(encoding="utf-8")
-
-
-@router.get("/translator", response_class=HTMLResponse)
-async def translator_page():
-    """Universal English↔Chinese translation tool."""
-    path = TEMPLATE_DIR / "translator.html"
-    return path.read_text(encoding="utf-8")

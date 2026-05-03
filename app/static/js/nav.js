@@ -98,6 +98,7 @@ function navigateTo(section) {
         if (section === 'reports') { loadReports(); }
         if (section === 'meetings') { loadMeetings(); }
         if (section === 'migration') { loadMigrationStats(); }
+        if (section === 'translate') { /* translate widget handles itself */ }
     }
     updateBreadcrumb(section);
     trackRecent(section);

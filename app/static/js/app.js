@@ -372,7 +372,79 @@ function renderMigrationResults(items) {
             '<p style="color:var(--text-secondary);font-size:14px;margin-bottom:8px">' + (s.notes || '') + '</p>' +
             (restrictions ? '<div style="font-size:13px;margin-bottom:8px"><strong style="color:#f87171">⚠️ Restrictions:</strong><ul style="margin:4px 0 0 16px">' + restrictions + '</ul></div>' : '') +
             (practices ? '<div style="font-size:13px;margin-bottom:8px"><strong style="color:#4ade80">✅ Best Practices:</strong><ul style="margin:4px 0 0 16px">' + practices + '</ul></div>' : '') +
-            (s.officialDoc ? '<a href="' + s.officialDoc + '" target="_blank" rel="noopener" style="font-size:12px;color:#4fc3f7">📖 Official documentation →</a>' : '') +
             '</div>';
     }).join('');
 }
+
+
+/* ═══════════ Universal Translation ═══════════ */
+
+let translateDir = 'en2zh';
+
+function setTranslateDir(dir, btn) {
+    translateDir = dir;
+    document.querySelectorAll('.lang-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const input = document.getElementById('translate-input');
+    input.placeholder = dir === 'en2zh'
+        ? '输入要翻译的英文内容…\n\n支持邮件、文章、段落等'
+        : '输入要翻译的中文内容…\n\n支持邮件、文章、段落等';
+    clearTranslate();
+}
+
+function updateCharCount() {
+    const len = document.getElementById('translate-input').value.length;
+    document.getElementById('char-count').textContent = len + ' / 500';
+}
+
+async function doTranslate() {
+    const text = document.getElementById('translate-input').value.trim();
+    const btn = document.getElementById('translate-btn');
+    const result = document.getElementById('translate-result');
+    const meta = document.getElementById('translate-meta');
+
+    if (!text) return;
+
+    btn.disabled = true;
+    btn.textContent = '翻译中…';
+    result.classList.add('show');
+    result.textContent = '翻译中…';
+    meta.classList.add('show');
+    meta.textContent = '';
+
+    const endpoint = translateDir === 'en2zh' ? '/api/translate/zh' : '/api/translate/en';
+    const token = localStorage.getItem('ase_token');
+
+    try {
+        const resp = await fetch(endpoint + '?q=' + encodeURIComponent(text), {
+            headers: token ? { Authorization: 'Bearer ' + token } : {}
+        });
+        const data = await resp.json();
+        if (data.error) {
+            result.innerHTML = '<span style="color:#f87171">❌ ' + data.error + '</span>';
+        } else {
+            result.textContent = data.translated;
+            meta.textContent = '质量: ' + data.quality + '% · 来源: ' + data.source;
+        }
+    } catch (e) {
+        result.innerHTML = '<span style="color:#f87171">❌ 网络错误，请重试</span>';
+    }
+
+    btn.disabled = false;
+    btn.textContent = '翻 译';
+    updateCharCount();
+}
+
+function clearTranslate() {
+    document.getElementById('translate-input').value = '';
+    document.getElementById('char-count').textContent = '0 / 500';
+    document.getElementById('translate-result').classList.remove('show');
+    document.getElementById('translate-meta').classList.remove('show');
+}
+
+// Ctrl+Enter shortcut
+document.addEventListener('keydown', e => {
+    if (e.ctrlKey && e.key === 'Enter' && document.getElementById('section-translate').classList.contains('active')) {
+        doTranslate();
+    }
+});
