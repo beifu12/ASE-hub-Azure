@@ -133,7 +133,7 @@ async def api_health(db: AsyncSession = Depends(get_db)):
         "status": "healthy" if db_ok else "degraded",
         "database": "ok" if db_ok else "error",
         "service": "ASE Hub",
-        "version": "2.2.0"
+        "version": "2.3.0"
     }
 
 
