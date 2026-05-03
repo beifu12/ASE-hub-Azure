@@ -152,49 +152,108 @@
             <div class="page-header">
                 <h1 data-i18n="dashboard">📊 Dashboard</h1>
             </div>
-            <div class="grid grid-3" id="dashboard-stats">
-                <div class="stat-card"><div class="value" id="stat-status">--</div><div class="label" data-i18n="azure_status">Azure Status</div></div>
-                <div class="stat-card"><div class="value" id="stat-updates">--</div><div class="label" data-i18n="recent_updates">Recent Updates</div></div>
-                <div class="stat-card"><div class="value" id="stat-bookmarks">--</div><div class="label" data-i18n="bookmarks">Bookmarks</div></div>
-            </div>
 
-            <div class="grid grid-2">
-                <div class="card">
-                    <div class="card-header">
-                        <span>🟢 <span data-i18n="azure_status">Azure Service Status</span></span>
-                        <button class="btn btn-sm" onclick="loadStatus()" data-i18n="refresh">🔄 Refresh</button>
+            <!-- Tile Grid -->
+            <div class="dashboard-grid">
+                <!-- T1: Azure Status (1x1) -->
+                <article class="tile tile-1x1 tile--ok" id="tile-status">
+                    <header class="tile__header">
+                        <span class="tile__icon">🟢</span>
+                        <h3 class="tile__title" data-i18n="azure_status">Azure Status</h3>
+                        <div class="tile__actions">
+                            <button class="tile__action" onclick="loadStatus()" title="Refresh">↻</button>
+                        </div>
+                    </header>
+                    <div class="tile__body" id="tile-body-status">
+                        <div class="loading"><div class="spinner"></div></div>
                     </div>
-                    <div id="status-list"><div class="loading"><div class="spinner"></div></div></div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <span>📡 <span data-i18n="latest_updates">Latest Azure Updates</span></span>
-                        <button class="btn btn-sm" onclick="loadUpdatesSummary()" data-i18n="refresh">🔄 Refresh</button>
+                </article>
+
+                <!-- T2: VM Status (1x1) -->
+                <article class="tile tile-1x1 tile--ok" id="tile-vm">
+                    <header class="tile__header">
+                        <span class="tile__icon">🖥</span>
+                        <h3 class="tile__title" data-i18n="vm_status">VM Status</h3>
+                        <div class="tile__actions">
+                            <button class="tile__action" onclick="loadVMStatus()" title="Refresh">↻</button>
+                        </div>
+                    </header>
+                    <div class="tile__body" id="tile-body-vm">
+                        <div class="loading"><div class="spinner"></div></div>
                     </div>
-                    <div id="updates-summary"><div class="loading"><div class="spinner"></div></div></div>
-                </div>
-            </div>
+                </article>
 
-            <div class="card">
-                <div class="card-header">
-                    <span>🔖 <span data-i18n="quick_links">Quick Links</span></span>
-                </div>
-                <div class="grid grid-3">
-                    <div class="quick-link"><a href="https://portal.azure.com" target="_blank" rel="noopener">Azure Portal</a></div>
-                    <div class="quick-link"><a href="https://learn.microsoft.com/en-us/azure/" target="_blank" rel="noopener">Azure Docs</a></div>
-                    <div class="quick-link"><a href="https://azure.microsoft.com/en-us/updates/" target="_blank" rel="noopener">Azure Updates</a></div>
-                    <div class="quick-link"><a href="https://azure.status.microsoft/" target="_blank" rel="noopener">Azure Status</a></div>
-                    <div class="quick-link"><a href="https://azurecharts.com/" target="_blank" rel="noopener">Azure Charts</a></div>
-                    <div class="quick-link"><a href="https://azure.microsoft.com/en-us/pricing/calculator/" target="_blank" rel="noopener">Pricing Calculator</a></div>
-                </div>
-            </div>
+                <!-- T3: User (1x1) -->
+                <article class="tile tile-1x1" id="tile-user">
+                    <header class="tile__header">
+                        <span class="tile__icon">👤</span>
+                        <h3 class="tile__title" data-i18n="user_count">User</h3>
+                        <div class="tile__actions">
+                            <button class="tile__action" onclick="loadUserInfo()" title="Refresh">↻</button>
+                        </div>
+                    </header>
+                    <div class="tile__body" id="tile-body-user">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                </article>
 
-            <div class="card">
-                <div class="card-header">
-                    <span>🔖 <span data-i18n="bookmarks">Saved Bookmarks</span></span>
-                    <button class="btn btn-sm" onclick="loadBookmarks()" data-i18n="refresh">🔄 Refresh</button>
-                </div>
-                <div id="bookmarks-list"><div class="loading"><div class="spinner"></div></div></div>
+                <!-- T4: Service Health (2x1) -->
+                <article class="tile tile-2x1 tile--ok" id="tile-health">
+                    <header class="tile__header">
+                        <span class="tile__icon">📊</span>
+                        <h3 class="tile__title" data-i18n="service_health">Service Health</h3>
+                        <div class="tile__actions">
+                            <button class="tile__action" onclick="loadStatus()" title="Refresh">↻</button>
+                        </div>
+                    </header>
+                    <div class="tile__body" id="tile-body-health">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                </article>
+
+                <!-- T6: Quick Links (1x1) -->
+                <article class="tile tile-1x1" id="tile-links">
+                    <header class="tile__header">
+                        <span class="tile__icon">🔗</span>
+                        <h3 class="tile__title" data-i18n="quick_links">Quick Links</h3>
+                    </header>
+                    <div class="tile__body" id="tile-body-links">
+                        <div class="tile__list-item"><a href="https://portal.azure.com" target="_blank" rel="noopener">Azure Portal</a></div>
+                        <div class="tile__list-item"><a href="https://learn.microsoft.com/en-us/azure/" target="_blank" rel="noopener">Azure Docs</a></div>
+                        <div class="tile__list-item"><a href="https://azure.microsoft.com/en-us/updates/" target="_blank" rel="noopener">Azure Updates</a></div>
+                        <div class="tile__list-item"><a href="https://azure.status.microsoft/" target="_blank" rel="noopener">Azure Status</a></div>
+                        <div class="tile__list-item"><a href="https://azurecharts.com/" target="_blank" rel="noopener">Azure Charts</a></div>
+                        <div class="tile__list-item"><a href="https://azure.microsoft.com/en-us/pricing/calculator/" target="_blank" rel="noopener">Pricing Calculator</a></div>
+                    </div>
+                </article>
+
+                <!-- T5: Latest Updates (2x1) -->
+                <article class="tile tile-2x1" id="tile-updates">
+                    <header class="tile__header">
+                        <span class="tile__icon">📡</span>
+                        <h3 class="tile__title" data-i18n="latest_updates">Latest Updates</h3>
+                        <div class="tile__actions">
+                            <button class="tile__action" onclick="loadUpdatesSummary()" title="Refresh">↻</button>
+                        </div>
+                    </header>
+                    <div class="tile__body" id="tile-body-updates">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                </article>
+
+                <!-- T7: Bookmarks (1x1) -->
+                <article class="tile tile-1x1" id="tile-bookmarks">
+                    <header class="tile__header">
+                        <span class="tile__icon">🔖</span>
+                        <h3 class="tile__title" data-i18n="bookmarks">Bookmarks</h3>
+                        <div class="tile__actions">
+                            <button class="tile__action" onclick="loadBookmarks()" title="Refresh">↻</button>
+                        </div>
+                    </header>
+                    <div class="tile__body" id="tile-body-bookmarks">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                </article>
             </div>
         </section>
 
