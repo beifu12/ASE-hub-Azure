@@ -1,0 +1,120 @@
+<article class="kb-article" data-title="Get-Sub结果说明"><h1>Get-Sub结果说明</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-06-01 14:01:22</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>这里是对抽取数据的过程中找到的可能存在异常的部分的索引，点击后面的链接就能跳转到对应的部分（也在Get-Sub的结果中）</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>这里是对抽取数据的过程中找到的可能存在异常的部分的索引，点击后面的链接就能跳转到对应的部分（也在Get-Sub的结果中）</li>
+</ul>
+<ul>
+<li>如果虚拟机运行期间存在一些异常情况，在这里会列出，例如：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>目前输出结果里面的有效项目有（对应左侧目录）：</li>
+</ul>
+<ul>
+<li>Findings：</li>
+</ul>
+<ul>
+<li>VM Availability-&gt;VM Availability Events：</li>
+</ul>
+<ul>
+<li>Instances-&gt;RDFE：</li>
+</ul>
+<ul>
+<li>CloudServices-&gt;PaaS/IaaS：</li>
+</ul>
+<ul>
+<li>里面列出了PaaS/IaaS中云服务的信息，例如创建时间，Instance的信息等等</li>
+</ul>
+<ul>
+<li>Virtual Networks-&gt;RDFE Virtual Networks：</li>
+</ul>
+<ul>
+<li>列出了虚拟网络的详细信息（区域，网段，子网网段，是否链接到本地网络）</li>
+</ul>
+<ul>
+<li>Virtual Networks-&gt;RDFE Network Security Groups：</li>
+</ul>
+<ul>
+<li>列出了网络安全组的信息</li>
+</ul>
+<ul>
+<li>Storage-&gt;RDFE：</li>
+</ul>
+<ul>
+<li>存储账号的使用情况：</li>
+</ul>
+<ul>
+<li>对应ACIS里面的情况：</li>
+</ul>
+<ul>
+<li>存储账号详细信息（创建时间，冗余选项等等）：</li>
+</ul>
+<ul>
+<li>磁盘情况：</li>
+</ul>
+<ul>
+<li>Operations-&gt;RDFE Operation History：</li>
+</ul>
+<ul>
+<li>列出了客户的操作history（比ACIS里面的清晰很多，推荐）</li>
+</ul>
+<ul>
+<li>Subscription-&gt;Subscription Details：</li>
+</ul>
+<ul>
+<li>列出了虚拟机的订阅总体情况</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>这里面列出了IAAS和PAAS的Instance的信息，包含Instance的总的统计，可以展开每个Instance查看其具体的信息，包括云服务名称，所属虚拟网络，DepID，ContainerID，Cluster，RoleState，InstanceStatus，DIP，OS，VIP，Endpoints等等</li>
+</ul>
+<ul>
+<li>查看存储账号的信息</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Get-Sub工具说明：通过Get-Sub脚本可以根据客户的SubID抽取出客户Sub下面的部署情况以及一些日志。下面对其中的一些输出结果做一些总结（附件是一个输出结果样例，大家可以解压后找到其中的_Report.htm文件查看，大致的样式如下）：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Get-Sub工具说明：通过Get-Sub脚本可以根据客户的SubID抽取出客户Sub下面的部署情况以及一些日志。下面对其中的一些输出结果做一些总结（附件是一个输出结果样例，大家可以解压后找到其中的_Report.htm文件查看，大致的样式如下）：</p>
+<p>目前输出结果里面的有效项目有（对应左侧目录）：</p>
+<p>Findings：</p>
+<p>这里是对抽取数据的过程中找到的可能存在异常的部分的索引，点击后面的链接就能跳转到对应的部分（也在Get-Sub的结果中）</p>
+<p>VM Availability-&gt;VM Availability Events：</p>
+<p>如果虚拟机运行期间存在一些异常情况，在这里会列出，例如：</p>
+<p>Instances-&gt;RDFE：</p>
+<p>这里面列出了IAAS和PAAS的Instance的信息，包含Instance的总的统计，可以展开每个Instance查看其具体的信息，包括云服务名称，所属虚拟网络，DepID，ContainerID，Cluster，RoleState，InstanceStatus，DIP，OS，VIP，Endpoints等等</p>
+<p>CloudServices-&gt;PaaS/IaaS：</p>
+<p>里面列出了PaaS/IaaS中云服务的信息，例如创建时间，Instance的信息等等</p>
+<p>Virtual Networks-&gt;RDFE Virtual Networks：</p>
+<p>列出了虚拟网络的详细信息（区域，网段，子网网段，是否链接到本地网络）</p>
+<p>Virtual Networks-&gt;RDFE Network Security Groups：</p>
+<p>列出了网络安全组的信息</p>
+<p>Storage-&gt;RDFE：</p>
+<p>查看存储账号的信息</p>
+<p>存储账号的使用情况：</p>
+<p>对应ACIS里面的情况：</p>
+<p>存储账号详细信息（创建时间，冗余选项等等）：</p>
+<p>磁盘情况：</p>
+<p>Operations-&gt;RDFE Operation History：</p>
+<p>列出了客户的操作history（比ACIS里面的清晰很多，推荐）</p>
+<p>Subscription-&gt;Subscription Details：</p>
+<p>列出了虚拟机的订阅总体情况</p></article>

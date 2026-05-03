@@ -1,0 +1,191 @@
+<article class="kb-article" data-title="【share】Windows修改ntp server不生效"><h1>【share】Windows修改ntp server不生效</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows OS related issue</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-08-20 16:51:25</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>通过以下命令检查发现其设置被policy 托管，关闭policy 后生效，或者直接修改policy</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>通过以下命令检查发现其设置被policy 托管，关闭policy 后生效，或者直接修改policy</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>w32tm /query /configuration</li>
+</ul>
+<ul>
+<li>[Configuration]</li>
+</ul>
+<ul>
+<li>AnnounceFlags: 5 (Local)</li>
+</ul>
+<ul>
+<li>TimeJumpAuditOffset: 28800 (Local)</li>
+</ul>
+<ul>
+<li>MinPollInterval: 6 (Local)</li>
+</ul>
+<ul>
+<li>MaxPollInterval: 10 (Local)</li>
+</ul>
+<ul>
+<li>MaxNegPhaseCorrection: 54000 (Local)</li>
+</ul>
+<ul>
+<li>MaxPosPhaseCorrection: 54000 (Local)</li>
+</ul>
+<ul>
+<li>MaxAllowedPhaseOffset: 1 (Local)</li>
+</ul>
+<ul>
+<li>FrequencyCorrectRate: 4 (Local)</li>
+</ul>
+<ul>
+<li>PollAdjustFactor: 5 (Local)</li>
+</ul>
+<ul>
+<li>LargePhaseOffset: 50000000 (Local)</li>
+</ul>
+<ul>
+<li>SpikeWatchPeriod: 900 (Local)</li>
+</ul>
+<ul>
+<li>LocalClockDispersion: 10 (Local)</li>
+</ul>
+<ul>
+<li>HoldPeriod: 5 (Local)</li>
+</ul>
+<ul>
+<li>PhaseCorrectRate: 1 (Local)</li>
+</ul>
+<ul>
+<li>UpdateInterval: 100 (Local)</li>
+</ul>
+<ul>
+<li>[TimeProviders]</li>
+</ul>
+<ul>
+<li>NtpClient (Local)</li>
+</ul>
+<ul>
+<li>DllName: C:\Windows\system32\w32time.dll (Local)</li>
+</ul>
+<ul>
+<li>InputProvider: 1 (Local)</li>
+</ul>
+<ul>
+<li>CrossSiteSyncFlags: 2 (Policy)</li>
+</ul>
+<ul>
+<li>AllowNonstandardModeCombinations: 1 (Local)</li>
+</ul>
+<ul>
+<li>CompatibilityFlags: 2147483648 (Local)</li>
+</ul>
+<ul>
+<li>LargeSampleSkew: 3 (Local)</li>
+</ul>
+<ul>
+<li>SpecialPollInterval: 1024 (Policy)</li>
+</ul>
+<ul>
+<li>Type: NT5DS (Policy)</li>
+</ul>
+<ul>
+<li>VMICTimeProvider (Local)</li>
+</ul>
+<ul>
+<li>DllName: C:\Windows\System32\vmictimeprovider.dll (Local)</li>
+</ul>
+<ul>
+<li>NtpServer (Local)</li>
+</ul>
+<ul>
+<li>InputProvider: 0 (Local)</li>
+</ul>
+<ul>
+<li>PS C:\Users\acnadmin&gt; w32tm /resync /rediscover</li>
+</ul>
+<ul>
+<li>Sending resync command to local computer</li>
+</ul>
+<ul>
+<li>The command completed successfully.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>EventLogFlags: 2 (Local)</li>
+</ul>
+<ul>
+<li>EventLogFlags: 0 (Policy)</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>通过以下命令检查发现其设置被policy 托管，关闭policy 后生效，或者直接修改policy</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Enabled: 1 (Local)</li>
+</ul>
+<ul>
+<li>ResolvePeerBackoffMinutes: 15 (Policy)</li>
+</ul>
+<ul>
+<li>ResolvePeerBackoffMaxTimes: 7 (Policy)</li>
+</ul>
+<ul>
+<li>Enabled: 0 (Local)</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/08/20</p>
+<p>通过以下命令检查发现其设置被policy 托管，关闭policy 后生效，或者直接修改policy</p>
+<p>w32tm /query /configuration</p>
+<p>[Configuration]</p>
+<p>EventLogFlags: 2 (Local)</p>
+<p>AnnounceFlags: 5 (Local)</p>
+<p>TimeJumpAuditOffset: 28800 (Local)</p>
+<p>MinPollInterval: 6 (Local)</p>
+<p>MaxPollInterval: 10 (Local)</p>
+<p>MaxNegPhaseCorrection: 54000 (Local)</p>
+<p>MaxPosPhaseCorrection: 54000 (Local)</p>
+<p>MaxAllowedPhaseOffset: 1 (Local)</p>
+<p>FrequencyCorrectRate: 4 (Local)</p>
+<p>PollAdjustFactor: 5 (Local)</p>
+<p>LargePhaseOffset: 50000000 (Local)</p>
+<p>SpikeWatchPeriod: 900 (Local)</p>
+<p>LocalClockDispersion: 10 (Local)</p>
+<p>HoldPeriod: 5 (Local)</p>
+<p>PhaseCorrectRate: 1 (Local)</p>
+<p>UpdateInterval: 100 (Local)</p>
+<p>[TimeProviders]</p>
+<p>NtpClient (Local)</p>
+<p>DllName: C:\Windows\system32\w32time.dll (Local)</p>
+<p>Enabled: 1 (Local)</p>
+<p>InputProvider: 1 (Local)</p>
+<p>CrossSiteSyncFlags: 2 (Policy)</p>
+<p>AllowNonstandardModeCombinations: 1 (Local)</p>
+<p>ResolvePeerBackoffMinutes: 15 (Policy)</p>
+<p>ResolvePeerBackoffMaxTimes: 7 (Policy)</p>
+<p>CompatibilityFlags: 2147483648 (Local)</p>
+<p>EventLogFlags: 0 (Policy)</p>
+<p>LargeSampleSkew: 3 (Local)</p>
+<p>SpecialPollInterval: 1024 (Policy)</p>
+<p>Type: NT5DS (Policy)</p>
+<p>VMICTimeProvider (Local)</p>
+<p>DllName: C:\Windows\System32\vmictimeprovider.dll (Local)</p>
+<p>NtpServer (Local)</p>
+<p>Enabled: 0 (Local)</p>
+<p>InputProvider: 0 (Local)</p>
+<p>PS C:\Users\acnadmin&gt; w32tm /resync /rediscover</p>
+<p>Sending resync command to local computer</p>
+<p>The command completed successfully.</p></article>

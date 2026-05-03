@@ -1,0 +1,74 @@
+<article class="kb-article" data-title="【Share】Microsoft Defender for Cloud plan的开启和注意"><h1>【Share】Microsoft Defender for Cloud plan的开启和注意</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Microsoft Defender for Cloud(安全中心).one</li>
+<li>Section: Microsoft Defender for Cloud(安全中心)</li>
+<li>最近修改: 2025-11-24 17:12:46</li>
+<li>JD 相关性: Defender/Sentinel/安全; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>目前我们的PG 已经告知我们，该现象为预期行为。目前只能对关闭的plan行为保存，不能对开启保存。该行为是为了帮助用户过渡此次退役事件。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>目前我们的PG 已经告知我们，该现象为预期行为。目前只能对关闭的plan行为保存，不能对开启保存。该行为是为了帮助用户过渡此次退役事件。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>请参考：Incident-706416144 Details - IcM</li>
+</ul>
+<ul>
+<li>对于临时的启用方法，请参考以下的操作路径。请注意，不保证对应的功能可以使用。</li>
+</ul>
+<ul>
+<li>for plan in  Containers ContainerRegistry Dns</li>
+</ul>
+<ul>
+<li>do</li>
+</ul>
+<ul>
+<li>done</li>
+</ul>
+<ul>
+<li>可以看到有两个已经被弃用的plan</li>
+</ul>
+<ul>
+<li>此时开启内部的两个功能。</li>
+</ul>
+<ul>
+<li>然后关闭两个启用的功能。</li>
+</ul>
+<ul>
+<li>此时就可以保存并开启。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>首先执行以下的命令，开启对应的功能。（主要是开启废弃的plan）</li>
+</ul>
+<ul>
+<li>az security pricing create --name $plan --tier Standard</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/11/05</p>
+<p>请参考：Incident-706416144 Details - IcM</p>
+<p>目前我们的PG 已经告知我们，该现象为预期行为。目前只能对关闭的plan行为保存，不能对开启保存。该行为是为了帮助用户过渡此次退役事件。</p>
+<p>对于临时的启用方法，请参考以下的操作路径。请注意，不保证对应的功能可以使用。</p>
+<p>首先执行以下的命令，开启对应的功能。（主要是开启废弃的plan）</p>
+<p>for plan in  Containers ContainerRegistry Dns</p>
+<p>do</p>
+<p>az security pricing create --name $plan --tier Standard</p>
+<p>done</p>
+<p>可以看到有两个已经被弃用的plan</p>
+<p>此时开启内部的两个功能。</p>
+<p>然后关闭两个启用的功能。</p>
+<p>此时就可以保存并开启。</p></article>

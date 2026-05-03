@@ -1,0 +1,92 @@
+<article class="kb-article" data-title="sentinel中转服务器接收日志时区不一致解决方案"><h1>sentinel中转服务器接收日志时区不一致解决方案</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Microsoft Sentinel</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-25 15:50:56</li>
+<li>JD 相关性: Defender/Sentinel/安全</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Johnny lee</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Johnny lee</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny lee</li>
+</ul>
+<ul>
+<li>通过文档可以了解，日志是以纯文本形式发送，所以源日志是什么时间，中转服务器就记录什么时间，不能自动改为当前中转服务器的时区。</li>
+</ul>
+<ul>
+<li>所以记录在中转服务器中的日志就是源服务器的时间戳。</li>
+</ul>
+<ul>
+<li>正常需要通过配置让所有源和中转服务器统一时区，才能保证中转服务器中的日志时区正确。</li>
+</ul>
+<ul>
+<li>但是客户不能修改其他源服务器时区，所以给客户提供了通过中转服务器接收到日志的时间替代源设备上日志的生成时间。</li>
+</ul>
+<ul>
+<li>具体中转服务器配置如下：</li>
+</ul>
+<ul>
+<li>$ActionFileDefaultTemplate CustomFormat</li>
+</ul>
+<ul>
+<li>、</li>
+</ul>
+<ul>
+<li>实际测试延迟为1s：</li>
+</ul>
+<ul>
+<li>当然我测试这两台虚拟机是在同一网段，如内网网络环境复杂，延迟可能会提高。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>初始问题是客户发现sentinel中已经阻止的ip日志还能查询到。</li>
+</ul>
+<ul>
+<li>通过查询客户中转服务器syslog日志发现实际问题是中转服务器（时区是UTC）上日志的时区不对为CST。</li>
+</ul>
+<ul>
+<li>通过查询文档CEF收集日志架构如下：</li>
+</ul>
+<ul>
+<li>通过抓包也可以看到日志转发到中转服务器过程中是不携带时区标签的：</li>
+</ul>
+<ul>
+<li>$template CustomFormat,&quot;%timegenerated:::date-rfc3339% %HOSTNAME% %syslogtag%%msg:::sp-if-no-1st-sp%%msg%\n&quot;</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://techcommunity.microsoft.com/t5/microsoft-sentinel-blog/best-practices-for-common-event-format-cef-collection-in-azure/ba-p/969990" target="_blank" rel="noopener">https://techcommunity.microsoft.com/t5/microsoft-sentinel-blog/best-practices-for-common-event-format-cef-collection-in-azure/ba-p/969990</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Johnny lee</p>
+<p>2024-6-29</p>
+<p>初始问题是客户发现sentinel中已经阻止的ip日志还能查询到。</p>
+<p>通过查询客户中转服务器syslog日志发现实际问题是中转服务器（时区是UTC）上日志的时区不对为CST。</p>
+<p>通过查询文档CEF收集日志架构如下：</p>
+<p><a href="https://techcommunity.microsoft.com/t5/microsoft-sentinel-blog/best-practices-for-common-event-format-cef-collection-in-azure/ba-p/969990" target="_blank" rel="noopener">https://techcommunity.microsoft.com/t5/microsoft-sentinel-blog/best-practices-for-common-event-format-cef-collection-in-azure/ba-p/969990</a></p>
+<p>通过文档可以了解，日志是以纯文本形式发送，所以源日志是什么时间，中转服务器就记录什么时间，不能自动改为当前中转服务器的时区。</p>
+<p>通过抓包也可以看到日志转发到中转服务器过程中是不携带时区标签的：</p>
+<p>所以记录在中转服务器中的日志就是源服务器的时间戳。</p>
+<p>正常需要通过配置让所有源和中转服务器统一时区，才能保证中转服务器中的日志时区正确。</p>
+<p>但是客户不能修改其他源服务器时区，所以给客户提供了通过中转服务器接收到日志的时间替代源设备上日志的生成时间。</p>
+<p>具体中转服务器配置如下：</p>
+<p>$template CustomFormat,&quot;%timegenerated:::date-rfc3339% %HOSTNAME% %syslogtag%%msg:::sp-if-no-1st-sp%%msg%\n&quot;</p>
+<p>$ActionFileDefaultTemplate CustomFormat</p>
+<p>、</p>
+<p>实际测试延迟为1s：</p>
+<p>当然我测试这两台虚拟机是在同一网段，如内网网络环境复杂，延迟可能会提高。</p></article>

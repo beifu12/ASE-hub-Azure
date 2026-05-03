@@ -1,0 +1,276 @@
+<article class="kb-article" data-title="P2S VPN using AAD authentication with MFA enabled and adding DNS suffixes/DNS Servers/Custom routes to the VPN client"><h1>P2S VPN using AAD authentication with MFA enabled and adding DNS suffixes/DNS Servers/Custom routes to the VPN client</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-19 18:03:14</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>注意：如果client已经加入了本地的域，这时使用主机名是无法解析的，只能使用FQDN， 具体请以实测为准。这种情况下，测试虽然DNS Server是有效的，但是主机名仍然无法使用，说明DNS suffix实际没有生效。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>注意：如果client已经加入了本地的域，这时使用主机名是无法解析的，只能使用FQDN， 具体请以实测为准。这种情况下，测试虽然DNS Server是有效的，但是主机名仍然无法使用，说明DNS suffix实际没有生效。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>第一部分：配置租户</li>
+</ul>
+<ul>
+<li>1、创建AD目录和用户，因为我们有测试账号，所以不用创建目录。只要创建一个用户就可以。</li>
+</ul>
+<ul>
+<li>2、访问：</li>
+</ul>
+<ul>
+<li>以全局管理员（我们的默认测试账号）xxx@microsoftinternal.partner.onmschina.cn 身份进行允许</li>
+</ul>
+<ul>
+<li>进入之后在AD的应用程序中会看到Azure VPN</li>
+</ul>
+<ul>
+<li>这表示Azure VPN应用程序已经在我的AD中注册了。</li>
+</ul>
+<ul>
+<li>点击Azure VPN，在“用户和组”中然后添加上面创建的VPN用户，授予默认访问</li>
+</ul>
+<ul>
+<li>fuzlvpnuser@microsoftinternal.partner.onmschina.cn</li>
+</ul>
+<ul>
+<li>第二部分：配置P2SVPN</li>
+</ul>
+<ul>
+<li>其中</li>
+</ul>
+<ul>
+<li>AD tenant ID可以在AD 的property处找到</li>
+</ul>
+<ul>
+<li>（2）受众 ，填写Azure VPN的Application ID</li>
+</ul>
+<ul>
+<li>第三部分：配置P2S VPN客户端</li>
+</ul>
+<ul>
+<li>2、在门户下载VPN客户端配置，然后解压</li>
+</ul>
+<ul>
+<li>其中有一个azurevpnconfig.xml的文件</li>
+</ul>
+<ul>
+<li>3、打开P2S VPN客户端，然后倒入上面的xml配置</li>
+</ul>
+<ul>
+<li>然后可以看到拨号成功</li>
+</ul>
+<ul>
+<li>并访问云端虚拟机</li>
+</ul>
+<ul>
+<li>启用</li>
+</ul>
+<ul>
+<li>这样登录的时候就会</li>
+</ul>
+<ul>
+<li>第五部分（可选）：设置拨号的DNS问题</li>
+</ul>
+<ul>
+<li>（1）将 DNS 后缀添加到 VPN 客户端</li>
+</ul>
+<ul>
+<li>修改下载的azurevpnconfig.xml 文件，并添加 &lt;dnssuffixes&gt;&lt;dnssufix&gt; &lt;/dnssufix&gt;&lt;/dnssuffixes&gt; 标记</li>
+</ul>
+<ul>
+<li>&lt;azvpnprofile&gt;</li>
+</ul>
+<ul>
+<li>&lt;clientconfig&gt;</li>
+</ul>
+<ul>
+<li>&lt;dnssuffixes&gt;</li>
+</ul>
+<ul>
+<li>&lt;dnssuffix&gt;.mycorp.com&lt;/dnssuffix&gt;</li>
+</ul>
+<ul>
+<li>&lt;/dnssuffixes&gt;</li>
+</ul>
+<ul>
+<li>&lt;/clientconfig&gt;</li>
+</ul>
+<ul>
+<li>&lt;/azvpnprofile&gt;</li>
+</ul>
+<ul>
+<li>（2）将自定义DNS Server添加到客户端</li>
+</ul>
+<ul>
+<li>&lt;dnsservers&gt;</li>
+</ul>
+<ul>
+<li>&lt;dnsserver&gt;x.x.x.x&lt;/dnsserver&gt;</li>
+</ul>
+<ul>
+<li>&lt;dnsserver&gt;y.y.y.y&lt;/dnsserver&gt;</li>
+</ul>
+<ul>
+<li>&lt;/dnsservers&gt;</li>
+</ul>
+<ul>
+<li>（3）将自定义路由添加到客户端</li>
+</ul>
+<ul>
+<li>&lt;includeroutes&gt;</li>
+</ul>
+<ul>
+<li>&lt;route&gt;</li>
+</ul>
+<ul>
+<li>&lt;destination&gt;x.x.x.x&lt;/destination&gt;&lt;mask&gt;24&lt;/mask&gt;</li>
+</ul>
+<ul>
+<li>&lt;/route&gt;</li>
+</ul>
+<ul>
+<li>&lt;/includeroutes&gt;</li>
+</ul>
+<ul>
+<li>以上三个配置截图如下</li>
+</ul>
+<ul>
+<li>删除当前的VPN连接，然后重新导入azurevpnconfig.xml创建连接，拨号成功之后，可以看到</li>
+</ul>
+<ul>
+<li>DNS sever</li>
+</ul>
+<ul>
+<li>DNS suffix</li>
+</ul>
+<ul>
+<li>自定义路由</li>
+</ul>
+<ul>
+<li>已经生效</li>
+</ul>
+<ul>
+<li>测试可以解析主机名和完整的域名，说明DNSserver的配置和DNS suffix的配置已经生效。</li>
+</ul>
+<ul>
+<li>A</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>登录到portal，如下截图的红框中是我创建的VPN用户，我们自己的测试账号就是全局管理员</li>
+</ul>
+<ul>
+<li>回到portal, 配置P2S VPN</li>
+</ul>
+<ul>
+<li>第四部分（可选）：启用MFA验证。</li>
+</ul>
+<ul>
+<li>选择用户，然后打开“多重身份验证”</li>
+</ul>
+<ul>
+<li>然后再回到AD，点击用户，设置MFA的验证方式，比如我这里选择手机</li>
+</ul>
+<ul>
+<li>验证完成，可以成功登录</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>然后输入第一部分的普通用户进行连接，因为是普通用户第一次登陆，所以需要修改密码</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：<a href="https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-tenant" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-tenant</a></li>
+</ul>
+<ul>
+<li><a href="https://login.chinacloudapi.cn/common/oauth2/authorize?client_id=49f817b6-84ae-4cc0-928c-73f27289b3aa&amp;response_type=code&amp;redirect_uri=https://portal.azure.cn&amp;nonce=1234&amp;prompt=admin_consent" target="_blank" rel="noopener">https://login.chinacloudapi.cn/common/oauth2/authorize?client_id=49f817b6-84ae-4cc0-928c-73f27289b3aa&amp;response_type=code&amp;redirect_uri=https://portal.azure.cn&amp;nonce=1234&amp;prompt=admin_consent</a></li>
+</ul>
+<ul>
+<li>（1）租户填写：<a href="https://login.chinacloudapi.cn/&lt;your" target="_blank" rel="noopener">https://login.chinacloudapi.cn/&lt;your</a> Directory ID&gt;/</li>
+</ul>
+<ul>
+<li>(3)、颁发者，填写  <a href="https://sts.chinacloudapi.cn/&lt;your" target="_blank" rel="noopener">https://sts.chinacloudapi.cn/&lt;your</a> Directory ID&gt;/</li>
+</ul>
+<ul>
+<li>1、到这里下载P2S VPN客户端：<a href="https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-client" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-client</a></li>
+</ul>
+<ul>
+<li>参考文档：<a href="https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-mfa" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-mfa</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020-09-09</p>
+<p>第一部分：配置租户</p>
+<p>1、创建AD目录和用户，因为我们有测试账号，所以不用创建目录。只要创建一个用户就可以。</p>
+<p>参考文档：<a href="https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-tenant" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-tenant</a></p>
+<p>登录到portal，如下截图的红框中是我创建的VPN用户，我们自己的测试账号就是全局管理员</p>
+<p>2、访问：</p>
+<p><a href="https://login.chinacloudapi.cn/common/oauth2/authorize?client_id=49f817b6-84ae-4cc0-928c-73f27289b3aa&amp;response_type=code&amp;redirect_uri=https://portal.azure.cn&amp;nonce=1234&amp;prompt=admin_consent" target="_blank" rel="noopener">https://login.chinacloudapi.cn/common/oauth2/authorize?client_id=49f817b6-84ae-4cc0-928c-73f27289b3aa&amp;response_type=code&amp;redirect_uri=https://portal.azure.cn&amp;nonce=1234&amp;prompt=admin_consent</a></p>
+<p>以全局管理员（我们的默认测试账号）xxx@microsoftinternal.partner.onmschina.cn 身份进行允许</p>
+<p>进入之后在AD的应用程序中会看到Azure VPN</p>
+<p>这表示Azure VPN应用程序已经在我的AD中注册了。</p>
+<p>点击Azure VPN，在“用户和组”中然后添加上面创建的VPN用户，授予默认访问</p>
+<p>fuzlvpnuser@microsoftinternal.partner.onmschina.cn</p>
+<p>第二部分：配置P2SVPN</p>
+<p>回到portal, 配置P2S VPN</p>
+<p>其中</p>
+<p>（1）租户填写：<a href="https://login.chinacloudapi.cn/&lt;your" target="_blank" rel="noopener">https://login.chinacloudapi.cn/&lt;your</a> Directory ID&gt;/</p>
+<p>AD tenant ID可以在AD 的property处找到</p>
+<p>（2）受众 ，填写Azure VPN的Application ID</p>
+<p>(3)、颁发者，填写  <a href="https://sts.chinacloudapi.cn/&lt;your" target="_blank" rel="noopener">https://sts.chinacloudapi.cn/&lt;your</a> Directory ID&gt;/</p>
+<p>第三部分：配置P2S VPN客户端</p>
+<p>1、到这里下载P2S VPN客户端：<a href="https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-client" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-client</a></p>
+<p>2、在门户下载VPN客户端配置，然后解压</p>
+<p>其中有一个azurevpnconfig.xml的文件</p>
+<p>3、打开P2S VPN客户端，然后倒入上面的xml配置</p>
+<p>然后输入第一部分的普通用户进行连接，因为是普通用户第一次登陆，所以需要修改密码</p>
+<p>然后可以看到拨号成功</p>
+<p>并访问云端虚拟机</p>
+<p>第四部分（可选）：启用MFA验证。</p>
+<p>参考文档：<a href="https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-mfa" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-mfa</a></p>
+<p>选择用户，然后打开“多重身份验证”</p>
+<p>启用</p>
+<p>然后再回到AD，点击用户，设置MFA的验证方式，比如我这里选择手机</p>
+<p>这样登录的时候就会</p>
+<p>验证完成，可以成功登录</p>
+<p>第五部分（可选）：设置拨号的DNS问题</p>
+<p>（1）将 DNS 后缀添加到 VPN 客户端</p>
+<p>修改下载的azurevpnconfig.xml 文件，并添加 &lt;dnssuffixes&gt;&lt;dnssufix&gt; &lt;/dnssufix&gt;&lt;/dnssuffixes&gt; 标记</p>
+<p>&lt;azvpnprofile&gt;</p>
+<p>&lt;clientconfig&gt;</p>
+<p>&lt;dnssuffixes&gt;</p>
+<p>&lt;dnssuffix&gt;.mycorp.com&lt;/dnssuffix&gt;</p>
+<p>&lt;/dnssuffixes&gt;</p>
+<p>&lt;/clientconfig&gt;</p>
+<p>&lt;/azvpnprofile&gt;</p>
+<p>（2）将自定义DNS Server添加到客户端</p>
+<p>&lt;dnsservers&gt;</p>
+<p>&lt;dnsserver&gt;x.x.x.x&lt;/dnsserver&gt;</p>
+<p>&lt;dnsserver&gt;y.y.y.y&lt;/dnsserver&gt;</p>
+<p>&lt;/dnsservers&gt;</p>
+<p>（3）将自定义路由添加到客户端</p>
+<p>&lt;includeroutes&gt;</p>
+<p>&lt;route&gt;</p>
+<p>&lt;destination&gt;x.x.x.x&lt;/destination&gt;&lt;mask&gt;24&lt;/mask&gt;</p>
+<p>&lt;/route&gt;</p>
+<p>&lt;/includeroutes&gt;</p>
+<p>以上三个配置截图如下</p>
+<p>删除当前的VPN连接，然后重新导入azurevpnconfig.xml创建连接，拨号成功之后，可以看到</p>
+<p>DNS sever</p>
+<p>DNS suffix</p>
+<p>自定义路由</p>
+<p>已经生效</p>
+<p>测试可以解析主机名和完整的域名，说明DNSserver的配置和DNS suffix的配置已经生效。</p>
+<p>注意：如果client已经加入了本地的域，这时使用主机名是无法解析的，只能使用FQDN， 具体请以实测为准。这种情况下，测试虽然DNS Server是有效的，但是主机名仍然无法使用，说明DNS suffix实际没有生效。</p>
+<p>A</p></article>

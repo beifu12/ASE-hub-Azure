@@ -1,0 +1,259 @@
+<article class="kb-article" data-title="AKS Support TSG update 2020/09/17"><h1>AKS Support TSG update 2020/09/17</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: AKS Operation guideline</li>
+<li>最近修改: 2021-07-16 16:13:24</li>
+<li>JD 相关性: 交付流程/客户支持; AKS/容器; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Issue appears on AKS Cluster 1.15.x and persists after upgrading to 1.16.13. Newly creating AKS 1.16.13 would not reproduce the issue</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Issue appears on AKS Cluster 1.15.x and persists after upgrading to 1.16.13. Newly creating AKS 1.16.13 would not reproduce the issue</li>
+</ul>
+<ul>
+<li>&gt;&gt; PG will open an issue to related component team.</li>
+</ul>
+<ul>
+<li>Attach acr by az cli request worker node running, otherwise it will failed after 22 retry failure.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi All,</li>
+</ul>
+<ul>
+<li>Here’s the update for this week.</li>
+</ul>
+<ul>
+<li>Customer’s pdb setting may block AKS version upgrade.</li>
+</ul>
+<ul>
+<li>Nodepool shows user mode while it is actually system mode.</li>
+</ul>
+<ul>
+<li>Label“kubernetes.azure.com/mode: system”of system nodepool can be get by kubectl describe command.</li>
+</ul>
+<ul>
+<li>Misunderstanding “kubelet is posting ready status.” message in BBM while agent node is already in not ready state.</li>
+</ul>
+<ul>
+<li>//Black box monitoring for cluster</li>
+</ul>
+<ul>
+<li>cluster(&quot;akscn&quot;).database(&quot;AKSprod&quot;).BlackboxMonitoringActivity</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt; ago(4d)</li>
+</ul>
+<ul>
+<li>| where fqdn contains &quot;fqdn&quot;</li>
+</ul>
+<ul>
+<li>| where state != &quot;Healthy&quot;</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, state, provisioningState, reason, agentNodeCount, msg, resourceGroupName, resourceName, underlayName</li>
+</ul>
+<ul>
+<li>// | render timeline</li>
+</ul>
+<ul>
+<li>PreciseTimeStamp:        2020-08-28 01:42:20.000</li>
+</ul>
+<ul>
+<li>state:        Unhealthy</li>
+</ul>
+<ul>
+<li>provisioningState:        Succeeded</li>
+</ul>
+<ul>
+<li>reason:        CustomerLinuxNodesNotReady</li>
+</ul>
+<ul>
+<li>agentNodeCount:        30</li>
+</ul>
+<ul>
+<li>All az aks update command ends up by a reconcile operation and request worker nodes in running status. This is by design.</li>
+</ul>
+<ul>
+<li>All base images in Mooncake now pull from mcr.azk8s.cn only.</li>
+</ul>
+<ul>
+<li>Progress of syncing with global feature:</li>
+</ul>
+<ul>
+<li>Landed feature</li>
+</ul>
+<ul>
+<li>Planning feature</li>
+</ul>
+<ul>
+<li>Standard Load Balancer</li>
+</ul>
+<ul>
+<li>Metrics / shoebox</li>
+</ul>
+<ul>
+<li>Network Policy</li>
+</ul>
+<ul>
+<li>AKS-managed Azure Active Directory integration</li>
+</ul>
+<ul>
+<li>Egress Lockdown</li>
+</ul>
+<ul>
+<li>virtual kubelet</li>
+</ul>
+<ul>
+<li>Api server authorized IP ranges</li>
+</ul>
+<ul>
+<li>VMSS + multi-node pool</li>
+</ul>
+<ul>
+<li>Auto-scaler (will be more stable since 7/17)</li>
+</ul>
+<ul>
+<li>AKS cluster certificate BYOK -&gt; storage encrypt</li>
+</ul>
+<ul>
+<li>Windows agent node</li>
+</ul>
+<ul>
+<li>AKS MSI</li>
+</ul>
+<ul>
+<li>Private master node / cluster</li>
+</ul>
+<ul>
+<li>Master node SLA</li>
+</ul>
+<ul>
+<li>(technically ready)</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>| order by PreciseTimeStamp asc</li>
+</ul>
+<ul>
+<li>Kube Audit log</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>msg:        SupportedState: &quot;Unsupported&quot; PodState: &quot;&quot; ResourceState: &quot;Customer linux nodes (aks-nodepool1-32471634-14) in not ready state: kubelet is posting ready status. AppArmor enabled&quot;</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>ICM: <a href="https://portal.microsofticm.com/imp/v3/incidents/details/203719706/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/203719706/home</a></li>
+</ul>
+<ul>
+<li>ICM:  <a href="https://portal.microsofticm.com/imp/v3/incidents/details/205541037/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/205541037/home</a></li>
+</ul>
+<ul>
+<li>Doc: <a href="https://docs.azure.cn/zh-cn/aks/use-system-pools" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/use-system-pools</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/load-balancer-standard" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/load-balancer-standard</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/use-network-policies" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/use-network-policies</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/aks/managed-aad" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/managed-aad</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/aks/limit-egress-traffic" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/limit-egress-traffic</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/view-master-logs" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/view-master-logs</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/api-server-authorized-ip-ranges" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/api-server-authorized-ip-ranges</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/aks/cluster-autoscaler" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/cluster-autoscaler</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/aks/azure-disk-customer-managed-keys" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/azure-disk-customer-managed-keys</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/aks/windows-container-cli" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/windows-container-cli</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/aks/use-managed-identity" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/use-managed-identity</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/aks/private-clusters" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/private-clusters</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/aks/uptime-sla" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/uptime-sla</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi All,</p>
+<p>Here’s the update for this week.</p>
+<p>Customer’s pdb setting may block AKS version upgrade.</p>
+<p>ICM: <a href="https://portal.microsofticm.com/imp/v3/incidents/details/203719706/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/203719706/home</a></p>
+<p>Nodepool shows user mode while it is actually system mode.</p>
+<p>Issue appears on AKS Cluster 1.15.x and persists after upgrading to 1.16.13. Newly creating AKS 1.16.13 would not reproduce the issue</p>
+<p>ICM:  <a href="https://portal.microsofticm.com/imp/v3/incidents/details/205541037/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/205541037/home</a></p>
+<p>Label“kubernetes.azure.com/mode: system”of system nodepool can be get by kubectl describe command.</p>
+<p>Doc: <a href="https://docs.azure.cn/zh-cn/aks/use-system-pools" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/use-system-pools</a></p>
+<p>Misunderstanding “kubelet is posting ready status.” message in BBM while agent node is already in not ready state.</p>
+<p>//Black box monitoring for cluster</p>
+<p>cluster(&quot;akscn&quot;).database(&quot;AKSprod&quot;).BlackboxMonitoringActivity</p>
+<p>| where PreciseTimeStamp &gt; ago(4d)</p>
+<p>| where fqdn contains &quot;fqdn&quot;</p>
+<p>| where state != &quot;Healthy&quot;</p>
+<p>| project PreciseTimeStamp, state, provisioningState, reason, agentNodeCount, msg, resourceGroupName, resourceName, underlayName</p>
+<p>| order by PreciseTimeStamp asc</p>
+<p>// | render timeline</p>
+<p>PreciseTimeStamp:        2020-08-28 01:42:20.000</p>
+<p>state:        Unhealthy</p>
+<p>provisioningState:        Succeeded</p>
+<p>reason:        CustomerLinuxNodesNotReady</p>
+<p>agentNodeCount:        30</p>
+<p>msg:        SupportedState: &quot;Unsupported&quot; PodState: &quot;&quot; ResourceState: &quot;Customer linux nodes (aks-nodepool1-32471634-14) in not ready state: kubelet is posting ready status. AppArmor enabled&quot;</p>
+<p>&gt;&gt; PG will open an issue to related component team.</p>
+<p>Attach acr by az cli request worker node running, otherwise it will failed after 22 retry failure.</p>
+<p>All az aks update command ends up by a reconcile operation and request worker nodes in running status. This is by design.</p>
+<p>All base images in Mooncake now pull from mcr.azk8s.cn only.</p>
+<p>Progress of syncing with global feature:</p>
+<p>Landed feature</p>
+<p>Planning feature</p>
+<p>Standard Load Balancer</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/load-balancer-standard" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/load-balancer-standard</a></p>
+<p>Metrics / shoebox</p>
+<p>Network Policy</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/use-network-policies" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/use-network-policies</a></p>
+<p>AKS-managed Azure Active Directory integration</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/aks/managed-aad" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/managed-aad</a></p>
+<p>Egress Lockdown</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/aks/limit-egress-traffic" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/limit-egress-traffic</a></p>
+<p>virtual kubelet</p>
+<p>Kube Audit log</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/view-master-logs" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/view-master-logs</a></p>
+<p>Api server authorized IP ranges</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/api-server-authorized-ip-ranges" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/api-server-authorized-ip-ranges</a></p>
+<p>VMSS + multi-node pool</p>
+<p>Auto-scaler (will be more stable since 7/17)</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/aks/cluster-autoscaler" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/cluster-autoscaler</a></p>
+<p>AKS cluster certificate BYOK -&gt; storage encrypt</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/aks/azure-disk-customer-managed-keys" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/azure-disk-customer-managed-keys</a></p>
+<p>Windows agent node</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/aks/windows-container-cli" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/windows-container-cli</a></p>
+<p>AKS MSI</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/aks/use-managed-identity" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/use-managed-identity</a></p>
+<p>Private master node / cluster</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/aks/private-clusters" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/private-clusters</a></p>
+<p>Master node SLA</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/aks/uptime-sla" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/uptime-sla</a></p>
+<p>(technically ready)</p></article>

@@ -1,0 +1,76 @@
+<article class="kb-article" data-title="Azure Firewall通过重启删除无法删除的public IP"><h1>Azure Firewall通过重启删除无法删除的public IP</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AzureFW</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-09 14:46:50</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>通常情况下FW创建出来的第一个IP由于跟pirvate IP绑定了导致无法删除（并且被使用在了跟平台层面的通信）：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>通常情况下FW创建出来的第一个IP由于跟pirvate IP绑定了导致无法删除（并且被使用在了跟平台层面的通信）：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025.12.09</li>
+</ul>
+<ul>
+<li>假设FW 有两个publicIP，一个是publicip1,另一个是publicip2：</li>
+</ul>
+<ul>
+<li># Stop the firewall</li>
+</ul>
+<ul>
+<li>$azfw = Get-AzFirewall -Name &quot;*<strong>&quot; -ResourceGroupName &quot;</strong>*&quot;</li>
+</ul>
+<ul>
+<li>$azfw.Deallocate()</li>
+</ul>
+<ul>
+<li># Start the firewall</li>
+</ul>
+<ul>
+<li>$vnet = Get-AzVirtualNetwork -ResourceGroupName &quot;Network_Group&quot; -Name &quot;***&quot;</li>
+</ul>
+<ul>
+<li>$publicip = Get-AzPublicIpAddress -Name &quot;publicip2&quot; -ResourceGroupName &quot;***&quot;</li>
+</ul>
+<ul>
+<li>$azfw.Allocate($vnet, @($publicip))</li>
+</ul>
+<ul>
+<li>备注：该方法前提是客户不能有跟publicip1相关的防火墙规则，如果有的话再操作之前应提前删除相关规则。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-AzFirewall -AzureFirewall $azfw</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>如果使用删除FW的方式进行删除IP，客户并不愿意接受，这时候可以通过重启FW的方式来删除该IP：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025.12.09</p>
+<p>通常情况下FW创建出来的第一个IP由于跟pirvate IP绑定了导致无法删除（并且被使用在了跟平台层面的通信）：</p>
+<p>如果使用删除FW的方式进行删除IP，客户并不愿意接受，这时候可以通过重启FW的方式来删除该IP：</p>
+<p>假设FW 有两个publicIP，一个是publicip1,另一个是publicip2：</p>
+<h1>Stop the firewall</h1>
+<p>$azfw = Get-AzFirewall -Name &quot;*<strong>&quot; -ResourceGroupName &quot;</strong>*&quot;</p>
+<p>$azfw.Deallocate()</p>
+<p>Set-AzFirewall -AzureFirewall $azfw</p>
+<h1>Start the firewall</h1>
+<p>$vnet = Get-AzVirtualNetwork -ResourceGroupName &quot;Network_Group&quot; -Name &quot;***&quot;</p>
+<p>$publicip = Get-AzPublicIpAddress -Name &quot;publicip2&quot; -ResourceGroupName &quot;***&quot;</p>
+<p>$azfw.Allocate($vnet, @($publicip))</p>
+<p>备注：该方法前提是客户不能有跟publicip1相关的防火墙规则，如果有的话再操作之前应提前删除相关规则。</p></article>

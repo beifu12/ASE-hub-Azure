@@ -1,0 +1,128 @@
+<article class="kb-article" data-title="查看 托管标识类型的服务主体分配了哪些azure ad租户的角色"><h1>查看 托管标识类型的服务主体分配了哪些azure ad租户的角色</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-30 09:37:18</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>如果希望查看 某个服务主体 分配了哪些AzureADDirectoryRole， 可以使用如下脚本，</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>如果希望查看 某个服务主体 分配了哪些AzureADDirectoryRole， 可以使用如下脚本，</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>我这里的服务主体是托管标识类型的服务主体。</li>
+</ul>
+<ul>
+<li># 连接到 Azure AD</li>
+</ul>
+<ul>
+<li>Connect-AzureAD -AzureEnvironmentName azurechinacloud</li>
+</ul>
+<ul>
+<li># 获取所有 Azure AD 目录角色</li>
+</ul>
+<ul>
+<li>$AADRoles = Get-AzureADDirectoryRole</li>
+</ul>
+<ul>
+<li>$Spname = &quot;omsagent-k8s-3&quot;</li>
+</ul>
+<ul>
+<li># 遍历每个角色</li>
+</ul>
+<ul>
+<li>foreach ($AADRole in $AADRoles) {</li>
+</ul>
+<ul>
+<li># 获取当前角色的所有成员</li>
+</ul>
+<ul>
+<li>$AADRoleMember = Get-AzureADDirectoryRoleMember -ObjectId $AADRole.ObjectId</li>
+</ul>
+<ul>
+<li># 只保留分配了特定服务主体的角色</li>
+</ul>
+<ul>
+<li>$servicePrincipalsInRole = $AADRoleMember | Where-Object { $_.ObjectType -eq &quot;ServicePrincipal&quot; -and $_.DisplayName -eq &quot;$Spname&quot; }</li>
+</ul>
+<ul>
+<li># 如果存在服务主体，将角色信息和服务主体信息输出</li>
+</ul>
+<ul>
+<li>if ($servicePrincipalsInRole) {</li>
+</ul>
+<ul>
+<li>Write-Output &quot;角色名称: $($AADRole.DisplayName)&quot;</li>
+</ul>
+<ul>
+<li>Write-Output &quot;角色 ObjectId: $($AADRole.ObjectId)&quot;</li>
+</ul>
+<ul>
+<li>Write-Output &quot;以下是分配到该角色的服务主体:&quot;</li>
+</ul>
+<ul>
+<li>foreach ($servicePrincipal in $servicePrincipalsInRole) {</li>
+</ul>
+<ul>
+<li>Write-Output &quot;服务主体名称: $($servicePrincipal.DisplayName) - $($servicePrincipal.UserPrincipalName)&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>Write-Output &quot;-------------------------------&quot;</li>
+</ul>
+<ul>
+<li>效果 ：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>将$Spname 替换为您需要查询的 sp name 即可。</li>
+</ul>
+<ul>
+<li>Portal 查询 ：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如果希望查看 某个服务主体 分配了哪些AzureADDirectoryRole， 可以使用如下脚本，</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/7/15</p>
+<p>如果希望查看 某个服务主体 分配了哪些AzureADDirectoryRole， 可以使用如下脚本，</p>
+<p>将$Spname 替换为您需要查询的 sp name 即可。</p>
+<p>我这里的服务主体是托管标识类型的服务主体。</p>
+<h1>连接到 Azure AD</h1>
+<p>Connect-AzureAD -AzureEnvironmentName azurechinacloud</p>
+<h1>获取所有 Azure AD 目录角色</h1>
+<p>$AADRoles = Get-AzureADDirectoryRole</p>
+<p>$Spname = &quot;omsagent-k8s-3&quot;</p>
+<h1>遍历每个角色</h1>
+<p>foreach ($AADRole in $AADRoles) {</p>
+<h1>获取当前角色的所有成员</h1>
+<p>$AADRoleMember = Get-AzureADDirectoryRoleMember -ObjectId $AADRole.ObjectId</p>
+<h1>只保留分配了特定服务主体的角色</h1>
+<p>$servicePrincipalsInRole = $AADRoleMember | Where-Object { $_.ObjectType -eq &quot;ServicePrincipal&quot; -and $_.DisplayName -eq &quot;$Spname&quot; }</p>
+<h1>如果存在服务主体，将角色信息和服务主体信息输出</h1>
+<p>if ($servicePrincipalsInRole) {</p>
+<p>Write-Output &quot;角色名称: $($AADRole.DisplayName)&quot;</p>
+<p>Write-Output &quot;角色 ObjectId: $($AADRole.ObjectId)&quot;</p>
+<p>Write-Output &quot;以下是分配到该角色的服务主体:&quot;</p>
+<p>foreach ($servicePrincipal in $servicePrincipalsInRole) {</p>
+<p>Write-Output &quot;服务主体名称: $($servicePrincipal.DisplayName) - $($servicePrincipal.UserPrincipalName)&quot;</p>
+<p>}</p>
+<p>Write-Output &quot;-------------------------------&quot;</p>
+<p>效果 ：</p>
+<p>Portal 查询 ：</p></article>

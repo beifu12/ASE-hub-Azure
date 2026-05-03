@@ -1,0 +1,137 @@
+<article class="kb-article" data-title="【Share】混合加入环境下通过启用 kerberos 云信任实现反钓鱼MFA需求"><h1>【Share】混合加入环境下通过启用 kerberos 云信任实现反钓鱼MFA需求</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-03-12 13:42:29</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考文档：Windows Hello 企业版云 Kerberos 信任部署指南 | Microsoft Learn</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考文档：Windows Hello 企业版云 Kerberos 信任部署指南 | Microsoft Learn</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考文档：Windows Hello 企业版云 Kerberos 信任部署指南 | Microsoft Learn</li>
+</ul>
+<ul>
+<li>Install-Module -Name AzureADHybridAuthenticationManagement -AllowClobber</li>
+</ul>
+<ul>
+<li># Specify the on-premises Active Directory domain. A new Microsoft Entra ID</li>
+</ul>
+<ul>
+<li># Kerberos Server object will be created in this Active Directory domain.</li>
+</ul>
+<ul>
+<li>$domain = $env:USERDNSDOMAIN</li>
+</ul>
+<ul>
+<li># Enter an Azure Active Directory Hybrid Identity Administrator username and password. 如下输入Global admin 帐号</li>
+</ul>
+<ul>
+<li>$cloudCred = Get-Credential</li>
+</ul>
+<ul>
+<li># Create the new Microsoft Entra ID Kerberos Server object in Active Directory</li>
+</ul>
+<ul>
+<li># and then publish it to Azure Active Directory.</li>
+</ul>
+<ul>
+<li>使客户端计算机可以获得具有 Microsoft Entra PRT 和完整的 Active Directory TGT，并可同时访问云和本地资源。</li>
+</ul>
+<ul>
+<li>建立完成以后，会在域控的OU中多出来一台设备</li>
+</ul>
+<ul>
+<li>Windows Hello 企业版开启时可以不勾选 不在登录后开始Windwos Hello 部署</li>
+</ul>
+<ul>
+<li>待用户登录计算机会自动弹出windows Hello 部署向导，而不用在设置中的登录选项中进行配置</li>
+</ul>
+<ul>
+<li>设置好PIN 后可以尝试使用PIN码重新登录</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li># Use the current windows login credential to access the on-premises AD. 登录域控执行</li>
+</ul>
+<ul>
+<li>调整组策略开启Windows Hello 企业版以及对应的验证方法，这里使用PIN：</li>
+</ul>
+<ul>
+<li>设置之前会跳转到AAD验证</li>
+</ul>
+<ul>
+<li>通过登录记录查看结果如下命中条件访问，并且成功通过反钓鱼MFA登录：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>用户成功混合加入后 ，可以参考如下命令创建 Kerberos 服务器对象</li>
+</ul>
+<ul>
+<li># First, ensure TLS 1.2 for PowerShell gallery access.</li>
+</ul>
+<ul>
+<li># Install the AzureADHybridAuthenticationManagement PowerShell module.</li>
+</ul>
+<ul>
+<li>Set-AzureADKerberosServerEndpoint -TargetEndpoint 1</li>
+</ul>
+<ul>
+<li>Set-AzureADKerberosServer -Domain $domain -CloudCredential $cloudCred</li>
+</ul>
+<ul>
+<li>Get-AzureADKerberosServer -Domain $domain -CloudCredential $cloudCr</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>登录后可以通过Dsregcmd /status 查看SSO的状态是否正常</li>
+</ul>
+<ul>
+<li>可以通过SSO访问Auzre Portal测试</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>From &lt;<a href="https://learn.microsoft.com/zh-cn/entra/identity/authentication/howto-authentication-passwordless-security-key-on-premises#install-the-azureadhybridauthenticationmanagement-module&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/authentication/howto-authentication-passwordless-security-key-on-premises#install-the-azureadhybridauthenticationmanagement-module&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/03/12</p>
+<p>参考文档：Windows Hello 企业版云 Kerberos 信任部署指南 | Microsoft Learn</p>
+<p>用户成功混合加入后 ，可以参考如下命令创建 Kerberos 服务器对象</p>
+<h1>First, ensure TLS 1.2 for PowerShell gallery access.</h1>
+<p>[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12</p>
+<h1>Install the AzureADHybridAuthenticationManagement PowerShell module.</h1>
+<p>Install-Module -Name AzureADHybridAuthenticationManagement -AllowClobber</p>
+<p>Set-AzureADKerberosServerEndpoint -TargetEndpoint 1</p>
+<h1>Specify the on-premises Active Directory domain. A new Microsoft Entra ID</h1>
+<h1>Kerberos Server object will be created in this Active Directory domain.</h1>
+<p>$domain = $env:USERDNSDOMAIN</p>
+<h1>Enter an Azure Active Directory Hybrid Identity Administrator username and password. 如下输入Global admin 帐号</h1>
+<p>$cloudCred = Get-Credential</p>
+<h1>Create the new Microsoft Entra ID Kerberos Server object in Active Directory</h1>
+<h1>and then publish it to Azure Active Directory.</h1>
+<h1>Use the current windows login credential to access the on-premises AD. 登录域控执行</h1>
+<p>Set-AzureADKerberosServer -Domain $domain -CloudCredential $cloudCred</p>
+<p>Get-AzureADKerberosServer -Domain $domain -CloudCredential $cloudCr</p>
+<p>使客户端计算机可以获得具有 Microsoft Entra PRT 和完整的 Active Directory TGT，并可同时访问云和本地资源。</p>
+<p>From &lt;<a href="https://learn.microsoft.com/zh-cn/entra/identity/authentication/howto-authentication-passwordless-security-key-on-premises#install-the-azureadhybridauthenticationmanagement-module&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/authentication/howto-authentication-passwordless-security-key-on-premises#install-the-azureadhybridauthenticationmanagement-module&gt;</a></p>
+<p>建立完成以后，会在域控的OU中多出来一台设备</p>
+<p>调整组策略开启Windows Hello 企业版以及对应的验证方法，这里使用PIN：</p>
+<p>Windows Hello 企业版开启时可以不勾选 不在登录后开始Windwos Hello 部署</p>
+<p>待用户登录计算机会自动弹出windows Hello 部署向导，而不用在设置中的登录选项中进行配置</p>
+<p>设置之前会跳转到AAD验证</p>
+<p>设置好PIN 后可以尝试使用PIN码重新登录</p>
+<p>登录后可以通过Dsregcmd /status 查看SSO的状态是否正常</p>
+<p>可以通过SSO访问Auzre Portal测试</p>
+<p>通过登录记录查看结果如下命中条件访问，并且成功通过反钓鱼MFA登录：</p></article>

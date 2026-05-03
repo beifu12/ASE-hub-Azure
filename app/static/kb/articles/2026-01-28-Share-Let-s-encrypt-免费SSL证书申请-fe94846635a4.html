@@ -1,0 +1,105 @@
+<article class="kb-article" data-title="[Share] Let&#39;s encrypt 免费SSL证书申请"><h1>[Share] Let&#39;s encrypt 免费SSL证书申请</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-28 16:06:00</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>由于目前我们使用阿里的免费证书只有20个，且现在很多用户都开始使用Let&#39;s encrypt签发的 免费证书，客户在CDN管理页面上传证书后会报内部错误，经过分析是证书加密算法不支持。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>由于目前我们使用阿里的免费证书只有20个，且现在很多用户都开始使用Let&#39;s encrypt签发的 免费证书，客户在CDN管理页面上传证书后会报内部错误，经过分析是证书加密算法不支持。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>由于目前我们使用阿里的免费证书只有20个，且现在很多用户都开始使用Let&#39;s encrypt签发的 免费证书，客户在CDN管理页面上传证书后会报内部错误，经过分析是证书加密算法不支持。</li>
+</ul>
+<ul>
+<li>默认Let&#39;s encrypt 签发的是EC加密，</li>
+</ul>
+<ul>
+<li>目前azure CDN 只支持RSA算法，</li>
+</ul>
+<ul>
+<li>Azure CDN HTTPS 加速服务- 客户自有证书| Azure Docs</li>
+</ul>
+<ul>
+<li>我们可以使用Certbot 来申请 RSA 加密的证书，</li>
+</ul>
+<ul>
+<li>安装cerbot , 环境ubuntu主机</li>
+</ul>
+<ul>
+<li>sudo apt update</li>
+</ul>
+<ul>
+<li>sudo apt install certbot</li>
+</ul>
+<ul>
+<li>sudo apt install python3-certbot-nginx</li>
+</ul>
+<ul>
+<li>sudo apt install python3-certbot-apache</li>
+</ul>
+<ul>
+<li>指定 --key-type rsa</li>
+</ul>
+<ul>
+<li>sudo certbot certonly --rsa-key-size 2048 \</li>
+</ul>
+<ul>
+<li>-d tangxin.azurecn.cn \</li>
+</ul>
+<ul>
+<li>添加DNS txt记录</li>
+</ul>
+<ul>
+<li>添加后等2分钟回车</li>
+</ul>
+<ul>
+<li>上传证书到CDN：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>--manual --preferred-challenges dns   # 选择 DNS 或 HTTP 验证方式</li>
+</ul>
+<ul>
+<li>检查证书</li>
+</ul>
+<ul>
+<li>在线查看证书</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/04/16</p>
+<p>由于目前我们使用阿里的免费证书只有20个，且现在很多用户都开始使用Let&#39;s encrypt签发的 免费证书，客户在CDN管理页面上传证书后会报内部错误，经过分析是证书加密算法不支持。</p>
+<p>默认Let&#39;s encrypt 签发的是EC加密，</p>
+<p>目前azure CDN 只支持RSA算法，</p>
+<p>Azure CDN HTTPS 加速服务- 客户自有证书| Azure Docs</p>
+<p>我们可以使用Certbot 来申请 RSA 加密的证书，</p>
+<p>安装cerbot , 环境ubuntu主机</p>
+<p>sudo apt update</p>
+<p>sudo apt install certbot</p>
+<p>sudo apt install python3-certbot-nginx</p>
+<p>sudo apt install python3-certbot-apache</p>
+<p>指定 --key-type rsa</p>
+<p>sudo certbot certonly --rsa-key-size 2048 \</p>
+<p>-d tangxin.azurecn.cn \</p>
+<p>--manual --preferred-challenges dns   # 选择 DNS 或 HTTP 验证方式</p>
+<p>添加DNS txt记录</p>
+<p>添加后等2分钟回车</p>
+<p>检查证书</p>
+<p>在线查看证书</p>
+<p>上传证书到CDN：</p></article>

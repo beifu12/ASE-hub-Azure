@@ -1,0 +1,333 @@
+<article class="kb-article" data-title="【Share】AKS Service Principal和Managed Identity的子网权限对于创建ILB的影响"><h1>【Share】AKS Service Principal和Managed Identity的子网权限对于创建ILB的影响</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-30 11:54:37</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错信息：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错信息：</li>
+</ul>
+<ul>
+<li>Warning  SyncLoadBalancerFailed   17m (x7 over 22m)  service-controller  Error syncing load balancer: failed to ensure load balancer: Retriable: false, RetryAfter: 0s, HTTPStatusCode: 403, RawError: {&quot;error&quot;:{&quot;code&quot;:&quot;LinkedAuthorizationFailed&quot;,&quot;message&quot;:&quot;The client &#39;832f9d06-ecbb-4373-830f-f8b27a6908ef&#39; with object id &#39;832f9d06-ecbb-4373-830f-f8b27a6908ef&#39; has permission to perform action &#39;Microsoft.Network/loadBalancers/write&#39; on scope &#39;/subscriptions/a61d7e35-a4d2-4179-a34f-bf6fe8b6fe6a/resourceGroups/mc_aks-sp_aks-sp_chinanorth2/providers/Microsoft.Network/loadBalancers/kubernetes-internal&#39;; however, it does not have permission to perform action &#39;Microsoft.Network/virtualNetworks/subnets/join/action&#39; on the linked scope(s) &#39;/subscriptions/a61d7e35-a4d2-4179-a34f-bf6fe8b6fe6a/resourceGroups/aks-sp-vnet/providers/Microsoft.Network/virtualNetworks/aks-sp-vnet/subnets/default&#39; or the linked scope(s) are invalid.&quot;}}</li>
+</ul>
+<ul>
+<li>能够看到报错中的&#39;832f9d06-ecbb-4373-830f-f8b27a6908ef&#39;这个object id正是从Service Principal升级过来的Managed Identity。</li>
+</ul>
+<ul>
+<li>如果客户使用内部Ingress，kubectl describe svc或ingress可能都无法看到这个报错。这个时候可以手动创建一个新的ILB资源触发报错。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考工单：</li>
+</ul>
+<ul>
+<li>SR_20231010256219_AKS升级后ingress不能访问</li>
+</ul>
+<ul>
+<li>工单背景：</li>
+</ul>
+<ul>
+<li>AKS使用CNI网络，并且虚拟网络在另外一个资源组时，由于Service Principal和Managed Identity的对虚拟网络子网的权限问题，可能会导致用户创建internal load balancer资源时出现权限问题。</li>
+</ul>
+<ul>
+<li>知识背景：</li>
+</ul>
+<ul>
+<li>简单地理解，Service Principal和Managed Identity都是系统使用的账户，用来操作相关资源。两者的区别是Service Principal需要定期更新口令，维护管理相对复杂。而Managed Identity则没有这个问题。目前Service Principal用的已经比较少了，多数情况下都用Managed Identity。</li>
+</ul>
+<ul>
+<li>实验分为三个场景：</li>
+</ul>
+<ul>
+<li>场景1：单纯使用Service Principal</li>
+</ul>
+<ul>
+<li>场景2：使用Service Principal，然后将其升级为Managed Identity</li>
+</ul>
+<ul>
+<li>场景3：单纯使用Managed Identity</li>
+</ul>
+<ul>
+<li>实验场景1：使用Service Principal创建CNI网络的AKS集群。</li>
+</ul>
+<ul>
+<li>进一步创建ILB资源：</li>
+</ul>
+<ul>
+<li>apiVersion: apps/v1</li>
+</ul>
+<ul>
+<li>kind: Deployment</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: nginx1</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>selector:</li>
+</ul>
+<ul>
+<li>matchLabels:</li>
+</ul>
+<ul>
+<li>app: nginx1</li>
+</ul>
+<ul>
+<li>replicas: 1</li>
+</ul>
+<ul>
+<li>template:</li>
+</ul>
+<ul>
+<li>labels:</li>
+</ul>
+<ul>
+<li>containers:</li>
+</ul>
+<ul>
+<li>- name: nginx1</li>
+</ul>
+<ul>
+<li>image: nginx:latest</li>
+</ul>
+<ul>
+<li>ports:</li>
+</ul>
+<ul>
+<li>- containerPort: 80</li>
+</ul>
+<ul>
+<li>---</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: Service</li>
+</ul>
+<ul>
+<li>name: ilb</li>
+</ul>
+<ul>
+<li>annotations:</li>
+</ul>
+<ul>
+<li>service.beta.kubernetes.io/azure-load-balancer-internal: &quot;true&quot;</li>
+</ul>
+<ul>
+<li>type: LoadBalancer</li>
+</ul>
+<ul>
+<li>- port: 8888</li>
+</ul>
+<ul>
+<li>实验场景2：使用Service Principal，然后将其升级为Managed Identity。</li>
+</ul>
+<ul>
+<li>- port: 9999  #之前是8888</li>
+</ul>
+<ul>
+<li>实验场景3：使用Managed Identity创建CNI网络的AKS</li>
+</ul>
+<ul>
+<li>也就是说，这个Managed Identity已经具备了对于subnet的Network Contributor权限。理论分析创建ILB不会存在问题，测试结果也是如此：</li>
+</ul>
+<ul>
+<li>总结：</li>
+</ul>
+<ul>
+<li>上述测试场景，虚拟网络都是在AKS基础资源组之外的。对于AKS基础资源组之内的资源不会有此类问题，因为系统会自动分配资源组的Contributor权限给Service Principal或Managed Identity，资源组下的NSG、LB、ILB、VMSS、VNet等会继承此权限。在处理此类工单时，需要特别注意虚拟网络是否在AKS基础资源组以内，以及是否Service Principal或Managed Identity是否有subnet的Network Contributor权限。</li>
+</ul>
+<ul>
+<li>对于使用service principal或managed identity创建的CNI网络AKS集群，并且vnet在另一个资源组，系统会自动分配subnet（注意不是vnet）的Network Contributor权限给这个service principal或managed identity。所以用户能够创建ILB资源。</li>
+</ul>
+<ul>
+<li>扩展测试：</li>
+</ul>
+<ul>
+<li>经过测试，kubnet类型的AKS存在一模一样的问题。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>注意：只能使用CLI创建Service Principal的AKS，Portal这两个选项貌似不起作用，创建的都是Managed Identity的。</li>
+</ul>
+<ul>
+<li>查看AKS使用的是Service Principal还是Managed Identity。可以看到输出与上述的Service Principal ID相同。</li>
+</ul>
+<ul>
+<li>查看子网的权限分配历史记录。注意这个在Portal是看不到的，Portal上能看到的是整个虚拟网络的权限分配情况，不是子网的。回显中能够看到这个Service Principal对子网有Network Contributor的权限。</li>
+</ul>
+<ul>
+<li>查看AKS是否已经从Service Principal切换到Managed Identity。输出&quot;msi&quot;即表示升级成功。</li>
+</ul>
+<ul>
+<li>继续查看subnet的权限分配情况。能够看到，这里的principalName还是之前的Service Principal，并没有新的Managed Identity的身影。据此可以判断，从Service Principal升级到Managed Identity，系统并没有自动分配Managed Identity对于这个subnet的任何权限。</li>
+</ul>
+<ul>
+<li>从Portal查看AKS基础资源组的IAM，能够看到有两个相同名字的Principal，它们一个是之前的Service Principal，另一个是升级后的Managed Identity。也就是说对于AKS基础资源组内的资源来说，Service Principal和Managed Identity都是Contributor权限。</li>
+</ul>
+<ul>
+<li>查看升级为Managed Identity后的ILB状态，正常：</li>
+</ul>
+<ul>
+<li>此时查看ILB状态，已经恢复正常：</li>
+</ul>
+<ul>
+<li>此场景使用Portal创建AKS即可。</li>
+</ul>
+<ul>
+<li>创建之后，查看AKS是否是Managed Identity：</li>
+</ul>
+<ul>
+<li>继续查看subnet的权限，能够看到有一条权限分配记录，根据principalName在AAD中检索，可以看到确实是创建AKS时系统自动创建的Managed Identity：</li>
+</ul>
+<ul>
+<li>同时查看Portal虚拟网络的IAM权限，并没有发现这个Managed Identity的具有任何权限。也就是默认系统只会分配subnet的权限给Managed Identity，这也遵循“最小权限”的原则。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>命令：</li>
+</ul>
+<ul>
+<li>az ad sp create-for-rbac --name aks-sp  #创建Service Principal</li>
+</ul>
+<ul>
+<li>az aks create -g aks-sp -n aks-sp --service-principal &quot;17f7fed6-ad85-4645-8199-21e7b4c6f8cd&quot; --client-secret  &quot;F~DfpV5IHEfbtS_AlUdY8DG5aYL6Q1Hv_-&quot; --network-plugin azure --vnet-subnet-id /subscriptions/a61d7e35-a4d2-4179-a34f-bf6fe8b6fe6a/resourceGroups/aks-sp-vnet/providers/Microsoft.Network/virtualNetworks/aks-sp-vnet/subnets/default</li>
+</ul>
+<ul>
+<li>az aks show -g aks-sp -n aks-sp --query &quot;servicePrincipalProfile&quot;</li>
+</ul>
+<ul>
+<li>az role assignment list --scope /subscriptions/a61d7e35-a4d2-4179-a34f-bf6fe8b6fe6a/resourceGroups/aks-sp-vnet/providers/Microsoft.Network/virtualNetworks/aks-sp-vnet/subnets/default</li>
+</ul>
+<ul>
+<li>在实验场景1已经完成的前提下，继续执行如下命令，把Service Principal升级为Managed Identity：</li>
+</ul>
+<ul>
+<li>az aks update -g aks-sp -n aks-sp --enable-managed-identity</li>
+</ul>
+<ul>
+<li>修复方法：在Portal虚拟网络的IAM分配Network Contributor权限给这个Managed Identity。当然通过命令行仅仅给subnet赋予权限也是可以的，为了操作简便就直接在Portal给虚拟网络赋予权限了。因为虚拟网络的Network Contributor的权限是包含subnet的Network Contributor权限的。</li>
+</ul>
+<ul>
+<li>az aks show -g aks-puremi -n aks-puremi --query &quot;servicePrincipalProfile&quot;</li>
+</ul>
+<ul>
+<li>az role assignment list --scope /subscriptions/a61d7e35-a4d2-4179-a34f-bf6fe8b6fe6a/resourceGroups/aks-puremi-vnet/providers/Microsoft.Network/virtualNetworks/aks-puremi-vnet/subnets/default</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>能够看到ILB正常获取到了端口，并且Portal显示内部负载均衡器也是正常的：</li>
+</ul>
+<ul>
+<li>此时我们对yaml做一个小小的修改，比如说修改ilb的端口：</li>
+</ul>
+<ul>
+<li>此时出现报错了。虽然kubectl get svc ilb显示端口是新的9999，但是Portal上还是之前的8888，配置并没有下发给平台内部负载均衡器。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>唯一出现问题的场景，是使用service principal创建的CNI网络AKS集群，并且vnet在另一个资源组，随后用户使用az aks update -g aks-sp -n aks-sp --enable-managed-identity把service principal升级为managed identity，那么升级上来的managed identity没有对vnet或subnet的任何权限，此时用户无法创建ILB资源。修复方法是：需用户手工分配相应的rbac权限(见5)。使用service principal创建的ILB资源，在升级为managed identity后依然能够正常运行，这是因为对应的负载均衡器的配置依然存在并且有效，但是此时无法创建新的ILB资源或者是更改先前ILB的配置，因为managed identity缺乏对vnet或subnet的权限。本工单中客户遇到的正是此场景。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>为了避免后期的问题，对于任何类型的managed identity，都需要手动分配相关权限给AKS资源组以外的其他资源。参考：<a href="https://learn.microsoft.com/zh-cn/azure/aks/use-managed-identity" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/aks/use-managed-identity</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>参考工单：</p>
+<p>SR_20231010256219_AKS升级后ingress不能访问</p>
+<p>工单背景：</p>
+<p>AKS使用CNI网络，并且虚拟网络在另外一个资源组时，由于Service Principal和Managed Identity的对虚拟网络子网的权限问题，可能会导致用户创建internal load balancer资源时出现权限问题。</p>
+<p>报错信息：</p>
+<p>Warning  SyncLoadBalancerFailed   17m (x7 over 22m)  service-controller  Error syncing load balancer: failed to ensure load balancer: Retriable: false, RetryAfter: 0s, HTTPStatusCode: 403, RawError: {&quot;error&quot;:{&quot;code&quot;:&quot;LinkedAuthorizationFailed&quot;,&quot;message&quot;:&quot;The client &#39;832f9d06-ecbb-4373-830f-f8b27a6908ef&#39; with object id &#39;832f9d06-ecbb-4373-830f-f8b27a6908ef&#39; has permission to perform action &#39;Microsoft.Network/loadBalancers/write&#39; on scope &#39;/subscriptions/a61d7e35-a4d2-4179-a34f-bf6fe8b6fe6a/resourceGroups/mc_aks-sp_aks-sp_chinanorth2/providers/Microsoft.Network/loadBalancers/kubernetes-internal&#39;; however, it does not have permission to perform action &#39;Microsoft.Network/virtualNetworks/subnets/join/action&#39; on the linked scope(s) &#39;/subscriptions/a61d7e35-a4d2-4179-a34f-bf6fe8b6fe6a/resourceGroups/aks-sp-vnet/providers/Microsoft.Network/virtualNetworks/aks-sp-vnet/subnets/default&#39; or the linked scope(s) are invalid.&quot;}}</p>
+<p>知识背景：</p>
+<p>简单地理解，Service Principal和Managed Identity都是系统使用的账户，用来操作相关资源。两者的区别是Service Principal需要定期更新口令，维护管理相对复杂。而Managed Identity则没有这个问题。目前Service Principal用的已经比较少了，多数情况下都用Managed Identity。</p>
+<p>实验分为三个场景：</p>
+<p>场景1：单纯使用Service Principal</p>
+<p>场景2：使用Service Principal，然后将其升级为Managed Identity</p>
+<p>场景3：单纯使用Managed Identity</p>
+<p>实验场景1：使用Service Principal创建CNI网络的AKS集群。</p>
+<p>注意：只能使用CLI创建Service Principal的AKS，Portal这两个选项貌似不起作用，创建的都是Managed Identity的。</p>
+<p>命令：</p>
+<p>az ad sp create-for-rbac --name aks-sp  #创建Service Principal</p>
+<p>az aks create -g aks-sp -n aks-sp --service-principal &quot;17f7fed6-ad85-4645-8199-21e7b4c6f8cd&quot; --client-secret  &quot;F~DfpV5IHEfbtS_AlUdY8DG5aYL6Q1Hv_-&quot; --network-plugin azure --vnet-subnet-id /subscriptions/a61d7e35-a4d2-4179-a34f-bf6fe8b6fe6a/resourceGroups/aks-sp-vnet/providers/Microsoft.Network/virtualNetworks/aks-sp-vnet/subnets/default</p>
+<p>查看AKS使用的是Service Principal还是Managed Identity。可以看到输出与上述的Service Principal ID相同。</p>
+<p>az aks show -g aks-sp -n aks-sp --query &quot;servicePrincipalProfile&quot;</p>
+<p>查看子网的权限分配历史记录。注意这个在Portal是看不到的，Portal上能看到的是整个虚拟网络的权限分配情况，不是子网的。回显中能够看到这个Service Principal对子网有Network Contributor的权限。</p>
+<p>az role assignment list --scope /subscriptions/a61d7e35-a4d2-4179-a34f-bf6fe8b6fe6a/resourceGroups/aks-sp-vnet/providers/Microsoft.Network/virtualNetworks/aks-sp-vnet/subnets/default</p>
+<p>进一步创建ILB资源：</p>
+<p>apiVersion: apps/v1</p>
+<p>kind: Deployment</p>
+<p>metadata:</p>
+<p>name: nginx1</p>
+<p>spec:</p>
+<p>selector:</p>
+<p>matchLabels:</p>
+<p>app: nginx1</p>
+<p>replicas: 1</p>
+<p>template:</p>
+<p>labels:</p>
+<p>containers:</p>
+<ul>
+<li>name: nginx1</li>
+</ul>
+<p>image: nginx:latest</p>
+<p>ports:</p>
+<ul>
+<li>containerPort: 80</li>
+</ul>
+<p>---</p>
+<p>apiVersion: v1</p>
+<p>kind: Service</p>
+<p>name: ilb</p>
+<p>annotations:</p>
+<p>service.beta.kubernetes.io/azure-load-balancer-internal: &quot;true&quot;</p>
+<p>type: LoadBalancer</p>
+<ul>
+<li>port: 8888</li>
+</ul>
+<p>能够看到ILB正常获取到了端口，并且Portal显示内部负载均衡器也是正常的：</p>
+<p>实验场景2：使用Service Principal，然后将其升级为Managed Identity。</p>
+<p>在实验场景1已经完成的前提下，继续执行如下命令，把Service Principal升级为Managed Identity：</p>
+<p>az aks update -g aks-sp -n aks-sp --enable-managed-identity</p>
+<p>查看AKS是否已经从Service Principal切换到Managed Identity。输出&quot;msi&quot;即表示升级成功。</p>
+<p>继续查看subnet的权限分配情况。能够看到，这里的principalName还是之前的Service Principal，并没有新的Managed Identity的身影。据此可以判断，从Service Principal升级到Managed Identity，系统并没有自动分配Managed Identity对于这个subnet的任何权限。</p>
+<p>从Portal查看AKS基础资源组的IAM，能够看到有两个相同名字的Principal，它们一个是之前的Service Principal，另一个是升级后的Managed Identity。也就是说对于AKS基础资源组内的资源来说，Service Principal和Managed Identity都是Contributor权限。</p>
+<p>查看升级为Managed Identity后的ILB状态，正常：</p>
+<p>此时我们对yaml做一个小小的修改，比如说修改ilb的端口：</p>
+<ul>
+<li>port: 9999  #之前是8888</li>
+</ul>
+<p>此时出现报错了。虽然kubectl get svc ilb显示端口是新的9999，但是Portal上还是之前的8888，配置并没有下发给平台内部负载均衡器。</p>
+<p>能够看到报错中的&#39;832f9d06-ecbb-4373-830f-f8b27a6908ef&#39;这个object id正是从Service Principal升级过来的Managed Identity。</p>
+<p>修复方法：在Portal虚拟网络的IAM分配Network Contributor权限给这个Managed Identity。当然通过命令行仅仅给subnet赋予权限也是可以的，为了操作简便就直接在Portal给虚拟网络赋予权限了。因为虚拟网络的Network Contributor的权限是包含subnet的Network Contributor权限的。</p>
+<p>此时查看ILB状态，已经恢复正常：</p>
+<p>实验场景3：使用Managed Identity创建CNI网络的AKS</p>
+<p>此场景使用Portal创建AKS即可。</p>
+<p>创建之后，查看AKS是否是Managed Identity：</p>
+<p>az aks show -g aks-puremi -n aks-puremi --query &quot;servicePrincipalProfile&quot;</p>
+<p>继续查看subnet的权限，能够看到有一条权限分配记录，根据principalName在AAD中检索，可以看到确实是创建AKS时系统自动创建的Managed Identity：</p>
+<p>az role assignment list --scope /subscriptions/a61d7e35-a4d2-4179-a34f-bf6fe8b6fe6a/resourceGroups/aks-puremi-vnet/providers/Microsoft.Network/virtualNetworks/aks-puremi-vnet/subnets/default</p>
+<p>也就是说，这个Managed Identity已经具备了对于subnet的Network Contributor权限。理论分析创建ILB不会存在问题，测试结果也是如此：</p>
+<p>同时查看Portal虚拟网络的IAM权限，并没有发现这个Managed Identity的具有任何权限。也就是默认系统只会分配subnet的权限给Managed Identity，这也遵循“最小权限”的原则。</p>
+<p>总结：</p>
+<p>如果客户使用内部Ingress，kubectl describe svc或ingress可能都无法看到这个报错。这个时候可以手动创建一个新的ILB资源触发报错。</p>
+<p>上述测试场景，虚拟网络都是在AKS基础资源组之外的。对于AKS基础资源组之内的资源不会有此类问题，因为系统会自动分配资源组的Contributor权限给Service Principal或Managed Identity，资源组下的NSG、LB、ILB、VMSS、VNet等会继承此权限。在处理此类工单时，需要特别注意虚拟网络是否在AKS基础资源组以内，以及是否Service Principal或Managed Identity是否有subnet的Network Contributor权限。</p>
+<p>对于使用service principal或managed identity创建的CNI网络AKS集群，并且vnet在另一个资源组，系统会自动分配subnet（注意不是vnet）的Network Contributor权限给这个service principal或managed identity。所以用户能够创建ILB资源。</p>
+<p>唯一出现问题的场景，是使用service principal创建的CNI网络AKS集群，并且vnet在另一个资源组，随后用户使用az aks update -g aks-sp -n aks-sp --enable-managed-identity把service principal升级为managed identity，那么升级上来的managed identity没有对vnet或subnet的任何权限，此时用户无法创建ILB资源。修复方法是：需用户手工分配相应的rbac权限(见5)。使用service principal创建的ILB资源，在升级为managed identity后依然能够正常运行，这是因为对应的负载均衡器的配置依然存在并且有效，但是此时无法创建新的ILB资源或者是更改先前ILB的配置，因为managed identity缺乏对vnet或subnet的权限。本工单中客户遇到的正是此场景。</p>
+<p>为了避免后期的问题，对于任何类型的managed identity，都需要手动分配相关权限给AKS资源组以外的其他资源。参考：<a href="https://learn.microsoft.com/zh-cn/azure/aks/use-managed-identity" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/aks/use-managed-identity</a></p>
+<p>扩展测试：</p>
+<p>经过测试，kubnet类型的AKS存在一模一样的问题。</p></article>

@@ -1,0 +1,42 @@
+<article class="kb-article" data-title="[ARM-APPGW-TroubleShooting-Requests]经过 WAF 后 POST 请求被修改为 GET 请求"><h1>[ARM-APPGW-TroubleShooting-Requests]经过 WAF 后 POST 请求被修改为 GET 请求</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-12-26 15:14:02</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题描述：应用加上 waf 后由于我们的请求是通过 Post 形式的，经过 waf 后请求变成了 get 导致请求失败</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题描述：应用加上 waf 后由于我们的请求是通过 Post 形式的，经过 waf 后请求变成了 get 导致请求失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>[REG:118102219251540] POD NET | Pulse | SR_2018102268266 | 经过 WAF 后 POST 请求被修改为 GET 请求</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>原因分析：POST 转 GET 请求问题是错误的将 Probe 地址配置成了前端域名所致，改正后probe状态正常，服务正常；测试时发现存在请求被 WAF 阻挡无法发送至后端</li>
+</ul>
+<ul>
+<li>解决方案：修改配置探测正常服务正常；WAF阻挡问题已开新Case再做处理</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2018/10/30</p>
+<p>[REG:118102219251540] POD NET | Pulse | SR_2018102268266 | 经过 WAF 后 POST 请求被修改为 GET 请求</p>
+<p>问题描述：应用加上 waf 后由于我们的请求是通过 Post 形式的，经过 waf 后请求变成了 get 导致请求失败</p>
+<p>原因分析：POST 转 GET 请求问题是错误的将 Probe 地址配置成了前端域名所致，改正后probe状态正常，服务正常；测试时发现存在请求被 WAF 阻挡无法发送至后端</p>
+<p>解决方案：修改配置探测正常服务正常；WAF阻挡问题已开新Case再做处理</p></article>

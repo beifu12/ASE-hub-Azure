@@ -1,0 +1,98 @@
+<article class="kb-article" data-title="[Share]Azure Load Balancer如何将流量分发给不同订阅的后端池"><h1>[Share]Azure Load Balancer如何将流量分发给不同订阅的后端池</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LB</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-29 18:03:37</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2025.7.29</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2025.7.29</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025.7.29</li>
+</ul>
+<ul>
+<li>Tian Tian</li>
+</ul>
+<ul>
+<li>关联工单：20250725364909</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>如果负载均衡器和后端池不在一个订阅下，如何实现后端池被负载均衡器负载呢？</li>
+</ul>
+<ul>
+<li>系统环境/应用程序信息：</li>
+</ul>
+<ul>
+<li>===============</li>
+</ul>
+<ul>
+<li>Azure Load Balancer</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>Azure Load Balancer只有在创建了不为空的后端池之后才具备VNet属性，且同一Load Balancer如果它有多个后端池，这些后端池必须属于同一VNet。</li>
+</ul>
+<ul>
+<li># Create a resource group in Azure Subscription B</li>
+</ul>
+<ul>
+<li># Create a load balancer</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>先az login 登录Azure，然后选择Subscription B，在Subscription B中创建一Load Balancer:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>经测试当前要实现Load Balancer与后端池分别属于不同的订阅，推荐使用Azure CLI工具进行创建。如下指令供您参考：</li>
+</ul>
+<ul>
+<li>az group create --name &#39;tianResourceGroupLB&#39; --location chinanorth3</li>
+</ul>
+<ul>
+<li>az network lb create --resource-group tianResourceGroupLB --name tianLoadBalancer --sku Standard --public-ip-address tianPublicIP   --frontend-ip-name myFrontEnd --backend-pool-name BackendPool1 --tags &#39;IsRemoteFrontend=true&#39;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025.7.29</p>
+<p>Tian Tian</p>
+<p>关联工单：20250725364909</p>
+<p>问题描述：</p>
+<p>=======</p>
+<p>如果负载均衡器和后端池不在一个订阅下，如何实现后端池被负载均衡器负载呢？</p>
+<p>系统环境/应用程序信息：</p>
+<p>===============</p>
+<p>Azure Load Balancer</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>Azure Load Balancer只有在创建了不为空的后端池之后才具备VNet属性，且同一Load Balancer如果它有多个后端池，这些后端池必须属于同一VNet。</p>
+<p>经测试当前要实现Load Balancer与后端池分别属于不同的订阅，推荐使用Azure CLI工具进行创建。如下指令供您参考：</p>
+<p>先az login 登录Azure，然后选择Subscription B，在Subscription B中创建一Load Balancer:</p>
+<h1>Create a resource group in Azure Subscription B</h1>
+<p>az group create --name &#39;tianResourceGroupLB&#39; --location chinanorth3</p>
+<h1>Create a load balancer</h1>
+<p>az network lb create --resource-group tianResourceGroupLB --name tianLoadBalancer --sku Standard --public-ip-address tianPublicIP   --frontend-ip-name myFrontEnd --backend-pool-name BackendPool1 --tags &#39;IsRemoteFrontend=true&#39;</p></article>

@@ -1,0 +1,110 @@
+<article class="kb-article" data-title="centos 8.1 通过磁盘快照创建的虚拟机无法SSH"><h1>centos 8.1 通过磁盘快照创建的虚拟机无法SSH</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-08-25 20:15:20</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户虚拟机代理正常，但是虚拟机无法通过门户已经run-command 的方式重置密码。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户虚拟机代理正常，但是虚拟机无法通过门户已经run-command 的方式重置密码。</li>
+</ul>
+<ul>
+<li>本地测试发现，可以复现客户的问题，我尝试通过Console进入单用户为我测试环境中通过原虚拟机01磁盘快照创建的新虚拟机02重置了密码，但是虚拟机02仍无法链接。之后在为客户console 单用户时，直接重置了密码，关闭了selinux之后虚拟机恢复连接。</li>
+</ul>
+<ul>
+<li>注：客户的环境中，虚拟机代理正常，但是通过门户重置密码以及通过run-command 重置密码时都无法成功，所以后续是通过console 单用户重置密码并关闭selinux 解决的。</li>
+</ul>
+<ul>
+<li>如果代理不正常，或者无法通过门户重置密码，需要console 单用户，重置密码，并关闭selinux。</li>
+</ul>
+<ul>
+<li>#但是仍无法SSH#</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>8/3/2020</li>
+</ul>
+<ul>
+<li>#原可以正常SSH的虚拟机01#</li>
+</ul>
+<ul>
+<li>#尝试通过门户重置密码，重置成功之后，可以成功登录虚拟机#</li>
+</ul>
+<ul>
+<li>#单用户重置密码成功#</li>
+</ul>
+<ul>
+<li>#再次console 单用户.关闭selinux  后，虚拟机可以正常登录#</li>
+</ul>
+<ul>
+<li>此外，测试还发现，如果为centos 8.1 的虚拟机做了备份，使用还原点还原的磁盘和虚拟机也会遇到类似的问题。</li>
+</ul>
+<ul>
+<li>Hana Liu (刘 欢) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>最后，补充一条，可以单条重置Linux 密码的参考命令 ，亲测有效 echo &#39;&lt;new passwd&gt;&#39; | passwd --stdin &lt;username&gt;</li>
+</ul>
+<ul>
+<li>run-command 参考命令</li>
+</ul>
+<ul>
+<li>az vm run-command invoke -g &lt;VM 资源组名称&gt; -n &lt;VM名称&gt; --command-id RunShellScript --scripts &quot; sudo echo &#39;&lt;newpasswd&gt;&#39; | passwd --stdin &lt;username&gt;&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>关于Centos 8.1 ,最近遇到一个工单2020072942677， 客户原有一台虚拟机A（只有系统磁盘）， 可以正常SSH ，之后客户通过A虚拟机磁盘的快照，新建了B虚拟机，B 虚拟机22端口可以正常联通，但是B虚拟机无法SSH， 希望我们帮忙处理。</li>
+</ul>
+<ul>
+<li>#通过快照创建虚拟机02， 22端口可以正常通信，但是无法SSH，ASC 上对对应的显示虚拟机的admin user name是空的#</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>如果客户需要，建议通过映像的方式，创建多台虚拟机。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Support direct line: 010-56060132   Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></li>
+</ul>
+<ul>
+<li>Cloud solution consulting: 400-085-0139   Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>8/3/2020</p>
+<p>关于Centos 8.1 ,最近遇到一个工单2020072942677， 客户原有一台虚拟机A（只有系统磁盘）， 可以正常SSH ，之后客户通过A虚拟机磁盘的快照，新建了B虚拟机，B 虚拟机22端口可以正常联通，但是B虚拟机无法SSH， 希望我们帮忙处理。</p>
+<p>客户虚拟机代理正常，但是虚拟机无法通过门户已经run-command 的方式重置密码。</p>
+<p>本地测试发现，可以复现客户的问题，我尝试通过Console进入单用户为我测试环境中通过原虚拟机01磁盘快照创建的新虚拟机02重置了密码，但是虚拟机02仍无法链接。之后在为客户console 单用户时，直接重置了密码，关闭了selinux之后虚拟机恢复连接。</p>
+<p>注：客户的环境中，虚拟机代理正常，但是通过门户重置密码以及通过run-command 重置密码时都无法成功，所以后续是通过console 单用户重置密码并关闭selinux 解决的。</p>
+<p>#原可以正常SSH的虚拟机01#</p>
+<p>#通过快照创建虚拟机02， 22端口可以正常通信，但是无法SSH，ASC 上对对应的显示虚拟机的admin user name是空的#</p>
+<p>#尝试通过门户重置密码，重置成功之后，可以成功登录虚拟机#</p>
+<p>如果代理不正常，或者无法通过门户重置密码，需要console 单用户，重置密码，并关闭selinux。</p>
+<p>#单用户重置密码成功#</p>
+<p>#但是仍无法SSH#</p>
+<p>#再次console 单用户.关闭selinux  后，虚拟机可以正常登录#</p>
+<p>此外，测试还发现，如果为centos 8.1 的虚拟机做了备份，使用还原点还原的磁盘和虚拟机也会遇到类似的问题。</p>
+<p>如果客户需要，建议通过映像的方式，创建多台虚拟机。</p>
+<p>最后，补充一条，可以单条重置Linux 密码的参考命令 ，亲测有效 echo &#39;&lt;new passwd&gt;&#39; | passwd --stdin &lt;username&gt;</p>
+<p>run-command 参考命令</p>
+<p>az vm run-command invoke -g &lt;VM 资源组名称&gt; -n &lt;VM名称&gt; --command-id RunShellScript --scripts &quot; sudo echo &#39;&lt;newpasswd&gt;&#39; | passwd --stdin &lt;username&gt;&quot;</p>
+<p>Hana Liu (刘 欢) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060132   Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></p>
+<p>Cloud solution consulting: 400-085-0139   Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</p></article>

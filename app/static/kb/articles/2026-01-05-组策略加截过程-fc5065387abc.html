@@ -1,0 +1,119 @@
+<article class="kb-article" data-title="组策略加截过程"><h1>组策略加截过程</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-05 09:59:51</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>那么对于组策略来说，到底有几部分组成呢？域用户在客户端登录，组策略是如何加载的呢？</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>那么对于组策略来说，到底有几部分组成呢？域用户在客户端登录，组策略是如何加载的呢？</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>那么对于组策略来说，到底有几部分组成呢？域用户在客户端登录，组策略是如何加载的呢？</li>
+</ul>
+<ul>
+<li>一、组策略对象的存储：（GPC+GPT）</li>
+</ul>
+<ul>
+<li>我们通过GPMC.msc新建一个组策略后，其实是建了一个GPO（组策略对象），那我们平时所说的其实就是GPO。</li>
+</ul>
+<ul>
+<li>那我们可以在哪些容器上链接GPO呢？我们只能在LSDOU这几个容器上链接GPO。即Local、Site、Domain、OU（组织单位），有关这些基本的概念，各位可以在本站去找。我以前讲过。</li>
+</ul>
+<ul>
+<li>如下图所示：是一个新建并链接GPO的例子。</li>
+</ul>
+<ul>
+<li>取一个名字，如a,再次单击，选编辑，即打开了一个叫“组策略编辑器”的东西，你就可以对“计算机配置”和“用户配置”项进行相应的设置了。</li>
+</ul>
+<ul>
+<li>我要说的这个GPO，其实是由GPC（组策略容器）和GPT（组策略模板）组成的。具体二者的作用以及存储地在哪呢，见下图：</li>
+</ul>
+<ul>
+<li>二、组策略的加载过程：</li>
+</ul>
+<ul>
+<li>我们知道了GPO的组成后，下面我们来看一下，一个用户或计算机是如何加载具体的GPT的呢？</li>
+</ul>
+<ul>
+<li>知道链接了哪几个GPO后，就会去找这几个GPO，具体的找的顺序一般按LSDOU的顺序去找，后面我会再介绍这块内容。通过GPLink的属性值我们知道具体应用的GPO了，我们就在如下图所示，右击该GPO的GPC的属性，找versionnumber值，该用户会把自己versionnumber和它作比较，如果这里的新，就会通过找该GPC的属性中的gPCFileSysPath属性值来应用具体的GPT的设置。如下面两个图所示：</li>
+</ul>
+<ul>
+<li>当然是应用计算机配置还是用户配置，还是要看具体的配置。如果该用户所在的容器链接的有GPO，并且在其GPT里有相应的“用户配置”，就会应用该用户配置;如果用户登录的计算机所在的容器链接的有GPO，并且在其GPT里有相应的“计算机配置”，就会应用该计算机配置。二者全部应用也有可能，即同时加载用户配置和计算机配置。</li>
+</ul>
+<ul>
+<li>我想通过这个过程，各位应该明白了GPO的加载的原理了。今天的学习就到这里了。下次课我们来学习一下，用户或计算机应用GPO的前提条件。</li>
+</ul>
+<ul>
+<li>策略优先级</li>
+</ul>
+<ul>
+<li>用户 - GPO</li>
+</ul>
+<ul>
+<li>计算机 - GPO</li>
+</ul>
+<ul>
+<li>用户 - PassportForWork CSP</li>
+</ul>
+<ul>
+<li>设备 - PassportForWork CSP</li>
+</ul>
+<ul>
+<li>Exchange Active Sync - DeviceLock CSP</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>那我们查看一下吧，对于GPO如下图所示：</li>
+</ul>
+<ul>
+<li>查看GPC，需要打开ADUC后，选择“查看”---高级功能后，可以展开如下所示：</li>
+</ul>
+<ul>
+<li>查看GPT需要打开如下共享共享，在这里有对应的GPT，打开如图所选的这个，能看到有关具体的配置文件夹。</li>
+</ul>
+<ul>
+<li>其实不管用户或计算机总会属于一个容器，如OU或域，如果用户属于域，那么在它登录到域的过程中，它要检查该域（容器）的属性值中gplink的内容，看该容器链接了几个GPO，如下图所示：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>From &lt;<a href="https://learn.microsoft.com/zh-cn/windows/security/identity-protection/hello-for-business/configure&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/security/identity-protection/hello-for-business/configure&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>那么对于组策略来说，到底有几部分组成呢？域用户在客户端登录，组策略是如何加载的呢？</p>
+<p>一、组策略对象的存储：（GPC+GPT）</p>
+<p>我们通过GPMC.msc新建一个组策略后，其实是建了一个GPO（组策略对象），那我们平时所说的其实就是GPO。</p>
+<p>那我们可以在哪些容器上链接GPO呢？我们只能在LSDOU这几个容器上链接GPO。即Local、Site、Domain、OU（组织单位），有关这些基本的概念，各位可以在本站去找。我以前讲过。</p>
+<p>如下图所示：是一个新建并链接GPO的例子。</p>
+<p>取一个名字，如a,再次单击，选编辑，即打开了一个叫“组策略编辑器”的东西，你就可以对“计算机配置”和“用户配置”项进行相应的设置了。</p>
+<p>我要说的这个GPO，其实是由GPC（组策略容器）和GPT（组策略模板）组成的。具体二者的作用以及存储地在哪呢，见下图：</p>
+<p>那我们查看一下吧，对于GPO如下图所示：</p>
+<p>查看GPC，需要打开ADUC后，选择“查看”---高级功能后，可以展开如下所示：</p>
+<p>查看GPT需要打开如下共享共享，在这里有对应的GPT，打开如图所选的这个，能看到有关具体的配置文件夹。</p>
+<p>二、组策略的加载过程：</p>
+<p>我们知道了GPO的组成后，下面我们来看一下，一个用户或计算机是如何加载具体的GPT的呢？</p>
+<p>其实不管用户或计算机总会属于一个容器，如OU或域，如果用户属于域，那么在它登录到域的过程中，它要检查该域（容器）的属性值中gplink的内容，看该容器链接了几个GPO，如下图所示：</p>
+<p>知道链接了哪几个GPO后，就会去找这几个GPO，具体的找的顺序一般按LSDOU的顺序去找，后面我会再介绍这块内容。通过GPLink的属性值我们知道具体应用的GPO了，我们就在如下图所示，右击该GPO的GPC的属性，找versionnumber值，该用户会把自己versionnumber和它作比较，如果这里的新，就会通过找该GPC的属性中的gPCFileSysPath属性值来应用具体的GPT的设置。如下面两个图所示：</p>
+<p>当然是应用计算机配置还是用户配置，还是要看具体的配置。如果该用户所在的容器链接的有GPO，并且在其GPT里有相应的“用户配置”，就会应用该用户配置;如果用户登录的计算机所在的容器链接的有GPO，并且在其GPT里有相应的“计算机配置”，就会应用该计算机配置。二者全部应用也有可能，即同时加载用户配置和计算机配置。</p>
+<p>我想通过这个过程，各位应该明白了GPO的加载的原理了。今天的学习就到这里了。下次课我们来学习一下，用户或计算机应用GPO的前提条件。</p>
+<p>策略优先级</p>
+<p>用户 - GPO</p>
+<p>计算机 - GPO</p>
+<p>用户 - PassportForWork CSP</p>
+<p>设备 - PassportForWork CSP</p>
+<p>Exchange Active Sync - DeviceLock CSP</p>
+<p>From &lt;<a href="https://learn.microsoft.com/zh-cn/windows/security/identity-protection/hello-for-business/configure&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/security/identity-protection/hello-for-business/configure&gt;</a></p></article>

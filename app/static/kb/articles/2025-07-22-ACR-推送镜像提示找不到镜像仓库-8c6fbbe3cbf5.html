@@ -1,0 +1,65 @@
+<article class="kb-article" data-title="ACR 推送镜像提示找不到镜像仓库"><h1>ACR 推送镜像提示找不到镜像仓库</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: ACR</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-22 16:56:59</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>推送镜像提示找不到镜像仓库，报错如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>推送镜像提示找不到镜像仓库，报错如下：</li>
+</ul>
+<ul>
+<li>显示找不到订阅下的ACR这个资源，这个报错比较不友好，比较难对应上是权限问题。</li>
+</ul>
+<ul>
+<li>但是添加这个角色后仍然报之前的报错。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny</li>
+</ul>
+<ul>
+<li>查找文档生成和推送镜像的角色为Container Registry Repository Writer</li>
+</ul>
+<ul>
+<li>Azure 容器注册表 Entra 权限与角色分配概述 - Azure Container Registry | Azure Docs</li>
+</ul>
+<ul>
+<li>后通过测试给用户添加如下两个角色可以正常build 镜像并上传到acr:</li>
+</ul>
+<ul>
+<li>分配角色后，build并上传镜像成功：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>远程排查，通过使用客户的订阅owner 权限账号可以正常 acr build。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>实际就是acr build命令还需要task相关的权限。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Johnny</p>
+<p>2025/07/22</p>
+<p>推送镜像提示找不到镜像仓库，报错如下：</p>
+<p>显示找不到订阅下的ACR这个资源，这个报错比较不友好，比较难对应上是权限问题。</p>
+<p>远程排查，通过使用客户的订阅owner 权限账号可以正常 acr build。</p>
+<p>查找文档生成和推送镜像的角色为Container Registry Repository Writer</p>
+<p>Azure 容器注册表 Entra 权限与角色分配概述 - Azure Container Registry | Azure Docs</p>
+<p>但是添加这个角色后仍然报之前的报错。</p>
+<p>后通过测试给用户添加如下两个角色可以正常build 镜像并上传到acr:</p>
+<p>分配角色后，build并上传镜像成功：</p>
+<p>实际就是acr build命令还需要task相关的权限。</p></article>

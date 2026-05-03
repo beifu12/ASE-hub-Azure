@@ -1,0 +1,188 @@
+<article class="kb-article" data-title="【share】P2S VPN 连接使用一个根证书多个客户端证书"><h1>【share】P2S VPN 连接使用一个根证书多个客户端证书</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-29 11:50:43</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>humingyue</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>humingyue</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>humingyue</li>
+</ul>
+<ul>
+<li>关联工单号：20251022378536</li>
+</ul>
+<ul>
+<li>如下是测试反馈：</li>
+</ul>
+<ul>
+<li>$rootParams = @{</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>$rootCert = New-SelfSignedCertificate @rootParams</li>
+</ul>
+<ul>
+<li>Export-Certificate -Cert $rootCert -FilePath &quot;$env:USERPROFILE\Desktop\RootCert.cer&quot;</li>
+</ul>
+<ul>
+<li>$clientCount = 5</li>
+</ul>
+<ul>
+<li>$domain = &#39;marketing.contoso.com&#39;</li>
+</ul>
+<ul>
+<li>1..$clientCount | ForEach-Object {</li>
+</ul>
+<ul>
+<li>$clientName = &quot;Client$_@$domain&quot;</li>
+</ul>
+<ul>
+<li>$clientParams = @{</li>
+</ul>
+<ul>
+<li>$clientCert = New-SelfSignedCertificate @clientParams</li>
+</ul>
+<ul>
+<li>$pfxPath = &quot;$env:USERPROFILE\Desktop\$clientName.pfx&quot;</li>
+</ul>
+<ul>
+<li>$password = ConvertTo-SecureString -String &quot;Password123&quot; -Force -AsPlainText</li>
+</ul>
+<ul>
+<li>Export-PfxCertificate -Cert $clientCert -FilePath $pfxPath -Password $password  #</li>
+</ul>
+<ul>
+<li>然后在证书管理平台找到这个根证书并导出cert 证书上传到VPN 网关</li>
+</ul>
+<ul>
+<li>下载客户端并安装：</li>
+</ul>
+<ul>
+<li>测试可以使用 client1-5 客户端证书进行连接：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>首先使用如下powershell 命令行创建一个根证书，多个客户端证书：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Type                = &#39;Custom&#39;</li>
+</ul>
+<ul>
+<li>Subject             = &#39;CN=Root Cert@marketing.contoso.com&#39;</li>
+</ul>
+<ul>
+<li>KeySpec              = &#39;Signature&#39;</li>
+</ul>
+<ul>
+<li>KeyExportPolicy      = &#39;Exportable&#39;</li>
+</ul>
+<ul>
+<li>KeyUsage             = &#39;CertSign&#39;</li>
+</ul>
+<ul>
+<li>KeyUsageProperty     = &#39;Sign&#39;</li>
+</ul>
+<ul>
+<li>KeyLength            = 2048</li>
+</ul>
+<ul>
+<li>HashAlgorithm        = &#39;sha256&#39;</li>
+</ul>
+<ul>
+<li>NotAfter             = (Get-Date).AddMonths(24)</li>
+</ul>
+<ul>
+<li>CertStoreLocation    = &#39;Cert:\CurrentUser\My&#39;</li>
+</ul>
+<ul>
+<li>Subject             = &quot;CN=$clientName&quot;</li>
+</ul>
+<ul>
+<li>DnsName             = $clientName</li>
+</ul>
+<ul>
+<li>KeySpec             = &#39;Signature&#39;</li>
+</ul>
+<ul>
+<li>KeyExportPolicy     = &#39;Exportable&#39;</li>
+</ul>
+<ul>
+<li>KeyLength           = 2048</li>
+</ul>
+<ul>
+<li>HashAlgorithm       = &#39;sha256&#39;</li>
+</ul>
+<ul>
+<li>NotAfter            = (Get-Date).AddMonths(18)</li>
+</ul>
+<ul>
+<li>CertStoreLocation   = &#39;Cert:\CurrentUser\My&#39;</li>
+</ul>
+<ul>
+<li>Signer              = $rootCert</li>
+</ul>
+<ul>
+<li>TextExtension       = @(&#39;2.5.29.37={text}1.3.6.1.5.5.7.3.2&#39;)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025-10-29</p>
+<p>humingyue</p>
+<p>关联工单号：20251022378536</p>
+<p>如下是测试反馈：</p>
+<p>首先使用如下powershell 命令行创建一个根证书，多个客户端证书：</p>
+<p>$rootParams = @{</p>
+<p>Type                = &#39;Custom&#39;</p>
+<p>Subject             = &#39;CN=Root Cert@marketing.contoso.com&#39;</p>
+<p>KeySpec              = &#39;Signature&#39;</p>
+<p>KeyExportPolicy      = &#39;Exportable&#39;</p>
+<p>KeyUsage             = &#39;CertSign&#39;</p>
+<p>KeyUsageProperty     = &#39;Sign&#39;</p>
+<p>KeyLength            = 2048</p>
+<p>HashAlgorithm        = &#39;sha256&#39;</p>
+<p>NotAfter             = (Get-Date).AddMonths(24)</p>
+<p>CertStoreLocation    = &#39;Cert:\CurrentUser\My&#39;</p>
+<p>}</p>
+<p>$rootCert = New-SelfSignedCertificate @rootParams</p>
+<p>Export-Certificate -Cert $rootCert -FilePath &quot;$env:USERPROFILE\Desktop\RootCert.cer&quot;</p>
+<p>$clientCount = 5</p>
+<p>$domain = &#39;marketing.contoso.com&#39;</p>
+<p>1..$clientCount | ForEach-Object {</p>
+<p>$clientName = &quot;Client$_@$domain&quot;</p>
+<p>$clientParams = @{</p>
+<p>Subject             = &quot;CN=$clientName&quot;</p>
+<p>DnsName             = $clientName</p>
+<p>KeySpec             = &#39;Signature&#39;</p>
+<p>KeyExportPolicy     = &#39;Exportable&#39;</p>
+<p>KeyLength           = 2048</p>
+<p>HashAlgorithm       = &#39;sha256&#39;</p>
+<p>NotAfter            = (Get-Date).AddMonths(18)</p>
+<p>CertStoreLocation   = &#39;Cert:\CurrentUser\My&#39;</p>
+<p>Signer              = $rootCert</p>
+<p>TextExtension       = @(&#39;2.5.29.37={text}1.3.6.1.5.5.7.3.2&#39;)</p>
+<p>$clientCert = New-SelfSignedCertificate @clientParams</p>
+<p>$pfxPath = &quot;$env:USERPROFILE\Desktop\$clientName.pfx&quot;</p>
+<p>$password = ConvertTo-SecureString -String &quot;Password123&quot; -Force -AsPlainText</p>
+<p>Export-PfxCertificate -Cert $clientCert -FilePath $pfxPath -Password $password  #</p>
+<p>然后在证书管理平台找到这个根证书并导出cert 证书上传到VPN 网关</p>
+<p>下载客户端并安装：</p>
+<p>测试可以使用 client1-5 客户端证书进行连接：</p></article>

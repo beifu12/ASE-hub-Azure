@@ -1,0 +1,125 @@
+<article class="kb-article" data-title="用linux FIO对高级存储进行最大Read吞吐量测试"><h1>用linux FIO对高级存储进行最大Read吞吐量测试</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-11-17 10:51:21</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>note：文档中是directory=XXX，按照文档操作会报错，修改为filename=XXX就可以运行了。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>note：文档中是directory=XXX，按照文档操作会报错，修改为filename=XXX就可以运行了。</li>
+</ul>
+<ul>
+<li>sdd: ios=488783/0, merge=0/0, ticks=4765038/0, in_queue=4770510, util=99.75%</li>
+</ul>
+<ul>
+<li>READ: bw=128MiB/s (134MB/s), 31.7MiB/s-31.0MiB/s (33.3MB/s-33.5MB/s), io=3827MiB (4013MB), run=30003-30004msec</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>创建了一块6500G的数据磁盘，挂载到D32s v3，这个size不会导致磁盘性能的限制。</li>
+</ul>
+<ul>
+<li>分别用4k、8k、16k、64k块大小进行read的吞吐量测试，可以看到不同块大小，会影响磁盘吞吐量的变化，这个与文档描述一致：</li>
+</ul>
+<ul>
+<li>所以要达到最大吞吐量或者最大IOPS，需要根据文档中的参数进行测试，关于优化应用程序性能，您可参考：</li>
+</ul>
+<ul>
+<li>vim fioread.ini</li>
+</ul>
+<ul>
+<li>开始进行30s的FIO测试：</li>
+</ul>
+<ul>
+<li>sudo fio --runtime 30 fioread.ini</li>
+</ul>
+<ul>
+<li>测试结果：</li>
+</ul>
+<ul>
+<li>4k:</li>
+</ul>
+<ul>
+<li>Run status group 0 (all jobs):</li>
+</ul>
+<ul>
+<li>READ: bw=63.8MiB/s (66.9MB/s), 15.9MiB/s-16.1MiB/s (16.7MB/s-16.8MB/s), io=1916MiB (2009MB), run=30036-30037msec</li>
+</ul>
+<ul>
+<li>Disk stats (read/write):</li>
+</ul>
+<ul>
+<li>8k:</li>
+</ul>
+<ul>
+<li>sdd: ios=488239/0, merge=0/0, ticks=4768920/0, in_queue=4774763, util=99.75%</li>
+</ul>
+<ul>
+<li>16k:</li>
+</ul>
+<ul>
+<li>READ: bw=255MiB/s (268MB/s), 63.1MiB/s-64.3MiB/s (66.1MB/s-67.5MB/s), io=7660MiB (8032MB), run=30004-30004msec</li>
+</ul>
+<ul>
+<li>sdd: ios=487968/0, merge=0/0, ticks=4804536/0, in_queue=4816471, util=99.76%</li>
+</ul>
+<ul>
+<li>64k:</li>
+</ul>
+<ul>
+<li>READ: bw=487MiB/s (510MB/s), 121MiB/s-123MiB/s (127MB/s-128MB/s), io=14.3GiB (15.3GB), run=30015-30031msec</li>
+</ul>
+<ul>
+<li>sdd: ios=232841/0, merge=0/0, ticks=4874319/0, in_queue=4883483, util=99.75%</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>我的测试步骤：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disks-benchmarks#maximum-combined-throughput" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disks-benchmarks#maximum-combined-throughput</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/premium-storage-performance#optimize-application-performance" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/premium-storage-performance#optimize-application-performance</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020/8/5</p>
+<p>创建了一块6500G的数据磁盘，挂载到D32s v3，这个size不会导致磁盘性能的限制。</p>
+<p>分别用4k、8k、16k、64k块大小进行read的吞吐量测试，可以看到不同块大小，会影响磁盘吞吐量的变化，这个与文档描述一致：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disks-benchmarks#maximum-combined-throughput" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disks-benchmarks#maximum-combined-throughput</a></p>
+<p>所以要达到最大吞吐量或者最大IOPS，需要根据文档中的参数进行测试，关于优化应用程序性能，您可参考：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/premium-storage-performance#optimize-application-performance" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/premium-storage-performance#optimize-application-performance</a></p>
+<p>我的测试步骤：</p>
+<p>vim fioread.ini</p>
+<p>note：文档中是directory=XXX，按照文档操作会报错，修改为filename=XXX就可以运行了。</p>
+<p>开始进行30s的FIO测试：</p>
+<p>sudo fio --runtime 30 fioread.ini</p>
+<p>测试结果：</p>
+<p>4k:</p>
+<p>Run status group 0 (all jobs):</p>
+<p>READ: bw=63.8MiB/s (66.9MB/s), 15.9MiB/s-16.1MiB/s (16.7MB/s-16.8MB/s), io=1916MiB (2009MB), run=30036-30037msec</p>
+<p>Disk stats (read/write):</p>
+<p>sdd: ios=488783/0, merge=0/0, ticks=4765038/0, in_queue=4770510, util=99.75%</p>
+<p>8k:</p>
+<p>READ: bw=128MiB/s (134MB/s), 31.7MiB/s-31.0MiB/s (33.3MB/s-33.5MB/s), io=3827MiB (4013MB), run=30003-30004msec</p>
+<p>sdd: ios=488239/0, merge=0/0, ticks=4768920/0, in_queue=4774763, util=99.75%</p>
+<p>16k:</p>
+<p>READ: bw=255MiB/s (268MB/s), 63.1MiB/s-64.3MiB/s (66.1MB/s-67.5MB/s), io=7660MiB (8032MB), run=30004-30004msec</p>
+<p>sdd: ios=487968/0, merge=0/0, ticks=4804536/0, in_queue=4816471, util=99.76%</p>
+<p>64k:</p>
+<p>READ: bw=487MiB/s (510MB/s), 121MiB/s-123MiB/s (127MB/s-128MB/s), io=14.3GiB (15.3GB), run=30015-30031msec</p>
+<p>sdd: ios=232841/0, merge=0/0, ticks=4874319/0, in_queue=4883483, util=99.75%</p></article>

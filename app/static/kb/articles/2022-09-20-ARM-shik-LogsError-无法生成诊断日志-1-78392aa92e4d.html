@@ -1,0 +1,89 @@
+<article class="kb-article" data-title="[ARM-shik-LogsError]无法生成诊断日志"><h1>[ARM-shik-LogsError]无法生成诊断日志</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-09-20 15:32:15</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>1、是否有自定义SSL策略，如果未选择如下三个，无法正常同步</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>1、是否有自定义SSL策略，如果未选择如下三个，无法正常同步</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>YaoYuejian</li>
+</ul>
+<ul>
+<li>1、客户问题：</li>
+</ul>
+<ul>
+<li>2、问题原因：</li>
+</ul>
+<ul>
+<li>&quot;TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256&quot;,</li>
+</ul>
+<ul>
+<li>&quot;TLS_RSA_WITH_AES_256_CBC_SHA256&quot;,</li>
+</ul>
+<ul>
+<li>&quot;TLS_RSA_WITH_AES_128_CBC_SHA256&quot;</li>
+</ul>
+<ul>
+<li>2、是否有关联NSG</li>
+</ul>
+<ul>
+<li>目前新增两个service tag “AzureCloud”和“GatewayManager”，是平台的一些管理IP</li>
+</ul>
+<ul>
+<li>3、以上都没有问题的情况下，可以尝试重启App GW（重启agent）</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>App GW Subnet关联了NSG，出站allow了到“storage”的流量，但是Deny了到“Internet”的流量。App GW开启诊断后，在Storage中没有log生成，Jarvis里边也没有</li>
+</ul>
+<ul>
+<li>关于App GW的各种日志，在其Instance上有一个agent，通过agent出站先同步到Jarvis，Jarvis再同步到Storage里边，不是Instance直接到Storage里边</li>
+</ul>
+<ul>
+<li>Jarvis不在Storage的tag下，最终匹配到Internet</li>
+</ul>
+<ul>
+<li>3、排查思路：</li>
+</ul>
+<ul>
+<li>一般对于App GW无法生成日志的问题，需要检查以下几项，全部满足后，正常情况下就可以生成日志了。</li>
+</ul>
+<ul>
+<li>如果出站规则deny去往internet的流量，是无法正常同步日志的。在不修改deny internet的情况下，至少allow 去往这两个tag的流量，才能在Jarvis里查到日志</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>YaoYuejian</p>
+<p>1、客户问题：</p>
+<p>App GW Subnet关联了NSG，出站allow了到“storage”的流量，但是Deny了到“Internet”的流量。App GW开启诊断后，在Storage中没有log生成，Jarvis里边也没有</p>
+<p>2、问题原因：</p>
+<p>关于App GW的各种日志，在其Instance上有一个agent，通过agent出站先同步到Jarvis，Jarvis再同步到Storage里边，不是Instance直接到Storage里边</p>
+<p>Jarvis不在Storage的tag下，最终匹配到Internet</p>
+<p>3、排查思路：</p>
+<p>一般对于App GW无法生成日志的问题，需要检查以下几项，全部满足后，正常情况下就可以生成日志了。</p>
+<p>1、是否有自定义SSL策略，如果未选择如下三个，无法正常同步</p>
+<p>&quot;TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256&quot;,</p>
+<p>&quot;TLS_RSA_WITH_AES_256_CBC_SHA256&quot;,</p>
+<p>&quot;TLS_RSA_WITH_AES_128_CBC_SHA256&quot;</p>
+<p>2、是否有关联NSG</p>
+<p>目前新增两个service tag “AzureCloud”和“GatewayManager”，是平台的一些管理IP</p>
+<p>如果出站规则deny去往internet的流量，是无法正常同步日志的。在不修改deny internet的情况下，至少allow 去往这两个tag的流量，才能在Jarvis里查到日志</p>
+<p>3、以上都没有问题的情况下，可以尝试重启App GW（重启agent）</p></article>

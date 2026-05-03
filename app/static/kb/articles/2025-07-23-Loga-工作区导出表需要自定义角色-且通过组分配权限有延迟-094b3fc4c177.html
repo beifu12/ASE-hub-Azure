@@ -1,0 +1,201 @@
+<article class="kb-article" data-title="Loga 工作区导出表需要自定义角色，且通过组分配权限有延迟"><h1>Loga 工作区导出表需要自定义角色，且通过组分配权限有延迟</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Log Analiytics</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-23 11:05:02</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>导出表不成功报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>导出表不成功报错：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny lee</li>
+</ul>
+<ul>
+<li>&quot;properties&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;statusCode&quot;: &quot;BadRequest&quot;,</li>
+</ul>
+<ul>
+<li>&quot;serviceRequestId&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;eventCategory&quot;: &quot;Administrative&quot;,</li>
+</ul>
+<ul>
+<li>&quot;entity&quot;: &quot;/subscriptions/516ebdd4-f487-49b7-9920-e8e4f358711c/resourcegroups/pep-dev-sentinel-rg/providers/microsoft.operationalinsights/workspaces/pep-dev-sentinel-workspace/dataExports/test2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;microsoft.operationalinsights/workspaces/dataExports/write&quot;,</li>
+</ul>
+<ul>
+<li>&quot;hierarchy&quot;: &quot;c43dfee5-4aaa-4b26-864c-53e99ac89e83/516ebdd4-f487-49b7-9920-e8e4f358711c&quot;</li>
+</ul>
+<ul>
+<li>需要通过自定义角色配置，具体角色：</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/516ebdd4-f487-49b7-9920-e8e4f358711c/providers/Microsoft.Authorization/roleDefinitions/cdc39391-e6d9-4f5a-9d10-750013a94221&quot;,</li>
+</ul>
+<ul>
+<li>&quot;description&quot;: &quot;This custom role provides general access to all non-restricted tables.&quot;,</li>
+</ul>
+<ul>
+<li>&quot;assignableScopes&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;/subscriptions/516ebdd4-f487-49b7-9920-e8e4f358711c&quot;</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;permissions&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;actions&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;Microsoft.OperationalInsights/workspaces/*&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Microsoft.OperationalInsights/workspaces/query/*&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Microsoft.OperationalInsights/workspaces/tables/*&quot;</li>
+</ul>
+<ul>
+<li>&quot;notActions&quot;: [],</li>
+</ul>
+<ul>
+<li>&quot;dataActions&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;Microsoft.OperationalInsights/workspaces/tables/data/read&quot;</li>
+</ul>
+<ul>
+<li>&quot;notDataActions&quot;: []</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>通过配置这个自定义角色后，可以成功创建工作区数据。</li>
+</ul>
+<ul>
+<li>但是通过组分配权限时，有出现这个问题，我这里测试页可以复现：</li>
+</ul>
+<ul>
+<li>我这里测试给组添加权限：</li>
+</ul>
+<ul>
+<li>Jogptest1分配了自定义角色和存储账号的内置角色：</li>
+</ul>
+<ul>
+<li>Jo2用户加入该组后， 继承了组的权限：</li>
+</ul>
+<ul>
+<li>再进行数据导出时，可以复现您的问题：</li>
+</ul>
+<ul>
+<li>就是自定义角色的权限没有通过组继承给用户，内置角色的可以继承。</li>
+</ul>
+<ul>
+<li>后又进行测试，发现登录2天之后，问题解决了。</li>
+</ul>
+<ul>
+<li>中间还尝试添加所有者：</li>
+</ul>
+<ul>
+<li>给组配置权限后，将用户添加为组的所有者后，可以成功进行数据导出：</li>
+</ul>
+<ul>
+<li>Jo2用户配置为jogptest1的所有者：</li>
+</ul>
+<ul>
+<li>之后还是使用jo2用户创建导出规则成功：</li>
+</ul>
+<ul>
+<li>后感觉和所有者与成员没有直接感谢，所以又添加了一个用户只添加为组成员，也可以创建导出策略成功了。</li>
+</ul>
+<ul>
+<li>看起来就如文档所说，组权限生效需要一定时间。</li>
+</ul>
+<ul>
+<li>最后得出结果就是给组分配权权限，到用户成功继承有一个时间延迟，这个文档有提到，但是没有想到延迟需要一两天时间。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>&quot;roleName&quot;: &quot;Log Analytics Standard Table Access&quot;,</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>&quot;statusMessage&quot;: &quot;{\&quot;error\&quot;:{\&quot;code\&quot;:\&quot;InvalidParameter\&quot;,\&quot;message\&quot;:\&quot;Operation failed due to insufficient permissions on table(s) Event. Your effective permissions must provide full access to the corresponding table(s). See Log Analytics permissions management  <a href="https://aka.ms/larbac." target="_blank" rel="noopener">https://aka.ms/larbac.</a> Operation Id: &#39;7e5dad1834cb1fa42446f3d244558b5a&#39;\&quot;}}&quot;,</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Johnny lee</p>
+<p>2025-7-23</p>
+<p>导出表不成功报错：</p>
+<p>&quot;properties&quot;: {</p>
+<p>&quot;statusCode&quot;: &quot;BadRequest&quot;,</p>
+<p>&quot;serviceRequestId&quot;: null,</p>
+<p>&quot;statusMessage&quot;: &quot;{\&quot;error\&quot;:{\&quot;code\&quot;:\&quot;InvalidParameter\&quot;,\&quot;message\&quot;:\&quot;Operation failed due to insufficient permissions on table(s) Event. Your effective permissions must provide full access to the corresponding table(s). See Log Analytics permissions management  <a href="https://aka.ms/larbac." target="_blank" rel="noopener">https://aka.ms/larbac.</a> Operation Id: &#39;7e5dad1834cb1fa42446f3d244558b5a&#39;\&quot;}}&quot;,</p>
+<p>&quot;eventCategory&quot;: &quot;Administrative&quot;,</p>
+<p>&quot;entity&quot;: &quot;/subscriptions/516ebdd4-f487-49b7-9920-e8e4f358711c/resourcegroups/pep-dev-sentinel-rg/providers/microsoft.operationalinsights/workspaces/pep-dev-sentinel-workspace/dataExports/test2&quot;,</p>
+<p>&quot;message&quot;: &quot;microsoft.operationalinsights/workspaces/dataExports/write&quot;,</p>
+<p>&quot;hierarchy&quot;: &quot;c43dfee5-4aaa-4b26-864c-53e99ac89e83/516ebdd4-f487-49b7-9920-e8e4f358711c&quot;</p>
+<p>需要通过自定义角色配置，具体角色：</p>
+<p>{</p>
+<p>&quot;id&quot;: &quot;/subscriptions/516ebdd4-f487-49b7-9920-e8e4f358711c/providers/Microsoft.Authorization/roleDefinitions/cdc39391-e6d9-4f5a-9d10-750013a94221&quot;,</p>
+<p>&quot;roleName&quot;: &quot;Log Analytics Standard Table Access&quot;,</p>
+<p>&quot;description&quot;: &quot;This custom role provides general access to all non-restricted tables.&quot;,</p>
+<p>&quot;assignableScopes&quot;: [</p>
+<p>&quot;/subscriptions/516ebdd4-f487-49b7-9920-e8e4f358711c&quot;</p>
+<p>],</p>
+<p>&quot;permissions&quot;: [</p>
+<p>&quot;actions&quot;: [</p>
+<p>&quot;Microsoft.OperationalInsights/workspaces/*&quot;,</p>
+<p>&quot;Microsoft.OperationalInsights/workspaces/query/*&quot;,</p>
+<p>&quot;Microsoft.OperationalInsights/workspaces/tables/*&quot;</p>
+<p>&quot;notActions&quot;: [],</p>
+<p>&quot;dataActions&quot;: [</p>
+<p>&quot;Microsoft.OperationalInsights/workspaces/tables/data/read&quot;</p>
+<p>&quot;notDataActions&quot;: []</p>
+<p>}</p>
+<p>]</p>
+<p>通过配置这个自定义角色后，可以成功创建工作区数据。</p>
+<p>但是通过组分配权限时，有出现这个问题，我这里测试页可以复现：</p>
+<p>我这里测试给组添加权限：</p>
+<p>Jogptest1分配了自定义角色和存储账号的内置角色：</p>
+<p>Jo2用户加入该组后， 继承了组的权限：</p>
+<p>再进行数据导出时，可以复现您的问题：</p>
+<p>就是自定义角色的权限没有通过组继承给用户，内置角色的可以继承。</p>
+<p>后又进行测试，发现登录2天之后，问题解决了。</p>
+<p>中间还尝试添加所有者：</p>
+<p>给组配置权限后，将用户添加为组的所有者后，可以成功进行数据导出：</p>
+<p>Jo2用户配置为jogptest1的所有者：</p>
+<p>之后还是使用jo2用户创建导出规则成功：</p>
+<p>后感觉和所有者与成员没有直接感谢，所以又添加了一个用户只添加为组成员，也可以创建导出策略成功了。</p>
+<p>看起来就如文档所说，组权限生效需要一定时间。</p>
+<p>最后得出结果就是给组分配权权限，到用户成功继承有一个时间延迟，这个文档有提到，但是没有想到延迟需要一两天时间。</p></article>

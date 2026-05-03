@@ -1,0 +1,230 @@
+<article class="kb-article" data-title="Storage 17 17"><h1>Storage 17 17</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2025-05-15 17:05:08</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>“The Virtual Machines failures occurred due to temporarily loss of connectivity to the VHD disks stored in Azure Storage. A specific storage node had network related issues, and the system wasn’t able to detect it quickly. That delayed the automatic recovery a...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>“The Virtual Machines failures occurred due to temporarily loss of connectivity to the VHD disks stored in Azure Storage.  A specific storage node had network related issues, and the system wasn’t able to detect it quickly.  That delayed the automatic recovery and led to the VHD disk failure. We have applied mitigations to address this issue for your account.  We have planned improvements in this area to automatically handle this, so that we can fully address this issue in the future.</li>
+</ul>
+<ul>
+<li>[2017/08/29, 12:44:18.564, ERROR, 00003644] RuntimeVmControlContainer::QueryVspDiskState - Failed to query state for disk=C:\Resources\Volume\SSDVolume1\OS\029c0c18-5fc1-4c08-b7bf-b6311786a65e_0A1FFBEDB4DB2E5BF26890918C40F8A5.vhd. HRESULT=0x80070032</li>
+</ul>
+<ul>
+<li>[2017/08/29, 12:44:18.579, ERROR, 00003644] RuntimeVmControlContainer::QueryVspDiskState - Failed to query state for disk=C:\Resources\Volume\SSDVolume1\029c0c18-5fc1-4c08-b7bf-b6311786a65e_13FBAA8D0D34A15DAEE9F7A1B8B1EE2F.vhd. HRESULT=0x80070032</li>
+</ul>
+<ul>
+<li>故障起始和结束时间：2017/10/9 13:59:06 - 2017/10/9 14:13:01</li>
+</ul>
+<ul>
+<li>Event ID 2 is emitted for individual IOs that are failed</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>120ms</li>
+</ul>
+<ul>
+<li>####以下内容为internal only, 切勿与客户分享.</li>
+</ul>
+<ul>
+<li>VhdDiskEvent:</li>
+</ul>
+<ul>
+<li>事件信息 (Incident Information)</li>
+</ul>
+<ul>
+<li>事件ID (Incident  ID)</li>
+</ul>
+<ul>
+<li>2017082906576</li>
+</ul>
+<ul>
+<li>事件名称 (Incident Title)</li>
+</ul>
+<ul>
+<li>[MS-LED]虚拟机重启</li>
+</ul>
+<ul>
+<li>受影响的服务 (Service Impacted)</li>
+</ul>
+<ul>
+<li>Azure虚拟机</li>
+</ul>
+<ul>
+<li>总结 (Summary)</li>
+</ul>
+<ul>
+<li>Microsoft Azure China技术支持团队关于您的订阅号 b8c58183-cfab-4516-86be-0a492817f8d2中虚拟</li>
+</ul>
+<ul>
+<li>对本次虚拟机服务中断给您业务带来的不利影响,我们深表歉意。我们正在不断采取措施来优化Microsoft Azure平台及运维流程，力争避免将来该问题再次发生，并希望得到您持续的支持与关注。</li>
+</ul>
+<ul>
+<li>由此可能为您带来的不便，我们深表歉意。</li>
+</ul>
+<ul>
+<li>部署相关信息：</li>
+</ul>
+<ul>
+<li>受影响时候的所在时区：CST</li>
+</ul>
+<ul>
+<li>受影响的Sub ID：201516b6-6a40-43b5-92b2-b42105f5e8bb</li>
+</ul>
+<ul>
+<li>受影响的服务和服务名称（如虚拟机名称等）：T-BJ-HDP-06</li>
+</ul>
+<ul>
+<li>如果涉及虚拟机，虚拟机是否部署了可用性集：T-BJ-HDP</li>
+</ul>
+<ul>
+<li>受影响的虚拟机是否使用了SSD存储：否</li>
+</ul>
+<ul>
+<li>OsVhddiskEventTable</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt;= datetime(2022-01-12T18:00:00Z) and TIMESTAMP &lt; datetime(2022-01-12T22:00:00Z)</li>
+</ul>
+<ul>
+<li>| where NodeId in (&quot;71add4a8-aeac-4e63-a6fc-33b4fa723f8c&quot;,</li>
+</ul>
+<ul>
+<li>&quot;f82ea7e1-a851-4871-a6b2-1c9370c614ae&quot;,</li>
+</ul>
+<ul>
+<li>&quot;bdd7f514-358f-4dbe-b498-5fb647864837&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ecc2aa8c-3cad-4add-91bd-b081a5e5df00&quot;,</li>
+</ul>
+<ul>
+<li>&quot;441afe35-dd4b-4713-99fa-474fee97152e&quot;)</li>
+</ul>
+<ul>
+<li>| where EventId == 17</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP,EventId,ParamStr1,Cluster,NodeId</li>
+</ul>
+<ul>
+<li>| where NodeId contains &quot;bdd7f514-358f-4dbe-b498-5fb647864837&quot;</li>
+</ul>
+<ul>
+<li>//| where ParamStr1.contains &quot;vhd&quot;</li>
+</ul>
+<ul>
+<li>| where EventId == 17</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP,EventId,ParamStr1</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>We apologize for any inconvenience this may have caused. We are continuously working on improving our processes to ensure these incidents do not occur in the future.”</li>
+</ul>
+<ul>
+<li>从这里可以看到本次的event 17是由于xfetraffic的time out导致的, 可以简单理解为xstore处理IO的时候有延迟导致time out.</li>
+</ul>
+<ul>
+<li>RdAgent Log:</li>
+</ul>
+<ul>
+<li>[2017/08/29, 12:44:18.564,  WARN, 00003644] RuntimeVmControlContainer::LogVhdDeviceVspPerfCounters - Failed to query VSP perf counters for vhd device=C:\Resources\Volume\SSDVolume1\OS\029c0c18-5fc1-4c08-b7bf-b6311786a65e_0A1FFBEDB4DB2E5BF26890918C40F8A5.vhd. PerfCounterReason=0. HRESULT=0x80070057.</li>
+</ul>
+<ul>
+<li>[2017/08/29, 12:44:18.595,  WARN, 00003644] RuntimeVmControlContainer::LogVhdDeviceVspPerfCounters - Failed to query VSP perf counters for vhd device=C:\Resources\Volume\SSDVolume1\029c0c18-5fc1-4c08-b7bf-b6311786a65e_13FBAA8D0D34A15DAEE9F7A1B8B1EE2F.vhd. PerfCounterReason=0. HRESULT=0x80070057.</li>
+</ul>
+<ul>
+<li>机 QPE-BJ-TOP2-01在 2017年8月29日 20:44:11 CST到20:45:10 CST 被异常重启事件的调查分析已完毕。通过后台排查和分析，确认在该时间点虚拟机与存储账号中的磁盘（vhd）文件出现了短时的连接失败的情况，平台检测到磁盘问题，为了保障后续服务稳定性和数据一致性，启动了相应的恢复机制，并对虚拟机进行了一次安全重启。</li>
+</ul>
+<ul>
+<li>[Jarvis][Logs]查看VHD Events</li>
+</ul>
+<ul>
+<li>rdos 链接 event 17 kusto</li>
+</ul>
+<ul>
+<li>//Event17 排查</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>关于Event 17的RCA, 参考如下.</li>
+</ul>
+<ul>
+<li>RCA Message</li>
+</ul>
+<ul>
+<li>Please share the below RCA message with the customer</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>事件发生后, 我们第一时间通知到了Azure平台运维团队, 尽快展开对故障点进行健康检查和问题修复。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>cluster(&quot;<a href="https://rdosmc.kusto.chinacloudapi.cn&quot;).database(&quot;rdos&quot;)." target="_blank" rel="noopener">https://rdosmc.kusto.chinacloudapi.cn&quot;).database(&quot;rdos&quot;).</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>关于Event 17的RCA, 参考如下.</p>
+<p>120ms</p>
+<p>RCA Message</p>
+<p>Please share the below RCA message with the customer</p>
+<p>“The Virtual Machines failures occurred due to temporarily loss of connectivity to the VHD disks stored in Azure Storage.  A specific storage node had network related issues, and the system wasn’t able to detect it quickly.  That delayed the automatic recovery and led to the VHD disk failure. We have applied mitigations to address this issue for your account.  We have planned improvements in this area to automatically handle this, so that we can fully address this issue in the future.</p>
+<p>We apologize for any inconvenience this may have caused. We are continuously working on improving our processes to ensure these incidents do not occur in the future.”</p>
+<p>####以下内容为internal only, 切勿与客户分享.</p>
+<p>从这里可以看到本次的event 17是由于xfetraffic的time out导致的, 可以简单理解为xstore处理IO的时候有延迟导致time out.</p>
+<p>RdAgent Log:</p>
+<p>[2017/08/29, 12:44:18.564, ERROR, 00003644] RuntimeVmControlContainer::QueryVspDiskState - Failed to query state for disk=C:\Resources\Volume\SSDVolume1\OS\029c0c18-5fc1-4c08-b7bf-b6311786a65e_0A1FFBEDB4DB2E5BF26890918C40F8A5.vhd. HRESULT=0x80070032</p>
+<p>[2017/08/29, 12:44:18.564,  WARN, 00003644] RuntimeVmControlContainer::LogVhdDeviceVspPerfCounters - Failed to query VSP perf counters for vhd device=C:\Resources\Volume\SSDVolume1\OS\029c0c18-5fc1-4c08-b7bf-b6311786a65e_0A1FFBEDB4DB2E5BF26890918C40F8A5.vhd. PerfCounterReason=0. HRESULT=0x80070057.</p>
+<p>[2017/08/29, 12:44:18.579, ERROR, 00003644] RuntimeVmControlContainer::QueryVspDiskState - Failed to query state for disk=C:\Resources\Volume\SSDVolume1\029c0c18-5fc1-4c08-b7bf-b6311786a65e_13FBAA8D0D34A15DAEE9F7A1B8B1EE2F.vhd. HRESULT=0x80070032</p>
+<p>[2017/08/29, 12:44:18.595,  WARN, 00003644] RuntimeVmControlContainer::LogVhdDeviceVspPerfCounters - Failed to query VSP perf counters for vhd device=C:\Resources\Volume\SSDVolume1\029c0c18-5fc1-4c08-b7bf-b6311786a65e_13FBAA8D0D34A15DAEE9F7A1B8B1EE2F.vhd. PerfCounterReason=0. HRESULT=0x80070057.</p>
+<p>VhdDiskEvent:</p>
+<p>事件信息 (Incident Information)</p>
+<p>事件ID (Incident  ID)</p>
+<p>2017082906576</p>
+<p>事件名称 (Incident Title)</p>
+<p>[MS-LED]虚拟机重启</p>
+<p>受影响的服务 (Service Impacted)</p>
+<p>Azure虚拟机</p>
+<p>总结 (Summary)</p>
+<p>Microsoft Azure China技术支持团队关于您的订阅号 b8c58183-cfab-4516-86be-0a492817f8d2中虚拟</p>
+<p>机 QPE-BJ-TOP2-01在 2017年8月29日 20:44:11 CST到20:45:10 CST 被异常重启事件的调查分析已完毕。通过后台排查和分析，确认在该时间点虚拟机与存储账号中的磁盘（vhd）文件出现了短时的连接失败的情况，平台检测到磁盘问题，为了保障后续服务稳定性和数据一致性，启动了相应的恢复机制，并对虚拟机进行了一次安全重启。</p>
+<p>事件发生后, 我们第一时间通知到了Azure平台运维团队, 尽快展开对故障点进行健康检查和问题修复。</p>
+<p>对本次虚拟机服务中断给您业务带来的不利影响,我们深表歉意。我们正在不断采取措施来优化Microsoft Azure平台及运维流程，力争避免将来该问题再次发生，并希望得到您持续的支持与关注。</p>
+<p>由此可能为您带来的不便，我们深表歉意。</p>
+<p>部署相关信息：</p>
+<p>故障起始和结束时间：2017/10/9 13:59:06 - 2017/10/9 14:13:01</p>
+<p>受影响时候的所在时区：CST</p>
+<p>受影响的Sub ID：201516b6-6a40-43b5-92b2-b42105f5e8bb</p>
+<p>受影响的服务和服务名称（如虚拟机名称等）：T-BJ-HDP-06</p>
+<p>如果涉及虚拟机，虚拟机是否部署了可用性集：T-BJ-HDP</p>
+<p>受影响的虚拟机是否使用了SSD存储：否</p>
+<p>[Jarvis][Logs]查看VHD Events</p>
+<p>rdos 链接 event 17 kusto</p>
+<p>//Event17 排查</p>
+<p>cluster(&quot;<a href="https://rdosmc.kusto.chinacloudapi.cn&quot;).database(&quot;rdos&quot;)." target="_blank" rel="noopener">https://rdosmc.kusto.chinacloudapi.cn&quot;).database(&quot;rdos&quot;).</a></p>
+<p>OsVhddiskEventTable</p>
+<p>| where TIMESTAMP &gt;= datetime(2022-01-12T18:00:00Z) and TIMESTAMP &lt; datetime(2022-01-12T22:00:00Z)</p>
+<p>| where NodeId in (&quot;71add4a8-aeac-4e63-a6fc-33b4fa723f8c&quot;,</p>
+<p>&quot;f82ea7e1-a851-4871-a6b2-1c9370c614ae&quot;,</p>
+<p>&quot;bdd7f514-358f-4dbe-b498-5fb647864837&quot;,</p>
+<p>&quot;ecc2aa8c-3cad-4add-91bd-b081a5e5df00&quot;,</p>
+<p>&quot;441afe35-dd4b-4713-99fa-474fee97152e&quot;)</p>
+<p>| where EventId == 17</p>
+<p>| project TIMESTAMP,EventId,ParamStr1,Cluster,NodeId</p>
+<p>| where NodeId contains &quot;bdd7f514-358f-4dbe-b498-5fb647864837&quot;</p>
+<p>//| where ParamStr1.contains &quot;vhd&quot;</p>
+<p>| where EventId == 17</p>
+<p>| project TIMESTAMP,EventId,ParamStr1</p>
+<p>Event ID 2 is emitted for individual IOs that are failed</p></article>

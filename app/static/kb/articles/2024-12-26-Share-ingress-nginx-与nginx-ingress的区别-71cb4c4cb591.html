@@ -1,0 +1,94 @@
+<article class="kb-article" data-title="[Share] ingress-nginx 与nginx-ingress的区别"><h1>[Share] ingress-nginx 与nginx-ingress的区别</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-12-26 16:04:37</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>业务报错信息，报错提示该annotaion被忽略</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>业务报错信息，报错提示该annotaion被忽略</li>
+</ul>
+<ul>
+<li>比如proxy-connect-timeout：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>检测用户部署的yaml，发现nginx-ingress，版本是2.30</li>
+</ul>
+<ul>
+<li>Releases | NGINX Ingress Controller</li>
+</ul>
+<ul>
+<li>K8s的ingress-nginx官网：</li>
+</ul>
+<ul>
+<li>Welcome - Ingress-Nginx Controller (kubernetes.github.io)</li>
+</ul>
+<ul>
+<li>F5 nginx的版本名字与K8s nginx不一样：</li>
+</ul>
+<ul>
+<li>GitHub - kubernetes/ingress-nginx: Ingress-NGINX Controller for Kubernetes</li>
+</ul>
+<ul>
+<li>F5 版本</li>
+</ul>
+<ul>
+<li>F5 nginx的annotation语法结构与K8s nginx不一样，请参考以下连接：</li>
+</ul>
+<ul>
+<li>Advanced configuration with Annotations | NGINX Ingress Controller</li>
+</ul>
+<ul>
+<li>Ingress-nginx annotation语法</li>
+</ul>
+<ul>
+<li>Annotations - Ingress-Nginx Controller</li>
+</ul>
+<ul>
+<li>Ingress-nginx中</li>
+</ul>
+<ul>
+<li>Nginx-ingress中：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>之前接到工单，用户在AKS自己部署了ingress-nginx然后发布业务不生效，经过排查发现用户安装的是nginx-ingress，并不是K8S官方社区发布的ingress-nginx。</li>
+</ul>
+<ul>
+<li>经过查询nginx-ingress是F5公司旗下的产品，</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/12/26</p>
+<p>之前接到工单，用户在AKS自己部署了ingress-nginx然后发布业务不生效，经过排查发现用户安装的是nginx-ingress，并不是K8S官方社区发布的ingress-nginx。</p>
+<p>检测用户部署的yaml，发现nginx-ingress，版本是2.30</p>
+<p>业务报错信息，报错提示该annotaion被忽略</p>
+<p>经过查询nginx-ingress是F5公司旗下的产品，</p>
+<p>Releases | NGINX Ingress Controller</p>
+<p>K8s的ingress-nginx官网：</p>
+<p>Welcome - Ingress-Nginx Controller (kubernetes.github.io)</p>
+<p>F5 nginx的版本名字与K8s nginx不一样：</p>
+<p>GitHub - kubernetes/ingress-nginx: Ingress-NGINX Controller for Kubernetes</p>
+<p>F5 版本</p>
+<p>F5 nginx的annotation语法结构与K8s nginx不一样，请参考以下连接：</p>
+<p>Advanced configuration with Annotations | NGINX Ingress Controller</p>
+<p>Ingress-nginx annotation语法</p>
+<p>Annotations - Ingress-Nginx Controller</p>
+<p>比如proxy-connect-timeout：</p>
+<p>Ingress-nginx中</p>
+<p>Nginx-ingress中：</p></article>

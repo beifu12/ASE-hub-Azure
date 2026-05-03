@@ -1,0 +1,246 @@
+<article class="kb-article" data-title="案例 Microsoft Azure 恢复服务 (MARS) 代理"><h1>案例 Microsoft Azure 恢复服务 (MARS) 代理</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-10-07 13:33:22</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>无法将Mars注册到保管库，报错信息如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>无法将Mars注册到保管库，报错信息如下：</li>
+</ul>
+<ul>
+<li>{&quot;error&quot;:{&quot;code&quot;:&quot;IdContainerReRegisterNotAllowedError&quot;,&quot;message&quot;:&quot;Could not register this server as this server is already registered with the vault under a different Backup Management Type. Contact Microsoft customer support if this issue persists.&quot;,&quot;target&quot;:null,&quot;details&quot;:null,&quot;innerError&quot;:null}}}</li>
+</ul>
+<ul>
+<li>SR_2019103159979_[S500]备份反复失败</li>
+</ul>
+<ul>
+<li>报错</li>
+</ul>
+<ul>
+<li>SR_20221105197312_unable to take back up using mars agent</li>
+</ul>
+<ul>
+<li>unable to take backup use mars agent</li>
+</ul>
+<ul>
+<li>0EE0 494C        11/03      10:40:52.510  32    KeyManager.cpp(122)        [00000244717FDF90]     F17ABB3F-43A7-43DE-A3FA-44F9BF6F5DB5         WARNING        Failed: Hr: = [0x80070003] : Encountered Failure: : lVal : CKeyManagerUtils::ReadKEKSecretFromDisk(&amp;pKEKSecret, &amp;m_pCurrentEnvelope-&gt;dwKEKKeyLength, &amp;m_OsVersion)</li>
+</ul>
+<ul>
+<li>To fix the issue, we may have to remove the legacy backup agent registered matedata from recovery vault.</li>
+</ul>
+<ul>
+<li>Note: as we have deleted the metadata from Azure recovery vault, the cbengine service may need some time to sync from cloud. Please wait for several minutes for service initialization before you can do register server and you will see error like below which can be ignored:</li>
+</ul>
+<ul>
+<li>Or you can uninstall MARS and reinstall it to avoid the sync error.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>案例 Microsoft Azure 恢复服务 (MARS) 代理</li>
+</ul>
+<ul>
+<li>案例1</li>
+</ul>
+<ul>
+<li>SR_20220314154094_Windows客户端计划备份未执行</li>
+</ul>
+<ul>
+<li>问题描述：Windows客户端计划备份未执行，但立即执行可以备份成功</li>
+</ul>
+<ul>
+<li>官方参考文档：</li>
+</ul>
+<ul>
+<li>案例2</li>
+</ul>
+<ul>
+<li>SR_20220123145557_It can&#39;t active when MarsAgent registration</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>I changed the passphrase into the other server, it still showed saved in local and can&#39;t active.</li>
+</ul>
+<ul>
+<li>从日志中发现以下错误：</li>
+</ul>
+<ul>
+<li>案例3</li>
+</ul>
+<ul>
+<li>收集日志</li>
+</ul>
+<ul>
+<li>C:\Program Files\Microsoft Azure Recovery Services Agent\Temp</li>
+</ul>
+<ul>
+<li>从日志看到</li>
+</ul>
+<ul>
+<li>重启备份代理服务，之后日志中不再出现E盘空间不足的记录。</li>
+</ul>
+<ul>
+<li>管理备份缓存文件夹</li>
+</ul>
+<ul>
+<li>案例4</li>
+</ul>
+<ul>
+<li>日志</li>
+</ul>
+<ul>
+<li>C:\Program Files\Microsoft Azure Recovery Services Agent\Scratch</li>
+</ul>
+<ul>
+<li>If not Re-generate passphrase</li>
+</ul>
+<ul>
+<li>Choose Action – Change Properties</li>
+</ul>
+<ul>
+<li>Set Passpharase follow the below screenshot.</li>
+</ul>
+<ul>
+<li>You can generate the Security Pin in the Recovery Services Vault.</li>
+</ul>
+<ul>
+<li>Erro when Re-generate passphrase</li>
+</ul>
+<ul>
+<li>结论:</li>
+</ul>
+<ul>
+<li>As the VM is installed from scratch, the new installed VM will be considered as a new VM which has different operation system, disk volume ID and system GUID. This will lead to a mismatched value between the MARS agent (on the new installed VM) and the backup agent registered matedata (on the recovery vault service in 21v cloud).</li>
+</ul>
+<ul>
+<li>This operation will delete the backup data (which is from the old VM and the latest backup time is 2022/07/10). But actually, we will not be above to recover the data due the mismatched metadata.</li>
+</ul>
+<ul>
+<li>Detailed steps are:</li>
+</ul>
+<ul>
+<li>It will clear all data (include the backup data and registered metadata.</li>
+</ul>
+<ul>
+<li>We can then register the VM again from Microsoft Azure Backup in VM GOAAZRCSRV010.</li>
+</ul>
+<ul>
+<li>Once the register is done. We can recreate backup schedule.</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>请您帮忙检查下，以下位置是否存在备份项，谢谢。</li>
+</ul>
+<ul>
+<li>排查过程</li>
+</ul>
+<ul>
+<li>Would you please help check if there is .KEK file in the scratch folder.</li>
+</ul>
+<ul>
+<li>From the azure portal -&gt; backup vault -&gt; Backup infrastructure -&gt; Azure Backup agent page, choice the VM GOAAZRCSRV010 and delete it.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>解决方案：虚拟机安全软件阻止了powershell运行</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<ul>
+<li>解决方案</li>
+</ul>
+<ul>
+<li>建议</li>
+</ul>
+<ul>
+<li>In the recovery service vault security settings page, disable the security features to allow the deletions of MARS backup data. This a temporary steps and we will re-enable the security feature to disallow the deletion of backup data.</li>
+</ul>
+<ul>
+<li>Once done, we can go to the Azure portal. In the recovery service vault security settings page, enable the security features again.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/backup/backup-azure-mars-troubleshoot#backups-dont-run-according-to-schedule" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/backup-azure-mars-troubleshoot#backups-dont-run-according-to-schedule</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/backup/backup-azure-file-folder-backup-faq#--------" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/backup-azure-file-folder-backup-faq#--------</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/backup/backup-azure-manage-mars#re-generate-passphrase" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/backup-azure-manage-mars#re-generate-passphrase</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/backup/backup-azure-file-folder-backup-faq" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/backup/backup-azure-file-folder-backup-faq</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>案例 Microsoft Azure 恢复服务 (MARS) 代理</p>
+<p>案例1</p>
+<p>SR_20220314154094_Windows客户端计划备份未执行</p>
+<p>问题描述：Windows客户端计划备份未执行，但立即执行可以备份成功</p>
+<p>解决方案：虚拟机安全软件阻止了powershell运行</p>
+<p>官方参考文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/backup/backup-azure-mars-troubleshoot#backups-dont-run-according-to-schedule" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/backup-azure-mars-troubleshoot#backups-dont-run-according-to-schedule</a></p>
+<p>案例2</p>
+<p>SR_20220123145557_It can&#39;t active when MarsAgent registration</p>
+<p>问题描述：</p>
+<p>无法将Mars注册到保管库，报错信息如下：</p>
+<p>I changed the passphrase into the other server, it still showed saved in local and can&#39;t active.</p>
+<p>解决方案：</p>
+<p>从日志中发现以下错误：</p>
+<p>{&quot;error&quot;:{&quot;code&quot;:&quot;IdContainerReRegisterNotAllowedError&quot;,&quot;message&quot;:&quot;Could not register this server as this server is already registered with the vault under a different Backup Management Type. Contact Microsoft customer support if this issue persists.&quot;,&quot;target&quot;:null,&quot;details&quot;:null,&quot;innerError&quot;:null}}}</p>
+<p>请您帮忙检查下，以下位置是否存在备份项，谢谢。</p>
+<p>案例3</p>
+<p>SR_2019103159979_[S500]备份反复失败</p>
+<p>报错</p>
+<p>收集日志</p>
+<p>C:\Program Files\Microsoft Azure Recovery Services Agent\Temp</p>
+<p>从日志看到</p>
+<p>解决方案</p>
+<p>重启备份代理服务，之后日志中不再出现E盘空间不足的记录。</p>
+<p>管理备份缓存文件夹</p>
+<p><a href="https://docs.azure.cn/zh-cn/backup/backup-azure-file-folder-backup-faq#--------" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/backup-azure-file-folder-backup-faq#--------</a></p>
+<p>案例4</p>
+<p>SR_20221105197312_unable to take back up using mars agent</p>
+<p>unable to take backup use mars agent</p>
+<p>排查过程</p>
+<p>日志</p>
+<p>0EE0 494C        11/03      10:40:52.510  32    KeyManager.cpp(122)        [00000244717FDF90]     F17ABB3F-43A7-43DE-A3FA-44F9BF6F5DB5         WARNING        Failed: Hr: = [0x80070003] : Encountered Failure: : lVal : CKeyManagerUtils::ReadKEKSecretFromDisk(&amp;pKEKSecret, &amp;m_pCurrentEnvelope-&gt;dwKEKKeyLength, &amp;m_OsVersion)</p>
+<p>建议</p>
+<p>Would you please help check if there is .KEK file in the scratch folder.</p>
+<p>C:\Program Files\Microsoft Azure Recovery Services Agent\Scratch</p>
+<p>If not Re-generate passphrase</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/backup/backup-azure-manage-mars#re-generate-passphrase" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/backup-azure-manage-mars#re-generate-passphrase</a></p>
+<p>Choose Action – Change Properties</p>
+<p>Set Passpharase follow the below screenshot.</p>
+<p>You can generate the Security Pin in the Recovery Services Vault.</p>
+<p>Erro when Re-generate passphrase</p>
+<p>结论:</p>
+<p>As the VM is installed from scratch, the new installed VM will be considered as a new VM which has different operation system, disk volume ID and system GUID. This will lead to a mismatched value between the MARS agent (on the new installed VM) and the backup agent registered matedata (on the recovery vault service in 21v cloud).</p>
+<p>To fix the issue, we may have to remove the legacy backup agent registered matedata from recovery vault.</p>
+<p>This operation will delete the backup data (which is from the old VM and the latest backup time is 2022/07/10). But actually, we will not be above to recover the data due the mismatched metadata.</p>
+<p>Detailed steps are:</p>
+<p>In the recovery service vault security settings page, disable the security features to allow the deletions of MARS backup data. This a temporary steps and we will re-enable the security feature to disallow the deletion of backup data.</p>
+<p>From the azure portal -&gt; backup vault -&gt; Backup infrastructure -&gt; Azure Backup agent page, choice the VM GOAAZRCSRV010 and delete it.</p>
+<p>It will clear all data (include the backup data and registered metadata.</p>
+<p>Once done, we can go to the Azure portal. In the recovery service vault security settings page, enable the security features again.</p>
+<p>We can then register the VM again from Microsoft Azure Backup in VM GOAAZRCSRV010.</p>
+<p>Note: as we have deleted the metadata from Azure recovery vault, the cbengine service may need some time to sync from cloud. Please wait for several minutes for service initialization before you can do register server and you will see error like below which can be ignored:</p>
+<p>Or you can uninstall MARS and reinstall it to avoid the sync error.</p>
+<p>Once the register is done. We can recreate backup schedule.</p>
+<p>参考文档：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/backup/backup-azure-file-folder-backup-faq" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/backup/backup-azure-file-folder-backup-faq</a></p></article>

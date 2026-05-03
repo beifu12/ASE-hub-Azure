@@ -1,0 +1,166 @@
+<article class="kb-article" data-title="【Share】虚拟机配额警报示例脚本"><h1>【Share】虚拟机配额警报示例脚本</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Powershell</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-25 09:36:13</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Hana Liu</li>
+</ul>
+<ul>
+<li>当前Global Azure官方文档 创建配额警报- Azure Quotas | Microsoft Learn 中提到可以为虚拟机创建配额警报，但是当前中国区没有对应的文档，我本地测试，当前在中国区还不能创建配额警报。</li>
+</ul>
+<ul>
+<li>注：高亮部分请根据时间情况修改。</li>
+</ul>
+<ul>
+<li>#添加环境变量使之登录到中国区Azure#</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -SubscriptionId  “SubscriptionId”</li>
+</ul>
+<ul>
+<li>#获取区域列表#</li>
+</ul>
+<ul>
+<li>$locations = Get-AzLocation  | Where-Object { $_.Location -ne &#39;china&#39; -and $_.Location -ne &#39;global&#39;} | Select-Object -ExpandProperty Location</li>
+</ul>
+<ul>
+<li>foreach ($location in $locations)</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>$usage = Get-AzVMUsage -Location $location | Where-Object { $_.Name.LocalizedValue -like &#39;*vCPUs*&#39; }   #仅筛选了关于vCPUs的项#</li>
+</ul>
+<ul>
+<li>$alertInfo = foreach ($item in $usage) {</li>
+</ul>
+<ul>
+<li>$name = $item.Name.LocalizedValue</li>
+</ul>
+<ul>
+<li>$currentValue = $item.CurrentValue</li>
+</ul>
+<ul>
+<li>$limit = $item.Limit</li>
+</ul>
+<ul>
+<li>if ($limit -ne 0) #排除配额limit为0的型号,即没有配额的型号#</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>if ($alertInfo) {</li>
+</ul>
+<ul>
+<li>$body = $alertInfo -join &quot;`n&quot;  #将一个区域中所有警报信息连起来#</li>
+</ul>
+<ul>
+<li>$emailTo = &quot;liu.huan3@oe.21vianet.com&quot;#定义收件人#</li>
+</ul>
+<ul>
+<li>$smtpCredential=new-object -typename System.Management.Automation.PSCredential -argumentlist &quot;xxxxx@126.com&quot;,(ConvertTo-SecureString &quot;GLTxxxxBG&quot; -AsPlainText -Force) #定义smtp服务器的凭据#</li>
+</ul>
+<ul>
+<li>Send-MailMessage -To $emailTo -From &quot;xxxxx@126.com&quot; -Subject $subject -Body $body -SmtpServer &quot;smtp.126.com&quot; -Credential $smtpCredential -Port &quot;25&quot; -UseSsl</li>
+</ul>
+<ul>
+<li>注：关于使用公共邮箱（比如126邮箱，163邮箱）作为SMTP 服务器的更多说明，请参考如下的截图</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#遍寻所有区域查看虚拟机配额情况#</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>我本地测试做了一个Powershell示例脚本，可以查看并在达到或超过设定的阈值时通过smtp服务器发送警报邮件, 具体请参考如下。</li>
+</ul>
+<ul>
+<li>#如有多个订阅，需要修改默认订阅，请参考如下的命令，高亮部分请使用您的订阅ID进行替换#</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>分享一个工单“SR_20240716304870_配额告警功能”，客户咨询Azure是否有Quota的预警功能，比如我们某一个型号的VM使用量达到一个阈值时，发出自动告警?</li>
+</ul>
+<ul>
+<li>#定义阈值，当前设置的阈值为90%#</li>
+</ul>
+<ul>
+<li>$coreThreshold = 0.9</li>
+</ul>
+<ul>
+<li>$threshold = [math]::Round($limit * $coreThreshold)</li>
+</ul>
+<ul>
+<li>if ($currentValue -ge $threshold) {</li>
+</ul>
+<ul>
+<li>&quot;Usage of $name has exceeded the threshold of $threshold. Current usage: $currentValue.&quot;</li>
+</ul>
+<ul>
+<li>$subject = &quot;VM Usage Threshold Exceeded in $location&quot;</li>
+</ul>
+<ul>
+<li>#本地使用的测试阈值为1%，测试收到的警报邮件情况#</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Hana Liu</p>
+<p>分享一个工单“SR_20240716304870_配额告警功能”，客户咨询Azure是否有Quota的预警功能，比如我们某一个型号的VM使用量达到一个阈值时，发出自动告警?</p>
+<p>当前Global Azure官方文档 创建配额警报- Azure Quotas | Microsoft Learn 中提到可以为虚拟机创建配额警报，但是当前中国区没有对应的文档，我本地测试，当前在中国区还不能创建配额警报。</p>
+<p>我本地测试做了一个Powershell示例脚本，可以查看并在达到或超过设定的阈值时通过smtp服务器发送警报邮件, 具体请参考如下。</p>
+<p>注：高亮部分请根据时间情况修改。</p>
+<p>#添加环境变量使之登录到中国区Azure#</p>
+<p>Connect-AzAccount -Environment AzureChinaCloud</p>
+<p>#如有多个订阅，需要修改默认订阅，请参考如下的命令，高亮部分请使用您的订阅ID进行替换#</p>
+<p>Select-AzSubscription -SubscriptionId  “SubscriptionId”</p>
+<p>#定义阈值，当前设置的阈值为90%#</p>
+<p>$coreThreshold = 0.9</p>
+<p>#获取区域列表#</p>
+<p>$locations = Get-AzLocation  | Where-Object { $_.Location -ne &#39;china&#39; -and $_.Location -ne &#39;global&#39;} | Select-Object -ExpandProperty Location</p>
+<p>#遍寻所有区域查看虚拟机配额情况#</p>
+<p>foreach ($location in $locations)</p>
+<p>{</p>
+<p>$usage = Get-AzVMUsage -Location $location | Where-Object { $_.Name.LocalizedValue -like &#39;*vCPUs*&#39; }   #仅筛选了关于vCPUs的项#</p>
+<p>$alertInfo = foreach ($item in $usage) {</p>
+<p>$name = $item.Name.LocalizedValue</p>
+<p>$currentValue = $item.CurrentValue</p>
+<p>$limit = $item.Limit</p>
+<p>if ($limit -ne 0) #排除配额limit为0的型号,即没有配额的型号#</p>
+<p>$threshold = [math]::Round($limit * $coreThreshold)</p>
+<p>if ($currentValue -ge $threshold) {</p>
+<p>&quot;Usage of $name has exceeded the threshold of $threshold. Current usage: $currentValue.&quot;</p>
+<p>}</p>
+<p>if ($alertInfo) {</p>
+<p>$subject = &quot;VM Usage Threshold Exceeded in $location&quot;</p>
+<p>$body = $alertInfo -join &quot;`n&quot;  #将一个区域中所有警报信息连起来#</p>
+<p>$emailTo = &quot;liu.huan3@oe.21vianet.com&quot;#定义收件人#</p>
+<p>$smtpCredential=new-object -typename System.Management.Automation.PSCredential -argumentlist &quot;xxxxx@126.com&quot;,(ConvertTo-SecureString &quot;GLTxxxxBG&quot; -AsPlainText -Force) #定义smtp服务器的凭据#</p>
+<p>Send-MailMessage -To $emailTo -From &quot;xxxxx@126.com&quot; -Subject $subject -Body $body -SmtpServer &quot;smtp.126.com&quot; -Credential $smtpCredential -Port &quot;25&quot; -UseSsl</p>
+<p>#本地使用的测试阈值为1%，测试收到的警报邮件情况#</p>
+<p>注：关于使用公共邮箱（比如126邮箱，163邮箱）作为SMTP 服务器的更多说明，请参考如下的截图</p></article>

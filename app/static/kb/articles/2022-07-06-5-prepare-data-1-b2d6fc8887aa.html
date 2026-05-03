@@ -1,0 +1,383 @@
+<article class="kb-article" data-title="5. prepare data"><h1>5. prepare data</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Data Box Disk</li>
+<li>最近修改: 2022-07-06 15:20:42</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>&lt;Error Code=&quot;InvalidShareContainerFormat&quot;&gt;</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>&lt;Error Code=&quot;InvalidShareContainerFormat&quot;&gt;</li>
+</ul>
+<ul>
+<li>现象1：</li>
+</ul>
+<ul>
+<li>BC5-error</li>
+</ul>
+<ul>
+<li>会报错，无法创建container</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>5. prepare data</li>
+</ul>
+<ul>
+<li>插盘：</li>
+</ul>
+<ul>
+<li>解锁：</li>
+</ul>
+<ul>
+<li>初始目录：</li>
+</ul>
+<ul>
+<li>数据复制</li>
+</ul>
+<ul>
+<li>Blockblob:</li>
+</ul>
+<ul>
+<li>类型</li>
+</ul>
+<ul>
+<li>Name</li>
+</ul>
+<ul>
+<li>预期结果</li>
+</ul>
+<ul>
+<li>Subfolder</li>
+</ul>
+<ul>
+<li>bc1-tech</li>
+</ul>
+<ul>
+<li>创建container</li>
+</ul>
+<ul>
+<li>BC2software2</li>
+</ul>
+<ul>
+<li>Files</li>
+</ul>
+<ul>
+<li>&lt;多个文件，包括大写小写等各种命名&gt;</li>
+</ul>
+<ul>
+<li>复制到$root容器</li>
+</ul>
+<ul>
+<li>PageBlob:</li>
+</ul>
+<ul>
+<li>命名</li>
+</ul>
+<ul>
+<li>pc1-RHEL</li>
+</ul>
+<ul>
+<li>Pc2-suse</li>
+</ul>
+<ul>
+<li>创建container，</li>
+</ul>
+<ul>
+<li>ISO文件若干</li>
+</ul>
+<ul>
+<li>复制到$root - blockblob</li>
+</ul>
+<ul>
+<li>AzureFile:</li>
+</ul>
+<ul>
+<li>fs1-pic</li>
+</ul>
+<ul>
+<li>创建fileshare</li>
+</ul>
+<ul>
+<li>FS2-music</li>
+</ul>
+<ul>
+<li>Other files</li>
+</ul>
+<ul>
+<li>不支持</li>
+</ul>
+<ul>
+<li>结果：</li>
+</ul>
+<ul>
+<li>Blockblob</li>
+</ul>
+<ul>
+<li>&lt;Description&gt;The share or container format is invalid as it doesn&#39;t follow Azure conventions.&lt;/Description&gt;</li>
+</ul>
+<ul>
+<li>&lt;List&gt;</li>
+</ul>
+<ul>
+<li>&lt;Container Name=&quot;BC2SOFTWARE&quot;/&gt;</li>
+</ul>
+<ul>
+<li>&lt;/List&gt;</li>
+</ul>
+<ul>
+<li>PageBlob</li>
+</ul>
+<ul>
+<li>&lt;Container Name=&quot;pc1-RHEL&quot;/&gt;</li>
+</ul>
+<ul>
+<li>&lt;Container Name=&quot;Pc2-suse&quot;/&gt;</li>
+</ul>
+<ul>
+<li>AzureFile</li>
+</ul>
+<ul>
+<li>&lt;Container Name=&quot;FS2-music&quot;/&gt;</li>
+</ul>
+<ul>
+<li>Type</li>
+</ul>
+<ul>
+<li>Expectation</li>
+</ul>
+<ul>
+<li>Result</li>
+</ul>
+<ul>
+<li>bc2-software</li>
+</ul>
+<ul>
+<li>bc-dup</li>
+</ul>
+<ul>
+<li>创建container。和第二个盘中文件夹重名，测试import情况</li>
+</ul>
+<ul>
+<li>复制到$root container</li>
+</ul>
+<ul>
+<li>pc1-rhel</li>
+</ul>
+<ul>
+<li>创建container，文件格式page</li>
+</ul>
+<ul>
+<li>pc2-suse</li>
+</ul>
+<ul>
+<li>pc-dup</li>
+</ul>
+<ul>
+<li>创建container。和第二个盘重名，测试import情况</li>
+</ul>
+<ul>
+<li>&lt;many iso files &gt;</li>
+</ul>
+<ul>
+<li>复制到$root, 文件格式block</li>
+</ul>
+<ul>
+<li>fs2-music</li>
+</ul>
+<ul>
+<li>fs-dup</li>
+</ul>
+<ul>
+<li>创建fileshare,和第二个盘重名，测试import情况</li>
+</ul>
+<ul>
+<li>命运运行后没过久，E盘消失不见 --&gt; 重启解决。可能是由于本地PC的USB接口不稳所致，后续发现所有可移动硬盘都会出现这个情况。</li>
+</ul>
+<ul>
+<li>拔出硬盘后，重启系统，再插上，需要重新unlock。--&gt; 文档中有说明，需要重新解锁。</li>
+</ul>
+<ul>
+<li>E盘识别后，blockblob下的子文件夹全部不见了。--&gt; 受系统保护的隐藏文件夹。</li>
+</ul>
+<ul>
+<li>但是文件夹是存在的，直接输路径可以进去！！！！</li>
+</ul>
+<ul>
+<li>重新来一遍，一个一个来</li>
+</ul>
+<ul>
+<li>复制到一半，磁盘被lock。</li>
+</ul>
+<ul>
+<li>再试，发现出问题时，两个硬盘，我自己的和MS的盘都会被弹出，然后再被识别出来。</li>
+</ul>
+<ul>
+<li>直接用file explorer复制bc2-software了</li>
+</ul>
+<ul>
+<li>Disk2 2024289445EF 结构：</li>
+</ul>
+<ul>
+<li>bc3-soft</li>
+</ul>
+<ul>
+<li>bc4-tech</li>
+</ul>
+<ul>
+<li>&lt;file many，包括大写小写各种命名&gt;</li>
+</ul>
+<ul>
+<li>pc3-rhel</li>
+</ul>
+<ul>
+<li>pc4-suse</li>
+</ul>
+<ul>
+<li>&lt;other isos many&gt;</li>
+</ul>
+<ul>
+<li>fs3-movie</li>
+</ul>
+<ul>
+<li>fs4-tool</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Disk1 4468 第一轮数据复制和验证测试：</li>
+</ul>
+<ul>
+<li>验证结果</li>
+</ul>
+<ul>
+<li>创建上述文件结构后，运行一次validate</li>
+</ul>
+<ul>
+<li>Robocopy G:\ E:\BlockBlob\bc1-tech\ * /MT:64 /E /R:1 /W:1 /NFL /NDL /FFT /Log:D:\robo\RobocopyLog-bc1-tech.txt</li>
+</ul>
+<ul>
+<li>Robocopy H:\ E:\BlockBlob\bc2-software\ /MT:64 /E /R:1 /W:1 /NFL /NDL /FFT /Log:D:\robo\RobocopyLog-bc2-software.txt</li>
+</ul>
+<ul>
+<li>使用工具确认E盘链接的USB接口：</li>
+</ul>
+<ul>
+<li>Robocopy G:\ E:\BlockBlob\bc1-tech\  /MT:8 /E /R:1 /W:1 /NFL /NDL /FFT /Log:D:\robo\RobocopyLog-bc1-tech-2.txt</li>
+</ul>
+<ul>
+<li>Reset 再validate</li>
+</ul>
+<ul>
+<li>Run validate and checksum</li>
+</ul>
+<ul>
+<li>不做validate和checksum</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>命令运行后，bc1-tech文件夹不见了 --&gt; 因为源文件夹中包含一些受系统保护的文件，因此文件夹被隐藏。经确认，隐藏文件不影响后期的数据复制。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Disk1 4468 重新修复结构后第二轮数据复制和验证：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>5. prepare data</p>
+<p>插盘：</p>
+<p>解锁：</p>
+<p>初始目录：</p>
+<p>数据复制</p>
+<p>Disk1 4468 第一轮数据复制和验证测试：</p>
+<p>Blockblob:</p>
+<p>类型</p>
+<p>Name</p>
+<p>预期结果</p>
+<p>验证结果</p>
+<p>Subfolder</p>
+<p>bc1-tech</p>
+<p>创建container</p>
+<p>BC2software2</p>
+<p>Files</p>
+<p>&lt;多个文件，包括大写小写等各种命名&gt;</p>
+<p>复制到$root容器</p>
+<p>PageBlob:</p>
+<p>命名</p>
+<p>pc1-RHEL</p>
+<p>Pc2-suse</p>
+<p>创建container，</p>
+<p>ISO文件若干</p>
+<p>复制到$root - blockblob</p>
+<p>AzureFile:</p>
+<p>fs1-pic</p>
+<p>创建fileshare</p>
+<p>FS2-music</p>
+<p>Other files</p>
+<p>不支持</p>
+<p>创建上述文件结构后，运行一次validate</p>
+<p>结果：</p>
+<p>Blockblob</p>
+<p>&lt;Error Code=&quot;InvalidShareContainerFormat&quot;&gt;</p>
+<p>&lt;Description&gt;The share or container format is invalid as it doesn&#39;t follow Azure conventions.&lt;/Description&gt;</p>
+<p>&lt;List&gt;</p>
+<p>&lt;Container Name=&quot;BC2SOFTWARE&quot;/&gt;</p>
+<p>&lt;/List&gt;</p>
+<p>PageBlob</p>
+<p>&lt;Container Name=&quot;pc1-RHEL&quot;/&gt;</p>
+<p>&lt;Container Name=&quot;Pc2-suse&quot;/&gt;</p>
+<p>AzureFile</p>
+<p>&lt;Container Name=&quot;FS2-music&quot;/&gt;</p>
+<p>Disk1 4468 重新修复结构后第二轮数据复制和验证：</p>
+<p>Type</p>
+<p>Expectation</p>
+<p>Result</p>
+<p>bc2-software</p>
+<p>bc-dup</p>
+<p>创建container。和第二个盘中文件夹重名，测试import情况</p>
+<p>复制到$root container</p>
+<p>pc1-rhel</p>
+<p>创建container，文件格式page</p>
+<p>pc2-suse</p>
+<p>pc-dup</p>
+<p>创建container。和第二个盘重名，测试import情况</p>
+<p>&lt;many iso files &gt;</p>
+<p>复制到$root, 文件格式block</p>
+<p>fs2-music</p>
+<p>fs-dup</p>
+<p>创建fileshare,和第二个盘重名，测试import情况</p>
+<p>现象1：</p>
+<p>Robocopy G:\ E:\BlockBlob\bc1-tech\ * /MT:64 /E /R:1 /W:1 /NFL /NDL /FFT /Log:D:\robo\RobocopyLog-bc1-tech.txt</p>
+<p>命令运行后，bc1-tech文件夹不见了 --&gt; 因为源文件夹中包含一些受系统保护的文件，因此文件夹被隐藏。经确认，隐藏文件不影响后期的数据复制。</p>
+<p>Robocopy H:\ E:\BlockBlob\bc2-software\ /MT:64 /E /R:1 /W:1 /NFL /NDL /FFT /Log:D:\robo\RobocopyLog-bc2-software.txt</p>
+<p>命运运行后没过久，E盘消失不见 --&gt; 重启解决。可能是由于本地PC的USB接口不稳所致，后续发现所有可移动硬盘都会出现这个情况。</p>
+<p>使用工具确认E盘链接的USB接口：</p>
+<p>拔出硬盘后，重启系统，再插上，需要重新unlock。--&gt; 文档中有说明，需要重新解锁。</p>
+<p>E盘识别后，blockblob下的子文件夹全部不见了。--&gt; 受系统保护的隐藏文件夹。</p>
+<p>但是文件夹是存在的，直接输路径可以进去！！！！</p>
+<p>重新来一遍，一个一个来</p>
+<p>Robocopy G:\ E:\BlockBlob\bc1-tech\  /MT:8 /E /R:1 /W:1 /NFL /NDL /FFT /Log:D:\robo\RobocopyLog-bc1-tech-2.txt</p>
+<p>复制到一半，磁盘被lock。</p>
+<p>再试，发现出问题时，两个硬盘，我自己的和MS的盘都会被弹出，然后再被识别出来。</p>
+<p>直接用file explorer复制bc2-software了</p>
+<p>Reset 再validate</p>
+<p>Run validate and checksum</p>
+<p>Disk2 2024289445EF 结构：</p>
+<p>bc3-soft</p>
+<p>bc4-tech</p>
+<p>BC5-error</p>
+<p>会报错，无法创建container</p>
+<p>&lt;file many，包括大写小写各种命名&gt;</p>
+<p>pc3-rhel</p>
+<p>pc4-suse</p>
+<p>&lt;other isos many&gt;</p>
+<p>fs3-movie</p>
+<p>fs4-tool</p>
+<p>不做validate和checksum</p></article>

@@ -1,0 +1,56 @@
+<article class="kb-article" data-title="【Share】使用azure Cli命令查看AAD用户的账户状态属性"><h1>【Share】使用azure Cli命令查看AAD用户的账户状态属性</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-06 17:36:10</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：20240328285497</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：20240328285497</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Liu Wanting</li>
+</ul>
+<ul>
+<li>通过graph api方式调出来账户状态</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>客户问题：如何使用azure Cli命令查看AAD某个用户的账户状态属性，不使用Powershell命令。</li>
+</ul>
+<ul>
+<li>原有的az ad user show命令返回没有account enabled这个属性</li>
+</ul>
+<ul>
+<li>参考命令：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案:</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>az rest --method GET --url &#39; <a href="https://microsoftgraph.chinacloudapi.cn/v1.0/users/1234@microsoftinternal.partner.onmschina.cn?$select=accountEnabled&#39;" target="_blank" rel="noopener">https://microsoftgraph.chinacloudapi.cn/v1.0/users/1234@microsoftinternal.partner.onmschina.cn?$select=accountEnabled&#39;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-06-06</p>
+<p>Liu Wanting</p>
+<p>参考工单：20240328285497</p>
+<p>客户问题：如何使用azure Cli命令查看AAD某个用户的账户状态属性，不使用Powershell命令。</p>
+<p>原有的az ad user show命令返回没有account enabled这个属性</p>
+<p>解决方案:</p>
+<p>通过graph api方式调出来账户状态</p>
+<p>参考命令：</p>
+<p>az rest --method GET --url &#39; <a href="https://microsoftgraph.chinacloudapi.cn/v1.0/users/1234@microsoftinternal.partner.onmschina.cn?$select=accountEnabled&#39;" target="_blank" rel="noopener">https://microsoftgraph.chinacloudapi.cn/v1.0/users/1234@microsoftinternal.partner.onmschina.cn?$select=accountEnabled&#39;</a></p></article>

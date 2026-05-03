@@ -1,0 +1,475 @@
+<article class="kb-article" data-title="China North2 and China East2 ER technical test report"><h1>China North2 and China East2 ER technical test report</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-11-02 11:18:41</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20190220</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20190220</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20190220</li>
+</ul>
+<ul>
+<li>请不要把附件测试报告提供给客户，这个测试报告仅供内部参考：</li>
+</ul>
+<ul>
+<li>Azure ASN: 12076</li>
+</ul>
+<ul>
+<li>GDS ASN: 65099</li>
+</ul>
+<ul>
+<li>Azure VNET: 10.100.100.0/24</li>
+</ul>
+<ul>
+<li>Test VM in Azure VNET: 10.100.100.4</li>
+</ul>
+<ul>
+<li>Peer Prefix :</li>
+</ul>
+<ul>
+<li>Router</li>
+</ul>
+<ul>
+<li>Peering</li>
+</ul>
+<ul>
+<li>VLAN ID(C-tag)</li>
+</ul>
+<ul>
+<li>Primary</li>
+</ul>
+<ul>
+<li>172.20.20.0/30</li>
+</ul>
+<ul>
+<li>Public</li>
+</ul>
+<ul>
+<li>500</li>
+</ul>
+<ul>
+<li>Secondary</li>
+</ul>
+<ul>
+<li>172.20.20.4/30</li>
+</ul>
+<ul>
+<li>172.24.24.0/30</li>
+</ul>
+<ul>
+<li>Private</li>
+</ul>
+<ul>
+<li>600</li>
+</ul>
+<ul>
+<li>172.24.24.4/30</li>
+</ul>
+<ul>
+<li>Peer IP：</li>
+</ul>
+<ul>
+<li>GDS router</li>
+</ul>
+<ul>
+<li>Microsoft MSEE</li>
+</ul>
+<ul>
+<li>172.20.20.1</li>
+</ul>
+<ul>
+<li>172.20.20.2</li>
+</ul>
+<ul>
+<li>172.20.20.5</li>
+</ul>
+<ul>
+<li>172.20.20.6</li>
+</ul>
+<ul>
+<li>172.24.24.1</li>
+</ul>
+<ul>
+<li>172.24.24.2</li>
+</ul>
+<ul>
+<li>172.24.24.5</li>
+</ul>
+<ul>
+<li>172.24.24.6</li>
+</ul>
+<ul>
+<li>On-premise Data center配置示例：</li>
+</ul>
+<ul>
+<li>R1,R2:华为路由器AR2220     Gateway：华为交换机S5710-EI</li>
+</ul>
+<ul>
+<li>#</li>
+</ul>
+<ul>
+<li>sysname Route-1</li>
+</ul>
+<ul>
+<li>bfd</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet0/0/1</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet0/0/1.1</li>
+</ul>
+<ul>
+<li>dot1q termination vid 500</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet0/0/1.2</li>
+</ul>
+<ul>
+<li>dot1q termination vid 600</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet0/0/2</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet0/0/2.1</li>
+</ul>
+<ul>
+<li>dot1q termination vid 501</li>
+</ul>
+<ul>
+<li>bgp 65099</li>
+</ul>
+<ul>
+<li>peer 172.20.20.2 as-number 12076</li>
+</ul>
+<ul>
+<li>peer 172.21.21.2 as-number 65099</li>
+</ul>
+<ul>
+<li>peer 172.24.24.2 as-number 12076</li>
+</ul>
+<ul>
+<li>peer 172.24.24.2 bfd min-tx-interval 100 min-rx-interval 400</li>
+</ul>
+<ul>
+<li>ipv4-family unicast</li>
+</ul>
+<ul>
+<li>undo synchronization</li>
+</ul>
+<ul>
+<li>peer 172.21.21.2 next-hop-local</li>
+</ul>
+<ul>
+<li>------------------------------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>sysname Route-2</li>
+</ul>
+<ul>
+<li>dot1q termination vid 601</li>
+</ul>
+<ul>
+<li>peer 172.20.20.6 as-number 12076</li>
+</ul>
+<ul>
+<li>peer 172.24.24.6 as-number 12076</li>
+</ul>
+<ul>
+<li>peer 172.24.24.6 bfd min-tx-interval 100 min-rx-interval 300</li>
+</ul>
+<ul>
+<li>peer 172.25.25.2 as-number 65099</li>
+</ul>
+<ul>
+<li>peer 172.25.25.2 next-hop-local</li>
+</ul>
+<ul>
+<li>sysname Gateway</li>
+</ul>
+<ul>
+<li>vlan batch  501 550 601</li>
+</ul>
+<ul>
+<li>interface Vlanif501</li>
+</ul>
+<ul>
+<li>interface Vlanif550</li>
+</ul>
+<ul>
+<li>interface Vlanif601</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet1/0/1</li>
+</ul>
+<ul>
+<li>port link-type trunk</li>
+</ul>
+<ul>
+<li>undo port trunk allow-pass vlan 1</li>
+</ul>
+<ul>
+<li>port trunk allow-pass vlan 501</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet1/0/2</li>
+</ul>
+<ul>
+<li>port trunk allow-pass vlan 601</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet1/0/3</li>
+</ul>
+<ul>
+<li>port default vlan 550</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet1/0/4</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet1/0/5</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet1/0/6</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet1/0/7</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet1/0/8</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet1/0/9</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet1/0/10</li>
+</ul>
+<ul>
+<li>peer 172.21.21.1 as-number 65099</li>
+</ul>
+<ul>
+<li>peer 172.25.25.1 as-number 65099</li>
+</ul>
+<ul>
+<li>network 10.1.1.0 255.255.255.0</li>
+</ul>
+<ul>
+<li>BFD配置示例：</li>
+</ul>
+<ul>
+<li>!</li>
+</ul>
+<ul>
+<li>interface TenGigabitEthernet0/1/0.19621</li>
+</ul>
+<ul>
+<li>description MSEE to service provider 621 link</li>
+</ul>
+<ul>
+<li>encapsulation dot1Q 19 second-dot1q 621</li>
+</ul>
+<ul>
+<li>vrf forwarding fe8b24903d7647bdbf6a510157410a90</li>
+</ul>
+<ul>
+<li>bfd interval 300 min_rx 300 multiplier 3</li>
+</ul>
+<ul>
+<li>no bfd echo</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>IP Prefix</li>
+</ul>
+<ul>
+<li>ip address 172.20.20.1 255.255.255.252</li>
+</ul>
+<ul>
+<li>ip address 172.24.24.1 255.255.255.252</li>
+</ul>
+<ul>
+<li>ip address 172.21.21.1 255.255.255.252</li>
+</ul>
+<ul>
+<li>ip address 172.20.20.5 255.255.255.252</li>
+</ul>
+<ul>
+<li>ip address 172.24.24.5 255.255.255.252</li>
+</ul>
+<ul>
+<li>ip address 172.25.25.1 255.255.255.252</li>
+</ul>
+<ul>
+<li>ip address 172.21.21.2 255.255.255.252</li>
+</ul>
+<ul>
+<li>ip address 10.1.1.1 255.255.255.0</li>
+</ul>
+<ul>
+<li>ip address 172.25.25.2 255.255.255.252</li>
+</ul>
+<ul>
+<li>ip address 192.168.6.6 255.255.255.252</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>peer 172.24.24.2 bfd enable</li>
+</ul>
+<ul>
+<li>peer 172.20.20.2 enable</li>
+</ul>
+<ul>
+<li>peer 172.21.21.2 enable</li>
+</ul>
+<ul>
+<li>peer 172.24.24.2 enable</li>
+</ul>
+<ul>
+<li>peer 172.24.24.6 bfd enable</li>
+</ul>
+<ul>
+<li>peer 172.20.20.6 enable</li>
+</ul>
+<ul>
+<li>peer 172.24.24.6 enable</li>
+</ul>
+<ul>
+<li>peer 172.25.25.2 enable</li>
+</ul>
+<ul>
+<li>peer 172.21.21.1 enable</li>
+</ul>
+<ul>
+<li>peer 172.25.25.1 enable</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20190220</p>
+<p>请不要把附件测试报告提供给客户，这个测试报告仅供内部参考：</p>
+<p>Azure ASN: 12076</p>
+<p>GDS ASN: 65099</p>
+<p>Azure VNET: 10.100.100.0/24</p>
+<p>Test VM in Azure VNET: 10.100.100.4</p>
+<p>Peer Prefix :</p>
+<p>Router</p>
+<p>IP Prefix</p>
+<p>Peering</p>
+<p>VLAN ID(C-tag)</p>
+<p>Primary</p>
+<p>172.20.20.0/30</p>
+<p>Public</p>
+<p>500</p>
+<p>Secondary</p>
+<p>172.20.20.4/30</p>
+<p>172.24.24.0/30</p>
+<p>Private</p>
+<p>600</p>
+<p>172.24.24.4/30</p>
+<p>Peer IP：</p>
+<p>GDS router</p>
+<p>Microsoft MSEE</p>
+<p>172.20.20.1</p>
+<p>172.20.20.2</p>
+<p>172.20.20.5</p>
+<p>172.20.20.6</p>
+<p>172.24.24.1</p>
+<p>172.24.24.2</p>
+<p>172.24.24.5</p>
+<p>172.24.24.6</p>
+<p>On-premise Data center配置示例：</p>
+<p>R1,R2:华为路由器AR2220     Gateway：华为交换机S5710-EI</p>
+<p>#</p>
+<p>sysname Route-1</p>
+<p>bfd</p>
+<p>interface GigabitEthernet0/0/1</p>
+<p>interface GigabitEthernet0/0/1.1</p>
+<p>dot1q termination vid 500</p>
+<p>ip address 172.20.20.1 255.255.255.252</p>
+<p>interface GigabitEthernet0/0/1.2</p>
+<p>dot1q termination vid 600</p>
+<p>ip address 172.24.24.1 255.255.255.252</p>
+<p>interface GigabitEthernet0/0/2</p>
+<p>interface GigabitEthernet0/0/2.1</p>
+<p>dot1q termination vid 501</p>
+<p>ip address 172.21.21.1 255.255.255.252</p>
+<p>bgp 65099</p>
+<p>peer 172.20.20.2 as-number 12076</p>
+<p>peer 172.21.21.2 as-number 65099</p>
+<p>peer 172.24.24.2 as-number 12076</p>
+<p>peer 172.24.24.2 bfd min-tx-interval 100 min-rx-interval 400</p>
+<p>peer 172.24.24.2 bfd enable</p>
+<p>ipv4-family unicast</p>
+<p>undo synchronization</p>
+<p>peer 172.20.20.2 enable</p>
+<p>peer 172.21.21.2 enable</p>
+<p>peer 172.21.21.2 next-hop-local</p>
+<p>peer 172.24.24.2 enable</p>
+<p>------------------------------------------------------------------------------------</p>
+<p>sysname Route-2</p>
+<p>ip address 172.20.20.5 255.255.255.252</p>
+<p>ip address 172.24.24.5 255.255.255.252</p>
+<p>dot1q termination vid 601</p>
+<p>ip address 172.25.25.1 255.255.255.252</p>
+<p>peer 172.20.20.6 as-number 12076</p>
+<p>peer 172.24.24.6 as-number 12076</p>
+<p>peer 172.24.24.6 bfd min-tx-interval 100 min-rx-interval 300</p>
+<p>peer 172.24.24.6 bfd enable</p>
+<p>peer 172.25.25.2 as-number 65099</p>
+<p>peer 172.20.20.6 enable</p>
+<p>peer 172.24.24.6 enable</p>
+<p>peer 172.25.25.2 enable</p>
+<p>peer 172.25.25.2 next-hop-local</p>
+<p>sysname Gateway</p>
+<p>vlan batch  501 550 601</p>
+<p>interface Vlanif501</p>
+<p>ip address 172.21.21.2 255.255.255.252</p>
+<p>interface Vlanif550</p>
+<p>ip address 10.1.1.1 255.255.255.0</p>
+<p>interface Vlanif601</p>
+<p>ip address 172.25.25.2 255.255.255.252</p>
+<p>interface GigabitEthernet1/0/1</p>
+<p>port link-type trunk</p>
+<p>undo port trunk allow-pass vlan 1</p>
+<p>port trunk allow-pass vlan 501</p>
+<p>interface GigabitEthernet1/0/2</p>
+<p>port trunk allow-pass vlan 601</p>
+<p>interface GigabitEthernet1/0/3</p>
+<p>port default vlan 550</p>
+<p>interface GigabitEthernet1/0/4</p>
+<p>interface GigabitEthernet1/0/5</p>
+<p>interface GigabitEthernet1/0/6</p>
+<p>interface GigabitEthernet1/0/7</p>
+<p>interface GigabitEthernet1/0/8</p>
+<p>interface GigabitEthernet1/0/9</p>
+<p>interface GigabitEthernet1/0/10</p>
+<p>peer 172.21.21.1 as-number 65099</p>
+<p>peer 172.25.25.1 as-number 65099</p>
+<p>network 10.1.1.0 255.255.255.0</p>
+<p>peer 172.21.21.1 enable</p>
+<p>peer 172.25.25.1 enable</p>
+<p>BFD配置示例：</p>
+<p>!</p>
+<p>interface TenGigabitEthernet0/1/0.19621</p>
+<p>description MSEE to service provider 621 link</p>
+<p>encapsulation dot1Q 19 second-dot1q 621</p>
+<p>vrf forwarding fe8b24903d7647bdbf6a510157410a90</p>
+<p>ip address 192.168.6.6 255.255.255.252</p>
+<p>bfd interval 300 min_rx 300 multiplier 3</p>
+<p>no bfd echo</p></article>

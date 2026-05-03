@@ -1,0 +1,82 @@
+<article class="kb-article" data-title="linux ssh 登录由于做了安全加固导致失败"><h1>linux ssh 登录由于做了安全加固导致失败</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-12-29 11:03:26</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2021年12月29日</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2021年12月29日</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2021年12月29日</li>
+</ul>
+<ul>
+<li>johnny</li>
+</ul>
+<ul>
+<li>另外，如果想能直接通过root ssh进行登录：</li>
+</ul>
+<ul>
+<li>修改配置文件/etc/ssh/sshd_config:</li>
+</ul>
+<ul>
+<li>将最后两行注释了。</li>
+</ul>
+<ul>
+<li>另外 修改/etc/pam.d/system-auth 配置文件：</li>
+</ul>
+<ul>
+<li>添加了user=root</li>
+</ul>
+<ul>
+<li>附上pam文件中各项参数含义参考文档：</li>
+</ul>
+<ul>
+<li>谢谢！</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>后查看/var/log/secret 日志发现系统做了安全加固：</li>
+</ul>
+<ul>
+<li>将 PermitRootLogin 改为yes。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>发现不允许使用root 或者说 小于1000 号uid的用户登录ssh，通过创建了新的azureuser用户，您可以通过ssh登录了。</li>
+</ul>
+<ul>
+<li>最终通过修改了以下位置可以通过root账户ssh登录了。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="http://www.361way.com/pam-limit-user-login/4269.html" target="_blank" rel="noopener">http://www.361way.com/pam-limit-user-login/4269.html</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021年12月29日</p>
+<p>johnny</p>
+<p>后查看/var/log/secret 日志发现系统做了安全加固：</p>
+<p>发现不允许使用root 或者说 小于1000 号uid的用户登录ssh，通过创建了新的azureuser用户，您可以通过ssh登录了。</p>
+<p>另外，如果想能直接通过root ssh进行登录：</p>
+<p>最终通过修改了以下位置可以通过root账户ssh登录了。</p>
+<p>修改配置文件/etc/ssh/sshd_config:</p>
+<p>将 PermitRootLogin 改为yes。</p>
+<p>将最后两行注释了。</p>
+<p>另外 修改/etc/pam.d/system-auth 配置文件：</p>
+<p>添加了user=root</p>
+<p>附上pam文件中各项参数含义参考文档：</p>
+<p><a href="http://www.361way.com/pam-limit-user-login/4269.html" target="_blank" rel="noopener">http://www.361way.com/pam-limit-user-login/4269.html</a></p>
+<p>谢谢！</p></article>

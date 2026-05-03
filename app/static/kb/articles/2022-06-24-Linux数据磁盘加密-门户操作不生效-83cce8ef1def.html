@@ -1,0 +1,126 @@
+<article class="kb-article" data-title="Linux数据磁盘加密，门户操作不生效"><h1>Linux数据磁盘加密，门户操作不生效</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-06-24 10:30:58</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>在开始加密之前，请务必停止可能正在向装载的数据磁盘写入数据的所有服务和进程并将其禁用，使其不会在重新引导后自动重启。 这可能会使文件在这些分区上保持打开状态，从而阻止加密过程重新装载这些分区，导致加密失败。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>在开始加密之前，请务必停止可能正在向装载的数据磁盘写入数据的所有服务和进程并将其禁用，使其不会在重新引导后自动重启。 这可能会使文件在这些分区上保持打开状态，从而阻止加密过程重新装载这些分区，导致加密失败。</li>
+</ul>
+<ul>
+<li>当您添加数据磁盘后，并不会主动为数据磁盘加密，请您在做好上述准备工作后。对数据磁盘创建快照备份，确保在加密过程中发生任何意外故障时可以恢复。</li>
+</ul>
+<ul>
+<li>2.加密故障排除</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<ul>
+<li>**数据磁盘加密准备工作。</li>
+</ul>
+<ul>
+<li>根据官方文档，添加新数据磁盘并将其附加到 VM 并不足以为加密做准备。 在启用加密之前，还必须格式化新附加的磁盘并将其正确装载在 VM 中。 在 Linux 上，磁盘必须使用永久性块设备名称装载在 /etc/fstab 中。</li>
+</ul>
+<ul>
+<li>因此，Linux 系统挂载数据磁盘，请您在加密之前使用磁盘的UUID在fstab中进行挂载，</li>
+</ul>
+<ul>
+<li>创建条目时，请使用“nofail”选项。</li>
+</ul>
+<ul>
+<li>如您之前已经在 &gt;&gt;磁盘 &gt;&gt; 其他设置 中设置了 &gt;&gt;OS和数据磁盘加密。</li>
+</ul>
+<ul>
+<li>1.先在&gt;&gt;扩展+应用程序 中，将AzureDiskEncryptionForLinux卸载。</li>
+</ul>
+<ul>
+<li>到&gt;&gt;磁盘 &gt;&gt; 其他设置 中</li>
+</ul>
+<ul>
+<li>注意事项：</li>
+</ul>
+<ul>
+<li>1.加密支持的操作系统和其他要求。</li>
+</ul>
+<ul>
+<li>3.对XFS的支持和常见问题</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>针对与您反馈的附加数据磁盘之后，在门户的 虚拟机 – 磁盘 – 其他设置 处，点击 保存 后，提示加密完成，但是实际查看磁盘配置，未能生效的问题。经研究和多次测试，以下步骤供您参考。</li>
+</ul>
+<ul>
+<li>如您通过门户操作的话，请参考以下步骤操作。</li>
+</ul>
+<ul>
+<li>4.然后，您可以在加密扩展中查看加密进度。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>然后，您可以使用CLI或者PowerShell加密。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>或者，您可以通过门户操作。</li>
+</ul>
+<ul>
+<li>将&gt;&gt;加密设置&gt;&gt; 要加密的磁盘更改为&gt;&gt;OS和数据磁盘，并保存。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：<a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-linux#enable-encryption-on-an-existing-or-running-linux-vm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-linux#enable-encryption-on-an-existing-or-running-linux-vm</a></li>
+</ul>
+<ul>
+<li>详见：<a href="https://docs.azure.cn/zh-cn/virtual-machines/troubleshooting/troubleshoot-device-names-problems#discover-filesystem-uuids-by-using-blkid" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/troubleshooting/troubleshoot-device-names-problems#discover-filesystem-uuids-by-using-blkid</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-linux#enable-encryption-on-a-newly-added-data-disk" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-linux#enable-encryption-on-a-newly-added-data-disk</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-overview#additional-vm-requirements" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-overview#additional-vm-requirements</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-troubleshooting#troubleshooting-linux-os-disk-encryption" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-troubleshooting#troubleshooting-linux-os-disk-encryption</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-faq#-----xfs------" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-faq#-----xfs------</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang Lihong</p>
+<p>针对与您反馈的附加数据磁盘之后，在门户的 虚拟机 – 磁盘 – 其他设置 处，点击 保存 后，提示加密完成，但是实际查看磁盘配置，未能生效的问题。经研究和多次测试，以下步骤供您参考。</p>
+<p>**数据磁盘加密准备工作。</p>
+<p>根据官方文档，添加新数据磁盘并将其附加到 VM 并不足以为加密做准备。 在启用加密之前，还必须格式化新附加的磁盘并将其正确装载在 VM 中。 在 Linux 上，磁盘必须使用永久性块设备名称装载在 /etc/fstab 中。</p>
+<p>参考文档：<a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-linux#enable-encryption-on-an-existing-or-running-linux-vm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-linux#enable-encryption-on-an-existing-or-running-linux-vm</a></p>
+<p>因此，Linux 系统挂载数据磁盘，请您在加密之前使用磁盘的UUID在fstab中进行挂载，</p>
+<p>创建条目时，请使用“nofail”选项。</p>
+<p>详见：<a href="https://docs.azure.cn/zh-cn/virtual-machines/troubleshooting/troubleshoot-device-names-problems#discover-filesystem-uuids-by-using-blkid" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/troubleshooting/troubleshoot-device-names-problems#discover-filesystem-uuids-by-using-blkid</a></p>
+<p>在开始加密之前，请务必停止可能正在向装载的数据磁盘写入数据的所有服务和进程并将其禁用，使其不会在重新引导后自动重启。 这可能会使文件在这些分区上保持打开状态，从而阻止加密过程重新装载这些分区，导致加密失败。</p>
+<p>如您之前已经在 &gt;&gt;磁盘 &gt;&gt; 其他设置 中设置了 &gt;&gt;OS和数据磁盘加密。</p>
+<p>当您添加数据磁盘后，并不会主动为数据磁盘加密，请您在做好上述准备工作后。对数据磁盘创建快照备份，确保在加密过程中发生任何意外故障时可以恢复。</p>
+<p>然后，您可以使用CLI或者PowerShell加密。</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-linux#enable-encryption-on-a-newly-added-data-disk" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-linux#enable-encryption-on-a-newly-added-data-disk</a></p>
+<p>或者，您可以通过门户操作。</p>
+<p>如您通过门户操作的话，请参考以下步骤操作。</p>
+<p>1.先在&gt;&gt;扩展+应用程序 中，将AzureDiskEncryptionForLinux卸载。</p>
+<p>到&gt;&gt;磁盘 &gt;&gt; 其他设置 中</p>
+<p>将&gt;&gt;加密设置&gt;&gt; 要加密的磁盘更改为&gt;&gt;OS和数据磁盘，并保存。</p>
+<p>4.然后，您可以在加密扩展中查看加密进度。</p>
+<p>注意事项：</p>
+<p>1.加密支持的操作系统和其他要求。</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-overview#additional-vm-requirements" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-overview#additional-vm-requirements</a></p>
+<p>2.加密故障排除</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-troubleshooting#troubleshooting-linux-os-disk-encryption" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-troubleshooting#troubleshooting-linux-os-disk-encryption</a></p>
+<p>3.对XFS的支持和常见问题</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-faq#-----xfs------" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-faq#-----xfs------</a></p></article>

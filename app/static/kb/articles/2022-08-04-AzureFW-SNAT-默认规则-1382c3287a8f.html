@@ -1,0 +1,101 @@
+<article class="kb-article" data-title="AzureFW SNAT 默认规则"><h1>AzureFW SNAT 默认规则</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AzureFW</li>
+<li>Section: TSG</li>
+<li>最近修改: 2022-08-04 12:53:10</li>
+<li>JD 相关性: 售后排障</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>即使单独配置允许ICMP消息，也无法ping通：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>即使单独配置允许ICMP消息，也无法ping通：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1、虚拟网络中必须要创建AzureFirewallSubnet，防火墙需在此子网中</li>
+</ul>
+<ul>
+<li>最多可以部署具有100个公共IP地址的Azure防火墙。</li>
+</ul>
+<ul>
+<li>创建后显示如下：</li>
+</ul>
+<ul>
+<li>3、配置UDR，创建默认路由，并关联到VM所在的子网</li>
+</ul>
+<ul>
+<li>源IP是FW的公网IP</li>
+</ul>
+<ul>
+<li>（3）禁止icmp报文  （通过Azure FW和LB的公网IP地址出站禁止icmp，即使你在Azure FW中配置了允许ICMP的规则）</li>
+</ul>
+<ul>
+<li>（4）默认禁止HTTP/HTTPS的访问</li>
+</ul>
+<ul>
+<li>补充如下：</li>
+</ul>
+<ul>
+<li>对于没有任何放行规则，只是被FW自动代答的请求，FW上不会记录任何日志。</li>
+</ul>
+<ul>
+<li>如果在测试中希望使用四层协议如TCP ping测试实际服务器的性能，可以使用Network Rule放行对应IP，这样即使是TCP ping测试，也会被转发到真实服务器，不会被FW代答。</li>
+</ul>
+<ul>
+<li>如果不希望用Network Rule放行，则可以选择Application层的测试工具（如curl, Jmeter等）进行测试。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>2、创建Firewall，注意公网IP的SKU只能是standard，并且是static的。因此后续如果需要添加第二个公网IP时，也需要选择SKU为standard的公网IP地址。</li>
+</ul>
+<ul>
+<li>（1）SNAT不需要配置，默认可以通过FW的公网IP访问外网的80和443端口</li>
+</ul>
+<ul>
+<li>（2）测试其他端口无法访问，如53,25,22,3389</li>
+</ul>
+<ul>
+<li>FW会代答的端口有三个: 80, 443, 3306。 这三个端口正是FW支持的三种Application Rule协议类型的端口。</li>
+</ul>
+<ul>
+<li>对Application Rule的三个端口，FW行使的是Proxy的功能，即FW会先跟Client端建立连接，直到收到Application layer的请求（例如一个HTTP GET）之后，才会开始跟真实的目标服务器建立连接并转发请求。因此FW会代答所有Application Rule所支持的三个端口的建连请求，并在到收到Application layer的数据之后，再判断该请求是否合法，并决定是否记录该请求并转发给真实服务器。</li>
+</ul>
+<ul>
+<li>这个是目前产品By design的行为。如果客户希望测试真实服务器的以上三个端口，如文档所说，有以下思路：</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>1、SNAT规则，不需要配置，默认可以通过FW的公网IP访问外网</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022-5-25</p>
+<p>1、虚拟网络中必须要创建AzureFirewallSubnet，防火墙需在此子网中</p>
+<p>2、创建Firewall，注意公网IP的SKU只能是standard，并且是static的。因此后续如果需要添加第二个公网IP时，也需要选择SKU为standard的公网IP地址。</p>
+<p>最多可以部署具有100个公共IP地址的Azure防火墙。</p>
+<p>创建后显示如下：</p>
+<p>3、配置UDR，创建默认路由，并关联到VM所在的子网</p>
+<p>1、SNAT规则，不需要配置，默认可以通过FW的公网IP访问外网</p>
+<p>（1）SNAT不需要配置，默认可以通过FW的公网IP访问外网的80和443端口</p>
+<p>源IP是FW的公网IP</p>
+<p>（2）测试其他端口无法访问，如53,25,22,3389</p>
+<p>（3）禁止icmp报文  （通过Azure FW和LB的公网IP地址出站禁止icmp，即使你在Azure FW中配置了允许ICMP的规则）</p>
+<p>即使单独配置允许ICMP消息，也无法ping通：</p>
+<p>（4）默认禁止HTTP/HTTPS的访问</p>
+<p>补充如下：</p>
+<p>FW会代答的端口有三个: 80, 443, 3306。 这三个端口正是FW支持的三种Application Rule协议类型的端口。</p>
+<p>对Application Rule的三个端口，FW行使的是Proxy的功能，即FW会先跟Client端建立连接，直到收到Application layer的请求（例如一个HTTP GET）之后，才会开始跟真实的目标服务器建立连接并转发请求。因此FW会代答所有Application Rule所支持的三个端口的建连请求，并在到收到Application layer的数据之后，再判断该请求是否合法，并决定是否记录该请求并转发给真实服务器。</p>
+<p>这个是目前产品By design的行为。如果客户希望测试真实服务器的以上三个端口，如文档所说，有以下思路：</p>
+<p>对于没有任何放行规则，只是被FW自动代答的请求，FW上不会记录任何日志。</p>
+<p>如果在测试中希望使用四层协议如TCP ping测试实际服务器的性能，可以使用Network Rule放行对应IP，这样即使是TCP ping测试，也会被转发到真实服务器，不会被FW代答。</p>
+<p>如果不希望用Network Rule放行，则可以选择Application层的测试工具（如curl, Jmeter等）进行测试。</p></article>

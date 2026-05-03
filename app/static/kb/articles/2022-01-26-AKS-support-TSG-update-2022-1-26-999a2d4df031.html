@@ -1,0 +1,82 @@
+<article class="kb-article" data-title="AKS support TSG update 2022/1/26"><h1>AKS support TSG update 2022/1/26</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: AKS Operation guideline</li>
+<li>最近修改: 2022-01-26 16:55:05</li>
+<li>JD 相关性: 交付流程/客户支持; AKS/容器; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Bellow notifications/woords about AKS uptime SLA are for your reference.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Bellow notifications/woords about AKS uptime SLA are for your reference.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Bellow notifications/woords about AKS uptime SLA are for your reference.</li>
+</ul>
+<ul>
+<li>+++++++++++++++++++</li>
+</ul>
+<ul>
+<li>这个SLA有两个含义：</li>
+</ul>
+<ul>
+<li>Master 节点上的object SLA保障从99.5%--&gt;99.95%, api 由单副本变成3副本;</li>
+</ul>
+<ul>
+<li>Master节点上的相关组件性能大幅度提升，用户最常用到的比如API server性能较之前有了倍量级提升（该提升比之前产品组手动帮用户调优的性能指标要高）</li>
+</ul>
+<ul>
+<li>烦请注意：</li>
+</ul>
+<ul>
+<li>这些指标数据都是不断变化的，比如很早之前memory默认6GB，cpu也有相应限制，但随着版本不断迭代，产品组会不断调整这些值，因为对于客户来讲控制平面是托管的，这些数值也都是confidential的。</li>
+</ul>
+<ul>
+<li>之后，请在内部强调会，我们不提供这些具体值给用户！</li>
+</ul>
+<ul>
+<li># Create an AKS cluster with uptime SLA</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>参考命令如下：</li>
+</ul>
+<ul>
+<li>az aks create --resource-group myResourceGroup --name myAKSCluster --uptime-sla --node-count 1</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>只要您通过as aks show看到目标集群已经是Paid状态，就说明该集群已经enable了Master SLA。</li>
+</ul>
+<ul>
+<li>PS 2: 由于大规模变更会对master node造成一定的workload，即使通过uptime-sla增加了资源，也会存在潜在风险，因此强烈建议在变更时，分批次进行。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>AKS uptime SLA document: <a href="https://docs.microsoft.com/en-us/azure/aks/uptime-sla" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/uptime-sla</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Bellow notifications/woords about AKS uptime SLA are for your reference.</p>
+<p>+++++++++++++++++++</p>
+<p>AKS uptime SLA document: <a href="https://docs.microsoft.com/en-us/azure/aks/uptime-sla" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/uptime-sla</a></p>
+<p>只要您通过as aks show看到目标集群已经是Paid状态，就说明该集群已经enable了Master SLA。</p>
+<p>这个SLA有两个含义：</p>
+<p>Master 节点上的object SLA保障从99.5%--&gt;99.95%, api 由单副本变成3副本;</p>
+<p>Master节点上的相关组件性能大幅度提升，用户最常用到的比如API server性能较之前有了倍量级提升（该提升比之前产品组手动帮用户调优的性能指标要高）</p>
+<p>烦请注意：</p>
+<p>这些指标数据都是不断变化的，比如很早之前memory默认6GB，cpu也有相应限制，但随着版本不断迭代，产品组会不断调整这些值，因为对于客户来讲控制平面是托管的，这些数值也都是confidential的。</p>
+<p>之后，请在内部强调会，我们不提供这些具体值给用户！</p>
+<p>参考命令如下：</p>
+<h1>Create an AKS cluster with uptime SLA</h1>
+<p>az aks create --resource-group myResourceGroup --name myAKSCluster --uptime-sla --node-count 1</p>
+<p>PS 2: 由于大规模变更会对master node造成一定的workload，即使通过uptime-sla增加了资源，也会存在潜在风险，因此强烈建议在变更时，分批次进行。</p></article>

@@ -1,0 +1,525 @@
+<article class="kb-article" data-title="ER路由优化--之连接权重"><h1>ER路由优化--之连接权重</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-03-30 13:10:29</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20190611</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20190611</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20190611</li>
+</ul>
+<ul>
+<li>专线路由优化：</li>
+</ul>
+<ul>
+<li>Weight值默认是32769</li>
+</ul>
+<ul>
+<li>抽取结果如下：</li>
+</ul>
+<ul>
+<li>&lt;GatewayRoute&gt;</li>
+</ul>
+<ul>
+<li>&lt;LocalAddress&gt;10.97.247.236&lt;/LocalAddress&gt;</li>
+</ul>
+<ul>
+<li>&lt;Network&gt;192.168.0.0/16&lt;/Network&gt;</li>
+</ul>
+<ul>
+<li>&lt;NextHop&gt;10.97.247.228&lt;/NextHop&gt;</li>
+</ul>
+<ul>
+<li>&lt;SourcePeer&gt;10.97.247.228&lt;/SourcePeer&gt;</li>
+</ul>
+<ul>
+<li>&lt;Origin&gt;EBgp&lt;/Origin&gt;</li>
+</ul>
+<ul>
+<li>&lt;Weight&gt;32869&lt;/Weight&gt;</li>
+</ul>
+<ul>
+<li>&lt;/GatewayRoute&gt;</li>
+</ul>
+<ul>
+<li>&lt;NextHop&gt;10.97.247.230&lt;/NextHop&gt;</li>
+</ul>
+<ul>
+<li>&lt;SourcePeer&gt;10.97.247.230&lt;/SourcePeer&gt;</li>
+</ul>
+<ul>
+<li>&lt;Weight&gt;32769&lt;/Weight&gt;</li>
+</ul>
+<ul>
+<li>在我们的环境中的示例如下：</li>
+</ul>
+<ul>
+<li>172.13.1.4  172.13.1.5是Azure ER GW和中国东部的ER专线Turnel MSEE上的配置的IP地址，这条线路Weight值为5000（37769）</li>
+</ul>
+<ul>
+<li>172.13.1.6  172.13.1.7是Azure ER GW和中国东部2的ER专线Turnel MSEE上的配置的IP地址，这条线路Weight值为300（33069）</li>
+</ul>
+<ul>
+<li>172.13.1.12为Azure ER GW的实例IP地址</li>
+</ul>
+<ul>
+<li>附东2专线MSEE对应VRF的配置及ER网关信息：</li>
+</ul>
+<ul>
+<li>CustomerSubscriptionId: 8775d62a-6741-481d-8737-73d2eba53518</li>
+</ul>
+<ul>
+<li>---------------------------------------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>GatewayId: cee85111-241e-47d4-a132-c0966dec744c</li>
+</ul>
+<ul>
+<li>GatewayName: vnetpeeringGW</li>
+</ul>
+<ul>
+<li>State: Provisioned</li>
+</ul>
+<ul>
+<li>VnetId: 61cdac37-a862-49c6-b96a-b2079c5ee201</li>
+</ul>
+<ul>
+<li>DeploymentId: a64fe2176f554d20b404ab72a1571529</li>
+</ul>
+<ul>
+<li>Location: China East</li>
+</ul>
+<ul>
+<li>GatewayType: Dedicated</li>
+</ul>
+<ul>
+<li>GatewaySize: Standard</li>
+</ul>
+<ul>
+<li>VIPAddress: 42.159.143.24</li>
+</ul>
+<ul>
+<li>LastEvent.Id: 23009</li>
+</ul>
+<ul>
+<li>LastEvent.Message: Maintenance completed for the gateway for the following virtual network: vnetpeeringvnet.</li>
+</ul>
+<ul>
+<li>LastEvent.Timestamp: 6/12/2019 8:09:27 PM</li>
+</ul>
+<ul>
+<li>MSEE 1号机配置：</li>
+</ul>
+<ul>
+<li>No Title</li>
+</ul>
+<ul>
+<li>sha20-06gmr-cis-1#sho running-config vrf 61397b03767345239d0a2857e151dd3a</li>
+</ul>
+<ul>
+<li>Building configuration...</li>
+</ul>
+<ul>
+<li>Current configuration : 2511 bytes</li>
+</ul>
+<ul>
+<li>vrf definition 61397b03767345239d0a2857e151dd3a</li>
+</ul>
+<ul>
+<li>rd 12076:266345728</li>
+</ul>
+<ul>
+<li>!</li>
+</ul>
+<ul>
+<li>address-family ipv4</li>
+</ul>
+<ul>
+<li>maximum routes 5050 80</li>
+</ul>
+<ul>
+<li>exit-address-family</li>
+</ul>
+<ul>
+<li>interface TenGigabitEthernet0/1/0</li>
+</ul>
+<ul>
+<li>no ip address</li>
+</ul>
+<ul>
+<li>interface TenGigabitEthernet0/1/0.7666</li>
+</ul>
+<ul>
+<li>description MSEE to service provider 500 link</li>
+</ul>
+<ul>
+<li>encapsulation dot1Q 7 second-dot1q 666</li>
+</ul>
+<ul>
+<li>vrf forwarding 61397b03767345239d0a2857e151dd3a</li>
+</ul>
+<ul>
+<li>bfd interval 300 min_rx 300 multiplier 3</li>
+</ul>
+<ul>
+<li>no bfd echo</li>
+</ul>
+<ul>
+<li>interface Tunnel267404800</li>
+</ul>
+<ul>
+<li>description MSEE to Azure bianertesting link vnetId cce19224-b345-42a7-aa1f-a2a7c5eb5f9e vrfId 61397b03-7673-4523-9d0a-2857e151dd3a</li>
+</ul>
+<ul>
+<li>tunnel source Loopback6</li>
+</ul>
+<ul>
+<li>tunnel mode vxlan ipv4 default-mac</li>
+</ul>
+<ul>
+<li>tunnel destination 42.159.157.181</li>
+</ul>
+<ul>
+<li>tunnel tos 0</li>
+</ul>
+<ul>
+<li>tunnel vxlan vni 1044550</li>
+</ul>
+<ul>
+<li>interface Tunnel267410688</li>
+</ul>
+<ul>
+<li>description MSEE to Azure vnetpeeringvnet link vnetId 61cdac37-a862-49c6-b96a-b2079c5ee201 vrfId 61397b03-7673-4523-9d0a-2857e151dd3a</li>
+</ul>
+<ul>
+<li>tunnel destination 42.159.143.24（Azure ER网关IP地址）</li>
+</ul>
+<ul>
+<li>tunnel vxlan vni 1044573</li>
+</ul>
+<ul>
+<li>router bgp 12076</li>
+</ul>
+<ul>
+<li>address-family ipv4 vrf 61397b03767345239d0a2857e151dd3a</li>
+</ul>
+<ul>
+<li>neighbor 10.13.1.12 remote-as 65515</li>
+</ul>
+<ul>
+<li>neighbor 10.13.1.12 ebgp-multihop 2</li>
+</ul>
+<ul>
+<li>neighbor 10.13.1.12 activate</li>
+</ul>
+<ul>
+<li>neighbor 10.13.1.12 send-community</li>
+</ul>
+<ul>
+<li>neighbor 10.13.1.12 as-override</li>
+</ul>
+<ul>
+<li>neighbor 10.13.1.12 maximum-prefix 200 80 restart 1</li>
+</ul>
+<ul>
+<li>neighbor 10.13.1.13 remote-as 65515</li>
+</ul>
+<ul>
+<li>neighbor 10.13.1.13 ebgp-multihop 2</li>
+</ul>
+<ul>
+<li>neighbor 10.13.1.13 activate</li>
+</ul>
+<ul>
+<li>neighbor 10.13.1.13 send-community</li>
+</ul>
+<ul>
+<li>neighbor 10.13.1.13 as-override</li>
+</ul>
+<ul>
+<li>neighbor 10.13.1.13 maximum-prefix 200 80 restart 1</li>
+</ul>
+<ul>
+<li>neighbor 172.13.1.12 remote-as 65515</li>
+</ul>
+<ul>
+<li>neighbor 172.13.1.12 ebgp-multihop 2</li>
+</ul>
+<ul>
+<li>neighbor 172.13.1.12 activate</li>
+</ul>
+<ul>
+<li>neighbor 172.13.1.12 send-community</li>
+</ul>
+<ul>
+<li>neighbor 172.13.1.12 as-override</li>
+</ul>
+<ul>
+<li>neighbor 172.13.1.12 maximum-prefix 200 80 restart 1</li>
+</ul>
+<ul>
+<li>neighbor 172.13.1.13 remote-as 65515</li>
+</ul>
+<ul>
+<li>neighbor 172.13.1.13 ebgp-multihop 2</li>
+</ul>
+<ul>
+<li>neighbor 172.13.1.13 activate</li>
+</ul>
+<ul>
+<li>neighbor 172.13.1.13 send-community</li>
+</ul>
+<ul>
+<li>neighbor 172.13.1.13 as-override</li>
+</ul>
+<ul>
+<li>neighbor 172.13.1.13 maximum-prefix 200 80 restart 1</li>
+</ul>
+<ul>
+<li>neighbor 172.16.0.1 remote-as 60600</li>
+</ul>
+<ul>
+<li>neighbor 172.16.0.1 fall-over bfd</li>
+</ul>
+<ul>
+<li>neighbor 172.16.0.1 activate</li>
+</ul>
+<ul>
+<li>neighbor 172.16.0.1 remove-private-as</li>
+</ul>
+<ul>
+<li>neighbor 172.16.0.1 allowas-in 2</li>
+</ul>
+<ul>
+<li>neighbor 172.16.0.1 maximum-prefix 4000 80 restart 1</li>
+</ul>
+<ul>
+<li>end</li>
+</ul>
+<ul>
+<li>MSEE 1号机配置</li>
+</ul>
+<ul>
+<li>sha20-06gmr-cis-2#sho running-config vrf fab48a76b2fd4e87881f41b75e43449a</li>
+</ul>
+<ul>
+<li>Current configuration : 2518 bytes</li>
+</ul>
+<ul>
+<li>vrf definition fab48a76b2fd4e87881f41b75e43449a</li>
+</ul>
+<ul>
+<li>vrf forwarding fab48a76b2fd4e87881f41b75e43449a</li>
+</ul>
+<ul>
+<li>description MSEE to Azure bianertesting link vnetId cce19224-b345-42a7-aa1f-a2a7c5eb5f9e vrfId fab48a76-b2fd-4e87-881f-41b75e43449a</li>
+</ul>
+<ul>
+<li>description MSEE to Azure vnetpeeringvnet link vnetId 61cdac37-a862-49c6-b96a-b2079c5ee201 vrfId fab48a76-b2fd-4e87-881f-41b75e43449a</li>
+</ul>
+<ul>
+<li>address-family ipv4 vrf fab48a76b2fd4e87881f41b75e43449a</li>
+</ul>
+<ul>
+<li>neighbor 172.16.10.1 remote-as 60600</li>
+</ul>
+<ul>
+<li>neighbor 172.16.10.1 fall-over bfd</li>
+</ul>
+<ul>
+<li>neighbor 172.16.10.1 activate</li>
+</ul>
+<ul>
+<li>neighbor 172.16.10.1 remove-private-as</li>
+</ul>
+<ul>
+<li>neighbor 172.16.10.1 allowas-in 2</li>
+</ul>
+<ul>
+<li>neighbor 172.16.10.1 maximum-prefix 4000 80 restart 1</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Javis查看方法：</li>
+</ul>
+<ul>
+<li>物理节点抓包显示，目标IP地址是MSEE tunnel的IP地址：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>ip address 172.16.0.2 255.255.255.252</li>
+</ul>
+<ul>
+<li>ip address 10.13.1.6 255.255.255.0</li>
+</ul>
+<ul>
+<li>ip address 172.13.1.6 255.255.255.0</li>
+</ul>
+<ul>
+<li>ip address 172.16.10.2 255.255.255.252</li>
+</ul>
+<ul>
+<li>ip address 10.13.1.7 255.255.255.0</li>
+</ul>
+<ul>
+<li>ip address 172.13.1.7 255.255.255.0</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>可以通过Azure portal调整权重实现以上路由优化：</li>
+</ul>
+<ul>
+<li>也可以通过VM的VFP表查看路由。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/expressroute/expressroute-optimize-routing" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/expressroute/expressroute-optimize-routing</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/expressroute/designing-for-disaster-recovery-with-expressroute-privatepeering" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/expressroute/designing-for-disaster-recovery-with-expressroute-privatepeering</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/expressroute/expressroute-optimize-routing" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/expressroute/expressroute-optimize-routing</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/expressroute/designing-for-disaster-recovery-with-expressroute-privatepeering" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/expressroute/designing-for-disaster-recovery-with-expressroute-privatepeering</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20190611</p>
+<p>专线路由优化：</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/expressroute/expressroute-optimize-routing" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/expressroute/expressroute-optimize-routing</a></p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/expressroute/designing-for-disaster-recovery-with-expressroute-privatepeering" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/expressroute/designing-for-disaster-recovery-with-expressroute-privatepeering</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/expressroute/expressroute-optimize-routing" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/expressroute/expressroute-optimize-routing</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/expressroute/designing-for-disaster-recovery-with-expressroute-privatepeering" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/expressroute/designing-for-disaster-recovery-with-expressroute-privatepeering</a></p>
+<p>可以通过Azure portal调整权重实现以上路由优化：</p>
+<p>Javis查看方法：</p>
+<p>Weight值默认是32769</p>
+<p>抽取结果如下：</p>
+<p>&lt;GatewayRoute&gt;</p>
+<p>&lt;LocalAddress&gt;10.97.247.236&lt;/LocalAddress&gt;</p>
+<p>&lt;Network&gt;192.168.0.0/16&lt;/Network&gt;</p>
+<p>&lt;NextHop&gt;10.97.247.228&lt;/NextHop&gt;</p>
+<p>&lt;SourcePeer&gt;10.97.247.228&lt;/SourcePeer&gt;</p>
+<p>&lt;Origin&gt;EBgp&lt;/Origin&gt;</p>
+<p>&lt;Weight&gt;32869&lt;/Weight&gt;</p>
+<p>&lt;/GatewayRoute&gt;</p>
+<p>&lt;NextHop&gt;10.97.247.230&lt;/NextHop&gt;</p>
+<p>&lt;SourcePeer&gt;10.97.247.230&lt;/SourcePeer&gt;</p>
+<p>&lt;Weight&gt;32769&lt;/Weight&gt;</p>
+<p>也可以通过VM的VFP表查看路由。</p>
+<p>物理节点抓包显示，目标IP地址是MSEE tunnel的IP地址：</p>
+<p>在我们的环境中的示例如下：</p>
+<p>172.13.1.4  172.13.1.5是Azure ER GW和中国东部的ER专线Turnel MSEE上的配置的IP地址，这条线路Weight值为5000（37769）</p>
+<p>172.13.1.6  172.13.1.7是Azure ER GW和中国东部2的ER专线Turnel MSEE上的配置的IP地址，这条线路Weight值为300（33069）</p>
+<p>172.13.1.12为Azure ER GW的实例IP地址</p>
+<p>附东2专线MSEE对应VRF的配置及ER网关信息：</p>
+<p>CustomerSubscriptionId: 8775d62a-6741-481d-8737-73d2eba53518</p>
+<p>---------------------------------------------------------------------------------------------</p>
+<p>GatewayId: cee85111-241e-47d4-a132-c0966dec744c</p>
+<p>GatewayName: vnetpeeringGW</p>
+<p>State: Provisioned</p>
+<p>VnetId: 61cdac37-a862-49c6-b96a-b2079c5ee201</p>
+<p>DeploymentId: a64fe2176f554d20b404ab72a1571529</p>
+<p>Location: China East</p>
+<p>GatewayType: Dedicated</p>
+<p>GatewaySize: Standard</p>
+<p>VIPAddress: 42.159.143.24</p>
+<p>LastEvent.Id: 23009</p>
+<p>LastEvent.Message: Maintenance completed for the gateway for the following virtual network: vnetpeeringvnet.</p>
+<p>LastEvent.Timestamp: 6/12/2019 8:09:27 PM</p>
+<p>MSEE 1号机配置：</p>
+<p>No Title</p>
+<p>sha20-06gmr-cis-1#sho running-config vrf 61397b03767345239d0a2857e151dd3a</p>
+<p>Building configuration...</p>
+<p>Current configuration : 2511 bytes</p>
+<p>vrf definition 61397b03767345239d0a2857e151dd3a</p>
+<p>rd 12076:266345728</p>
+<p>!</p>
+<p>address-family ipv4</p>
+<p>maximum routes 5050 80</p>
+<p>exit-address-family</p>
+<p>interface TenGigabitEthernet0/1/0</p>
+<p>no ip address</p>
+<p>interface TenGigabitEthernet0/1/0.7666</p>
+<p>description MSEE to service provider 500 link</p>
+<p>encapsulation dot1Q 7 second-dot1q 666</p>
+<p>vrf forwarding 61397b03767345239d0a2857e151dd3a</p>
+<p>ip address 172.16.0.2 255.255.255.252</p>
+<p>bfd interval 300 min_rx 300 multiplier 3</p>
+<p>no bfd echo</p>
+<p>interface Tunnel267404800</p>
+<p>description MSEE to Azure bianertesting link vnetId cce19224-b345-42a7-aa1f-a2a7c5eb5f9e vrfId 61397b03-7673-4523-9d0a-2857e151dd3a</p>
+<p>ip address 10.13.1.6 255.255.255.0</p>
+<p>tunnel source Loopback6</p>
+<p>tunnel mode vxlan ipv4 default-mac</p>
+<p>tunnel destination 42.159.157.181</p>
+<p>tunnel tos 0</p>
+<p>tunnel vxlan vni 1044550</p>
+<p>interface Tunnel267410688</p>
+<p>description MSEE to Azure vnetpeeringvnet link vnetId 61cdac37-a862-49c6-b96a-b2079c5ee201 vrfId 61397b03-7673-4523-9d0a-2857e151dd3a</p>
+<p>ip address 172.13.1.6 255.255.255.0</p>
+<p>tunnel destination 42.159.143.24（Azure ER网关IP地址）</p>
+<p>tunnel vxlan vni 1044573</p>
+<p>router bgp 12076</p>
+<p>address-family ipv4 vrf 61397b03767345239d0a2857e151dd3a</p>
+<p>neighbor 10.13.1.12 remote-as 65515</p>
+<p>neighbor 10.13.1.12 ebgp-multihop 2</p>
+<p>neighbor 10.13.1.12 activate</p>
+<p>neighbor 10.13.1.12 send-community</p>
+<p>neighbor 10.13.1.12 as-override</p>
+<p>neighbor 10.13.1.12 maximum-prefix 200 80 restart 1</p>
+<p>neighbor 10.13.1.13 remote-as 65515</p>
+<p>neighbor 10.13.1.13 ebgp-multihop 2</p>
+<p>neighbor 10.13.1.13 activate</p>
+<p>neighbor 10.13.1.13 send-community</p>
+<p>neighbor 10.13.1.13 as-override</p>
+<p>neighbor 10.13.1.13 maximum-prefix 200 80 restart 1</p>
+<p>neighbor 172.13.1.12 remote-as 65515</p>
+<p>neighbor 172.13.1.12 ebgp-multihop 2</p>
+<p>neighbor 172.13.1.12 activate</p>
+<p>neighbor 172.13.1.12 send-community</p>
+<p>neighbor 172.13.1.12 as-override</p>
+<p>neighbor 172.13.1.12 maximum-prefix 200 80 restart 1</p>
+<p>neighbor 172.13.1.13 remote-as 65515</p>
+<p>neighbor 172.13.1.13 ebgp-multihop 2</p>
+<p>neighbor 172.13.1.13 activate</p>
+<p>neighbor 172.13.1.13 send-community</p>
+<p>neighbor 172.13.1.13 as-override</p>
+<p>neighbor 172.13.1.13 maximum-prefix 200 80 restart 1</p>
+<p>neighbor 172.16.0.1 remote-as 60600</p>
+<p>neighbor 172.16.0.1 fall-over bfd</p>
+<p>neighbor 172.16.0.1 activate</p>
+<p>neighbor 172.16.0.1 remove-private-as</p>
+<p>neighbor 172.16.0.1 allowas-in 2</p>
+<p>neighbor 172.16.0.1 maximum-prefix 4000 80 restart 1</p>
+<p>end</p>
+<p>MSEE 1号机配置</p>
+<p>sha20-06gmr-cis-2#sho running-config vrf fab48a76b2fd4e87881f41b75e43449a</p>
+<p>Current configuration : 2518 bytes</p>
+<p>vrf definition fab48a76b2fd4e87881f41b75e43449a</p>
+<p>vrf forwarding fab48a76b2fd4e87881f41b75e43449a</p>
+<p>ip address 172.16.10.2 255.255.255.252</p>
+<p>description MSEE to Azure bianertesting link vnetId cce19224-b345-42a7-aa1f-a2a7c5eb5f9e vrfId fab48a76-b2fd-4e87-881f-41b75e43449a</p>
+<p>ip address 10.13.1.7 255.255.255.0</p>
+<p>description MSEE to Azure vnetpeeringvnet link vnetId 61cdac37-a862-49c6-b96a-b2079c5ee201 vrfId fab48a76-b2fd-4e87-881f-41b75e43449a</p>
+<p>ip address 172.13.1.7 255.255.255.0</p>
+<p>address-family ipv4 vrf fab48a76b2fd4e87881f41b75e43449a</p>
+<p>neighbor 172.16.10.1 remote-as 60600</p>
+<p>neighbor 172.16.10.1 fall-over bfd</p>
+<p>neighbor 172.16.10.1 activate</p>
+<p>neighbor 172.16.10.1 remove-private-as</p>
+<p>neighbor 172.16.10.1 allowas-in 2</p>
+<p>neighbor 172.16.10.1 maximum-prefix 4000 80 restart 1</p></article>

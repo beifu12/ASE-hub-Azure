@@ -1,0 +1,139 @@
+<article class="kb-article" data-title="VPN来回路径不一致导致的问题"><h1>VPN来回路径不一致导致的问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2024-07-08 11:28:07</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象描述：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象描述：</li>
+</ul>
+<ul>
+<li>用户在其现有处于“已连接”状态VPN连接，VPN connection Local Network Gateway中添加了新的地址段，但网络依旧不通。: Src: 10.121.0.0/16，  dst:10.207.0.0/16(阿里云)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>关联工单：20221209203400</li>
+</ul>
+<ul>
+<li>同样是由  China到Ali Cloud的地址段，延迟不一样，一个300+ms，一个500+ms。（第一个问题解决后的延伸）。</li>
+</ul>
+<ul>
+<li>用户资源：</li>
+</ul>
+<ul>
+<li>VPN连接：</li>
+</ul>
+<ul>
+<li>/subscriptions/f493a0b9-fff5-4e5b-bc4f-ebecb4d24b32/resourceGroups/mcs-network-cne2-hub1-default-rg/providers/Microsoft.Network/connections/TO-OC-ALI-HUB-DEV-ZGK-CONN</li>
+</ul>
+<ul>
+<li>问题原因：用户错误地将10.207.0.0/16添加在了Azure China VPN GW与Ali Cloud的VPN connection中。网络规划不清晰。</li>
+</ul>
+<ul>
+<li>解决办法：</li>
+</ul>
+<ul>
+<li>让用户将10.207.0.0/16添加到Azure China VPN GW与Azrue US VPn GW的VPN connection中。</li>
+</ul>
+<ul>
+<li>如果要调整延迟问题，需要同步调整Ali VPN IPSec感兴趣流的配置，让来回路径一致。</li>
+</ul>
+<ul>
+<li>和用户讨论其网络拓扑：</li>
+</ul>
+<ul>
+<li>用户明确表示其预期的Azure China VPN与Ali 10.207.0.0/16的数据流走向是：Azure China ----Azue US---Ali Cloud；并且其10.207.0.0/16与Azure US及on-premises office网络是通的。</li>
+</ul>
+<ul>
+<li>于是明确告知用户：要让数据流按其预期的流动，需要做的是将10.207.0.0/16添加到与Azure US端的IPSec connection中，而不是与Ali Cloud的IPSec connection中。</li>
+</ul>
+<ul>
+<li>用户完成上述调整后，再次测试网络已可以连通；但其同时表示网络时延为500+ms，而与另外的两个Ali Cloud网段(10.195.0.0/16和10.208.0.0）的时延只有300ms+。</li>
+</ul>
+<ul>
+<li>在Azure China VM中ping10.195.x.x，得到时延300+ms；ping 10.207.x.x得到时延500+ms，且前者TTL值比后者大1；说明 前者来回路径比后者少经过一跳。</li>
+</ul>
+<ul>
+<li>去程：由Azure China VPN GW走与Ali Cloud的VPN连接到达Ali Cloud</li>
+</ul>
+<ul>
+<li>回程：由Ali Cloud VPN GW走与Azure US VPn GW的VPN连接到达Azure US VPN，然后再走Azure China与Azure US间的VPN回到Azure China。</li>
+</ul>
+<ul>
+<li>与Azure US VPN间的感兴趣流中有10.207.0.0/16；所以Ali Cloud 10.207.0.0/16要去往Azure China只能走与Azure US 间的VPN连接</li>
+</ul>
+<ul>
+<li>结合 上面做的Azure China端的配置，此时由Azure China来回Ali 10.207.0.0/16都需要经Azure US，所以时延更高为500ms+。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>检查Azure VPN GW的IKE日志，发现这个新加的网段10.207.0.0/16，会被Ali端明确以Traffic Selector不可接受而拒绝：</li>
+</ul>
+<ul>
+<li>排查Azure VPN connection的配置，无自定义策略，使用的是Azure默认的IPSec\IKE policy：</li>
+</ul>
+<ul>
+<li>同时排查Azure VPN GW与Azure US GW间的connection CNE2-HUB-To-USE2-TRANSIT中并没有10.195.0.0/16和10.208.0.0/16这两个地址段。</li>
+</ul>
+<ul>
+<li>再排查Azure VPn GW与Ali Cloud VPN GW间的connection TO-OC-ALI-HUB-DEV-ZGK-CONN中是包含10.195.0.0/16和10.208.0.0/16这两个地址段的。</li>
+</ul>
+<ul>
+<li>进一步排查Ali Cloud VPN GW中IPSec中的配置发现：</li>
+</ul>
+<ul>
+<li>与Azure China VPN间的感兴趣流中只有10.195.0.0/16和10.208.0.0/16；也正是由于这个原因导致Azure China VPN与其协商10.207.0.0/16的IPSec SA时会直接回复Traffic Selector unacceptable。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>根据这一时延，以及当前Azure China与Ali cloud的VPN连接处于“已连接”状态，推断造成这一问题的原因是由Azure China去往Ali 10.195.0.0/16和10.208.0.0/16，它来回路径不一致导致：</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal-east.microsoftgeneva.com/s/D8B88EB" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/D8B88EB</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>关联工单：20221209203400</p>
+<p>问题现象描述：</p>
+<p>用户在其现有处于“已连接”状态VPN连接，VPN connection Local Network Gateway中添加了新的地址段，但网络依旧不通。: Src: 10.121.0.0/16，  dst:10.207.0.0/16(阿里云)</p>
+<p>同样是由  China到Ali Cloud的地址段，延迟不一样，一个300+ms，一个500+ms。（第一个问题解决后的延伸）。</p>
+<p>用户资源：</p>
+<p>VPN连接：</p>
+<p>/subscriptions/f493a0b9-fff5-4e5b-bc4f-ebecb4d24b32/resourceGroups/mcs-network-cne2-hub1-default-rg/providers/Microsoft.Network/connections/TO-OC-ALI-HUB-DEV-ZGK-CONN</p>
+<p>问题原因：用户错误地将10.207.0.0/16添加在了Azure China VPN GW与Ali Cloud的VPN connection中。网络规划不清晰。</p>
+<p>解决办法：</p>
+<p>让用户将10.207.0.0/16添加到Azure China VPN GW与Azrue US VPn GW的VPN connection中。</p>
+<p>如果要调整延迟问题，需要同步调整Ali VPN IPSec感兴趣流的配置，让来回路径一致。</p>
+<p>排查过程：</p>
+<p>检查Azure VPN GW的IKE日志，发现这个新加的网段10.207.0.0/16，会被Ali端明确以Traffic Selector不可接受而拒绝：</p>
+<p><a href="https://portal-east.microsoftgeneva.com/s/D8B88EB" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/D8B88EB</a></p>
+<p>排查Azure VPN connection的配置，无自定义策略，使用的是Azure默认的IPSec\IKE policy：</p>
+<p>和用户讨论其网络拓扑：</p>
+<p>用户明确表示其预期的Azure China VPN与Ali 10.207.0.0/16的数据流走向是：Azure China ----Azue US---Ali Cloud；并且其10.207.0.0/16与Azure US及on-premises office网络是通的。</p>
+<p>于是明确告知用户：要让数据流按其预期的流动，需要做的是将10.207.0.0/16添加到与Azure US端的IPSec connection中，而不是与Ali Cloud的IPSec connection中。</p>
+<p>用户完成上述调整后，再次测试网络已可以连通；但其同时表示网络时延为500+ms，而与另外的两个Ali Cloud网段(10.195.0.0/16和10.208.0.0）的时延只有300ms+。</p>
+<p>同时排查Azure VPN GW与Azure US GW间的connection CNE2-HUB-To-USE2-TRANSIT中并没有10.195.0.0/16和10.208.0.0/16这两个地址段。</p>
+<p>再排查Azure VPn GW与Ali Cloud VPN GW间的connection TO-OC-ALI-HUB-DEV-ZGK-CONN中是包含10.195.0.0/16和10.208.0.0/16这两个地址段的。</p>
+<p>在Azure China VM中ping10.195.x.x，得到时延300+ms；ping 10.207.x.x得到时延500+ms，且前者TTL值比后者大1；说明 前者来回路径比后者少经过一跳。</p>
+<p>根据这一时延，以及当前Azure China与Ali cloud的VPN连接处于“已连接”状态，推断造成这一问题的原因是由Azure China去往Ali 10.195.0.0/16和10.208.0.0/16，它来回路径不一致导致：</p>
+<p>去程：由Azure China VPN GW走与Ali Cloud的VPN连接到达Ali Cloud</p>
+<p>回程：由Ali Cloud VPN GW走与Azure US VPn GW的VPN连接到达Azure US VPN，然后再走Azure China与Azure US间的VPN回到Azure China。</p>
+<p>进一步排查Ali Cloud VPN GW中IPSec中的配置发现：</p>
+<p>与Azure China VPN间的感兴趣流中只有10.195.0.0/16和10.208.0.0/16；也正是由于这个原因导致Azure China VPN与其协商10.207.0.0/16的IPSec SA时会直接回复Traffic Selector unacceptable。</p>
+<p>与Azure US VPN间的感兴趣流中有10.207.0.0/16；所以Ali Cloud 10.207.0.0/16要去往Azure China只能走与Azure US 间的VPN连接</p>
+<p>结合 上面做的Azure China端的配置，此时由Azure China来回Ali 10.207.0.0/16都需要经Azure US，所以时延更高为500ms+。</p></article>

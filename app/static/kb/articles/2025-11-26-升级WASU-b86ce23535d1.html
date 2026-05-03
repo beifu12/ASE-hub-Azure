@@ -1,0 +1,194 @@
+<article class="kb-article" data-title="升级WASU"><h1>升级WASU</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: 标准话术和流程</li>
+<li>最近修改: 2025-11-26 15:48:40</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Impacted Regions 受影响的区域，如已知，可选择部分区域，如东区；如未知，选择unknown</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Impacted Regions  受影响的区域，如已知，可选择部分区域，如东区；如未知，选择unknown</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>升级sev2场景：</li>
+</ul>
+<ul>
+<li>2.之前是Sev-3，但是客户有严重的商业影响，可以升级为Sev-2</li>
+</ul>
+<ul>
+<li>注：</li>
+</ul>
+<ul>
+<li>如果受影响的客户中有升级到CSS的case，或者有CPE的话，升级CSS后由CSS起Sev-2也可以</li>
+</ul>
+<ul>
+<li>如果影响程度比较轻微，不确定是否要起Sev 2的话，可以咨询一下TA或者Manager</li>
+</ul>
+<ul>
+<li>第一部分   创建ICM工单</li>
+</ul>
+<ul>
+<li>此选项已选择wasu的icm 团队名称，无需更改，点击Next即可。Service的值决定case会被route/transfer到哪个团队</li>
+</ul>
+<ul>
+<li>Required Details  （注：title和description均要使用英文）</li>
+</ul>
+<ul>
+<li>需要留意以下几项</li>
+</ul>
+<ul>
+<li>Description  问题描述，severity为2需要提供商业影响</li>
+</ul>
+<ul>
+<li>Severity     升级问题的等级，一般为2</li>
+</ul>
+<ul>
+<li>Impacted services 这个可按实际受影响的服务填写，如找不到或不熟悉填写哪个团队，可暂时填写wasu 的alias，如图中所示</li>
+</ul>
+<ul>
+<li>Customer/SLA impact  是否有客户收到影响，根据实际情况标注</li>
+</ul>
+<ul>
+<li>Optional Details</li>
+</ul>
+<ul>
+<li>Support ticket id  提供azul系统中客户工单SR 号</li>
+</ul>
+<ul>
+<li>Subscription id   提供客户受影响订阅</li>
+</ul>
+<ul>
+<li>其它的可选项填写，wasu一般会在接到工单后自行进行补充</li>
+</ul>
+<ul>
+<li>点击提交即可</li>
+</ul>
+<ul>
+<li>第二部分   发送邮件通知wasu</li>
+</ul>
+<ul>
+<li>发送邮件至azure_wasu@21vianet.com，并抄送podvm@oe.21vianet.com。邮件内容也使用英文。</li>
+</ul>
+<ul>
+<li>第三部分 跟进LSI进展</li>
+</ul>
+<ul>
+<li>待wasu判断并创建了LSI后，请将LSI number同步至分单会议中，这样在班儿同事都能快速的对LSI有一个简单了解，受到相同影响的case owner需尽快把LSI number填写到自己的azul工单中，方便后续汇总、提供信息给wasu。 注：不要混淆CRI number和LSI number</li>
+</ul>
+<ul>
+<li>获取当前收到SR信息列表</li>
+</ul>
+<ul>
+<li>输入LSI number，点击“Query to WASU”,会获取到已经填写了LSI number的所有工单列表，将该列表复制粘贴到与wasu沟通邮件中。 注：如果azul工单不填写LSI number的话，即使受影响也不会在此显示，所以case owner一定要在自己的azul工单中尽快填写LSI number。</li>
+</ul>
+<ul>
+<li>比较少见，但也需了解的操作：</li>
+</ul>
+<ul>
+<li>如果case里忘记了填写LSI number，但是case已经关闭了。这个时候不能在Azul补填LSI number了，那么就写好case SR号码，使用“Add/Update case information”这个按钮把这个case加到list里就好。</li>
+</ul>
+<ul>
+<li>如果有的case填LSI number了，但是后来发现并不是LSI相关的case，case如果已经关闭了，这时可以填好SR号码，然后使用“Remove case from the list”按钮把这个case从list里面移除。</li>
+</ul>
+<ul>
+<li>-----------------------------------------------</li>
+</ul>
+<ul>
+<li>当前升级wasu的模版有  升级Sev2模板 |   MC Sev2 CRI Template/升级wasu Severity 2</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>升级前需要咨询TA确认</li>
+</ul>
+<ul>
+<li>升级步骤：</li>
+</ul>
+<ul>
+<li>Title   按照模版格式提供受影响服务并一句话概括问题，也可按照[Mooncake] | [Azure Portal] | [SR_XXX][MSSolve_XX] | &lt;issue description&gt; 格式填写，如果有升级微软，把xxx换成微软的case号，如果没有，可将[MSSolve_XX]删除</li>
+</ul>
+<ul>
+<li>Cloud instance  检查验证是中国区环境</li>
+</ul>
+<ul>
+<li>Incident Type  咱们升级wasu一定要是customer reported，检查保持不变即可。wasu收到咱们的CRI ticket会判断是否满足及创建LSI</li>
+</ul>
+<ul>
+<li>wasu一般是通过邮件或者在skype上ping我们索要需要的信息（最常见的就是询问当前收到了多少个SR）或者通知问题已经被mitigated了，让我们联系客户验证。针对最长见的两种操作进行说明。</li>
+</ul>
+<ul>
+<li>有得时候客户可能有CPE或者提到了索赔，就需要在列表中添加额外信息，如果客户没有提及，此步骤略过即可。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Select Team</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>1. Azure的服务有异常报错或者不可用，影响多个用户（3个或3个以上），或者我们可以稳定复现，这种情况不管有没有workaround，都可以起Sev-2</li>
+</ul>
+<ul>
+<li>LSI Mitigate后，请case owner或者值班的同事，向所有客户邮件同步问题已解决，如果有A请尽快电话联系，然后将所有相关工单的状态修改为Solution Offered。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>访问升级wasu模版链接 <a href="https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=X2v3Cf" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=X2v3Cf</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=34w3C3" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=34w3C3</a>  （已更正wasu Select Team名称）</li>
+</ul>
+<ul>
+<li>登录 <a href="http://wats.service.21vianet.com/default.aspx" target="_blank" rel="noopener">http://wats.service.21vianet.com/default.aspx</a> ，选择LSI 模块儿</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>升级sev2场景：</p>
+<p>1. Azure的服务有异常报错或者不可用，影响多个用户（3个或3个以上），或者我们可以稳定复现，这种情况不管有没有workaround，都可以起Sev-2</p>
+<p>2.之前是Sev-3，但是客户有严重的商业影响，可以升级为Sev-2</p>
+<p>注：</p>
+<p>升级前需要咨询TA确认</p>
+<p>如果受影响的客户中有升级到CSS的case，或者有CPE的话，升级CSS后由CSS起Sev-2也可以</p>
+<p>如果影响程度比较轻微，不确定是否要起Sev 2的话，可以咨询一下TA或者Manager</p>
+<p>升级步骤：</p>
+<p>第一部分   创建ICM工单</p>
+<p>访问升级wasu模版链接 <a href="https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=X2v3Cf" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=X2v3Cf</a></p>
+<p><a href="https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=34w3C3" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=34w3C3</a>  （已更正wasu Select Team名称）</p>
+<p>Select Team</p>
+<p>此选项已选择wasu的icm 团队名称，无需更改，点击Next即可。Service的值决定case会被route/transfer到哪个团队</p>
+<p>Required Details  （注：title和description均要使用英文）</p>
+<p>需要留意以下几项</p>
+<p>Title   按照模版格式提供受影响服务并一句话概括问题，也可按照[Mooncake] | [Azure Portal] | [SR_XXX][MSSolve_XX] | &lt;issue description&gt; 格式填写，如果有升级微软，把xxx换成微软的case号，如果没有，可将[MSSolve_XX]删除</p>
+<p>Description  问题描述，severity为2需要提供商业影响</p>
+<p>Severity     升级问题的等级，一般为2</p>
+<p>Cloud instance  检查验证是中国区环境</p>
+<p>Impacted services 这个可按实际受影响的服务填写，如找不到或不熟悉填写哪个团队，可暂时填写wasu 的alias，如图中所示</p>
+<p>Customer/SLA impact  是否有客户收到影响，根据实际情况标注</p>
+<p>Impacted Regions  受影响的区域，如已知，可选择部分区域，如东区；如未知，选择unknown</p>
+<p>Optional Details</p>
+<p>Incident Type  咱们升级wasu一定要是customer reported，检查保持不变即可。wasu收到咱们的CRI ticket会判断是否满足及创建LSI</p>
+<p>Support ticket id  提供azul系统中客户工单SR 号</p>
+<p>Subscription id   提供客户受影响订阅</p>
+<p>其它的可选项填写，wasu一般会在接到工单后自行进行补充</p>
+<p>点击提交即可</p>
+<p>第二部分   发送邮件通知wasu</p>
+<p>发送邮件至azure_wasu@21vianet.com，并抄送podvm@oe.21vianet.com。邮件内容也使用英文。</p>
+<p>第三部分 跟进LSI进展</p>
+<p>待wasu判断并创建了LSI后，请将LSI number同步至分单会议中，这样在班儿同事都能快速的对LSI有一个简单了解，受到相同影响的case owner需尽快把LSI number填写到自己的azul工单中，方便后续汇总、提供信息给wasu。 注：不要混淆CRI number和LSI number</p>
+<p>wasu一般是通过邮件或者在skype上ping我们索要需要的信息（最常见的就是询问当前收到了多少个SR）或者通知问题已经被mitigated了，让我们联系客户验证。针对最长见的两种操作进行说明。</p>
+<p>获取当前收到SR信息列表</p>
+<p>登录 <a href="http://wats.service.21vianet.com/default.aspx" target="_blank" rel="noopener">http://wats.service.21vianet.com/default.aspx</a> ，选择LSI 模块儿</p>
+<p>输入LSI number，点击“Query to WASU”,会获取到已经填写了LSI number的所有工单列表，将该列表复制粘贴到与wasu沟通邮件中。 注：如果azul工单不填写LSI number的话，即使受影响也不会在此显示，所以case owner一定要在自己的azul工单中尽快填写LSI number。</p>
+<p>比较少见，但也需了解的操作：</p>
+<p>有得时候客户可能有CPE或者提到了索赔，就需要在列表中添加额外信息，如果客户没有提及，此步骤略过即可。</p>
+<p>如果case里忘记了填写LSI number，但是case已经关闭了。这个时候不能在Azul补填LSI number了，那么就写好case SR号码，使用“Add/Update case information”这个按钮把这个case加到list里就好。</p>
+<p>如果有的case填LSI number了，但是后来发现并不是LSI相关的case，case如果已经关闭了，这时可以填好SR号码，然后使用“Remove case from the list”按钮把这个case从list里面移除。</p>
+<p>LSI Mitigate后，请case owner或者值班的同事，向所有客户邮件同步问题已解决，如果有A请尽快电话联系，然后将所有相关工单的状态修改为Solution Offered。</p>
+<p>-----------------------------------------------</p>
+<p>当前升级wasu的模版有  升级Sev2模板 |   MC Sev2 CRI Template/升级wasu Severity 2</p></article>

@@ -1,0 +1,57 @@
+<article class="kb-article" data-title="【Share】子网中有private endpoint资源的子网enablePrivateEndpointNetworkPolicies 时会提示报错"><h1>【Share】子网中有private endpoint资源的子网enablePrivateEndpointNetworkPolicies 时会提示报错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2026-03-18 09:37:01</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考：20250324345074</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考：20250324345074</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Humingyue</li>
+</ul>
+<ul>
+<li>根据与产品团队的沟通，预计China Azure在2025/04支持在Private Endpoint所在的Subnet启用PrivateEndpointNetworkPolicies，但产品组也表示这是个大概的预期 “This is internal only, as there are a lot of reasons for possible delays. However, we have established an agreed upon timeline with the engineering team, so you should expect use some time in April.”。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>对于子网中有private endpoint资源的子网enablePrivateEndpointNetworkPolicies 时会提示报错</li>
+</ul>
+<ul>
+<li>但对于一个没有部署private endpoint 资源的子网是可以enable PrivateEndpointNetworkPolicies，</li>
+</ul>
+<ul>
+<li>对于一个已经enable PrivateEndpointNetworkPolicies的子网当前无法部署private endpoint。在使用ARM 模板部署时会出现如下提醒。</li>
+</ul>
+<ul>
+<li>这里需要注意一下：如果通过portal 部署private endpoint资源时会显示成功部署了private endpoint，但实际上portal部署时自动将PrivateEndpointNetworkPolicies配置disable了。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Humingyue</p>
+<p>对于子网中有private endpoint资源的子网enablePrivateEndpointNetworkPolicies 时会提示报错</p>
+<p>但对于一个没有部署private endpoint 资源的子网是可以enable PrivateEndpointNetworkPolicies，</p>
+<p>对于一个已经enable PrivateEndpointNetworkPolicies的子网当前无法部署private endpoint。在使用ARM 模板部署时会出现如下提醒。</p>
+<p>这里需要注意一下：如果通过portal 部署private endpoint资源时会显示成功部署了private endpoint，但实际上portal部署时自动将PrivateEndpointNetworkPolicies配置disable了。</p>
+<p>根据与产品团队的沟通，预计China Azure在2025/04支持在Private Endpoint所在的Subnet启用PrivateEndpointNetworkPolicies，但产品组也表示这是个大概的预期 “This is internal only, as there are a lot of reasons for possible delays. However, we have established an agreed upon timeline with the engineering team, so you should expect use some time in April.”。</p>
+<p>参考：20250324345074</p></article>

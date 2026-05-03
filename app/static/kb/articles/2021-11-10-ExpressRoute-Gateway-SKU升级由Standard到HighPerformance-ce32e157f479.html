@@ -1,0 +1,70 @@
+<article class="kb-article" data-title="ExpressRoute Gateway SKU升级由Standard到HighPerformance"><h1>ExpressRoute Gateway SKU升级由Standard到HighPerformance</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-11-10 16:07:56</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>相关工单：SR_20211109130842_新申请的ER线路无法到达2G的流量上限。用户新建了1Gbps带宽的电路，反馈线路带宽达不到2Gbps，注意用户订购1Gbps带宽，基于BGP的负载均衡，当用户ER电路的两条物理传输链路都启用了后，用户可以享受到2倍带宽进行传输的，但这一点Azure不提供保证并不支持长期如此使用。官网相关说明如下：FAQ - Azure ExpressRoute | Microsoft Docs</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>相关工单：SR_20211109130842_新申请的ER线路无法到达2G的流量上限。用户新建了1Gbps带宽的电路，反馈线路带宽达不到2Gbps，注意用户订购1Gbps带宽，基于BGP的负载均衡，当用户ER电路的两条物理传输链路都启用了后，用户可以享受到2倍带宽进行传输的，但这一点Azure不提供保证并不支持长期如此使用。官网相关说明如下：FAQ - Azure ExpressRoute | Microsoft Docs</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2021.11.9</li>
+</ul>
+<ul>
+<li>Standard ER GW是2台虚拟机实例。</li>
+</ul>
+<ul>
+<li>HighPerformance ER GW会是3台虚拟机实例。</li>
+</ul>
+<ul>
+<li>是否3个实例都使用来跑路由协议还不确定。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>用户根据之前使用的老ER电路（500Mbps），在其业务高峰期，每天凌晨3点到4点间，Azure到本地IDC的流量传输可以跑满2条物理传输链路的带宽，但是在使用了新的ER电路（1Gbps）观察了同样的业务背景下，两条线路带宽还是只能达到1Gbps多。因此需要排查问题原因。</li>
+</ul>
+<ul>
+<li>通过查看Circuit dashboard 中显示新ER电路的两条物理传输链路确实只达到了1Gbps多点。</li>
+</ul>
+<ul>
+<li>升级过程中Standard的2台虚拟机实例会重建，用官网的描述是分配更多的如CPU，网络带宽资源，Kusto查询到的虚拟机node id,container id, creation time变化情况：</li>
+</ul>
+<ul>
+<li>整个Updating过程持续时间38分钟，ASC中能看到2个ergw分组。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>如上图所示，对于标准ExpressRoute网关，其带宽只能高达1Gbps，如果用户想通过订阅1Gbps来偶尔跑满两条物理传输链路享受2Gbps的服务，需要使用高性能SKU的网关。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>升级ER网关由Standard到HighPerformance，可以通过Portal直接进行操作，但因没有真实环境进行测试，在测试环境中通过创建Standard ER网关，然后升级到HighPerformance，观察了有关现象，确认肯定是会有Downtime，因此建议用户申请维护窗口来进行。升级过程中观察到的现象：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>后查阅Azure官方文档 <a href="https://www.azure.cn/pricing/details/expressroute/index.html：" target="_blank" rel="noopener">https://www.azure.cn/pricing/details/expressroute/index.html：</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021.11.9</p>
+<p>相关工单：SR_20211109130842_新申请的ER线路无法到达2G的流量上限。用户新建了1Gbps带宽的电路，反馈线路带宽达不到2Gbps，注意用户订购1Gbps带宽，基于BGP的负载均衡，当用户ER电路的两条物理传输链路都启用了后，用户可以享受到2倍带宽进行传输的，但这一点Azure不提供保证并不支持长期如此使用。官网相关说明如下：FAQ - Azure ExpressRoute | Microsoft Docs</p>
+<p>用户根据之前使用的老ER电路（500Mbps），在其业务高峰期，每天凌晨3点到4点间，Azure到本地IDC的流量传输可以跑满2条物理传输链路的带宽，但是在使用了新的ER电路（1Gbps）观察了同样的业务背景下，两条线路带宽还是只能达到1Gbps多。因此需要排查问题原因。</p>
+<p>通过查看Circuit dashboard 中显示新ER电路的两条物理传输链路确实只达到了1Gbps多点。</p>
+<p>后查阅Azure官方文档 <a href="https://www.azure.cn/pricing/details/expressroute/index.html：" target="_blank" rel="noopener">https://www.azure.cn/pricing/details/expressroute/index.html：</a></p>
+<p>如上图所示，对于标准ExpressRoute网关，其带宽只能高达1Gbps，如果用户想通过订阅1Gbps来偶尔跑满两条物理传输链路享受2Gbps的服务，需要使用高性能SKU的网关。</p>
+<p>升级ER网关由Standard到HighPerformance，可以通过Portal直接进行操作，但因没有真实环境进行测试，在测试环境中通过创建Standard ER网关，然后升级到HighPerformance，观察了有关现象，确认肯定是会有Downtime，因此建议用户申请维护窗口来进行。升级过程中观察到的现象：</p>
+<p>Standard ER GW是2台虚拟机实例。</p>
+<p>HighPerformance ER GW会是3台虚拟机实例。</p>
+<p>升级过程中Standard的2台虚拟机实例会重建，用官网的描述是分配更多的如CPU，网络带宽资源，Kusto查询到的虚拟机node id,container id, creation time变化情况：</p>
+<p>整个Updating过程持续时间38分钟，ASC中能看到2个ergw分组。</p>
+<p>是否3个实例都使用来跑路由协议还不确定。</p></article>

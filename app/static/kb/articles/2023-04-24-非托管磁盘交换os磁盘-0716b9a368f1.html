@@ -1,0 +1,258 @@
+<article class="kb-article" data-title="非托管磁盘交换os磁盘"><h1>非托管磁盘交换os磁盘</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2023-04-24 11:21:49</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20230403221525</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20230403221525</li>
+</ul>
+<ul>
+<li>虚拟机代理状态Not Ready,无法重置虚拟机密码</li>
+</ul>
+<ul>
+<li>Sdc和sda uuid一样，无法挂载</li>
+</ul>
+<ul>
+<li>针对与您无法登录vm，且重置完密码仍旧无法登录的问题</li>
+</ul>
+<ul>
+<li>针对于您另外一台vm的代理异常问题</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>尊敬的周先生：</li>
+</ul>
+<ul>
+<li>您好。</li>
+</ul>
+<ul>
+<li>您的反馈对我们非常重要。您会在工单关闭后收到一份客户满意度调查问卷，如果您能花几分钟时间来完成，我们将不胜感激，祝您工作顺利！</li>
+</ul>
+<ul>
+<li>为了供您以后参考，以下为您提供本次案例的总结，供您参考</li>
+</ul>
+<ul>
+<li>案例总结如下：</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>资源ID：/subscriptions/0777a2e7-8e9c-4f37-b1b2-71b2c9dc5ff0/resourceGroups/BJ2J9PRG/providers/Microsoft.Compute/virtualMachines/bj2j9pbo1</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>vm  case1525vm</li>
+</ul>
+<ul>
+<li>非托管os磁盘</li>
+</ul>
+<ul>
+<li>可以看到磁盘vhd为</li>
+</ul>
+<ul>
+<li>创建快照</li>
+</ul>
+<ul>
+<li>使用azure storage explorer创建该vhd的快照</li>
+</ul>
+<ul>
+<li>Copy</li>
+</ul>
+<ul>
+<li>回上一级</li>
+</ul>
+<ul>
+<li>新建目录并进入</li>
+</ul>
+<ul>
+<li>粘贴</li>
+</ul>
+<ul>
+<li>拷贝完成</li>
+</ul>
+<ul>
+<li>在存储账户中可以看到拷贝后的vhd</li>
+</ul>
+<ul>
+<li>在正常vm附加非托管数据磁盘(由于我就一台这样的vm，我先附加到原vm)</li>
+</ul>
+<ul>
+<li>选择新建立的vhd文件</li>
+</ul>
+<ul>
+<li>正常vm中原os盘是sda</li>
+</ul>
+<ul>
+<li>新加磁盘为sdc</li>
+</ul>
+<ul>
+<li>生成新uuid</li>
+</ul>
+<ul>
+<li>更新 uuid到sdc4</li>
+</ul>
+<ul>
+<li>挂载sdc4到 /mnt/sdc</li>
+</ul>
+<ul>
+<li>您操作完后，假设我在 mount点/home/Jason/ 下touch 了 test_from_case1525</li>
+</ul>
+<ul>
+<li>Umount /dev/dec4 并将sdc4 uuid恢复</li>
+</ul>
+<ul>
+<li>在azure门户上停止原vm</li>
+</ul>
+<ul>
+<li>将新建的vhd从正常vm上卸载</li>
+</ul>
+<ul>
+<li>复制新复制的vhd url</li>
+</ul>
+<ul>
+<li>登录</li>
+</ul>
+<ul>
+<li>Connect-AzAccount   -EnvironmentName AzureChinaCloud</li>
+</ul>
+<ul>
+<li>$vm = Get-Azvm -ResourceGroupName case1525 -Name case1525vm</li>
+</ul>
+<ul>
+<li>Update-Azvm -ResourceGroupName case1525 -VM $vm</li>
+</ul>
+<ul>
+<li>启动原vm</li>
+</ul>
+<ul>
+<li>会上您在azure门户上新增加了user，并且在问题vm os磁盘 sshd配置文件中 allowuser添加了该user后，可以正常ssh</li>
+</ul>
+<ul>
+<li>协助您对vm重新安装了suse的waagent  python-azure-agent ，该vm的代理状态恢复正常。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>以下为步骤</li>
+</ul>
+<ul>
+<li>查看</li>
+</ul>
+<ul>
+<li>查看 less /mnt/sdc/var/log/waagent.log</li>
+</ul>
+<ul>
+<li>登录到原vm，确认 /home/jason 已有  test_from_case1525  文件</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>参照文档安装azure powershell</li>
+</ul>
+<ul>
+<li>Set-AzVMOSDisk -VM $vm -VhdUri $uri</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>感谢您的电话确认，我们将会把本次技术支持案例关闭并归档。</li>
+</ul>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<ul>
+<li>将原vm的非托管os磁盘打快照后生产新vhd文件附加到正常的vm上，查看修改后，替换原vm的非托管磁盘</li>
+</ul>
+<ul>
+<li>交换时只能交换相同大小的磁盘，建议您将复制的磁盘挂载到正常vm后，清理部分空间，在与原os磁盘交换，确定vm正常后，再进行扩展磁盘的操作。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://case1525disks.blob.core.chinacloudapi.cn/vhds/case1525vm20230403153728.vhd" target="_blank" rel="noopener">https://case1525disks.blob.core.chinacloudapi.cn/vhds/case1525vm20230403153728.vhd</a></li>
+</ul>
+<ul>
+<li><a href="https://case1525disks.blob.core.chinacloudapi.cn/vhds/copy-disk/case1525vm20230403153728.vhd" target="_blank" rel="noopener">https://case1525disks.blob.core.chinacloudapi.cn/vhds/copy-disk/case1525vm20230403153728.vhd</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/powershell/azure/install-azps-windows?view=azps-9.5.0&amp;tabs=powershell&amp;pivots=windows-psgallery" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/azure/install-azps-windows?view=azps-9.5.0&amp;tabs=powershell&amp;pivots=windows-psgallery</a></li>
+</ul>
+<ul>
+<li>$uri = &quot;<a href="https://case1525disks.blob.core.chinacloudapi.cn/vhds/copy-disk/case1525vm20230403153728.vhd&quot;" target="_blank" rel="noopener">https://case1525disks.blob.core.chinacloudapi.cn/vhds/copy-disk/case1525vm20230403153728.vhd&quot;</a></li>
+</ul>
+<ul>
+<li>根据您的环境修改标黄的值，其中 case1525 为问题原vm所在资源组 ，case1525vm 为问题原vm的名称，<a href="https://case1525disks.blob.core.chinacloudapi.cn/vhds/copy-disk/case1525vm20230403153728.vhd" target="_blank" rel="noopener">https://case1525disks.blob.core.chinacloudapi.cn/vhds/copy-disk/case1525vm20230403153728.vhd</a> 为拷贝并修复的vhd</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20230403221525</p>
+<p>尊敬的周先生：</p>
+<p>您好。</p>
+<p>感谢您的电话确认，我们将会把本次技术支持案例关闭并归档。</p>
+<p>您的反馈对我们非常重要。您会在工单关闭后收到一份客户满意度调查问卷，如果您能花几分钟时间来完成，我们将不胜感激，祝您工作顺利！</p>
+<p>为了供您以后参考，以下为您提供本次案例的总结，供您参考</p>
+<p>案例总结如下：</p>
+<p>问题描述：</p>
+<p>=======</p>
+<p>虚拟机代理状态Not Ready,无法重置虚拟机密码</p>
+<p>资源ID：/subscriptions/0777a2e7-8e9c-4f37-b1b2-71b2c9dc5ff0/resourceGroups/BJ2J9PRG/providers/Microsoft.Compute/virtualMachines/bj2j9pbo1</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>将原vm的非托管os磁盘打快照后生产新vhd文件附加到正常的vm上，查看修改后，替换原vm的非托管磁盘</p>
+<p>以下为步骤</p>
+<p>vm  case1525vm</p>
+<p>非托管os磁盘</p>
+<p>可以看到磁盘vhd为</p>
+<p><a href="https://case1525disks.blob.core.chinacloudapi.cn/vhds/case1525vm20230403153728.vhd" target="_blank" rel="noopener">https://case1525disks.blob.core.chinacloudapi.cn/vhds/case1525vm20230403153728.vhd</a></p>
+<p>创建快照</p>
+<p>使用azure storage explorer创建该vhd的快照</p>
+<p>Copy</p>
+<p>回上一级</p>
+<p>新建目录并进入</p>
+<p>粘贴</p>
+<p>拷贝完成</p>
+<p>在存储账户中可以看到拷贝后的vhd</p>
+<p>在正常vm附加非托管数据磁盘(由于我就一台这样的vm，我先附加到原vm)</p>
+<p>选择新建立的vhd文件</p>
+<p>正常vm中原os盘是sda</p>
+<p>新加磁盘为sdc</p>
+<p>Sdc和sda uuid一样，无法挂载</p>
+<p>生成新uuid</p>
+<p>更新 uuid到sdc4</p>
+<p>挂载sdc4到 /mnt/sdc</p>
+<p>查看</p>
+<p>查看 less /mnt/sdc/var/log/waagent.log</p>
+<p>您操作完后，假设我在 mount点/home/Jason/ 下touch 了 test_from_case1525</p>
+<p>Umount /dev/dec4 并将sdc4 uuid恢复</p>
+<p>在azure门户上停止原vm</p>
+<p>将新建的vhd从正常vm上卸载</p>
+<p>复制新复制的vhd url</p>
+<p><a href="https://case1525disks.blob.core.chinacloudapi.cn/vhds/copy-disk/case1525vm20230403153728.vhd" target="_blank" rel="noopener">https://case1525disks.blob.core.chinacloudapi.cn/vhds/copy-disk/case1525vm20230403153728.vhd</a></p>
+<p>参照文档安装azure powershell</p>
+<p><a href="https://learn.microsoft.com/zh-cn/powershell/azure/install-azps-windows?view=azps-9.5.0&amp;tabs=powershell&amp;pivots=windows-psgallery" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/azure/install-azps-windows?view=azps-9.5.0&amp;tabs=powershell&amp;pivots=windows-psgallery</a></p>
+<p>登录</p>
+<p>Connect-AzAccount   -EnvironmentName AzureChinaCloud</p>
+<p>$vm = Get-Azvm -ResourceGroupName case1525 -Name case1525vm</p>
+<p>$uri = &quot;<a href="https://case1525disks.blob.core.chinacloudapi.cn/vhds/copy-disk/case1525vm20230403153728.vhd&quot;" target="_blank" rel="noopener">https://case1525disks.blob.core.chinacloudapi.cn/vhds/copy-disk/case1525vm20230403153728.vhd&quot;</a></p>
+<p>Set-AzVMOSDisk -VM $vm -VhdUri $uri</p>
+<p>Update-Azvm -ResourceGroupName case1525 -VM $vm</p>
+<p>根据您的环境修改标黄的值，其中 case1525 为问题原vm所在资源组 ，case1525vm 为问题原vm的名称，<a href="https://case1525disks.blob.core.chinacloudapi.cn/vhds/copy-disk/case1525vm20230403153728.vhd" target="_blank" rel="noopener">https://case1525disks.blob.core.chinacloudapi.cn/vhds/copy-disk/case1525vm20230403153728.vhd</a> 为拷贝并修复的vhd</p>
+<p>启动原vm</p>
+<p>登录到原vm，确认 /home/jason 已有  test_from_case1525  文件</p>
+<p>交换时只能交换相同大小的磁盘，建议您将复制的磁盘挂载到正常vm后，清理部分空间，在与原os磁盘交换，确定vm正常后，再进行扩展磁盘的操作。</p>
+<p>针对与您无法登录vm，且重置完密码仍旧无法登录的问题</p>
+<p>会上您在azure门户上新增加了user，并且在问题vm os磁盘 sshd配置文件中 allowuser添加了该user后，可以正常ssh</p>
+<p>针对于您另外一台vm的代理异常问题</p>
+<p>协助您对vm重新安装了suse的waagent  python-azure-agent ，该vm的代理状态恢复正常。</p></article>

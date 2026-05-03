@@ -1,0 +1,351 @@
+<article class="kb-article" data-title="在AKS内通过VolumeSnapshot为PV 创建快照，并通过快照快速部署PV 应用的pod"><h1>在AKS内通过VolumeSnapshot为PV 创建快照，并通过快照快速部署PV 应用的pod</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-11-30 15:49:49</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>测试步骤如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>测试步骤如下：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1、创建磁盘PVC</li>
+</ul>
+<ul>
+<li>---</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: PersistentVolumeClaim</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: pvc-azuredisk</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>accessModes:</li>
+</ul>
+<ul>
+<li>- ReadWriteOnce</li>
+</ul>
+<ul>
+<li>resources:</li>
+</ul>
+<ul>
+<li>requests:</li>
+</ul>
+<ul>
+<li>storage: 10Gi</li>
+</ul>
+<ul>
+<li>storageClassName: managed-csi</li>
+</ul>
+<ul>
+<li>2、通过PVC创建pod</li>
+</ul>
+<ul>
+<li>kind: Pod</li>
+</ul>
+<ul>
+<li>name: nginx-azuredisk</li>
+</ul>
+<ul>
+<li>nodeSelector:</li>
+</ul>
+<ul>
+<li>kubernetes.io/os: linux</li>
+</ul>
+<ul>
+<li>containers:</li>
+</ul>
+<ul>
+<li>- image: mcr.microsoft.com/oss/nginx/nginx:1.17.3-alpine</li>
+</ul>
+<ul>
+<li>command:</li>
+</ul>
+<ul>
+<li>- &quot;/bin/sh&quot;</li>
+</ul>
+<ul>
+<li>- &quot;-c&quot;</li>
+</ul>
+<ul>
+<li>- while true; do echo $(date) &gt;&gt; /mnt/azuredisk/outfile; sleep 1; done</li>
+</ul>
+<ul>
+<li>volumeMounts:</li>
+</ul>
+<ul>
+<li>- name: azuredisk01</li>
+</ul>
+<ul>
+<li>mountPath: &quot;/mnt/azuredisk&quot;</li>
+</ul>
+<ul>
+<li>readOnly: false</li>
+</ul>
+<ul>
+<li>volumes:</li>
+</ul>
+<ul>
+<li>persistentVolumeClaim:</li>
+</ul>
+<ul>
+<li>claimName: pvc-azuredisk</li>
+</ul>
+<ul>
+<li>4、创建快照类</li>
+</ul>
+<ul>
+<li>在继续之前，请确保应用程序不会将数据写入源磁盘。</li>
+</ul>
+<ul>
+<li>apiVersion: snapshot.storage.k8s.io/v1</li>
+</ul>
+<ul>
+<li>kind: VolumeSnapshotClass</li>
+</ul>
+<ul>
+<li>name: csi-azuredisk-vsc</li>
+</ul>
+<ul>
+<li>driver: disk.csi.azure.com</li>
+</ul>
+<ul>
+<li>deletionPolicy: Delete</li>
+</ul>
+<ul>
+<li>parameters:</li>
+</ul>
+<ul>
+<li>incremental: &quot;true&quot;  # available values: &quot;true&quot;, &quot;false&quot; (&quot;true&quot; by default for Azure Public Cloud, and &quot;false&quot; by default for Azure Stack Cloud)</li>
+</ul>
+<ul>
+<li>5、创建快照</li>
+</ul>
+<ul>
+<li>kind: VolumeSnapshot</li>
+</ul>
+<ul>
+<li>name: azuredisk-volume-snapshot</li>
+</ul>
+<ul>
+<li>volumeSnapshotClassName: csi-azuredisk-vsc</li>
+</ul>
+<ul>
+<li>source:</li>
+</ul>
+<ul>
+<li>persistentVolumeClaimName: pvc-azuredisk</li>
+</ul>
+<ul>
+<li>6、通过快照到磁盘</li>
+</ul>
+<ul>
+<li>name: pvc-azuredisk-snapshot-restored</li>
+</ul>
+<ul>
+<li>dataSource:</li>
+</ul>
+<ul>
+<li>apiGroup: snapshot.storage.k8s.io</li>
+</ul>
+<ul>
+<li>7、通过PVC创建pod应用</li>
+</ul>
+<ul>
+<li>name: nginx-restored</li>
+</ul>
+<ul>
+<li>args:</li>
+</ul>
+<ul>
+<li>- sleep</li>
+</ul>
+<ul>
+<li>- &quot;3600&quot;</li>
+</ul>
+<ul>
+<li>claimName: pvc-azuredisk-snapshot-restored</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>测试步骤如下：</li>
+</ul>
+<ul>
+<li>3、模拟写入文件并查看</li>
+</ul>
+<ul>
+<li>8、验证</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>kubectl exec nginx-azuredisk -- touch /mnt/azuredisk/test.txt</li>
+</ul>
+<ul>
+<li>kubectl exec nginx-azuredisk -- ls /mnt/azuredisk</li>
+</ul>
+<ul>
+<li>kubectl describe volumesnapshot azuredisk-volume-snapshot</li>
+</ul>
+<ul>
+<li>kubectl exec nginx-restored -- ls /mnt/azuredisk</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/pvc-azuredisk-csi.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/pvc-azuredisk-csi.yaml</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/pvc-azuredisk-csi.yaml&gt;" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/pvc-azuredisk-csi.yaml&gt;</a></li>
+</ul>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/nginx-pod-azuredisk.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/nginx-pod-azuredisk.yaml</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/nginx-pod-azuredisk.yaml&gt;" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/nginx-pod-azuredisk.yaml&gt;</a></li>
+</ul>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/storageclass-azuredisk-snapshot.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/storageclass-azuredisk-snapshot.yaml</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/storageclass-azuredisk-snapshot.yaml&gt;" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/storageclass-azuredisk-snapshot.yaml&gt;</a></li>
+</ul>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/azuredisk-volume-snapshot.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/azuredisk-volume-snapshot.yaml</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/azuredisk-volume-snapshot.yaml&gt;" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/azuredisk-volume-snapshot.yaml&gt;</a></li>
+</ul>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/pvc-azuredisk-snapshot-restored.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/pvc-azuredisk-snapshot-restored.yaml</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/pvc-azuredisk-snapshot-restored.yaml&gt;" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/pvc-azuredisk-snapshot-restored.yaml&gt;</a></li>
+</ul>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/nginx-pod-restored-snapshot.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/nginx-pod-restored-snapshot.yaml</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/nginx-pod-restored-snapshot.yaml&gt;" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/nginx-pod-restored-snapshot.yaml&gt;</a></li>
+</ul>
+<ul>
+<li>参考：<a href="https://docs.azure.cn/zh-cn/aks/azure-disk-csi" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/azure-disk-csi</a></li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.io/zh-cn/docs/concepts/storage/volume-snapshots/" target="_blank" rel="noopener">https://kubernetes.io/zh-cn/docs/concepts/storage/volume-snapshots/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/11/30</p>
+<p>测试步骤如下：</p>
+<p>1、创建磁盘PVC</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/pvc-azuredisk-csi.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/pvc-azuredisk-csi.yaml</a></p>
+<p>---</p>
+<p>apiVersion: v1</p>
+<p>kind: PersistentVolumeClaim</p>
+<p>metadata:</p>
+<p>name: pvc-azuredisk</p>
+<p>spec:</p>
+<p>accessModes:</p>
+<ul>
+<li>ReadWriteOnce</li>
+</ul>
+<p>resources:</p>
+<p>requests:</p>
+<p>storage: 10Gi</p>
+<p>storageClassName: managed-csi</p>
+<p>From &lt;<a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/pvc-azuredisk-csi.yaml&gt;" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/pvc-azuredisk-csi.yaml&gt;</a></p>
+<p>2、通过PVC创建pod</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/nginx-pod-azuredisk.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/nginx-pod-azuredisk.yaml</a></p>
+<p>kind: Pod</p>
+<p>name: nginx-azuredisk</p>
+<p>nodeSelector:</p>
+<p>kubernetes.io/os: linux</p>
+<p>containers:</p>
+<ul>
+<li>image: mcr.microsoft.com/oss/nginx/nginx:1.17.3-alpine</li>
+</ul>
+<p>command:</p>
+<ul>
+<li>&quot;/bin/sh&quot;</li>
+</ul>
+<ul>
+<li>&quot;-c&quot;</li>
+</ul>
+<ul>
+<li>while true; do echo $(date) &gt;&gt; /mnt/azuredisk/outfile; sleep 1; done</li>
+</ul>
+<p>volumeMounts:</p>
+<ul>
+<li>name: azuredisk01</li>
+</ul>
+<p>mountPath: &quot;/mnt/azuredisk&quot;</p>
+<p>readOnly: false</p>
+<p>volumes:</p>
+<p>persistentVolumeClaim:</p>
+<p>claimName: pvc-azuredisk</p>
+<p>From &lt;<a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/nginx-pod-azuredisk.yaml&gt;" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/nginx-pod-azuredisk.yaml&gt;</a></p>
+<p>3、模拟写入文件并查看</p>
+<p>kubectl exec nginx-azuredisk -- touch /mnt/azuredisk/test.txt</p>
+<p>kubectl exec nginx-azuredisk -- ls /mnt/azuredisk</p>
+<p>4、创建快照类</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/storageclass-azuredisk-snapshot.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/storageclass-azuredisk-snapshot.yaml</a></p>
+<p>在继续之前，请确保应用程序不会将数据写入源磁盘。</p>
+<p>apiVersion: snapshot.storage.k8s.io/v1</p>
+<p>kind: VolumeSnapshotClass</p>
+<p>name: csi-azuredisk-vsc</p>
+<p>driver: disk.csi.azure.com</p>
+<p>deletionPolicy: Delete</p>
+<p>parameters:</p>
+<p>incremental: &quot;true&quot;  # available values: &quot;true&quot;, &quot;false&quot; (&quot;true&quot; by default for Azure Public Cloud, and &quot;false&quot; by default for Azure Stack Cloud)</p>
+<p>From &lt;<a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/storageclass-azuredisk-snapshot.yaml&gt;" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/storageclass-azuredisk-snapshot.yaml&gt;</a></p>
+<p>5、创建快照</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/azuredisk-volume-snapshot.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/azuredisk-volume-snapshot.yaml</a></p>
+<p>kind: VolumeSnapshot</p>
+<p>name: azuredisk-volume-snapshot</p>
+<p>volumeSnapshotClassName: csi-azuredisk-vsc</p>
+<p>source:</p>
+<p>persistentVolumeClaimName: pvc-azuredisk</p>
+<p>From &lt;<a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/azuredisk-volume-snapshot.yaml&gt;" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/azuredisk-volume-snapshot.yaml&gt;</a></p>
+<p>kubectl describe volumesnapshot azuredisk-volume-snapshot</p>
+<p>6、通过快照到磁盘</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/pvc-azuredisk-snapshot-restored.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/pvc-azuredisk-snapshot-restored.yaml</a></p>
+<p>name: pvc-azuredisk-snapshot-restored</p>
+<p>dataSource:</p>
+<p>apiGroup: snapshot.storage.k8s.io</p>
+<p>From &lt;<a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/pvc-azuredisk-snapshot-restored.yaml&gt;" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/pvc-azuredisk-snapshot-restored.yaml&gt;</a></p>
+<p>7、通过PVC创建pod应用</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/nginx-pod-restored-snapshot.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/nginx-pod-restored-snapshot.yaml</a></p>
+<p>name: nginx-restored</p>
+<p>args:</p>
+<ul>
+<li>sleep</li>
+</ul>
+<ul>
+<li>&quot;3600&quot;</li>
+</ul>
+<p>claimName: pvc-azuredisk-snapshot-restored</p>
+<p>From &lt;<a href="https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/nginx-pod-restored-snapshot.yaml&gt;" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/snapshot/nginx-pod-restored-snapshot.yaml&gt;</a></p>
+<p>8、验证</p>
+<p>kubectl exec nginx-restored -- ls /mnt/azuredisk</p>
+<p>参考：<a href="https://docs.azure.cn/zh-cn/aks/azure-disk-csi" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/azure-disk-csi</a></p>
+<p><a href="https://kubernetes.io/zh-cn/docs/concepts/storage/volume-snapshots/" target="_blank" rel="noopener">https://kubernetes.io/zh-cn/docs/concepts/storage/volume-snapshots/</a></p></article>

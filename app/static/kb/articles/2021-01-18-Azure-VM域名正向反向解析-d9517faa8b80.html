@@ -1,0 +1,114 @@
+<article class="kb-article" data-title="Azure VM域名正向反向解析"><h1>Azure VM域名正向反向解析</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DNS</li>
+<li>Section: DNS</li>
+<li>最近修改: 2021-01-18 10:07:39</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>[REG:117060615848476] Pod-Net|MS-LED|SR_2017060691125|VNET|正向反向解析</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>[REG:117060615848476] Pod-Net|MS-LED|SR_2017060691125|VNET|正向反向解析</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>[REG:117060615848476] Pod-Net|MS-LED|SR_2017060691125|VNET|正向反向解析</li>
+</ul>
+<ul>
+<li>请将以下内容发给用户</li>
+</ul>
+<ul>
+<li>==================================</li>
+</ul>
+<ul>
+<li>拿您的DFA-Azure-NBU为例，主机名叫DFA-Azure-NBU，完整的域名其实是DFA-Azure-NBU.DFA-Azure-NBU.a4.internal.chinacloudapp.cn。</li>
+</ul>
+<ul>
+<li>在完整的域名中，前面一个DFA-Azure-NBU为主机名，第二个DFA-Azure-NBU为云服务的名字。</li>
+</ul>
+<ul>
+<li>在这台机器上的ipconfig /all结果中能看到以下这行：</li>
+</ul>
+<ul>
+<li>. . . . . . . . : DFA-Azure-NBU.a4.internal.chinacloudapp.cn</li>
+</ul>
+<ul>
+<li>其代表的含义是，当找DNS做域名解析时，如果会将DFA-Azure-NBU.a4.internal.chinacloudapp.cn作为主机的域名后缀来做解析。</li>
+</ul>
+<ul>
+<li>而DFA-Azure-TC的云服务名字就叫DFA-Azure-TC。所以它完整的域名应该是DFA-Azure-TC.DFA-Azure-TC.a4.internal.chinacloudapp.cn。</li>
+</ul>
+<ul>
+<li>回到您的备份软件遇到的问题，我认为与备份软件做域名解析的方式有一定关系。</li>
+</ul>
+<ul>
+<li>根据我们之前看到的情况，连接成功时没有发现有对DNS发起的域名解析，此时应该是使用了hosts文件中的配置。</li>
+</ul>
+<ul>
+<li>所以我认为即便使用默认DNS，将主机名解析写入本地hosts文件，就应该能使之生效。</li>
+</ul>
+<ul>
+<li>如果没有即时生效，应该还是备份软件解析域名的机制导致。</li>
+</ul>
+<ul>
+<li>另外，使用外部DNS与此问题没有直接联系。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>比方说，在这台机器上查询DFA-Azure-TC，他会找DNS查询DFA-Azure-TC.DFA-Azure-NBU.a4.internal.chinacloudapp.cn。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>首先跟您解释一下ASM模式下虚拟机的命名规则和不同命令域名解析的方式。</li>
+</ul>
+<ul>
+<li>所以当运行命令nslookup dfa-azure-tc时，DNS查询不到其对应的IP。而运行nslookup dfa-azure-tc.dfa-azure-tc.a4.internal.chinacloudapp.cn时，应该能解析到IP。（根据我的测试，其中a4这段并不一定是固定值，要根据实际的DNS后缀来做查询）</li>
+</ul>
+<ul>
+<li>Nslookup命令查询时，会直接向DNS发起查询。但是ping命令会先查看本机hosts文件中的本地配置。</li>
+</ul>
+<ul>
+<li>所以当配置了hosts以后，直接用nslookup命令查询不同云服务下的主机名，将无法查到结果。</li>
+</ul>
+<ul>
+<li>但是使用ping命令时，它会从本机的hosts文件中拿到IP，所以看得到解析出来的结果。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>下次新建虚拟机时，建议你试一下，在备份软件中填入上面描述的完整域名，看能否连接。</li>
+</ul>
+<ul>
+<li>当然，完整域名太长，不方便使用和记忆。所以如果单改hosts文件可行的话，还是建议使用这个简单、直接的方式。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>[REG:117060615848476] Pod-Net|MS-LED|SR_2017060691125|VNET|正向反向解析</p>
+<p>请将以下内容发给用户</p>
+<p>==================================</p>
+<p>首先跟您解释一下ASM模式下虚拟机的命名规则和不同命令域名解析的方式。</p>
+<p>拿您的DFA-Azure-NBU为例，主机名叫DFA-Azure-NBU，完整的域名其实是DFA-Azure-NBU.DFA-Azure-NBU.a4.internal.chinacloudapp.cn。</p>
+<p>在完整的域名中，前面一个DFA-Azure-NBU为主机名，第二个DFA-Azure-NBU为云服务的名字。</p>
+<p>在这台机器上的ipconfig /all结果中能看到以下这行：</p>
+<p>. . . . . . . . : DFA-Azure-NBU.a4.internal.chinacloudapp.cn</p>
+<p>其代表的含义是，当找DNS做域名解析时，如果会将DFA-Azure-NBU.a4.internal.chinacloudapp.cn作为主机的域名后缀来做解析。</p>
+<p>比方说，在这台机器上查询DFA-Azure-TC，他会找DNS查询DFA-Azure-TC.DFA-Azure-NBU.a4.internal.chinacloudapp.cn。</p>
+<p>而DFA-Azure-TC的云服务名字就叫DFA-Azure-TC。所以它完整的域名应该是DFA-Azure-TC.DFA-Azure-TC.a4.internal.chinacloudapp.cn。</p>
+<p>所以当运行命令nslookup dfa-azure-tc时，DNS查询不到其对应的IP。而运行nslookup dfa-azure-tc.dfa-azure-tc.a4.internal.chinacloudapp.cn时，应该能解析到IP。（根据我的测试，其中a4这段并不一定是固定值，要根据实际的DNS后缀来做查询）</p>
+<p>Nslookup命令查询时，会直接向DNS发起查询。但是ping命令会先查看本机hosts文件中的本地配置。</p>
+<p>所以当配置了hosts以后，直接用nslookup命令查询不同云服务下的主机名，将无法查到结果。</p>
+<p>但是使用ping命令时，它会从本机的hosts文件中拿到IP，所以看得到解析出来的结果。</p>
+<p>回到您的备份软件遇到的问题，我认为与备份软件做域名解析的方式有一定关系。</p>
+<p>根据我们之前看到的情况，连接成功时没有发现有对DNS发起的域名解析，此时应该是使用了hosts文件中的配置。</p>
+<p>所以我认为即便使用默认DNS，将主机名解析写入本地hosts文件，就应该能使之生效。</p>
+<p>如果没有即时生效，应该还是备份软件解析域名的机制导致。</p>
+<p>另外，使用外部DNS与此问题没有直接联系。</p>
+<p>下次新建虚拟机时，建议你试一下，在备份软件中填入上面描述的完整域名，看能否连接。</p>
+<p>当然，完整域名太长，不方便使用和记忆。所以如果单改hosts文件可行的话，还是建议使用这个简单、直接的方式。</p></article>

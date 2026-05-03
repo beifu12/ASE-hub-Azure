@@ -1,0 +1,304 @@
+<article class="kb-article" data-title="DNS问题排查思路--[REG:116111714949547] [POD-Net][MS-LED][SR_2016111558948][Network][DNS解析失败]"><h1>DNS问题排查思路--[REG:116111714949547] [POD-Net][MS-LED][SR_2016111558948][Network][DNS解析失败]</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2024-01-12 20:06:22</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>尝试解析用户域名，无法解析。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>尝试解析用户域名，无法解析。</li>
+</ul>
+<ul>
+<li>Dig +trace 追踪解析轨迹，依旧无法获得解析</li>
+</ul>
+<ul>
+<li>com.                           86400 IN        DS       30909 8 2 E2D3C916F6DEEAC73294E8268FB5885044A833FC5459588F4A9184CF C41A5766</li>
+</ul>
+<ul>
+<li>CK0POJMG874LJREF7EFN8430QVIT8BSM.com. 86400 IN RRSIG NSEC3 8 2 86400 20161122054942 20161115043942 6404 com. AwH+KmiAJUCW24qrFOG5rp+y3GkCTCxfZREwWlG/bgEpn2XrQDlKN3fe 91y15VlQMsFoTgjjg1WE/5t7TWFzomyvl07CocFH7p6tvjUwghF8JJZL HnNefcOpTxgrtAUZXxZT+wFVtiyOvoPocWAjLLG8JD3U+SO39ZTjy/+U UdI=</li>
+</ul>
+<ul>
+<li>使用114.114.114.114作为DNS确实能够解析到此域名，但是同样是国内的DNS，210.2.4.8就无法解析此域名。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Azure自带域名的解析，可以成功解析。</li>
+</ul>
+<ul>
+<li>[kfu@centos7 ~]$ nslookup zhwebn2.chinacloudapp.cn</li>
+</ul>
+<ul>
+<li>Server:            8.8.8.8</li>
+</ul>
+<ul>
+<li>Address:        8.8.8.8#53</li>
+</ul>
+<ul>
+<li>Non-authoritative answer:</li>
+</ul>
+<ul>
+<li>Name: zhwebn2.chinacloudapp.cn</li>
+</ul>
+<ul>
+<li>Address: 42.159.238.149</li>
+</ul>
+<ul>
+<li>[kfu@centos7 ~]$ nslookup appclient.11ziyun.com</li>
+</ul>
+<ul>
+<li>Server:                       8.8.8.8</li>
+</ul>
+<ul>
+<li>** server can&#39;t find appclient.11ziyun.com: SERVFAIL</li>
+</ul>
+<ul>
+<li>[kfu@centos7 ~]$ dig +trace appclient.11ziyun.com</li>
+</ul>
+<ul>
+<li>; &lt;&lt;&gt;&gt; DiG 9.9.4-RedHat-9.9.4-14.el7 &lt;&lt;&gt;&gt; +trace appclient.11ziyun.com</li>
+</ul>
+<ul>
+<li>;; global options: +cmd</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        NS       a.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        NS       b.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        NS       c.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        NS       d.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        NS       e.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        NS       f.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        NS       g.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        NS       h.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        NS       i.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        NS       j.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        NS       k.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        NS       l.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        NS       m.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                                   51444 IN        RRSIG NS 8 0 518400 20161127050000 20161114040000 39291 . X5BN0TCC1JMcrIHeLzo+Dosg6bNo9KuQahoTqbdxTiNRh/geBhOYingo SxAHMZkjHEdrpPBpuQ5iftvbqcT0lYSl6WNRcG5zabbmPm+M+MX89RJa Gt5pMwgcbeI8SqQOmTrH+n+fvW16i9xFqJyqYzExsiPzoDd9DsUPXliG kUoE9ERqQ59OAarrn3jWCcNEM72Fkb+Y3DIeg46WNLrBjT+uefbhqqFd FQcd8QrqBVL3qf3QyzmQOHmzzEmUJP+jKvRIfmFpaWS9MLvynUTuvIKA Crrh1DJ13ssyug6WP467RQ4mZJ8VL0hw0+KWQh18Zrwpn/GCJU/wlPdn 0pHB5w==</li>
+</ul>
+<ul>
+<li>;; Received 525 bytes from 8.8.8.8#53(8.8.8.8) in 1299 ms</li>
+</ul>
+<ul>
+<li>com.                           172800           IN        NS       d.gtld-servers.net.</li>
+</ul>
+<ul>
+<li>com.                           172800           IN        NS       a.gtld-servers.net.</li>
+</ul>
+<ul>
+<li>com.                           172800           IN        NS       m.gtld-servers.net.</li>
+</ul>
+<ul>
+<li>com.                           172800           IN        NS       l.gtld-servers.net.</li>
+</ul>
+<ul>
+<li>com.                           172800           IN        NS       k.gtld-servers.net.</li>
+</ul>
+<ul>
+<li>com.                           172800           IN        NS       h.gtld-servers.net.</li>
+</ul>
+<ul>
+<li>com.                           172800           IN        NS       g.gtld-servers.net.</li>
+</ul>
+<ul>
+<li>com.                           172800           IN        NS       i.gtld-servers.net.</li>
+</ul>
+<ul>
+<li>com.                           172800           IN        NS       c.gtld-servers.net.</li>
+</ul>
+<ul>
+<li>com.                           172800           IN        NS       j.gtld-servers.net.</li>
+</ul>
+<ul>
+<li>com.                           172800           IN        NS       e.gtld-servers.net.</li>
+</ul>
+<ul>
+<li>com.                           172800           IN        NS       f.gtld-servers.net.</li>
+</ul>
+<ul>
+<li>com.                           172800           IN        NS       b.gtld-servers.net.</li>
+</ul>
+<ul>
+<li>com.                           86400 IN        RRSIG DS 8 1 86400 20161129170000 20161116160000 39291 . FkYxVZL0IAx1WndOtLfJOD8wz3i6jOuhE1ReRjZd2BC1GAQ15ZYr2/CE yJbeojDHuCiNq4X8We4M/cIhriWixDUV+DgmmuY59C191n+QSBrpq3WA PnbE8FhL35JYNoU0ebccS0t05pvazHclYW7+5nqT3YkB2LpXhTIYvU77 WQXM6uCSvCF9r60NxjBCD30+hImPsjS2wAxEucs85v9dsliMaNSJ+C7N EMu6LNtiksnOlNab5z0NfSoWze1o/6gDBRKNCO/iw+yMXp4NiFTTWKN3 iK4jCi63IRoJDr05Y2v/MygESgz0NM0SyeMWnhc2zEmYcjXrS+HifcbP jjR2rQ==</li>
+</ul>
+<ul>
+<li>;; Received 873 bytes from 202.12.27.33#53(m.root-servers.net) in 1297 ms</li>
+</ul>
+<ul>
+<li>11ziyun.com.            172800           IN        NS       f1g1ns1.dnspod.net.</li>
+</ul>
+<ul>
+<li>11ziyun.com.            172800           IN        NS       f1g1ns2.dnspod.net.</li>
+</ul>
+<ul>
+<li>CK0POJMG874LJREF7EFN8430QVIT8BSM.com. 86400 IN NSEC3 1 1 0 - CK0Q1GIN43N1ARRC9OSM6QPQR81H5M9A NS SOA RRSIG DNSKEY NSEC3PARAM</li>
+</ul>
+<ul>
+<li>P5ER8CC5M3I59L1293LI56SPOSTP9FUF.com. 86400 IN NSEC3 1 1 0 - P5EVLIU96QNRHQQSO3SI83EPR5B54LBP NS DS RRSIG</li>
+</ul>
+<ul>
+<li>P5ER8CC5M3I59L1293LI56SPOSTP9FUF.com. 86400 IN RRSIG NSEC3 8 2 86400 20161121053103 20161114042103 6404 com. tvY6/xebB5Fqvnsz9xphwpJdtjp8MZOPkwQttXOWblvgCXosd06d8x6y XaVtBnjkwn/FcVPGVEFCjTdVWmwei7JbvGpOf1TM+DN7QeyjXOlsODus u0mCPmgke0ipka11ZftKMsnBXbu0tulMe7sih1ACF7njz/x+9qatnMCC Fyo=</li>
+</ul>
+<ul>
+<li>;; Received 765 bytes from 192.33.14.30#53(b.gtld-servers.net) in 1267 ms</li>
+</ul>
+<ul>
+<li>;; connection timed out; no servers could be reached</li>
+</ul>
+<ul>
+<li>通过以上测试，说明域名appclient.11ziyun.com在注册时没有能够在DNS中生成相关记录，或者此域名没有注册成功。</li>
+</ul>
+<ul>
+<li>Hi Zhangliang，</li>
+</ul>
+<ul>
+<li>一点更新：</li>
+</ul>
+<ul>
+<li>[kfu@centos7 ~]$ nslookup appclient.11ziyun.com 114.114.114.114</li>
+</ul>
+<ul>
+<li>Server:              114.114.114.114</li>
+</ul>
+<ul>
+<li>Address:           114.114.114.114#53</li>
+</ul>
+<ul>
+<li>Name:  appclient.11ziyun.com</li>
+</ul>
+<ul>
+<li>[kfu@centos7 ~]$ nslookup appclient.11ziyun.com 210.2.4.8</li>
+</ul>
+<ul>
+<li>Server:              210.2.4.8</li>
+</ul>
+<ul>
+<li>Address:           210.2.4.8#53</li>
+</ul>
+<ul>
+<li>*** Can&#39;t find appclient.11ziyun.com: No answer</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>根据用户提供的信息，我做了以下查询：</li>
+</ul>
+<ul>
+<li>查询域名Whios信息。从下图中看到，此域名是通过HICHINA注册的，域名所有人邮箱是 wuhanzh@aliyun.com 。并且在上一步dig操作中也查询到了域名所在的DNS服务器f1g1ns1.dnspod.net和f1g1ns2.dnspod.net。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>建议域名管理员在域名注册商处检查相关配置，或者联系域名注册商的技术支持协助解决。</li>
+</ul>
+<ul>
+<li>所以此问题还是跟域名的注册商的配置有关系，建议用户直接联系用域名注册商来解决此问题。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>根据用户提供的信息，我做了以下查询：</p>
+<p>Azure自带域名的解析，可以成功解析。</p>
+<p>[kfu@centos7 ~]$ nslookup zhwebn2.chinacloudapp.cn</p>
+<p>Server:            8.8.8.8</p>
+<p>Address:        8.8.8.8#53</p>
+<p>Non-authoritative answer:</p>
+<p>Name: zhwebn2.chinacloudapp.cn</p>
+<p>Address: 42.159.238.149</p>
+<p>尝试解析用户域名，无法解析。</p>
+<p>[kfu@centos7 ~]$ nslookup appclient.11ziyun.com</p>
+<p>Server:                       8.8.8.8</p>
+<p>** server can&#39;t find appclient.11ziyun.com: SERVFAIL</p>
+<p>Dig +trace 追踪解析轨迹，依旧无法获得解析</p>
+<p>[kfu@centos7 ~]$ dig +trace appclient.11ziyun.com</p>
+<p>; &lt;&lt;&gt;&gt; DiG 9.9.4-RedHat-9.9.4-14.el7 &lt;&lt;&gt;&gt; +trace appclient.11ziyun.com</p>
+<p>;; global options: +cmd</p>
+<p>.                                   51444 IN        NS       a.root-servers.net.</p>
+<p>.                                   51444 IN        NS       b.root-servers.net.</p>
+<p>.                                   51444 IN        NS       c.root-servers.net.</p>
+<p>.                                   51444 IN        NS       d.root-servers.net.</p>
+<p>.                                   51444 IN        NS       e.root-servers.net.</p>
+<p>.                                   51444 IN        NS       f.root-servers.net.</p>
+<p>.                                   51444 IN        NS       g.root-servers.net.</p>
+<p>.                                   51444 IN        NS       h.root-servers.net.</p>
+<p>.                                   51444 IN        NS       i.root-servers.net.</p>
+<p>.                                   51444 IN        NS       j.root-servers.net.</p>
+<p>.                                   51444 IN        NS       k.root-servers.net.</p>
+<p>.                                   51444 IN        NS       l.root-servers.net.</p>
+<p>.                                   51444 IN        NS       m.root-servers.net.</p>
+<p>.                                   51444 IN        RRSIG NS 8 0 518400 20161127050000 20161114040000 39291 . X5BN0TCC1JMcrIHeLzo+Dosg6bNo9KuQahoTqbdxTiNRh/geBhOYingo SxAHMZkjHEdrpPBpuQ5iftvbqcT0lYSl6WNRcG5zabbmPm+M+MX89RJa Gt5pMwgcbeI8SqQOmTrH+n+fvW16i9xFqJyqYzExsiPzoDd9DsUPXliG kUoE9ERqQ59OAarrn3jWCcNEM72Fkb+Y3DIeg46WNLrBjT+uefbhqqFd FQcd8QrqBVL3qf3QyzmQOHmzzEmUJP+jKvRIfmFpaWS9MLvynUTuvIKA Crrh1DJ13ssyug6WP467RQ4mZJ8VL0hw0+KWQh18Zrwpn/GCJU/wlPdn 0pHB5w==</p>
+<p>;; Received 525 bytes from 8.8.8.8#53(8.8.8.8) in 1299 ms</p>
+<p>com.                           172800           IN        NS       d.gtld-servers.net.</p>
+<p>com.                           172800           IN        NS       a.gtld-servers.net.</p>
+<p>com.                           172800           IN        NS       m.gtld-servers.net.</p>
+<p>com.                           172800           IN        NS       l.gtld-servers.net.</p>
+<p>com.                           172800           IN        NS       k.gtld-servers.net.</p>
+<p>com.                           172800           IN        NS       h.gtld-servers.net.</p>
+<p>com.                           172800           IN        NS       g.gtld-servers.net.</p>
+<p>com.                           172800           IN        NS       i.gtld-servers.net.</p>
+<p>com.                           172800           IN        NS       c.gtld-servers.net.</p>
+<p>com.                           172800           IN        NS       j.gtld-servers.net.</p>
+<p>com.                           172800           IN        NS       e.gtld-servers.net.</p>
+<p>com.                           172800           IN        NS       f.gtld-servers.net.</p>
+<p>com.                           172800           IN        NS       b.gtld-servers.net.</p>
+<p>com.                           86400 IN        DS       30909 8 2 E2D3C916F6DEEAC73294E8268FB5885044A833FC5459588F4A9184CF C41A5766</p>
+<p>com.                           86400 IN        RRSIG DS 8 1 86400 20161129170000 20161116160000 39291 . FkYxVZL0IAx1WndOtLfJOD8wz3i6jOuhE1ReRjZd2BC1GAQ15ZYr2/CE yJbeojDHuCiNq4X8We4M/cIhriWixDUV+DgmmuY59C191n+QSBrpq3WA PnbE8FhL35JYNoU0ebccS0t05pvazHclYW7+5nqT3YkB2LpXhTIYvU77 WQXM6uCSvCF9r60NxjBCD30+hImPsjS2wAxEucs85v9dsliMaNSJ+C7N EMu6LNtiksnOlNab5z0NfSoWze1o/6gDBRKNCO/iw+yMXp4NiFTTWKN3 iK4jCi63IRoJDr05Y2v/MygESgz0NM0SyeMWnhc2zEmYcjXrS+HifcbP jjR2rQ==</p>
+<p>;; Received 873 bytes from 202.12.27.33#53(m.root-servers.net) in 1297 ms</p>
+<p>11ziyun.com.            172800           IN        NS       f1g1ns1.dnspod.net.</p>
+<p>11ziyun.com.            172800           IN        NS       f1g1ns2.dnspod.net.</p>
+<p>CK0POJMG874LJREF7EFN8430QVIT8BSM.com. 86400 IN NSEC3 1 1 0 - CK0Q1GIN43N1ARRC9OSM6QPQR81H5M9A NS SOA RRSIG DNSKEY NSEC3PARAM</p>
+<p>CK0POJMG874LJREF7EFN8430QVIT8BSM.com. 86400 IN RRSIG NSEC3 8 2 86400 20161122054942 20161115043942 6404 com. AwH+KmiAJUCW24qrFOG5rp+y3GkCTCxfZREwWlG/bgEpn2XrQDlKN3fe 91y15VlQMsFoTgjjg1WE/5t7TWFzomyvl07CocFH7p6tvjUwghF8JJZL HnNefcOpTxgrtAUZXxZT+wFVtiyOvoPocWAjLLG8JD3U+SO39ZTjy/+U UdI=</p>
+<p>P5ER8CC5M3I59L1293LI56SPOSTP9FUF.com. 86400 IN NSEC3 1 1 0 - P5EVLIU96QNRHQQSO3SI83EPR5B54LBP NS DS RRSIG</p>
+<p>P5ER8CC5M3I59L1293LI56SPOSTP9FUF.com. 86400 IN RRSIG NSEC3 8 2 86400 20161121053103 20161114042103 6404 com. tvY6/xebB5Fqvnsz9xphwpJdtjp8MZOPkwQttXOWblvgCXosd06d8x6y XaVtBnjkwn/FcVPGVEFCjTdVWmwei7JbvGpOf1TM+DN7QeyjXOlsODus u0mCPmgke0ipka11ZftKMsnBXbu0tulMe7sih1ACF7njz/x+9qatnMCC Fyo=</p>
+<p>;; Received 765 bytes from 192.33.14.30#53(b.gtld-servers.net) in 1267 ms</p>
+<p>;; connection timed out; no servers could be reached</p>
+<p>查询域名Whios信息。从下图中看到，此域名是通过HICHINA注册的，域名所有人邮箱是 wuhanzh@aliyun.com 。并且在上一步dig操作中也查询到了域名所在的DNS服务器f1g1ns1.dnspod.net和f1g1ns2.dnspod.net。</p>
+<p>通过以上测试，说明域名appclient.11ziyun.com在注册时没有能够在DNS中生成相关记录，或者此域名没有注册成功。</p>
+<p>建议域名管理员在域名注册商处检查相关配置，或者联系域名注册商的技术支持协助解决。</p>
+<p>Hi Zhangliang，</p>
+<p>一点更新：</p>
+<p>使用114.114.114.114作为DNS确实能够解析到此域名，但是同样是国内的DNS，210.2.4.8就无法解析此域名。</p>
+<p>所以此问题还是跟域名的注册商的配置有关系，建议用户直接联系用域名注册商来解决此问题。</p>
+<p>[kfu@centos7 ~]$ nslookup appclient.11ziyun.com 114.114.114.114</p>
+<p>Server:              114.114.114.114</p>
+<p>Address:           114.114.114.114#53</p>
+<p>Name:  appclient.11ziyun.com</p>
+<p>[kfu@centos7 ~]$ nslookup appclient.11ziyun.com 210.2.4.8</p>
+<p>Server:              210.2.4.8</p>
+<p>Address:           210.2.4.8#53</p>
+<p>*** Can&#39;t find appclient.11ziyun.com: No answer</p></article>

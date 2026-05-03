@@ -1,0 +1,95 @@
+<article class="kb-article" data-title="Azure AD影响MFA的设置"><h1>Azure AD影响MFA的设置</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD connect sync MFA</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-06-20 09:24:58</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>zhanglihong</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>zhanglihong</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zhanglihong</li>
+</ul>
+<ul>
+<li>有一些会影响MFA认证的功能。列举如下：</li>
+</ul>
+<ul>
+<li>保持登录状态：</li>
+</ul>
+<ul>
+<li>参考截图：</li>
+</ul>
+<ul>
+<li>条件访问策略中配置设备过滤，不使用MFA。</li>
+</ul>
+<ul>
+<li>如设置登录频率为1小时。</li>
+</ul>
+<ul>
+<li>附：</li>
+</ul>
+<ul>
+<li>1．保持登录状态许可要求：</li>
+</ul>
+<ul>
+<li>2．条件访问许可要求</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>条件访问策略中配置“要求所有用户使用合规设备、已建立混合 Azure AD 联接的设备或多重身份验证”</li>
+</ul>
+<ul>
+<li>4． 条件访问的身份验证会话管理配置后，也会影响MFA。</li>
+</ul>
+<ul>
+<li>参考案例：SR_20230614235724_咨询一个关于Azure AD多重身份验证信任设备的问题</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：<a href="https://learn.microsoft.com/zh-cn/azure/active-directory/fundamentals/how-to-manage-stay-signed-in-prompt" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/active-directory/fundamentals/how-to-manage-stay-signed-in-prompt</a></li>
+</ul>
+<ul>
+<li>参考文档：<a href="https://learn.microsoft.com/zh-cn/azure/active-directory/conditional-access/howto-conditional-access-policy-compliant-device#create-a-conditional-access-policy" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/active-directory/conditional-access/howto-conditional-access-policy-compliant-device#create-a-conditional-access-policy</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/active-directory/conditional-access/howto-conditional-access-session-lifetime" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/active-directory/conditional-access/howto-conditional-access-session-lifetime</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/active-directory/fundamentals/how-to-manage-stay-signed-in-prompt#license-and-role-requirements" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/active-directory/fundamentals/how-to-manage-stay-signed-in-prompt#license-and-role-requirements</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/active-directory/conditional-access/overview#license-requirements" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/conditional-access/overview#license-requirements</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zhanglihong</p>
+<p>有一些会影响MFA认证的功能。列举如下：</p>
+<p>保持登录状态：</p>
+<p>参考文档：<a href="https://learn.microsoft.com/zh-cn/azure/active-directory/fundamentals/how-to-manage-stay-signed-in-prompt" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/active-directory/fundamentals/how-to-manage-stay-signed-in-prompt</a></p>
+<p>参考截图：</p>
+<p>条件访问策略中配置“要求所有用户使用合规设备、已建立混合 Azure AD 联接的设备或多重身份验证”</p>
+<p>参考文档：<a href="https://learn.microsoft.com/zh-cn/azure/active-directory/conditional-access/howto-conditional-access-policy-compliant-device#create-a-conditional-access-policy" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/active-directory/conditional-access/howto-conditional-access-policy-compliant-device#create-a-conditional-access-policy</a></p>
+<p>条件访问策略中配置设备过滤，不使用MFA。</p>
+<p>4． 条件访问的身份验证会话管理配置后，也会影响MFA。</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/active-directory/conditional-access/howto-conditional-access-session-lifetime" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/active-directory/conditional-access/howto-conditional-access-session-lifetime</a></p>
+<p>如设置登录频率为1小时。</p>
+<p>附：</p>
+<p>1．保持登录状态许可要求：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/active-directory/fundamentals/how-to-manage-stay-signed-in-prompt#license-and-role-requirements" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/active-directory/fundamentals/how-to-manage-stay-signed-in-prompt#license-and-role-requirements</a></p>
+<p>2．条件访问许可要求</p>
+<p><a href="https://docs.azure.cn/zh-cn/active-directory/conditional-access/overview#license-requirements" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/conditional-access/overview#license-requirements</a></p>
+<p>参考案例：SR_20230614235724_咨询一个关于Azure AD多重身份验证信任设备的问题</p></article>

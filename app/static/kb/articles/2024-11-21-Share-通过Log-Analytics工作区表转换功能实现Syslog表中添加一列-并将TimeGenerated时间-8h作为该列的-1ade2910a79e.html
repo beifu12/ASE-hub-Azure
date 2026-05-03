@@ -1,0 +1,150 @@
+<article class="kb-article" data-title="【Share】通过Log Analytics工作区表转换功能实现Syslog表中添加一列，并将TimeGenerated时间+8h作为该列的值"><h1>【Share】通过Log Analytics工作区表转换功能实现Syslog表中添加一列，并将TimeGenerated时间+8h作为该列的值</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-21 15:24:35</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>最近接了一个LA 工作区表转换功能案例SR_20241111324269，此处以客户需求“将syslog表中TimeGenerated值+8h显示”为例，梳理下大致转换方法，供大家后续参考。相关历史工单 20240304280689</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>最近接了一个LA 工作区表转换功能案例SR_20241111324269，此处以客户需求“将syslog表中TimeGenerated值+8h显示”为例，梳理下大致转换方法，供大家后续参考。相关历史工单 20240304280689</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>LA工作区表转换主要分两种场景：</li>
+</ul>
+<ul>
+<li>$tableParams = @&#39;</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;properties&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;schema&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;columns&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;BJTimeGenerated_CF&quot;,</li>
+</ul>
+<ul>
+<li>&quot;description&quot;: &quot;The list of resources, this query ran against&quot;,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;DateTime&quot;,</li>
+</ul>
+<ul>
+<li>&quot;isDefaultDisplay&quot;: true,</li>
+</ul>
+<ul>
+<li>&quot;isHidden&quot;: false</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>&#39;@</li>
+</ul>
+<ul>
+<li>在DCR模版处点击Deploy进入模版编辑模式，更改transformKql至source\n| extend BJTimeGenerated_CF = TimeGenerated + 8h\n</li>
+</ul>
+<ul>
+<li>+++++++++++++++++++++++++++++++++++++++++++++++++++</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>最近接了一个LA 工作区表转换功能案例SR_20241111324269，此处以客户需求“将syslog表中TimeGenerated值+8h显示”为例，梳理下大致转换方法，供大家后续参考。相关历史工单 20240304280689</li>
+</ul>
+<ul>
+<li>一、由DCR收集的数据，比如syslog，转换需要在收集数据的DCR上更改transfornKql的值，转换由syslog DCR中transfornKql的值控制。 下方有如何实现syslog表格转换步骤</li>
+</ul>
+<ul>
+<li>二、由非DCR收集的数据，如旧式代理收集的数据（由于旧式代理已经退役，所以可能比较少见）或者一些资源日志（如LA诊断查询日志）。该场景，可完全参考使用 Azure 门户在工作区数据收集规则中添加转换执行表转换，表转换由创建出的工作区DCR中transfornKql的值控制。</li>
+</ul>
+<ul>
+<li>++++++++++如何实现syslog表格转换步骤+++++++++++++++++++++++++++++++++</li>
+</ul>
+<ul>
+<li>以下方法可实现由DCR收集的syslog表转换（新建BJTimeGenerated_CF列，BJTimeGenerated_CF=TimeGenerated+8）。</li>
+</ul>
+<ul>
+<li>查看原始数据</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Syslog&quot;,</li>
+</ul>
+<ul>
+<li>验证新列已添加</li>
+</ul>
+<ul>
+<li>保存，等待30分钟后，查看BJTimeGenerated_CF列数据已是转换后数据</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>通过Powershell添加在syslog表中添加新列，参考更新表架构部分。</li>
+</ul>
+<ul>
+<li>使用Powershell登录Azure账户，然后运行如下脚本。注：标黄处替换为自己环境实际值</li>
+</ul>
+<ul>
+<li>Invoke-AzRestMethod -Path &quot;/subscriptions/d3c17595-846b-42e1-8e58-dc872136fbd2/resourcegroups/sentinel/providers/microsoft.operationalinsights/workspaces/sentinel3/tables/Syslog?api-version=2021-12-01-preview&quot; -Method PUT -payload $tableParams</li>
+</ul>
+<ul>
+<li>命令返回结果</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>对于syslog表格转换，参考文档<a href="https://docs.azure.cn/zh-cn/azure-monitor/logs/tutorial-workspace-transformations-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/logs/tutorial-workspace-transformations-portal</a> 中提及的在表处create transformation操作方法，会在门户中创建新列，但是创建出的工作区转换DCR中转换值并无法关联应用至syslog DCR，在已创建出新列基础上，继续编辑syslog DCR转换，可实现syslog表转换。但不建议，因为会有额外的工作区DCR产生。</li>
+</ul>
+<ul>
+<li>建议参考<a href="https://docs.azure.cn/zh-cn/azure-monitor/logs/tutorial-workspace-transformations-api" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/logs/tutorial-workspace-transformations-api</a> 更新表架构，然后编辑syslog DCR实现转换，此操作不会产生额外的工作区DCR。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>最近接了一个LA 工作区表转换功能案例SR_20241111324269，此处以客户需求“将syslog表中TimeGenerated值+8h显示”为例，梳理下大致转换方法，供大家后续参考。相关历史工单 20240304280689</p>
+<p>LA工作区表转换主要分两种场景：</p>
+<p>一、由DCR收集的数据，比如syslog，转换需要在收集数据的DCR上更改transfornKql的值，转换由syslog DCR中transfornKql的值控制。 下方有如何实现syslog表格转换步骤</p>
+<p>二、由非DCR收集的数据，如旧式代理收集的数据（由于旧式代理已经退役，所以可能比较少见）或者一些资源日志（如LA诊断查询日志）。该场景，可完全参考使用 Azure 门户在工作区数据收集规则中添加转换执行表转换，表转换由创建出的工作区DCR中transfornKql的值控制。</p>
+<p>++++++++++如何实现syslog表格转换步骤+++++++++++++++++++++++++++++++++</p>
+<p>以下方法可实现由DCR收集的syslog表转换（新建BJTimeGenerated_CF列，BJTimeGenerated_CF=TimeGenerated+8）。</p>
+<p>查看原始数据</p>
+<p>通过Powershell添加在syslog表中添加新列，参考更新表架构部分。</p>
+<p>使用Powershell登录Azure账户，然后运行如下脚本。注：标黄处替换为自己环境实际值</p>
+<p>$tableParams = @&#39;</p>
+<p>{</p>
+<p>&quot;properties&quot;: {</p>
+<p>&quot;schema&quot;: {</p>
+<p>&quot;name&quot;: &quot;Syslog&quot;,</p>
+<p>&quot;columns&quot;: [</p>
+<p>&quot;name&quot;: &quot;BJTimeGenerated_CF&quot;,</p>
+<p>&quot;description&quot;: &quot;The list of resources, this query ran against&quot;,</p>
+<p>&quot;type&quot;: &quot;DateTime&quot;,</p>
+<p>&quot;isDefaultDisplay&quot;: true,</p>
+<p>&quot;isHidden&quot;: false</p>
+<p>}</p>
+<p>]</p>
+<p>&#39;@</p>
+<p>Invoke-AzRestMethod -Path &quot;/subscriptions/d3c17595-846b-42e1-8e58-dc872136fbd2/resourcegroups/sentinel/providers/microsoft.operationalinsights/workspaces/sentinel3/tables/Syslog?api-version=2021-12-01-preview&quot; -Method PUT -payload $tableParams</p>
+<p>命令返回结果</p>
+<p>验证新列已添加</p>
+<p>在DCR模版处点击Deploy进入模版编辑模式，更改transformKql至source\n| extend BJTimeGenerated_CF = TimeGenerated + 8h\n</p>
+<p>保存，等待30分钟后，查看BJTimeGenerated_CF列数据已是转换后数据</p>
+<p>+++++++++++++++++++++++++++++++++++++++++++++++++++</p>
+<p>对于syslog表格转换，参考文档<a href="https://docs.azure.cn/zh-cn/azure-monitor/logs/tutorial-workspace-transformations-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/logs/tutorial-workspace-transformations-portal</a> 中提及的在表处create transformation操作方法，会在门户中创建新列，但是创建出的工作区转换DCR中转换值并无法关联应用至syslog DCR，在已创建出新列基础上，继续编辑syslog DCR转换，可实现syslog表转换。但不建议，因为会有额外的工作区DCR产生。</p>
+<p>建议参考<a href="https://docs.azure.cn/zh-cn/azure-monitor/logs/tutorial-workspace-transformations-api" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/logs/tutorial-workspace-transformations-api</a> 更新表架构，然后编辑syslog DCR实现转换，此操作不会产生额外的工作区DCR。</p></article>

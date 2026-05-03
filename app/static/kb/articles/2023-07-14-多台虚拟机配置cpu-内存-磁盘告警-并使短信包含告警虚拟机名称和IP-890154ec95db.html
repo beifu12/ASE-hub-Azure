@@ -1,0 +1,137 @@
+<article class="kb-article" data-title="多台虚拟机配置cpu、内存、磁盘告警，并使短信包含告警虚拟机名称和IP"><h1>多台虚拟机配置cpu、内存、磁盘告警，并使短信包含告警虚拟机名称和IP</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-07-14 15:20:05</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>但是客户要求告警短信中能体现触发告警的虚拟机名称及ip，此方法无法实现。短信中接收到的是工作区名称，如图</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>但是客户要求告警短信中能体现触发告警的虚拟机名称及ip，此方法无法实现。短信中接收到的是工作区名称，如图</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>ZuoXiaojing</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>为100多台北三centos6+centos7虚拟机批量设置CPU、内存、磁盘警报，使短信中包含告警的虚拟机名称和IP</li>
+</ul>
+<ul>
+<li>配置警报：</li>
+</ul>
+<ul>
+<li>范围要是工作区，如果是全部虚拟机，看不到LA平台指标</li>
+</ul>
+<ul>
+<li>可在条件处选择连接到工作区的多台虚拟机</li>
+</ul>
+<ul>
+<li>测试发现，使用自定义日志搜索配置警报可以实现，如情形2。</li>
+</ul>
+<ul>
+<li>情形2  使用LA自定义日志搜索时，有一个参数叫“资源 ID”列，可实现将虚拟机名字反映在短信或邮件中，Global文档解释的比较易懂</li>
+</ul>
+<ul>
+<li>Perf</li>
+</ul>
+<ul>
+<li>| where TimeGenerated &gt;= (now()-10m) and TimeGenerated &lt;= now()</li>
+</ul>
+<ul>
+<li>| where CounterName == &quot;% Processor Time&quot; and InstanceName == &quot;_Total&quot;</li>
+</ul>
+<ul>
+<li>| join kind=leftouter(</li>
+</ul>
+<ul>
+<li>Heartbeat</li>
+</ul>
+<ul>
+<li>)</li>
+</ul>
+<ul>
+<li>on $left.Computer == $right.Computer</li>
+</ul>
+<ul>
+<li>|project ComputerPrivateIPs,ResourceId,Computer,CounterValue,TimeGenerated</li>
+</ul>
+<ul>
+<li>|extend statusAndCount = pack(&quot;VMip&quot;, ComputerPrivateIPs, &quot;VMname&quot;, Computer)</li>
+</ul>
+<ul>
+<li>|extend _ResourceId=replace_string(ResourceId, Computer, tostring(statusAndCount))</li>
+</ul>
+<ul>
+<li>此处一定要使用替换字符串后的_ResourceId</li>
+</ul>
+<ul>
+<li>收到的短信内容</li>
+</ul>
+<ul>
+<li>[Microsoft]testxiaojing:Fired:Sev2 Azure Monitor Alert whencpuislessthan100percent on {&quot;vmip&quot;:&quot;163.228.89.232&quot;,&quot;vmname&quot;:&quot;centos6&quot;}</li>
+</ul>
+<ul>
+<li>[Microsoft]testxiaojing:Fired:Sev2 Azure Monitor Alert whencpuislessthan100percent on {&quot;vmip&quot;:&quot;52.130.145.156&quot;,&quot;vmname&quot;:&quot;ubuntu&quot;}</li>
+</ul>
+<ul>
+<li>收到的邮件内容</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查分析：</li>
+</ul>
+<ul>
+<li>情形1  使用Log Analytics工作区平台指标可实现监控cpu、磁盘、内存需求</li>
+</ul>
+<ul>
+<li>查询过去10分钟虚拟机CPU情况</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>目前Azure Monitor监控代理分三种Azure Monitor新式代理、Log Analytics旧代理（2024年8月31日之后不再受支持）、诊断扩展（2024年2月29日经典警报停用），批量配置警报，Azure Monitor新式代理和Log Analytics旧代理可以通过门户同时配置多台虚拟机。但受限于虚拟机操作系统版本（Azure Monitor代理支持的操作系统）,客户只能使用Log Analytics旧代理。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/7/14</p>
+<p>ZuoXiaojing</p>
+<p>问题描述：</p>
+<p>为100多台北三centos6+centos7虚拟机批量设置CPU、内存、磁盘警报，使短信中包含告警的虚拟机名称和IP</p>
+<p>排查分析：</p>
+<p>目前Azure Monitor监控代理分三种Azure Monitor新式代理、Log Analytics旧代理（2024年8月31日之后不再受支持）、诊断扩展（2024年2月29日经典警报停用），批量配置警报，Azure Monitor新式代理和Log Analytics旧代理可以通过门户同时配置多台虚拟机。但受限于虚拟机操作系统版本（Azure Monitor代理支持的操作系统）,客户只能使用Log Analytics旧代理。</p>
+<p>配置警报：</p>
+<p>情形1  使用Log Analytics工作区平台指标可实现监控cpu、磁盘、内存需求</p>
+<p>范围要是工作区，如果是全部虚拟机，看不到LA平台指标</p>
+<p>可在条件处选择连接到工作区的多台虚拟机</p>
+<p>但是客户要求告警短信中能体现触发告警的虚拟机名称及ip，此方法无法实现。短信中接收到的是工作区名称，如图</p>
+<p>测试发现，使用自定义日志搜索配置警报可以实现，如情形2。</p>
+<p>情形2  使用LA自定义日志搜索时，有一个参数叫“资源 ID”列，可实现将虚拟机名字反映在短信或邮件中，Global文档解释的比较易懂</p>
+<p>查询过去10分钟虚拟机CPU情况</p>
+<p>Perf</p>
+<p>| where TimeGenerated &gt;= (now()-10m) and TimeGenerated &lt;= now()</p>
+<p>| where CounterName == &quot;% Processor Time&quot; and InstanceName == &quot;_Total&quot;</p>
+<p>| join kind=leftouter(</p>
+<p>Heartbeat</p>
+<p>)</p>
+<p>on $left.Computer == $right.Computer</p>
+<p>|project ComputerPrivateIPs,ResourceId,Computer,CounterValue,TimeGenerated</p>
+<p>|extend statusAndCount = pack(&quot;VMip&quot;, ComputerPrivateIPs, &quot;VMname&quot;, Computer)</p>
+<p>|extend _ResourceId=replace_string(ResourceId, Computer, tostring(statusAndCount))</p>
+<p>此处一定要使用替换字符串后的_ResourceId</p>
+<p>收到的短信内容</p>
+<p>[Microsoft]testxiaojing:Fired:Sev2 Azure Monitor Alert whencpuislessthan100percent on {&quot;vmip&quot;:&quot;163.228.89.232&quot;,&quot;vmname&quot;:&quot;centos6&quot;}</p>
+<p>[Microsoft]testxiaojing:Fired:Sev2 Azure Monitor Alert whencpuislessthan100percent on {&quot;vmip&quot;:&quot;52.130.145.156&quot;,&quot;vmname&quot;:&quot;ubuntu&quot;}</p>
+<p>收到的邮件内容</p></article>

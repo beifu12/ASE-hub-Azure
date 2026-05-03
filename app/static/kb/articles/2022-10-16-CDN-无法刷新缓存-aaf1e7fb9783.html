@@ -1,0 +1,99 @@
+<article class="kb-article" data-title="CDN 无法刷新缓存"><h1>CDN 无法刷新缓存</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-10-16 13:41:13</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>最近经常接到CDN缓存刷新失败的案例。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>最近经常接到CDN缓存刷新失败的案例。</li>
+</ul>
+<ul>
+<li>通过与MS CDN PG的沟通了解到，客户刷新的url如果不符合规则，刷新会失败的。</li>
+</ul>
+<ul>
+<li>以下实例可以看出刷新失败的链接：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi , ALL,</li>
+</ul>
+<ul>
+<li>以某一次刷新为例：</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;Files&quot;: [</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;Directories&quot;: null</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>上述标红的URL就不是一个合法的URL，最末的%2是不符合URL encode的标准的,一般都是%号接两个16进制的。</li>
+</ul>
+<ul>
+<li>谢谢！</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>以后咱们可以用这个网址验证下客户的url是否是正确的。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>失败的原因是提交了非法的URL。</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>&quot;<a href="http://md.cdn.qingt.net/sog-blobs/b470acd6f45b92a0b9f06d28eff8ebfb-5b583bb94e0e40c41f445f230f5646d6?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rscd=attachment%3B%20filename%3D%22%25E5%25BB%25B6%25E7%25A6%25A7%25E6%2594%25BB%25E7%2595%25A5%252059%2520%2520Story%2520of%2520Yanxi%2520Palace%252059%25EF%25BC%2588%25E7%25A7%25A6%25E5%25B2%259A%25E3%2580%2581%25E8%2581%2582%25E8%25BF%259C%25E3%2580%2581%25E4%25BD%2598%25E8%25AF%2597%25E6%259B%25BC%25E3%2580%2581%25E5%2590%25B4%25E8%25B0%25A8%25E8%25A8%252&quot;," target="_blank" rel="noopener">http://md.cdn.qingt.net/sog-blobs/b470acd6f45b92a0b9f06d28eff8ebfb-5b583bb94e0e40c41f445f230f5646d6?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rscd=attachment%3B%20filename%3D%22%25E5%25BB%25B6%25E7%25A6%25A7%25E6%2594%25BB%25E7%2595%25A5%252059%2520%2520Story%2520of%2520Yanxi%2520Palace%252059%25EF%25BC%2588%25E7%25A7%25A6%25E5%25B2%259A%25E3%2580%2581%25E8%2581%2582%25E8%25BF%259C%25E3%2580%2581%25E4%25BD%2598%25E8%25AF%2597%25E6%259B%25BC%25E3%2580%2581%25E5%2590%25B4%25E8%25B0%25A8%25E8%25A8%252&quot;,</a></li>
+</ul>
+<ul>
+<li>&quot;<a href="http://md.cdn.qingt.net/sog-blobs/bda431dc39e4b6804930110db8d260bf-e024a67493d6dcf0276d8314b1368c72?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rscd=attachment%3B%20filename%3D%22%25E5%25BB%25B6%25E7%25A6%25A7%25E6%2594%25BB%25E7%2595%25A5%252066%2520%2520Story%2520of%2520Yanxi%2520Palace%252066%25EF%25BC%2588%25E7%25A7%25A6%25E5%25B2%259A%25E3%2580%2581%25E8%2581%2582%25E8%25BF%259C%25E3%2580%2581%25E4%25BD%2598%25E8%25AF%2597%25E6%259B%25BC%25E3%2580%2581%25E5%2590%25B4%25E8%25B0%25A8%25E8%25A8%2&quot;," target="_blank" rel="noopener">http://md.cdn.qingt.net/sog-blobs/bda431dc39e4b6804930110db8d260bf-e024a67493d6dcf0276d8314b1368c72?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rscd=attachment%3B%20filename%3D%22%25E5%25BB%25B6%25E7%25A6%25A7%25E6%2594%25BB%25E7%2595%25A5%252066%2520%2520Story%2520of%2520Yanxi%2520Palace%252066%25EF%25BC%2588%25E7%25A7%25A6%25E5%25B2%259A%25E3%2580%2581%25E8%2581%2582%25E8%25BF%259C%25E3%2580%2581%25E4%25BD%2598%25E8%25AF%2597%25E6%259B%25BC%25E3%2580%2581%25E5%2590%25B4%25E8%25B0%25A8%25E8%25A8%2&quot;,</a></li>
+</ul>
+<ul>
+<li>&quot;<a href="http://md.cdn.qingt.net/sog-blobs/bda431dc39e4b6804930110db8d260bf-e024a67493d6dcf0276d8314b1368c72?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rscd=attachment%3B%20filename%3D%22%25E5%25BB%25B6%25E7%25A6%25A7%25E6%2594%25BB%25E7%2595%25A5%252066%2520%2520Story%2520of%2520Yanxi%2520Palace%252066%25EF%25BC%2588%25E7%25A7%25A6%25E5%25B2%259A%25E3%2580%2581%25E8%2581%2582%25E8%25BF%259C%25E3%2580%2581%25E4%25BD%2598%25E8%25AF%2597%25E6%259B%25BC%25E3%2580%2581%25E5%2590%25B4%25E8%25B0%25A8%25E8%25A8%252&quot;," target="_blank" rel="noopener">http://md.cdn.qingt.net/sog-blobs/bda431dc39e4b6804930110db8d260bf-e024a67493d6dcf0276d8314b1368c72?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rscd=attachment%3B%20filename%3D%22%25E5%25BB%25B6%25E7%25A6%25A7%25E6%2594%25BB%25E7%2595%25A5%252066%2520%2520Story%2520of%2520Yanxi%2520Palace%252066%25EF%25BC%2588%25E7%25A7%25A6%25E5%25B2%259A%25E3%2580%2581%25E8%2581%2582%25E8%25BF%259C%25E3%2580%2581%25E4%25BD%2598%25E8%25AF%2597%25E6%259B%25BC%25E3%2580%2581%25E5%2590%25B4%25E8%25B0%25A8%25E8%25A8%252&quot;,</a></li>
+</ul>
+<ul>
+<li>&quot;<a href="http://md.cdn.qingt.net/sog-blobs/5bc9478048451f2bf14105ccf9b6be2c-62d9399af8ea6268f5f71937bb8eaed1?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rsct=video/mp4&amp;sig=Zsz61bXkkUZ02AvVDVKhlki8RGZ3cYRoOPE4NwpqOVk%3D&quot;" target="_blank" rel="noopener">http://md.cdn.qingt.net/sog-blobs/5bc9478048451f2bf14105ccf9b6be2c-62d9399af8ea6268f5f71937bb8eaed1?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rsct=video/mp4&amp;sig=Zsz61bXkkUZ02AvVDVKhlki8RGZ3cYRoOPE4NwpqOVk%3D&quot;</a></li>
+</ul>
+<ul>
+<li>可以自己用代码验证一下：<a href="http://rextester.com/ZKQ85002" target="_blank" rel="noopener">http://rextester.com/ZKQ85002</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi , ALL,</p>
+<p>最近经常接到CDN缓存刷新失败的案例。</p>
+<p>通过与MS CDN PG的沟通了解到，客户刷新的url如果不符合规则，刷新会失败的。</p>
+<p>以下实例可以看出刷新失败的链接：</p>
+<p>失败的原因是提交了非法的URL。</p>
+<p>以某一次刷新为例：</p>
+<p>{</p>
+<p>&quot;Files&quot;: [</p>
+<p>&quot;<a href="http://md.cdn.qingt.net/sog-blobs/b470acd6f45b92a0b9f06d28eff8ebfb-5b583bb94e0e40c41f445f230f5646d6?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rscd=attachment%3B%20filename%3D%22%25E5%25BB%25B6%25E7%25A6%25A7%25E6%2594%25BB%25E7%2595%25A5%252059%2520%2520Story%2520of%2520Yanxi%2520Palace%252059%25EF%25BC%2588%25E7%25A7%25A6%25E5%25B2%259A%25E3%2580%2581%25E8%2581%2582%25E8%25BF%259C%25E3%2580%2581%25E4%25BD%2598%25E8%25AF%2597%25E6%259B%25BC%25E3%2580%2581%25E5%2590%25B4%25E8%25B0%25A8%25E8%25A8%252&quot;," target="_blank" rel="noopener">http://md.cdn.qingt.net/sog-blobs/b470acd6f45b92a0b9f06d28eff8ebfb-5b583bb94e0e40c41f445f230f5646d6?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rscd=attachment%3B%20filename%3D%22%25E5%25BB%25B6%25E7%25A6%25A7%25E6%2594%25BB%25E7%2595%25A5%252059%2520%2520Story%2520of%2520Yanxi%2520Palace%252059%25EF%25BC%2588%25E7%25A7%25A6%25E5%25B2%259A%25E3%2580%2581%25E8%2581%2582%25E8%25BF%259C%25E3%2580%2581%25E4%25BD%2598%25E8%25AF%2597%25E6%259B%25BC%25E3%2580%2581%25E5%2590%25B4%25E8%25B0%25A8%25E8%25A8%252&quot;,</a></p>
+<p>&quot;<a href="http://md.cdn.qingt.net/sog-blobs/bda431dc39e4b6804930110db8d260bf-e024a67493d6dcf0276d8314b1368c72?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rscd=attachment%3B%20filename%3D%22%25E5%25BB%25B6%25E7%25A6%25A7%25E6%2594%25BB%25E7%2595%25A5%252066%2520%2520Story%2520of%2520Yanxi%2520Palace%252066%25EF%25BC%2588%25E7%25A7%25A6%25E5%25B2%259A%25E3%2580%2581%25E8%2581%2582%25E8%25BF%259C%25E3%2580%2581%25E4%25BD%2598%25E8%25AF%2597%25E6%259B%25BC%25E3%2580%2581%25E5%2590%25B4%25E8%25B0%25A8%25E8%25A8%2&quot;," target="_blank" rel="noopener">http://md.cdn.qingt.net/sog-blobs/bda431dc39e4b6804930110db8d260bf-e024a67493d6dcf0276d8314b1368c72?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rscd=attachment%3B%20filename%3D%22%25E5%25BB%25B6%25E7%25A6%25A7%25E6%2594%25BB%25E7%2595%25A5%252066%2520%2520Story%2520of%2520Yanxi%2520Palace%252066%25EF%25BC%2588%25E7%25A7%25A6%25E5%25B2%259A%25E3%2580%2581%25E8%2581%2582%25E8%25BF%259C%25E3%2580%2581%25E4%25BD%2598%25E8%25AF%2597%25E6%259B%25BC%25E3%2580%2581%25E5%2590%25B4%25E8%25B0%25A8%25E8%25A8%2&quot;,</a></p>
+<p>&quot;<a href="http://md.cdn.qingt.net/sog-blobs/bda431dc39e4b6804930110db8d260bf-e024a67493d6dcf0276d8314b1368c72?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rscd=attachment%3B%20filename%3D%22%25E5%25BB%25B6%25E7%25A6%25A7%25E6%2594%25BB%25E7%2595%25A5%252066%2520%2520Story%2520of%2520Yanxi%2520Palace%252066%25EF%25BC%2588%25E7%25A7%25A6%25E5%25B2%259A%25E3%2580%2581%25E8%2581%2582%25E8%25BF%259C%25E3%2580%2581%25E4%25BD%2598%25E8%25AF%2597%25E6%259B%25BC%25E3%2580%2581%25E5%2590%25B4%25E8%25B0%25A8%25E8%25A8%252&quot;," target="_blank" rel="noopener">http://md.cdn.qingt.net/sog-blobs/bda431dc39e4b6804930110db8d260bf-e024a67493d6dcf0276d8314b1368c72?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rscd=attachment%3B%20filename%3D%22%25E5%25BB%25B6%25E7%25A6%25A7%25E6%2594%25BB%25E7%2595%25A5%252066%2520%2520Story%2520of%2520Yanxi%2520Palace%252066%25EF%25BC%2588%25E7%25A7%25A6%25E5%25B2%259A%25E3%2580%2581%25E8%2581%2582%25E8%25BF%259C%25E3%2580%2581%25E4%25BD%2598%25E8%25AF%2597%25E6%259B%25BC%25E3%2580%2581%25E5%2590%25B4%25E8%25B0%25A8%25E8%25A8%252&quot;,</a></p>
+<p>&quot;<a href="http://md.cdn.qingt.net/sog-blobs/5bc9478048451f2bf14105ccf9b6be2c-62d9399af8ea6268f5f71937bb8eaed1?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rsct=video/mp4&amp;sig=Zsz61bXkkUZ02AvVDVKhlki8RGZ3cYRoOPE4NwpqOVk%3D&quot;" target="_blank" rel="noopener">http://md.cdn.qingt.net/sog-blobs/5bc9478048451f2bf14105ccf9b6be2c-62d9399af8ea6268f5f71937bb8eaed1?se=2018-09-01T00%3A00%3A00Z&amp;sp=r&amp;sv=2017-04-17&amp;sr=b&amp;rsct=video/mp4&amp;sig=Zsz61bXkkUZ02AvVDVKhlki8RGZ3cYRoOPE4NwpqOVk%3D&quot;</a></p>
+<p>],</p>
+<p>&quot;Directories&quot;: null</p>
+<p>}</p>
+<p>上述标红的URL就不是一个合法的URL，最末的%2是不符合URL encode的标准的,一般都是%号接两个16进制的。</p>
+<p>可以自己用代码验证一下：<a href="http://rextester.com/ZKQ85002" target="_blank" rel="noopener">http://rextester.com/ZKQ85002</a></p>
+<p>以后咱们可以用这个网址验证下客户的url是否是正确的。</p>
+<p>谢谢！</p></article>

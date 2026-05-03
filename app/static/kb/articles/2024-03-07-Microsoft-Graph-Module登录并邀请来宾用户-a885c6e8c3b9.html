@@ -1,0 +1,95 @@
+<article class="kb-article" data-title="Microsoft Graph Module登录并邀请来宾用户"><h1>Microsoft Graph Module登录并邀请来宾用户</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: Kusto Jarvis常用命令</li>
+<li>最近修改: 2024-03-07 10:07:05</li>
+<li>JD 相关性: 自动化/命令工具; Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>此问题已在guthub中创建了issue，期待PG调整。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>此问题已在guthub中创建了issue，期待PG调整。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>先决条件：</li>
+</ul>
+<ul>
+<li>登录后的权限实际时使用的用户权限，应用程序无需分配API权限。可以直接使用New-MgInvitation邀请来宾用户</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>发现可以使用类似openid的方式通过应用登录时使用用户身份进行验证，登录后使用的是用户的权限。所以可以正常邀请来并用户。</li>
+</ul>
+<ul>
+<li>针对MgGraph module登录问题我们发现以下方式可以登录。此方式是借助应用登录的方式通过用户进行验证。</li>
+</ul>
+<ul>
+<li>应用需要再身份验证功能种开启“允许公共客户端流”的功能。</li>
+</ul>
+<ul>
+<li>应用对应的企业应用中需要先添加用户，用于以用户方式登录时进行验证。</li>
+</ul>
+<ul>
+<li>复制URL和code到浏览器中进行验证。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Case num: SR_20240301280493_不能用脚本添加一个guest用户</li>
+</ul>
+<ul>
+<li>问题文档快速入门：使用 PowerShell 添加来宾用户 | Azure Docs</li>
+</ul>
+<ul>
+<li>Graph Module在中国区无法直接使用用户的方式登录，会直接报错 AADSTS700016，相关github上有很多issue。[ChinaAzure/Mooncake]Microsoft graph SDK for powershell cannot be used cause of required application cannot be found in AAD tenant. · Issue #1032</li>
+</ul>
+<ul>
+<li>Connect-Graph in 21vianet Azure AD reported AADSTS700016 · Issue #1735 · microsoftgraph/msgraph-sdk-powershell (github.com)</li>
+</ul>
+<ul>
+<li>Microsoft Graph PowerShell cannot invite guest users in Azure China and is prompted with insufficient permissions. · Issue #2620</li>
+</ul>
+<ul>
+<li>登录命令：Connect-MgGraph -Environment China -Scopes &#39;User.ReadWrite.All&#39; -UseDeviceAuthentication -ClientId &quot;APP ID&quot; -TenantId &quot;Tenant ID”</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>部分解决方案是建议使用证书的方式通过应用程序进行登录，经过测试虽然可以登录成功，但是在邀请来宾用户是会一直提示权限有问题，即时给足权限也是不行。同样权限同样的应用程序使用AzureAD模块登录后就可以正常邀请。说明中国区Graph module对于应用程序的权限识别有一定问题。</li>
+</ul>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>WangZhaoqing</p>
+<p>Case num: SR_20240301280493_不能用脚本添加一个guest用户</p>
+<p>问题原因：</p>
+<p>问题文档快速入门：使用 PowerShell 添加来宾用户 | Azure Docs</p>
+<p>Graph Module在中国区无法直接使用用户的方式登录，会直接报错 AADSTS700016，相关github上有很多issue。[ChinaAzure/Mooncake]Microsoft graph SDK for powershell cannot be used cause of required application cannot be found in AAD tenant. · Issue #1032</p>
+<p>Connect-Graph in 21vianet Azure AD reported AADSTS700016 · Issue #1735 · microsoftgraph/msgraph-sdk-powershell (github.com)</p>
+<p>部分解决方案是建议使用证书的方式通过应用程序进行登录，经过测试虽然可以登录成功，但是在邀请来宾用户是会一直提示权限有问题，即时给足权限也是不行。同样权限同样的应用程序使用AzureAD模块登录后就可以正常邀请。说明中国区Graph module对于应用程序的权限识别有一定问题。</p>
+<p>此问题已在guthub中创建了issue，期待PG调整。</p>
+<p>Microsoft Graph PowerShell cannot invite guest users in Azure China and is prompted with insufficient permissions. · Issue #2620</p>
+<p>解决方案：</p>
+<p>发现可以使用类似openid的方式通过应用登录时使用用户身份进行验证，登录后使用的是用户的权限。所以可以正常邀请来并用户。</p>
+<p>针对MgGraph module登录问题我们发现以下方式可以登录。此方式是借助应用登录的方式通过用户进行验证。</p>
+<p>登录命令：Connect-MgGraph -Environment China -Scopes &#39;User.ReadWrite.All&#39; -UseDeviceAuthentication -ClientId &quot;APP ID&quot; -TenantId &quot;Tenant ID”</p>
+<p>先决条件：</p>
+<p>应用需要再身份验证功能种开启“允许公共客户端流”的功能。</p>
+<p>应用对应的企业应用中需要先添加用户，用于以用户方式登录时进行验证。</p>
+<p>复制URL和code到浏览器中进行验证。</p>
+<p>登录后的权限实际时使用的用户权限，应用程序无需分配API权限。可以直接使用New-MgInvitation邀请来宾用户</p></article>

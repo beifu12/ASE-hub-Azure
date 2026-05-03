@@ -1,0 +1,194 @@
+<article class="kb-article" data-title="ADFS部署(包含DC搭建)"><h1>ADFS部署(包含DC搭建)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-03-11 10:21:45</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>WangZhaoqing</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>se</li>
+</ul>
+<ul>
+<li>首先需要搭建DC</li>
+</ul>
+<ul>
+<li>点击添加角色和功能，然后默认点击下一步</li>
+</ul>
+<ul>
+<li>将服务器升级到域控</li>
+</ul>
+<ul>
+<li>一直下一步知道安装完成即可,安装时间较长，安装完成后虚拟机会重启。</li>
+</ul>
+<ul>
+<li>完成DHCP服务配置，默认点击直接提交即可。</li>
+</ul>
+<ul>
+<li>开始在DC上安装AC，中间省略截图的部分均是点击下一步</li>
+</ul>
+<ul>
+<li>配置ADCS</li>
+</ul>
+<ul>
+<li>一直下一步即可</li>
+</ul>
+<ul>
+<li>以上环境准备好后就可以配置ADFS服务器了。在配置前我们需要给计算机或者指定的用户或者计算机授权证书颁发</li>
+</ul>
+<ul>
+<li>我们在CA服务器上打开证书颁发架构</li>
+</ul>
+<ul>
+<li>选择证书模板，点击管理</li>
+</ul>
+<ul>
+<li>找到web Server，右键选择属性，点击安全选项</li>
+</ul>
+<ul>
+<li>添加当前系统用户并授权注册权限。同步给认证用户也添加注册权限。</li>
+</ul>
+<ul>
+<li>接下来我们安装ADFS服务；在安装ADFS之前，我们需要创建一个ADFS账户及证书。</li>
+</ul>
+<ul>
+<li>我们创建的服账户adfs_svc</li>
+</ul>
+<ul>
+<li>申请证书可以使用IIS，这边主要介绍mmc的方式，因为比IIS简单。直接上图</li>
+</ul>
+<ul>
+<li>右键点击个人，然后再All Task中选择申请证书</li>
+</ul>
+<ul>
+<li>配置注册信息</li>
+</ul>
+<ul>
+<li>现在开始安装 ADFS</li>
+</ul>
+<ul>
+<li>安装完毕配置ADFS服务</li>
+</ul>
+<ul>
+<li>一直下一步直到配置完成。完成后重启操作系统。</li>
+</ul>
+<ul>
+<li>发现出现错误，如果是在windows server 2012R2下安装及配置ADFS的话就不会出现以上错误，</li>
+</ul>
+<ul>
+<li>执行后再重新生成一个证书即可，生成方式参考上面的mmc申请方式</li>
+</ul>
+<ul>
+<li>在本机DNS中添加adfs-srv解析记录</li>
+</ul>
+<ul>
+<li>在域名服务商处添加A记录</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>搭建4.0，为方便测试DC与ADFS都搭建在一台上了，注意测试一定要用真实域名因为公网验证要配置A记录解析。</li>
+</ul>
+<ul>
+<li>域名要先在Azure AD的自定义域名中进行验证。</li>
+</ul>
+<ul>
+<li>添加ADDS功能和DHCP。如下步骤一致默认安装即可</li>
+</ul>
+<ul>
+<li>此时我们可以验证CA是否安装成功，打开浏览器访问，此IP为本机IP，cert</li>
+</ul>
+<ul>
+<li>验证当前管理员用户</li>
+</ul>
+<ul>
+<li>经过查看资料Windows server 2016的是 ADFS 4.0需要在配置证书的时候增加一个certauth开头的使用者，</li>
+</ul>
+<ul>
+<li>此时已搭建完成，我们开始验证ADFS功能。首先我们在ADFS内部通过浏览器访问</li>
+</ul>
+<ul>
+<li>登录验证系统用户返回验证成功</li>
+</ul>
+<ul>
+<li>随后可通过公网进行访问验证。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>例如certauth.adfs.contoso.com，另外IDP-initiated sign on地址默认是关闭的，需要执行PowerShell命令手动开启</li>
+</ul>
+<ul>
+<li>需要在ADFS 4.0下的powershell下执行一下命令</li>
+</ul>
+<ul>
+<li>Set-AdfsProperties -EnableIdPInitiatedSignonPage:$true</li>
+</ul>
+<ul>
+<li>Set-AdfsProperties -EnableRelayStateForIdpInitiatedSignOn:$true</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>访问  <a href="https://adfs-srv.wats.xyz/adfs/ls/idpinitiatedsignon.aspx" target="_blank" rel="noopener">https://adfs-srv.wats.xyz/adfs/ls/idpinitiatedsignon.aspx</a></li>
+</ul>
+<ul>
+<li>更详细的功能请参考微软官方文档：<a href="https://social.technet.microsoft.com/wiki/contents/articles/34162.ad-fs-4-0-discover-setup-and-publish-application-part1.aspx" target="_blank" rel="noopener">https://social.technet.microsoft.com/wiki/contents/articles/34162.ad-fs-4-0-discover-setup-and-publish-application-part1.aspx</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>WangZhaoqing</p>
+<p>搭建4.0，为方便测试DC与ADFS都搭建在一台上了，注意测试一定要用真实域名因为公网验证要配置A记录解析。</p>
+<p>域名要先在Azure AD的自定义域名中进行验证。</p>
+<p>se</p>
+<p>首先需要搭建DC</p>
+<p>点击添加角色和功能，然后默认点击下一步</p>
+<p>添加ADDS功能和DHCP。如下步骤一致默认安装即可</p>
+<p>将服务器升级到域控</p>
+<p>一直下一步知道安装完成即可,安装时间较长，安装完成后虚拟机会重启。</p>
+<p>完成DHCP服务配置，默认点击直接提交即可。</p>
+<p>开始在DC上安装AC，中间省略截图的部分均是点击下一步</p>
+<p>配置ADCS</p>
+<p>一直下一步即可</p>
+<p>此时我们可以验证CA是否安装成功，打开浏览器访问，此IP为本机IP，cert</p>
+<p>以上环境准备好后就可以配置ADFS服务器了。在配置前我们需要给计算机或者指定的用户或者计算机授权证书颁发</p>
+<p>我们在CA服务器上打开证书颁发架构</p>
+<p>选择证书模板，点击管理</p>
+<p>找到web Server，右键选择属性，点击安全选项</p>
+<p>添加当前系统用户并授权注册权限。同步给认证用户也添加注册权限。</p>
+<p>接下来我们安装ADFS服务；在安装ADFS之前，我们需要创建一个ADFS账户及证书。</p>
+<p>我们创建的服账户adfs_svc</p>
+<p>申请证书可以使用IIS，这边主要介绍mmc的方式，因为比IIS简单。直接上图</p>
+<p>右键点击个人，然后再All Task中选择申请证书</p>
+<p>配置注册信息</p>
+<p>现在开始安装 ADFS</p>
+<p>安装完毕配置ADFS服务</p>
+<p>验证当前管理员用户</p>
+<p>一直下一步直到配置完成。完成后重启操作系统。</p>
+<p>发现出现错误，如果是在windows server 2012R2下安装及配置ADFS的话就不会出现以上错误，</p>
+<p>经过查看资料Windows server 2016的是 ADFS 4.0需要在配置证书的时候增加一个certauth开头的使用者，</p>
+<p>例如certauth.adfs.contoso.com，另外IDP-initiated sign on地址默认是关闭的，需要执行PowerShell命令手动开启</p>
+<p>需要在ADFS 4.0下的powershell下执行一下命令</p>
+<p>Set-AdfsProperties -EnableIdPInitiatedSignonPage:$true</p>
+<p>Set-AdfsProperties -EnableRelayStateForIdpInitiatedSignOn:$true</p>
+<p>执行后再重新生成一个证书即可，生成方式参考上面的mmc申请方式</p>
+<p>此时已搭建完成，我们开始验证ADFS功能。首先我们在ADFS内部通过浏览器访问</p>
+<p>在本机DNS中添加adfs-srv解析记录</p>
+<p>访问  <a href="https://adfs-srv.wats.xyz/adfs/ls/idpinitiatedsignon.aspx" target="_blank" rel="noopener">https://adfs-srv.wats.xyz/adfs/ls/idpinitiatedsignon.aspx</a></p>
+<p>登录验证系统用户返回验证成功</p>
+<p>在域名服务商处添加A记录</p>
+<p>随后可通过公网进行访问验证。</p>
+<p>更详细的功能请参考微软官方文档：<a href="https://social.technet.microsoft.com/wiki/contents/articles/34162.ad-fs-4-0-discover-setup-and-publish-application-part1.aspx" target="_blank" rel="noopener">https://social.technet.microsoft.com/wiki/contents/articles/34162.ad-fs-4-0-discover-setup-and-publish-application-part1.aspx</a></p></article>

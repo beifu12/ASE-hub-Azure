@@ -1,0 +1,176 @@
+<article class="kb-article" data-title="Azure VPN GW IKEv1测试"><h1>Azure VPN GW IKEv1测试</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2026-01-12 17:59:17</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>给大家推荐一个免费在线画图软件：draw.io</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>给大家推荐一个免费在线画图软件：draw.io</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>给大家推荐一个免费在线画图软件：draw.io</li>
+</ul>
+<ul>
+<li>测试环境</li>
+</ul>
+<ul>
+<li>TunnelEvent表</li>
+</ul>
+<ul>
+<li>无流量(04.19 00:23:02 – 09:20:50)：</li>
+</ul>
+<ul>
+<li>00:23:02 – 07:59:02</li>
+</ul>
+<ul>
+<li>07:59:02 – 08:01:02(中断2min)</li>
+</ul>
+<ul>
+<li>08:01:02 - 09:20:50(删除Connection)</li>
+</ul>
+<ul>
+<li>04.20 23:07:24 – 06:43:23</li>
+</ul>
+<ul>
+<li>一直有流量(23:07:24 – 06:43:24)</li>
+</ul>
+<ul>
+<li>IPSec SA Rekey时（06:07）不会丢包</li>
+</ul>
+<ul>
+<li>06:43:24</li>
+</ul>
+<ul>
+<li>丢了一个ICMP包（IKE SA、IPSec SA的协商）</li>
+</ul>
+<ul>
+<li>(06 – 09有流量)06:43:24 – 14:19:25</li>
+</ul>
+<ul>
+<li>04.21 14:21:24 – 21:57:24</li>
+</ul>
+<ul>
+<li>场景：21:56:57在IPSec SA删除后通过短ping，保证在IKE SA删除时有正常的IPSec SA。</li>
+</ul>
+<ul>
+<li>短ping时，会丢一个icmp（协商IPSec SA）</li>
+</ul>
+<ul>
+<li>21:57:24 – 21:58:34</li>
+</ul>
+<ul>
+<li>场景：通常情况下，IKE SA建立成功后，会在7h 36min时删除旧的IKE SA。若没有流量触发，那么在旧的IKE SA删除后，会在120s后再次协商新的IKE SA。在这次的测试中，手动在删除旧的IKE SA后的70s时（创建计划任务），手动触发IKE SA的建立。</li>
+</ul>
+<ul>
+<li>会丢一个ICMP包（IKE SA与IPSec SA的协商）</li>
+</ul>
+<ul>
+<li>结论</li>
+</ul>
+<ul>
+<li>1. IKEv1的IKE SA会在建立成功后7h 36min删除IKE SA（无论是否当时有Active的IPSec SA），并重新协商。</li>
+</ul>
+<ul>
+<li>3. 在删除IKE SA后，若在2min内没有流量触发，那么会在删除后的120s时再次协商IKE SA。若有流量触发，会立即协商IKE SA。</li>
+</ul>
+<ul>
+<li>4. 在IKE SA协商时，若有流量需要通过VPN，那么会有丢包。或IKE SA存在，但是IPSec SA过期而进行第二次协商时，也会有丢包。</li>
+</ul>
+<ul>
+<li>疑问</li>
+</ul>
+<ul>
+<li>IKEv1在IKE SA Lifetime过期时，标准做法是重建IKE SA吗</li>
+</ul>
+<ul>
+<li>从平台的日志来看，IKE SA删除的原因为IKE SA Lifetime过期或者收到了对方的IKE SA Delete。但是7h 36min还未到设定的Lifetime 28800s。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>以40.73.23.126为基准排查</li>
+</ul>
+<ul>
+<li>2. 通过Azure Jarvis日志来看，删除的原因为IKE SA Lifetime expired或收到了对方的IKE SA Delete</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/114E173D" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/114E173D</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/EBF7819" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/EBF7819</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/A66FE4C2" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/A66FE4C2</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/E9A69449" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/E9A69449</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/44E1B2D2" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/44E1B2D2</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/107A9C99" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/107A9C99</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/DE2856BF" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/DE2856BF</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/70BE4C03" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/70BE4C03</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/BA906F18" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/BA906F18</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-04-22</p>
+<p>给大家推荐一个免费在线画图软件：draw.io</p>
+<p>测试环境</p>
+<p>以40.73.23.126为基准排查</p>
+<p>TunnelEvent表</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/114E173D" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/114E173D</a></p>
+<p>无流量(04.19 00:23:02 – 09:20:50)：</p>
+<p>00:23:02 – 07:59:02</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/EBF7819" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/EBF7819</a></p>
+<p>07:59:02 – 08:01:02(中断2min)</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/A66FE4C2" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/A66FE4C2</a></p>
+<p>08:01:02 - 09:20:50(删除Connection)</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/E9A69449" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/E9A69449</a></p>
+<p>04.20 23:07:24 – 06:43:23</p>
+<p>一直有流量(23:07:24 – 06:43:24)</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/44E1B2D2" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/44E1B2D2</a></p>
+<p>IPSec SA Rekey时（06:07）不会丢包</p>
+<p>06:43:24</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/107A9C99" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/107A9C99</a></p>
+<p>丢了一个ICMP包（IKE SA、IPSec SA的协商）</p>
+<p>(06 – 09有流量)06:43:24 – 14:19:25</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/DE2856BF" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/DE2856BF</a></p>
+<p>04.21 14:21:24 – 21:57:24</p>
+<p>场景：21:56:57在IPSec SA删除后通过短ping，保证在IKE SA删除时有正常的IPSec SA。</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/70BE4C03" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/70BE4C03</a></p>
+<p>短ping时，会丢一个icmp（协商IPSec SA）</p>
+<p>21:57:24 – 21:58:34</p>
+<p>场景：通常情况下，IKE SA建立成功后，会在7h 36min时删除旧的IKE SA。若没有流量触发，那么在旧的IKE SA删除后，会在120s后再次协商新的IKE SA。在这次的测试中，手动在删除旧的IKE SA后的70s时（创建计划任务），手动触发IKE SA的建立。</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/BA906F18" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/BA906F18</a></p>
+<p>会丢一个ICMP包（IKE SA与IPSec SA的协商）</p>
+<p>结论</p>
+<p>1. IKEv1的IKE SA会在建立成功后7h 36min删除IKE SA（无论是否当时有Active的IPSec SA），并重新协商。</p>
+<p>2. 通过Azure Jarvis日志来看，删除的原因为IKE SA Lifetime expired或收到了对方的IKE SA Delete</p>
+<p>3. 在删除IKE SA后，若在2min内没有流量触发，那么会在删除后的120s时再次协商IKE SA。若有流量触发，会立即协商IKE SA。</p>
+<p>4. 在IKE SA协商时，若有流量需要通过VPN，那么会有丢包。或IKE SA存在，但是IPSec SA过期而进行第二次协商时，也会有丢包。</p>
+<p>疑问</p>
+<p>IKEv1在IKE SA Lifetime过期时，标准做法是重建IKE SA吗</p>
+<p>从平台的日志来看，IKE SA删除的原因为IKE SA Lifetime过期或者收到了对方的IKE SA Delete。但是7h 36min还未到设定的Lifetime 28800s。</p></article>

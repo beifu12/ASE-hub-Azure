@@ -1,0 +1,131 @@
+<article class="kb-article" data-title="【Share】使用REST API 列出存储账户的SAS Token的官方文档方法实际为生成新的存储账户SAS Token"><h1>【Share】使用REST API 列出存储账户的SAS Token的官方文档方法实际为生成新的存储账户SAS Token</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2022-08-16 16:27:53</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>从上述文档的标题看，似乎很对应客户的需求，所以我们就测试了下。由于文档中的链接是指向Azure Global，无法直接使用其集成的API测试功能，所以就使用Postman测试了下，详见下面信息：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>从上述文档的标题看，似乎很对应客户的需求，所以我们就测试了下。由于文档中的链接是指向Azure Global，无法直接使用其集成的API测试功能，所以就使用Postman测试了下，详见下面信息：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Jia.xiaolei</li>
+</ul>
+<ul>
+<li>2022.08.13</li>
+</ul>
+<ul>
+<li>前两天收到客户一个需求，希望列出之前其订阅下某个存储账户生成的SAS Token，并询问文档：Storage Accounts - List Account SAS - REST API (Azure Storage Resource Provider) | Microsoft Docs 是否可用。</li>
+</ul>
+<ul>
+<li>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</li>
+</ul>
+<ul>
+<li>下载安装Postman:</li>
+</ul>
+<ul>
+<li>下载Postman 工具并安装，下载地址：</li>
+</ul>
+<ul>
+<li>操作之前需要建立Collection</li>
+</ul>
+<ul>
+<li>再建立Request，并选择存放在之前建立的Collection 下</li>
+</ul>
+<ul>
+<li>3，然后在Postman Request 中，输入URL 中根据自己的信息替换（{}部分）并填入（management.chinacloudapi.cn为Azure China的api管理URL,不要用之前文档中那个）：</li>
+</ul>
+<ul>
+<li>POST</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;signedServices&quot;: &quot;b&quot;,</li>
+</ul>
+<ul>
+<li>&quot;signedResourceTypes&quot;: &quot;s&quot;,</li>
+</ul>
+<ul>
+<li>&quot;signedPermission&quot;: &quot;r&quot;,</li>
+</ul>
+<ul>
+<li>&quot;signedStart&quot;: &quot;2017-05-24T10:42:03.1567373Z&quot;,</li>
+</ul>
+<ul>
+<li>&quot;signedExpiry&quot;: &quot;2017-05-24T11:42:03.1567373Z&quot;,</li>
+</ul>
+<ul>
+<li>&quot;keyToSign&quot;: &quot;key1&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>4，Postman中点击Send，可以得到类似如下的输出结果：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2，通过Chrome 浏览器登录Portal后，获取认证信息Bearer Token：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>&quot;signedProtocol&quot;: &quot;https,http&quot;,</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://www.postman.com/downloads/" target="_blank" rel="noopener">https://www.postman.com/downloads/</a></li>
+</ul>
+<ul>
+<li><a href="https://management.chinacloudapi.cn/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}/ListAccountSas?api-version=2021-09-01" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}/ListAccountSas?api-version=2021-09-01</a></li>
+</ul>
+<ul>
+<li>在Body中选择“Raw” ---“JSON” ,然后配置具体的SAS Token参数，如下方信息。详细的参数信息，您可参考文档：<a href="https://docs.microsoft.com/en-us/rest/api/storagerp/storage-accounts/list-account-sas?tabs=HTTP#code-try-0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/rest/api/storagerp/storage-accounts/list-account-sas?tabs=HTTP#code-try-0</a></li>
+</ul>
+<ul>
+<li>但是最终证实这个文档：<a href="https://docs.microsoft.com/en-us/rest/api/storagerp/storage-accounts/list-account-sas?tabs=HTTP&amp;tryIt=true&amp;source=docs#code-try-0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/rest/api/storagerp/storage-accounts/list-account-sas?tabs=HTTP&amp;tryIt=true&amp;source=docs#code-try-0</a> 中描述的方法标题有些“歧义”，并不是指导用户去查询出已有的SAS Token，见下方截图：</li>
+</ul>
+<ul>
+<li>而进一步在网上搜索文档，在微软的MSDN中有一篇帖子：<a href="https://social.msdn.microsoft.com/Forums/azure/en-US/0c2f37f6-e3e2-4a91-b823-185479be3c06/want-to-get-the-list-of-sas-token-currently-existing-in-my-storage-account?forum=windowsazuredata" target="_blank" rel="noopener">https://social.msdn.microsoft.com/Forums/azure/en-US/0c2f37f6-e3e2-4a91-b823-185479be3c06/want-to-get-the-list-of-sas-token-currently-existing-in-my-storage-account?forum=windowsazuredata</a> 其中明确提到是没有任何可能获取到已有的SAS Token的。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Jia.xiaolei</p>
+<p>2022.08.13</p>
+<p>前两天收到客户一个需求，希望列出之前其订阅下某个存储账户生成的SAS Token，并询问文档：Storage Accounts - List Account SAS - REST API (Azure Storage Resource Provider) | Microsoft Docs 是否可用。</p>
+<p>从上述文档的标题看，似乎很对应客户的需求，所以我们就测试了下。由于文档中的链接是指向Azure Global，无法直接使用其集成的API测试功能，所以就使用Postman测试了下，详见下面信息：</p>
+<p>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</p>
+<p>下载安装Postman:</p>
+<p>下载Postman 工具并安装，下载地址：</p>
+<p><a href="https://www.postman.com/downloads/" target="_blank" rel="noopener">https://www.postman.com/downloads/</a></p>
+<p>操作之前需要建立Collection</p>
+<p>再建立Request，并选择存放在之前建立的Collection 下</p>
+<p>2，通过Chrome 浏览器登录Portal后，获取认证信息Bearer Token：</p>
+<p>3，然后在Postman Request 中，输入URL 中根据自己的信息替换（{}部分）并填入（management.chinacloudapi.cn为Azure China的api管理URL,不要用之前文档中那个）：</p>
+<p>POST</p>
+<p><a href="https://management.chinacloudapi.cn/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}/ListAccountSas?api-version=2021-09-01" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}/ListAccountSas?api-version=2021-09-01</a></p>
+<p>在Body中选择“Raw” ---“JSON” ,然后配置具体的SAS Token参数，如下方信息。详细的参数信息，您可参考文档：<a href="https://docs.microsoft.com/en-us/rest/api/storagerp/storage-accounts/list-account-sas?tabs=HTTP#code-try-0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/rest/api/storagerp/storage-accounts/list-account-sas?tabs=HTTP#code-try-0</a></p>
+<p>{</p>
+<p>&quot;signedServices&quot;: &quot;b&quot;,</p>
+<p>&quot;signedResourceTypes&quot;: &quot;s&quot;,</p>
+<p>&quot;signedPermission&quot;: &quot;r&quot;,</p>
+<p>&quot;signedProtocol&quot;: &quot;https,http&quot;,</p>
+<p>&quot;signedStart&quot;: &quot;2017-05-24T10:42:03.1567373Z&quot;,</p>
+<p>&quot;signedExpiry&quot;: &quot;2017-05-24T11:42:03.1567373Z&quot;,</p>
+<p>&quot;keyToSign&quot;: &quot;key1&quot;</p>
+<p>}</p>
+<p>4，Postman中点击Send，可以得到类似如下的输出结果：</p>
+<p>但是最终证实这个文档：<a href="https://docs.microsoft.com/en-us/rest/api/storagerp/storage-accounts/list-account-sas?tabs=HTTP&amp;tryIt=true&amp;source=docs#code-try-0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/rest/api/storagerp/storage-accounts/list-account-sas?tabs=HTTP&amp;tryIt=true&amp;source=docs#code-try-0</a> 中描述的方法标题有些“歧义”，并不是指导用户去查询出已有的SAS Token，见下方截图：</p>
+<p>而进一步在网上搜索文档，在微软的MSDN中有一篇帖子：<a href="https://social.msdn.microsoft.com/Forums/azure/en-US/0c2f37f6-e3e2-4a91-b823-185479be3c06/want-to-get-the-list-of-sas-token-currently-existing-in-my-storage-account?forum=windowsazuredata" target="_blank" rel="noopener">https://social.msdn.microsoft.com/Forums/azure/en-US/0c2f37f6-e3e2-4a91-b823-185479be3c06/want-to-get-the-list-of-sas-token-currently-existing-in-my-storage-account?forum=windowsazuredata</a> 其中明确提到是没有任何可能获取到已有的SAS Token的。</p></article>

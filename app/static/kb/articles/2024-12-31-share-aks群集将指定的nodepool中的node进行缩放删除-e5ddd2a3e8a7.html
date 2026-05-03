@@ -1,0 +1,292 @@
+<article class="kb-article" data-title="【share】aks群集将指定的nodepool中的node进行缩放删除"><h1>【share】aks群集将指定的nodepool中的node进行缩放删除</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-12-31 10:47:43</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>以下方法将指定的aks nodepool中的node进行缩放删除。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>以下方法将指定的aks nodepool中的node进行缩放删除。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>以下方法将指定的aks nodepool中的node进行缩放删除。</li>
+</ul>
+<ul>
+<li>参考官方文档：</li>
+</ul>
+<ul>
+<li>以下测试环境，使用的aks节点池有20个node节点，</li>
+</ul>
+<ul>
+<li>如缩放删除如下截图，中指定的四台node，需要在虚拟机规模集中，对其进行stop，详情参考截图。</li>
+</ul>
+<ul>
+<li>如下截图，分别对四台VM 进行stop。</li>
+</ul>
+<ul>
+<li>详细输出文件如下：</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;availabilityZones&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;1&quot;,</li>
+</ul>
+<ul>
+<li>&quot;2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;3&quot;</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;count&quot;: 16,</li>
+</ul>
+<ul>
+<li>&quot;creationData&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;gpuInstanceProfile&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/fe456b35-63d2-4b94-a30a-cf03b5433907/resourcegroups/aksrg/providers/Microsoft.ContainerService/managedClusters/aks22test/agentPools/agentpool&quot;,</li>
+</ul>
+<ul>
+<li>&quot;kubeletConfig&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;kubeletDiskType&quot;: &quot;OS&quot;,</li>
+</ul>
+<ul>
+<li>&quot;linuxOsConfig&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;maxCount&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;maxPods&quot;: 110,</li>
+</ul>
+<ul>
+<li>&quot;minCount&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;mode&quot;: &quot;System&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;agentpool&quot;,</li>
+</ul>
+<ul>
+<li>&quot;nodeImageVersion&quot;: &quot;AKSUbuntu-1804gen2containerd-2023.01.20&quot;,</li>
+</ul>
+<ul>
+<li>&quot;nodeLabels&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;nodePublicIpPrefixId&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;nodeTaints&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;orchestratorVersion&quot;: &quot;1.24.9&quot;,</li>
+</ul>
+<ul>
+<li>&quot;osDiskSizeGb&quot;: 128,</li>
+</ul>
+<ul>
+<li>&quot;osDiskType&quot;: &quot;Managed&quot;,</li>
+</ul>
+<ul>
+<li>&quot;osType&quot;: &quot;Linux&quot;,</li>
+</ul>
+<ul>
+<li>&quot;podSubnetId&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;powerState&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;Running&quot;</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;provisioningState&quot;: &quot;Succeeded&quot;,</li>
+</ul>
+<ul>
+<li>&quot;proximityPlacementGroupId&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;resourceGroup&quot;: &quot;aksrg&quot;,</li>
+</ul>
+<ul>
+<li>&quot;scaleDownMode&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;scaleSetEvictionPolicy&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;scaleSetPriority&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;spotMaxPrice&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;tags&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;Microsoft.ContainerService/managedClusters/agentPools&quot;,</li>
+</ul>
+<ul>
+<li>&quot;typePropertiesType&quot;: &quot;VirtualMachineScaleSets&quot;,</li>
+</ul>
+<ul>
+<li>&quot;upgradeSettings&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;vmSize&quot;: &quot;Standard_DS2_v2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;vnetSubnetId&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;workloadRuntime&quot;: null</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>虚拟机规模集中的4个VM node，也已经被缩放删除掉。</li>
+</ul>
+<ul>
+<li>综上所述，</li>
+</ul>
+<ul>
+<li>即可完成想要被缩放的node。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>然后在node节点池中，查看状态，被关机的4台VM状态，必须是notready。</li>
+</ul>
+<ul>
+<li>再次查看node，发现之前被关机的四台VM，已经被缩减掉。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>执行以下命令，此命令的含义是，通过缩放节点池，将节点计数更改为16，我们将解除分配4个节点，解除分配的这4个节点将从节点池中，优先解除分配已关机的node。</li>
+</ul>
+<ul>
+<li>az aks nodepool scale --node-count 16 --name agentpool --cluster-name aks22test --resource-group aksrg</li>
+</ul>
+<ul>
+<li>执行完命令后的输出截图和详细文本，参考以下截图和文本：</li>
+</ul>
+<ul>
+<li>通过在虚拟机规模集中，先关机想被缩放的VM node，然后再使用命令，参考此命令：az aks nodepool scale --node-count 16 --name agentpool --cluster-name aks22test --resource-group aksrg</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>&quot;osSku&quot;: &quot;Ubuntu&quot;,</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>&quot;enableAutoScaling&quot;: false,</li>
+</ul>
+<ul>
+<li>&quot;enableEncryptionAtHost&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;enableFips&quot;: false,</li>
+</ul>
+<ul>
+<li>&quot;enableNodePublicIp&quot;: false,</li>
+</ul>
+<ul>
+<li>&quot;enableUltraSsd&quot;: null,</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/scale-down-mode#using-scale-down-mode-to-deallocate-nodes-on-scale-down" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/scale-down-mode#using-scale-down-mode-to-deallocate-nodes-on-scale-down</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>以下方法将指定的aks nodepool中的node进行缩放删除。</p>
+<p>参考官方文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/scale-down-mode#using-scale-down-mode-to-deallocate-nodes-on-scale-down" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/scale-down-mode#using-scale-down-mode-to-deallocate-nodes-on-scale-down</a></p>
+<p>以下测试环境，使用的aks节点池有20个node节点，</p>
+<p>如缩放删除如下截图，中指定的四台node，需要在虚拟机规模集中，对其进行stop，详情参考截图。</p>
+<p>如下截图，分别对四台VM 进行stop。</p>
+<p>然后在node节点池中，查看状态，被关机的4台VM状态，必须是notready。</p>
+<p>执行以下命令，此命令的含义是，通过缩放节点池，将节点计数更改为16，我们将解除分配4个节点，解除分配的这4个节点将从节点池中，优先解除分配已关机的node。</p>
+<p>az aks nodepool scale --node-count 16 --name agentpool --cluster-name aks22test --resource-group aksrg</p>
+<p>执行完命令后的输出截图和详细文本，参考以下截图和文本：</p>
+<p>详细输出文件如下：</p>
+<p>{</p>
+<p>&quot;availabilityZones&quot;: [</p>
+<p>&quot;1&quot;,</p>
+<p>&quot;2&quot;,</p>
+<p>&quot;3&quot;</p>
+<p>],</p>
+<p>&quot;count&quot;: 16,</p>
+<p>&quot;creationData&quot;: null,</p>
+<p>&quot;enableAutoScaling&quot;: false,</p>
+<p>&quot;enableEncryptionAtHost&quot;: null,</p>
+<p>&quot;enableFips&quot;: false,</p>
+<p>&quot;enableNodePublicIp&quot;: false,</p>
+<p>&quot;enableUltraSsd&quot;: null,</p>
+<p>&quot;gpuInstanceProfile&quot;: null,</p>
+<p>&quot;id&quot;: &quot;/subscriptions/fe456b35-63d2-4b94-a30a-cf03b5433907/resourcegroups/aksrg/providers/Microsoft.ContainerService/managedClusters/aks22test/agentPools/agentpool&quot;,</p>
+<p>&quot;kubeletConfig&quot;: null,</p>
+<p>&quot;kubeletDiskType&quot;: &quot;OS&quot;,</p>
+<p>&quot;linuxOsConfig&quot;: null,</p>
+<p>&quot;maxCount&quot;: null,</p>
+<p>&quot;maxPods&quot;: 110,</p>
+<p>&quot;minCount&quot;: null,</p>
+<p>&quot;mode&quot;: &quot;System&quot;,</p>
+<p>&quot;name&quot;: &quot;agentpool&quot;,</p>
+<p>&quot;nodeImageVersion&quot;: &quot;AKSUbuntu-1804gen2containerd-2023.01.20&quot;,</p>
+<p>&quot;nodeLabels&quot;: null,</p>
+<p>&quot;nodePublicIpPrefixId&quot;: null,</p>
+<p>&quot;nodeTaints&quot;: null,</p>
+<p>&quot;orchestratorVersion&quot;: &quot;1.24.9&quot;,</p>
+<p>&quot;osDiskSizeGb&quot;: 128,</p>
+<p>&quot;osDiskType&quot;: &quot;Managed&quot;,</p>
+<p>&quot;osSku&quot;: &quot;Ubuntu&quot;,</p>
+<p>&quot;osType&quot;: &quot;Linux&quot;,</p>
+<p>&quot;podSubnetId&quot;: null,</p>
+<p>&quot;powerState&quot;: {</p>
+<p>&quot;code&quot;: &quot;Running&quot;</p>
+<p>},</p>
+<p>&quot;provisioningState&quot;: &quot;Succeeded&quot;,</p>
+<p>&quot;proximityPlacementGroupId&quot;: null,</p>
+<p>&quot;resourceGroup&quot;: &quot;aksrg&quot;,</p>
+<p>&quot;scaleDownMode&quot;: null,</p>
+<p>&quot;scaleSetEvictionPolicy&quot;: null,</p>
+<p>&quot;scaleSetPriority&quot;: null,</p>
+<p>&quot;spotMaxPrice&quot;: null,</p>
+<p>&quot;tags&quot;: null,</p>
+<p>&quot;type&quot;: &quot;Microsoft.ContainerService/managedClusters/agentPools&quot;,</p>
+<p>&quot;typePropertiesType&quot;: &quot;VirtualMachineScaleSets&quot;,</p>
+<p>&quot;upgradeSettings&quot;: null,</p>
+<p>&quot;vmSize&quot;: &quot;Standard_DS2_v2&quot;,</p>
+<p>&quot;vnetSubnetId&quot;: null,</p>
+<p>&quot;workloadRuntime&quot;: null</p>
+<p>}</p>
+<p>再次查看node，发现之前被关机的四台VM，已经被缩减掉。</p>
+<p>虚拟机规模集中的4个VM node，也已经被缩放删除掉。</p>
+<p>综上所述，</p>
+<p>通过在虚拟机规模集中，先关机想被缩放的VM node，然后再使用命令，参考此命令：az aks nodepool scale --node-count 16 --name agentpool --cluster-name aks22test --resource-group aksrg</p>
+<p>即可完成想要被缩放的node。</p></article>

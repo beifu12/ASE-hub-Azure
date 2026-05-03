@@ -1,0 +1,260 @@
+<article class="kb-article" data-title="IKEV2 rekey过程"><h1>IKEV2 rekey过程</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-12-27 16:41:50</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>I’d like to share this best practices of IKEv2 phase1 SA lifetime with you since we got lots of case regarding rekey recently:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>I’d like to share this best practices of IKEv2 phase1 SA lifetime with you since we got lots of case regarding rekey recently:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>I’d like to share this best practices of IKEv2 phase1 SA lifetime with you since we got lots of case regarding rekey recently:</li>
+</ul>
+<ul>
+<li>SA lifetime is local concept, it doesn’t means the peer can’t form if the lifetime’s value does not match, generally the rekey process will initiated by the lowest lifetime peer, for example, if Cisco CSR router set it to 120 seconds while Azure VPNGW fix to 28800 seconds, the rekey is always initiated by CSR at 60 ± X  seconds before lifetime expired.</li>
+</ul>
+<ul>
+<li>yingga</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.229: IKEv2:(SESSION ID = 13,SA ID = 1):Initiating a rekey</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.229: IKEv2:(SESSION ID = 13,SA ID = 1):Beginning IKE Rekey as Initiator</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.229: IKEv2:Searching Policy with fvrf 0, local address 10.0.1.4</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.229: IKEv2:Found Policy &#39;azure-policy&#39;</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.230: IKEv2:(SESSION ID = 13,SA ID = 1):[IKEv2 -&gt; Crypto Engine] Computing DH public key, DH Group 2</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.230: IKEv2:(SA ID = 1):[Crypto Engine -&gt; IKEv2] DH key Computation PASSED</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 1):Request queued for computation of DH key</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 1):Generating CREATE_CHILD_SA exchange</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 2):IKE Proposal: 1, SPI size: 8 (rekey),</li>
+</ul>
+<ul>
+<li>Num. transforms: 6</li>
+</ul>
+<ul>
+<li>AES-CBC   AES-CBC   3DES   SHA1   SHA96   DH_GROUP_1024_MODP/Group 2</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 1):Building packet for encryption.</li>
+</ul>
+<ul>
+<li>Payload contents:</li>
+</ul>
+<ul>
+<li>SA N KE NOTIFY(SET_WINDOW_SIZE)</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 1):Sending Packet [To 40.73.69.95:4500/From 10.0.1.4:4500/VRF i0:f0]</li>
+</ul>
+<ul>
+<li>Initiator SPI : E52D4AD02A023241 - Responder SPI : E52721D8A083E34E Message id: 0</li>
+</ul>
+<ul>
+<li>IKEv2 CREATE_CHILD_SA Exchange REQUEST</li>
+</ul>
+<ul>
+<li>ENCR</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 2):Insert SA</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):Received Packet [From 40.73.69.95:4500/To 10.0.1.4:4500/VRF i0:f0]</li>
+</ul>
+<ul>
+<li>IKEv2 CREATE_CHILD_SA Exchange RESPONSE</li>
+</ul>
+<ul>
+<li>SA KE N</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):Processing any notify-messages in child SA exchange</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):Validating create child message</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):Processing CREATE_CHILD_SA exchange</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):PFS configured, DH group 2</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):[IKEv2 -&gt; Crypto Engine] Computing DH secret key, DH Group 2</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SA ID = 1):[Crypto Engine -&gt; IKEv2] DH key Computation PASSED</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Request queued for computation of DH secret</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SA ID = 1):[IKEv2 -&gt; Crypto Engine] Calculate SKEYSEED and create rekeyed IKEv2 SA</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SA ID = 1):[Crypto Engine -&gt; IKEv2] SKEYSEED calculation and creation of rekeyed IKEv2 SA PASSED</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 2):Activating new IKE SA</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 2):Initializing DPD, configured for 0 seconds</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:IKEv2 MIB tunnel started, tunnel index 2</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 2):No duplicate IKEv2 SA found</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 2):IKEV2 SA created; inserting SA into database. SA lifetime timer (120 sec) started</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Sending DELETE INFO message for IKEv2 SA [ISPI: 0xE52D4AD02A023241 RSPI: 0xE52721D8A083E34E]</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Building packet for encryption.</li>
+</ul>
+<ul>
+<li>DELETE</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Sending Packet [To 40.73.69.95:4500/From 10.0.1.4:4500/VRF i0:f0]</li>
+</ul>
+<ul>
+<li>Initiator SPI : E52D4AD02A023241 - Responder SPI : E52721D8A083E34E Message id: 1</li>
+</ul>
+<ul>
+<li>IKEv2 INFORMATIONAL Exchange REQUEST</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.279: IKEv2:(SESSION ID = 13,SA ID = 1):Received Packet [From 40.73.69.95:4500/To 10.0.1.4:4500/VRF i0:f0]</li>
+</ul>
+<ul>
+<li>IKEv2 INFORMATIONAL Exchange RESPONSE</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.279: IKEv2:(SESSION ID = 13,SA ID = 1):Processing ACK to informational exchange</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.279: IKEv2:(SESSION ID = 13,SA ID = 1):Deleting SA</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Yes, the rekey message type should be CREATE_CHILD_SA, Azure side should expect this from WFPdiag log which collected from VPNGW.</li>
+</ul>
+<ul>
+<li>Attach the ikev2 debug log from CSR for ur reference:</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.229: IKEv2:(SESSION ID = 13,SA ID = 1):Checking if we need to rekey the IKE SA</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 1):Checking if request will fit in peer window</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):Checking for PFS configuration</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Checking if IKE SA rekey</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 2):Checking for duplicate IKEv2 SA</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Checking if request will fit in peer window</li>
+</ul>
+<ul>
+<li>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Check for existing active SA</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>I’d like to share this best practices of IKEv2 phase1 SA lifetime with you since we got lots of case regarding rekey recently:</p>
+<p>SA lifetime is local concept, it doesn’t means the peer can’t form if the lifetime’s value does not match, generally the rekey process will initiated by the lowest lifetime peer, for example, if Cisco CSR router set it to 120 seconds while Azure VPNGW fix to 28800 seconds, the rekey is always initiated by CSR at 60 ± X  seconds before lifetime expired.</p>
+<p>Yes, the rekey message type should be CREATE_CHILD_SA, Azure side should expect this from WFPdiag log which collected from VPNGW.</p>
+<p>Attach the ikev2 debug log from CSR for ur reference:</p>
+<p>yingga</p>
+<p>*Nov  5 08:13:58.229: IKEv2:(SESSION ID = 13,SA ID = 1):Checking if we need to rekey the IKE SA</p>
+<p>*Nov  5 08:13:58.229: IKEv2:(SESSION ID = 13,SA ID = 1):Initiating a rekey</p>
+<p>*Nov  5 08:13:58.229: IKEv2:(SESSION ID = 13,SA ID = 1):Beginning IKE Rekey as Initiator</p>
+<p>*Nov  5 08:13:58.229: IKEv2:Searching Policy with fvrf 0, local address 10.0.1.4</p>
+<p>*Nov  5 08:13:58.229: IKEv2:Found Policy &#39;azure-policy&#39;</p>
+<p>*Nov  5 08:13:58.230: IKEv2:(SESSION ID = 13,SA ID = 1):[IKEv2 -&gt; Crypto Engine] Computing DH public key, DH Group 2</p>
+<p>*Nov  5 08:13:58.230: IKEv2:(SA ID = 1):[Crypto Engine -&gt; IKEv2] DH key Computation PASSED</p>
+<p>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 1):Request queued for computation of DH key</p>
+<p>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 1):Generating CREATE_CHILD_SA exchange</p>
+<p>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 2):IKE Proposal: 1, SPI size: 8 (rekey),</p>
+<p>Num. transforms: 6</p>
+<p>AES-CBC   AES-CBC   3DES   SHA1   SHA96   DH_GROUP_1024_MODP/Group 2</p>
+<p>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 1):Building packet for encryption.</p>
+<p>Payload contents:</p>
+<p>SA N KE NOTIFY(SET_WINDOW_SIZE)</p>
+<p>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 1):Checking if request will fit in peer window</p>
+<p>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 1):Sending Packet [To 40.73.69.95:4500/From 10.0.1.4:4500/VRF i0:f0]</p>
+<p>Initiator SPI : E52D4AD02A023241 - Responder SPI : E52721D8A083E34E Message id: 0</p>
+<p>IKEv2 CREATE_CHILD_SA Exchange REQUEST</p>
+<p>ENCR</p>
+<p>*Nov  5 08:13:58.231: IKEv2:(SESSION ID = 13,SA ID = 2):Insert SA</p>
+<p>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):Received Packet [From 40.73.69.95:4500/To 10.0.1.4:4500/VRF i0:f0]</p>
+<p>IKEv2 CREATE_CHILD_SA Exchange RESPONSE</p>
+<p>SA KE N</p>
+<p>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):Processing any notify-messages in child SA exchange</p>
+<p>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):Validating create child message</p>
+<p>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):Processing CREATE_CHILD_SA exchange</p>
+<p>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):Checking for PFS configuration</p>
+<p>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):PFS configured, DH group 2</p>
+<p>*Nov  5 08:13:58.255: IKEv2:(SESSION ID = 13,SA ID = 1):[IKEv2 -&gt; Crypto Engine] Computing DH secret key, DH Group 2</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SA ID = 1):[Crypto Engine -&gt; IKEv2] DH key Computation PASSED</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Request queued for computation of DH secret</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Checking if IKE SA rekey</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SA ID = 1):[IKEv2 -&gt; Crypto Engine] Calculate SKEYSEED and create rekeyed IKEv2 SA</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SA ID = 1):[Crypto Engine -&gt; IKEv2] SKEYSEED calculation and creation of rekeyed IKEv2 SA PASSED</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 2):Activating new IKE SA</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 2):Initializing DPD, configured for 0 seconds</p>
+<p>*Nov  5 08:13:58.257: IKEv2:IKEv2 MIB tunnel started, tunnel index 2</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 2):Checking for duplicate IKEv2 SA</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 2):No duplicate IKEv2 SA found</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 2):IKEV2 SA created; inserting SA into database. SA lifetime timer (120 sec) started</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Sending DELETE INFO message for IKEv2 SA [ISPI: 0xE52D4AD02A023241 RSPI: 0xE52721D8A083E34E]</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Building packet for encryption.</p>
+<p>DELETE</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Checking if request will fit in peer window</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Sending Packet [To 40.73.69.95:4500/From 10.0.1.4:4500/VRF i0:f0]</p>
+<p>Initiator SPI : E52D4AD02A023241 - Responder SPI : E52721D8A083E34E Message id: 1</p>
+<p>IKEv2 INFORMATIONAL Exchange REQUEST</p>
+<p>*Nov  5 08:13:58.257: IKEv2:(SESSION ID = 13,SA ID = 1):Check for existing active SA</p>
+<p>*Nov  5 08:13:58.279: IKEv2:(SESSION ID = 13,SA ID = 1):Received Packet [From 40.73.69.95:4500/To 10.0.1.4:4500/VRF i0:f0]</p>
+<p>IKEv2 INFORMATIONAL Exchange RESPONSE</p>
+<p>*Nov  5 08:13:58.279: IKEv2:(SESSION ID = 13,SA ID = 1):Processing ACK to informational exchange</p>
+<p>*Nov  5 08:13:58.279: IKEv2:(SESSION ID = 13,SA ID = 1):Deleting SA</p></article>

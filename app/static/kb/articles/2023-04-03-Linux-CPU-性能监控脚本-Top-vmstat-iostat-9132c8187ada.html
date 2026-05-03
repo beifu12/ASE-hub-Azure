@@ -1,0 +1,77 @@
+<article class="kb-article" data-title="[Linux][CPU] 性能监控脚本（Top/vmstat/iostat）"><h1>[Linux][CPU] 性能监控脚本（Top/vmstat/iostat）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-03 14:36:02</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>-rw-r--r--. 1 root root 1200 Dec 20 02:45 topMon_20161220024401</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>-rw-r--r--. 1 root root 1200 Dec 20 02:45 topMon_20161220024401</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>登陆虚拟机，并切换到root用户。</li>
+</ul>
+<ul>
+<li>执行crontab -e</li>
+</ul>
+<ul>
+<li>添加定时任务：* * * * * &lt;the path of the script&gt;/top_monitor.sh &lt;the path of ouputs saved&gt; &lt;keeps&gt;</li>
+</ul>
+<ul>
+<li>范例：* * * * * /root/Documents/Bruce_Scripts/top_monitor.sh /var/tmp/ 72                à这里的keeps以小时为单位，如果保留三天的话，就输入72</li>
+</ul>
+<ul>
+<li>注：不要把用户数据放到该目录下，否则会被清理掉。</li>
+</ul>
+<ul>
+<li>[root@cpha-worker Bruce_Scripts]# ll /var/tmp/topMon/</li>
+</ul>
+<ul>
+<li>total 40</li>
+</ul>
+<ul>
+<li>-rw-r--r--. 1 root root 1200 Dec 20 02:44 topMon_20161220024301</li>
+</ul>
+<ul>
+<li>-rw-r--r--. 1 root root 1200 Dec 20 02:46 topMon_20161220024501</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>上传附件中的top_monitor.sh脚本到虚拟机上</li>
+</ul>
+<ul>
+<li>该脚本每5秒钟收集一次top命令的输出，每天会产生一个新的文件，所以理论上，如果您上述输入72，目录下会保留三个文件。</li>
+</ul>
+<ul>
+<li>脚本输出如下：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>上传附件中的top_monitor.sh脚本到虚拟机上</p>
+<p>登陆虚拟机，并切换到root用户。</p>
+<p>执行crontab -e</p>
+<p>添加定时任务：* * * * * &lt;the path of the script&gt;/top_monitor.sh &lt;the path of ouputs saved&gt; &lt;keeps&gt;</p>
+<p>范例：* * * * * /root/Documents/Bruce_Scripts/top_monitor.sh /var/tmp/ 72                à这里的keeps以小时为单位，如果保留三天的话，就输入72</p>
+<p>该脚本每5秒钟收集一次top命令的输出，每天会产生一个新的文件，所以理论上，如果您上述输入72，目录下会保留三个文件。</p>
+<p>注：不要把用户数据放到该目录下，否则会被清理掉。</p>
+<p>脚本输出如下：</p>
+<p>[root@cpha-worker Bruce_Scripts]# ll /var/tmp/topMon/</p>
+<p>total 40</p>
+<p>-rw-r--r--. 1 root root 1200 Dec 20 02:44 topMon_20161220024301</p>
+<p>-rw-r--r--. 1 root root 1200 Dec 20 02:45 topMon_20161220024401</p>
+<p>-rw-r--r--. 1 root root 1200 Dec 20 02:46 topMon_20161220024501</p></article>

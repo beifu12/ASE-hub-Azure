@@ -1,0 +1,177 @@
+<article class="kb-article" data-title="安装ingress controller时镜像无法下载的问题"><h1>安装ingress controller时镜像无法下载的问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-05-22 16:40:40</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：SR_2020080544134_[S500]create ingress，pulling image failed.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：SR_2020080544134_[S500]create ingress，pulling image failed.</li>
+</ul>
+<ul>
+<li>客户想在AKS中创建ingress-nginx，根据Azure的如下文档进行操作，但是在创建的时候出现了AKS无法拉取镜像的问题。</li>
+</ul>
+<ul>
+<li>由于nginx-controller的提供方换了repo，导致暂时无法正常下载，因为是国外的站点us.gcr.io，目前国内已经无法下载了。</li>
+</ul>
+<ul>
+<li>We have also refreshed the following articles with appending the ‘--set controller.image.registry=usgcr.azk8s.cn` parameter.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>【问题】</li>
+</ul>
+<ul>
+<li>【原因】</li>
+</ul>
+<ul>
+<li>【解决办法】</li>
+</ul>
+<ul>
+<li>k8s.gcr.io</li>
+</ul>
+<ul>
+<li>registryk8s.azk8s.cn/ingress-nginx/kube-webhook-certgen:v1.4.0</li>
+</ul>
+<ul>
+<li>Usgcr.azk8s.cn/k8s-artifacts-prod/ingress-nginx/controller:v0.34.1</li>
+</ul>
+<ul>
+<li>mcr.azk8s.cn/oss/kubernetes/hyperkube:v1.15.7</li>
+</ul>
+<ul>
+<li>修改官网配置，手工指定image的registry：</li>
+</ul>
+<ul>
+<li>Old:</li>
+</ul>
+<ul>
+<li># Use Helm to deploy an NGINX ingress controller</li>
+</ul>
+<ul>
+<li>helm install nginx stable/nginx-ingress \</li>
+</ul>
+<ul>
+<li>--namespace ingress-basic \</li>
+</ul>
+<ul>
+<li>--set controller.replicaCount=2 \</li>
+</ul>
+<ul>
+<li>--set controller.nodeSelector.&quot;beta\.kubernetes\.io/os&quot;=linux \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.nodeSelector.&quot;beta\.kubernetes\.io/os&quot;=linux \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.image.repository=gcr.azk8s.cn/google_containers/defaultbackend-amd64</li>
+</ul>
+<ul>
+<li>New:</li>
+</ul>
+<ul>
+<li>--set controller.image.registry=usgcr.azk8s.cn \</li>
+</ul>
+<ul>
+<li>修改后可以正常安装使用。</li>
+</ul>
+<ul>
+<li>【最新更新】平台已经更新了官网文档</li>
+</ul>
+<ul>
+<li>When you have any comments or questions, please contact me freely!</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>对于中国区的AKS，建议参考如下文档（已更新）。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/ingress-tls" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/ingress-tls</a></li>
+</ul>
+<ul>
+<li>helm的安装和使用：<a href="https://docs.azure.cn/zh-cn/aks/kubernetes-helm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/kubernetes-helm</a></li>
+</ul>
+<ul>
+<li><a href="https://gitee.com/chenze007/kube-charts-mirror" target="_blank" rel="noopener">https://gitee.com/chenze007/kube-charts-mirror</a></li>
+</ul>
+<ul>
+<li>helm repo add stable  <a href="https://mirror.azure.cn/kubernetes/charts/" target="_blank" rel="noopener">https://mirror.azure.cn/kubernetes/charts/</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/Azure/container-service-for-azure-china/tree/master/aks" target="_blank" rel="noopener">https://github.com/Azure/container-service-for-azure-china/tree/master/aks</a></li>
+</ul>
+<ul>
+<li>We have added the link of ‘<a href="https://github.com/Azure/container-service-for-azure-china/blob/master/aks/README.md’" target="_blank" rel="noopener">https://github.com/Azure/container-service-for-azure-china/blob/master/aks/README.md’</a> in the TOC and Index file of Azure AKS China Docs site.</li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/aks" target="_blank" rel="noopener">https://docs.azure.cn/aks</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/aks/ingress-basic" target="_blank" rel="noopener">https://docs.azure.cn/aks/ingress-basic</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/aks/ingress-internal-ip" target="_blank" rel="noopener">https://docs.azure.cn/aks/ingress-internal-ip</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/aks/ingress-own-tls" target="_blank" rel="noopener">https://docs.azure.cn/aks/ingress-own-tls</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/aks/ingress-static-ip" target="_blank" rel="noopener">https://docs.azure.cn/aks/ingress-static-ip</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/aks/ingress-tls" target="_blank" rel="noopener">https://docs.azure.cn/aks/ingress-tls</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020/8/13</p>
+<p>参考工单：SR_2020080544134_[S500]create ingress，pulling image failed.</p>
+<p>【问题】</p>
+<p>客户想在AKS中创建ingress-nginx，根据Azure的如下文档进行操作，但是在创建的时候出现了AKS无法拉取镜像的问题。</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/ingress-tls" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/ingress-tls</a></p>
+<p>【原因】</p>
+<p>由于nginx-controller的提供方换了repo，导致暂时无法正常下载，因为是国外的站点us.gcr.io，目前国内已经无法下载了。</p>
+<p>helm的安装和使用：<a href="https://docs.azure.cn/zh-cn/aks/kubernetes-helm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/kubernetes-helm</a></p>
+<p><a href="https://gitee.com/chenze007/kube-charts-mirror" target="_blank" rel="noopener">https://gitee.com/chenze007/kube-charts-mirror</a></p>
+<p>helm repo add stable  <a href="https://mirror.azure.cn/kubernetes/charts/" target="_blank" rel="noopener">https://mirror.azure.cn/kubernetes/charts/</a></p>
+<p>【解决办法】</p>
+<p>对于中国区的AKS，建议参考如下文档（已更新）。</p>
+<p><a href="https://github.com/Azure/container-service-for-azure-china/tree/master/aks" target="_blank" rel="noopener">https://github.com/Azure/container-service-for-azure-china/tree/master/aks</a></p>
+<p>k8s.gcr.io</p>
+<p>registryk8s.azk8s.cn/ingress-nginx/kube-webhook-certgen:v1.4.0</p>
+<p>Usgcr.azk8s.cn/k8s-artifacts-prod/ingress-nginx/controller:v0.34.1</p>
+<p>mcr.azk8s.cn/oss/kubernetes/hyperkube:v1.15.7</p>
+<p>修改官网配置，手工指定image的registry：</p>
+<p>Old:</p>
+<h1>Use Helm to deploy an NGINX ingress controller</h1>
+<p>helm install nginx stable/nginx-ingress \</p>
+<p>--namespace ingress-basic \</p>
+<p>--set controller.replicaCount=2 \</p>
+<p>--set controller.nodeSelector.&quot;beta\.kubernetes\.io/os&quot;=linux \</p>
+<p>--set defaultBackend.nodeSelector.&quot;beta\.kubernetes\.io/os&quot;=linux \</p>
+<p>--set defaultBackend.image.repository=gcr.azk8s.cn/google_containers/defaultbackend-amd64</p>
+<p>New:</p>
+<p>--set controller.image.registry=usgcr.azk8s.cn \</p>
+<p>修改后可以正常安装使用。</p>
+<p>【最新更新】平台已经更新了官网文档</p>
+<p>We have added the link of ‘<a href="https://github.com/Azure/container-service-for-azure-china/blob/master/aks/README.md’" target="_blank" rel="noopener">https://github.com/Azure/container-service-for-azure-china/blob/master/aks/README.md’</a> in the TOC and Index file of Azure AKS China Docs site.</p>
+<p><a href="https://docs.azure.cn/aks" target="_blank" rel="noopener">https://docs.azure.cn/aks</a></p>
+<p>We have also refreshed the following articles with appending the ‘--set controller.image.registry=usgcr.azk8s.cn` parameter.</p>
+<p><a href="https://docs.azure.cn/aks/ingress-basic" target="_blank" rel="noopener">https://docs.azure.cn/aks/ingress-basic</a></p>
+<p><a href="https://docs.azure.cn/aks/ingress-internal-ip" target="_blank" rel="noopener">https://docs.azure.cn/aks/ingress-internal-ip</a></p>
+<p><a href="https://docs.azure.cn/aks/ingress-own-tls" target="_blank" rel="noopener">https://docs.azure.cn/aks/ingress-own-tls</a></p>
+<p><a href="https://docs.azure.cn/aks/ingress-static-ip" target="_blank" rel="noopener">https://docs.azure.cn/aks/ingress-static-ip</a></p>
+<p><a href="https://docs.azure.cn/aks/ingress-tls" target="_blank" rel="noopener">https://docs.azure.cn/aks/ingress-tls</a></p>
+<p>When you have any comments or questions, please contact me freely!</p></article>

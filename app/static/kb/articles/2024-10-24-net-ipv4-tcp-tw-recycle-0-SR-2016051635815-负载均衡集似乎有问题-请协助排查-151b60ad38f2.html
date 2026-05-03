@@ -1,0 +1,178 @@
+<article class="kb-article" data-title="net.ipv4.tcp_tw_recycle=0    -------   SR_2016051635815_负载均衡集似乎有问题，请协助排查"><h1>net.ipv4.tcp_tw_recycle=0    -------   SR_2016051635815_负载均衡集似乎有问题，请协助排查</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LB</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2024-10-24 14:27:19</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Coping with the TCP TIME-WAIT state on busy Linux servers中阐述：Enabling this option is not recommended since this causes problems when working with NAT (Network Address Translation).</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Coping with the TCP TIME-WAIT state on busy Linux servers中阐述：Enabling this option is not recommended since this causes problems when working with NAT (Network Address Translation).</li>
+</ul>
+<ul>
+<li>Centos  6.6    2.6.32-504.30.3.el6.x86_64</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi larry,</li>
+</ul>
+<ul>
+<li>由于问题紧密关联到开源项目--Linux虚拟机，我们收集到若干关于net.ipv4.tcp_tw_的文章，这些文章都倾向于默认关闭net.ipv4.tcp_tw_recycle。为您提供以下几篇文章参考：</li>
+</ul>
+<ul>
+<li>我们针对Azure上的部分Linux虚拟机进行了测试，SLB Probe会被net.ipv4.tcp_tw_recycle ==1干预的虚拟机包括：</li>
+</ul>
+<ul>
+<li>Centos 6.7   2.6.32-573.22.1.el6.x86_64</li>
+</ul>
+<ul>
+<li>Centos 7.2   3.10.0-327.10.1.el7.x86_64</li>
+</ul>
+<ul>
+<li>以下版本虚拟机暂时没有复现问题：</li>
+</ul>
+<ul>
+<li>Centos  6.5    2.6.32-431.29.2.el6.x86_64</li>
+</ul>
+<ul>
+<li>Centos 7.0   3.10.0-123.20.1.el7.x86_64</li>
+</ul>
+<ul>
+<li>Centos 7.1   3.10.0-229.20.1.el7.x86_64</li>
+</ul>
+<ul>
+<li>这也说明net.ipv4.tcp_tw_recycle 并非唯一决定因素，内核版本也会影响测试结果。</li>
+</ul>
+<ul>
+<li>示例：</li>
+</ul>
+<ul>
+<li>解决方式：</li>
+</ul>
+<ul>
+<li>1.临时修改kernel参数，及时生效，重启系统后无效</li>
+</ul>
+<ul>
+<li>[root@hlmvme683 ~]# echo 0 &gt; /proc/sys/net/ipv4/tcp_tw_recycle</li>
+</ul>
+<ul>
+<li>[root@hlmvme683 ~]# cat /proc/sys/net/ipv4/tcp_tw_recycle</li>
+</ul>
+<ul>
+<li>0</li>
+</ul>
+<ul>
+<li>2. 为了避免重启后无效，需要将相应的参数设定保存到/etc/sysctl.conf，重启VM或者执行sysctl –p 生效</li>
+</ul>
+<ul>
+<li>[root@hlmvme683 ~]# echo &#39;net.ipv4.tcp_tw_recycle = 0&#39; &gt;&gt; /etc/sysctl.conf</li>
+</ul>
+<ul>
+<li>[root@hlmvme683 ~]# sysctl -p</li>
+</ul>
+<ul>
+<li>net.ipv4.ip_forward = 0</li>
+</ul>
+<ul>
+<li>net.ipv4.conf.default.rp_filter = 1</li>
+</ul>
+<ul>
+<li>net.ipv4.conf.default.accept_source_route = 0</li>
+</ul>
+<ul>
+<li>kernel.sysrq = 0</li>
+</ul>
+<ul>
+<li>kernel.core_uses_pid = 1</li>
+</ul>
+<ul>
+<li>net.ipv4.tcp_syncookies = 1</li>
+</ul>
+<ul>
+<li>kernel.msgmnb = 65536</li>
+</ul>
+<ul>
+<li>kernel.msgmax = 65536</li>
+</ul>
+<ul>
+<li>kernel.shmmax = 68719476736</li>
+</ul>
+<ul>
+<li>kernel.shmall = 42949672= 0</li>
+</ul>
+<ul>
+<li>Jack Lee (李小兵) | WATS Engineer</li>
+</ul>
+<ul>
+<li>Microsoft Azure Technical Support, 21ViaNet Group, Inc.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如何查看recycle参数：您帮忙在虚拟机里执行以下 s  查看一下返回的参数是1还是0？</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>tcp_tw_recycle参数引发的故障 中阐述：在一些高并发的 WebServer上，为了端口能够快速回收，打开了 tcp_tw_reccycle ，而在关闭 tcp_tw_reccycle 的时候，kernal 是不会检查对端机器的包的时间戳的；打开了 tcp_tw_reccycle 了，就会检查时间戳，很不幸移动的cmwap发来的包的时间戳是乱跳的，所以我方的就把带了“倒退”的时间戳的包当作是“recycle的tw连接重传数据，不是新的请求”，于是丢掉不回包，造成大量丢包。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>tcp_tw_recycle和tcp_timestamps导致connect失败问题 中阐述：tcp_tw_recycle – BOOLEAN Enable fast recycling TIME-WAIT sockets. Default value is 0. It should not be changed without advice/request of technical experts.</li>
+</ul>
+<ul>
+<li>最后，我们建议您使用Azure的虚拟机时，net.ipv4.tcp_tw_recycle=0，避免不可预测的问题。</li>
+</ul>
+<ul>
+<li>Customer support hot line: 400-089-0365   Cloud solution consulting: 010-57835502</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi larry,</p>
+<p>由于问题紧密关联到开源项目--Linux虚拟机，我们收集到若干关于net.ipv4.tcp_tw_的文章，这些文章都倾向于默认关闭net.ipv4.tcp_tw_recycle。为您提供以下几篇文章参考：</p>
+<p>Coping with the TCP TIME-WAIT state on busy Linux servers中阐述：Enabling this option is not recommended since this causes problems when working with NAT (Network Address Translation).</p>
+<p>tcp_tw_recycle和tcp_timestamps导致connect失败问题 中阐述：tcp_tw_recycle – BOOLEAN Enable fast recycling TIME-WAIT sockets. Default value is 0. It should not be changed without advice/request of technical experts.</p>
+<p>tcp_tw_recycle参数引发的故障 中阐述：在一些高并发的 WebServer上，为了端口能够快速回收，打开了 tcp_tw_reccycle ，而在关闭 tcp_tw_reccycle 的时候，kernal 是不会检查对端机器的包的时间戳的；打开了 tcp_tw_reccycle 了，就会检查时间戳，很不幸移动的cmwap发来的包的时间戳是乱跳的，所以我方的就把带了“倒退”的时间戳的包当作是“recycle的tw连接重传数据，不是新的请求”，于是丢掉不回包，造成大量丢包。</p>
+<p>我们针对Azure上的部分Linux虚拟机进行了测试，SLB Probe会被net.ipv4.tcp_tw_recycle ==1干预的虚拟机包括：</p>
+<p>Centos 6.7   2.6.32-573.22.1.el6.x86_64</p>
+<p>Centos 7.2   3.10.0-327.10.1.el7.x86_64</p>
+<p>以下版本虚拟机暂时没有复现问题：</p>
+<p>Centos  6.5    2.6.32-431.29.2.el6.x86_64</p>
+<p>Centos  6.6    2.6.32-504.30.3.el6.x86_64</p>
+<p>Centos 7.0   3.10.0-123.20.1.el7.x86_64</p>
+<p>Centos 7.1   3.10.0-229.20.1.el7.x86_64</p>
+<p>这也说明net.ipv4.tcp_tw_recycle 并非唯一决定因素，内核版本也会影响测试结果。</p>
+<p>最后，我们建议您使用Azure的虚拟机时，net.ipv4.tcp_tw_recycle=0，避免不可预测的问题。</p>
+<p>如何查看recycle参数：您帮忙在虚拟机里执行以下 s  查看一下返回的参数是1还是0？</p>
+<p>示例：</p>
+<p>解决方式：</p>
+<p>1.临时修改kernel参数，及时生效，重启系统后无效</p>
+<p>[root@hlmvme683 ~]# echo 0 &gt; /proc/sys/net/ipv4/tcp_tw_recycle</p>
+<p>[root@hlmvme683 ~]# cat /proc/sys/net/ipv4/tcp_tw_recycle</p>
+<p>0</p>
+<p>2. 为了避免重启后无效，需要将相应的参数设定保存到/etc/sysctl.conf，重启VM或者执行sysctl –p 生效</p>
+<p>[root@hlmvme683 ~]# echo &#39;net.ipv4.tcp_tw_recycle = 0&#39; &gt;&gt; /etc/sysctl.conf</p>
+<p>[root@hlmvme683 ~]# sysctl -p</p>
+<p>net.ipv4.ip_forward = 0</p>
+<p>net.ipv4.conf.default.rp_filter = 1</p>
+<p>net.ipv4.conf.default.accept_source_route = 0</p>
+<p>kernel.sysrq = 0</p>
+<p>kernel.core_uses_pid = 1</p>
+<p>net.ipv4.tcp_syncookies = 1</p>
+<p>kernel.msgmnb = 65536</p>
+<p>kernel.msgmax = 65536</p>
+<p>kernel.shmmax = 68719476736</p>
+<p>kernel.shmall = 42949672= 0</p>
+<p>Jack Lee (李小兵) | WATS Engineer</p>
+<p>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>Microsoft Azure Technical Support, 21ViaNet Group, Inc.</p>
+<p>Customer support hot line: 400-089-0365   Cloud solution consulting: 010-57835502</p></article>

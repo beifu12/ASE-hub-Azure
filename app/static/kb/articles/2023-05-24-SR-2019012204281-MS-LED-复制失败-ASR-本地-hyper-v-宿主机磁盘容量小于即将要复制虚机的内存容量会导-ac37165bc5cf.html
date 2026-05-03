@@ -1,0 +1,95 @@
+<article class="kb-article" data-title="SR_2019012204281_[MS-LED]复制失败（ASR）| 本地 hyper-v 宿主机磁盘容量小于即将要复制虚机的内存容量会导致最终复制失败"><h1>SR_2019012204281_[MS-LED]复制失败（ASR）| 本地 hyper-v 宿主机磁盘容量小于即将要复制虚机的内存容量会导致最终复制失败</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Site Recovery Hyper-V VMM</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-05-24 22:43:38</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>一个本地hyper –V VM通过ASR复制到Azure发生失败报错的工单。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>一个本地hyper –V VM通过ASR复制到Azure发生失败报错的工单。</li>
+</ul>
+<ul>
+<li>首先，看到的复制报错如下：</li>
+</ul>
+<ul>
+<li>复制虚拟机 VPOANEWAP01 失败，因为导出虚拟机配置时出现故障(错误代码: 8079002c 时间戳 1/22/2019 7:47:04 AM)。</li>
+</ul>
+<ul>
+<li>Export System Definition for virtual machine &#39;VPOANEWAP01&#39; failed.(Virtual Machine ID 5156bfb4-c98b-43e1-99cf-fc60a94fe812 , Data Source ID 3382220913841736620, Task ID ecad3976-dcd9-4942-832a-da2a5a9e5182)</li>
+</ul>
+<ul>
+<li>接着是尝试再次进行复制，并发现了以下报错。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>错误 ID</li>
+</ul>
+<ul>
+<li>18099</li>
+</ul>
+<ul>
+<li>错误消息</li>
+</ul>
+<ul>
+<li>提供程序错误</li>
+</ul>
+<ul>
+<li>可能的原因</li>
+</ul>
+<ul>
+<li>如果 Windows Server 2016 Hyper-V 主机上虚拟机的 RAM 大小大于 10 GB，则会发生这种情况。</li>
+</ul>
+<ul>
+<li>请解决关于 Hyper-V 服务器的任何问题。</li>
+</ul>
+<ul>
+<li>################################################</li>
+</ul>
+<ul>
+<li>&quot;possibleCauses&quot;: &quot;This can happen if the RAM Size of the virtual machine on a Windows Server 2016  Hyper-V host is greater than 10 GB.&quot;,</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>然后，根据以上报错带着排查的方向（如果 Windows Server 2016 Hyper-V 主机上虚拟机的 RAM 大小大于 10 GB，则会发生这种情况。）远程到了客户进行在线排查的时候，发现客户本地VM的内存是大于10 GB的。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>&quot;errorCategory&quot;: &quot;Replication&quot;,</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>建议</li>
+</ul>
+<ul>
+<li>&quot;recommendation&quot;: &quot;Resolve any issues on the Hyper-V server.&quot;,</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>一个本地hyper –V VM通过ASR复制到Azure发生失败报错的工单。</p>
+<p>首先，看到的复制报错如下：</p>
+<p>错误 ID</p>
+<p>18099</p>
+<p>错误消息</p>
+<p>复制虚拟机 VPOANEWAP01 失败，因为导出虚拟机配置时出现故障(错误代码: 8079002c 时间戳 1/22/2019 7:47:04 AM)。</p>
+<p>提供程序错误</p>
+<p>Export System Definition for virtual machine &#39;VPOANEWAP01&#39; failed.(Virtual Machine ID 5156bfb4-c98b-43e1-99cf-fc60a94fe812 , Data Source ID 3382220913841736620, Task ID ecad3976-dcd9-4942-832a-da2a5a9e5182)</p>
+<p>可能的原因</p>
+<p>如果 Windows Server 2016 Hyper-V 主机上虚拟机的 RAM 大小大于 10 GB，则会发生这种情况。</p>
+<p>建议</p>
+<p>请解决关于 Hyper-V 服务器的任何问题。</p>
+<p>################################################</p>
+<p>&quot;errorCategory&quot;: &quot;Replication&quot;,</p>
+<p>&quot;possibleCauses&quot;: &quot;This can happen if the RAM Size of the virtual machine on a Windows Server 2016  Hyper-V host is greater than 10 GB.&quot;,</p>
+<p>&quot;recommendation&quot;: &quot;Resolve any issues on the Hyper-V server.&quot;,</p>
+<p>然后，根据以上报错带着排查的方向（如果 Windows Server 2016 Hyper-V 主机上虚拟机的 RAM 大小大于 10 GB，则会发生这种情况。）远程到了客户进行在线排查的时候，发现客户本地VM的内存是大于10 GB的。</p>
+<p>接着是尝试再次进行复制，并发现了以下报错。</p></article>

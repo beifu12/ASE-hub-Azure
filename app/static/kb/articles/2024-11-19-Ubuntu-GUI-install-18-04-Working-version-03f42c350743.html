@@ -1,0 +1,84 @@
+<article class="kb-article" data-title="Ubuntu GUI install 18.04 (Working version)"><h1>Ubuntu GUI install 18.04 (Working version)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-19 10:59:31</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>之前有TSG教我们怎么用Ubuntu 18.04 GUI. 但是，那个GUI太慢。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>之前有TSG教我们怎么用Ubuntu 18.04 GUI. 但是，那个GUI太慢。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>之前有TSG教我们怎么用Ubuntu 18.04 GUI. 但是，那个GUI太慢。</li>
+</ul>
+<ul>
+<li>这个TSG安装更好的GUI。</li>
+</ul>
+<ul>
+<li>1. 首先创建一台Ubuntu 18.04的虚拟机.</li>
+</ul>
+<ul>
+<li>2. 安装ubuntuDesktop: sudo apt-get install ubuntu-desktop -y</li>
+</ul>
+<ul>
+<li>4. 安装unzip：sudo apt install unzip</li>
+</ul>
+<ul>
+<li>6. 添加可执行权限:  chmod +x Std-Xrdp-Install-0.2.sh</li>
+</ul>
+<ul>
+<li>8. ARM下的虚拟机如果配置了NSG，则需要添加NSG 3389的入站规则，如果是经典虚拟机，则需要为虚拟机添加remote desktop（3389）终结点。</li>
+</ul>
+<ul>
+<li>9. 完成后我们可以用mstsc直接用Public IP进行连接</li>
+</ul>
+<ul>
+<li>10. 登陆后输入用户名密码:</li>
+</ul>
+<ul>
+<li>11. 好了。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>创建完成后使用你的ssh app (Xshell, putty, etc.) 登陆虚拟机，依次执行下面的命令（高亮部分）</li>
+</ul>
+<ul>
+<li>5. 解压脚本：unzip Std-Xrdp-Install-0.2.zip</li>
+</ul>
+<ul>
+<li>7. 运行脚本:  ./Std-Xrdp-Install-0.2.sh</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>3. 下载这个脚本：wget  <a href="https://azuresupport.blob.core.chinacloudapi.cn/tools/Std-Xrdp-Install-0.2.zip" target="_blank" rel="noopener">https://azuresupport.blob.core.chinacloudapi.cn/tools/Std-Xrdp-Install-0.2.zip</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2018/10/11</p>
+<p>之前有TSG教我们怎么用Ubuntu 18.04 GUI. 但是，那个GUI太慢。</p>
+<p>这个TSG安装更好的GUI。</p>
+<p>1. 首先创建一台Ubuntu 18.04的虚拟机.</p>
+<p>创建完成后使用你的ssh app (Xshell, putty, etc.) 登陆虚拟机，依次执行下面的命令（高亮部分）</p>
+<p>2. 安装ubuntuDesktop: sudo apt-get install ubuntu-desktop -y</p>
+<p>3. 下载这个脚本：wget  <a href="https://azuresupport.blob.core.chinacloudapi.cn/tools/Std-Xrdp-Install-0.2.zip" target="_blank" rel="noopener">https://azuresupport.blob.core.chinacloudapi.cn/tools/Std-Xrdp-Install-0.2.zip</a></p>
+<p>4. 安装unzip：sudo apt install unzip</p>
+<p>5. 解压脚本：unzip Std-Xrdp-Install-0.2.zip</p>
+<p>6. 添加可执行权限:  chmod +x Std-Xrdp-Install-0.2.sh</p>
+<p>7. 运行脚本:  ./Std-Xrdp-Install-0.2.sh</p>
+<p>8. ARM下的虚拟机如果配置了NSG，则需要添加NSG 3389的入站规则，如果是经典虚拟机，则需要为虚拟机添加remote desktop（3389）终结点。</p>
+<p>9. 完成后我们可以用mstsc直接用Public IP进行连接</p>
+<p>10. 登陆后输入用户名密码:</p>
+<p>11. 好了。</p></article>

@@ -1,0 +1,395 @@
+<article class="kb-article" data-title="【Share】非托管磁盘VM Agent版本过低迁移失败，暨VM Agent安装&amp;依赖构建"><h1>【Share】非托管磁盘VM Agent版本过低迁移失败，暨VM Agent安装&amp;依赖构建</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-03-31 17:16:07</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>关联跟进的一个工单：SR_20260328401433_非托管磁盘迁移到托管磁盘 代理问题</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>关联跟进的一个工单：SR_20260328401433_非托管磁盘迁移到托管磁盘 代理问题</li>
+</ul>
+<ul>
+<li>缺少的依赖组件无法下载只能手动构建：</li>
+</ul>
+<ul>
+<li>下载失败：sudo pip install ordereddict</li>
+</ul>
+<ul>
+<li>下载失败：sudo yum install python-setuptools -y &amp;&amp; sudo easy_install ordereddict</li>
+</ul>
+<ul>
+<li>raise TypeError(&#39;expected at most 1 arguments, got %d&#39; % len(args))</li>
+</ul>
+<ul>
+<li>except ValueError:</li>
+</ul>
+<ul>
+<li>raise KeyError(&#39;dictionary is empty&#39;)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>Zhang Wenxin</li>
+</ul>
+<ul>
+<li>sudo systemctl stop waagent</li>
+</ul>
+<ul>
+<li>cd /tmp</li>
+</ul>
+<ul>
+<li>rm -rf WALinuxAgent-2.15.0.1 v2.15.0.1.tar.gz</li>
+</ul>
+<ul>
+<li>tar xzf v2.15.0.1.tar.gz</li>
+</ul>
+<ul>
+<li>cd WALinuxAgent-2.15.0.1</li>
+</ul>
+<ul>
+<li>sudo python setup.py install --force</li>
+</ul>
+<ul>
+<li>sudo systemctl daemon-reload</li>
+</ul>
+<ul>
+<li>sudo systemctl start waagent</li>
+</ul>
+<ul>
+<li>waagent --version</li>
+</ul>
+<ul>
+<li>sudo service waagent stop</li>
+</ul>
+<ul>
+<li>rm -rf WALinuxAgent-2.14.0.1 v2.14.0.1.tar.gz</li>
+</ul>
+<ul>
+<li>tar xzf v2.14.0.1.tar.gz</li>
+</ul>
+<ul>
+<li>cd WALinuxAgent-2.14.0.1</li>
+</ul>
+<ul>
+<li>sudo chkconfig waagent on</li>
+</ul>
+<ul>
+<li>sudo service waagent start</li>
+</ul>
+<ul>
+<li>cat &gt; /usr/lib/python2.6/site-packages/ordereddict.py &lt;&lt; &#39;PYEOF&#39;</li>
+</ul>
+<ul>
+<li>class OrderedDict(dict):</li>
+</ul>
+<ul>
+<li>def __init__(self, *args, **kwds):</li>
+</ul>
+<ul>
+<li>if len(args) &gt; 1:</li>
+</ul>
+<ul>
+<li>self.__keys = []</li>
+</ul>
+<ul>
+<li>self.update(*args, **kwds)</li>
+</ul>
+<ul>
+<li>def clear(self):</li>
+</ul>
+<ul>
+<li>del self.__keys[:]</li>
+</ul>
+<ul>
+<li>dict.clear(self)</li>
+</ul>
+<ul>
+<li>def __setitem__(self, key, value):</li>
+</ul>
+<ul>
+<li>if key not in self:</li>
+</ul>
+<ul>
+<li>self.__keys.append(key)</li>
+</ul>
+<ul>
+<li>dict.__setitem__(self, key, value)</li>
+</ul>
+<ul>
+<li>def __delitem__(self, key):</li>
+</ul>
+<ul>
+<li>dict.__delitem__(self, key)</li>
+</ul>
+<ul>
+<li>self.__keys.remove(key)</li>
+</ul>
+<ul>
+<li>def __iter__(self):</li>
+</ul>
+<ul>
+<li>return iter(self.__keys)</li>
+</ul>
+<ul>
+<li>def keys(self):</li>
+</ul>
+<ul>
+<li>return list(self.__keys)</li>
+</ul>
+<ul>
+<li>def values(self):</li>
+</ul>
+<ul>
+<li>return [self[key] for key in self.__keys]</li>
+</ul>
+<ul>
+<li>def items(self):</li>
+</ul>
+<ul>
+<li>return [(key, self[key]) for key in self.__keys]</li>
+</ul>
+<ul>
+<li>def iterkeys(self):</li>
+</ul>
+<ul>
+<li>def itervalues(self):</li>
+</ul>
+<ul>
+<li>for key in self.__keys:</li>
+</ul>
+<ul>
+<li>yield self[key]</li>
+</ul>
+<ul>
+<li>def iteritems(self):</li>
+</ul>
+<ul>
+<li>yield (key, self[key])</li>
+</ul>
+<ul>
+<li>def update(self, *args, **kwds):</li>
+</ul>
+<ul>
+<li>if args:</li>
+</ul>
+<ul>
+<li>if hasattr(other, &#39;items&#39;):</li>
+</ul>
+<ul>
+<li>for key, value in other.items():</li>
+</ul>
+<ul>
+<li>self[key] = value</li>
+</ul>
+<ul>
+<li>elif hasattr(other, &#39;keys&#39;):</li>
+</ul>
+<ul>
+<li>for key in other.keys():</li>
+</ul>
+<ul>
+<li>self[key] = other[key]</li>
+</ul>
+<ul>
+<li>else:</li>
+</ul>
+<ul>
+<li>for key, value in other:</li>
+</ul>
+<ul>
+<li>for key, value in kwds.items():</li>
+</ul>
+<ul>
+<li>def setdefault(self, key, default=None):</li>
+</ul>
+<ul>
+<li>self[key] = default</li>
+</ul>
+<ul>
+<li>return self[key]</li>
+</ul>
+<ul>
+<li>def pop(self, key, *args):</li>
+</ul>
+<ul>
+<li>try:</li>
+</ul>
+<ul>
+<li>pass</li>
+</ul>
+<ul>
+<li>return result</li>
+</ul>
+<ul>
+<li>def popitem(self):</li>
+</ul>
+<ul>
+<li>if not self:</li>
+</ul>
+<ul>
+<li>return (key, value)</li>
+</ul>
+<ul>
+<li>def __repr__(self):</li>
+</ul>
+<ul>
+<li>return &#39;OrderedDict(%r)&#39; % self.items()</li>
+</ul>
+<ul>
+<li>def copy(self):</li>
+</ul>
+<ul>
+<li>return OrderedDict(self.items())</li>
+</ul>
+<ul>
+<li>def __eq__(self, other):</li>
+</ul>
+<ul>
+<li>if isinstance(other, OrderedDict):</li>
+</ul>
+<ul>
+<li>return list(self.items()) == list(other.items())</li>
+</ul>
+<ul>
+<li>return dict.__eq__(self, other)</li>
+</ul>
+<ul>
+<li>PYEOF</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>1、其中一台是Centos7，升级并迁移成功采用的命令如下：</li>
+</ul>
+<ul>
+<li>2、其中一台由于是Centos6.5，升级并迁移成功采用的命令如下：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>other = args[0]</li>
+</ul>
+<ul>
+<li>result = dict.pop(self, key, *args)</li>
+</ul>
+<ul>
+<li>key = self.__keys.pop()</li>
+</ul>
+<ul>
+<li>value = dict.pop(self, key)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>VM Agent版本过低导致Centos 7.5&amp; Centos 6.5无法迁移非托管磁盘的问题，没有repo源下操作Github下载软件包（可使用镜像站，但是尽量不要体现在邮件），手动构建依赖和修复。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>curl -LO <a href="https://github.com/Azure/WALinuxAgent/archive/refs/tags/v2.15.0.1.tar.gz" target="_blank" rel="noopener">https://github.com/Azure/WALinuxAgent/archive/refs/tags/v2.15.0.1.tar.gz</a></li>
+</ul>
+<ul>
+<li>curl -LO <a href="https://github.com/Azure/WALinuxAgent/archive/refs/tags/v2.14.0.1.tar.gz" target="_blank" rel="noopener">https://github.com/Azure/WALinuxAgent/archive/refs/tags/v2.14.0.1.tar.gz</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026/03/31</p>
+<p>Reviewer</p>
+<p>Zhang Wenxin</p>
+<p>VM Agent版本过低导致Centos 7.5&amp; Centos 6.5无法迁移非托管磁盘的问题，没有repo源下操作Github下载软件包（可使用镜像站，但是尽量不要体现在邮件），手动构建依赖和修复。</p>
+<p>关联跟进的一个工单：SR_20260328401433_非托管磁盘迁移到托管磁盘 代理问题</p>
+<p>1、其中一台是Centos7，升级并迁移成功采用的命令如下：</p>
+<p>sudo systemctl stop waagent</p>
+<p>cd /tmp</p>
+<p>rm -rf WALinuxAgent-2.15.0.1 v2.15.0.1.tar.gz</p>
+<p>curl -LO <a href="https://github.com/Azure/WALinuxAgent/archive/refs/tags/v2.15.0.1.tar.gz" target="_blank" rel="noopener">https://github.com/Azure/WALinuxAgent/archive/refs/tags/v2.15.0.1.tar.gz</a></p>
+<p>tar xzf v2.15.0.1.tar.gz</p>
+<p>cd WALinuxAgent-2.15.0.1</p>
+<p>sudo python setup.py install --force</p>
+<p>sudo systemctl daemon-reload</p>
+<p>sudo systemctl start waagent</p>
+<p>waagent --version</p>
+<p>2、其中一台由于是Centos6.5，升级并迁移成功采用的命令如下：</p>
+<p>sudo service waagent stop</p>
+<p>rm -rf WALinuxAgent-2.14.0.1 v2.14.0.1.tar.gz</p>
+<p>curl -LO <a href="https://github.com/Azure/WALinuxAgent/archive/refs/tags/v2.14.0.1.tar.gz" target="_blank" rel="noopener">https://github.com/Azure/WALinuxAgent/archive/refs/tags/v2.14.0.1.tar.gz</a></p>
+<p>tar xzf v2.14.0.1.tar.gz</p>
+<p>cd WALinuxAgent-2.14.0.1</p>
+<p>sudo chkconfig waagent on</p>
+<p>sudo service waagent start</p>
+<p>缺少的依赖组件无法下载只能手动构建：</p>
+<p>下载失败：sudo pip install ordereddict</p>
+<p>下载失败：sudo yum install python-setuptools -y &amp;&amp; sudo easy_install ordereddict</p>
+<p>cat &gt; /usr/lib/python2.6/site-packages/ordereddict.py &lt;&lt; &#39;PYEOF&#39;</p>
+<p>class OrderedDict(dict):</p>
+<p>def __init__(self, *args, **kwds):</p>
+<p>if len(args) &gt; 1:</p>
+<p>raise TypeError(&#39;expected at most 1 arguments, got %d&#39; % len(args))</p>
+<p>self.__keys = []</p>
+<p>self.update(*args, **kwds)</p>
+<p>def clear(self):</p>
+<p>del self.__keys[:]</p>
+<p>dict.clear(self)</p>
+<p>def __setitem__(self, key, value):</p>
+<p>if key not in self:</p>
+<p>self.__keys.append(key)</p>
+<p>dict.__setitem__(self, key, value)</p>
+<p>def __delitem__(self, key):</p>
+<p>dict.__delitem__(self, key)</p>
+<p>self.__keys.remove(key)</p>
+<p>def __iter__(self):</p>
+<p>return iter(self.__keys)</p>
+<p>def keys(self):</p>
+<p>return list(self.__keys)</p>
+<p>def values(self):</p>
+<p>return [self[key] for key in self.__keys]</p>
+<p>def items(self):</p>
+<p>return [(key, self[key]) for key in self.__keys]</p>
+<p>def iterkeys(self):</p>
+<p>def itervalues(self):</p>
+<p>for key in self.__keys:</p>
+<p>yield self[key]</p>
+<p>def iteritems(self):</p>
+<p>yield (key, self[key])</p>
+<p>def update(self, *args, **kwds):</p>
+<p>if args:</p>
+<p>other = args[0]</p>
+<p>if hasattr(other, &#39;items&#39;):</p>
+<p>for key, value in other.items():</p>
+<p>self[key] = value</p>
+<p>elif hasattr(other, &#39;keys&#39;):</p>
+<p>for key in other.keys():</p>
+<p>self[key] = other[key]</p>
+<p>else:</p>
+<p>for key, value in other:</p>
+<p>for key, value in kwds.items():</p>
+<p>def setdefault(self, key, default=None):</p>
+<p>self[key] = default</p>
+<p>return self[key]</p>
+<p>def pop(self, key, *args):</p>
+<p>result = dict.pop(self, key, *args)</p>
+<p>try:</p>
+<p>except ValueError:</p>
+<p>pass</p>
+<p>return result</p>
+<p>def popitem(self):</p>
+<p>if not self:</p>
+<p>raise KeyError(&#39;dictionary is empty&#39;)</p>
+<p>key = self.__keys.pop()</p>
+<p>value = dict.pop(self, key)</p>
+<p>return (key, value)</p>
+<p>def __repr__(self):</p>
+<p>return &#39;OrderedDict(%r)&#39; % self.items()</p>
+<p>def copy(self):</p>
+<p>return OrderedDict(self.items())</p>
+<p>def __eq__(self, other):</p>
+<p>if isinstance(other, OrderedDict):</p>
+<p>return list(self.items()) == list(other.items())</p>
+<p>return dict.__eq__(self, other)</p>
+<p>PYEOF</p></article>

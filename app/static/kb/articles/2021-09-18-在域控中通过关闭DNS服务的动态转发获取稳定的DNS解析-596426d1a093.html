@@ -1,0 +1,450 @@
+<article class="kb-article" data-title="在域控中通过关闭DNS服务的动态转发获取稳定的DNS解析"><h1>在域控中通过关闭DNS服务的动态转发获取稳定的DNS解析</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DNS</li>
+<li>Section: New Section 1</li>
+<li>最近修改: 2021-09-18 12:08:32</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>现在这三台域控均无法解析 Private DNS Zones里的设备</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>现在这三台域控均无法解析 Private DNS Zones里的设备</li>
+</ul>
+<ul>
+<li>异常解析</li>
+</ul>
+<ul>
+<li>而问题出现时，我们发现dns server再收到fqdn+dns suffix的请求返回预期报错之后，针对原始FQDN，dns server没有往Azure 平台的dns server进行转发，而是直接返回了“no such domian”的报错。之所以会发生这个问题，是由于这时候dns server已经有了negative cache，所以直接返回了上面的结果。那为什么会出现negative cache呢，原因就是之前dns server收到一个关于reddog域名的记录请求，这时候请求被转发到了外部ISP的dns server 202.96.209.133，由于该dns server无法解析reddog的域名，dns server收到该响应报文后就把结果给缓存了下来，最终引起直接给客户端返回解析失败的结果。</li>
+</ul>
+<ul>
+<li>证实 10.224.14.4 解析reddog.microsoft.com Private DNS zones 失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20200922</li>
+</ul>
+<ul>
+<li>2020091552059</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=============</li>
+</ul>
+<ul>
+<li>这是两台在Azure China的域控，计划做Load Balance</li>
+</ul>
+<ul>
+<li>acepi001vw01.ALDICN.LOCAL [10.224.14.4]</li>
+</ul>
+<ul>
+<li>acepi001vw15.ALDICN.LOCAL [10.224.14.24]</li>
+</ul>
+<ul>
+<li>这是一台在IDC的域控</li>
+</ul>
+<ul>
+<li>sncpivw02.ALDICN.LOCAL [10.224.130.52]</li>
+</ul>
+<ul>
+<li>第一步：</li>
+</ul>
+<ul>
+<li>如果使用了自定义DNS后，需要在自定义的DNS服务器上配置转发规则才能正常解析私有dNS区域的记录：*.reddog.microsoft.com 转发到Azure 默认DNS（168.63.129.16）</li>
+</ul>
+<ul>
+<li>如ACEPI001VW01 已设置168.63.129.16 虚拟DNS，配置后客户可以使用自己的预控解析Azure private zone的域名了，但是发现解析不稳定，有时能解析有时不能解析。</li>
+</ul>
+<ul>
+<li>第二步</li>
+</ul>
+<ul>
+<li>第三步</li>
+</ul>
+<ul>
+<li>附：</li>
+</ul>
+<ul>
+<li>正常解析</li>
+</ul>
+<ul>
+<li>Client</li>
+</ul>
+<ul>
+<li>Server</li>
+</ul>
+<ul>
+<li>1538142 [1] 0680.1BD8::09/17/20-17:02:33.0443626 [dnslib] print_c1738 DnsPrint_PacketName() -     Name      &quot;(12)aceda015vw04(6)reddog(9)microsoft(3)com(0)&quot;</li>
+</ul>
+<ul>
+<li>1538156 [1] 0680.1BD8::09/17/20-17:02:33.0443720 [server] debug_c1172 Dbg_DnsMessage() - QUESTION  (12)aceda015vw04(6)reddog(9)microsoft(3)com(0)    TYPE A (1)    CLASS 1</li>
+</ul>
+<ul>
+<li>1538158 [1] 0680.1BD8::09/17/20-17:02:33.0443747 [server] name_c1131 Name_ConvertPacketNameToLookupNameEx() - Packet name: LookupName[4][35](12)aceda015vw04(6)reddog(9)microsoft(3)com</li>
+</ul>
+<ul>
+<li>1538166 [1] 0680.1BD8::09/17/20-17:02:33.0443778 [server] dblook_c3119 Lookup_NodeForPacket() - Lookup packet name: (12)aceda015vw04(6)reddog(9)microsoft(3)com(0)</li>
+</ul>
+<ul>
+<li>1538167 [1] 0680.1BD8::09/17/20-17:02:33.0443791 [server] name_c1131 Name_ConvertPacketNameToLookupNameEx() - Packet name: LookupName[4][35](12)aceda015vw04(6)reddog(9)microsoft(3)com</li>
+</ul>
+<ul>
+<li>1538168 [1] 0680.1BD8::09/17/20-17:02:33.0443802 [server] dblook_c3171 Lookup_NodeForPacket() - Lookup_NodeForPacket final lookup name: LookupName[4][35](12)aceda015vw04(6)reddog(9)microsoft(3)com</li>
+</ul>
+<ul>
+<li>1538169 [1] 0680.1BD8::09/17/20-17:02:33.0443814 [server] dblook_c2271 Lookup_ZoneTreeNode() - Performing lookup with flags 10000000 for name: LookupName[4][35](12)aceda015vw04(6)reddog(9)microsoft(3)com</li>
+</ul>
+<ul>
+<li>1538201 [1] 0680.1BD8::09/17/20-17:02:33.0443940 [server] dblook_c2315 Lookup_ZoneTreeNode() - Lookup length 12, label aceda015vw04</li>
+</ul>
+<ul>
+<li>1538202 [1] 0680.1BD8::09/17/20-17:02:33.0443943 [server] tree_c4488 NTree_FindOrCreateChildNode() - NTree_FindOrCreateChild()    parent label: (reddog)        child count = 0        zone        = 0000001336870700    child label: (aceda015vw04)</li>
+</ul>
+<ul>
+<li>1538205 [1] 0680.1BD8::09/17/20-17:02:33.0443953 [server] dblook_c2335 Lookup_ZoneTreeNode() - Node aceda015vw04 does not exist in zone tree</li>
+</ul>
+<ul>
+<li>1538207 [1] 0680.1BD8::09/17/20-17:02:33.0443972 [server] dblook_c219 Lookup_ZoneNode() - Performing find operation on lookup name: LookupName[4][35](12)aceda015vw04(6)reddog(9)microsoft(3)com</li>
+</ul>
+<ul>
+<li>1538664 [1] 0680.1BD8::09/17/20-17:02:33.0446791 [server] dblook_c393 Lookup_ZoneNode() - Lookup length 12, label aceda015vw04</li>
+</ul>
+<ul>
+<li>1538665 [1] 0680.1BD8::09/17/20-17:02:33.0446795 [server] tree_c4488 NTree_FindOrCreateChildNode() - NTree_FindOrCreateChild()    parent label: (reddog)        child count = 43        zone        = 0000000000000000    child label: (aceda015vw04)</li>
+</ul>
+<ul>
+<li>1538710 [1] 0680.1BD8::09/17/20-17:02:33.0447050 [dnslib] name_c1673 Dns_DowncaseNameLabel() - Dns_DowncaseNameLabel( aceda015vw04 )    flag = 00000003</li>
+</ul>
+<ul>
+<li>1538719 [1] 0680.1BD8::09/17/20-17:02:33.0447082 [server] tree_c4693 NTree_FindOrCreateChildNode() - TREE: search aceda015vw04 found NULL NSEC NULL</li>
+</ul>
+<ul>
+<li>1538720 [1] 0680.1BD8::09/17/20-17:02:33.0447087 [server] dblook_c539 Lookup_ZoneNode() - Node aceda015vw04 does not exist</li>
+</ul>
+<ul>
+<li>1538772 [1] 0680.1BD8::09/17/20-17:02:33.0447431 [server] recurse_c4255 Recurse_Question() - Sending to next server scope forwarder</li>
+</ul>
+<ul>
+<li>1538773 [1] 0680.1BD8::09/17/20-17:02:33.0447435 [server] DynamicForwarders_cpp128 DF_LockRead() - Acquiring dynamic forwarder read lock</li>
+</ul>
+<ul>
+<li>1538774 [1] 0680.1BD8::09/17/20-17:02:33.0447444 [server] recurse_c871 Recurse_SendToForwarder() - Recursing query at 0000001338F68FD0 to forwarders name server at 202.96.209.133</li>
+</ul>
+<ul>
+<li>1538775 [1] 0680.1BD8::09/17/20-17:02:33.0447447 [server] DynamicForwarders_cpp179 DF_UnlockRead() - Releasing dynamic forwarder read lock</li>
+</ul>
+<ul>
+<li>1538776 [1] 0680.1BD8::09/17/20-17:02:33.0447454 [server] recurse_c1112 sendRecursiveQuery() - sendRecursiveQuery at 0000001338F68FD0 to NS at 202.96.209.133 (OPT=TRUE)</li>
+</ul>
+<ul>
+<li>1538777 [1] 0680.1BD8::09/17/20-17:02:33.0447461 [server] remotequerysystem_c635 DnsRq_InsertNewRemoteQuery() - Inserting new query 0000001338F68FD0 with tag 1 and context 0x0000</li>
+</ul>
+<ul>
+<li>1538778 [1] 0680.1BD8::09/17/20-17:02:33.0447479 [server] name_c1131 Name_ConvertPacketNameToLookupNameEx() - Packet name: LookupName[4][35](12)aceda015vw04(6)reddog(9)microsoft(3)com</li>
+</ul>
+<ul>
+<li>1538779 [1] 0680.1BD8::09/17/20-17:02:33.0447486 [dnslib] name_c1673 Dns_DowncaseNameLabel() - Dns_DowncaseNameLabel( aceda015vw04 )    flag = 00000003</li>
+</ul>
+<ul>
+<li>1538791 [1] 0680.1BD8::09/17/20-17:02:33.0447561 [server] recurse_c1010 queueAndSendRecursiveQuery() - Recursing for queued query at 0000001338F68FD0    queuing XID=0x017E, queuing time=1787461, expire=1787464, current=1787461    sending msg at 00000013328720D0 to NS at 202.96.209.133</li>
+</ul>
+<ul>
+<li>1538795 [1] 0680.1BD8::09/17/20-17:02:33.0447597 [server] remote_c385 Remote_FindOrCreate() - Remote_FindOrCreate( 202.96.209.133 ) = 00000013371948E0</li>
+</ul>
+<ul>
+<li>1538796 [1] 0680.1BD8::09/17/20-17:02:33.0447614 [server] remote_c982 Remote_QuerySupportedEDNSVersion() - Returning version 0x00 for remote server 202.96.209.133, AllowProbe flag was TRUE</li>
+</ul>
+<ul>
+<li>1538797 [1] 0680.1BD8::09/17/20-17:02:33.0447618 [server] send_c288 sendMsgCore() - Using EDNS because remote server at 202.96.209.133 supports EDNS or an EDNS probe is required</li>
+</ul>
+<ul>
+<li>1538809 [1] 0680.1BD8::09/17/20-17:02:33.0448454 [dnslib] print_c1738 DnsPrint_PacketName() -     Name      &quot;(12)aceda015vw04(6)reddog(9)microsoft(3)com(0)&quot;</li>
+</ul>
+<ul>
+<li>1538829 [1] 0680.1BD8::09/17/20-17:02:33.0448832 [server] debug_c993 Dbg_DnsMessage() - XID 0x017e, remote address 202.96.209.133, port 53, socket 12420</li>
+</ul>
+<ul>
+<li>1538837 [1] 0680.1BD8::09/17/20-17:02:33.0448869 [server] debug_c1172 Dbg_DnsMessage() - QUESTION  (12)aceda015vw04(6)reddog(9)microsoft(3)com(0)    TYPE A (1)    CLASS 1</li>
+</ul>
+<ul>
+<li>1555131 [1] 0680.1BD8::09/17/20-17:02:33.0967714 [server] DynamicForwarders_cpp379 DF_SetForwarderResponseTime() - Updating forwarder 202.96.209.133 with fast response of 0 seconds</li>
+</ul>
+<ul>
+<li>1555133 [1] 0680.1BD8::09/17/20-17:02:33.0967726 [server] DynamicForwarders_cpp416 DF_SetForwarderResponseTime() - Found forwarder 202.96.209.133 at index 0</li>
+</ul>
+<ul>
+<li>1555134 [1] 0680.1BD8::09/17/20-17:02:33.0967729 [server] DynamicForwarders_cpp446 DF_SetForwarderResponseTime() - Clearing consecutive slow response count for forwarder 202.96.209.133 at index 0</li>
+</ul>
+<ul>
+<li>1555713 [1] 0680.1BD8::09/17/20-17:02:33.0969506 [server] OlsWins_cpp437 DnsOls_ProcessWinsDataExpiry() - Processing node aceda015vw04.reddog.microsoft.com.</li>
+</ul>
+<ul>
+<li>1555714 [1] 0680.1BD8::09/17/20-17:02:33.0969509 [server] OlsWins_cpp587 DnsOls_ProcessWinsDataExpiry() - Returning 0 for node aceda015vw04.reddog.microsoft.com.</li>
+</ul>
+<ul>
+<li>1556179         PrimaryServer: (7)ns1-205(9)azure-dns[C02A]&lt;NULL&gt;</li>
+</ul>
+<ul>
+<li>1556197 [1] 0680.1BD8::09/17/20-17:02:33.0970777 [server] name_c385 Name_PacketNameToCountNameEx() - Packet name: (7)ns1-205(9)azure-dns(3)com(0)</li>
+</ul>
+<ul>
+<li>1556206 [1] 0680.1BD8::09/17/20-17:02:33.0970827 [dnscore] name_core_c495 Name_CopyCountName() - Copied count name: CountName[23][3](7)ns1-205(9)azure-dns(3)com</li>
+</ul>
+<ul>
+<li>1556230 [1] 0680.1BD8::09/17/20-17:02:33.0970947 [server] rrlist_c1404 RR_CacheNonExistence() - Caching authoritative NXDOMAIN at node aceda015vw04.reddog.microsoft.com. of type 1 using query time 1787461</li>
+</ul>
+<ul>
+<li>1、禁用dns server的动态转发器功能，使得reddog的域名被转发到Azure 平台这个第一顺序的dns server，保证该域名可以被普通转发器正常解析。</li>
+</ul>
+<ul>
+<li>根据微软技术支持经验，server 2012开始版本支持动态转发器的新功能，对应转发器是根据响应时间来确定最终转发的结果，所以会出现以上行为。具体请参考以上信息，</li>
+</ul>
+<ul>
+<li>Dynamic DNS Forwarders</li>
+</ul>
+<ul>
+<li>Copy</li>
+</ul>
+<ul>
+<li>如之前电话沟通，关闭动态转发器功能，关闭以上功能后，dns服务器选择转发器时，依然会根据转发器的配置顺序来进行递归查找对应的dns记录。</li>
+</ul>
+<ul>
+<li>截图一</li>
+</ul>
+<ul>
+<li>上周六</li>
+</ul>
+<ul>
+<li>acepi001vw15 非生产域控</li>
+</ul>
+<ul>
+<li>10.224.14.24</li>
+</ul>
+<ul>
+<li>关闭动态转发器</li>
+</ul>
+<ul>
+<li>截图二</li>
+</ul>
+<ul>
+<li>acepi001vw01 生产域控</li>
+</ul>
+<ul>
+<li>10.224.14.4</li>
+</ul>
+<ul>
+<li>未关闭动态转发器</li>
+</ul>
+<ul>
+<li>acepi001vw15 生产域控</li>
+</ul>
+<ul>
+<li>已关闭动态转发器</li>
+</ul>
+<ul>
+<li>而同时 10.224.14.24可以正常解析。</li>
+</ul>
+<ul>
+<li>截图三、四</li>
+</ul>
+<ul>
+<li>sncpivw02</li>
+</ul>
+<ul>
+<li>10.224.130.52</li>
+</ul>
+<ul>
+<li>IDC DC DNS Server</li>
+</ul>
+<ul>
+<li>设置reddog.microsoft.com条件转发</li>
+</ul>
+<ul>
+<li>已在本周一晚 维护窗口，对上述三台域控 均已设置 关闭动态转发器功能</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>如果使用平台默认DNS继续没有问题，需要您进一步查看DNS服务器的日志进行分析</li>
+</ul>
+<ul>
+<li>客户确认使用AZURE配置的预控解析有问题时，使用Azure平台默认的DNS服务器解析是稳定的。</li>
+</ul>
+<ul>
+<li>客户升级了premier工单给MS查询DNS配置问题，如下为MS的排查过程，供大家参考：</li>
+</ul>
+<ul>
+<li>通过分析log，我们发现Azure china的dns server解析reddog域名出现“no such domain”的报错还是由于reddog的域名没有被转发到Azure 平台的dns server（168.63.29.16），而被转发到了外部的dns server（202.96.209.133），由于该dns server无法正常解析reddog的域名，最终返回无法找到这个域名信息的报错。</li>
+</ul>
+<ul>
+<li>以下是log详细分析，供您参考，</li>
+</ul>
+<ul>
+<li>Nslookup会触发补全dns后缀的动作，这个解析失败时符合区域的，所以我们再正常的log中也会看到针对fqdn+dns suffix这个域名出现一次解析失败的情况，但是在后续fqdn的解析中，转发器Azure平台正常返回了对应的A记录信息，最终dns server返回客户端正常的域名记录。</li>
+</ul>
+<ul>
+<li>查看当前Azure china的dns server 配置，我们发现以上外部ISP的dns server是在配置列表中的。由于server 2012R2的新功能 动态dns转发器 ，当时该dns转发器被列为第一优先级的转发器。</li>
+</ul>
+<ul>
+<li>以上的情况是在条件转发器配置不生效的情况下发生的。我们进一步分析dns server的etl trace，与以上网络包的行为是一致的。我们发现dns server收到client关于以下域名的请求时，由于本地权威区域没有对应的zone信息会进行递归查询，在选择转发域名的时候，由于动态forwarder功能，当时选择将该域名转发到外部ISP的dns server 202.96.209.5，由于该dns server没能解析到reddog的域名，直接返回了no such name和SOA记录的结果，最终缓存到了dns 服务器本地。条件转发器不生效的情况，目前的dns server没有cover这个情况。</li>
+</ul>
+<ul>
+<li>确认可以解析 Azure China Private DNS zones的资源</li>
+</ul>
+<ul>
+<li>计划使用Log Analytics 对这三台域控DNS日志，进行监控，查看是否在后续几天出现非0返回值</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>除了以上注册表信息，我们也可以通过以下PS命令来关闭动态转发器功能，关闭以上功能后，dns服务器选择转发器时，依然会根据转发器的配置顺序来进行递归查找对应的dns记录。</li>
+</ul>
+<ul>
+<li>Set-DnsServerForwarder -EnableReordering $False -PassThru</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>建议您按照下面的方法使用平台默认的DNS对主机名进行解析，看看是否有相同的问题：</li>
+</ul>
+<ul>
+<li>修复建议，</li>
+</ul>
+<ul>
+<li>When you add more than one forwarder in the settings for a DNS Server in Windows Server 2012 R2, the DNS service reorders the list of servers in the list of forwarders based on response time of each server in the list. The reordering and response checking operations are enabled by default in Windows Server 2012 R2. If you wish to disable this feature, you need to change the following registry DWORD value to 0:</li>
+</ul>
+<ul>
+<li>HKLM\System\CurrentControlSet\Services\DNS\Parameters\EnableForwarderReordering</li>
+</ul>
+<ul>
+<li>完成配置后，可以通过重启dns server服务来生效。</li>
+</ul>
+<ul>
+<li>2、关于条件转发器针对reddog域名不生效的问题，由于Azure china和local IDC的dns server之前存在AD复制关系，并且Azure china这边有没有把条件转发器存放在AD数据中，本地IDC中又是存放在AD数据库中的，配置比较乱。接下来建议贵方将关于reddog的条件转发器配置删除，然后重新配置（如果配置存放在AD环境中，则只配置其中一台，另外两台通过AD复制完成，如果选择不存放再AD数据库，三台分别配置条件转发器），然后再次测试条件转发器是否可以生效。</li>
+</ul>
+<ul>
+<li>最终客户按照如上MS的建议修改后目前解析已经稳定：</li>
+</ul>
+<ul>
+<li>按此建议，做了如下操作，重演故障。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/dn305898(v=ws.11)" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/dn305898(v=ws.11)</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20200922</p>
+<p>2020091552059</p>
+<p>问题描述：</p>
+<p>=============</p>
+<p>这是两台在Azure China的域控，计划做Load Balance</p>
+<p>acepi001vw01.ALDICN.LOCAL [10.224.14.4]</p>
+<p>acepi001vw15.ALDICN.LOCAL [10.224.14.24]</p>
+<p>这是一台在IDC的域控</p>
+<p>sncpivw02.ALDICN.LOCAL [10.224.130.52]</p>
+<p>现在这三台域控均无法解析 Private DNS Zones里的设备</p>
+<p>排查过程：</p>
+<p>第一步：</p>
+<p>如果使用了自定义DNS后，需要在自定义的DNS服务器上配置转发规则才能正常解析私有dNS区域的记录：*.reddog.microsoft.com 转发到Azure 默认DNS（168.63.129.16）</p>
+<p>如ACEPI001VW01 已设置168.63.129.16 虚拟DNS，配置后客户可以使用自己的预控解析Azure private zone的域名了，但是发现解析不稳定，有时能解析有时不能解析。</p>
+<p>第二步</p>
+<p>建议您按照下面的方法使用平台默认的DNS对主机名进行解析，看看是否有相同的问题：</p>
+<p>如果使用平台默认DNS继续没有问题，需要您进一步查看DNS服务器的日志进行分析</p>
+<p>第三步</p>
+<p>客户确认使用AZURE配置的预控解析有问题时，使用Azure平台默认的DNS服务器解析是稳定的。</p>
+<p>附：</p>
+<p>客户升级了premier工单给MS查询DNS配置问题，如下为MS的排查过程，供大家参考：</p>
+<p>通过分析log，我们发现Azure china的dns server解析reddog域名出现“no such domain”的报错还是由于reddog的域名没有被转发到Azure 平台的dns server（168.63.29.16），而被转发到了外部的dns server（202.96.209.133），由于该dns server无法正常解析reddog的域名，最终返回无法找到这个域名信息的报错。</p>
+<p>以下是log详细分析，供您参考，</p>
+<p>正常解析</p>
+<p>Client</p>
+<p>Server</p>
+<p>Nslookup会触发补全dns后缀的动作，这个解析失败时符合区域的，所以我们再正常的log中也会看到针对fqdn+dns suffix这个域名出现一次解析失败的情况，但是在后续fqdn的解析中，转发器Azure平台正常返回了对应的A记录信息，最终dns server返回客户端正常的域名记录。</p>
+<p>异常解析</p>
+<p>而问题出现时，我们发现dns server再收到fqdn+dns suffix的请求返回预期报错之后，针对原始FQDN，dns server没有往Azure 平台的dns server进行转发，而是直接返回了“no such domian”的报错。之所以会发生这个问题，是由于这时候dns server已经有了negative cache，所以直接返回了上面的结果。那为什么会出现negative cache呢，原因就是之前dns server收到一个关于reddog域名的记录请求，这时候请求被转发到了外部ISP的dns server 202.96.209.133，由于该dns server无法解析reddog的域名，dns server收到该响应报文后就把结果给缓存了下来，最终引起直接给客户端返回解析失败的结果。</p>
+<p>查看当前Azure china的dns server 配置，我们发现以上外部ISP的dns server是在配置列表中的。由于server 2012R2的新功能 动态dns转发器 ，当时该dns转发器被列为第一优先级的转发器。</p>
+<p>以上的情况是在条件转发器配置不生效的情况下发生的。我们进一步分析dns server的etl trace，与以上网络包的行为是一致的。我们发现dns server收到client关于以下域名的请求时，由于本地权威区域没有对应的zone信息会进行递归查询，在选择转发域名的时候，由于动态forwarder功能，当时选择将该域名转发到外部ISP的dns server 202.96.209.5，由于该dns server没能解析到reddog的域名，直接返回了no such name和SOA记录的结果，最终缓存到了dns 服务器本地。条件转发器不生效的情况，目前的dns server没有cover这个情况。</p>
+<p>1538142 [1] 0680.1BD8::09/17/20-17:02:33.0443626 [dnslib] print_c1738 DnsPrint_PacketName() -     Name      &quot;(12)aceda015vw04(6)reddog(9)microsoft(3)com(0)&quot;</p>
+<p>1538156 [1] 0680.1BD8::09/17/20-17:02:33.0443720 [server] debug_c1172 Dbg_DnsMessage() - QUESTION  (12)aceda015vw04(6)reddog(9)microsoft(3)com(0)    TYPE A (1)    CLASS 1</p>
+<p>1538158 [1] 0680.1BD8::09/17/20-17:02:33.0443747 [server] name_c1131 Name_ConvertPacketNameToLookupNameEx() - Packet name: LookupName[4][35](12)aceda015vw04(6)reddog(9)microsoft(3)com</p>
+<p>1538166 [1] 0680.1BD8::09/17/20-17:02:33.0443778 [server] dblook_c3119 Lookup_NodeForPacket() - Lookup packet name: (12)aceda015vw04(6)reddog(9)microsoft(3)com(0)</p>
+<p>1538167 [1] 0680.1BD8::09/17/20-17:02:33.0443791 [server] name_c1131 Name_ConvertPacketNameToLookupNameEx() - Packet name: LookupName[4][35](12)aceda015vw04(6)reddog(9)microsoft(3)com</p>
+<p>1538168 [1] 0680.1BD8::09/17/20-17:02:33.0443802 [server] dblook_c3171 Lookup_NodeForPacket() - Lookup_NodeForPacket final lookup name: LookupName[4][35](12)aceda015vw04(6)reddog(9)microsoft(3)com</p>
+<p>1538169 [1] 0680.1BD8::09/17/20-17:02:33.0443814 [server] dblook_c2271 Lookup_ZoneTreeNode() - Performing lookup with flags 10000000 for name: LookupName[4][35](12)aceda015vw04(6)reddog(9)microsoft(3)com</p>
+<p>1538201 [1] 0680.1BD8::09/17/20-17:02:33.0443940 [server] dblook_c2315 Lookup_ZoneTreeNode() - Lookup length 12, label aceda015vw04</p>
+<p>1538202 [1] 0680.1BD8::09/17/20-17:02:33.0443943 [server] tree_c4488 NTree_FindOrCreateChildNode() - NTree_FindOrCreateChild()    parent label: (reddog)        child count = 0        zone        = 0000001336870700    child label: (aceda015vw04)</p>
+<p>1538205 [1] 0680.1BD8::09/17/20-17:02:33.0443953 [server] dblook_c2335 Lookup_ZoneTreeNode() - Node aceda015vw04 does not exist in zone tree</p>
+<p>1538207 [1] 0680.1BD8::09/17/20-17:02:33.0443972 [server] dblook_c219 Lookup_ZoneNode() - Performing find operation on lookup name: LookupName[4][35](12)aceda015vw04(6)reddog(9)microsoft(3)com</p>
+<p>1538664 [1] 0680.1BD8::09/17/20-17:02:33.0446791 [server] dblook_c393 Lookup_ZoneNode() - Lookup length 12, label aceda015vw04</p>
+<p>1538665 [1] 0680.1BD8::09/17/20-17:02:33.0446795 [server] tree_c4488 NTree_FindOrCreateChildNode() - NTree_FindOrCreateChild()    parent label: (reddog)        child count = 43        zone        = 0000000000000000    child label: (aceda015vw04)</p>
+<p>1538710 [1] 0680.1BD8::09/17/20-17:02:33.0447050 [dnslib] name_c1673 Dns_DowncaseNameLabel() - Dns_DowncaseNameLabel( aceda015vw04 )    flag = 00000003</p>
+<p>1538719 [1] 0680.1BD8::09/17/20-17:02:33.0447082 [server] tree_c4693 NTree_FindOrCreateChildNode() - TREE: search aceda015vw04 found NULL NSEC NULL</p>
+<p>1538720 [1] 0680.1BD8::09/17/20-17:02:33.0447087 [server] dblook_c539 Lookup_ZoneNode() - Node aceda015vw04 does not exist</p>
+<p>1538772 [1] 0680.1BD8::09/17/20-17:02:33.0447431 [server] recurse_c4255 Recurse_Question() - Sending to next server scope forwarder</p>
+<p>1538773 [1] 0680.1BD8::09/17/20-17:02:33.0447435 [server] DynamicForwarders_cpp128 DF_LockRead() - Acquiring dynamic forwarder read lock</p>
+<p>1538774 [1] 0680.1BD8::09/17/20-17:02:33.0447444 [server] recurse_c871 Recurse_SendToForwarder() - Recursing query at 0000001338F68FD0 to forwarders name server at 202.96.209.133</p>
+<p>1538775 [1] 0680.1BD8::09/17/20-17:02:33.0447447 [server] DynamicForwarders_cpp179 DF_UnlockRead() - Releasing dynamic forwarder read lock</p>
+<p>1538776 [1] 0680.1BD8::09/17/20-17:02:33.0447454 [server] recurse_c1112 sendRecursiveQuery() - sendRecursiveQuery at 0000001338F68FD0 to NS at 202.96.209.133 (OPT=TRUE)</p>
+<p>1538777 [1] 0680.1BD8::09/17/20-17:02:33.0447461 [server] remotequerysystem_c635 DnsRq_InsertNewRemoteQuery() - Inserting new query 0000001338F68FD0 with tag 1 and context 0x0000</p>
+<p>1538778 [1] 0680.1BD8::09/17/20-17:02:33.0447479 [server] name_c1131 Name_ConvertPacketNameToLookupNameEx() - Packet name: LookupName[4][35](12)aceda015vw04(6)reddog(9)microsoft(3)com</p>
+<p>1538779 [1] 0680.1BD8::09/17/20-17:02:33.0447486 [dnslib] name_c1673 Dns_DowncaseNameLabel() - Dns_DowncaseNameLabel( aceda015vw04 )    flag = 00000003</p>
+<p>1538791 [1] 0680.1BD8::09/17/20-17:02:33.0447561 [server] recurse_c1010 queueAndSendRecursiveQuery() - Recursing for queued query at 0000001338F68FD0    queuing XID=0x017E, queuing time=1787461, expire=1787464, current=1787461    sending msg at 00000013328720D0 to NS at 202.96.209.133</p>
+<p>1538795 [1] 0680.1BD8::09/17/20-17:02:33.0447597 [server] remote_c385 Remote_FindOrCreate() - Remote_FindOrCreate( 202.96.209.133 ) = 00000013371948E0</p>
+<p>1538796 [1] 0680.1BD8::09/17/20-17:02:33.0447614 [server] remote_c982 Remote_QuerySupportedEDNSVersion() - Returning version 0x00 for remote server 202.96.209.133, AllowProbe flag was TRUE</p>
+<p>1538797 [1] 0680.1BD8::09/17/20-17:02:33.0447618 [server] send_c288 sendMsgCore() - Using EDNS because remote server at 202.96.209.133 supports EDNS or an EDNS probe is required</p>
+<p>1538809 [1] 0680.1BD8::09/17/20-17:02:33.0448454 [dnslib] print_c1738 DnsPrint_PacketName() -     Name      &quot;(12)aceda015vw04(6)reddog(9)microsoft(3)com(0)&quot;</p>
+<p>1538829 [1] 0680.1BD8::09/17/20-17:02:33.0448832 [server] debug_c993 Dbg_DnsMessage() - XID 0x017e, remote address 202.96.209.133, port 53, socket 12420</p>
+<p>1538837 [1] 0680.1BD8::09/17/20-17:02:33.0448869 [server] debug_c1172 Dbg_DnsMessage() - QUESTION  (12)aceda015vw04(6)reddog(9)microsoft(3)com(0)    TYPE A (1)    CLASS 1</p>
+<p>1555131 [1] 0680.1BD8::09/17/20-17:02:33.0967714 [server] DynamicForwarders_cpp379 DF_SetForwarderResponseTime() - Updating forwarder 202.96.209.133 with fast response of 0 seconds</p>
+<p>1555133 [1] 0680.1BD8::09/17/20-17:02:33.0967726 [server] DynamicForwarders_cpp416 DF_SetForwarderResponseTime() - Found forwarder 202.96.209.133 at index 0</p>
+<p>1555134 [1] 0680.1BD8::09/17/20-17:02:33.0967729 [server] DynamicForwarders_cpp446 DF_SetForwarderResponseTime() - Clearing consecutive slow response count for forwarder 202.96.209.133 at index 0</p>
+<p>1555713 [1] 0680.1BD8::09/17/20-17:02:33.0969506 [server] OlsWins_cpp437 DnsOls_ProcessWinsDataExpiry() - Processing node aceda015vw04.reddog.microsoft.com.</p>
+<p>1555714 [1] 0680.1BD8::09/17/20-17:02:33.0969509 [server] OlsWins_cpp587 DnsOls_ProcessWinsDataExpiry() - Returning 0 for node aceda015vw04.reddog.microsoft.com.</p>
+<p>1556179         PrimaryServer: (7)ns1-205(9)azure-dns[C02A]&lt;NULL&gt;</p>
+<p>1556197 [1] 0680.1BD8::09/17/20-17:02:33.0970777 [server] name_c385 Name_PacketNameToCountNameEx() - Packet name: (7)ns1-205(9)azure-dns(3)com(0)</p>
+<p>1556206 [1] 0680.1BD8::09/17/20-17:02:33.0970827 [dnscore] name_core_c495 Name_CopyCountName() - Copied count name: CountName[23][3](7)ns1-205(9)azure-dns(3)com</p>
+<p>1556230 [1] 0680.1BD8::09/17/20-17:02:33.0970947 [server] rrlist_c1404 RR_CacheNonExistence() - Caching authoritative NXDOMAIN at node aceda015vw04.reddog.microsoft.com. of type 1 using query time 1787461</p>
+<p>修复建议，</p>
+<p>1、禁用dns server的动态转发器功能，使得reddog的域名被转发到Azure 平台这个第一顺序的dns server，保证该域名可以被普通转发器正常解析。</p>
+<p>根据微软技术支持经验，server 2012开始版本支持动态转发器的新功能，对应转发器是根据响应时间来确定最终转发的结果，所以会出现以上行为。具体请参考以上信息，</p>
+<p>Dynamic DNS Forwarders</p>
+<p>When you add more than one forwarder in the settings for a DNS Server in Windows Server 2012 R2, the DNS service reorders the list of servers in the list of forwarders based on response time of each server in the list. The reordering and response checking operations are enabled by default in Windows Server 2012 R2. If you wish to disable this feature, you need to change the following registry DWORD value to 0:</p>
+<p>Copy</p>
+<p>HKLM\System\CurrentControlSet\Services\DNS\Parameters\EnableForwarderReordering</p>
+<p>除了以上注册表信息，我们也可以通过以下PS命令来关闭动态转发器功能，关闭以上功能后，dns服务器选择转发器时，依然会根据转发器的配置顺序来进行递归查找对应的dns记录。</p>
+<p>Set-DnsServerForwarder -EnableReordering $False -PassThru</p>
+<p>完成配置后，可以通过重启dns server服务来生效。</p>
+<p><a href="https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/dn305898(v=ws.11)" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/dn305898(v=ws.11)</a></p>
+<p>2、关于条件转发器针对reddog域名不生效的问题，由于Azure china和local IDC的dns server之前存在AD复制关系，并且Azure china这边有没有把条件转发器存放在AD数据中，本地IDC中又是存放在AD数据库中的，配置比较乱。接下来建议贵方将关于reddog的条件转发器配置删除，然后重新配置（如果配置存放在AD环境中，则只配置其中一台，另外两台通过AD复制完成，如果选择不存放再AD数据库，三台分别配置条件转发器），然后再次测试条件转发器是否可以生效。</p>
+<p>最终客户按照如上MS的建议修改后目前解析已经稳定：</p>
+<p>如之前电话沟通，关闭动态转发器功能，关闭以上功能后，dns服务器选择转发器时，依然会根据转发器的配置顺序来进行递归查找对应的dns记录。</p>
+<p>按此建议，做了如下操作，重演故障。</p>
+<p>截图一</p>
+<p>上周六</p>
+<p>acepi001vw15 非生产域控</p>
+<p>10.224.14.24</p>
+<p>关闭动态转发器</p>
+<p>截图二</p>
+<p>acepi001vw01 生产域控</p>
+<p>10.224.14.4</p>
+<p>未关闭动态转发器</p>
+<p>acepi001vw15 生产域控</p>
+<p>已关闭动态转发器</p>
+<p>证实 10.224.14.4 解析reddog.microsoft.com Private DNS zones 失败</p>
+<p>而同时 10.224.14.24可以正常解析。</p>
+<p>截图三、四</p>
+<p>sncpivw02</p>
+<p>10.224.130.52</p>
+<p>IDC DC DNS Server</p>
+<p>设置reddog.microsoft.com条件转发</p>
+<p>确认可以解析 Azure China Private DNS zones的资源</p>
+<p>已在本周一晚 维护窗口，对上述三台域控 均已设置 关闭动态转发器功能</p>
+<p>计划使用Log Analytics 对这三台域控DNS日志，进行监控，查看是否在后续几天出现非0返回值</p></article>

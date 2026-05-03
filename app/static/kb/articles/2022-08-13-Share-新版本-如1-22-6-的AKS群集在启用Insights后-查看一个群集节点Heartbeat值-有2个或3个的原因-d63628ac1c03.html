@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="【Share】新版本（如1.22.6）的AKS群集在启用Insights后，查看一个群集节点Heartbeat值，有2个或3个的原因"><h1>【Share】新版本（如1.22.6）的AKS群集在启用Insights后，查看一个群集节点Heartbeat值，有2个或3个的原因</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2022-08-13 15:41:41</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Jia.Xiaolei</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<ul>
+<li>2022.08.13</li>
+</ul>
+<ul>
+<li>++++++++++++++++++++++++++++++++++++++++++++</li>
+</ul>
+<ul>
+<li>Heartbeat</li>
+</ul>
+<ul>
+<li>| where OSType == &#39;Linux&#39;</li>
+</ul>
+<ul>
+<li>| summarize arg_max(TimeGenerated, *) by SourceComputerId</li>
+</ul>
+<ul>
+<li>| sort by Computer</li>
+</ul>
+<ul>
+<li>| render table</li>
+</ul>
+<ul>
+<li>同时发现，Computer为同一个值，但是SourceComputerId却不同，到底这三个值是不是同一个节点上的？</li>
+</ul>
+<ul>
+<li>通过我们测试，发现在一个AKS群集中，如果群集有N个node，则其上会有N* omsagent-XXXXX + 1* omsagent-rs-XXXXX 个OMS Agent pod（下方截图为只有1个群集节点的情况）；</li>
+</ul>
+<ul>
+<li>[leo@leocentos8 ~]$ kubectl exec omsagent-rs-5b78f9fc44-cm9t6 -n kube-system -it -- /bin/bash</li>
+</ul>
+<ul>
+<li>root@omsagent-rs-5b78f9fc44-cm9t6:/opt# cat /etc/mdsd.d/oms/24557708-ae02-4d00-a928-e742b76fcdb0/omsagent.txt</li>
+</ul>
+<ul>
+<li>6a436202-d090-47ae-8aa9-73bf8a19fe0b  ---SourceComputerID</li>
+</ul>
+<ul>
+<li>以上就解释了为什么您看到的所有Node的Heartbeat都是2个，事实上应该是N-1个Node 是2个heartbeat值，一个Node是3个Heartbeat.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>有客户反馈在AKS群集启用Insights后，在“Logs”的“Heartbeat”中查询时，同一个节点会显示出两个或3个值，通过测试我们也能复现客户的问题，见下方截图：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用命令：kubectl describe pod omsagent-xxxxx -n kube-system 可以看到，在每个omsagent-xxxxx pod 中包含两个Container （），而每个1* omsagent-rs-XXXXX中只有一个Container，而其中每个Container都会获取一个所在Node的Heartbeat值，每个值根据SourceComputerId区分，而SourceComputerId记录在如下配置文件中，可以登录具体的Container进行查看：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Jia.Xiaolei</p>
+<p>2022.08.13</p>
+<p>有客户反馈在AKS群集启用Insights后，在“Logs”的“Heartbeat”中查询时，同一个节点会显示出两个或3个值，通过测试我们也能复现客户的问题，见下方截图：</p>
+<p>++++++++++++++++++++++++++++++++++++++++++++</p>
+<p>Heartbeat</p>
+<p>| where OSType == &#39;Linux&#39;</p>
+<p>| summarize arg_max(TimeGenerated, *) by SourceComputerId</p>
+<p>| sort by Computer</p>
+<p>| render table</p>
+<p>同时发现，Computer为同一个值，但是SourceComputerId却不同，到底这三个值是不是同一个节点上的？</p>
+<p>通过我们测试，发现在一个AKS群集中，如果群集有N个node，则其上会有N* omsagent-XXXXX + 1* omsagent-rs-XXXXX 个OMS Agent pod（下方截图为只有1个群集节点的情况）；</p>
+<p>使用命令：kubectl describe pod omsagent-xxxxx -n kube-system 可以看到，在每个omsagent-xxxxx pod 中包含两个Container （），而每个1* omsagent-rs-XXXXX中只有一个Container，而其中每个Container都会获取一个所在Node的Heartbeat值，每个值根据SourceComputerId区分，而SourceComputerId记录在如下配置文件中，可以登录具体的Container进行查看：</p>
+<p>[leo@leocentos8 ~]$ kubectl exec omsagent-rs-5b78f9fc44-cm9t6 -n kube-system -it -- /bin/bash</p>
+<p>root@omsagent-rs-5b78f9fc44-cm9t6:/opt# cat /etc/mdsd.d/oms/24557708-ae02-4d00-a928-e742b76fcdb0/omsagent.txt</p>
+<p>6a436202-d090-47ae-8aa9-73bf8a19fe0b  ---SourceComputerID</p>
+<p>以上就解释了为什么您看到的所有Node的Heartbeat都是2个，事实上应该是N-1个Node 是2个heartbeat值，一个Node是3个Heartbeat.</p></article>

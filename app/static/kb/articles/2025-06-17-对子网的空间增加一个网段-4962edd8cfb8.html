@@ -1,0 +1,58 @@
+<article class="kb-article" data-title="对子网的空间增加一个网段"><h1>对子网的空间增加一个网段</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-17 14:30:54</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2025 06/17</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2025 06/17</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025 06/17</li>
+</ul>
+<ul>
+<li>测试可以正常添加</li>
+</ul>
+<ul>
+<li>10.2.1.0/27是原来默认的地址空间, 10.2.1.64/27是新增加的地址空间</li>
+</ul>
+<ul>
+<li>添加后的子网地址空间:</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>相关的CLI命令:</li>
+</ul>
+<ul>
+<li>az network vnet subnet update -n Gatewaysubnet  --vnet-name ad  -g ad --address-prefixes  10.2.1.0/27 10.2.1.64/27</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>由于客户使用了基本SKU的IP的VPN网关迁移到标准SKU,可能会遇到子网地址空间太小的问题(至少是/27),目前提供了一个priview版的对子网新增加一段地址空间的功能,不需要删除子网内的资源</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>相关的文档:  <a href="https://learn.microsoft.com/zh-cn/azure/vpn-gateway/basic-public-ip-migrate-about" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/vpn-gateway/basic-public-ip-migrate-about</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025 06/17</p>
+<p>由于客户使用了基本SKU的IP的VPN网关迁移到标准SKU,可能会遇到子网地址空间太小的问题(至少是/27),目前提供了一个priview版的对子网新增加一段地址空间的功能,不需要删除子网内的资源</p>
+<p>测试可以正常添加</p>
+<p>相关的文档:  <a href="https://learn.microsoft.com/zh-cn/azure/vpn-gateway/basic-public-ip-migrate-about" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/vpn-gateway/basic-public-ip-migrate-about</a></p>
+<p>相关的CLI命令:</p>
+<p>10.2.1.0/27是原来默认的地址空间, 10.2.1.64/27是新增加的地址空间</p>
+<p>az network vnet subnet update -n Gatewaysubnet  --vnet-name ad  -g ad --address-prefixes  10.2.1.0/27 10.2.1.64/27</p>
+<p>添加后的子网地址空间:</p></article>

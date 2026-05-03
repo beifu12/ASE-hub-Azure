@@ -1,0 +1,83 @@
+<article class="kb-article" data-title="Shrinking the C: System VHD disk in Azure IaaS"><h1>Shrinking the C: System VHD disk in Azure IaaS</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-08-27 16:24:36</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>执行到最后有Error，但不影响</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>执行到最后有Error，但不影响</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>本地Hyper-V 虚拟机创建固定大小127GB 磁盘，或者Azure VM  配置此处略</li>
+</ul>
+<ul>
+<li>AzureVM使用删除虚拟机保留磁盘的方式，此步略</li>
+</ul>
+<ul>
+<li>软件下载使用：</li>
+</ul>
+<ul>
+<li>使用方法很简单：四个参数</li>
+</ul>
+<ul>
+<li>运行WindowsAzureDiskResizer.exe</li>
+</ul>
+<ul>
+<li>使用刚才的VHD创建的虚拟磁盘</li>
+</ul>
+<ul>
+<li>使用新创建的磁盘重建虚拟机</li>
+</ul>
+<ul>
+<li>特别提醒：本次测试在Global和MoonCake都可以成功完成，涉及到磁盘操作请注意数据安全。出现任何问题，请自行处理解决。此文档暂为内部技术分享。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>磁盘管理器中查看如下图：diskmgmt.msc</li>
+</ul>
+<ul>
+<li>存储账号容器中查看VHD已经更改为30GB</li>
+</ul>
+<ul>
+<li>虚拟机创建完成后，登录系统验证</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用如下命令将C盘压缩为30GB  ,如果没有1MB卷系统无法启动。</li>
+</ul>
+<ul>
+<li>Get-Volume C  |Resize-Partition  -Size  (30GB  -1MB)</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>本文参考链接：<a href="http://blog.maartenballiauw.be/post/2013/01/07/Tales-from-the-trenches-resizing-a-Windows-Azure-virtual-disk-the-smooth-way.aspx" target="_blank" rel="noopener">http://blog.maartenballiauw.be/post/2013/01/07/Tales-from-the-trenches-resizing-a-Windows-Azure-virtual-disk-the-smooth-way.aspx</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>本地Hyper-V 虚拟机创建固定大小127GB 磁盘，或者Azure VM  配置此处略</p>
+<p>使用如下命令将C盘压缩为30GB  ,如果没有1MB卷系统无法启动。</p>
+<p>Get-Volume C  |Resize-Partition  -Size  (30GB  -1MB)</p>
+<p>磁盘管理器中查看如下图：diskmgmt.msc</p>
+<p>AzureVM使用删除虚拟机保留磁盘的方式，此步略</p>
+<p>软件下载使用：</p>
+<p>使用方法很简单：四个参数</p>
+<p>运行WindowsAzureDiskResizer.exe</p>
+<p>存储账号容器中查看VHD已经更改为30GB</p>
+<p>使用刚才的VHD创建的虚拟磁盘</p>
+<p>执行到最后有Error，但不影响</p>
+<p>使用新创建的磁盘重建虚拟机</p>
+<p>虚拟机创建完成后，登录系统验证</p>
+<p>本文参考链接：<a href="http://blog.maartenballiauw.be/post/2013/01/07/Tales-from-the-trenches-resizing-a-Windows-Azure-virtual-disk-the-smooth-way.aspx" target="_blank" rel="noopener">http://blog.maartenballiauw.be/post/2013/01/07/Tales-from-the-trenches-resizing-a-Windows-Azure-virtual-disk-the-smooth-way.aspx</a></p>
+<p>特别提醒：本次测试在Global和MoonCake都可以成功完成，涉及到磁盘操作请注意数据安全。出现任何问题，请自行处理解决。此文档暂为内部技术分享。</p></article>

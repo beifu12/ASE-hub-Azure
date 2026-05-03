@@ -1,0 +1,123 @@
+<article class="kb-article" data-title="查看linux性能的收集日志脚本linux-reports.sh使用说明"><h1>查看linux性能的收集日志脚本linux-reports.sh使用说明</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Net Perf analysis</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-09-26 15:37:05</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Linux report是一个脚本, 具体用法参见下面的步骤:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Linux report是一个脚本, 具体用法参见下面的步骤:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2.  登陆虚拟主机, 切换到root用户.</li>
+</ul>
+<ul>
+<li>5.  在随后打开的编辑器内, 添加新的一行, 内容为双引号内的信息&quot; &lt;path&gt;/linux-reports.sh 33333333 60 &amp;&quot;</li>
+</ul>
+<ul>
+<li>6.  其中33333333 为case号码, 可以根据实际case的号码输入, 测试的话, 可以任意指定.</li>
+</ul>
+<ul>
+<li>7.  其中60为性能数据保留的最长期限, 单位为分钟. 比如60, 就是代表, 所有的性能数据收集的时间在60分钟之内的,予以保留,超过60分钟的,会被删除.如果想保留超过一天及以上的, 只有输入确定的分钟数即可, 比如保留三天, 那么分钟数为4320.</li>
+</ul>
+<ul>
+<li>8.  所有的性能数据都存放在目录/var/tmp/下. 命名类似: 33333333_centOS7_065402-01-Apr-2016.tar.gz</li>
+</ul>
+<ul>
+<li>例如：</li>
+</ul>
+<ul>
+<li>a.      安装iotop工具集. 该工具可以实时提供每一时刻具体产生IO的进程. 安装方法如下</li>
+</ul>
+<ul>
+<li>e.    在随后打开的编辑器内, 添加新的两行, 内容为双引号内的信息</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>$ mkdir /var/log/performance</li>
+</ul>
+<ul>
+<li>$ chmod 777 /var/log/performance</li>
+</ul>
+<ul>
+<li>$ iostat -x 2 300 &gt; /var/log/performance/iostat.<code>date +%FT%H%M</code> &amp;</li>
+</ul>
+<ul>
+<li>$ iotop -o -b -n 600 &gt; /var/log/performance/iotop.<code>date +%FT%H%M</code> &amp;</li>
+</ul>
+<ul>
+<li>a.    &quot;*/6 * * * *  iostat -x 2 300 &gt; /var/log/performance/iostat.<code>date +%FT%H%M</code> &amp;&quot;</li>
+</ul>
+<ul>
+<li>b.  &quot;*/6 * * * *  iotop -o -b -n 600 &gt; /var/log/performance/iotop.<code>date +%FT%H%M</code> &amp;&quot;</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Linux report是一个脚本, 具体用法参见下面的步骤:</li>
+</ul>
+<ul>
+<li>a.  上传附件中的脚本, 名字为: linux-reports.sh</li>
+</ul>
+<ul>
+<li>3.  执行命令: chmod +x  &lt;path&gt;/linux-reports.sh       &lt;path&gt;替换成实际脚本上传的目录, step 5里的内容同样改成实际目录.</li>
+</ul>
+<ul>
+<li>4.  执行命令: crontab -e</li>
+</ul>
+<ul>
+<li>a.      登陆到虚拟机,切换成root 用户, 执行命令: $ yum install iotop</li>
+</ul>
+<ul>
+<li>b.     安装完毕以后, 执行命令: $ iotop</li>
+</ul>
+<ul>
+<li>c.      确认是否命令可以正常输出.</li>
+</ul>
+<ul>
+<li>b.     运行如下命令,收集相关IO数据:</li>
+</ul>
+<ul>
+<li>c.    说明: 如果此前 /var/log/performance 目录存在的话,可以把目录清理下,然后执行上述命令, 持续时间600秒, 技术以后,把performance 目录下的log文件上传给我, 供分析.</li>
+</ul>
+<ul>
+<li>d.    执行命令: crontab -e</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Linux report是一个脚本, 具体用法参见下面的步骤:</p>
+<p>a.  上传附件中的脚本, 名字为: linux-reports.sh</p>
+<p>2.  登陆虚拟主机, 切换到root用户.</p>
+<p>3.  执行命令: chmod +x  &lt;path&gt;/linux-reports.sh       &lt;path&gt;替换成实际脚本上传的目录, step 5里的内容同样改成实际目录.</p>
+<p>4.  执行命令: crontab -e</p>
+<p>5.  在随后打开的编辑器内, 添加新的一行, 内容为双引号内的信息&quot; &lt;path&gt;/linux-reports.sh 33333333 60 &amp;&quot;</p>
+<p>6.  其中33333333 为case号码, 可以根据实际case的号码输入, 测试的话, 可以任意指定.</p>
+<p>7.  其中60为性能数据保留的最长期限, 单位为分钟. 比如60, 就是代表, 所有的性能数据收集的时间在60分钟之内的,予以保留,超过60分钟的,会被删除.如果想保留超过一天及以上的, 只有输入确定的分钟数即可, 比如保留三天, 那么分钟数为4320.</p>
+<p>8.  所有的性能数据都存放在目录/var/tmp/下. 命名类似: 33333333_centOS7_065402-01-Apr-2016.tar.gz</p>
+<p>例如：</p>
+<p>a.      安装iotop工具集. 该工具可以实时提供每一时刻具体产生IO的进程. 安装方法如下</p>
+<p>a.      登陆到虚拟机,切换成root 用户, 执行命令: $ yum install iotop</p>
+<p>b.     安装完毕以后, 执行命令: $ iotop</p>
+<p>c.      确认是否命令可以正常输出.</p>
+<p>b.     运行如下命令,收集相关IO数据:</p>
+<p>$ mkdir /var/log/performance</p>
+<p>$ chmod 777 /var/log/performance</p>
+<p>$ iostat -x 2 300 &gt; /var/log/performance/iostat.<code>date +%FT%H%M</code> &amp;</p>
+<p>$ iotop -o -b -n 600 &gt; /var/log/performance/iotop.<code>date +%FT%H%M</code> &amp;</p>
+<p>c.    说明: 如果此前 /var/log/performance 目录存在的话,可以把目录清理下,然后执行上述命令, 持续时间600秒, 技术以后,把performance 目录下的log文件上传给我, 供分析.</p>
+<p>d.    执行命令: crontab -e</p>
+<p>e.    在随后打开的编辑器内, 添加新的两行, 内容为双引号内的信息</p>
+<p>a.    &quot;*/6 * * * *  iostat -x 2 300 &gt; /var/log/performance/iostat.<code>date +%FT%H%M</code> &amp;&quot;</p>
+<p>b.  &quot;*/6 * * * *  iotop -o -b -n 600 &gt; /var/log/performance/iotop.<code>date +%FT%H%M</code> &amp;&quot;</p></article>

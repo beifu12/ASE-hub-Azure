@@ -1,0 +1,186 @@
+<article class="kb-article" data-title="VPN连接稳定性问题"><h1>VPN连接稳定性问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-07-31 10:52:30</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象描述：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象描述：</li>
+</ul>
+<ul>
+<li>/subscriptions/20131b00-ee65-403d-8f3e-2c3a4cce840c/resourceGroups/ISCE2HUB01-RG-F-NETWORK/providers/Microsoft.Network/connections/CE2-DC3B-VPN</li>
+</ul>
+<ul>
+<li>问题原因： Azure VPN Gateway与on-premsies VPN Device间不匹配的配置导致QM SA Rekey无法顺利完成。</li>
+</ul>
+<ul>
+<li>继续分析11.20 7:43的一次IPSec SA Rekey失败继而断开重连的情况：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>关联工单20221115198955  （截止12.11用户还没最终回复</li>
+</ul>
+<ul>
+<li>同步伴随BGP peer频繁flap。</li>
+</ul>
+<ul>
+<li>未启用active-active模式。</li>
+</ul>
+<ul>
+<li>用户资源：</li>
+</ul>
+<ul>
+<li>VPN连接：</li>
+</ul>
+<ul>
+<li>S2S VPN IKEv2, route based</li>
+</ul>
+<ul>
+<li>On-premises VPN Device为思科设备，具体型号未了解。</li>
+</ul>
+<ul>
+<li>The connection configuration:</li>
+</ul>
+<ul>
+<li>两个Azure VPN gateway的实例并非高CPU负载的情况出现：</li>
+</ul>
+<ul>
+<li>该VPN连接的出入站流量在近期长时间稳定在103Mbps的水平：</li>
+</ul>
+<ul>
+<li>So the IPsec SA will be rekey, below is the process, there are two cases :</li>
+</ul>
+<ul>
+<li>当思科设备初始一个CHILD_SA_QM_REKEY时，思科设备使用的PfsGroup14，Azure VPN GW收到后回复了一个通知消息”Policy Mismatch&quot;；接着思科设备发出IPSec SA删除消息，Azure VPN GW回复了IKE SA删除ACK：</li>
+</ul>
+<ul>
+<li>当Azure VPN GW初始化一个CHILD_SA QM_SA_REKEY时，它使用的是用户在VPN connection中定义的PfsGroup2，但是此次思科设备回应了“Invalid KE Payload&quot;</li>
+</ul>
+<ul>
+<li>当上述过程重复了多次后，Azure VPN GW尝试要创建新的QM_SA，并且使用的PfsGroup2, 此时没有收到思科设备的回应，而是让删除这一隧道的IKE SA：</li>
+</ul>
+<ul>
+<li>随后Azure VPN GW删除了这一IKE SA，关闭了隧道：</li>
+</ul>
+<ul>
+<li>如下为思科端show ike\ipsec sa相关输出，可以看出它确实位于NAT设备后端：</li>
+</ul>
+<ul>
+<li>And I suggest you set the Azure VPN Gateway as ResponderOnly,:</li>
+</ul>
+<ul>
+<li>You can reference the official document said as shown below:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>用户的S2S VPN with BGP，VPN connection status频繁在Connected和Disconnected间切换。可以从Dashboard中看到:</li>
+</ul>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>确认问题现象：</li>
+</ul>
+<ul>
+<li>该VPN连接最开始9月26，27报过一张工单，排查那几天有较为频繁但无规律的DPD time out导致的断开事件，但断开时间不长，从时间上看无明显规律；26日晚断开时间很长，有好几个小时，后来也自己恢复了。当时排查除了发现有DPD time out，发现该VPN连接从9月28日开始很有规律地每23小时左右会由Connected转为Disconnected一次，每次断开时间在70秒左右。</li>
+</ul>
+<ul>
+<li>确认当前Azure VPN connection所使用的配置参数：</li>
+</ul>
+<ul>
+<li>根据上面查看到的IPSec的生成周期，默认为102GB或者24小时，按照此VPN连接这个流量传输水平，基本每2小时其传输量就可以很接近102GB，会触发IPSec SA的Rekey；如果传输流量达不到这个102GB，那么在接近24小时，也会触发Ipsec SA的Rekey。从上面的查询可以看到在10月3号之前基本每24小时这一VPN连接会断开一次；在10月3号之后基本每2小时断开一次。从上述这些现象看断开重连的时间节点与IPSec SA Rekey的时间点非常吻合。</li>
+</ul>
+<ul>
+<li>Change the Azure VPN connection setting through portal:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>紧接着Azure VPn GW尝试协商一个新的IKE  SA，且使用的是默认的UDP 500端口，并且也能收到思科设备回应的MM Nonce消息和IKE SA INIT回应消息：</li>
+</ul>
+<ul>
+<li>在Azure VPN GW发出了全0的Traffic Selector提议时，随即收到思科设备在4500端口上发出的认证失败消息，显然对端思科设备是在NAT设备后面，因为NAT的原因某些hash值发生改变，认证相关数据发生改变，所以会认证失败，随即因为IKE认证凭据不可接受而关闭了这一IKE隧道：</li>
+</ul>
+<ul>
+<li>在30秒后，对端思科设备开始主动进行IKE SA的协商，最开始时是使用默认的500端口，在进入IKE AUTH认证阶段时转换为端口4500，在后续协商过程中，收到思科端IPSec payload没有使用PfsGroup:</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决建议： 调整Azure VPN connection Phase 2 Pfs Group设置为“None&quot;，与on-premises VPN Device保持一致。同时设置Azure VPN GW为ResponderOnly（截止2022.12.11用户一直失联，还没有调整）</li>
+</ul>
+<ul>
+<li>根据用户侧反馈on-premises Ciscoe设备上可以看到很多BGP peerflap事件时间点与Tunnel状态变化一致， 这一问题我这分析是因为VPN tunnel的状态变化所致，；修复 了VPN tunnel的问题后其应当不再出现。Azure VPN dashboard中可以看到BGP Peer Events非常多：</li>
+</ul>
+<ul>
+<li>结论及建议：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/dashboard/share/32438B19?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;BrkMooncake&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;11d0005f-9ad5-4bbd-9043-75f34490fdab&quot;},{&quot;query&quot;:&quot;//*[id=&#39;DeploymentId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;34d23079bbb04ca596a558065d419eaa&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RoleInstance&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;IsPrimary&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RemoteIdentifier&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]&amp;globalStartTime=1589851503651&amp;globalEndTime=1589872260000&amp;pinGlobalTimeRange=true" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/dashboard/share/32438B19?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;BrkMooncake&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;11d0005f-9ad5-4bbd-9043-75f34490fdab&quot;},{&quot;query&quot;:&quot;//*[id=&#39;DeploymentId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;34d23079bbb04ca596a558065d419eaa&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RoleInstance&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;IsPrimary&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RemoteIdentifier&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]&amp;globalStartTime=1589851503651&amp;globalEndTime=1589872260000&amp;pinGlobalTimeRange=true</a></li>
+</ul>
+<ul>
+<li><a href="https://portal-east.microsoftgeneva.com/s/3615FA93" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/3615FA93</a></li>
+</ul>
+<ul>
+<li><a href="https://portal-east.microsoftgeneva.com/s/DD8AE9DA" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/DD8AE9DA</a></li>
+</ul>
+<ul>
+<li>11月用户要求继续排查问题原因开了此工单；再次排查VPN连接状态，发现断开频率大幅提升至每2小时就会Connected转为Disconnected一次，每次断开时间在30秒左右，这些断开现象并没有从业务侧得到反馈，推断为断开时间短，所以业务侧没有感知。从上图看到约从10.3下午4点51分开始每2小 时的就会出现一次约30秒的中断，截止目前（2022.12.11）依然维持这一现象： <a href="https://portal-east.microsoftgeneva.com/s/AABA8518" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/AABA8518</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/dashboard/BrkProd/BrkGWT/VpnGateway/TenantTunnelStats?overrides=[{%22query%22:%22//*[id%3D%27GatewayId%27]%22,%22key%22:%22value%22,%22replacement%22:%2211d0005f-9ad5-4bbd-9043-75f34490fdab%22},{%22query%22:%22//dataSources%22,%22key%22:%22account%22,%22replacement%22:%22BrkMooncake%22},{%22query%22:%22//*[id%3D%27DeploymentId%27]%22,%22key%22:%22value%22,%22replacement%22:%2234d23079bbb04ca596a558065d419eaa%22},{%22query%22:%22//*[id%3D%27RoleInstance%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22},{%22query%22:%22//*[id%3D%27RemoteIdentifier%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22},{%22query%22:%22//*[id%3D%27IsPrimary%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22}]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/dashboard/BrkProd/BrkGWT/VpnGateway/TenantTunnelStats?overrides=[{%22query%22:%22//*[id%3D%27GatewayId%27]%22,%22key%22:%22value%22,%22replacement%22:%2211d0005f-9ad5-4bbd-9043-75f34490fdab%22},{%22query%22:%22//dataSources%22,%22key%22:%22account%22,%22replacement%22:%22BrkMooncake%22},{%22query%22:%22//*[id%3D%27DeploymentId%27]%22,%22key%22:%22value%22,%22replacement%22:%2234d23079bbb04ca596a558065d419eaa%22},{%22query%22:%22//*[id%3D%27RoleInstance%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22},{%22query%22:%22//*[id%3D%27RemoteIdentifier%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22},{%22query%22:%22//*[id%3D%27IsPrimary%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22}]%20</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-vpn-faq#can-i-use-nat-t-on-my-vpn-connections" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-vpn-faq#can-i-use-nat-t-on-my-vpn-connections</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>关联工单20221115198955  （截止12.11用户还没最终回复</p>
+<p>问题现象描述：</p>
+<p>用户的S2S VPN with BGP，VPN connection status频繁在Connected和Disconnected间切换。可以从Dashboard中看到:</p>
+<p><a href="https://portal.microsoftgeneva.com/dashboard/share/32438B19?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;BrkMooncake&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;11d0005f-9ad5-4bbd-9043-75f34490fdab&quot;},{&quot;query&quot;:&quot;//*[id=&#39;DeploymentId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;34d23079bbb04ca596a558065d419eaa&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RoleInstance&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;IsPrimary&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RemoteIdentifier&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]&amp;globalStartTime=1589851503651&amp;globalEndTime=1589872260000&amp;pinGlobalTimeRange=true" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/dashboard/share/32438B19?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;BrkMooncake&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;11d0005f-9ad5-4bbd-9043-75f34490fdab&quot;},{&quot;query&quot;:&quot;//*[id=&#39;DeploymentId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;34d23079bbb04ca596a558065d419eaa&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RoleInstance&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;IsPrimary&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RemoteIdentifier&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]&amp;globalStartTime=1589851503651&amp;globalEndTime=1589872260000&amp;pinGlobalTimeRange=true</a></p>
+<p>同步伴随BGP peer频繁flap。</p>
+<p>未启用active-active模式。</p>
+<p>用户资源：</p>
+<p>VPN连接：</p>
+<p>/subscriptions/20131b00-ee65-403d-8f3e-2c3a4cce840c/resourceGroups/ISCE2HUB01-RG-F-NETWORK/providers/Microsoft.Network/connections/CE2-DC3B-VPN</p>
+<p>S2S VPN IKEv2, route based</p>
+<p>On-premises VPN Device为思科设备，具体型号未了解。</p>
+<p>问题原因： Azure VPN Gateway与on-premsies VPN Device间不匹配的配置导致QM SA Rekey无法顺利完成。</p>
+<p>解决建议： 调整Azure VPN connection Phase 2 Pfs Group设置为“None&quot;，与on-premises VPN Device保持一致。同时设置Azure VPN GW为ResponderOnly（截止2022.12.11用户一直失联，还没有调整）</p>
+<p>排查过程：</p>
+<p>确认问题现象：</p>
+<p>该VPN连接最开始9月26，27报过一张工单，排查那几天有较为频繁但无规律的DPD time out导致的断开事件，但断开时间不长，从时间上看无明显规律；26日晚断开时间很长，有好几个小时，后来也自己恢复了。当时排查除了发现有DPD time out，发现该VPN连接从9月28日开始很有规律地每23小时左右会由Connected转为Disconnected一次，每次断开时间在70秒左右。</p>
+<p><a href="https://portal-east.microsoftgeneva.com/s/3615FA93" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/3615FA93</a></p>
+<p><a href="https://portal-east.microsoftgeneva.com/s/DD8AE9DA" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/DD8AE9DA</a></p>
+<p>11月用户要求继续排查问题原因开了此工单；再次排查VPN连接状态，发现断开频率大幅提升至每2小时就会Connected转为Disconnected一次，每次断开时间在30秒左右，这些断开现象并没有从业务侧得到反馈，推断为断开时间短，所以业务侧没有感知。从上图看到约从10.3下午4点51分开始每2小 时的就会出现一次约30秒的中断，截止目前（2022.12.11）依然维持这一现象： <a href="https://portal-east.microsoftgeneva.com/s/AABA8518" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/AABA8518</a></p>
+<p>确认当前Azure VPN connection所使用的配置参数：</p>
+<p>The connection configuration:</p>
+<p>根据用户侧反馈on-premises Ciscoe设备上可以看到很多BGP peerflap事件时间点与Tunnel状态变化一致， 这一问题我这分析是因为VPN tunnel的状态变化所致，；修复 了VPN tunnel的问题后其应当不再出现。Azure VPN dashboard中可以看到BGP Peer Events非常多：</p>
+<p>两个Azure VPN gateway的实例并非高CPU负载的情况出现：</p>
+<p>该VPN连接的出入站流量在近期长时间稳定在103Mbps的水平：</p>
+<p><a href="https://portal.microsoftgeneva.com/dashboard/BrkProd/BrkGWT/VpnGateway/TenantTunnelStats?overrides=[{%22query%22:%22//*[id%3D%27GatewayId%27]%22,%22key%22:%22value%22,%22replacement%22:%2211d0005f-9ad5-4bbd-9043-75f34490fdab%22},{%22query%22:%22//dataSources%22,%22key%22:%22account%22,%22replacement%22:%22BrkMooncake%22},{%22query%22:%22//*[id%3D%27DeploymentId%27]%22,%22key%22:%22value%22,%22replacement%22:%2234d23079bbb04ca596a558065d419eaa%22},{%22query%22:%22//*[id%3D%27RoleInstance%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22},{%22query%22:%22//*[id%3D%27RemoteIdentifier%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22},{%22query%22:%22//*[id%3D%27IsPrimary%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22}]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/dashboard/BrkProd/BrkGWT/VpnGateway/TenantTunnelStats?overrides=[{%22query%22:%22//*[id%3D%27GatewayId%27]%22,%22key%22:%22value%22,%22replacement%22:%2211d0005f-9ad5-4bbd-9043-75f34490fdab%22},{%22query%22:%22//dataSources%22,%22key%22:%22account%22,%22replacement%22:%22BrkMooncake%22},{%22query%22:%22//*[id%3D%27DeploymentId%27]%22,%22key%22:%22value%22,%22replacement%22:%2234d23079bbb04ca596a558065d419eaa%22},{%22query%22:%22//*[id%3D%27RoleInstance%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22},{%22query%22:%22//*[id%3D%27RemoteIdentifier%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22},{%22query%22:%22//*[id%3D%27IsPrimary%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22}]%20</a></p>
+<p>根据上面查看到的IPSec的生成周期，默认为102GB或者24小时，按照此VPN连接这个流量传输水平，基本每2小时其传输量就可以很接近102GB，会触发IPSec SA的Rekey；如果传输流量达不到这个102GB，那么在接近24小时，也会触发Ipsec SA的Rekey。从上面的查询可以看到在10月3号之前基本每24小时这一VPN连接会断开一次；在10月3号之后基本每2小时断开一次。从上述这些现象看断开重连的时间节点与IPSec SA Rekey的时间点非常吻合。</p>
+<p>继续分析11.20 7:43的一次IPSec SA Rekey失败继而断开重连的情况：</p>
+<p>So the IPsec SA will be rekey, below is the process, there are two cases :</p>
+<p>当思科设备初始一个CHILD_SA_QM_REKEY时，思科设备使用的PfsGroup14，Azure VPN GW收到后回复了一个通知消息”Policy Mismatch&quot;；接着思科设备发出IPSec SA删除消息，Azure VPN GW回复了IKE SA删除ACK：</p>
+<p>当Azure VPN GW初始化一个CHILD_SA QM_SA_REKEY时，它使用的是用户在VPN connection中定义的PfsGroup2，但是此次思科设备回应了“Invalid KE Payload&quot;</p>
+<p>当上述过程重复了多次后，Azure VPN GW尝试要创建新的QM_SA，并且使用的PfsGroup2, 此时没有收到思科设备的回应，而是让删除这一隧道的IKE SA：</p>
+<p>随后Azure VPN GW删除了这一IKE SA，关闭了隧道：</p>
+<p>紧接着Azure VPn GW尝试协商一个新的IKE  SA，且使用的是默认的UDP 500端口，并且也能收到思科设备回应的MM Nonce消息和IKE SA INIT回应消息：</p>
+<p>在Azure VPN GW发出了全0的Traffic Selector提议时，随即收到思科设备在4500端口上发出的认证失败消息，显然对端思科设备是在NAT设备后面，因为NAT的原因某些hash值发生改变，认证相关数据发生改变，所以会认证失败，随即因为IKE认证凭据不可接受而关闭了这一IKE隧道：</p>
+<p>在30秒后，对端思科设备开始主动进行IKE SA的协商，最开始时是使用默认的500端口，在进入IKE AUTH认证阶段时转换为端口4500，在后续协商过程中，收到思科端IPSec payload没有使用PfsGroup:</p>
+<p>如下为思科端show ike\ipsec sa相关输出，可以看出它确实位于NAT设备后端：</p>
+<p>结论及建议：</p>
+<p>Change the Azure VPN connection setting through portal:</p>
+<p>And I suggest you set the Azure VPN Gateway as ResponderOnly,:</p>
+<p>You can reference the official document said as shown below:</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-vpn-faq#can-i-use-nat-t-on-my-vpn-connections" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-vpn-faq#can-i-use-nat-t-on-my-vpn-connections</a></p></article>

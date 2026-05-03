@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="Backup process"><h1>Backup process</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RecoveryService</li>
+<li>Section: ASR</li>
+<li>最近修改: 2025-07-23 08:16:23</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>To back up files, folders, and the volume or system state from an on-premises computer to Azure using Microsoft Azure Recovery Services (MARS) agent:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>To back up files, folders, and the volume or system state from an on-premises computer to Azure using Microsoft Azure Recovery Services (MARS) agent:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>To back up files, folders, and the volume or system state from an on-premises computer to Azure using Microsoft Azure Recovery Services (MARS) agent:</li>
+</ul>
+<ul>
+<li>Configure your Recovery Services vault to securely save the backup passphrase to Azure Key vault.</li>
+</ul>
+<ul>
+<li>Download the Recovery Services vault credentials and agent installer to an on-premises machine.</li>
+</ul>
+<ul>
+<li>Install the agent and use the downloaded vault credentials to register the machine to the Recovery Services vault.</li>
+</ul>
+<ul>
+<li>From the agent console on the client, configure the backup to specify what to back up, when to back up (the schedule), how long the backups should be retained in Azure (the retention policy) and start protecting.</li>
+</ul>
+<ul>
+<li>The following diagram shows the backup flow:</li>
+</ul>
+<ul>
+<li>Additional information</li>
+</ul>
+<ul>
+<li>To proceed with the backup operation, review the following additional details:</li>
+</ul>
+<ul>
+<li>Incremental backups (subsequent backups) run according to the schedule you specify. During incremental backups, changed files are identified and a new VHD is created. The VHD is compressed and encrypted, and then it&#39;s sent to the vault. After the incremental backup finishes, the new VHD is merged with the VHD created after the initial replication. This merged VHD provides the latest state to be used for comparison for ongoing backup. Microsoft Azure Recovery Services (MARS) agent performs a full backup of the system state each time a backup job is run. There&#39;re no incremental backups for the system state with the MARS agent.</li>
+</ul>
+<ul>
+<li>Next steps</li>
+</ul>
+<ul>
+<li>MARS agent support matrix</li>
+</ul>
+<ul>
+<li>MARS agent FAQ</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>From the Azure portal, create a Recovery Services vault, and choose files, folders, and the system state from the Backup goals.</li>
+</ul>
+<ul>
+<li>The Initial Backup (first backup) runs according to your backup settings. The MARS agent uses VSS to take a point-in-time snapshot of the volumes selected for backup. The agent only uses the Windows System Writer operation to capture the snapshot. It doesn&#39;t use any application VSS writers, and doesn&#39;t capture app-consistent snapshots. After VSS agent takes the snapshot, the MARS agent creates a virtual hard disk (VHD) in the cache folder you specified during the backup configuration. The agent also stores checksums for each data block.</li>
+</ul>
+<ul>
+<li>The MARS agent can run the backup job in optimized mode using the USN (Update Sequence Number) change journal, or in unoptimized mode by checking for changes in directories or files via scanning the entire volume. Unoptimized mode is slower because the agent has to scan each file on the volume and compare it against the metadata to determine the changed files. The Initial backup will always run in unoptimized mode. If the previous backup failed, then the next scheduled backup job will run in unoptimized mode. To learn more about these modes and how to verify them, refer to this article.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>From &lt;<a href="https://learn.microsoft.com/en-us/azure/backup/backup-azure-about-mars&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/backup-azure-about-mars&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>To back up files, folders, and the volume or system state from an on-premises computer to Azure using Microsoft Azure Recovery Services (MARS) agent:</p>
+<p>From the Azure portal, create a Recovery Services vault, and choose files, folders, and the system state from the Backup goals.</p>
+<p>Configure your Recovery Services vault to securely save the backup passphrase to Azure Key vault.</p>
+<p>Download the Recovery Services vault credentials and agent installer to an on-premises machine.</p>
+<p>Install the agent and use the downloaded vault credentials to register the machine to the Recovery Services vault.</p>
+<p>From the agent console on the client, configure the backup to specify what to back up, when to back up (the schedule), how long the backups should be retained in Azure (the retention policy) and start protecting.</p>
+<p>The following diagram shows the backup flow:</p>
+<p>Additional information</p>
+<p>To proceed with the backup operation, review the following additional details:</p>
+<p>The Initial Backup (first backup) runs according to your backup settings. The MARS agent uses VSS to take a point-in-time snapshot of the volumes selected for backup. The agent only uses the Windows System Writer operation to capture the snapshot. It doesn&#39;t use any application VSS writers, and doesn&#39;t capture app-consistent snapshots. After VSS agent takes the snapshot, the MARS agent creates a virtual hard disk (VHD) in the cache folder you specified during the backup configuration. The agent also stores checksums for each data block.</p>
+<p>Incremental backups (subsequent backups) run according to the schedule you specify. During incremental backups, changed files are identified and a new VHD is created. The VHD is compressed and encrypted, and then it&#39;s sent to the vault. After the incremental backup finishes, the new VHD is merged with the VHD created after the initial replication. This merged VHD provides the latest state to be used for comparison for ongoing backup. Microsoft Azure Recovery Services (MARS) agent performs a full backup of the system state each time a backup job is run. There&#39;re no incremental backups for the system state with the MARS agent.</p>
+<p>The MARS agent can run the backup job in optimized mode using the USN (Update Sequence Number) change journal, or in unoptimized mode by checking for changes in directories or files via scanning the entire volume. Unoptimized mode is slower because the agent has to scan each file on the volume and compare it against the metadata to determine the changed files. The Initial backup will always run in unoptimized mode. If the previous backup failed, then the next scheduled backup job will run in unoptimized mode. To learn more about these modes and how to verify them, refer to this article.</p>
+<p>Next steps</p>
+<p>MARS agent support matrix</p>
+<p>MARS agent FAQ</p>
+<p>From &lt;<a href="https://learn.microsoft.com/en-us/azure/backup/backup-azure-about-mars&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/backup-azure-about-mars&gt;</a></p></article>

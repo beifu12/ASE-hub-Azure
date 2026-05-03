@@ -1,0 +1,160 @@
+<article class="kb-article" data-title="Azure VM Serial Console -Windows"><h1>Azure VM Serial Console -Windows</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-10 10:06:27</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>二，防火墙配置有误，导致无法RDP登录，通过Azure Serial Console关闭Windows防火墙</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>二，防火墙配置有误，导致无法RDP登录，通过Azure Serial Console关闭Windows防火墙</li>
+</ul>
+<ul>
+<li>四，在操作系统内部为网卡配置了错误的IP地址，导致虚拟机无法RDP连接登录</li>
+</ul>
+<ul>
+<li>bcdedit /set {bootmgr} timeout 10</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<ul>
+<li>Johnny</li>
+</ul>
+<ul>
+<li>本期向大家介绍几个可以使用Azure Serial Console解决的Windows VM的问题，以下用例操作系统为Windows Server 2022</li>
+</ul>
+<ul>
+<li>连接到串行控制台。 如果成功连接，则提示为 SAC&gt;：</li>
+</ul>
+<ul>
+<li>输入 cmd 以创建具有 CMD 实例的通道；</li>
+</ul>
+<ul>
+<li>输入 ch -si 1 或按 &lt;esc&gt;+&lt;tab&gt; 快捷键切换到运行 CMD 实例的通道；</li>
+</ul>
+<ul>
+<li>按 Enter，然后输入具有管理权限的登录凭据；</li>
+</ul>
+<ul>
+<li>输入有效凭据后，将打开 CMD 实例；</li>
+</ul>
+<ul>
+<li>在防火墙入站规则中未允许RDP连接，如：</li>
+</ul>
+<ul>
+<li>通过Azure Serial Console关闭Windows系统防火墙；</li>
+</ul>
+<ul>
+<li>在Windows操作系统内部为网卡配置了IP地址，如：</li>
+</ul>
+<ul>
+<li>netsh interface show interface</li>
+</ul>
+<ul>
+<li>五，进入Windows系统安全模式</li>
+</ul>
+<ul>
+<li>bcdedit /set {bootmgr} displaybootmenu yes</li>
+</ul>
+<ul>
+<li>bcdedit /set {bootmgr} bootems yes</li>
+</ul>
+<ul>
+<li>按F8选择安全模式，或其他选项执行</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>三，检查/启动RDP服务</li>
+</ul>
+<ul>
+<li>再次检查RDP服务状态，查看、确认服务是否已经启动成功；</li>
+</ul>
+<ul>
+<li>通过Azure portal的Azure Serial Console处重启VM；</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>一，在串行控制台中使用 CMD 或 PowerShell</li>
+</ul>
+<ul>
+<li>若要启动 PowerShell 实例，请在 CMD 实例中输入 PowerShell ，然后按 Enter。</li>
+</ul>
+<ul>
+<li>登录Azure Serial Console，在CMD命令行执行“sc query termservice”检查RDP服务状态；</li>
+</ul>
+<ul>
+<li>在CMD命令行执行“sc start termservice”启动RDP服务；</li>
+</ul>
+<ul>
+<li>在Azure Serial Console切换到Powershell命令行下，执行“Get-NetIPConfiguration”命令查看当前网卡配置，注意红线标出的参数；</li>
+</ul>
+<ul>
+<li>Update  实际工单中 如果客户是禁用了网卡，那么使用 Get-NetIPConfiguration 看不到禁用的网卡，需要使用如下命令查看网络接口：</li>
+</ul>
+<ul>
+<li>查看Azure portal上虚拟机网卡配置，执行如下命令，为网卡重新配置IP地址</li>
+</ul>
+<ul>
+<li>New-NetIPAddress -InterfaceIndex “13” -IPAddress  10.1.0.4  -PrefixLength 24 -DefaultGateway 10.1.0.1</li>
+</ul>
+<ul>
+<li>在管理命令提示符下运行以下命令：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>然后使用 netsh interface set interface name=&quot;&lt;interface name&gt;&quot; admin=enabled  启用网卡</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：1，<a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/serial-console-windows" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/serial-console-windows</a></li>
+</ul>
+<ul>
+<li>2，<a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/serial-console-cmd-ps-commands" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/serial-console-cmd-ps-commands</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Jia.Xiaolei</p>
+<p>2023-11-19</p>
+<p>Johnny</p>
+<p>2023-12-12</p>
+<p>本期向大家介绍几个可以使用Azure Serial Console解决的Windows VM的问题，以下用例操作系统为Windows Server 2022</p>
+<p>一，在串行控制台中使用 CMD 或 PowerShell</p>
+<p>连接到串行控制台。 如果成功连接，则提示为 SAC&gt;：</p>
+<p>输入 cmd 以创建具有 CMD 实例的通道；</p>
+<p>输入 ch -si 1 或按 &lt;esc&gt;+&lt;tab&gt; 快捷键切换到运行 CMD 实例的通道；</p>
+<p>按 Enter，然后输入具有管理权限的登录凭据；</p>
+<p>输入有效凭据后，将打开 CMD 实例；</p>
+<p>若要启动 PowerShell 实例，请在 CMD 实例中输入 PowerShell ，然后按 Enter。</p>
+<p>二，防火墙配置有误，导致无法RDP登录，通过Azure Serial Console关闭Windows防火墙</p>
+<p>在防火墙入站规则中未允许RDP连接，如：</p>
+<p>通过Azure Serial Console关闭Windows系统防火墙；</p>
+<p>三，检查/启动RDP服务</p>
+<p>登录Azure Serial Console，在CMD命令行执行“sc query termservice”检查RDP服务状态；</p>
+<p>在CMD命令行执行“sc start termservice”启动RDP服务；</p>
+<p>再次检查RDP服务状态，查看、确认服务是否已经启动成功；</p>
+<p>四，在操作系统内部为网卡配置了错误的IP地址，导致虚拟机无法RDP连接登录</p>
+<p>在Windows操作系统内部为网卡配置了IP地址，如：</p>
+<p>在Azure Serial Console切换到Powershell命令行下，执行“Get-NetIPConfiguration”命令查看当前网卡配置，注意红线标出的参数；</p>
+<p>Update  实际工单中 如果客户是禁用了网卡，那么使用 Get-NetIPConfiguration 看不到禁用的网卡，需要使用如下命令查看网络接口：</p>
+<p>netsh interface show interface</p>
+<p>然后使用 netsh interface set interface name=&quot;&lt;interface name&gt;&quot; admin=enabled  启用网卡</p>
+<p>查看Azure portal上虚拟机网卡配置，执行如下命令，为网卡重新配置IP地址</p>
+<p>New-NetIPAddress -InterfaceIndex “13” -IPAddress  10.1.0.4  -PrefixLength 24 -DefaultGateway 10.1.0.1</p>
+<p>五，进入Windows系统安全模式</p>
+<p>在管理命令提示符下运行以下命令：</p>
+<p>bcdedit /set {bootmgr} displaybootmenu yes</p>
+<p>bcdedit /set {bootmgr} timeout 10</p>
+<p>bcdedit /set {bootmgr} bootems yes</p>
+<p>通过Azure portal的Azure Serial Console处重启VM；</p>
+<p>按F8选择安全模式，或其他选项执行</p>
+<p>参考文档：1，<a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/serial-console-windows" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/serial-console-windows</a></p>
+<p>2，<a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/serial-console-cmd-ps-commands" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/serial-console-cmd-ps-commands</a></p></article>

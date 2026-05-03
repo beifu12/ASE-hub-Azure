@@ -1,0 +1,118 @@
+<article class="kb-article" data-title="在Ubuntu系统中禁止内核版本升级而导致显卡驱动异常"><h1>在Ubuntu系统中禁止内核版本升级而导致显卡驱动异常</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RDP_SSH</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2026-01-06 15:10:40</li>
+<li>JD 相关性: 售后排障; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>2019.06.24</li>
+</ul>
+<ul>
+<li>Linux leoubuntu1604 4.15.0-1045-azure #49-Ubuntu SMP Mon May 13 16:30:09 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux</li>
+</ul>
+<ul>
+<li>###锁定内核文件</li>
+</ul>
+<ul>
+<li>root@leoubuntu1604:~# sudo apt-mark hold linux-image-azure linux-headers-azure</li>
+</ul>
+<ul>
+<li>linux-image-azure set on hold.</li>
+</ul>
+<ul>
+<li>linux-headers-azure set on hold.</li>
+</ul>
+<ul>
+<li>root@leoubuntu1604:~# sudo apt-mark hold linux-image-4.15.0-1045-azure</li>
+</ul>
+<ul>
+<li>linux-image-4.15.0-1045-azure set on hold.</li>
+</ul>
+<ul>
+<li>root@leoubuntu1604:~# sudo apt-mark hold linux-headers-4.15.0-1045</li>
+</ul>
+<ul>
+<li>linux-headers-4.15.0-1045-azure set on hold.</li>
+</ul>
+<ul>
+<li>root@leoubuntu1604:~# sudo apt-mark hold linux-headers-4.15.0-1045-azure</li>
+</ul>
+<ul>
+<li>linux-headers-4.15.0-1045-azure was already set on hold.</li>
+</ul>
+<ul>
+<li>root@leoubuntu1604:~# sudo apt-get update</li>
+</ul>
+<ul>
+<li>…</li>
+</ul>
+<ul>
+<li>root@leoubuntu1604:~# sudo apt-get upgrade -y</li>
+</ul>
+<ul>
+<li>Reading package lists... Done</li>
+</ul>
+<ul>
+<li>root@leoubuntu1604:~# uname -a</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>root@leoubuntu1604:~# uname –a       ###查看现有内核版本</li>
+</ul>
+<ul>
+<li>###进行验证</li>
+</ul>
+<ul>
+<li>Linux leoubuntu1604 4.15.0-1045-azure #49-Ubuntu SMP Mon May 13 16:30:09 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux     ###经验证在执行apt-get upgrade时，内核并未升级</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>以下为我测试验证使用的命令，希望对大家作有所提示：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>最近接到一个客户的工单，因为升级了Ubuntu内核导致Nvidia显卡驱动异常，故在协助客户对系统内核回退修复问题后，希望找到一个禁止内核升级的方法。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>2019.06.24</p>
+<p>最近接到一个客户的工单，因为升级了Ubuntu内核导致Nvidia显卡驱动异常，故在协助客户对系统内核回退修复问题后，希望找到一个禁止内核升级的方法。</p>
+<p>以下为我测试验证使用的命令，希望对大家作有所提示：</p>
+<p>root@leoubuntu1604:~# uname –a       ###查看现有内核版本</p>
+<p>Linux leoubuntu1604 4.15.0-1045-azure #49-Ubuntu SMP Mon May 13 16:30:09 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux</p>
+<p>###锁定内核文件</p>
+<p>root@leoubuntu1604:~# sudo apt-mark hold linux-image-azure linux-headers-azure</p>
+<p>linux-image-azure set on hold.</p>
+<p>linux-headers-azure set on hold.</p>
+<p>root@leoubuntu1604:~# sudo apt-mark hold linux-image-4.15.0-1045-azure</p>
+<p>linux-image-4.15.0-1045-azure set on hold.</p>
+<p>root@leoubuntu1604:~# sudo apt-mark hold linux-headers-4.15.0-1045</p>
+<p>linux-headers-4.15.0-1045-azure set on hold.</p>
+<p>root@leoubuntu1604:~# sudo apt-mark hold linux-headers-4.15.0-1045-azure</p>
+<p>linux-headers-4.15.0-1045-azure was already set on hold.</p>
+<p>###进行验证</p>
+<p>root@leoubuntu1604:~# sudo apt-get update</p>
+<p>…</p>
+<p>root@leoubuntu1604:~# sudo apt-get upgrade -y</p>
+<p>Reading package lists... Done</p>
+<p>root@leoubuntu1604:~# uname -a</p>
+<p>Linux leoubuntu1604 4.15.0-1045-azure #49-Ubuntu SMP Mon May 13 16:30:09 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux     ###经验证在执行apt-get upgrade时，内核并未升级</p></article>

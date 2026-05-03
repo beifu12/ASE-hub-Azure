@@ -1,0 +1,146 @@
+<article class="kb-article" data-title="升级CDN"><h1>升级CDN</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: 标准话术和流程</li>
+<li>最近修改: 2024-11-19 14:58:19</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>升级场景：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>升级场景：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>升级场景：</li>
+</ul>
+<ul>
+<li>第一部分  访问升级链接</li>
+</ul>
+<ul>
+<li>登录凭据，cme账号</li>
+</ul>
+<ul>
+<li>注：</li>
+</ul>
+<ul>
+<li>1.我们给cdn后线升级一般都是sev3。Sev2就是整个cdn服务有问题，影响多个用户，类似其它服务sev2,此时工单会先达到wasu团队，然后wasu协助跟进，遵循常规LSI处理流程即可。</li>
+</ul>
+<ul>
+<li>2.非工作时间，单个客户比较着急的case，如A级别并提供了商业影响。咱们可以创建sev3并在ICM查找 cdn oncall（参见文档底部），给他们打电话说明下问题，让他们上线支援即可。</li>
+</ul>
+<ul>
+<li>第二部分  创建ICM工单</li>
+</ul>
+<ul>
+<li>默认选中CDN team，保持不变，选择下一步即可</li>
+</ul>
+<ul>
+<li>Required Details</li>
+</ul>
+<ul>
+<li>Title 一定要使用英文</li>
+</ul>
+<ul>
+<li>Attachments  如有截图或日志信息，可通过添加附件提供</li>
+</ul>
+<ul>
+<li>Environment 填写Prod即可</li>
+</ul>
+<ul>
+<li>Optional details 需要注意以下三项</li>
+</ul>
+<ul>
+<li>第二部分  给CDN团队发送邮件</li>
+</ul>
+<ul>
+<li>在创建ICM工单后，会收到一封来自IcM Incident Management的邮件，其中已包含cdn团队（mccdncn@microsoft.com）及oncall工程师联系方式。在给cdn团队发送的邮件中添加podnet@oe.21vianet.com即可。 邮件内容可使用中文</li>
+</ul>
+<ul>
+<li>--------cdn oncall查找方法-------------------------------</li>
+</ul>
+<ul>
+<li>通过链接</li>
+</ul>
+<ul>
+<li>能看到primary 和backup oncall，先联系primary，如果primary联系不上，再联系backup</li>
+</ul>
+<ul>
+<li>如果以上链接有问题，在ICM中点击“On call Lists&quot;,搜索Azure China CDN--China/Gallatin  /  China CDN Engineering Team，选择the current shift, 点击Run即可</li>
+</ul>
+<ul>
+<li>-----------------------------------------------------------</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>注：升级cdn工单至产品组前，一定要与TA或者课代表进行确认</li>
+</ul>
+<ul>
+<li>1.在已经了解客户遇到的具体问题，并进行一定的排查分析后，确认需要loop cdn产品组做进一步排查。</li>
+</ul>
+<ul>
+<li>2.如对客户遇到的问题不太明确或对排查充不充分问题无法确认，可咨询TA或课代表</li>
+</ul>
+<ul>
+<li>升级步骤：</li>
+</ul>
+<ul>
+<li>Description  可以使用中文，但是提交工单时应尽量包含几方面内容  1 .客户问题是什么 ？是功能咨询还是troubleshooting ，如是troubleshooting，需要按模版提供尽可能多的信息2. 为什么要升级？此处应体现你做了哪些排查分析。比如创建终结点失败，你需要了解确认客户填写信息正确，可通过jarvis或cdn dashboard，看到错误信息的确我们无法解决，一并提供给cdn，并告知排查分析的过程 3.升级诉求，希望cdn 团队能帮忙解决什么问题</li>
+</ul>
+<ul>
+<li>检查无误后，点击submit，提交工单。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Select Team</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>CDN Sev 3: <a href="https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=gx26d2" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=gx26d2</a></li>
+</ul>
+<ul>
+<li>CDN Sev 2: <a href="https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=31C1A2" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=31C1A2</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsofticm.com/imp/v3/oncall/current?categoryId=0&amp;serviceId=10101&amp;teamIds=11047&amp;scheduleType=current&amp;shiftType=current&amp;viewType=1&amp;startDate=2017-03-09T16:00:00.000Z&amp;endDate=2017-03-10T15:59:59.999Z&amp;gridViewStartDate=2017-04-21T16:00:00.000Z&amp;gridViewEndDate=2017-04-27T16:00:00.000Z&amp;gridViewSelectedDateRangeType=4" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/oncall/current?categoryId=0&amp;serviceId=10101&amp;teamIds=11047&amp;scheduleType=current&amp;shiftType=current&amp;viewType=1&amp;startDate=2017-03-09T16:00:00.000Z&amp;endDate=2017-03-10T15:59:59.999Z&amp;gridViewStartDate=2017-04-21T16:00:00.000Z&amp;gridViewEndDate=2017-04-27T16:00:00.000Z&amp;gridViewSelectedDateRangeType=4</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>升级场景：</p>
+<p>注：升级cdn工单至产品组前，一定要与TA或者课代表进行确认</p>
+<p>1.在已经了解客户遇到的具体问题，并进行一定的排查分析后，确认需要loop cdn产品组做进一步排查。</p>
+<p>2.如对客户遇到的问题不太明确或对排查充不充分问题无法确认，可咨询TA或课代表</p>
+<p>升级步骤：</p>
+<p>第一部分  访问升级链接</p>
+<p>CDN Sev 3: <a href="https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=gx26d2" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=gx26d2</a></p>
+<p>CDN Sev 2: <a href="https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=31C1A2" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/create?tmpl=31C1A2</a></p>
+<p>登录凭据，cme账号</p>
+<p>注：</p>
+<p>1.我们给cdn后线升级一般都是sev3。Sev2就是整个cdn服务有问题，影响多个用户，类似其它服务sev2,此时工单会先达到wasu团队，然后wasu协助跟进，遵循常规LSI处理流程即可。</p>
+<p>2.非工作时间，单个客户比较着急的case，如A级别并提供了商业影响。咱们可以创建sev3并在ICM查找 cdn oncall（参见文档底部），给他们打电话说明下问题，让他们上线支援即可。</p>
+<p>第二部分  创建ICM工单</p>
+<p>Select Team</p>
+<p>默认选中CDN team，保持不变，选择下一步即可</p>
+<p>Required Details</p>
+<p>Title 一定要使用英文</p>
+<p>Description  可以使用中文，但是提交工单时应尽量包含几方面内容  1 .客户问题是什么 ？是功能咨询还是troubleshooting ，如是troubleshooting，需要按模版提供尽可能多的信息2. 为什么要升级？此处应体现你做了哪些排查分析。比如创建终结点失败，你需要了解确认客户填写信息正确，可通过jarvis或cdn dashboard，看到错误信息的确我们无法解决，一并提供给cdn，并告知排查分析的过程 3.升级诉求，希望cdn 团队能帮忙解决什么问题</p>
+<p>Attachments  如有截图或日志信息，可通过添加附件提供</p>
+<p>Environment 填写Prod即可</p>
+<p>Optional details 需要注意以下三项</p>
+<p>检查无误后，点击submit，提交工单。</p>
+<p>第二部分  给CDN团队发送邮件</p>
+<p>在创建ICM工单后，会收到一封来自IcM Incident Management的邮件，其中已包含cdn团队（mccdncn@microsoft.com）及oncall工程师联系方式。在给cdn团队发送的邮件中添加podnet@oe.21vianet.com即可。 邮件内容可使用中文</p>
+<p>--------cdn oncall查找方法-------------------------------</p>
+<p>通过链接</p>
+<p><a href="https://portal.microsofticm.com/imp/v3/oncall/current?categoryId=0&amp;serviceId=10101&amp;teamIds=11047&amp;scheduleType=current&amp;shiftType=current&amp;viewType=1&amp;startDate=2017-03-09T16:00:00.000Z&amp;endDate=2017-03-10T15:59:59.999Z&amp;gridViewStartDate=2017-04-21T16:00:00.000Z&amp;gridViewEndDate=2017-04-27T16:00:00.000Z&amp;gridViewSelectedDateRangeType=4" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/oncall/current?categoryId=0&amp;serviceId=10101&amp;teamIds=11047&amp;scheduleType=current&amp;shiftType=current&amp;viewType=1&amp;startDate=2017-03-09T16:00:00.000Z&amp;endDate=2017-03-10T15:59:59.999Z&amp;gridViewStartDate=2017-04-21T16:00:00.000Z&amp;gridViewEndDate=2017-04-27T16:00:00.000Z&amp;gridViewSelectedDateRangeType=4</a></p>
+<p>能看到primary 和backup oncall，先联系primary，如果primary联系不上，再联系backup</p>
+<p>如果以上链接有问题，在ICM中点击“On call Lists&quot;,搜索Azure China CDN--China/Gallatin  /  China CDN Engineering Team，选择the current shift, 点击Run即可</p>
+<p>-----------------------------------------------------------</p></article>

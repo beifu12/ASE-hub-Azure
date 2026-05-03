@@ -1,0 +1,76 @@
+<article class="kb-article" data-title="Kernel bug(kernel BUG at include/linux/fs.h:3103!) 导致Ubuntu 不能ssh连接，解决方案"><h1>Kernel bug(kernel BUG at include/linux/fs.h:3103!) 导致Ubuntu 不能ssh连接，解决方案</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-06-24 10:34:03</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2022年6月24日</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2022年6月24日</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2022年6月24日</li>
+</ul>
+<ul>
+<li>johnny</li>
+</ul>
+<ul>
+<li>Hi ALL， 最近已经遇到两次这个问题了：</li>
+</ul>
+<ul>
+<li>都是对应的  20.04.1-Ubuntu  内核版本5.13.0-1028-azure</li>
+</ul>
+<ul>
+<li>Ubuntu的默认启动内核方法：</li>
+</ul>
+<ul>
+<li>我这里测试，之前给您发送的文档的方法的没有问题的。</li>
+</ul>
+<ul>
+<li>我当前内核情况：</li>
+</ul>
+<ul>
+<li>然后注意不是修改boot目录的grub.cfg</li>
+</ul>
+<ul>
+<li>而是修改 /etc/default/grub:</li>
+</ul>
+<ul>
+<li>我当前内核是1077 ， 改为 1 &gt; 4 就是1067</li>
+</ul>
+<ul>
+<li>重启后内核修改成功：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>这个版本的内核和docker服务有冲突，可以通过重启马上先禁用docker服务，然后修改内核，再启动docker。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022年6月24日</p>
+<p>johnny</p>
+<p>Hi ALL， 最近已经遇到两次这个问题了：</p>
+<p>都是对应的  20.04.1-Ubuntu  内核版本5.13.0-1028-azure</p>
+<p>这个版本的内核和docker服务有冲突，可以通过重启马上先禁用docker服务，然后修改内核，再启动docker。</p>
+<p>Ubuntu的默认启动内核方法：</p>
+<p>我这里测试，之前给您发送的文档的方法的没有问题的。</p>
+<p>我当前内核情况：</p>
+<p>然后注意不是修改boot目录的grub.cfg</p>
+<p>而是修改 /etc/default/grub:</p>
+<p>我当前内核是1077 ， 改为 1 &gt; 4 就是1067</p>
+<p>重启后内核修改成功：</p></article>

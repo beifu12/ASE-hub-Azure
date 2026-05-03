@@ -1,0 +1,172 @@
+<article class="kb-article" data-title="O dnodeAKS访问外网的公网IP及SNAT问题"><h1>O dnodeAKS访问外网的公网IP及SNAT问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-04-20 14:04:45</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Fuzhangliang/Zhanglihe</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Fuzhangliang/Zhanglihe</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Fuzhangliang/Zhanglihe</li>
+</ul>
+<ul>
+<li>20190712</li>
+</ul>
+<ul>
+<li>apt-get update &amp;&amp; apt-get install curl -y</li>
+</ul>
+<ul>
+<li>其IP是：</li>
+</ul>
+<ul>
+<li>{&quot;ip&quot;: &quot;139.217.220.26&quot;, &quot;country&quot;: &quot;上海市&quot;, &quot;city&quot;: &quot;Azure&quot;}</li>
+</ul>
+<ul>
+<li>2、如果创建了公共负载均衡器，那么node将使用负载均衡器的IP出站。</li>
+</ul>
+<ul>
+<li>如何创建公共负载均衡器用于Node出站，参考如下：</li>
+</ul>
+<ul>
+<li>（1）查找Node的资源组</li>
+</ul>
+<ul>
+<li>（2）在以上资源组中，创建一个公网IP地址（请注意首先需要使用CLI登录Azure）</li>
+</ul>
+<ul>
+<li>得到IP:139.217.223.236</li>
+</ul>
+<ul>
+<li>（3）、创建一个SVC</li>
+</ul>
+<ul>
+<li>yamL文件如下，LOadbalancer的IP填写上面创建的IP地址</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: Service</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: my-egress</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>loadBalancerIP: 139.217.223.236</li>
+</ul>
+<ul>
+<li>type: LoadBalancer</li>
+</ul>
+<ul>
+<li>ports:</li>
+</ul>
+<ul>
+<li>- port: 80</li>
+</ul>
+<ul>
+<li>此时Node会在负载均衡器后端</li>
+</ul>
+<ul>
+<li>此时再次测试Pod对外访问，将使用负载均衡器的IP.</li>
+</ul>
+<ul>
+<li>此时如果在门户再创建第二台Node,再创建一个Pod</li>
+</ul>
+<ul>
+<li>测试对外访问，依然得到负载均衡器的IP地址。</li>
+</ul>
+<ul>
+<li>此种情况下，Node将使用负载均衡器的IP出站。</li>
+</ul>
+<ul>
+<li>3、当然，您可以给node设置独立的公网IP地址。但是这一点官方没有提及。如果给Node设置了独立的公网IP，Node将使用独立的公网IP出站。</li>
+</ul>
+<ul>
+<li>Node0的ip：</li>
+</ul>
+<ul>
+<li>此时该Node上的Pod使用该IP出站</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1、默认情况下，没有负载均衡器，此时平台会给Node随机分配一个IP出站。可以在Node上run一个Pod查看这个出站IP</li>
+</ul>
+<ul>
+<li>或者在门户查看</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>kubectl run clienttest  --image=debian  --replicas=1  -i -t --restart=Never</li>
+</ul>
+<ul>
+<li>az aks show --resource-group fuzlk8srg --name testk8s --query nodeResourceGroup -o tsv</li>
+</ul>
+<ul>
+<li>az network public-ip create     --resource-group MC_fuzlk8srg_testk8s_chinaeast2    --name myAKSPublicIP     --allocation-method static</li>
+</ul>
+<ul>
+<li>kubectl run clienttest2  --image=debian  --replicas=1  -i -t --restart=Never  --overrides=&#39;{ &quot;apiVersion&quot;: &quot;v1&quot;, &quot;spec&quot;: { &quot;nodeName&quot;:&quot;aks-nodepool1-29185247-1&quot; } }&#39;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>最后，经我测试，Node出站不再受SNAT的限制。可以轻松对外发起5000连接。远超文档<a href="https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outboud-connections#problemsolving" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outboud-connections#problemsolving</a> 中1024个端口的限制。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Fuzhangliang/Zhanglihe</p>
+<p>20190712</p>
+<p>1、默认情况下，没有负载均衡器，此时平台会给Node随机分配一个IP出站。可以在Node上run一个Pod查看这个出站IP</p>
+<p>kubectl run clienttest  --image=debian  --replicas=1  -i -t --restart=Never</p>
+<p>apt-get update &amp;&amp; apt-get install curl -y</p>
+<p>其IP是：</p>
+<p>{&quot;ip&quot;: &quot;139.217.220.26&quot;, &quot;country&quot;: &quot;上海市&quot;, &quot;city&quot;: &quot;Azure&quot;}</p>
+<p>2、如果创建了公共负载均衡器，那么node将使用负载均衡器的IP出站。</p>
+<p>如何创建公共负载均衡器用于Node出站，参考如下：</p>
+<p>（1）查找Node的资源组</p>
+<p>az aks show --resource-group fuzlk8srg --name testk8s --query nodeResourceGroup -o tsv</p>
+<p>或者在门户查看</p>
+<p>（2）在以上资源组中，创建一个公网IP地址（请注意首先需要使用CLI登录Azure）</p>
+<p>az network public-ip create     --resource-group MC_fuzlk8srg_testk8s_chinaeast2    --name myAKSPublicIP     --allocation-method static</p>
+<p>得到IP:139.217.223.236</p>
+<p>（3）、创建一个SVC</p>
+<p>yamL文件如下，LOadbalancer的IP填写上面创建的IP地址</p>
+<p>apiVersion: v1</p>
+<p>kind: Service</p>
+<p>metadata:</p>
+<p>name: my-egress</p>
+<p>spec:</p>
+<p>loadBalancerIP: 139.217.223.236</p>
+<p>type: LoadBalancer</p>
+<p>ports:</p>
+<ul>
+<li>port: 80</li>
+</ul>
+<p>此时Node会在负载均衡器后端</p>
+<p>此时再次测试Pod对外访问，将使用负载均衡器的IP.</p>
+<p>此时如果在门户再创建第二台Node,再创建一个Pod</p>
+<p>kubectl run clienttest2  --image=debian  --replicas=1  -i -t --restart=Never  --overrides=&#39;{ &quot;apiVersion&quot;: &quot;v1&quot;, &quot;spec&quot;: { &quot;nodeName&quot;:&quot;aks-nodepool1-29185247-1&quot; } }&#39;</p>
+<p>测试对外访问，依然得到负载均衡器的IP地址。</p>
+<p>此种情况下，Node将使用负载均衡器的IP出站。</p>
+<p>最后，经我测试，Node出站不再受SNAT的限制。可以轻松对外发起5000连接。远超文档<a href="https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outboud-connections#problemsolving" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outboud-connections#problemsolving</a> 中1024个端口的限制。</p>
+<p>3、当然，您可以给node设置独立的公网IP地址。但是这一点官方没有提及。如果给Node设置了独立的公网IP，Node将使用独立的公网IP出站。</p>
+<p>Node0的ip：</p>
+<p>此时该Node上的Pod使用该IP出站</p></article>

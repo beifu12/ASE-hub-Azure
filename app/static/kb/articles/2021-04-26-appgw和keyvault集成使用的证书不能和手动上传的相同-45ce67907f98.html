@@ -1,0 +1,89 @@
+<article class="kb-article" data-title="appgw和keyvault集成使用的证书不能和手动上传的相同"><h1>appgw和keyvault集成使用的证书不能和手动上传的相同</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-04-26 13:48:31</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>从keyvault再次拉相同的证书就会报错。如下截图：客户已经手动上传了star.capitaland.com.cn的证书并在listener中使用</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>从keyvault再次拉相同的证书就会报错。如下截图：客户已经手动上传了star.capitaland.com.cn的证书并在listener中使用</li>
+</ul>
+<ul>
+<li>这种情形往往发生在客户之前使用的是手动上传证书的方式，后续又想用keyvault集成去拿证书的场景。特别注意是泛域名的证书，因为覆盖的域名广，所以客户往往会后续使用keyvault，这样就遇到报错了。报错有如下几种。</li>
+</ul>
+<ul>
+<li>报错1</li>
+</ul>
+<ul>
+<li>报错2</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>fuzhangliang</li>
+</ul>
+<ul>
+<li>如果一个SSL证书被手动上传到网关，如在listener中手动上传的，然后这个证书又被上传到keyvault。</li>
+</ul>
+<ul>
+<li>后续新的listener或现有listener想通过集成keyvault使用这个证书，是不行的。</li>
+</ul>
+<ul>
+<li>新的listener或者原有的listener选择通过keyvault拉取该证书就报证书重复。因为该证书已经被上传到网关。</li>
+</ul>
+<ul>
+<li>（2）将现有的listener中的证书都选择为使用keyvault中的证书B</li>
+</ul>
+<ul>
+<li>（3）将之前手动上传的证书删除：</li>
+</ul>
+<ul>
+<li>#列出证书</li>
+</ul>
+<ul>
+<li>#删除证书</li>
+</ul>
+<ul>
+<li>(4)然后将listener中的证书，选择为使用keyvault中的原来手动上传的证书。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az network application-gateway ssl-cert list --gateway-name  --resource-group</li>
+</ul>
+<ul>
+<li>az network application-gateway ssl-cert delete --gateway-name  --resource-group  --name  certname&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案是：（1）在keyvault上传一个其他域名不同的证书，然后新建一个listener，使用这个新的证书cert B</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-4-26</p>
+<p>fuzhangliang</p>
+<p>如果一个SSL证书被手动上传到网关，如在listener中手动上传的，然后这个证书又被上传到keyvault。</p>
+<p>后续新的listener或现有listener想通过集成keyvault使用这个证书，是不行的。</p>
+<p>从keyvault再次拉相同的证书就会报错。如下截图：客户已经手动上传了star.capitaland.com.cn的证书并在listener中使用</p>
+<p>新的listener或者原有的listener选择通过keyvault拉取该证书就报证书重复。因为该证书已经被上传到网关。</p>
+<p>这种情形往往发生在客户之前使用的是手动上传证书的方式，后续又想用keyvault集成去拿证书的场景。特别注意是泛域名的证书，因为覆盖的域名广，所以客户往往会后续使用keyvault，这样就遇到报错了。报错有如下几种。</p>
+<p>解决方案是：（1）在keyvault上传一个其他域名不同的证书，然后新建一个listener，使用这个新的证书cert B</p>
+<p>（2）将现有的listener中的证书都选择为使用keyvault中的证书B</p>
+<p>（3）将之前手动上传的证书删除：</p>
+<p>#列出证书</p>
+<p>az network application-gateway ssl-cert list --gateway-name  --resource-group</p>
+<p>#删除证书</p>
+<p>az network application-gateway ssl-cert delete --gateway-name  --resource-group  --name  certname&quot;</p>
+<p>(4)然后将listener中的证书，选择为使用keyvault中的原来手动上传的证书。</p>
+<p>报错1</p>
+<p>报错2</p></article>

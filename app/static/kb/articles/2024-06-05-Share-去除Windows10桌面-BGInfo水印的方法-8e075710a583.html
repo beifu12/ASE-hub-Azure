@@ -1,0 +1,75 @@
+<article class="kb-article" data-title="【Share】去除Windows10桌面 BGInfo水印的方法"><h1>【Share】去除Windows10桌面 BGInfo水印的方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-05 11:32:14</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>近期在Powershell命令行中使用平台image创建Windows 10虚拟机后，发现虚拟机会默认安装BGInfo扩展，此扩展会在Windows 10 桌面右上角显示水印。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>近期在Powershell命令行中使用平台image创建Windows 10虚拟机后，发现虚拟机会默认安装BGInfo扩展，此扩展会在Windows 10 桌面右上角显示水印。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>关于BGInfo说明：</li>
+</ul>
+<ul>
+<li>Bginfo—强大的Windows系统信息显示工具 (sysgeek.cn)</li>
+</ul>
+<ul>
+<li>为了去除BGInfo水印，尝试将虚拟机扩展卸载，并将虚拟机内部扩展目录删除后重启虚拟机，重启后虚拟机中BGInfo水印仍显示。</li>
+</ul>
+<ul>
+<li>============================================</li>
+</ul>
+<ul>
+<li>在此时在虚拟机扩展页面中找到BGinfo扩展并卸载：</li>
+</ul>
+<ul>
+<li>成功卸载之后，在虚拟机内部看到扩展所在目录为空：</li>
+</ul>
+<ul>
+<li>C:\Packages\Plugins</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>经测试，按照下面步骤可完整去除BGInfo水印显示：</li>
+</ul>
+<ul>
+<li>之后重新虚拟机，重启之后登录确认BGInfo没有启动且没有水印。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>近期在Powershell命令行中使用平台image创建Windows 10虚拟机后，发现虚拟机会默认安装BGInfo扩展，此扩展会在Windows 10 桌面右上角显示水印。</li>
+</ul>
+<ul>
+<li>经查看，使用powershell创建非托管磁盘Windows10虚拟机的方法，会默认为虚拟机安装BGInfo扩展：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>需要在系统内部将BGInfo开机启动设置为Disabled：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-06-05</p>
+<p>近期在Powershell命令行中使用平台image创建Windows 10虚拟机后，发现虚拟机会默认安装BGInfo扩展，此扩展会在Windows 10 桌面右上角显示水印。</p>
+<p>经查看，使用powershell创建非托管磁盘Windows10虚拟机的方法，会默认为虚拟机安装BGInfo扩展：</p>
+<p>关于BGInfo说明：</p>
+<p>Bginfo—强大的Windows系统信息显示工具 (sysgeek.cn)</p>
+<p>为了去除BGInfo水印，尝试将虚拟机扩展卸载，并将虚拟机内部扩展目录删除后重启虚拟机，重启后虚拟机中BGInfo水印仍显示。</p>
+<p>经测试，按照下面步骤可完整去除BGInfo水印显示：</p>
+<p>============================================</p>
+<p>需要在系统内部将BGInfo开机启动设置为Disabled：</p>
+<p>之后重新虚拟机，重启之后登录确认BGInfo没有启动且没有水印。</p>
+<p>在此时在虚拟机扩展页面中找到BGinfo扩展并卸载：</p>
+<p>成功卸载之后，在虚拟机内部看到扩展所在目录为空：</p>
+<p>C:\Packages\Plugins</p></article>

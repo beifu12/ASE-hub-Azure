@@ -1,0 +1,280 @@
+<article class="kb-article" data-title="Windows server 2016 &amp; 2019配置ADFS与AAD实现联合身份验证"><h1>Windows server 2016 &amp; 2019配置ADFS与AAD实现联合身份验证</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-05-22 14:14:00</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>一定要填写certauth这个，否则会报错</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>一定要填写certauth这个，否则会报错</li>
+</ul>
+<ul>
+<li>如出现报错:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>分别使用了2016和2019测试了搭建ADFS</li>
+</ul>
+<ul>
+<li>环境: Windows Server 2019 Datacenter</li>
+</ul>
+<ul>
+<li>Windows Server 2016 Datacenter</li>
+</ul>
+<ul>
+<li>1, 导入证书.</li>
+</ul>
+<ul>
+<li>2, ADFS服务器加域</li>
+</ul>
+<ul>
+<li>3, 添加ADFS角色</li>
+</ul>
+<ul>
+<li>4, 托管域变更为联盟域</li>
+</ul>
+<ul>
+<li>5, DNS设置</li>
+</ul>
+<ul>
+<li>6, 添加ADFS服务器的A记录</li>
+</ul>
+<ul>
+<li>8, 参考文档</li>
+</ul>
+<ul>
+<li>1, 导入证书</li>
+</ul>
+<ul>
+<li>首先申请证书，常见的两种方法，第一种就是通过web进行证书申请，第二种通过mmc控制台进行申请</li>
+</ul>
+<ul>
+<li>第一种,  在域名证书管理处进行证书申请下载.</li>
+</ul>
+<ul>
+<li>以万网为例:</li>
+</ul>
+<ul>
+<li>导入ADFS服务器</li>
+</ul>
+<ul>
+<li>Win+R :  MMC   进入到MMC导入证书</li>
+</ul>
+<ul>
+<li>第二种:   运行certlm.msc ，打开证书管理</li>
+</ul>
+<ul>
+<li>右击--个人--所有任务---申请新证书</li>
+</ul>
+<ul>
+<li>如使用申请新证书的方式,  首先需要在DC域控上安装CA 再授权ADFS服务器enroll</li>
+</ul>
+<ul>
+<li>在DC上安装CA</li>
+</ul>
+<ul>
+<li>在域控上给计算机或者指定的用户或者计算机授权证书颁发</li>
+</ul>
+<ul>
+<li>接下来就可以申请新证书.</li>
+</ul>
+<ul>
+<li>需要注意的是，计算机名和ADFS的证书名称不能一样</li>
+</ul>
+<ul>
+<li>adfs-svc.jsgoldnet.cn</li>
+</ul>
+<ul>
+<li>certauth.adfs-svc.jsgoldnet.cn</li>
+</ul>
+<ul>
+<li>enterpriseregistration.jsgoldnet.cn</li>
+</ul>
+<ul>
+<li>enterpriseregistration.region. jsgoldnet.cn</li>
+</ul>
+<ul>
+<li>2, ADFS服务器加入域</li>
+</ul>
+<ul>
+<li>3, 添加ADFS服务器角色并配置:</li>
+</ul>
+<ul>
+<li>安装完成之后，点击配置</li>
+</ul>
+<ul>
+<li>输入域管理员凭证；</li>
+</ul>
+<ul>
+<li>4, 将域名covert为联盟域</li>
+</ul>
+<ul>
+<li>Import-module msonline</li>
+</ul>
+<ul>
+<li>Connect-MsolService -AzureEnvironment azurechinacloud</li>
+</ul>
+<ul>
+<li>Convert-msolDomainToFederated -DomainName XXXXX</li>
+</ul>
+<ul>
+<li>5,</li>
+</ul>
+<ul>
+<li>在DNS manager中将ADFS服务器内网IP地址指向到DNS做解析</li>
+</ul>
+<ul>
+<li>6，在域名管理处添加ADFS服务器A记录</li>
+</ul>
+<ul>
+<li>公网和内网域名解析是否正确</li>
+</ul>
+<ul>
+<li>需要另外启用；Enabling IdpInitiatedSignon Page On Windows 2016 &amp; 2019</li>
+</ul>
+<ul>
+<li>目前测试,  使用内网可以正常跳转</li>
+</ul>
+<ul>
+<li>使用虚拟机的公网也可以正常跳转</li>
+</ul>
+<ul>
+<li>如使用本地公网会出现</li>
+</ul>
+<ul>
+<li>8， 参考文档:</li>
+</ul>
+<ul>
+<li>Federation Metadata Explorer :</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>步骤:</li>
+</ul>
+<ul>
+<li>7, 验证</li>
+</ul>
+<ul>
+<li>验证CA</li>
+</ul>
+<ul>
+<li>对 Windows Server 上 AD FS 中用于证书身份验证的备用主机名绑定的支持 | Microsoft Learn</li>
+</ul>
+<ul>
+<li>7,  验证:</li>
+</ul>
+<ul>
+<li>验证证书源数据是否正常</li>
+</ul>
+<ul>
+<li>验证ADFS跳转</li>
+</ul>
+<ul>
+<li>抓包发现有21V 拦截记录:  应该是由于没有进行ICP备案导致.</li>
+</ul>
+<ul>
+<li>The Federation Metadata Explorer is an online tool that will retrieve the federation metadata document from your AD FS service and display the contents in a readable format. In addition to viewing the contents, this is a great way to check that your federation service is reachable from the extranet.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Get-AdfsProperties | Select-Object EnableIdpInitiatedSignonpage</li>
+</ul>
+<ul>
+<li>Set-AdfsProperties –EnableIdpInitiatedSignonPage $True</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://adfs.jumpinghole.xyz/federationmetadata/2007-06/federationmetadata.xml" target="_blank" rel="noopener">https://adfs.jumpinghole.xyz/federationmetadata/2007-06/federationmetadata.xml</a></li>
+</ul>
+<ul>
+<li><a href="https://adfs.jumpinghole.xyz/adfs/ls/idpinitiatedsignon.htm" target="_blank" rel="noopener">https://adfs.jumpinghole.xyz/adfs/ls/idpinitiatedsignon.htm</a></li>
+</ul>
+<ul>
+<li>AD FS 要求 : <a href="https://learn.microsoft.com/zh-cn/windows-server/identity/ad-fs/overview/ad-fs-requirements" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows-server/identity/ad-fs/overview/ad-fs-requirements</a></li>
+</ul>
+<ul>
+<li>对 Active Directory 联合身份验证服务 Idp 发起的登录进行故障排除: <a href="https://learn.microsoft.com/zh-cn/windows-server/identity/ad-fs/troubleshooting/ad-fs-tshoot-initiatedsignon" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows-server/identity/ad-fs/troubleshooting/ad-fs-tshoot-initiatedsignon</a></li>
+</ul>
+<ul>
+<li>安装 AD FS 角色服务 : <a href="https://learn.microsoft.com/zh-cn/windows-server/identity/ad-fs/deployment/install-the-ad-fs-role-service" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows-server/identity/ad-fs/deployment/install-the-ad-fs-role-service</a></li>
+</ul>
+<ul>
+<li><a href="https://adfshelp.microsoft.com/MetadataExplorer/ShowFederationMetadata" target="_blank" rel="noopener">https://adfshelp.microsoft.com/MetadataExplorer/ShowFederationMetadata</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/04/15</p>
+<p>分别使用了2016和2019测试了搭建ADFS</p>
+<p>环境: Windows Server 2019 Datacenter</p>
+<p>Windows Server 2016 Datacenter</p>
+<p>步骤:</p>
+<p>1, 导入证书.</p>
+<p>2, ADFS服务器加域</p>
+<p>3, 添加ADFS角色</p>
+<p>4, 托管域变更为联盟域</p>
+<p>5, DNS设置</p>
+<p>6, 添加ADFS服务器的A记录</p>
+<p>7, 验证</p>
+<p>8, 参考文档</p>
+<p>1, 导入证书</p>
+<p>首先申请证书，常见的两种方法，第一种就是通过web进行证书申请，第二种通过mmc控制台进行申请</p>
+<p>第一种,  在域名证书管理处进行证书申请下载.</p>
+<p>以万网为例:</p>
+<p>导入ADFS服务器</p>
+<p>Win+R :  MMC   进入到MMC导入证书</p>
+<p>第二种:   运行certlm.msc ，打开证书管理</p>
+<p>右击--个人--所有任务---申请新证书</p>
+<p>如使用申请新证书的方式,  首先需要在DC域控上安装CA 再授权ADFS服务器enroll</p>
+<p>在DC上安装CA</p>
+<p>验证CA</p>
+<p>在域控上给计算机或者指定的用户或者计算机授权证书颁发</p>
+<p>接下来就可以申请新证书.</p>
+<p>需要注意的是，计算机名和ADFS的证书名称不能一样</p>
+<p>一定要填写certauth这个，否则会报错</p>
+<p>adfs-svc.jsgoldnet.cn</p>
+<p>certauth.adfs-svc.jsgoldnet.cn</p>
+<p>enterpriseregistration.jsgoldnet.cn</p>
+<p>enterpriseregistration.region. jsgoldnet.cn</p>
+<p>对 Windows Server 上 AD FS 中用于证书身份验证的备用主机名绑定的支持 | Microsoft Learn</p>
+<p>2, ADFS服务器加入域</p>
+<p>3, 添加ADFS服务器角色并配置:</p>
+<p>安装完成之后，点击配置</p>
+<p>输入域管理员凭证；</p>
+<p>4, 将域名covert为联盟域</p>
+<p>Import-module msonline</p>
+<p>Connect-MsolService -AzureEnvironment azurechinacloud</p>
+<p>Convert-msolDomainToFederated -DomainName XXXXX</p>
+<p>5,</p>
+<p>在DNS manager中将ADFS服务器内网IP地址指向到DNS做解析</p>
+<p>6，在域名管理处添加ADFS服务器A记录</p>
+<p>7,  验证:</p>
+<p>公网和内网域名解析是否正确</p>
+<p><a href="https://adfs.jumpinghole.xyz/federationmetadata/2007-06/federationmetadata.xml" target="_blank" rel="noopener">https://adfs.jumpinghole.xyz/federationmetadata/2007-06/federationmetadata.xml</a></p>
+<p>验证证书源数据是否正常</p>
+<p><a href="https://adfs.jumpinghole.xyz/adfs/ls/idpinitiatedsignon.htm" target="_blank" rel="noopener">https://adfs.jumpinghole.xyz/adfs/ls/idpinitiatedsignon.htm</a></p>
+<p>验证ADFS跳转</p>
+<p>如出现报错:</p>
+<p>需要另外启用；Enabling IdpInitiatedSignon Page On Windows 2016 &amp; 2019</p>
+<p>Get-AdfsProperties | Select-Object EnableIdpInitiatedSignonpage</p>
+<p>Set-AdfsProperties –EnableIdpInitiatedSignonPage $True</p>
+<p>目前测试,  使用内网可以正常跳转</p>
+<p>使用虚拟机的公网也可以正常跳转</p>
+<p>如使用本地公网会出现</p>
+<p>抓包发现有21V 拦截记录:  应该是由于没有进行ICP备案导致.</p>
+<p>8， 参考文档:</p>
+<p>AD FS 要求 : <a href="https://learn.microsoft.com/zh-cn/windows-server/identity/ad-fs/overview/ad-fs-requirements" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows-server/identity/ad-fs/overview/ad-fs-requirements</a></p>
+<p>对 Active Directory 联合身份验证服务 Idp 发起的登录进行故障排除: <a href="https://learn.microsoft.com/zh-cn/windows-server/identity/ad-fs/troubleshooting/ad-fs-tshoot-initiatedsignon" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows-server/identity/ad-fs/troubleshooting/ad-fs-tshoot-initiatedsignon</a></p>
+<p>安装 AD FS 角色服务 : <a href="https://learn.microsoft.com/zh-cn/windows-server/identity/ad-fs/deployment/install-the-ad-fs-role-service" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows-server/identity/ad-fs/deployment/install-the-ad-fs-role-service</a></p>
+<p>Federation Metadata Explorer :</p>
+<p>The Federation Metadata Explorer is an online tool that will retrieve the federation metadata document from your AD FS service and display the contents in a readable format. In addition to viewing the contents, this is a great way to check that your federation service is reachable from the extranet.</p>
+<p><a href="https://adfshelp.microsoft.com/MetadataExplorer/ShowFederationMetadata" target="_blank" rel="noopener">https://adfshelp.microsoft.com/MetadataExplorer/ShowFederationMetadata</a></p></article>

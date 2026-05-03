@@ -1,0 +1,94 @@
+<article class="kb-article" data-title="Azure VM备份失败但快照仍然在计费"><h1>Azure VM备份失败但快照仍然在计费</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure VM backup</li>
+<li>Section: Kusto Jarvis常用命令</li>
+<li>最近修改: 2023-09-27 15:12:09</li>
+<li>JD 相关性: 自动化/命令工具; 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_20230516229926_Azure备份服务失败告警未通知及成本仍然在继续计费</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_20230516229926_Azure备份服务失败告警未通知及成本仍然在继续计费</li>
+</ul>
+<ul>
+<li>客户当前使用Azure的备份服务来保护虚拟机服务， 备份服务的日志里在3月底一直到4月底出现持续的备份任务失败。快照的保留期是5天，客户备份任务失败30天的情况下，在账单里发现仍然存在备份磁盘快照的费用，</li>
+</ul>
+<ul>
+<li>如果恢复点包含快照并且它是可用的最新恢复点，则它会一直保留到下一次成功备份为止。所以备份长时间失败，快照依然保留。</li>
+</ul>
+<ul>
+<li>备份失败期间为什么快照大小持续变大？</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<ul>
+<li>参考工单：</li>
+</ul>
+<ul>
+<li>SR_20230516229924 [MS-LED]关于Azure 备份成本计费问题咨询</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>快照保留期</li>
+</ul>
+<ul>
+<li>解释：</li>
+</ul>
+<ul>
+<li>但从商务的账单中看到备份的快照计费在持续增大。</li>
+</ul>
+<ul>
+<li>关于这一点，PG给出的解释如下：</li>
+</ul>
+<ul>
+<li>a.     原理如以下微软官方文档，当磁盘的内容变化，快照会需要额外空间存储更新前的内容，这是为了保证始终可以用该快照恢复磁盘数据至抓取快照的时刻</li>
+</ul>
+<ul>
+<li>b.     随着时间推移，磁盘中（相对3.28号）内容变化越来越多，3.28号的快照也在不断变大</li>
+</ul>
+<ul>
+<li>管理快照最佳实践</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-CN/backup/backup-instant-restore-capability#frequently-asked-questions" target="_blank" rel="noopener">https://docs.azure.cn/zh-CN/backup/backup-instant-restore-capability#frequently-asked-questions</a></li>
+</ul>
+<ul>
+<li>微软官方文档：<a href="https://learn.microsoft.com/zh-cn/rest/api/storageservices/understanding-how-snapshots-accrue-charges" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/rest/api/storageservices/understanding-how-snapshots-accrue-charges</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang Lihong</p>
+<p>2020-09-27</p>
+<p>参考工单：</p>
+<p>SR_20230516229926_Azure备份服务失败告警未通知及成本仍然在继续计费</p>
+<p>SR_20230516229924 [MS-LED]关于Azure 备份成本计费问题咨询</p>
+<p>问题描述：</p>
+<p>客户当前使用Azure的备份服务来保护虚拟机服务， 备份服务的日志里在3月底一直到4月底出现持续的备份任务失败。快照的保留期是5天，客户备份任务失败30天的情况下，在账单里发现仍然存在备份磁盘快照的费用，</p>
+<p>快照保留期</p>
+<p>解释：</p>
+<p>如果恢复点包含快照并且它是可用的最新恢复点，则它会一直保留到下一次成功备份为止。所以备份长时间失败，快照依然保留。</p>
+<p><a href="https://docs.azure.cn/zh-CN/backup/backup-instant-restore-capability#frequently-asked-questions" target="_blank" rel="noopener">https://docs.azure.cn/zh-CN/backup/backup-instant-restore-capability#frequently-asked-questions</a></p>
+<p>但从商务的账单中看到备份的快照计费在持续增大。</p>
+<p>关于这一点，PG给出的解释如下：</p>
+<p>备份失败期间为什么快照大小持续变大？</p>
+<p>a.     原理如以下微软官方文档，当磁盘的内容变化，快照会需要额外空间存储更新前的内容，这是为了保证始终可以用该快照恢复磁盘数据至抓取快照的时刻</p>
+<p>b.     随着时间推移，磁盘中（相对3.28号）内容变化越来越多，3.28号的快照也在不断变大</p>
+<p>微软官方文档：<a href="https://learn.microsoft.com/zh-cn/rest/api/storageservices/understanding-how-snapshots-accrue-charges" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/rest/api/storageservices/understanding-how-snapshots-accrue-charges</a></p>
+<p>管理快照最佳实践</p></article>

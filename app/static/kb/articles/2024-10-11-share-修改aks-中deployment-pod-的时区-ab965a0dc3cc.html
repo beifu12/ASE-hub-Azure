@@ -1,0 +1,224 @@
+<article class="kb-article" data-title="【share】修改aks 中deployment/pod  的时区"><h1>【share】修改aks 中deployment/pod  的时区</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-10-11 14:18:13</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Pod 的时区默认是从其所在node 取的。 aks 集群 的默认时区是utc 时间，且azure 官方没有提供在aks 集群层面修改时区的接口和方案。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Pod 的时区默认是从其所在node 取的。 aks 集群 的默认时区是utc 时间，且azure 官方没有提供在aks 集群层面修改时区的接口和方案。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Pod 的时区默认是从其所在node 取的。 aks 集群 的默认时区是utc 时间，且azure 官方没有提供在aks 集群层面修改时区的接口和方案。</li>
+</ul>
+<ul>
+<li>遇到有客户希望单纯修改deployment/pod 时区的需求。 通过测试，为容器 inject          - name: TZ            value:  Asia/Shanghai  即可。</li>
+</ul>
+<ul>
+<li>我测试的aks 环境是1.26.3.</li>
+</ul>
+<ul>
+<li>apiVersion: apps/v1</li>
+</ul>
+<ul>
+<li>kind: Deployment</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: azure-vote-back</li>
+</ul>
+<ul>
+<li>namespace: deploy</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>replicas: 1</li>
+</ul>
+<ul>
+<li>selector:</li>
+</ul>
+<ul>
+<li>matchLabels:</li>
+</ul>
+<ul>
+<li>app: azure-vote-back</li>
+</ul>
+<ul>
+<li>template:</li>
+</ul>
+<ul>
+<li>labels:</li>
+</ul>
+<ul>
+<li>nodeSelector:</li>
+</ul>
+<ul>
+<li>&quot;kubernetes.io/os&quot;: linux</li>
+</ul>
+<ul>
+<li>containers:</li>
+</ul>
+<ul>
+<li>- name: azure-vote-back</li>
+</ul>
+<ul>
+<li>image: mcr.microsoft.com/oss/bitnami/redis:6.0.8</li>
+</ul>
+<ul>
+<li>env:</li>
+</ul>
+<ul>
+<li>- name: ALLOW_EMPTY_PASSWORD</li>
+</ul>
+<ul>
+<li>value: &quot;yes&quot;</li>
+</ul>
+<ul>
+<li>- name: TZ</li>
+</ul>
+<ul>
+<li>value:  Asia/Shanghai</li>
+</ul>
+<ul>
+<li>resources:</li>
+</ul>
+<ul>
+<li>requests:</li>
+</ul>
+<ul>
+<li>cpu: 100m</li>
+</ul>
+<ul>
+<li>memory: 128Mi</li>
+</ul>
+<ul>
+<li>limits:</li>
+</ul>
+<ul>
+<li>cpu: 250m</li>
+</ul>
+<ul>
+<li>memory: 256Mi</li>
+</ul>
+<ul>
+<li>ports:</li>
+</ul>
+<ul>
+<li>- containerPort: 6379</li>
+</ul>
+<ul>
+<li>name: redis</li>
+</ul>
+<ul>
+<li>volumeMounts:</li>
+</ul>
+<ul>
+<li>mountPath: /test0629</li>
+</ul>
+<ul>
+<li>volumes:</li>
+</ul>
+<ul>
+<li>hostPath:</li>
+</ul>
+<ul>
+<li>type: DirectoryOrCreate</li>
+</ul>
+<ul>
+<li>---</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: Service</li>
+</ul>
+<ul>
+<li>- port: 6379</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>- name: log</li>
+</ul>
+<ul>
+<li>path: /logs</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Pod 的时区默认是从其所在node 取的。 aks 集群 的默认时区是utc 时间，且azure 官方没有提供在aks 集群层面修改时区的接口和方案。</p>
+<p>遇到有客户希望单纯修改deployment/pod 时区的需求。 通过测试，为容器 inject          - name: TZ            value:  Asia/Shanghai  即可。</p>
+<p>我测试的aks 环境是1.26.3.</p>
+<p>apiVersion: apps/v1</p>
+<p>kind: Deployment</p>
+<p>metadata:</p>
+<p>name: azure-vote-back</p>
+<p>namespace: deploy</p>
+<p>spec:</p>
+<p>replicas: 1</p>
+<p>selector:</p>
+<p>matchLabels:</p>
+<p>app: azure-vote-back</p>
+<p>template:</p>
+<p>labels:</p>
+<p>nodeSelector:</p>
+<p>&quot;kubernetes.io/os&quot;: linux</p>
+<p>containers:</p>
+<ul>
+<li>name: azure-vote-back</li>
+</ul>
+<p>image: mcr.microsoft.com/oss/bitnami/redis:6.0.8</p>
+<p>env:</p>
+<ul>
+<li>name: ALLOW_EMPTY_PASSWORD</li>
+</ul>
+<p>value: &quot;yes&quot;</p>
+<ul>
+<li>name: TZ</li>
+</ul>
+<p>value:  Asia/Shanghai</p>
+<p>resources:</p>
+<p>requests:</p>
+<p>cpu: 100m</p>
+<p>memory: 128Mi</p>
+<p>limits:</p>
+<p>cpu: 250m</p>
+<p>memory: 256Mi</p>
+<p>ports:</p>
+<ul>
+<li>containerPort: 6379</li>
+</ul>
+<p>name: redis</p>
+<p>volumeMounts:</p>
+<ul>
+<li>name: log</li>
+</ul>
+<p>mountPath: /test0629</p>
+<p>volumes:</p>
+<p>hostPath:</p>
+<p>path: /logs</p>
+<p>type: DirectoryOrCreate</p>
+<p>---</p>
+<p>apiVersion: v1</p>
+<p>kind: Service</p>
+<ul>
+<li>port: 6379</li>
+</ul></article>

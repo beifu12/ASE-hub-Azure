@@ -1,0 +1,101 @@
+<article class="kb-article" data-title="P2S连接报错“自定义脚本(to update your routing table)失败(80071392)”"><h1>P2S连接报错“自定义脚本(to update your routing table)失败(80071392)”</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-04 16:39:43</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>故障现象</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>故障现象</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>关联工单：20240520294420</li>
+</ul>
+<ul>
+<li>问题原因</li>
+</ul>
+<ul>
+<li>下载的客户端配置文件中包含重复的Azure网段</li>
+</ul>
+<ul>
+<li>进入到下列路径，标黄部分修改为实际参数</li>
+</ul>
+<ul>
+<li>C:\Users\shao.junjie\AppData\Roaming\Microsoft\Network\Connections\Cm\0d3c005f-9cd4-43ad-86cf-eef87f249374</li>
+</ul>
+<ul>
+<li>打开routes.txt, 删除重复网段的路由条目，保存后重新连接即可</li>
+</ul>
+<ul>
+<li>=================================================================================================</li>
+</ul>
+<ul>
+<li>进一步解释一下案例20240520294420案例出现重复路由的原因</li>
+</ul>
+<ul>
+<li>访问架构如下</li>
+</ul>
+<ul>
+<li>Client--P2S connection-- VPN Hub Vnet(10.21.65.0/24)--Spoke Vnet(10.21.66.0/24)</li>
+</ul>
+<ul>
+<li>客户原来在VPN P2S设置中手动宣告了10.21.65.0和10.21.66.0，当时routes.txt文件中出现了两条包含10.21.65.0的重复路由</li>
+</ul>
+<ul>
+<li>如果在P2S中清除手动宣告的路由，那routes.txt文件中只有10.21.65.0一条路由，没有10.21.66.0的路由，这是因为对等互连设置中没有启用传播网关路由的选项，配置文件中只能自动学到VPN所在的网段</li>
+</ul>
+<ul>
+<li>客户在P2S设置中清除手动宣告的路由，并在对等互连设置中启用传播网关路由的选项后，routes.txt文件中学到了正确的路由，问题解决</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>为点到站点 VPN 网关客户端播发自定义路由 - Azure VPN Gateway | Azure Docs</li>
+</ul>
+<ul>
+<li>针对虚拟网络对等互连配置 VPN 网关传输 - Azure VPN Gateway | Azure Docs</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>P2S连接时报错“自定义脚本(to update your routing table)失败(80071392)”</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/06/04</p>
+<p>关联工单：20240520294420</p>
+<p>故障现象</p>
+<p>P2S连接时报错“自定义脚本(to update your routing table)失败(80071392)”</p>
+<p>问题原因</p>
+<p>下载的客户端配置文件中包含重复的Azure网段</p>
+<p>解决方法</p>
+<p>进入到下列路径，标黄部分修改为实际参数</p>
+<p>C:\Users\shao.junjie\AppData\Roaming\Microsoft\Network\Connections\Cm\0d3c005f-9cd4-43ad-86cf-eef87f249374</p>
+<p>打开routes.txt, 删除重复网段的路由条目，保存后重新连接即可</p>
+<p>=================================================================================================</p>
+<p>进一步解释一下案例20240520294420案例出现重复路由的原因</p>
+<p>访问架构如下</p>
+<p>Client--P2S connection-- VPN Hub Vnet(10.21.65.0/24)--Spoke Vnet(10.21.66.0/24)</p>
+<p>客户原来在VPN P2S设置中手动宣告了10.21.65.0和10.21.66.0，当时routes.txt文件中出现了两条包含10.21.65.0的重复路由</p>
+<p>如果在P2S中清除手动宣告的路由，那routes.txt文件中只有10.21.65.0一条路由，没有10.21.66.0的路由，这是因为对等互连设置中没有启用传播网关路由的选项，配置文件中只能自动学到VPN所在的网段</p>
+<p>客户在P2S设置中清除手动宣告的路由，并在对等互连设置中启用传播网关路由的选项后，routes.txt文件中学到了正确的路由，问题解决</p>
+<p>参考文档：</p>
+<p>为点到站点 VPN 网关客户端播发自定义路由 - Azure VPN Gateway | Azure Docs</p>
+<p>针对虚拟网络对等互连配置 VPN 网关传输 - Azure VPN Gateway | Azure Docs</p></article>

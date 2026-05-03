@@ -1,0 +1,94 @@
+<article class="kb-article" data-title="【BGP VPN】BGP协商卡在OpenSent和Openconfirm状态"><h1>【BGP VPN】BGP协商卡在OpenSent和Openconfirm状态</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-08-15 13:54:12</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：BGP协商卡在OpenSent和Openconfirm状态</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：BGP协商卡在OpenSent和Openconfirm状态</li>
+</ul>
+<ul>
+<li>Azure侧数据包，同样过滤其中一次协商过程，Network Monitor无法解码BGP报文，没有找到让Netmon解码的方法，也不会导出成wireshark可以解析的报文，所以只能人肉看包了。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>YaoYuejian</li>
+</ul>
+<ul>
+<li>参考case：2019042321467</li>
+</ul>
+<ul>
+<li>小坑：BGP over VPN中，BGP报文在networktrace.etl中看不到，需要到TunnelInnerPacketTrace.etl中看</li>
+</ul>
+<ul>
+<li>数据包附加到这里了</li>
+</ul>
+<ul>
+<li>对于本地数据包，取其中的一次协商过程，如下：（10.1.7.1是On-premises BGP地址，10.3.3.142是Azure BGP地址）</li>
+</ul>
+<ul>
+<li>可以看到，On-premises可以收到Azure VPN GW的open报文，同时也向Azure发送了keeplive 报文，说明BGP capacity协商没有问题。</li>
+</ul>
+<ul>
+<li>由于一直收不到Azure发来的keeplive报文，所以卡在openconfirm</li>
+</ul>
+<ul>
+<li>下图中TCP Payload中，一堆FF之后，第三个字节代表报文类型（红色圆圈），其中 01是open报文，02是update报文，03是notification报文，04是keeplive报文（可以参考wireshark）</li>
+</ul>
+<ul>
+<li>第五个报文就是On-premises发来的Open报文</li>
+</ul>
+<ul>
+<li>往下接着看，Azure一直在重传open报文，直到reset，这时候就要考虑为什么了?</li>
+</ul>
+<ul>
+<li>不接受On-premises发来的open报文，而On-premises协商BGP capacity没有问题，那么问题就不在TCP及以上layer，到三层的话，也就只能是TTL了。</li>
+</ul>
+<ul>
+<li>结论，由于Azure VPN GW的BGP地址是两个实例之外虚拟出来的第三个地址，除去VPN Tunel，也是非直连，ebgp max hop是1，是不行的，改成2.</li>
+</ul>
+<ul>
+<li>重点解释一个疑问，ebgp multihop =1的情况下，为什么tcp三次握手可以建立？</li>
+</ul>
+<ul>
+<li>以上的协商过程是由Azure发起的，On-premises在响应这次握手的时候使用系统默认的TTL 64，所以三次握手成功</li>
+</ul>
+<ul>
+<li>如下第一个图，由On-premises主动发起的BGP协商，三次握手第一个包TTL就是1了。第二张图可以看到Azure不会响应这个请求。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>YaoYuejian</p>
+<p>参考case：2019042321467</p>
+<p>问题现象：BGP协商卡在OpenSent和Openconfirm状态</p>
+<p>小坑：BGP over VPN中，BGP报文在networktrace.etl中看不到，需要到TunnelInnerPacketTrace.etl中看</p>
+<p>数据包附加到这里了</p>
+<p>对于本地数据包，取其中的一次协商过程，如下：（10.1.7.1是On-premises BGP地址，10.3.3.142是Azure BGP地址）</p>
+<p>可以看到，On-premises可以收到Azure VPN GW的open报文，同时也向Azure发送了keeplive 报文，说明BGP capacity协商没有问题。</p>
+<p>由于一直收不到Azure发来的keeplive报文，所以卡在openconfirm</p>
+<p>Azure侧数据包，同样过滤其中一次协商过程，Network Monitor无法解码BGP报文，没有找到让Netmon解码的方法，也不会导出成wireshark可以解析的报文，所以只能人肉看包了。</p>
+<p>下图中TCP Payload中，一堆FF之后，第三个字节代表报文类型（红色圆圈），其中 01是open报文，02是update报文，03是notification报文，04是keeplive报文（可以参考wireshark）</p>
+<p>第五个报文就是On-premises发来的Open报文</p>
+<p>往下接着看，Azure一直在重传open报文，直到reset，这时候就要考虑为什么了?</p>
+<p>不接受On-premises发来的open报文，而On-premises协商BGP capacity没有问题，那么问题就不在TCP及以上layer，到三层的话，也就只能是TTL了。</p>
+<p>结论，由于Azure VPN GW的BGP地址是两个实例之外虚拟出来的第三个地址，除去VPN Tunel，也是非直连，ebgp max hop是1，是不行的，改成2.</p>
+<p>重点解释一个疑问，ebgp multihop =1的情况下，为什么tcp三次握手可以建立？</p>
+<p>以上的协商过程是由Azure发起的，On-premises在响应这次握手的时候使用系统默认的TTL 64，所以三次握手成功</p>
+<p>如下第一个图，由On-premises主动发起的BGP协商，三次握手第一个包TTL就是1了。第二张图可以看到Azure不会响应这个请求。</p></article>

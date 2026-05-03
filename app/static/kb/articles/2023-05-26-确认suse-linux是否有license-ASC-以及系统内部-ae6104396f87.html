@@ -1,0 +1,124 @@
+<article class="kb-article" data-title="确认suse linux是否有license （ASC 以及系统内部）"><h1>确认suse linux是否有license （ASC 以及系统内部）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-05-26 13:03:23</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Hi， ALL</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Hi， ALL</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi， ALL</li>
+</ul>
+<ul>
+<li>做了如下测试，测试版本分别为 suse 11 sp4  suse12 sp3 以及suse15</li>
+</ul>
+<ul>
+<li>如果不带BYOS基本可以认为是平台默认镜像，这样的虚拟机是有key的：</li>
+</ul>
+<ul>
+<li>Suse11 sp4：</li>
+</ul>
+<ul>
+<li>Suse 12 sp3：</li>
+</ul>
+<ul>
+<li>Suse 15：</li>
+</ul>
+<ul>
+<li>如是客户镜像或者平台的BYOS的镜像默认不带key。</li>
+</ul>
+<ul>
+<li>使用SSH登录目标SuSE虚拟机，并切换至root用户；</li>
+</ul>
+<ul>
+<li>输入yast2；</li>
+</ul>
+<ul>
+<li>依次进入Support-Novell Customer Center Configuration;</li>
+</ul>
+<ul>
+<li>在Novell Customer Center Configuration界面使用Tab键打开Registration Status;</li>
+</ul>
+<ul>
+<li>在Details中可以看到详细注册信息</li>
+</ul>
+<ul>
+<li>此为注册成功示例：</li>
+</ul>
+<ul>
+<li>Details：</li>
+</ul>
+<ul>
+<li>此为未注册示例：</li>
+</ul>
+<ul>
+<li>Suse12 sp3 ：</li>
+</ul>
+<ul>
+<li>从这个版本开始位置有改变：</li>
+</ul>
+<ul>
+<li>依次进入Software -&gt;  Product Registration ;</li>
+</ul>
+<ul>
+<li>以下是没有注册的效果：</li>
+</ul>
+<ul>
+<li>Suse15 位置同suse12 sp3一样：</li>
+</ul>
+<ul>
+<li>以下是注册成功的效果：</li>
+</ul>
+<ul>
+<li>谢谢！</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>有时不太好界定时，最准确的方法是在系统内部查看：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>首先可以通过asc 查询一下Billing Code：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2018/12/19</p>
+<p>Hi， ALL</p>
+<p>做了如下测试，测试版本分别为 suse 11 sp4  suse12 sp3 以及suse15</p>
+<p>首先可以通过asc 查询一下Billing Code：</p>
+<p>如果不带BYOS基本可以认为是平台默认镜像，这样的虚拟机是有key的：</p>
+<p>Suse11 sp4：</p>
+<p>Suse 12 sp3：</p>
+<p>Suse 15：</p>
+<p>如是客户镜像或者平台的BYOS的镜像默认不带key。</p>
+<p>有时不太好界定时，最准确的方法是在系统内部查看：</p>
+<p>使用SSH登录目标SuSE虚拟机，并切换至root用户；</p>
+<p>输入yast2；</p>
+<p>依次进入Support-Novell Customer Center Configuration;</p>
+<p>在Novell Customer Center Configuration界面使用Tab键打开Registration Status;</p>
+<p>在Details中可以看到详细注册信息</p>
+<p>此为注册成功示例：</p>
+<p>Details：</p>
+<p>此为未注册示例：</p>
+<p>Suse12 sp3 ：</p>
+<p>从这个版本开始位置有改变：</p>
+<p>依次进入Software -&gt;  Product Registration ;</p>
+<p>以下是没有注册的效果：</p>
+<p>Suse15 位置同suse12 sp3一样：</p>
+<p>以下是注册成功的效果：</p>
+<p>谢谢！</p></article>

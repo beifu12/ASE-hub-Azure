@@ -1,0 +1,230 @@
+<article class="kb-article" data-title="hyper-v ASR troubleshooting"><h1>hyper-v ASR troubleshooting</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Site Recovery Hyper-V VMM</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-05-25 15:45:01</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Azure VM 网络配置（故障转移后）</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Azure VM 网络配置（故障转移后）</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>复制过程：</li>
+</ul>
+<ul>
+<li>复制过程是什么？</li>
+</ul>
+<ul>
+<li>当触发初始复制时，系统会拍摄 Hyper-V VM 快照。</li>
+</ul>
+<ul>
+<li>VM 上的虚拟硬盘是逐一复制的，直至全部复制到 Azure 为止。 该过程可能需要一些时间，具体取决于 VM 大小和网络带宽。 了解如何增加网络带宽。</li>
+</ul>
+<ul>
+<li>如果在初始复制期间发生磁盘更改，Hyper-V 副本复制跟踪器将跟踪这些更改，并将其记录在 Hyper-V 复制日志 (.hrl) 中。 这些日志文件位于与磁盘相同的文件夹中。 每个磁盘都有一个关联的 .hrl 文件，该文件将发送到辅助存储器。 当初始复制正在进行时，快照和日志将占用磁盘资源。</li>
+</ul>
+<ul>
+<li>当初始复制完成时，将删除 VM 快照。</li>
+</ul>
+<ul>
+<li>日志中的任何磁盘更改会进行同步，并合并到父磁盘中。</li>
+</ul>
+<ul>
+<li>在完成初始复制后，根据复制策略开始增量复制同步。</li>
+</ul>
+<ul>
+<li>更改是所记录的 .hrl 文件。 为复制配置的每个磁盘都有一个关联的 .hrl 文件。</li>
+</ul>
+<ul>
+<li>此日志会发送到客户的存储帐户。 当日志正处于传输到 Azure 的过程中时，主磁盘中的变更会记录到同一文件夹的另一日志文件中。</li>
+</ul>
+<ul>
+<li>在初始复制和增量复制过程中，均可以在 Azure 门户中监视 VM。</li>
+</ul>
+<ul>
+<li>支持矩阵：</li>
+</ul>
+<ul>
+<li>支持的方案</li>
+</ul>
+<ul>
+<li>本地服务器</li>
+</ul>
+<ul>
+<li>复制的 VM</li>
+</ul>
+<ul>
+<li>VM/磁盘管理</li>
+</ul>
+<ul>
+<li>Hyper-V 网络配置</li>
+</ul>
+<ul>
+<li>Hyper-V 主机存储</li>
+</ul>
+<ul>
+<li>Hyper-V VM 来宾存储</li>
+</ul>
+<ul>
+<li>Azure 存储</li>
+</ul>
+<ul>
+<li>Azure 计算功能</li>
+</ul>
+<ul>
+<li>Azure VM 要求</li>
+</ul>
+<ul>
+<li>恢复服务保管库操作</li>
+</ul>
+<ul>
+<li>提供程序和代理</li>
+</ul>
+<ul>
+<li>将本地 Hyper-V VM 恢复到 Azure 时，请使用 Azure Site Recovery。 如果遇到问题，请使用以下清单来解决问题：</li>
+</ul>
+<ul>
+<li>所有 Hyper-V 主机和 VM 是否都满足恢复的要求和先决条件？</li>
+</ul>
+<ul>
+<li>如果 Hyper-V 主机由 Virtual Machine Manager (VMM) 管理，则 VMM 服务器必须至少有一个云和一个或多个主机组。 运行 VM 的 Hyper-V 主机应位于云中，并在本地 VMM VM 网络与 Azure 虚拟网络之间创建网络映射。 请参阅本模块的摘要中的链接。</li>
+</ul>
+<ul>
+<li>简单介绍一下vmm</li>
+</ul>
+<ul>
+<li>在使用主到辅助站点的情况下VMM出现几率更大：</li>
+</ul>
+<ul>
+<li>启用保护的问题</li>
+</ul>
+<ul>
+<li>复制问题</li>
+</ul>
+<ul>
+<li>“严重”复制状态问题</li>
+</ul>
+<ul>
+<li>应用一致的快照问题</li>
+</ul>
+<ul>
+<li>收集复制日志</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在此阶段，可以检查 VM 设置以确保它已为故障转移做好准备。 可针对 VM 运行灾难恢复钻取（测试故障转移）来检查它是否按预期进行故障转移。</li>
+</ul>
+<ul>
+<li>使用 Hyper-V 排查站点恢复的问题</li>
+</ul>
+<ul>
+<li>查看本模块末尾的“支持将本地 Hyper-V VM 灾难恢复到 Azure”链接。</li>
+</ul>
+<ul>
+<li>检查位于“应用程序和服务日志”&gt;“Microsoft”&gt;“Windows”中的日志。</li>
+</ul>
+<ul>
+<li>在来宾 VM 上，验证 WMI 是否已启用并可访问。</li>
+</ul>
+<ul>
+<li>排查 WMI 问题。</li>
+</ul>
+<ul>
+<li>此外，请检查常见错误消息：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>排查 WMI 脚本和服务的问题。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>初始复制完成后，“在虚拟机上完成保护”作业将运行。 该作业会配置网络和其他复制后设置以便保护 VM。</li>
+</ul>
+<ul>
+<li>在来宾 VM 上，确保你拥有最新版本的集成服务且该服务正在运行。 Microsoft 建议使集成服务保持最新。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-architecture#replication-process" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-architecture#replication-process</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-common-questions" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-common-questions</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-support-matrix" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-support-matrix</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/system-center/vmm/overview?view=sc-vmm-2022#%E6%A6%82%E8%A7%88" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/system-center/vmm/overview?view=sc-vmm-2022#%E6%A6%82%E8%A7%88</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-vmm-architecture" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-vmm-architecture</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-troubleshoot" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-troubleshoot</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/windows/win32/wmisdk/wmi-troubleshooting" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/win32/wmisdk/wmi-troubleshooting</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>复制过程：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-architecture#replication-process" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-architecture#replication-process</a></p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-common-questions" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-common-questions</a></p>
+<p>复制过程是什么？</p>
+<p>当触发初始复制时，系统会拍摄 Hyper-V VM 快照。</p>
+<p>VM 上的虚拟硬盘是逐一复制的，直至全部复制到 Azure 为止。 该过程可能需要一些时间，具体取决于 VM 大小和网络带宽。 了解如何增加网络带宽。</p>
+<p>如果在初始复制期间发生磁盘更改，Hyper-V 副本复制跟踪器将跟踪这些更改，并将其记录在 Hyper-V 复制日志 (.hrl) 中。 这些日志文件位于与磁盘相同的文件夹中。 每个磁盘都有一个关联的 .hrl 文件，该文件将发送到辅助存储器。 当初始复制正在进行时，快照和日志将占用磁盘资源。</p>
+<p>当初始复制完成时，将删除 VM 快照。</p>
+<p>日志中的任何磁盘更改会进行同步，并合并到父磁盘中。</p>
+<p>初始复制完成后，“在虚拟机上完成保护”作业将运行。 该作业会配置网络和其他复制后设置以便保护 VM。</p>
+<p>在此阶段，可以检查 VM 设置以确保它已为故障转移做好准备。 可针对 VM 运行灾难恢复钻取（测试故障转移）来检查它是否按预期进行故障转移。</p>
+<p>在完成初始复制后，根据复制策略开始增量复制同步。</p>
+<p>更改是所记录的 .hrl 文件。 为复制配置的每个磁盘都有一个关联的 .hrl 文件。</p>
+<p>此日志会发送到客户的存储帐户。 当日志正处于传输到 Azure 的过程中时，主磁盘中的变更会记录到同一文件夹的另一日志文件中。</p>
+<p>在初始复制和增量复制过程中，均可以在 Azure 门户中监视 VM。</p>
+<p>支持矩阵：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-support-matrix" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-support-matrix</a></p>
+<p>支持的方案</p>
+<p>本地服务器</p>
+<p>复制的 VM</p>
+<p>VM/磁盘管理</p>
+<p>Hyper-V 网络配置</p>
+<p>Azure VM 网络配置（故障转移后）</p>
+<p>Hyper-V 主机存储</p>
+<p>Hyper-V VM 来宾存储</p>
+<p>Azure 存储</p>
+<p>Azure 计算功能</p>
+<p>Azure VM 要求</p>
+<p>恢复服务保管库操作</p>
+<p>提供程序和代理</p>
+<p>使用 Hyper-V 排查站点恢复的问题</p>
+<p>将本地 Hyper-V VM 恢复到 Azure 时，请使用 Azure Site Recovery。 如果遇到问题，请使用以下清单来解决问题：</p>
+<p>所有 Hyper-V 主机和 VM 是否都满足恢复的要求和先决条件？</p>
+<p>查看本模块末尾的“支持将本地 Hyper-V VM 灾难恢复到 Azure”链接。</p>
+<p>如果 Hyper-V 主机由 Virtual Machine Manager (VMM) 管理，则 VMM 服务器必须至少有一个云和一个或多个主机组。 运行 VM 的 Hyper-V 主机应位于云中，并在本地 VMM VM 网络与 Azure 虚拟网络之间创建网络映射。 请参阅本模块的摘要中的链接。</p>
+<p>简单介绍一下vmm</p>
+<p><a href="https://learn.microsoft.com/zh-cn/system-center/vmm/overview?view=sc-vmm-2022#%E6%A6%82%E8%A7%88" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/system-center/vmm/overview?view=sc-vmm-2022#%E6%A6%82%E8%A7%88</a></p>
+<p>在使用主到辅助站点的情况下VMM出现几率更大：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-vmm-architecture" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-vmm-architecture</a></p>
+<p>检查位于“应用程序和服务日志”&gt;“Microsoft”&gt;“Windows”中的日志。</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-troubleshoot" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/hyper-v-azure-troubleshoot</a></p>
+<p>在来宾 VM 上，验证 WMI 是否已启用并可访问。</p>
+<p>排查 WMI 问题。</p>
+<p>排查 WMI 脚本和服务的问题。</p>
+<p><a href="https://learn.microsoft.com/zh-cn/windows/win32/wmisdk/wmi-troubleshooting" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/win32/wmisdk/wmi-troubleshooting</a></p>
+<p>在来宾 VM 上，确保你拥有最新版本的集成服务且该服务正在运行。 Microsoft 建议使集成服务保持最新。</p>
+<p>此外，请检查常见错误消息：</p>
+<p>启用保护的问题</p>
+<p>复制问题</p>
+<p>“严重”复制状态问题</p>
+<p>应用一致的快照问题</p>
+<p>收集复制日志</p></article>

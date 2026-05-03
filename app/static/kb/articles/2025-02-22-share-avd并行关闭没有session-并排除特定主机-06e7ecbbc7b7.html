@@ -1,0 +1,165 @@
+<article class="kb-article" data-title="【share】avd并行关闭没有session 并排除特定主机"><h1>【share】avd并行关闭没有session 并排除特定主机</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-02-22 16:26:36</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<h1>Connect to Azure China Cloud and select the subscription</h1>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li># Connect to Azure China Cloud and select the subscription</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li># Connect to Azure China Cloud and select the subscription</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -SubscriptionId &#39;97a20f90-b022-457f-95cd-72eeda*****&#39;</li>
+</ul>
+<ul>
+<li># Define host pool and resource group</li>
+</ul>
+<ul>
+<li>$HostPoolName = &quot;autopoweroff&quot;</li>
+</ul>
+<ul>
+<li>$ResourceGroupName = &quot;wvd&quot;</li>
+</ul>
+<ul>
+<li># List of VMs to exclude from power-off</li>
+</ul>
+<ul>
+<li>$notoffvms = @(&#39;autopoweroff/auto-0&#39;, &#39;autopoweroff/auto-1&#39;)</li>
+</ul>
+<ul>
+<li># Retrieve all session hosts in the host pool</li>
+</ul>
+<ul>
+<li>$SessionHosts = Get-AzWvdSessionHost -HostPoolName $HostPoolName -ResourceGroupName $ResourceGroupName</li>
+</ul>
+<ul>
+<li># Process each session host</li>
+</ul>
+<ul>
+<li>$SessionHosts | ForEach-Object -Parallel {</li>
+</ul>
+<ul>
+<li>$SessionHost = $_</li>
+</ul>
+<ul>
+<li># Skip if the session host is in the exclusion list</li>
+</ul>
+<ul>
+<li>if ($SessionHost.Name -in $notoffvms) {</li>
+</ul>
+<ul>
+<li>Write-Output &quot;Skipping excluded VM: $($SessionHost.Name)&quot;</li>
+</ul>
+<ul>
+<li>continue</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li># If the session count is 0, stop the VM</li>
+</ul>
+<ul>
+<li>if ($SessionHost.Session -eq 0) {</li>
+</ul>
+<ul>
+<li>Stop-AzVM -Id $SessionHost.ResourceId -Force</li>
+</ul>
+<ul>
+<li>Write-Output &quot;Host $($SessionHost.ResourceId) has no sessions and was stopped successfully.&quot;</li>
+</ul>
+<ul>
+<li>elseif ($SessionHost.Session -gt 0) {</li>
+</ul>
+<ul>
+<li># Retrieve user sessions for the session host</li>
+</ul>
+<ul>
+<li>$UserSessions = Get-AzWvdUserSession -HostPoolName $HostPoolName -ResourceGroupName $ResourceGroupName -SessionHostName $SessionHost.Name.Split(&quot;/&quot;)[1]</li>
+</ul>
+<ul>
+<li>$hasActiveSession = $UserSessions.SessionState -contains &quot;Active&quot;</li>
+</ul>
+<ul>
+<li>if ($hasActiveSession) {</li>
+</ul>
+<ul>
+<li>Write-Output &quot;Host $($SessionHost.ResourceId) has active sessions and will not be stopped.&quot;</li>
+</ul>
+<ul>
+<li>} else {</li>
+</ul>
+<ul>
+<li>Write-Output &quot;Host $($SessionHost.ResourceId) has no active sessions and was stopped successfully.&quot;</li>
+</ul>
+<ul>
+<li>} -ThrottleLimit 10 # Adjust throttle limit based on your environment</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li># Rest of the logic goes here</li>
+</ul>
+<ul>
+<li># If the session count is greater than 0, check for active sessions</li>
+</ul>
+<ul>
+<li># Check if any session is active</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025-02-22</p>
+<h1>Connect to Azure China Cloud and select the subscription</h1>
+<p>Connect-AzAccount -Environment AzureChinaCloud</p>
+<p>Select-AzSubscription -SubscriptionId &#39;97a20f90-b022-457f-95cd-72eeda*****&#39;</p>
+<h1>Define host pool and resource group</h1>
+<p>$HostPoolName = &quot;autopoweroff&quot;</p>
+<p>$ResourceGroupName = &quot;wvd&quot;</p>
+<h1>List of VMs to exclude from power-off</h1>
+<p>$notoffvms = @(&#39;autopoweroff/auto-0&#39;, &#39;autopoweroff/auto-1&#39;)</p>
+<h1>Retrieve all session hosts in the host pool</h1>
+<p>$SessionHosts = Get-AzWvdSessionHost -HostPoolName $HostPoolName -ResourceGroupName $ResourceGroupName</p>
+<h1>Process each session host</h1>
+<p>$SessionHosts | ForEach-Object -Parallel {</p>
+<p>$SessionHost = $_</p>
+<h1>Rest of the logic goes here</h1>
+<h1>Skip if the session host is in the exclusion list</h1>
+<p>if ($SessionHost.Name -in $notoffvms) {</p>
+<p>Write-Output &quot;Skipping excluded VM: $($SessionHost.Name)&quot;</p>
+<p>continue</p>
+<p>}</p>
+<h1>If the session count is 0, stop the VM</h1>
+<p>if ($SessionHost.Session -eq 0) {</p>
+<p>Stop-AzVM -Id $SessionHost.ResourceId -Force</p>
+<p>Write-Output &quot;Host $($SessionHost.ResourceId) has no sessions and was stopped successfully.&quot;</p>
+<h1>If the session count is greater than 0, check for active sessions</h1>
+<p>elseif ($SessionHost.Session -gt 0) {</p>
+<h1>Retrieve user sessions for the session host</h1>
+<p>$UserSessions = Get-AzWvdUserSession -HostPoolName $HostPoolName -ResourceGroupName $ResourceGroupName -SessionHostName $SessionHost.Name.Split(&quot;/&quot;)[1]</p>
+<h1>Check if any session is active</h1>
+<p>$hasActiveSession = $UserSessions.SessionState -contains &quot;Active&quot;</p>
+<p>if ($hasActiveSession) {</p>
+<p>Write-Output &quot;Host $($SessionHost.ResourceId) has active sessions and will not be stopped.&quot;</p>
+<p>} else {</p>
+<p>Write-Output &quot;Host $($SessionHost.ResourceId) has no active sessions and was stopped successfully.&quot;</p>
+<p>} -ThrottleLimit 10 # Adjust throttle limit based on your environment</p></article>

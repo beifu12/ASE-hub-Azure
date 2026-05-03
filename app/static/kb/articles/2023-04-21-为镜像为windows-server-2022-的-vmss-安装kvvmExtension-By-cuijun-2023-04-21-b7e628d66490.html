@@ -1,0 +1,117 @@
+<article class="kb-article" data-title="为镜像为windows server 2022 的 vmss 安装kvvmExtension                                                    By cuijun 2023.04.21"><h1>为镜像为windows server 2022 的 vmss 安装kvvmExtension                                                    By cuijun 2023.04.21</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: vmss 安装keyvault 扩展（KVVMExtension）</li>
+<li>最近修改: 2023-04-21 16:51:55</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>背景：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>背景：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>背景：</li>
+</ul>
+<ul>
+<li>密钥保管库 VM 扩展可自动刷新 Azure 密钥保管库中存储的证书。 具体而言，该扩展监视一系列观测到存储在 Key Vault 中的证书，并在检测到更改时检索并安装相应的证书。 本文档详细介绍适用于 Windows 的 Key Vault VM 虚拟机扩展支持的平台、配置和部署选项。</li>
+</ul>
+<ul>
+<li>环境介绍 ：</li>
+</ul>
+<ul>
+<li>Vmss ：</li>
+</ul>
+<ul>
+<li>/subscriptions/f00d42ae-5064-4957-a59d-673d54f414c7/resourceGroups/KvvmForPaas/providers/Microsoft.Compute/virtualMachineScaleSets/windows2022</li>
+</ul>
+<ul>
+<li>Os version ： windows server 2022 datacenter</li>
+</ul>
+<ul>
+<li>Keyvault :</li>
+</ul>
+<ul>
+<li>/subscriptions/f00d42ae-5064-4957-a59d-673d54f414c7/resourceGroups/k8s/providers/Microsoft.KeyVault/vaults/test0331foraks</li>
+</ul>
+<ul>
+<li>证书（certificate）： test0420</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>适用于 Windows 的 Azure Key Vault VM 扩展 - Azure Virtual Machines | Azure Docs</li>
+</ul>
+<ul>
+<li>前提条件：</li>
+</ul>
+<ul>
+<li>首先一定要满足文档要求的操作系统、证书类型、先决条件内容。</li>
+</ul>
+<ul>
+<li>下面是一些细节需要注意：</li>
+</ul>
+<ul>
+<li>首先是证书类型一定是：</li>
+</ul>
+<ul>
+<li>这两种类型的证书可以在keyvault 实例中进行生成：</li>
+</ul>
+<ul>
+<li>在keyvault 中点击 证书---》点击生成，如图所示，</li>
+</ul>
+<ul>
+<li>注意 主题（subject ）要满足格式 CN=《mydomain.com》</li>
+</ul>
+<ul>
+<li>例如： CN=test0.chinacloudsites.cn</li>
+</ul>
+<ul>
+<li>托管标识：</li>
+</ul>
+<ul>
+<li>要为 Vmss 实例  windows2022  的托管标识 分配 keyvault  test0331foraks  “密钥保管库机密用户” 角色</li>
+</ul>
+<ul>
+<li>在vmss 这里找到系统分配的托管标识：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>背景：</p>
+<p>密钥保管库 VM 扩展可自动刷新 Azure 密钥保管库中存储的证书。 具体而言，该扩展监视一系列观测到存储在 Key Vault 中的证书，并在检测到更改时检索并安装相应的证书。 本文档详细介绍适用于 Windows 的 Key Vault VM 虚拟机扩展支持的平台、配置和部署选项。</p>
+<p>环境介绍 ：</p>
+<p>Vmss ：</p>
+<p>/subscriptions/f00d42ae-5064-4957-a59d-673d54f414c7/resourceGroups/KvvmForPaas/providers/Microsoft.Compute/virtualMachineScaleSets/windows2022</p>
+<p>Os version ： windows server 2022 datacenter</p>
+<p>Keyvault :</p>
+<p>/subscriptions/f00d42ae-5064-4957-a59d-673d54f414c7/resourceGroups/k8s/providers/Microsoft.KeyVault/vaults/test0331foraks</p>
+<p>证书（certificate）： test0420</p>
+<p>参考文档：</p>
+<p>适用于 Windows 的 Azure Key Vault VM 扩展 - Azure Virtual Machines | Azure Docs</p>
+<p>前提条件：</p>
+<p>首先一定要满足文档要求的操作系统、证书类型、先决条件内容。</p>
+<p>下面是一些细节需要注意：</p>
+<p>首先是证书类型一定是：</p>
+<p>这两种类型的证书可以在keyvault 实例中进行生成：</p>
+<p>在keyvault 中点击 证书---》点击生成，如图所示，</p>
+<p>注意 主题（subject ）要满足格式 CN=《mydomain.com》</p>
+<p>例如： CN=test0.chinacloudsites.cn</p>
+<p>托管标识：</p>
+<p>要为 Vmss 实例  windows2022  的托管标识 分配 keyvault  test0331foraks  “密钥保管库机密用户” 角色</p>
+<p>在vmss 这里找到系统分配的托管标识：</p></article>

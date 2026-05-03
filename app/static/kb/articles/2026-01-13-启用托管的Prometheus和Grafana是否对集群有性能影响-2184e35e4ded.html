@@ -1,0 +1,450 @@
+<article class="kb-article" data-title="启用托管的Prometheus和Grafana是否对集群有性能影响"><h1>启用托管的Prometheus和Grafana是否对集群有性能影响</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-13 11:32:09</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>kube-system retina-agent-ppkhx 0/1 Pending 0 155m</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>kube-system   retina-agent-ppkhx                                    0/1     Pending   0              155m</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny</li>
+</ul>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>Zhangwenxin</li>
+</ul>
+<ul>
+<li>1；是否AKS都是预装好了Prometheus插件，这里的启用指标只是开始收集日志。</li>
+</ul>
+<ul>
+<li>否，启用指标时会安装Azure Monitor 代理 的容器化版本。</li>
+</ul>
+<ul>
+<li>2；开始日志收集是否对现有应用有影响，存在哪些影响，是否影响可用性。</li>
+</ul>
+<ul>
+<li>有的，azure monitor 代理的容器化版本实际就是一个应用pod</li>
+</ul>
+<ul>
+<li>可以参考如下文档：</li>
+</ul>
+<ul>
+<li>启用对 AKS 群集的监视 - Azure Monitor | Microsoft Learn</li>
+</ul>
+<ul>
+<li>我这里就创建了一个节点，针对ama的pod有7个：</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# kubectl get pod -A</li>
+</ul>
+<ul>
+<li>NAMESPACE     NAME                                                  READY   STATUS    RESTARTS       AGE</li>
+</ul>
+<ul>
+<li>kube-system   ama-metrics-5dc84985dc-lkcg2                          2/2     Running   0              160m</li>
+</ul>
+<ul>
+<li>kube-system   ama-metrics-5dc84985dc-st7n9                          2/2     Running   0              160m</li>
+</ul>
+<ul>
+<li>kube-system   ama-metrics-ksm-756cb45ffc-4jh94                      1/1     Running   0              160m</li>
+</ul>
+<ul>
+<li>kube-system   ama-metrics-node-kmlwc                                2/2     Running   0              160m</li>
+</ul>
+<ul>
+<li>kube-system   ama-metrics-operator-targets-688b46f4f7-l494v         2/2     Running   3 (157m ago)   159m</li>
+</ul>
+<ul>
+<li>kube-system   azure-cns-9rpcr                                       1/1     Running   0              163m</li>
+</ul>
+<ul>
+<li>kube-system   azure-ip-masq-agent-xcvs5                             1/1     Running   0              163m</li>
+</ul>
+<ul>
+<li>kube-system   azure-wi-webhook-controller-manager-5d8b464fb-l5jqg   1/1     Running   1 (162m ago)   165m</li>
+</ul>
+<ul>
+<li>kube-system   azure-wi-webhook-controller-manager-5d8b464fb-s9bfr   1/1     Running   1 (162m ago)   165m</li>
+</ul>
+<ul>
+<li>kube-system   cloud-node-manager-z59gb                              1/1     Running   0              163m</li>
+</ul>
+<ul>
+<li>kube-system   coredns-568bd97898-gfqxw                              1/1     Running   0              163m</li>
+</ul>
+<ul>
+<li>kube-system   coredns-568bd97898-snm7l                              1/1     Running   0              165m</li>
+</ul>
+<ul>
+<li>kube-system   coredns-autoscaler-58fb4b6945-j6stj                   1/1     Running   0              165m</li>
+</ul>
+<ul>
+<li>kube-system   csi-azuredisk-node-qlxv6                              3/3     Running   0              163m</li>
+</ul>
+<ul>
+<li>kube-system   csi-azurefile-node-w2h7s                              3/3     Running   0              163m</li>
+</ul>
+<ul>
+<li>kube-system   konnectivity-agent-85fc475c74-kf6rd                   1/1     Running   0              137m</li>
+</ul>
+<ul>
+<li>kube-system   konnectivity-agent-85fc475c74-r4ths                   1/1     Running   0              137m</li>
+</ul>
+<ul>
+<li>kube-system   konnectivity-agent-autoscaler-768f7f8d85-wx4nj        1/1     Running   0              165m</li>
+</ul>
+<ul>
+<li>kube-system   kube-proxy-cnc7s                                      1/1     Running   0              163m</li>
+</ul>
+<ul>
+<li>kube-system   metrics-server-85b8bd6796-n745w                       2/2     Running   0              159m</li>
+</ul>
+<ul>
+<li>kube-system   metrics-server-85b8bd6796-thw4r                       2/2     Running   0              159m</li>
+</ul>
+<ul>
+<li>增加针对Prometheus的pod：</li>
+</ul>
+<ul>
+<li>3；日志发送的LA工作区能否修改。</li>
+</ul>
+<ul>
+<li>如您要指定收集数据的工作区，那么就不能创建时默认勾选。</li>
+</ul>
+<ul>
+<li>托管的Prometheus和Grafana都要创建特定的工作区，不是默认那种工作区，如果之前创建过可以使用。</li>
+</ul>
+<ul>
+<li>例如prometheus 工作区格式：/subscriptions/aaaa0a0a-bb1b-cc2c-dd3d-eeeeee4e4e4e/resourceGroups/my-resource-group/providers/microsoft.monitor/accounts/my-workspace</li>
+</ul>
+<ul>
+<li>更多详细信息，参考链接：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>补充信息，早期开启aks的见解容器日志的情况下：</li>
+</ul>
+<ul>
+<li>默认会创建如下3个pod：</li>
+</ul>
+<ul>
+<li>NAMESPACE     NAME                                                  READY   STATUS    RESTARTS        AGE</li>
+</ul>
+<ul>
+<li>kube-system   azure-cns-758vx                                       1/1     Running   0               3h36m</li>
+</ul>
+<ul>
+<li>kube-system   azure-cns-mm5sm                                       1/1     Running   0               63m</li>
+</ul>
+<ul>
+<li>kube-system   azure-ip-masq-agent-5qc7c                             1/1     Running   0               63m</li>
+</ul>
+<ul>
+<li>kube-system   azure-ip-masq-agent-xcwpq                             1/1     Running   0               3h36m</li>
+</ul>
+<ul>
+<li>kube-system   azure-npm-4tl2f                                       1/1     Running   0               3h36m</li>
+</ul>
+<ul>
+<li>kube-system   azure-npm-h8xt6                                       1/1     Running   0               63m</li>
+</ul>
+<ul>
+<li>kube-system   azure-wi-webhook-controller-manager-5d8b464fb-4dc7d   1/1     Running   1 (3h36m ago)   3h38m</li>
+</ul>
+<ul>
+<li>kube-system   azure-wi-webhook-controller-manager-5d8b464fb-sj5f8   1/1     Running   1 (3h36m ago)   3h38m</li>
+</ul>
+<ul>
+<li>kube-system   cloud-node-manager-l75hz                              1/1     Running   0               3h36m</li>
+</ul>
+<ul>
+<li>kube-system   cloud-node-manager-mh4zq                              1/1     Running   0               63m</li>
+</ul>
+<ul>
+<li>kube-system   coredns-568bd97898-4ghfw                              1/1     Running   0               3h38m</li>
+</ul>
+<ul>
+<li>kube-system   coredns-568bd97898-h46ff                              1/1     Running   0               3h36m</li>
+</ul>
+<ul>
+<li>kube-system   coredns-autoscaler-58fb4b6945-nx4j9                   1/1     Running   0               3h38m</li>
+</ul>
+<ul>
+<li>kube-system   csi-azuredisk-node-2rmph                              3/3     Running   0               63m</li>
+</ul>
+<ul>
+<li>kube-system   csi-azuredisk-node-fzwzg                              3/3     Running   0               3h36m</li>
+</ul>
+<ul>
+<li>kube-system   csi-azurefile-node-gv76t                              3/3     Running   0               63m</li>
+</ul>
+<ul>
+<li>kube-system   csi-azurefile-node-nf95q                              3/3     Running   0               3h36m</li>
+</ul>
+<ul>
+<li>kube-system   konnectivity-agent-5b9688f969-jv58n                   1/1     Running   0               73m</li>
+</ul>
+<ul>
+<li>kube-system   konnectivity-agent-5b9688f969-s8prf                   1/1     Running   0               73m</li>
+</ul>
+<ul>
+<li>kube-system   konnectivity-agent-autoscaler-768f7f8d85-87dvw        1/1     Running   0               3h38m</li>
+</ul>
+<ul>
+<li>kube-system   kube-proxy-j5qzh                                      1/1     Running   0               3h36m</li>
+</ul>
+<ul>
+<li>kube-system   kube-proxy-wcngg                                      1/1     Running   0               63m</li>
+</ul>
+<ul>
+<li>kube-system   metrics-server-6898dc489b-d5qr8                       2/2     Running   0               72m</li>
+</ul>
+<ul>
+<li>kube-system   metrics-server-6898dc489b-mrplx                       2/2     Running   0               73m</li>
+</ul>
+<ul>
+<li>当前可以单独启用如下见解配置：</li>
+</ul>
+<ul>
+<li>默认创建时如果取消了勾选所有选项：</li>
+</ul>
+<ul>
+<li>创建出来的群集是不会有ama pod的：</li>
+</ul>
+<ul>
+<li>kube-system   azure-cns-758vx                                       1/1     Running   0               3h21m</li>
+</ul>
+<ul>
+<li>kube-system   azure-cns-mm5sm                                       1/1     Running   0               48m</li>
+</ul>
+<ul>
+<li>kube-system   azure-ip-masq-agent-5qc7c                             1/1     Running   0               48m</li>
+</ul>
+<ul>
+<li>kube-system   azure-ip-masq-agent-xcwpq                             1/1     Running   0               3h21m</li>
+</ul>
+<ul>
+<li>kube-system   azure-npm-4tl2f                                       1/1     Running   0               3h21m</li>
+</ul>
+<ul>
+<li>kube-system   azure-npm-h8xt6                                       1/1     Running   0               48m</li>
+</ul>
+<ul>
+<li>kube-system   azure-wi-webhook-controller-manager-5d8b464fb-4dc7d   1/1     Running   1 (3h21m ago)   3h23m</li>
+</ul>
+<ul>
+<li>kube-system   azure-wi-webhook-controller-manager-5d8b464fb-sj5f8   1/1     Running   1 (3h21m ago)   3h23m</li>
+</ul>
+<ul>
+<li>kube-system   cloud-node-manager-l75hz                              1/1     Running   0               3h21m</li>
+</ul>
+<ul>
+<li>kube-system   cloud-node-manager-mh4zq                              1/1     Running   0               48m</li>
+</ul>
+<ul>
+<li>kube-system   coredns-568bd97898-4ghfw                              1/1     Running   0               3h23m</li>
+</ul>
+<ul>
+<li>kube-system   coredns-568bd97898-h46ff                              1/1     Running   0               3h21m</li>
+</ul>
+<ul>
+<li>kube-system   coredns-autoscaler-58fb4b6945-nx4j9                   1/1     Running   0               3h23m</li>
+</ul>
+<ul>
+<li>kube-system   csi-azuredisk-node-2rmph                              3/3     Running   0               48m</li>
+</ul>
+<ul>
+<li>kube-system   csi-azuredisk-node-fzwzg                              3/3     Running   0               3h21m</li>
+</ul>
+<ul>
+<li>kube-system   csi-azurefile-node-gv76t                              3/3     Running   0               48m</li>
+</ul>
+<ul>
+<li>kube-system   csi-azurefile-node-nf95q                              3/3     Running   0               3h21m</li>
+</ul>
+<ul>
+<li>kube-system   konnectivity-agent-5b9688f969-jv58n                   1/1     Running   0               58m</li>
+</ul>
+<ul>
+<li>kube-system   konnectivity-agent-5b9688f969-s8prf                   1/1     Running   0               58m</li>
+</ul>
+<ul>
+<li>kube-system   konnectivity-agent-autoscaler-768f7f8d85-87dvw        1/1     Running   0               3h23m</li>
+</ul>
+<ul>
+<li>kube-system   kube-proxy-j5qzh                                      1/1     Running   0               3h21m</li>
+</ul>
+<ul>
+<li>kube-system   kube-proxy-wcngg                                      1/1     Running   0               48m</li>
+</ul>
+<ul>
+<li>kube-system   metrics-server-6898dc489b-d5qr8                       2/2     Running   0               57m</li>
+</ul>
+<ul>
+<li>kube-system   metrics-server-6898dc489b-mrplx                       2/2     Running   0               58m</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>我又测试确认了一下，如果开启托管的Prometheus和Grafana，会创建如下部署：</li>
+</ul>
+<ul>
+<li>kube-system   ama-logs-bzhqr                                        0/3     Pending   0              155m</li>
+</ul>
+<ul>
+<li>kube-system   ama-logs-rs-c78f8768c-v5bm6                           2/2     Running   0              155m</li>
+</ul>
+<ul>
+<li>排查增加的针对 Prometheus的pod cpu和内存负载如下：</li>
+</ul>
+<ul>
+<li>Portal创建时会按照如下方式创建工作区：</li>
+</ul>
+<ul>
+<li>kube-system   ama-logs-nxc8b                                        3/3     Running   0               8m52s</li>
+</ul>
+<ul>
+<li>kube-system   ama-logs-rs-c78f8768c-pnxm9                           2/2     Running   0               8m52s</li>
+</ul>
+<ul>
+<li>kube-system   ama-logs-w9t97                                        3/3     Running   0               8m52s</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>需要创建aks群集后，通过命令启用可以选择指定的工作区：</li>
+</ul>
+<ul>
+<li>az aks create/update --enable-azure-monitor-metrics --name &quot;my-cluster&quot; --resource-group &quot;my-resource-group&quot; --azure-monitor-workspace-resource-id &quot;/subscriptions/aaaa0a0a-bb1b-cc2c-dd3d-eeeeee4e4e4e/resourceGroups/my-resource-group/providers/microsoft.monitor/accounts/my-workspace&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在部署工作负载时，请对容器设置资源内存和 CPU 限制。 这也会从 NodeAllocatable 中扣减，并且可以帮助群集范围的计划程序确定将哪些 pod 放置在哪些节点上。 在没有限制的情况下调度 Pod 可能会导致 Windows 节点过度配置，并且在极端情况下可能会导致节点不健康。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/azure-monitor/containers/kubernetes-monitoring-enable" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/azure-monitor/containers/kubernetes-monitoring-enable</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Johnny</p>
+<p>Reviewer</p>
+<p>Zhangwenxin</p>
+<p>1；是否AKS都是预装好了Prometheus插件，这里的启用指标只是开始收集日志。</p>
+<p>否，启用指标时会安装Azure Monitor 代理 的容器化版本。</p>
+<p>2；开始日志收集是否对现有应用有影响，存在哪些影响，是否影响可用性。</p>
+<p>有的，azure monitor 代理的容器化版本实际就是一个应用pod</p>
+<p>可以参考如下文档：</p>
+<p>启用对 AKS 群集的监视 - Azure Monitor | Microsoft Learn</p>
+<p>在部署工作负载时，请对容器设置资源内存和 CPU 限制。 这也会从 NodeAllocatable 中扣减，并且可以帮助群集范围的计划程序确定将哪些 pod 放置在哪些节点上。 在没有限制的情况下调度 Pod 可能会导致 Windows 节点过度配置，并且在极端情况下可能会导致节点不健康。</p>
+<p>我又测试确认了一下，如果开启托管的Prometheus和Grafana，会创建如下部署：</p>
+<p>我这里就创建了一个节点，针对ama的pod有7个：</p>
+<p>root@Ubuntu20:~# kubectl get pod -A</p>
+<p>NAMESPACE     NAME                                                  READY   STATUS    RESTARTS       AGE</p>
+<p>kube-system   ama-logs-bzhqr                                        0/3     Pending   0              155m</p>
+<p>kube-system   ama-logs-rs-c78f8768c-v5bm6                           2/2     Running   0              155m</p>
+<p>kube-system   ama-metrics-5dc84985dc-lkcg2                          2/2     Running   0              160m</p>
+<p>kube-system   ama-metrics-5dc84985dc-st7n9                          2/2     Running   0              160m</p>
+<p>kube-system   ama-metrics-ksm-756cb45ffc-4jh94                      1/1     Running   0              160m</p>
+<p>kube-system   ama-metrics-node-kmlwc                                2/2     Running   0              160m</p>
+<p>kube-system   ama-metrics-operator-targets-688b46f4f7-l494v         2/2     Running   3 (157m ago)   159m</p>
+<p>kube-system   azure-cns-9rpcr                                       1/1     Running   0              163m</p>
+<p>kube-system   azure-ip-masq-agent-xcvs5                             1/1     Running   0              163m</p>
+<p>kube-system   azure-wi-webhook-controller-manager-5d8b464fb-l5jqg   1/1     Running   1 (162m ago)   165m</p>
+<p>kube-system   azure-wi-webhook-controller-manager-5d8b464fb-s9bfr   1/1     Running   1 (162m ago)   165m</p>
+<p>kube-system   cloud-node-manager-z59gb                              1/1     Running   0              163m</p>
+<p>kube-system   coredns-568bd97898-gfqxw                              1/1     Running   0              163m</p>
+<p>kube-system   coredns-568bd97898-snm7l                              1/1     Running   0              165m</p>
+<p>kube-system   coredns-autoscaler-58fb4b6945-j6stj                   1/1     Running   0              165m</p>
+<p>kube-system   csi-azuredisk-node-qlxv6                              3/3     Running   0              163m</p>
+<p>kube-system   csi-azurefile-node-w2h7s                              3/3     Running   0              163m</p>
+<p>kube-system   konnectivity-agent-85fc475c74-kf6rd                   1/1     Running   0              137m</p>
+<p>kube-system   konnectivity-agent-85fc475c74-r4ths                   1/1     Running   0              137m</p>
+<p>kube-system   konnectivity-agent-autoscaler-768f7f8d85-wx4nj        1/1     Running   0              165m</p>
+<p>kube-system   kube-proxy-cnc7s                                      1/1     Running   0              163m</p>
+<p>kube-system   metrics-server-85b8bd6796-n745w                       2/2     Running   0              159m</p>
+<p>kube-system   metrics-server-85b8bd6796-thw4r                       2/2     Running   0              159m</p>
+<p>kube-system   retina-agent-ppkhx                                    0/1     Pending   0              155m</p>
+<p>增加针对Prometheus的pod：</p>
+<p>排查增加的针对 Prometheus的pod cpu和内存负载如下：</p>
+<p>3；日志发送的LA工作区能否修改。</p>
+<p>Portal创建时会按照如下方式创建工作区：</p>
+<p>如您要指定收集数据的工作区，那么就不能创建时默认勾选。</p>
+<p>需要创建aks群集后，通过命令启用可以选择指定的工作区：</p>
+<p>az aks create/update --enable-azure-monitor-metrics --name &quot;my-cluster&quot; --resource-group &quot;my-resource-group&quot; --azure-monitor-workspace-resource-id &quot;/subscriptions/aaaa0a0a-bb1b-cc2c-dd3d-eeeeee4e4e4e/resourceGroups/my-resource-group/providers/microsoft.monitor/accounts/my-workspace&quot;</p>
+<p>托管的Prometheus和Grafana都要创建特定的工作区，不是默认那种工作区，如果之前创建过可以使用。</p>
+<p>例如prometheus 工作区格式：/subscriptions/aaaa0a0a-bb1b-cc2c-dd3d-eeeeee4e4e4e/resourceGroups/my-resource-group/providers/microsoft.monitor/accounts/my-workspace</p>
+<p>更多详细信息，参考链接：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/azure-monitor/containers/kubernetes-monitoring-enable" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/azure-monitor/containers/kubernetes-monitoring-enable</a></p>
+<p>========</p>
+<p>补充信息，早期开启aks的见解容器日志的情况下：</p>
+<p>默认会创建如下3个pod：</p>
+<p>NAMESPACE     NAME                                                  READY   STATUS    RESTARTS        AGE</p>
+<p>kube-system   ama-logs-nxc8b                                        3/3     Running   0               8m52s</p>
+<p>kube-system   ama-logs-rs-c78f8768c-pnxm9                           2/2     Running   0               8m52s</p>
+<p>kube-system   ama-logs-w9t97                                        3/3     Running   0               8m52s</p>
+<p>kube-system   azure-cns-758vx                                       1/1     Running   0               3h36m</p>
+<p>kube-system   azure-cns-mm5sm                                       1/1     Running   0               63m</p>
+<p>kube-system   azure-ip-masq-agent-5qc7c                             1/1     Running   0               63m</p>
+<p>kube-system   azure-ip-masq-agent-xcwpq                             1/1     Running   0               3h36m</p>
+<p>kube-system   azure-npm-4tl2f                                       1/1     Running   0               3h36m</p>
+<p>kube-system   azure-npm-h8xt6                                       1/1     Running   0               63m</p>
+<p>kube-system   azure-wi-webhook-controller-manager-5d8b464fb-4dc7d   1/1     Running   1 (3h36m ago)   3h38m</p>
+<p>kube-system   azure-wi-webhook-controller-manager-5d8b464fb-sj5f8   1/1     Running   1 (3h36m ago)   3h38m</p>
+<p>kube-system   cloud-node-manager-l75hz                              1/1     Running   0               3h36m</p>
+<p>kube-system   cloud-node-manager-mh4zq                              1/1     Running   0               63m</p>
+<p>kube-system   coredns-568bd97898-4ghfw                              1/1     Running   0               3h38m</p>
+<p>kube-system   coredns-568bd97898-h46ff                              1/1     Running   0               3h36m</p>
+<p>kube-system   coredns-autoscaler-58fb4b6945-nx4j9                   1/1     Running   0               3h38m</p>
+<p>kube-system   csi-azuredisk-node-2rmph                              3/3     Running   0               63m</p>
+<p>kube-system   csi-azuredisk-node-fzwzg                              3/3     Running   0               3h36m</p>
+<p>kube-system   csi-azurefile-node-gv76t                              3/3     Running   0               63m</p>
+<p>kube-system   csi-azurefile-node-nf95q                              3/3     Running   0               3h36m</p>
+<p>kube-system   konnectivity-agent-5b9688f969-jv58n                   1/1     Running   0               73m</p>
+<p>kube-system   konnectivity-agent-5b9688f969-s8prf                   1/1     Running   0               73m</p>
+<p>kube-system   konnectivity-agent-autoscaler-768f7f8d85-87dvw        1/1     Running   0               3h38m</p>
+<p>kube-system   kube-proxy-j5qzh                                      1/1     Running   0               3h36m</p>
+<p>kube-system   kube-proxy-wcngg                                      1/1     Running   0               63m</p>
+<p>kube-system   metrics-server-6898dc489b-d5qr8                       2/2     Running   0               72m</p>
+<p>kube-system   metrics-server-6898dc489b-mrplx                       2/2     Running   0               73m</p>
+<p>当前可以单独启用如下见解配置：</p>
+<p>默认创建时如果取消了勾选所有选项：</p>
+<p>创建出来的群集是不会有ama pod的：</p>
+<p>kube-system   azure-cns-758vx                                       1/1     Running   0               3h21m</p>
+<p>kube-system   azure-cns-mm5sm                                       1/1     Running   0               48m</p>
+<p>kube-system   azure-ip-masq-agent-5qc7c                             1/1     Running   0               48m</p>
+<p>kube-system   azure-ip-masq-agent-xcwpq                             1/1     Running   0               3h21m</p>
+<p>kube-system   azure-npm-4tl2f                                       1/1     Running   0               3h21m</p>
+<p>kube-system   azure-npm-h8xt6                                       1/1     Running   0               48m</p>
+<p>kube-system   azure-wi-webhook-controller-manager-5d8b464fb-4dc7d   1/1     Running   1 (3h21m ago)   3h23m</p>
+<p>kube-system   azure-wi-webhook-controller-manager-5d8b464fb-sj5f8   1/1     Running   1 (3h21m ago)   3h23m</p>
+<p>kube-system   cloud-node-manager-l75hz                              1/1     Running   0               3h21m</p>
+<p>kube-system   cloud-node-manager-mh4zq                              1/1     Running   0               48m</p>
+<p>kube-system   coredns-568bd97898-4ghfw                              1/1     Running   0               3h23m</p>
+<p>kube-system   coredns-568bd97898-h46ff                              1/1     Running   0               3h21m</p>
+<p>kube-system   coredns-autoscaler-58fb4b6945-nx4j9                   1/1     Running   0               3h23m</p>
+<p>kube-system   csi-azuredisk-node-2rmph                              3/3     Running   0               48m</p>
+<p>kube-system   csi-azuredisk-node-fzwzg                              3/3     Running   0               3h21m</p>
+<p>kube-system   csi-azurefile-node-gv76t                              3/3     Running   0               48m</p>
+<p>kube-system   csi-azurefile-node-nf95q                              3/3     Running   0               3h21m</p>
+<p>kube-system   konnectivity-agent-5b9688f969-jv58n                   1/1     Running   0               58m</p>
+<p>kube-system   konnectivity-agent-5b9688f969-s8prf                   1/1     Running   0               58m</p>
+<p>kube-system   konnectivity-agent-autoscaler-768f7f8d85-87dvw        1/1     Running   0               3h23m</p>
+<p>kube-system   kube-proxy-j5qzh                                      1/1     Running   0               3h21m</p>
+<p>kube-system   kube-proxy-wcngg                                      1/1     Running   0               48m</p>
+<p>kube-system   metrics-server-6898dc489b-d5qr8                       2/2     Running   0               57m</p>
+<p>kube-system   metrics-server-6898dc489b-mrplx                       2/2     Running   0               58m</p></article>

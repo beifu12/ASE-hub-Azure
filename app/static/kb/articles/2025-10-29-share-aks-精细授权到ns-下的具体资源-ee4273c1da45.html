@@ -1,0 +1,207 @@
+<article class="kb-article" data-title="【share】aks  精细授权到ns 下的具体资源"><h1>【share】aks  精细授权到ns 下的具体资源</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-29 15:40:39</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>By cuijun</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>By cuijun</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>By cuijun</li>
+</ul>
+<ul>
+<li>前提：</li>
+</ul>
+<ul>
+<li>认证和授权是两码事，这个概念要明确。</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>K8s 官方文档：  Using RBAC Authorization | Kubernetes</li>
+</ul>
+<ul>
+<li>认证部分：</li>
+</ul>
+<ul>
+<li>用户必须在azure 级别 授予“Azure Kubernetes 服务 RBAC 读取者”  角色，用户才能获得 aks config 文件的权限。</li>
+</ul>
+<ul>
+<li>K8s 借助 config 文件识别用户身份。</li>
+</ul>
+<ul>
+<li>授权部分：</li>
+</ul>
+<ul>
+<li>定义一个role ， 将azure ad 的用户/ 组 绑定这个role.</li>
+</ul>
+<ul>
+<li>借助k8s 自身的role 、rolebingding ;  进行授权。</li>
+</ul>
+<ul>
+<li>Role ymal 定义了 名字叫deployment-reader  的 role 可以在什么范围下 对什么样的对象执行什么样的权限</li>
+</ul>
+<ul>
+<li>Role.yaml</li>
+</ul>
+<ul>
+<li>apiVersion: rbac.authorization.k8s.io/v1</li>
+</ul>
+<ul>
+<li>kind: Role</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>namespace: default</li>
+</ul>
+<ul>
+<li>name: deployment-reader</li>
+</ul>
+<ul>
+<li>rules:</li>
+</ul>
+<ul>
+<li>- apiGroups: [&quot;app&quot;]     # &quot;&quot; indicates the core API group</li>
+</ul>
+<ul>
+<li>resources: [&quot;deployments&quot;]</li>
+</ul>
+<ul>
+<li>verbs: [&quot;get&quot;, &quot;watch&quot;, &quot;list&quot;]</li>
+</ul>
+<ul>
+<li>Rolebingding  yaml 将了 一个叫deployment-reader-rolebind 的 rolebinding 定义了哪个用户具有上面的deployment-reader  角色 。</li>
+</ul>
+<ul>
+<li>e4488e2b-b066-4372-8b7a-9697cb28014 这个是用户的对象id ，也可以是upn.</li>
+</ul>
+<ul>
+<li>Rolebinding yaml</li>
+</ul>
+<ul>
+<li># This role binding allows &quot;user&quot; to read pods in the &quot;default&quot; namespace.</li>
+</ul>
+<ul>
+<li># You need to already have a Role named &quot;deployment-reader&quot; in that namespace.</li>
+</ul>
+<ul>
+<li>kind: RoleBinding</li>
+</ul>
+<ul>
+<li>name: deployment-reader-rolebind</li>
+</ul>
+<ul>
+<li>subjects:</li>
+</ul>
+<ul>
+<li># You can specify more than one &quot;subject&quot;</li>
+</ul>
+<ul>
+<li>- kind: User</li>
+</ul>
+<ul>
+<li>name: e4488e2b-b066-4372-8b7a-9697cb28014b    #userObjectId，也可以是用户的upn</li>
+</ul>
+<ul>
+<li>roleRef:</li>
+</ul>
+<ul>
+<li># &quot;roleRef&quot; specifies the binding to a Role / ClusterRole</li>
+</ul>
+<ul>
+<li>kind: Role #this must be Role or ClusterRole</li>
+</ul>
+<ul>
+<li>name: deployment-reader # this must match the name of the Role or ClusterRole you wish to bind to</li>
+</ul>
+<ul>
+<li>apiGroup: rbac.authorization.k8s.io</li>
+</ul>
+<ul>
+<li>效果：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>认证是识别用户身份，用户登录azure ，输入账号密码，azure确认用户身份。</li>
+</ul>
+<ul>
+<li>授权是确认身份后，系统或者程序决定这个用户可以执行哪些权限。</li>
+</ul>
+<ul>
+<li>步骤：</li>
+</ul>
+<ul>
+<li>以下示例是分配用户查看 ns default  下 deployment 的权限</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档 ： <a href="https://docs.azure.cn/zh-cn/aks/azure-ad-rbac?tabs=portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/azure-ad-rbac?tabs=portal</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>By cuijun</p>
+<p>前提：</p>
+<p>认证和授权是两码事，这个概念要明确。</p>
+<p>认证是识别用户身份，用户登录azure ，输入账号密码，azure确认用户身份。</p>
+<p>授权是确认身份后，系统或者程序决定这个用户可以执行哪些权限。</p>
+<p>步骤：</p>
+<p>参考文档：</p>
+<p>参考文档 ： <a href="https://docs.azure.cn/zh-cn/aks/azure-ad-rbac?tabs=portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/azure-ad-rbac?tabs=portal</a></p>
+<p>K8s 官方文档：  Using RBAC Authorization | Kubernetes</p>
+<p>认证部分：</p>
+<p>用户必须在azure 级别 授予“Azure Kubernetes 服务 RBAC 读取者”  角色，用户才能获得 aks config 文件的权限。</p>
+<p>K8s 借助 config 文件识别用户身份。</p>
+<p>授权部分：</p>
+<p>定义一个role ， 将azure ad 的用户/ 组 绑定这个role.</p>
+<p>以下示例是分配用户查看 ns default  下 deployment 的权限</p>
+<p>借助k8s 自身的role 、rolebingding ;  进行授权。</p>
+<p>Role ymal 定义了 名字叫deployment-reader  的 role 可以在什么范围下 对什么样的对象执行什么样的权限</p>
+<p>Role.yaml</p>
+<p>apiVersion: rbac.authorization.k8s.io/v1</p>
+<p>kind: Role</p>
+<p>metadata:</p>
+<p>namespace: default</p>
+<p>name: deployment-reader</p>
+<p>rules:</p>
+<ul>
+<li>apiGroups: [&quot;app&quot;]     # &quot;&quot; indicates the core API group</li>
+</ul>
+<p>resources: [&quot;deployments&quot;]</p>
+<p>verbs: [&quot;get&quot;, &quot;watch&quot;, &quot;list&quot;]</p>
+<p>Rolebingding  yaml 将了 一个叫deployment-reader-rolebind 的 rolebinding 定义了哪个用户具有上面的deployment-reader  角色 。</p>
+<p>e4488e2b-b066-4372-8b7a-9697cb28014 这个是用户的对象id ，也可以是upn.</p>
+<p>Rolebinding yaml</p>
+<h1>This role binding allows &quot;user&quot; to read pods in the &quot;default&quot; namespace.</h1>
+<h1>You need to already have a Role named &quot;deployment-reader&quot; in that namespace.</h1>
+<p>kind: RoleBinding</p>
+<p>name: deployment-reader-rolebind</p>
+<p>subjects:</p>
+<h1>You can specify more than one &quot;subject&quot;</h1>
+<ul>
+<li>kind: User</li>
+</ul>
+<p>name: e4488e2b-b066-4372-8b7a-9697cb28014b    #userObjectId，也可以是用户的upn</p>
+<p>roleRef:</p>
+<h1>&quot;roleRef&quot; specifies the binding to a Role / ClusterRole</h1>
+<p>kind: Role #this must be Role or ClusterRole</p>
+<p>name: deployment-reader # this must match the name of the Role or ClusterRole you wish to bind to</p>
+<p>apiGroup: rbac.authorization.k8s.io</p>
+<p>效果：</p></article>

@@ -1,0 +1,88 @@
+<article class="kb-article" data-title="Azure vm中安装virtual box实现嵌套虚拟化"><h1>Azure vm中安装virtual box实现嵌套虚拟化</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RecoveryService</li>
+<li>Section: ASR</li>
+<li>最近修改: 2024-01-31 16:53:15</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Johnny lee</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Johnny lee</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny lee</li>
+</ul>
+<ul>
+<li>前言：</li>
+</ul>
+<ul>
+<li>由于之前测试hypev-v 和vmware workstations都有相关限制</li>
+</ul>
+<ul>
+<li>想到之前使用Linux 的virt-manager  嵌套虚拟化没有限制，尝试使用开源的virtual box在azure vm中再启用嵌套虚拟化成功了：</li>
+</ul>
+<ul>
+<li>1 下载virtual box并安装：</li>
+</ul>
+<ul>
+<li>参考如下文档：</li>
+</ul>
+<ul>
+<li>可以看到vt-x就可以勾选上了：</li>
+</ul>
+<ul>
+<li>之前安装 exsi 参考 之前文档 Esxi安装过程</li>
+</ul>
+<ul>
+<li>下载asr的最新版ovf ，可以直接导入：</li>
+</ul>
+<ul>
+<li>目前实现在一台windows 11中启用exsi和asr配置服务器:</li>
+</ul>
+<ul>
+<li>之前不能使用linux virt-manger 操作，主要是没法直接导入ovf，等限制，virtual box创建是还可以直接选择创建的磁盘是vhd做着vmdk，灵活性比较高：</li>
+</ul>
+<ul>
+<li>有兴趣的同学可以测试实验一下。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>步骤：</li>
+</ul>
+<ul>
+<li>VirtualBox启用嵌套VT-x/AMD-V - 古道轻风 - 博客园 (cnblogs.com)</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>2注意默认情况下virtual box也不能启动嵌套的vt-x ，需要命令启动：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Johnny lee</p>
+<p>2022-8-26</p>
+<p>前言：</p>
+<p>由于之前测试hypev-v 和vmware workstations都有相关限制</p>
+<p>想到之前使用Linux 的virt-manager  嵌套虚拟化没有限制，尝试使用开源的virtual box在azure vm中再启用嵌套虚拟化成功了：</p>
+<p>步骤：</p>
+<p>1 下载virtual box并安装：</p>
+<p>2注意默认情况下virtual box也不能启动嵌套的vt-x ，需要命令启动：</p>
+<p>参考如下文档：</p>
+<p>VirtualBox启用嵌套VT-x/AMD-V - 古道轻风 - 博客园 (cnblogs.com)</p>
+<p>可以看到vt-x就可以勾选上了：</p>
+<p>之前安装 exsi 参考 之前文档 Esxi安装过程</p>
+<p>下载asr的最新版ovf ，可以直接导入：</p>
+<p>目前实现在一台windows 11中启用exsi和asr配置服务器:</p>
+<p>之前不能使用linux virt-manger 操作，主要是没法直接导入ovf，等限制，virtual box创建是还可以直接选择创建的磁盘是vhd做着vmdk，灵活性比较高：</p>
+<p>有兴趣的同学可以测试实验一下。</p></article>

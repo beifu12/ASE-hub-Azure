@@ -1,0 +1,131 @@
+<article class="kb-article" data-title="Linux上安装和使用Microsoft Graph PowerShell"><h1>Linux上安装和使用Microsoft Graph PowerShell</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: Kusto Jarvis常用命令</li>
+<li>最近修改: 2023-12-15 15:52:27</li>
+<li>JD 相关性: 自动化/命令工具; Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>之前在linux上测试msonline模块时，也测试了AzureAD模块，测试也是无法正常使用的。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>之前在linux上测试msonline模块时，也测试了AzureAD模块，测试也是无法正常使用的。</li>
+</ul>
+<ul>
+<li>4．由于我们没有Mac电脑，无法进行测试。我这里在一台Ubuntu 22的VM上测试，是可以正常使用的。您可以在mac上尝试下。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zhanglihong</li>
+</ul>
+<ul>
+<li>1．对于msonline模块与linux和mac的兼容性，官方文档上没有明确的说明。</li>
+</ul>
+<ul>
+<li>Azure AD模块</li>
+</ul>
+<ul>
+<li>Msonline模块</li>
+</ul>
+<ul>
+<li>Install-Module Microsoft.Graph</li>
+</ul>
+<ul>
+<li>也就是说，您需要azure中创建一个app,并赋予相应的权限，然后使用这个应用来登录。</li>
+</ul>
+<ul>
+<li>参考截图：</li>
+</ul>
+<ul>
+<li>Microsoft Graph登录参考：</li>
+</ul>
+<ul>
+<li>Client_ID，请参考以下截图：</li>
+</ul>
+<ul>
+<li>Password请参考下图获取：</li>
+</ul>
+<ul>
+<li>更多参考：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>需要特别注意的是，经确认，目前在中国区不支持AAD用户密码方式登录，只支持应用的方式登录。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>从微软的论坛和github上的issue，可以看到由于有些依赖在linux或mac上没有，导致了使用上的问题，Powershell团队对此进行了说明。</li>
+</ul>
+<ul>
+<li>2．从微软官方文档看到MSOnline 计划于 2024 年 3 月 30 日弃用。建议迁移到Microsoft Graph PowerShell</li>
+</ul>
+<ul>
+<li>3．安装Microsoft Graph PowerShell参考：</li>
+</ul>
+<ul>
+<li>##安装命令</li>
+</ul>
+<ul>
+<li>Microsoft Graph命令参考：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/answers/questions/788725/connect-azuread-is-not-recognized-as-a-name-of-a-c" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/answers/questions/788725/connect-azuread-is-not-recognized-as-a-name-of-a-c</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/PowerShell/PowerShell/issues/7162" target="_blank" rel="noopener">https://github.com/PowerShell/PowerShell/issues/7162</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/powershell/azure/active-directory/install-msonlinev1?view=azureadps-1.0" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/azure/active-directory/install-msonlinev1?view=azureadps-1.0</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/powershell/microsoftgraph/overview?view=graph-powershell-1.0" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/microsoftgraph/overview?view=graph-powershell-1.0</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/powershell/microsoftgraph/installation?view=graph-powershell-1.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/microsoftgraph/installation?view=graph-powershell-1.0</a></li>
+</ul>
+<ul>
+<li>创建应用程序参考文档：<a href="https://learn.microsoft.com/zh-cn/entra/identity-platform/howto-create-service-principal-portal" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity-platform/howto-create-service-principal-portal</a></li>
+</ul>
+<ul>
+<li>参考文档：<a href="https://learn.microsoft.com/en-us/powershell/microsoftgraph/authentication-commands?view=graph-powershell-1.0#app-only-access" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/microsoftgraph/authentication-commands?view=graph-powershell-1.0#app-only-access</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.users/update-mguser?view=graph-powershell-1.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.users/update-mguser?view=graph-powershell-1.0</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zhanglihong</p>
+<p>1．对于msonline模块与linux和mac的兼容性，官方文档上没有明确的说明。</p>
+<p>之前在linux上测试msonline模块时，也测试了AzureAD模块，测试也是无法正常使用的。</p>
+<p>从微软的论坛和github上的issue，可以看到由于有些依赖在linux或mac上没有，导致了使用上的问题，Powershell团队对此进行了说明。</p>
+<p>Azure AD模块</p>
+<p><a href="https://learn.microsoft.com/en-us/answers/questions/788725/connect-azuread-is-not-recognized-as-a-name-of-a-c" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/answers/questions/788725/connect-azuread-is-not-recognized-as-a-name-of-a-c</a></p>
+<p>Msonline模块</p>
+<p><a href="https://github.com/PowerShell/PowerShell/issues/7162" target="_blank" rel="noopener">https://github.com/PowerShell/PowerShell/issues/7162</a></p>
+<p>2．从微软官方文档看到MSOnline 计划于 2024 年 3 月 30 日弃用。建议迁移到Microsoft Graph PowerShell</p>
+<p><a href="https://learn.microsoft.com/zh-cn/powershell/azure/active-directory/install-msonlinev1?view=azureadps-1.0" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/azure/active-directory/install-msonlinev1?view=azureadps-1.0</a></p>
+<p>3．安装Microsoft Graph PowerShell参考：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/powershell/microsoftgraph/overview?view=graph-powershell-1.0" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/microsoftgraph/overview?view=graph-powershell-1.0</a></p>
+<p><a href="https://learn.microsoft.com/en-us/powershell/microsoftgraph/installation?view=graph-powershell-1.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/microsoftgraph/installation?view=graph-powershell-1.0</a></p>
+<p>4．由于我们没有Mac电脑，无法进行测试。我这里在一台Ubuntu 22的VM上测试，是可以正常使用的。您可以在mac上尝试下。</p>
+<p>##安装命令</p>
+<p>Install-Module Microsoft.Graph</p>
+<p>需要特别注意的是，经确认，目前在中国区不支持AAD用户密码方式登录，只支持应用的方式登录。</p>
+<p>也就是说，您需要azure中创建一个app,并赋予相应的权限，然后使用这个应用来登录。</p>
+<p>创建应用程序参考文档：<a href="https://learn.microsoft.com/zh-cn/entra/identity-platform/howto-create-service-principal-portal" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity-platform/howto-create-service-principal-portal</a></p>
+<p>参考截图：</p>
+<p>Microsoft Graph登录参考：</p>
+<p>参考文档：<a href="https://learn.microsoft.com/en-us/powershell/microsoftgraph/authentication-commands?view=graph-powershell-1.0#app-only-access" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/microsoftgraph/authentication-commands?view=graph-powershell-1.0#app-only-access</a></p>
+<p>Client_ID，请参考以下截图：</p>
+<p>Password请参考下图获取：</p>
+<p>更多参考：</p>
+<p>Microsoft Graph命令参考：</p>
+<p><a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.users/update-mguser?view=graph-powershell-1.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.users/update-mguser?view=graph-powershell-1.0</a></p></article>

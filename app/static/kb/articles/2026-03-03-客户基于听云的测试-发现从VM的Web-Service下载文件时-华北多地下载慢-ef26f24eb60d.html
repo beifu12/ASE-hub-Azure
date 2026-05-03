@@ -1,0 +1,458 @@
+<article class="kb-article" data-title="客户基于听云的测试，发现从VM的Web Service下载文件时，华北多地下载慢"><h1>客户基于听云的测试，发现从VM的Web Service下载文件时，华北多地下载慢</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2026-03-03 15:50:58</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Failed requests: 0</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Failed requests:        0</li>
+</ul>
+<ul>
+<li>Write errors:           0</li>
+</ul>
+<ul>
+<li>SimpleHTTPServer， Port 80，测试总数60，并发60。测试结果：失败，只完成6次任务。</li>
+</ul>
+<ul>
+<li>SimpleHTTPServer， Port 9000，测试总数60，并发60。测试结果：失败，只完成5次任务。</li>
+</ul>
+<ul>
+<li>SimpleHTTPServer， Port 80，测试总数60，并发10。测试结果：失败，只完成20次任务。</li>
+</ul>
+<ul>
+<li>SimpleHTTPServer， Port 9000，测试总数60，并发10。测试结果：失败，只完成27次任务。</li>
+</ul>
+<ul>
+<li>我们对Apache HTTP Server 的ab测试没有timeout或失败</li>
+</ul>
+<ul>
+<li>在报告中只体现了avg（算术平均值）、min、max，缺少对异常点的处理、方差等统计：</li>
+</ul>
+<ul>
+<li>我们看到异常点的测试结果远远大于其他点的下载时间，去除异常点后的平均值与其他区域相近</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>[REG:117090616289590] POD NET | Webdirect | SR_2017090107263 | 虚拟机网络问题</li>
+</ul>
+<ul>
+<li>Apache HTTP Server， Port 80，测试总数60，并发60。测试结果：成功完成。</li>
+</ul>
+<ul>
+<li>This is ApacheBench, Version 2.3 &lt;$Revision: 1430300 $&gt;</li>
+</ul>
+<ul>
+<li>Benchmarking 40.125.203.156 (be patient).....done</li>
+</ul>
+<ul>
+<li>Server Software:        Apache/2.2.15</li>
+</ul>
+<ul>
+<li>Server Hostname:        40.125.203.156</li>
+</ul>
+<ul>
+<li>Server Port:            80</li>
+</ul>
+<ul>
+<li>Document Path:          /test10M</li>
+</ul>
+<ul>
+<li>Document Length:        10485760 bytes</li>
+</ul>
+<ul>
+<li>Concurrency Level:      60</li>
+</ul>
+<ul>
+<li>Time taken for tests:   32.577 seconds</li>
+</ul>
+<ul>
+<li>Complete requests:      60</li>
+</ul>
+<ul>
+<li>Total transferred:      629162280 bytes</li>
+</ul>
+<ul>
+<li>HTML transferred:       629145600 bytes</li>
+</ul>
+<ul>
+<li>Requests per second:    1.84 [#/sec] (mean)</li>
+</ul>
+<ul>
+<li>Time per request:       32576.737 [ms] (mean)</li>
+</ul>
+<ul>
+<li>Time per request:       542.946 [ms] (mean, across all concurrent requests)</li>
+</ul>
+<ul>
+<li>Transfer rate:          18860.58 [Kbytes/sec] received</li>
+</ul>
+<ul>
+<li>Connection Times (ms)</li>
+</ul>
+<ul>
+<li>min  mean[+/-sd] median   max</li>
+</ul>
+<ul>
+<li>Connect:       28   35   3.5     35      41</li>
+</ul>
+<ul>
+<li>Processing:   848 5863 7334.0   3911   32465</li>
+</ul>
+<ul>
+<li>Waiting:       29 2314 1377.5   2590    4566</li>
+</ul>
+<ul>
+<li>Total:        877 5897 7336.0   3946   32506</li>
+</ul>
+<ul>
+<li>Percentage of the requests served within a certain time (ms)</li>
+</ul>
+<ul>
+<li>50%   3946</li>
+</ul>
+<ul>
+<li>66%   4952</li>
+</ul>
+<ul>
+<li>75%   5316</li>
+</ul>
+<ul>
+<li>80%   5569</li>
+</ul>
+<ul>
+<li>90%  14880</li>
+</ul>
+<ul>
+<li>95%  26978</li>
+</ul>
+<ul>
+<li>98%  32167</li>
+</ul>
+<ul>
+<li>99%  32506</li>
+</ul>
+<ul>
+<li>100%  32506 (longest request)</li>
+</ul>
+<ul>
+<li>Benchmarking 40.125.203.156 (be patient)...apr_socket_recv: Connection reset by peer (104)</li>
+</ul>
+<ul>
+<li>Total of 6 requests completed</li>
+</ul>
+<ul>
+<li>Total of 5 requests completed</li>
+</ul>
+<ul>
+<li>Total of 20 requests completed</li>
+</ul>
+<ul>
+<li>Total of 27 requests completed</li>
+</ul>
+<ul>
+<li>从以上结果得出结论：</li>
+</ul>
+<ul>
+<li>SimpleHTTPServer对并发连接的支持并不太友好。</li>
+</ul>
+<ul>
+<li>Apache HTTP Server的性能明显好于SimpleHTTPServer。</li>
+</ul>
+<ul>
+<li>另外，由于不同云平台对Linux的内核参数调教不同，而Azure 使用的是出厂设置，所以这一部分还有提升空间。</li>
+</ul>
+<ul>
+<li>通过内核参数优化， 能够进一步提升HTTP服务的性能。</li>
+</ul>
+<ul>
+<li>刚和CSA张工、客户吴先生电话会议，小结如下：</li>
+</ul>
+<ul>
+<li>【听云报告结果】</li>
+</ul>
+<ul>
+<li>可用性为100%</li>
+</ul>
+<ul>
+<li>应用由SimpleHTTPServer更改为Apache HTTP Server之后，多次听云的测试报告均显示可用性很好</li>
+</ul>
+<ul>
+<li>性能（秒）大部分区域正常</li>
+</ul>
+<ul>
+<li>部分区域性能（秒）较差。客户提到“联通线路北京点较差，移动线路内蒙古点不好” ：</li>
+</ul>
+<ul>
+<li>联通线路北京点</li>
+</ul>
+<ul>
+<li>听云总共测试20个节点，其中111.200.231.234作了一次测试，下载时间为99.106s；119.253.37.55作了两次测试，下载时间为52.6/84.3s；111.196.241.159作了一次测试，下载时间为29.8s。</li>
+</ul>
+<ul>
+<li>除此以外的19次测试，平均值为4.014s，和其他区域基本持平。</li>
+</ul>
+<ul>
+<li>移动线路内蒙古点</li>
+</ul>
+<ul>
+<li>听云在内蒙古部署了两个点（111.56.44.84和211.138.84.238），总共测试25次其中24次来自同一个IP 111.56.44.84</li>
+</ul>
+<ul>
+<li>【分析】</li>
+</ul>
+<ul>
+<li>部分区域报告结果较差，原因 很可能是受限于测试方法和部分测试点的自身网络性能。</li>
+</ul>
+<ul>
+<li>从现有的几次报告，基本可以排除Azure VM部署的服务存在问题</li>
+</ul>
+<ul>
+<li>本次报告显示，可用性为100%</li>
+</ul>
+<ul>
+<li>近几次的ab测试结果全部成功（对于Apache HTTP Server，详见下面的邮件）</li>
+</ul>
+<ul>
+<li>网络的问题涉及很多方面：测试点本身性能、测试点到公网的链路、公网出口到Azure的链路、Azure平台入口到Azure VM的链路、Azure VM情况、VM上服务运行情况。</li>
+</ul>
+<ul>
+<li>如果Azure平台链路或是Azure VM上部署的服务存在并发/性能问题，性能（秒）受到影响的不应只有特定的几台机器，因此目前基本可以排除公网出口到VM运行服务这一部分的问题</li>
+</ul>
+<ul>
+<li>测试报告不能说明客户关注的区域实际情况</li>
+</ul>
+<ul>
+<li>网络测试很受测试机器本地环境的影响</li>
+</ul>
+<ul>
+<li>样本数过小：</li>
+</ul>
+<ul>
+<li>比如内蒙古大部分测试来自同一个监测点ip，不能代表某一片区域访问的情况</li>
+</ul>
+<ul>
+<li>一个区域的测试点最好能含括尽可能多的测试机/IP，尽量减少测试机本身的影响</li>
+</ul>
+<ul>
+<li>问题描述：客户基于听云的测试，发现从VM的Web Service下载文件时，华北多地下载慢</li>
+</ul>
+<ul>
+<li>原因分析：</li>
+</ul>
+<ul>
+<li>9/1第一次听云报告结果</li>
+</ul>
+<ul>
+<li>报告显示下载服务存在可用性低及性能问题</li>
+</ul>
+<ul>
+<li>通过多次进行并发测试，推测问题是由VM使用的SimpleHTTPServer性能缺陷 导致</li>
+</ul>
+<ul>
+<li>9/30听云第二次对电信链路测试</li>
+</ul>
+<ul>
+<li>测试报告显示可用性得到显著提升，北京天津性能稍低</li>
+</ul>
+<ul>
+<li>10/19听云第三次对联通、移动链路测试</li>
+</ul>
+<ul>
+<li>由于测试时间段较短，采样点也较少，计划进行最后一次大范围测试</li>
+</ul>
+<ul>
+<li>10/30 听云第四次大范围测试电信、移动、联通线路</li>
+</ul>
+<ul>
+<li>整体上看性能和可用性较好，北京电信线路性能不是很好</li>
+</ul>
+<ul>
+<li>对于最初的可用性问题，优化服务自身的配置后，可用性可达100%；多次测试结果符合客户预期</li>
+</ul>
+<ul>
+<li>对于性能问题，根据听云的多次报告，北京电信线路的性能始终偏高，移动和联通的结果很好</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>九月多次和客户以及听云联合排查</li>
+</ul>
+<ul>
+<li>为验证可用性确实得到了改善，并排查性能问题，计划再次测试移动和联通线路</li>
+</ul>
+<ul>
+<li>可用性为100%，部分线路和地区性能一般；对报告进行分析，查看到存在部分异常点，去除异常点来看整体性能符合客户的预期</li>
+</ul>
+<ul>
+<li>排查过程中Azure平台层面没有做什么网络/链路的修改或优化</li>
+</ul>
+<ul>
+<li>因此基本可以确认性能问题很大程度受到运营商线路质量/监测节点本地网络影响</li>
+</ul>
+<ul>
+<li>对于公网的网络环境的优化，一般需要测试端、运营商、服务端共同排查（双向trace、多次测试），我们Azure单独能提供的帮助非常有限</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>通过同时psping测试端口80（丢包）以及SSH端口22（不丢包）的结果来看，推测问题由应用导致，建议再次测试并在问题复现时进行抓包</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>【下一步建议】</li>
+</ul>
+<ul>
+<li>如电话沟通，客户将在本周四/五再做大范围测试，我们建议：</li>
+</ul>
+<ul>
+<li>分析报告时，如果有某个测试点的下载时间远大于其他测试点，建议作为异常点处理；如有需要，我们再单独分析这些节点为什么下载特别慢</li>
+</ul>
+<ul>
+<li>建议服务配置从SimpleHTTPServer改为Apache HTTP Server，并再次进行电信单运营商测试。</li>
+</ul>
+<ul>
+<li>建议联合听云或运营商排查北京电信线路的性能情况，在非Azure服务器做同样下载测试，以作横向对比</li>
+</ul>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>[kfu@kyle-ctos-pipvm tmp]$ ab -n 60 -c 60 <a href="http://40.125.203.156:80/test10M" target="_blank" rel="noopener">http://40.125.203.156:80/test10M</a></li>
+</ul>
+<ul>
+<li>Copyright 1996 Adam Twiss, Zeus Technology Ltd, <a href="http://www.zeustech.net/" target="_blank" rel="noopener">http://www.zeustech.net/</a></li>
+</ul>
+<ul>
+<li>d to The Apache Software Foundation, <a href="http://www.apache.org/" target="_blank" rel="noopener">http://www.apache.org/</a></li>
+</ul>
+<ul>
+<li>Licensed to The Apache Software Foundation, <a href="http://www.apache.org/" target="_blank" rel="noopener">http://www.apache.org/</a></li>
+</ul>
+<ul>
+<li>[kfu@kyle-ctos-pipvm tmp]$ ab -n 60 -c 60 <a href="http://40.125.203.156:9000/test10M" target="_blank" rel="noopener">http://40.125.203.156:9000/test10M</a></li>
+</ul>
+<ul>
+<li>[kfu@kyle-ctos-pipvm tmp]$ ab -n 60 -c 10 <a href="http://40.125.203.156:80/test10M" target="_blank" rel="noopener">http://40.125.203.156:80/test10M</a></li>
+</ul>
+<ul>
+<li>[kfu@kyle-ctos-pipvm tmp]$ ab -n 60 -c 10 <a href="http://40.125.203.156:9000/test10M" target="_blank" rel="noopener">http://40.125.203.156:9000/test10M</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>[REG:117090616289590] POD NET | Webdirect | SR_2017090107263 | 虚拟机网络问题</p>
+<p>Apache HTTP Server， Port 80，测试总数60，并发60。测试结果：成功完成。</p>
+<p>[kfu@kyle-ctos-pipvm tmp]$ ab -n 60 -c 60 <a href="http://40.125.203.156:80/test10M" target="_blank" rel="noopener">http://40.125.203.156:80/test10M</a></p>
+<p>This is ApacheBench, Version 2.3 &lt;$Revision: 1430300 $&gt;</p>
+<p>Copyright 1996 Adam Twiss, Zeus Technology Ltd, <a href="http://www.zeustech.net/" target="_blank" rel="noopener">http://www.zeustech.net/</a></p>
+<p>d to The Apache Software Foundation, <a href="http://www.apache.org/" target="_blank" rel="noopener">http://www.apache.org/</a></p>
+<p>Benchmarking 40.125.203.156 (be patient).....done</p>
+<p>Server Software:        Apache/2.2.15</p>
+<p>Server Hostname:        40.125.203.156</p>
+<p>Server Port:            80</p>
+<p>Document Path:          /test10M</p>
+<p>Document Length:        10485760 bytes</p>
+<p>Concurrency Level:      60</p>
+<p>Time taken for tests:   32.577 seconds</p>
+<p>Complete requests:      60</p>
+<p>Failed requests:        0</p>
+<p>Write errors:           0</p>
+<p>Total transferred:      629162280 bytes</p>
+<p>HTML transferred:       629145600 bytes</p>
+<p>Requests per second:    1.84 [#/sec] (mean)</p>
+<p>Time per request:       32576.737 [ms] (mean)</p>
+<p>Time per request:       542.946 [ms] (mean, across all concurrent requests)</p>
+<p>Transfer rate:          18860.58 [Kbytes/sec] received</p>
+<p>Connection Times (ms)</p>
+<p>min  mean[+/-sd] median   max</p>
+<p>Connect:       28   35   3.5     35      41</p>
+<p>Processing:   848 5863 7334.0   3911   32465</p>
+<p>Waiting:       29 2314 1377.5   2590    4566</p>
+<p>Total:        877 5897 7336.0   3946   32506</p>
+<p>Percentage of the requests served within a certain time (ms)</p>
+<p>50%   3946</p>
+<p>66%   4952</p>
+<p>75%   5316</p>
+<p>80%   5569</p>
+<p>90%  14880</p>
+<p>95%  26978</p>
+<p>98%  32167</p>
+<p>99%  32506</p>
+<p>100%  32506 (longest request)</p>
+<p>SimpleHTTPServer， Port 80，测试总数60，并发60。测试结果：失败，只完成6次任务。</p>
+<p>Licensed to The Apache Software Foundation, <a href="http://www.apache.org/" target="_blank" rel="noopener">http://www.apache.org/</a></p>
+<p>Benchmarking 40.125.203.156 (be patient)...apr_socket_recv: Connection reset by peer (104)</p>
+<p>Total of 6 requests completed</p>
+<p>SimpleHTTPServer， Port 9000，测试总数60，并发60。测试结果：失败，只完成5次任务。</p>
+<p>[kfu@kyle-ctos-pipvm tmp]$ ab -n 60 -c 60 <a href="http://40.125.203.156:9000/test10M" target="_blank" rel="noopener">http://40.125.203.156:9000/test10M</a></p>
+<p>Total of 5 requests completed</p>
+<p>SimpleHTTPServer， Port 80，测试总数60，并发10。测试结果：失败，只完成20次任务。</p>
+<p>[kfu@kyle-ctos-pipvm tmp]$ ab -n 60 -c 10 <a href="http://40.125.203.156:80/test10M" target="_blank" rel="noopener">http://40.125.203.156:80/test10M</a></p>
+<p>Total of 20 requests completed</p>
+<p>SimpleHTTPServer， Port 9000，测试总数60，并发10。测试结果：失败，只完成27次任务。</p>
+<p>[kfu@kyle-ctos-pipvm tmp]$ ab -n 60 -c 10 <a href="http://40.125.203.156:9000/test10M" target="_blank" rel="noopener">http://40.125.203.156:9000/test10M</a></p>
+<p>Total of 27 requests completed</p>
+<p>从以上结果得出结论：</p>
+<p>SimpleHTTPServer对并发连接的支持并不太友好。</p>
+<p>Apache HTTP Server的性能明显好于SimpleHTTPServer。</p>
+<p>另外，由于不同云平台对Linux的内核参数调教不同，而Azure 使用的是出厂设置，所以这一部分还有提升空间。</p>
+<p>通过内核参数优化， 能够进一步提升HTTP服务的性能。</p>
+<p>刚和CSA张工、客户吴先生电话会议，小结如下：</p>
+<p>【听云报告结果】</p>
+<p>可用性为100%</p>
+<p>应用由SimpleHTTPServer更改为Apache HTTP Server之后，多次听云的测试报告均显示可用性很好</p>
+<p>我们对Apache HTTP Server 的ab测试没有timeout或失败</p>
+<p>性能（秒）大部分区域正常</p>
+<p>部分区域性能（秒）较差。客户提到“联通线路北京点较差，移动线路内蒙古点不好” ：</p>
+<p>联通线路北京点</p>
+<p>听云总共测试20个节点，其中111.200.231.234作了一次测试，下载时间为99.106s；119.253.37.55作了两次测试，下载时间为52.6/84.3s；111.196.241.159作了一次测试，下载时间为29.8s。</p>
+<p>除此以外的19次测试，平均值为4.014s，和其他区域基本持平。</p>
+<p>移动线路内蒙古点</p>
+<p>听云在内蒙古部署了两个点（111.56.44.84和211.138.84.238），总共测试25次其中24次来自同一个IP 111.56.44.84</p>
+<p>【分析】</p>
+<p>部分区域报告结果较差，原因 很可能是受限于测试方法和部分测试点的自身网络性能。</p>
+<p>从现有的几次报告，基本可以排除Azure VM部署的服务存在问题</p>
+<p>本次报告显示，可用性为100%</p>
+<p>近几次的ab测试结果全部成功（对于Apache HTTP Server，详见下面的邮件）</p>
+<p>网络的问题涉及很多方面：测试点本身性能、测试点到公网的链路、公网出口到Azure的链路、Azure平台入口到Azure VM的链路、Azure VM情况、VM上服务运行情况。</p>
+<p>如果Azure平台链路或是Azure VM上部署的服务存在并发/性能问题，性能（秒）受到影响的不应只有特定的几台机器，因此目前基本可以排除公网出口到VM运行服务这一部分的问题</p>
+<p>测试报告不能说明客户关注的区域实际情况</p>
+<p>在报告中只体现了avg（算术平均值）、min、max，缺少对异常点的处理、方差等统计：</p>
+<p>网络测试很受测试机器本地环境的影响</p>
+<p>我们看到异常点的测试结果远远大于其他点的下载时间，去除异常点后的平均值与其他区域相近</p>
+<p>样本数过小：</p>
+<p>比如内蒙古大部分测试来自同一个监测点ip，不能代表某一片区域访问的情况</p>
+<p>【下一步建议】</p>
+<p>如电话沟通，客户将在本周四/五再做大范围测试，我们建议：</p>
+<p>一个区域的测试点最好能含括尽可能多的测试机/IP，尽量减少测试机本身的影响</p>
+<p>分析报告时，如果有某个测试点的下载时间远大于其他测试点，建议作为异常点处理；如有需要，我们再单独分析这些节点为什么下载特别慢</p>
+<p>问题描述：客户基于听云的测试，发现从VM的Web Service下载文件时，华北多地下载慢</p>
+<p>原因分析：</p>
+<p>9/1第一次听云报告结果</p>
+<p>报告显示下载服务存在可用性低及性能问题</p>
+<p>通过同时psping测试端口80（丢包）以及SSH端口22（不丢包）的结果来看，推测问题由应用导致，建议再次测试并在问题复现时进行抓包</p>
+<p>九月多次和客户以及听云联合排查</p>
+<p>通过多次进行并发测试，推测问题是由VM使用的SimpleHTTPServer性能缺陷 导致</p>
+<p>建议服务配置从SimpleHTTPServer改为Apache HTTP Server，并再次进行电信单运营商测试。</p>
+<p>9/30听云第二次对电信链路测试</p>
+<p>测试报告显示可用性得到显著提升，北京天津性能稍低</p>
+<p>为验证可用性确实得到了改善，并排查性能问题，计划再次测试移动和联通线路</p>
+<p>10/19听云第三次对联通、移动链路测试</p>
+<p>可用性为100%，部分线路和地区性能一般；对报告进行分析，查看到存在部分异常点，去除异常点来看整体性能符合客户的预期</p>
+<p>由于测试时间段较短，采样点也较少，计划进行最后一次大范围测试</p>
+<p>10/30 听云第四次大范围测试电信、移动、联通线路</p>
+<p>整体上看性能和可用性较好，北京电信线路性能不是很好</p>
+<p>建议联合听云或运营商排查北京电信线路的性能情况，在非Azure服务器做同样下载测试，以作横向对比</p>
+<p>解决方案：</p>
+<p>对于最初的可用性问题，优化服务自身的配置后，可用性可达100%；多次测试结果符合客户预期</p>
+<p>排查过程中Azure平台层面没有做什么网络/链路的修改或优化</p>
+<p>对于性能问题，根据听云的多次报告，北京电信线路的性能始终偏高，移动和联通的结果很好</p>
+<p>因此基本可以确认性能问题很大程度受到运营商线路质量/监测节点本地网络影响</p>
+<p>对于公网的网络环境的优化，一般需要测试端、运营商、服务端共同排查（双向trace、多次测试），我们Azure单独能提供的帮助非常有限</p></article>

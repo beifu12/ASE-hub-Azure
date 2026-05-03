@@ -1,0 +1,116 @@
+<article class="kb-article" data-title="[Share] 用Storage的SAS理解AFD缓存时的查询字符串行为"><h1>[Share] 用Storage的SAS理解AFD缓存时的查询字符串行为</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AFD</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-03-20 17:04:27</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>YangJiaqing&amp;</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>YangJiaqing&amp;</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>YangJiaqing&amp;</li>
+</ul>
+<ul>
+<li>Tangxin</li>
+</ul>
+<ul>
+<li>2025.12.15</li>
+</ul>
+<ul>
+<li>设置：</li>
+</ul>
+<ul>
+<li>首次访问（无query）：</li>
+</ul>
+<ul>
+<li>首次访问（带query）：</li>
+</ul>
+<ul>
+<li>再次访问（不带query）：</li>
+</ul>
+<ul>
+<li>再次访问（带query）：</li>
+</ul>
+<ul>
+<li>如果完全想要去除SAS query呢，就是非得保证客户每一次都可以不带query完成访问？</li>
+</ul>
+<ul>
+<li>首次访问（不带query）：</li>
+</ul>
+<ul>
+<li>这是因为这个规则只对缓存生效，回源依然不带query</li>
+</ul>
+<ul>
+<li>需要使用URL rewrite：</li>
+</ul>
+<ul>
+<li>/{url_path}?{query_string.seg0.tolower}&amp;sp=r&amp;st=2025-12-15T01:30:47Z&amp;se=2026-01-01T09:45:47Z&amp;spr=https&amp;sv=2024-11-04&amp;sr=b&amp;sig=XnWvcx1eSAHAprFVZajMuPlUDLYIZ00XXiJLAk3%2FIRU%3D</li>
+</ul>
+<ul>
+<li>首次访问：</li>
+</ul>
+<ul>
+<li>再配置个缓存：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>众所周知，Storage如果不开匿名访问，就必须要在URL中添加SAS作为查询字符串。</li>
+</ul>
+<ul>
+<li>我们观察到了一个现象，如果配置AFD缓存Storage，首次访问的时候必须要带SAS query，但是后续访问则无需SAS query，可以直接通过AFD拿到缓存里文件，这样似乎不太安全：</li>
+</ul>
+<ul>
+<li>这是因为首次访问AFD回源Storage时需要验证SAS，而一旦文件被缓存，根据缓存行为，客户访问时就可以直接忽略查询字符串</li>
+</ul>
+<ul>
+<li>设置查询字符串行为为“使用查询字符串”</li>
+</ul>
+<ul>
+<li>查询字符串将成为区分缓存的条件，也就是不同的查询字符串将被分别处理而不是直接忽略：</li>
+</ul>
+<ul>
+<li>这样的行为就很适合使用SAS作为安全验证的逻辑了，客户端如果不带正确SAS就无法通过AFD访问到文件</li>
+</ul>
+<ul>
+<li>如果设置为包含特定的查询字符串：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>YangJiaqing&amp;</p>
+<p>Tangxin</p>
+<p>2025.12.15</p>
+<p>众所周知，Storage如果不开匿名访问，就必须要在URL中添加SAS作为查询字符串。</p>
+<p>我们观察到了一个现象，如果配置AFD缓存Storage，首次访问的时候必须要带SAS query，但是后续访问则无需SAS query，可以直接通过AFD拿到缓存里文件，这样似乎不太安全：</p>
+<p>设置：</p>
+<p>首次访问（无query）：</p>
+<p>首次访问（带query）：</p>
+<p>再次访问（不带query）：</p>
+<p>这是因为首次访问AFD回源Storage时需要验证SAS，而一旦文件被缓存，根据缓存行为，客户访问时就可以直接忽略查询字符串</p>
+<p>设置查询字符串行为为“使用查询字符串”</p>
+<p>查询字符串将成为区分缓存的条件，也就是不同的查询字符串将被分别处理而不是直接忽略：</p>
+<p>再次访问（带query）：</p>
+<p>这样的行为就很适合使用SAS作为安全验证的逻辑了，客户端如果不带正确SAS就无法通过AFD访问到文件</p>
+<p>如果完全想要去除SAS query呢，就是非得保证客户每一次都可以不带query完成访问？</p>
+<p>如果设置为包含特定的查询字符串：</p>
+<p>首次访问（不带query）：</p>
+<p>这是因为这个规则只对缓存生效，回源依然不带query</p>
+<p>需要使用URL rewrite：</p>
+<p>/{url_path}?{query_string.seg0.tolower}&amp;sp=r&amp;st=2025-12-15T01:30:47Z&amp;se=2026-01-01T09:45:47Z&amp;spr=https&amp;sv=2024-11-04&amp;sr=b&amp;sig=XnWvcx1eSAHAprFVZajMuPlUDLYIZ00XXiJLAk3%2FIRU%3D</p>
+<p>首次访问：</p>
+<p>再配置个缓存：</p></article>

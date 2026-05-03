@@ -1,0 +1,70 @@
+<article class="kb-article" data-title="国内版ss首次登录需要实名认证"><h1>国内版ss首次登录需要实名认证</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD connect sync MFA</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-04-11 11:52:17</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Nancy</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Nancy</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Nancy</li>
+</ul>
+<ul>
+<li>由于客户侧不支持安装msix安装包，是从另一个未知地方获取的安装包进行安装，怀疑可能和此有关。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题：客户登录teams应用要求短信和邮箱验证，邮箱无法收到验证码</li>
+</ul>
+<ul>
+<li>排查及解决：</li>
+</ul>
+<ul>
+<li>经检查未开启任何MFA认证，登录日志显示：</li>
+</ul>
+<ul>
+<li>经过与teams团队确认，首次登录国内版teams会要求实名认证，而且只会要求一种手机验证方式。</li>
+</ul>
+<ul>
+<li>但是该客户登录teams客户端在认证完手机短信验证码后，还会强制要求验证邮箱，类似如下界面，且客户表示Gmail邮箱无法收到验证码，163邮箱可以正常收到。</li>
+</ul>
+<ul>
+<li>再次与teams确认，正常实名过程不会要求邮箱验证。</li>
+</ul>
+<ul>
+<li>接下来，尝试让用户通过浏览器方式登录teams完成实名认证，此时并不需要邮箱验证，然后再使用客户端登录即可。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>这时会调用AAD的MFA验证方法，所以需要将对应方式开启。事实客户环境对应已经开启。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://teams.microsoftonline.cn/" target="_blank" rel="noopener">https://teams.microsoftonline.cn/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Nancy</p>
+<p>问题：客户登录teams应用要求短信和邮箱验证，邮箱无法收到验证码</p>
+<p>排查及解决：</p>
+<p>经检查未开启任何MFA认证，登录日志显示：</p>
+<p>经过与teams团队确认，首次登录国内版teams会要求实名认证，而且只会要求一种手机验证方式。</p>
+<p>这时会调用AAD的MFA验证方法，所以需要将对应方式开启。事实客户环境对应已经开启。</p>
+<p>但是该客户登录teams客户端在认证完手机短信验证码后，还会强制要求验证邮箱，类似如下界面，且客户表示Gmail邮箱无法收到验证码，163邮箱可以正常收到。</p>
+<p>再次与teams确认，正常实名过程不会要求邮箱验证。</p>
+<p>接下来，尝试让用户通过浏览器方式登录teams完成实名认证，此时并不需要邮箱验证，然后再使用客户端登录即可。</p>
+<p><a href="https://teams.microsoftonline.cn/" target="_blank" rel="noopener">https://teams.microsoftonline.cn/</a></p>
+<p>由于客户侧不支持安装msix安装包，是从另一个未知地方获取的安装包进行安装，怀疑可能和此有关。</p></article>

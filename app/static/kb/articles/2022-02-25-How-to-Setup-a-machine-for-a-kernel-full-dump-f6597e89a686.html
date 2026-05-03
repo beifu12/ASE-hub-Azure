@@ -1,0 +1,115 @@
+<article class="kb-article" data-title="How to - Setup a machine for a kernel/full dump"><h1>How to - Setup a machine for a kernel/full dump</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: PODA</li>
+<li>最近修改: 2022-02-25 16:17:18</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>When to setup the machine for a dump</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>When to setup the machine for a dump</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>When to setup the machine for a dump</li>
+</ul>
+<ul>
+<li>On a non-boot scenario where the machine is bluescreening and the last good known config nor reverting the hives worked</li>
+</ul>
+<ul>
+<li>On Slow/hang/frozen scenarios</li>
+</ul>
+<ul>
+<li>Kernel DUMP</li>
+</ul>
+<ul>
+<li>If the machine is in a non-boot scenario then the OS disk needs to be attached to another VM then the following keys needs to be changed:</li>
+</ul>
+<ul>
+<li>If the machine is in a booting scenario and if you can performed this change while the machine is online, then change:</li>
+</ul>
+<ul>
+<li>For this configuration to kick in, the machine needs to be restarted.</li>
+</ul>
+<ul>
+<li>There&#39;s no need to move the pagefile on any other place nor reduce the RAM memory.</li>
+</ul>
+<ul>
+<li>By default, the dump if created will be on c:\windows\MEMORY.DMP</li>
+</ul>
+<ul>
+<li>FULL DUMP</li>
+</ul>
+<ul>
+<li>HKLM\SYSTEM\ControlSet001\Control\CrashControl\DumpFile  = d:\memory.dmp</li>
+</ul>
+<ul>
+<li>HKLM\SYSTEM\CurrentControlSet\Control\CrashControl\DumpFile  = d:\memory.dmp</li>
+</ul>
+<ul>
+<li>The dump size will be as large as the RAM memory. This will work only if the destination folder has enough space to have a dump file created.</li>
+</ul>
+<ul>
+<li>Since the dump that is going to result on this is going to be as big as the RAM, its creating will take a way longer than a kernel dump.</li>
+</ul>
+<ul>
+<li>If the machine is in a non-boot scenario then the destination drive to place the dump needs to be a DATA disk which then you can attach to another machine to get the dump</li>
+</ul>
+<ul>
+<li>HKLM\SYSTEM\ControlSet001\Control\CrashControl\DumpFile  = E:\memory.dmp</li>
+</ul>
+<ul>
+<li>Once the dump is created, you&#39;ll find it on the destination folder:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>The best way to troubleshoot a case with a dump is always starts with a kernel dump and only if that is not enough, go with a full dump.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>HKLM\SYSTEM\ControlSet001\Control\CrashControl\CrashDumpEnabled = 2</li>
+</ul>
+<ul>
+<li>HKLM\SYSTEM\CurrentControlSet\Control\CrashControl\CrashDumpEnabled = 2</li>
+</ul>
+<ul>
+<li>HKLM\SYSTEM\ControlSet001\Control\CrashControl\CrashDumpEnabled = 1</li>
+</ul>
+<ul>
+<li>HKLM\SYSTEM\CurrentControlSet\Control\CrashControl\CrashDumpEnabled = 1</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>When to setup the machine for a dump</p>
+<p>On a non-boot scenario where the machine is bluescreening and the last good known config nor reverting the hives worked</p>
+<p>On Slow/hang/frozen scenarios</p>
+<p>The best way to troubleshoot a case with a dump is always starts with a kernel dump and only if that is not enough, go with a full dump.</p>
+<p>Kernel DUMP</p>
+<p>If the machine is in a non-boot scenario then the OS disk needs to be attached to another VM then the following keys needs to be changed:</p>
+<p>HKLM\SYSTEM\ControlSet001\Control\CrashControl\CrashDumpEnabled = 2</p>
+<p>If the machine is in a booting scenario and if you can performed this change while the machine is online, then change:</p>
+<p>HKLM\SYSTEM\CurrentControlSet\Control\CrashControl\CrashDumpEnabled = 2</p>
+<p>For this configuration to kick in, the machine needs to be restarted.</p>
+<p>There&#39;s no need to move the pagefile on any other place nor reduce the RAM memory.</p>
+<p>By default, the dump if created will be on c:\windows\MEMORY.DMP</p>
+<p>FULL DUMP</p>
+<p>HKLM\SYSTEM\ControlSet001\Control\CrashControl\CrashDumpEnabled = 1</p>
+<p>HKLM\SYSTEM\ControlSet001\Control\CrashControl\DumpFile  = d:\memory.dmp</p>
+<p>HKLM\SYSTEM\CurrentControlSet\Control\CrashControl\CrashDumpEnabled = 1</p>
+<p>HKLM\SYSTEM\CurrentControlSet\Control\CrashControl\DumpFile  = d:\memory.dmp</p>
+<p>The dump size will be as large as the RAM memory. This will work only if the destination folder has enough space to have a dump file created.</p>
+<p>Since the dump that is going to result on this is going to be as big as the RAM, its creating will take a way longer than a kernel dump.</p>
+<p>If the machine is in a non-boot scenario then the destination drive to place the dump needs to be a DATA disk which then you can attach to another machine to get the dump</p>
+<p>HKLM\SYSTEM\ControlSet001\Control\CrashControl\DumpFile  = E:\memory.dmp</p>
+<p>Once the dump is created, you&#39;ll find it on the destination folder:</p></article>

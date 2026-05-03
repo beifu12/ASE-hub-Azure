@@ -1,0 +1,77 @@
+<article class="kb-article" data-title="【share] AKS backup"><h1>【share] AKS backup</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-12 14:48:36</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>备份扩展是在AKS的 dataprotection-microsoft的名称空间中安装三个pod, 当node节点是2个时候,其中一个pod一直无法ready</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>备份扩展是在AKS的 dataprotection-microsoft的名称空间中安装三个pod, 当node节点是2个时候,其中一个pod一直无法ready</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>测试了使用备份中心对AKS进行备份的过程:</li>
+</ul>
+<ul>
+<li>1 在backup 中心启用对AKS的备份,当选中需要备份的AKS后,需要对AKs安装备份扩展</li>
+</ul>
+<ul>
+<li>相关的权限说明：</li>
+</ul>
+<ul>
+<li>然后又扩展了一个新的node后, 这个pod才运行正常</li>
+</ul>
+<ul>
+<li>后续继续配置备份以及选择备份文件所在的存储账户和容器名称,以及PVC的备份快照保持的资源组</li>
+</ul>
+<ul>
+<li>disk类型的PVC</li>
+</ul>
+<ul>
+<li>可以选择对所有名称空间的资源进行备份, 也可以按照名称空间,标签选择器以及K8s kind和group等类型自定义备份的数据或者是否排除PV的备份</li>
+</ul>
+<ul>
+<li>Storage 的容器中的备份数据:</li>
+</ul>
+<ul>
+<li>存储卷的pv 被备份在用户指定的资源组以快照的行为存在:</li>
+</ul>
+<ul>
+<li>还原的时候指定的目标：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>后续可以在备份中心查看备份合状态以及相关的配置信息:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/backup/azure-kubernetes-service-cluster-backup-concept?toc=%2Faks%2Ftoc.json&amp;bc=%2Fazure%2Faks%2Fbreadcrumb%2Ftoc.json#required-roles-and-permissions" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/azure-kubernetes-service-cluster-backup-concept?toc=%2Faks%2Ftoc.json&amp;bc=%2Fazure%2Faks%2Fbreadcrumb%2Ftoc.json#required-roles-and-permissions</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/08/12</p>
+<p>测试了使用备份中心对AKS进行备份的过程:</p>
+<p>1 在backup 中心启用对AKS的备份,当选中需要备份的AKS后,需要对AKs安装备份扩展</p>
+<p>相关的权限说明：</p>
+<p><a href="https://docs.azure.cn/zh-cn/backup/azure-kubernetes-service-cluster-backup-concept?toc=%2Faks%2Ftoc.json&amp;bc=%2Fazure%2Faks%2Fbreadcrumb%2Ftoc.json#required-roles-and-permissions" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/azure-kubernetes-service-cluster-backup-concept?toc=%2Faks%2Ftoc.json&amp;bc=%2Fazure%2Faks%2Fbreadcrumb%2Ftoc.json#required-roles-and-permissions</a></p>
+<p>备份扩展是在AKS的 dataprotection-microsoft的名称空间中安装三个pod, 当node节点是2个时候,其中一个pod一直无法ready</p>
+<p>然后又扩展了一个新的node后, 这个pod才运行正常</p>
+<p>后续继续配置备份以及选择备份文件所在的存储账户和容器名称,以及PVC的备份快照保持的资源组</p>
+<p>disk类型的PVC</p>
+<p>可以选择对所有名称空间的资源进行备份, 也可以按照名称空间,标签选择器以及K8s kind和group等类型自定义备份的数据或者是否排除PV的备份</p>
+<p>后续可以在备份中心查看备份合状态以及相关的配置信息:</p>
+<p>Storage 的容器中的备份数据:</p>
+<p>存储卷的pv 被备份在用户指定的资源组以快照的行为存在:</p>
+<p>还原的时候指定的目标：</p></article>

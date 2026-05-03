@@ -1,0 +1,283 @@
+<article class="kb-article" data-title="同一虚拟内虚拟机内网通信延时高"><h1>同一虚拟内虚拟机内网通信延时高</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-07-04 14:32:51</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>1）虚拟机的waagent服务无法正常启动</li>
+</ul>
+<ul>
+<li>3）重新启动该服务时，依然报错，高延迟问题复现。</li>
+</ul>
+<ul>
+<li>由于waagent服务的设计，在启动阶段会发起CPU中断，该服务由于python的问题，无法正常启动，会持续进行重试，那么CPU会持续受到来自waagent服务的中断请求，以至于Tcp会话发起的CPU中断的响应迟滞，导致Tcp ping延迟变高。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>XinYuefeng</li>
+</ul>
+<ul>
+<li>同一虚拟网络内，虚拟机内网通信延时不稳定，有时达到200ms</li>
+</ul>
+<ul>
+<li>2.客户使用的自定义镜像，升级LIS到最新版本延时不稳定的问题仍然存在</li>
+</ul>
+<ul>
+<li>3.通过客户提供的vhd在lab环境中可以复现延时不稳定的问题,并发现如下：</li>
+</ul>
+<ul>
+<li>2）当终止该服务时，高延迟问题消失</li>
+</ul>
+<ul>
+<li>##以下是strace的错误信息</li>
+</ul>
+<ul>
+<li>3413  17:07:30 stat(&quot;/usr/sbin/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/sbin/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/sbin/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/sbin/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/sbin/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/plat-linux2/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/plat-linux2/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/plat-linux2/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/plat-linux2/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/plat-linux2/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/lib-tk/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-tk/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-tk/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-tk/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-tk/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/lib-dynload/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-dynload/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-dynload/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-dynload/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-dynload/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/site-packages/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/site-packages/futures-3.1.1-py2.7.egg/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/futures-3.1.1-py2.7.egg/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/futures-3.1.1-py2.7.egg/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/futures-3.1.1-py2.7.egg/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/futures-3.1.1-py2.7.egg/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/site-packages/requests-2.14.2-py2.7.egg/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/requests-2.14.2-py2.7.egg/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/requests-2.14.2-py2.7.egg/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/requests-2.14.2-py2.7.egg/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/requests-2.14.2-py2.7.egg/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/site-packages/cryptography-1.8.1-py2.7-linux-x86_64.egg/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/cryptography-1.8.1-py2.7-linux-x86_64.egg/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/cryptography-1.8.1-py2.7-linux-x86_64.egg/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</li>
+</ul>
+<ul>
+<li># service waagent restart</li>
+</ul>
+<ul>
+<li>来重启waagent服务</li>
+</ul>
+<ul>
+<li>同时由于/etc/profile中指定了python的环境变量，同样需要对此进行修改。</li>
+</ul>
+<ul>
+<li>#export PY_HOME=&quot;/usr/local/python2.7/bin&quot;</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>具体请参考工单：SR_2019030410716_[MS-LED]内网ping延迟</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查分析：</li>
+</ul>
+<ul>
+<li>1.从平台层面检查分析未见异常</li>
+</ul>
+<ul>
+<li>4）通过waagnet启动的trace，确定服务启动时，调用的python版本为python2.7, 但是在python2.7的library 库里，没有找到对应的waagent模块，同时通过rpm查看，并未发现python2.7的软件包。已安装的python版本为2.6。</li>
+</ul>
+<ul>
+<li>5）检查发现/usr/bin/python软连接指向的是python2.7，修改该软连接为python2.6之后，waagent服务可以正常启动，同时高延迟问题得到消失。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>基于上述发现，在受影响的机器上，检查python的配置，修改/usr/bin/python的软连接为已安装python的版本，同时执行命令：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>XinYuefeng</p>
+<p>问题现象：</p>
+<p>同一虚拟网络内，虚拟机内网通信延时不稳定，有时达到200ms</p>
+<p>排查分析：</p>
+<p>1.从平台层面检查分析未见异常</p>
+<p>2.客户使用的自定义镜像，升级LIS到最新版本延时不稳定的问题仍然存在</p>
+<p>3.通过客户提供的vhd在lab环境中可以复现延时不稳定的问题,并发现如下：</p>
+<p>1）虚拟机的waagent服务无法正常启动</p>
+<p>2）当终止该服务时，高延迟问题消失</p>
+<p>3）重新启动该服务时，依然报错，高延迟问题复现。</p>
+<p>4）通过waagnet启动的trace，确定服务启动时，调用的python版本为python2.7, 但是在python2.7的library 库里，没有找到对应的waagent模块，同时通过rpm查看，并未发现python2.7的软件包。已安装的python版本为2.6。</p>
+<p>5）检查发现/usr/bin/python软连接指向的是python2.7，修改该软连接为python2.6之后，waagent服务可以正常启动，同时高延迟问题得到消失。</p>
+<p>##以下是strace的错误信息</p>
+<p>3413  17:07:30 stat(&quot;/usr/sbin/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/sbin/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/sbin/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/sbin/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/sbin/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/plat-linux2/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/plat-linux2/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/plat-linux2/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/plat-linux2/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/plat-linux2/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/lib-tk/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-tk/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-tk/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-tk/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-tk/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/lib-dynload/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-dynload/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-dynload/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-dynload/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/lib-dynload/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/site-packages/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/site-packages/futures-3.1.1-py2.7.egg/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/futures-3.1.1-py2.7.egg/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/futures-3.1.1-py2.7.egg/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/futures-3.1.1-py2.7.egg/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/futures-3.1.1-py2.7.egg/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/site-packages/requests-2.14.2-py2.7.egg/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/requests-2.14.2-py2.7.egg/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/requests-2.14.2-py2.7.egg/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/requests-2.14.2-py2.7.egg/azurelinuxagent.py&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/requests-2.14.2-py2.7.egg/azurelinuxagent.pyc&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 stat(&quot;/usr/local/python2.7/lib/python2.7/site-packages/cryptography-1.8.1-py2.7-linux-x86_64.egg/azurelinuxagent&quot;, 0x7ffd1459b2f0) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/cryptography-1.8.1-py2.7-linux-x86_64.egg/azurelinuxagent.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>3413  17:07:30 open(&quot;/usr/local/python2.7/lib/python2.7/site-packages/cryptography-1.8.1-py2.7-linux-x86_64.egg/azurelinuxagentmodule.so&quot;, O_RDONLY) = -1 ENOENT (No such file or directory)</p>
+<p>解决方案：</p>
+<p>基于上述发现，在受影响的机器上，检查python的配置，修改/usr/bin/python的软连接为已安装python的版本，同时执行命令：</p>
+<h1>service waagent restart</h1>
+<p>来重启waagent服务</p>
+<p>同时由于/etc/profile中指定了python的环境变量，同样需要对此进行修改。</p>
+<p>#export PY_HOME=&quot;/usr/local/python2.7/bin&quot;</p>
+<p>问题原因：</p>
+<p>由于waagent服务的设计，在启动阶段会发起CPU中断，该服务由于python的问题，无法正常启动，会持续进行重试，那么CPU会持续受到来自waagent服务的中断请求，以至于Tcp会话发起的CPU中断的响应迟滞，导致Tcp ping延迟变高。</p>
+<p>具体请参考工单：SR_2019030410716_[MS-LED]内网ping延迟</p></article>

@@ -1,0 +1,203 @@
+<article class="kb-article" data-title="openssl 探测wafv2 完整证书链返回 异常结果的分析"><h1>openssl 探测wafv2 完整证书链返回 异常结果的分析</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-17 12:30:19</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>步骤:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>步骤:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>按照Lina提供的文档构建了两张通配符证书：一张包含了完整的证书链，一张证书只有服务端证书</li>
+</ul>
+<ul>
+<li>在waf中分别建立两个listener并上传两张证书到appgwv2，并建立对应的规则</li>
+</ul>
+<ul>
+<li>域名 mail.xxxxx.com 关联的证书为包含完整证书链信息</li>
+</ul>
+<ul>
+<li>测试分为两块：curl和openssl</li>
+</ul>
+<ul>
+<li>curl的测试结果符合预期,但是openssl的结果有些问题</li>
+</ul>
+<ul>
+<li>openssl  mail.xxxxx.com</li>
+</ul>
+<ul>
+<li>由于v2是采用的Nginx，Nginx通常对于过来的请求会根据协议，Server块（主机头） ，URI去匹配和筛选最终确定被哪个location去执行动作。</li>
+</ul>
+<ul>
+<li>由于该测试中Server块（主机头）是都是基于严格匹配的配置前提下，新的请求来到Nginx这边处理的时候，会从上往下挨个Server块进行匹配，直接匹配为止。</li>
+</ul>
+<ul>
+<li>如果Server块没有匹配且没有default站点的情况，会匹配第一个Server块 ，回到appgwv2的配置，如下，猜测是使用openssl mail主机时返回的是rule2对应的证书。（rule1是http协议）</li>
+</ul>
+<ul>
+<li>因此对于这种情景,我们可以在openssl 后面跟一个-servername选项,这样后续发送的包都会携带对应的SNI字段</li>
+</ul>
+<ul>
+<li>把pfx的证书私钥导出,便于后面pem转pfx使用</li>
+</ul>
+<ul>
+<li>openssl pkcs12 -in youcert.pfx -nodes -nocerts -out name.key</li>
+</ul>
+<ul>
+<li>openssl rsa -in name.key -out private.pem</li>
+</ul>
+<ul>
+<li>由于该实验使用的客户之前提供给我们测试的证书,所以把客户的信息给隐藏了,阿里可以申请免费一年的各种证书,有兴趣可以参考lina的文档自行拆解构造</li>
+</ul>
+<ul>
+<li>类别</li>
+</ul>
+<ul>
+<li>Azure Blob 存储</li>
+</ul>
+<ul>
+<li>Azure 文件</li>
+</ul>
+<ul>
+<li>Azure NetApp 文件</li>
+</ul>
+<ul>
+<li>用例</li>
+</ul>
+<ul>
+<li>Blob 存储最适合用于大规模的读取密集型高顺序访问工作负载，其中的数据只会引入一次并且进一步修改的次数极少。</li>
+</ul>
+<ul>
+<li>如果维护工作量很少或者根本无需维护，则 Blob 存储可提供最低的总拥有成本。</li>
+</ul>
+<ul>
+<li>部分示例方案包括：大规模分析数据、吞吐量敏感型高性能计算、备份和存档、自动驾驶、媒体渲染或基因组测序。</li>
+</ul>
+<ul>
+<li>Azure 文件存储是高度可用的服务，最适合用于随机访问工作负载。</li>
+</ul>
+<ul>
+<li>对于 NFS 共享，Azure 文件存储提供全面的 POSIX 文件系统支持，除了基于 VM 的平台外，还可以从包含内置 CSI 驱动程序的容器平台（例如 Azure 容器实例 (ACI) 和 Azure Kubernetes 服务 (AKS)）轻松使用该服务。</li>
+</ul>
+<ul>
+<li>部分示例方案包括：共享文件、数据库、主目录、传统应用程序、ERP、CMS、不需要高级管理的 NAS 迁移，以及需要横向扩展文件存储的自定义应用程序。</li>
+</ul>
+<ul>
+<li>在云中完全托管的文件服务，由 NetApp 提供支持，提供高级管理功能。</li>
+</ul>
+<ul>
+<li>Azure NetApp 文件适用于需要随机访问的工作负荷，提供广泛的协议支持和数据保护功能。</li>
+</ul>
+<ul>
+<li>部分示例方案包括：需要丰富管理功能的本地企业 NAS 迁移、延迟敏感型工作负荷（例如 SAP HANA）、延迟敏感型或 IOPS 密集型高性能计算，或需要同时进行多协议访问的工作负荷。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>步骤:</li>
+</ul>
+<ul>
+<li>openssl 去检查mail主机的报错失败的。</li>
+</ul>
+<ul>
+<li>mail的主机检查证书报错如下：</li>
+</ul>
+<ul>
+<li>www的主机检查报错如下：</li>
+</ul>
+<ul>
+<li>后续进一步抓包分析发现原因：</li>
+</ul>
+<ul>
+<li>同时wireshark抓包会看到即便访问mail的主机名，返回来的证书只包含Server自己的证书，也就是证书链不完整的证书.</li>
+</ul>
+<ul>
+<li>另外,Lina之前提供的构建证书链的步骤1中可能少了一步:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>curl 的时候 client hello会带有SNI，而openssl 默认不会带SNI字段</li>
+</ul>
+<ul>
+<li>curl mail.xxxxx.com</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>域名www.xxxxx.com 关联的证书为没有包含完整证书链信息</li>
+</ul>
+<ul>
+<li>curl <a href="https://www.xxxxx.com" target="_blank" rel="noopener">https://www.xxxxx.com</a> //报错证链异常</li>
+</ul>
+<ul>
+<li>curl <a href="https://mail.xxxxx.com" target="_blank" rel="noopener">https://mail.xxxxx.com</a> //可以正常访</li>
+</ul>
+<ul>
+<li>因为mail的证书链是完整的并且curl <a href="https://mail.xxxxx.com是没问题" target="_blank" rel="noopener">https://mail.xxxxx.com是没问题</a> ，这个结果并不符合预期的</li>
+</ul>
+<ul>
+<li>后续把rule2删除,然后再新建rule4,让其放置在rule3的后面,后续使用openssl检查都是成功的,即便访问openssl www.xxxxx.com 也是正常的。</li>
+</ul>
+<ul>
+<li>openssl s_client -ign_eof -connect www.xxxxx.com:443 -servername www.xxxxx.com</li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://learn.microsoft.com/zh-cn/azure/storage/common/nfs-comparison&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/storage/common/nfs-comparison&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2019/12/15</p>
+<p>步骤:</p>
+<p>按照Lina提供的文档构建了两张通配符证书：一张包含了完整的证书链，一张证书只有服务端证书</p>
+<p>在waf中分别建立两个listener并上传两张证书到appgwv2，并建立对应的规则</p>
+<p>域名www.xxxxx.com 关联的证书为没有包含完整证书链信息</p>
+<p>域名 mail.xxxxx.com 关联的证书为包含完整证书链信息</p>
+<p>测试分为两块：curl和openssl</p>
+<p>curl的测试结果符合预期,但是openssl的结果有些问题</p>
+<p>curl <a href="https://www.xxxxx.com" target="_blank" rel="noopener">https://www.xxxxx.com</a> //报错证链异常</p>
+<p>curl <a href="https://mail.xxxxx.com" target="_blank" rel="noopener">https://mail.xxxxx.com</a> //可以正常访</p>
+<p>openssl 去检查mail主机的报错失败的。</p>
+<p>mail的主机检查证书报错如下：</p>
+<p>www的主机检查报错如下：</p>
+<p>因为mail的证书链是完整的并且curl <a href="https://mail.xxxxx.com是没问题" target="_blank" rel="noopener">https://mail.xxxxx.com是没问题</a> ，这个结果并不符合预期的</p>
+<p>后续进一步抓包分析发现原因：</p>
+<p>curl 的时候 client hello会带有SNI，而openssl 默认不会带SNI字段</p>
+<p>curl mail.xxxxx.com</p>
+<p>openssl  mail.xxxxx.com</p>
+<p>由于v2是采用的Nginx，Nginx通常对于过来的请求会根据协议，Server块（主机头） ，URI去匹配和筛选最终确定被哪个location去执行动作。</p>
+<p>由于该测试中Server块（主机头）是都是基于严格匹配的配置前提下，新的请求来到Nginx这边处理的时候，会从上往下挨个Server块进行匹配，直接匹配为止。</p>
+<p>如果Server块没有匹配且没有default站点的情况，会匹配第一个Server块 ，回到appgwv2的配置，如下，猜测是使用openssl mail主机时返回的是rule2对应的证书。（rule1是http协议）</p>
+<p>后续把rule2删除,然后再新建rule4,让其放置在rule3的后面,后续使用openssl检查都是成功的,即便访问openssl www.xxxxx.com 也是正常的。</p>
+<p>同时wireshark抓包会看到即便访问mail的主机名，返回来的证书只包含Server自己的证书，也就是证书链不完整的证书.</p>
+<p>因此对于这种情景,我们可以在openssl 后面跟一个-servername选项,这样后续发送的包都会携带对应的SNI字段</p>
+<p>openssl s_client -ign_eof -connect www.xxxxx.com:443 -servername www.xxxxx.com</p>
+<p>另外,Lina之前提供的构建证书链的步骤1中可能少了一步:</p>
+<p>把pfx的证书私钥导出,便于后面pem转pfx使用</p>
+<p>openssl pkcs12 -in youcert.pfx -nodes -nocerts -out name.key</p>
+<p>openssl rsa -in name.key -out private.pem</p>
+<p>由于该实验使用的客户之前提供给我们测试的证书,所以把客户的信息给隐藏了,阿里可以申请免费一年的各种证书,有兴趣可以参考lina的文档自行拆解构造</p>
+<p>类别</p>
+<p>Azure Blob 存储</p>
+<p>Azure 文件</p>
+<p>Azure NetApp 文件</p>
+<p>用例</p>
+<p>Blob 存储最适合用于大规模的读取密集型高顺序访问工作负载，其中的数据只会引入一次并且进一步修改的次数极少。</p>
+<p>如果维护工作量很少或者根本无需维护，则 Blob 存储可提供最低的总拥有成本。</p>
+<p>部分示例方案包括：大规模分析数据、吞吐量敏感型高性能计算、备份和存档、自动驾驶、媒体渲染或基因组测序。</p>
+<p>Azure 文件存储是高度可用的服务，最适合用于随机访问工作负载。</p>
+<p>对于 NFS 共享，Azure 文件存储提供全面的 POSIX 文件系统支持，除了基于 VM 的平台外，还可以从包含内置 CSI 驱动程序的容器平台（例如 Azure 容器实例 (ACI) 和 Azure Kubernetes 服务 (AKS)）轻松使用该服务。</p>
+<p>部分示例方案包括：共享文件、数据库、主目录、传统应用程序、ERP、CMS、不需要高级管理的 NAS 迁移，以及需要横向扩展文件存储的自定义应用程序。</p>
+<p>在云中完全托管的文件服务，由 NetApp 提供支持，提供高级管理功能。</p>
+<p>Azure NetApp 文件适用于需要随机访问的工作负荷，提供广泛的协议支持和数据保护功能。</p>
+<p>部分示例方案包括：需要丰富管理功能的本地企业 NAS 迁移、延迟敏感型工作负荷（例如 SAP HANA）、延迟敏感型或 IOPS 密集型高性能计算，或需要同时进行多协议访问的工作负荷。</p>
+<p>From &lt;<a href="https://learn.microsoft.com/zh-cn/azure/storage/common/nfs-comparison&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/storage/common/nfs-comparison&gt;</a></p></article>

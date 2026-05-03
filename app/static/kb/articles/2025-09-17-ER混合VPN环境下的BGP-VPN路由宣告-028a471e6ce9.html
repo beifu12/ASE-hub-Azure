@@ -1,0 +1,93 @@
+<article class="kb-article" data-title="ER混合VPN环境下的BGP VPN路由宣告"><h1>ER混合VPN环境下的BGP VPN路由宣告</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-17 20:03:39</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2020010801209_[MS-LED]通过VPN gateway，无法收到Azure上的路由</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2020010801209_[MS-LED]通过VPN gateway，无法收到Azure上的路由</li>
+</ul>
+<ul>
+<li>ER通道中断的情况下，On-premise10.14.0.4无法ping通VNETB下的VM（10.244.16.4），理论上也不能ping通VNETC下的VM。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhanglihe/Caozheng</li>
+</ul>
+<ul>
+<li>测试情况：</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>On-premise---------(BGP VPN)---------VNETA----------(BGP VPN)----------VNETB-----------(BGP VPN)------------VNETC</li>
+</ul>
+<ul>
+<li>VNETA: IP prefix 10.244.64.0/20;    BGP Peer 10.244.79.254;    ASN 65003</li>
+</ul>
+<ul>
+<li>VNETB: IP prefix 10.244.16.0/20;    BGP Peer 10.244.31.254;    ASN 65004</li>
+</ul>
+<ul>
+<li>VNETC: IP prefix 10.244.0.0/20;    BGP Peer 10.244.15.254;    ASN 65005</li>
+</ul>
+<ul>
+<li>如果VNETA VNETB VNETC均不和ER专线建立Connection，则VNETA的VPNGW会将通过BGP学到的VNETB和VNETC的IP Prefix, 通告给On-premise:</li>
+</ul>
+<ul>
+<li>On-premise上学到的路由情况如下：</li>
+</ul>
+<ul>
+<li>ER通道中断的情况下，On-premise10.14.0.4可以ping通VNETB下的VM（10.244.16.4）。</li>
+</ul>
+<ul>
+<li>如果VNETA VNETB VNETC均和ER专线建立Connection，则VNETA的VPNGW不会将通过BGP学到的VNETB和VNETC的IP Prefix, 通告给On-premise:</li>
+</ul>
+<ul>
+<li>在ER混合VPN的情况下，VPNGW不会向IDC宣告通过BGP VPN学到的其它VNET的IP prefix。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查结论：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>下一步建议：</li>
+</ul>
+<ul>
+<li>如果客户希望在ER通道中断的情况下，依然实现IDC和VNETB之间的VPN连接，可以建议客户将VNETB VNETC分别直接和IDC建立VPN连接。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhanglihe/Caozheng</p>
+<p>2020/01/21</p>
+<p>SR_2020010801209_[MS-LED]通过VPN gateway，无法收到Azure上的路由</p>
+<p>测试情况：</p>
+<p>==============</p>
+<p>On-premise---------(BGP VPN)---------VNETA----------(BGP VPN)----------VNETB-----------(BGP VPN)------------VNETC</p>
+<p>VNETA: IP prefix 10.244.64.0/20;    BGP Peer 10.244.79.254;    ASN 65003</p>
+<p>VNETB: IP prefix 10.244.16.0/20;    BGP Peer 10.244.31.254;    ASN 65004</p>
+<p>VNETC: IP prefix 10.244.0.0/20;    BGP Peer 10.244.15.254;    ASN 65005</p>
+<p>如果VNETA VNETB VNETC均不和ER专线建立Connection，则VNETA的VPNGW会将通过BGP学到的VNETB和VNETC的IP Prefix, 通告给On-premise:</p>
+<p>On-premise上学到的路由情况如下：</p>
+<p>ER通道中断的情况下，On-premise10.14.0.4可以ping通VNETB下的VM（10.244.16.4）。</p>
+<p>如果VNETA VNETB VNETC均和ER专线建立Connection，则VNETA的VPNGW不会将通过BGP学到的VNETB和VNETC的IP Prefix, 通告给On-premise:</p>
+<p>ER通道中断的情况下，On-premise10.14.0.4无法ping通VNETB下的VM（10.244.16.4），理论上也不能ping通VNETC下的VM。</p>
+<p>排查结论：</p>
+<p>在ER混合VPN的情况下，VPNGW不会向IDC宣告通过BGP VPN学到的其它VNET的IP prefix。</p>
+<p>下一步建议：</p>
+<p>如果客户希望在ER通道中断的情况下，依然实现IDC和VNETB之间的VPN连接，可以建议客户将VNETB VNETC分别直接和IDC建立VPN连接。</p></article>

@@ -1,0 +1,265 @@
+<article class="kb-article" data-title="受信任虚拟机磁盘跨区域复制后安全类型会变为标准"><h1>受信任虚拟机磁盘跨区域复制后安全类型会变为标准</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-05-31 10:16:45</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>我这里测试北3一个受信任虚拟机的磁盘复制到北1后，磁盘创建虚拟机时安全类型也变为了标准：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>我这里测试北3一个受信任虚拟机的磁盘复制到北1后，磁盘创建虚拟机时安全类型也变为了标准：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>我这里测试北3一个受信任虚拟机的磁盘复制到北1后，磁盘创建虚拟机时安全类型也变为了标准：</li>
+</ul>
+<ul>
+<li>（我是使用azure storage explorer直接复制的）</li>
+</ul>
+<ul>
+<li>在北1使用磁盘创建虚拟机时，安全类型已经变为标准：</li>
+</ul>
+<ul>
+<li>--resource-group</li>
+</ul>
+<ul>
+<li>[--accelerated-network {false, true}]</li>
+</ul>
+<ul>
+<li>[--architecture {Arm64, x64}]</li>
+</ul>
+<ul>
+<li>[--data-access-auth-mode {AzureActiveDirectory, None}]</li>
+</ul>
+<ul>
+<li>[--disk-access]</li>
+</ul>
+<ul>
+<li>[--disk-encryption-set]</li>
+</ul>
+<ul>
+<li>[--disk-iops-read-only]</li>
+</ul>
+<ul>
+<li>[--disk-iops-read-write]</li>
+</ul>
+<ul>
+<li>[--disk-mbps-read-only]</li>
+</ul>
+<ul>
+<li>[--disk-mbps-read-write]</li>
+</ul>
+<ul>
+<li>[--edge-zone]</li>
+</ul>
+<ul>
+<li>[--encryption-type {EncryptionAtRestWithCustomerKey, EncryptionAtRestWithPlatformAndCustomerKeys, EncryptionAtRestWithPlatformKey}]</li>
+</ul>
+<ul>
+<li>[--gallery-image-reference]</li>
+</ul>
+<ul>
+<li>[--gallery-image-reference-lun]</li>
+</ul>
+<ul>
+<li>[--hyper-v-generation {V1, V2}]</li>
+</ul>
+<ul>
+<li>[--image-reference]</li>
+</ul>
+<ul>
+<li>[--image-reference-lun]</li>
+</ul>
+<ul>
+<li>[--location]</li>
+</ul>
+<ul>
+<li>[--max-shares]</li>
+</ul>
+<ul>
+<li>[--network-access-policy {AllowAll, AllowPrivate, DenyAll}]</li>
+</ul>
+<ul>
+<li>[--no-wait]</li>
+</ul>
+<ul>
+<li>[--optimized-for-frequent-attach {false, true}]</li>
+</ul>
+<ul>
+<li>[--os-type {Linux, Windows}]</li>
+</ul>
+<ul>
+<li>[--performance-plus {false, true}]</li>
+</ul>
+<ul>
+<li>[--secure-vm-disk-encryption-set]</li>
+</ul>
+<ul>
+<li>[--security-data-uri]</li>
+</ul>
+<ul>
+<li>[--security-type {ConfidentialVM_DiskEncryptedWithCustomerKey, ConfidentialVM_DiskEncryptedWithPlatformKey, ConfidentialVM_VMGuestStateOnlyEncryptedWithPlatformKey, Standard, TrustedLaunch}]</li>
+</ul>
+<ul>
+<li>[--size-gb]</li>
+</ul>
+<ul>
+<li>[--source]</li>
+</ul>
+<ul>
+<li>[--source-storage-account-id]</li>
+</ul>
+<ul>
+<li>[--support-hibernation {false, true}]</li>
+</ul>
+<ul>
+<li>[--tags]</li>
+</ul>
+<ul>
+<li>[--tier]</li>
+</ul>
+<ul>
+<li>[--upload-size-bytes]</li>
+</ul>
+<ul>
+<li>[--upload-type {Upload, UploadWithSecurityData}]</li>
+</ul>
+<ul>
+<li>[--zone]</li>
+</ul>
+<ul>
+<li>update中没有 --security-type选项：</li>
+</ul>
+<ul>
+<li>[--add]</li>
+</ul>
+<ul>
+<li>[--force-string]</li>
+</ul>
+<ul>
+<li>[--ids]</li>
+</ul>
+<ul>
+<li>[--name]</li>
+</ul>
+<ul>
+<li>[--remove]</li>
+</ul>
+<ul>
+<li>[--resource-group]</li>
+</ul>
+<ul>
+<li>[--set]</li>
+</ul>
+<ul>
+<li>[--subscription]</li>
+</ul>
+<ul>
+<li>使用vhd创建磁盘时可以选择受信任的安全类型：</li>
+</ul>
+<ul>
+<li>另外，如果安全类型不一致也不能交互OS磁盘，会报如下错误：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过查看对应磁盘的安全类型只能在创建是修改，已经存在的磁盘没有办法修改安全类型：</li>
+</ul>
+<ul>
+<li>[--logical-sector-size]</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az disk create --name</li>
+</ul>
+<ul>
+<li>az disk update [--accelerated-network {false, true}]</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>[--sku {PremiumV2_LRS, Premium_LRS, Premium_ZRS, StandardSSD_LRS, StandardSSD_ZRS, Standard_LRS, UltraSSD_LRS}]</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>[--enable-bursting {false, true}]</li>
+</ul>
+<ul>
+<li>[--public-network-access {Disabled, Enabled}]</li>
+</ul>
+<ul>
+<li>解决方案就是不拷贝磁盘，直接将快照跨区域复制到存储账号中，然后使用vhd创建磁盘时可以选择安全类型：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/cli/azure/disk?view=azure-cli-latest" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/disk?view=azure-cli-latest</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/scripts/copy-snapshot-to-storage-account" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/scripts/copy-snapshot-to-storage-account</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-05-31</p>
+<p>我这里测试北3一个受信任虚拟机的磁盘复制到北1后，磁盘创建虚拟机时安全类型也变为了标准：</p>
+<p>（我是使用azure storage explorer直接复制的）</p>
+<p>在北1使用磁盘创建虚拟机时，安全类型已经变为标准：</p>
+<p>通过查看对应磁盘的安全类型只能在创建是修改，已经存在的磁盘没有办法修改安全类型：</p>
+<p><a href="https://learn.microsoft.com/en-us/cli/azure/disk?view=azure-cli-latest" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/disk?view=azure-cli-latest</a></p>
+<p>az disk create --name</p>
+<p>--resource-group</p>
+<p>[--accelerated-network {false, true}]</p>
+<p>[--architecture {Arm64, x64}]</p>
+<p>[--data-access-auth-mode {AzureActiveDirectory, None}]</p>
+<p>[--disk-access]</p>
+<p>[--disk-encryption-set]</p>
+<p>[--disk-iops-read-only]</p>
+<p>[--disk-iops-read-write]</p>
+<p>[--disk-mbps-read-only]</p>
+<p>[--disk-mbps-read-write]</p>
+<p>[--edge-zone]</p>
+<p>[--enable-bursting {false, true}]</p>
+<p>[--encryption-type {EncryptionAtRestWithCustomerKey, EncryptionAtRestWithPlatformAndCustomerKeys, EncryptionAtRestWithPlatformKey}]</p>
+<p>[--gallery-image-reference]</p>
+<p>[--gallery-image-reference-lun]</p>
+<p>[--hyper-v-generation {V1, V2}]</p>
+<p>[--image-reference]</p>
+<p>[--image-reference-lun]</p>
+<p>[--location]</p>
+<p>[--logical-sector-size]</p>
+<p>[--max-shares]</p>
+<p>[--network-access-policy {AllowAll, AllowPrivate, DenyAll}]</p>
+<p>[--no-wait]</p>
+<p>[--optimized-for-frequent-attach {false, true}]</p>
+<p>[--os-type {Linux, Windows}]</p>
+<p>[--performance-plus {false, true}]</p>
+<p>[--public-network-access {Disabled, Enabled}]</p>
+<p>[--secure-vm-disk-encryption-set]</p>
+<p>[--security-data-uri]</p>
+<p>[--security-type {ConfidentialVM_DiskEncryptedWithCustomerKey, ConfidentialVM_DiskEncryptedWithPlatformKey, ConfidentialVM_VMGuestStateOnlyEncryptedWithPlatformKey, Standard, TrustedLaunch}]</p>
+<p>[--size-gb]</p>
+<p>[--sku {PremiumV2_LRS, Premium_LRS, Premium_ZRS, StandardSSD_LRS, StandardSSD_ZRS, Standard_LRS, UltraSSD_LRS}]</p>
+<p>[--source]</p>
+<p>[--source-storage-account-id]</p>
+<p>[--support-hibernation {false, true}]</p>
+<p>[--tags]</p>
+<p>[--tier]</p>
+<p>[--upload-size-bytes]</p>
+<p>[--upload-type {Upload, UploadWithSecurityData}]</p>
+<p>[--zone]</p>
+<p>update中没有 --security-type选项：</p>
+<p>az disk update [--accelerated-network {false, true}]</p>
+<p>[--add]</p>
+<p>[--force-string]</p>
+<p>[--ids]</p>
+<p>[--name]</p>
+<p>[--remove]</p>
+<p>[--resource-group]</p>
+<p>[--set]</p>
+<p>[--subscription]</p>
+<p>解决方案就是不拷贝磁盘，直接将快照跨区域复制到存储账号中，然后使用vhd创建磁盘时可以选择安全类型：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/scripts/copy-snapshot-to-storage-account" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/scripts/copy-snapshot-to-storage-account</a></p>
+<p>使用vhd创建磁盘时可以选择受信任的安全类型：</p>
+<p>另外，如果安全类型不一致也不能交互OS磁盘，会报如下错误：</p></article>

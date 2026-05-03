@@ -1,0 +1,96 @@
+<article class="kb-article" data-title="[Share]MgGraph批量分配许可"><h1>[Share]MgGraph批量分配许可</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-26 18:04:14</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>执行结果如下，我执行中的报错是正常的，因为我的第二用户确实没有设置usage location</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>执行结果如下，我执行中的报错是正常的，因为我的第二用户确实没有设置usage location</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Create</li>
+</ul>
+<ul>
+<li>Case:20250625360019</li>
+</ul>
+<ul>
+<li>需求：批量为用户分配许可</li>
+</ul>
+<ul>
+<li>实现方式：</li>
+</ul>
+<ul>
+<li>#为多个用户批量分配许可证</li>
+</ul>
+<ul>
+<li># 从CSV文件读取用户列表</li>
+</ul>
+<ul>
+<li>$users = Import-Csv -Path &quot;D:\users.csv&quot;</li>
+</ul>
+<ul>
+<li>CSV文件中用户格式如下：</li>
+</ul>
+<ul>
+<li># 为CSV中用户批量分配许可证</li>
+</ul>
+<ul>
+<li>foreach ($user in $users) {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;已为 $($user.UserPrincipalName) 分配许可证&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>为应用程序分配API权限，查询许可证信息以及修改用户信息需要Organization.ReadWrite.All, User.ReadWrite.All权限，分配后要点击“代表Microsoft授予管理员同意”按钮。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Get-MgSubscribedSKU | Format-List</li>
+</ul>
+<ul>
+<li>Set-MgUserLicense -UserId $user.UPN -AddLicenses @{SkuId = $licenseSkuId} -RemoveLicenses @()</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>#查询许可证信息，确认需要的SkuID是什么</li>
+</ul>
+<ul>
+<li>$licenseSkuId = &quot;SkuID&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Create</p>
+<p>2025-06-26</p>
+<p>Case:20250625360019</p>
+<p>需求：批量为用户分配许可</p>
+<p>实现方式：</p>
+<p>为应用程序分配API权限，查询许可证信息以及修改用户信息需要Organization.ReadWrite.All, User.ReadWrite.All权限，分配后要点击“代表Microsoft授予管理员同意”按钮。</p>
+<p>#为多个用户批量分配许可证</p>
+<p>#查询许可证信息，确认需要的SkuID是什么</p>
+<p>Get-MgSubscribedSKU | Format-List</p>
+<p>$licenseSkuId = &quot;SkuID&quot;</p>
+<h1>从CSV文件读取用户列表</h1>
+<p>$users = Import-Csv -Path &quot;D:\users.csv&quot;</p>
+<p>CSV文件中用户格式如下：</p>
+<h1>为CSV中用户批量分配许可证</h1>
+<p>foreach ($user in $users) {</p>
+<p>Set-MgUserLicense -UserId $user.UPN -AddLicenses @{SkuId = $licenseSkuId} -RemoveLicenses @()</p>
+<p>Write-Host &quot;已为 $($user.UserPrincipalName) 分配许可证&quot;</p>
+<p>}</p>
+<p>执行结果如下，我执行中的报错是正常的，因为我的第二用户确实没有设置usage location</p></article>

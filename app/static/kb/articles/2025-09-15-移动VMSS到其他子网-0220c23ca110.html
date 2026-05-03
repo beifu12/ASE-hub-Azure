@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="移动VMSS到其他子网"><h1>移动VMSS到其他子网</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VMSS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-15 17:05:00</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>现有规模集，子网为sub2，ip为10.1.2.4</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>现有规模集，子网为sub2，ip为10.1.2.4</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>现有规模集，子网为sub2，ip为10.1.2.4</li>
+</ul>
+<ul>
+<li>$vmss = Get-AzVmss -ResourceGroupName czvm -VMScaleSetName test</li>
+</ul>
+<ul>
+<li>get现有VMSS设置</li>
+</ul>
+<ul>
+<li>$net = $vmss.VirtualMachineProfile.NetworkProfile.NetworkInterfaceConfigurations[0].IpConfigurations[0].Subnet</li>
+</ul>
+<ul>
+<li>$net.id = &#39;/subscriptions/97a20f90-b022-457f-95cd-72eedac44985/resourceGroups/north1/providers/Microsoft.Network/virtualNetworks/north1-vnet/subnets/su3&#39;</li>
+</ul>
+<ul>
+<li>指定目标子网</li>
+</ul>
+<ul>
+<li>$vmss.VirtualMachineProfile.NetworkProfile.NetworkInterfaceConfigurations[0].IpConfigurations[0].Subnet = $net</li>
+</ul>
+<ul>
+<li>update-azvmss -VirtualMachineScaleSet $vmss -ResourceGroupName czvm -VMScaleSetName test</li>
+</ul>
+<ul>
+<li>使配置生效</li>
+</ul>
+<ul>
+<li>后续如果扩展实例，新的实例也是在新的子网中</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>回到portal，选中所有实例，选择升级</li>
+</ul>
+<ul>
+<li>升级完成后，查看实例属性，子网和IP都已经更新</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用以下powershell命令修改vmss的子网设置</li>
+</ul>
+<ul>
+<li>命令执行完后，可以看到vmss的子网设置已经变为新的子网</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>此处如果vmss中有多个实例，则需要修改每个网卡的设置</li>
+</ul>
+<ul>
+<li>将配置写回到VMSS配置中</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2019-09-18</p>
+<p>现有规模集，子网为sub2，ip为10.1.2.4</p>
+<p>使用以下powershell命令修改vmss的子网设置</p>
+<p>$vmss = Get-AzVmss -ResourceGroupName czvm -VMScaleSetName test</p>
+<p>get现有VMSS设置</p>
+<p>$net = $vmss.VirtualMachineProfile.NetworkProfile.NetworkInterfaceConfigurations[0].IpConfigurations[0].Subnet</p>
+<p>此处如果vmss中有多个实例，则需要修改每个网卡的设置</p>
+<p>$net.id = &#39;/subscriptions/97a20f90-b022-457f-95cd-72eedac44985/resourceGroups/north1/providers/Microsoft.Network/virtualNetworks/north1-vnet/subnets/su3&#39;</p>
+<p>指定目标子网</p>
+<p>$vmss.VirtualMachineProfile.NetworkProfile.NetworkInterfaceConfigurations[0].IpConfigurations[0].Subnet = $net</p>
+<p>将配置写回到VMSS配置中</p>
+<p>update-azvmss -VirtualMachineScaleSet $vmss -ResourceGroupName czvm -VMScaleSetName test</p>
+<p>使配置生效</p>
+<p>命令执行完后，可以看到vmss的子网设置已经变为新的子网</p>
+<p>回到portal，选中所有实例，选择升级</p>
+<p>升级完成后，查看实例属性，子网和IP都已经更新</p>
+<p>后续如果扩展实例，新的实例也是在新的子网中</p></article>

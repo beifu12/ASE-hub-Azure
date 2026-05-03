@@ -1,0 +1,141 @@
+<article class="kb-article" data-title="[Application insights][Logic App]application insights 中的log query后的结果定时自动导出到blob storage"><h1>[Application insights][Logic App]application insights 中的log query后的结果定时自动导出到blob storage</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: logic app</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-05-31 11:46:14</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>标黄的容器名称必须已存在否则会报错。执行后如下存储账号中的文件夹分层显示：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>标黄的容器名称必须已存在否则会报错。执行后如下存储账号中的文件夹分层显示：</li>
+</ul>
+<ul>
+<li>在Run query and list results 添加一个并行分支来设置任务运行失败的邮件提醒工作</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>测试过程供参考：</li>
+</ul>
+<ul>
+<li>创建一个逻辑应用</li>
+</ul>
+<ul>
+<li>添加每日运行触发器</li>
+</ul>
+<ul>
+<li>添加添加 Azure Monitor 日志操作</li>
+</ul>
+<ul>
+<li>根据文档添加compose</li>
+</ul>
+<ul>
+<li>再根据文档添加create blob</li>
+</ul>
+<ul>
+<li>表达式内容：subtractFromTime(formatDateTime(utcNow(),&#39;yyyy-MM-ddTHH:00:00&#39;), 1,&#39;Day&#39;)</li>
+</ul>
+<ul>
+<li>完成设计器保存，运行触发器</li>
+</ul>
+<ul>
+<li>concat(&#39;/exportblobs/&#39;,utcnow(&#39;yyyyMM&#39;),&#39;/&#39;,utcnow(&#39;yyyyMMdd&#39;))</li>
+</ul>
+<ul>
+<li>可以在query中写好时间范围，之后在Time range中选择 Set in query 就是使用Query中的时间范围</li>
+</ul>
+<ul>
+<li>示例时间范围是：</li>
+</ul>
+<ul>
+<li>| where timestamp &gt;= datetime(2021-5-19T00:00:00Z) and timestamp &lt;= datetime(2021-5-24T23:59:00Z)</li>
+</ul>
+<ul>
+<li>去掉原来第5、第6步连接器</li>
+</ul>
+<ul>
+<li>在第3个连接器添加为Control里面的 For each 选择value</li>
+</ul>
+<ul>
+<li>第4个连接器添加为Create CSV table， From 选择 value ，Columns选择automatic 后面跟Create blob连接器</li>
+</ul>
+<ul>
+<li>测试结果：</li>
+</ul>
+<ul>
+<li>设置完成后参考下面截图配置当Run query and list results不成功发送邮件</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查询到下面官网可以使用逻辑应用来实现您的需求（日志中运行的kusto语句查询出的日志定期自动导出到存储账号blob文件）</li>
+</ul>
+<ul>
+<li>复制我的Application insights中示例查询语句</li>
+</ul>
+<ul>
+<li>根据文档添加Parse json 将application insights中查询的一条结果添加到“使用示例有效负载生产架构中”</li>
+</ul>
+<ul>
+<li>测试结果查看已创建blob内容</li>
+</ul>
+<ul>
+<li>在测试环境中验证，需要指定一个已存在的容器，之后可以在创建blob连接器中的文件路径使用下面表达式来生成按照年月/年月日 分层的文件夹：</li>
+</ul>
+<ul>
+<li>可以根据下面设置query语句，设置自定义查询时间方法：</li>
+</ul>
+<ul>
+<li>使用下面的方法来将查询的结果转为数组类型：</li>
+</ul>
+<ul>
+<li>搜索send an email 连接器，进行必要的设置（例如添加O365账号，Outlook账号，或者一个授权的SMTP服务来发送邮件，由于我这里无相关账号做进一步验证，这里可能需要您做进一步验证）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/azure-monitor/logs/logs-export-logic-app" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/azure-monitor/logs/logs-export-logic-app</a></li>
+</ul>
+<ul>
+<li>参考：<a href="https://docs.azure.cn/zh-cn/logic-apps/logic-apps-exception-handling" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/logic-apps/logic-apps-exception-handling</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/05/31</p>
+<p>查询到下面官网可以使用逻辑应用来实现您的需求（日志中运行的kusto语句查询出的日志定期自动导出到存储账号blob文件）</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/azure-monitor/logs/logs-export-logic-app" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/azure-monitor/logs/logs-export-logic-app</a></p>
+<p>测试过程供参考：</p>
+<p>创建一个逻辑应用</p>
+<p>添加每日运行触发器</p>
+<p>添加添加 Azure Monitor 日志操作</p>
+<p>复制我的Application insights中示例查询语句</p>
+<p>根据文档添加Parse json 将application insights中查询的一条结果添加到“使用示例有效负载生产架构中”</p>
+<p>根据文档添加compose</p>
+<p>再根据文档添加create blob</p>
+<p>表达式内容：subtractFromTime(formatDateTime(utcNow(),&#39;yyyy-MM-ddTHH:00:00&#39;), 1,&#39;Day&#39;)</p>
+<p>完成设计器保存，运行触发器</p>
+<p>测试结果查看已创建blob内容</p>
+<p>在测试环境中验证，需要指定一个已存在的容器，之后可以在创建blob连接器中的文件路径使用下面表达式来生成按照年月/年月日 分层的文件夹：</p>
+<p>concat(&#39;/exportblobs/&#39;,utcnow(&#39;yyyyMM&#39;),&#39;/&#39;,utcnow(&#39;yyyyMMdd&#39;))</p>
+<p>标黄的容器名称必须已存在否则会报错。执行后如下存储账号中的文件夹分层显示：</p>
+<p>可以根据下面设置query语句，设置自定义查询时间方法：</p>
+<p>可以在query中写好时间范围，之后在Time range中选择 Set in query 就是使用Query中的时间范围</p>
+<p>示例时间范围是：</p>
+<p>| where timestamp &gt;= datetime(2021-5-19T00:00:00Z) and timestamp &lt;= datetime(2021-5-24T23:59:00Z)</p>
+<p>使用下面的方法来将查询的结果转为数组类型：</p>
+<p>去掉原来第5、第6步连接器</p>
+<p>在第3个连接器添加为Control里面的 For each 选择value</p>
+<p>第4个连接器添加为Create CSV table， From 选择 value ，Columns选择automatic 后面跟Create blob连接器</p>
+<p>测试结果：</p>
+<p>在Run query and list results 添加一个并行分支来设置任务运行失败的邮件提醒工作</p>
+<p>参考：<a href="https://docs.azure.cn/zh-cn/logic-apps/logic-apps-exception-handling" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/logic-apps/logic-apps-exception-handling</a></p>
+<p>搜索send an email 连接器，进行必要的设置（例如添加O365账号，Outlook账号，或者一个授权的SMTP服务来发送邮件，由于我这里无相关账号做进一步验证，这里可能需要您做进一步验证）</p>
+<p>设置完成后参考下面截图配置当Run query and list results不成功发送邮件</p></article>

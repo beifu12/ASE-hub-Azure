@@ -1,0 +1,127 @@
+<article class="kb-article" data-title="【share】azure中国区的AVD自动伸缩功能"><h1>【share】azure中国区的AVD自动伸缩功能</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-30 09:57:30</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>中国区的官方文档：<a href="https://docs.azure.cn/zh-cn/virtual-desktop/set-up-scaling-script，可以实现azure中国区的AVD自动伸缩功能。" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/set-up-scaling-script，可以实现azure中国区的AVD自动伸缩功能。</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>中国区的官方文档：<a href="https://docs.azure.cn/zh-cn/virtual-desktop/set-up-scaling-script，可以实现azure中国区的AVD自动伸缩功能。" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/set-up-scaling-script，可以实现azure中国区的AVD自动伸缩功能。</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2019-09-24-preview, 2019-12-10-preview, 2020-09-21-preview, 2020-10-19-preview, 2020-11-02-preview, 2020-11-10-preview, 2021-01-14-preview, 2021-02-01-preview, 2021-03-09-preview, 2021-04-01-preview,</li>
+</ul>
+<ul>
+<li>2021-05-13-preview, 2021-08-04-preview, 2021-09-03-preview, 2021-09-17-privatepreview, 2022-01-12-privatepreview, 2022-02-10-preview, 2022-04-01-preview, 2022-06-03-privatepreview, 2022-07-05-preview,</li>
+</ul>
+<ul>
+<li>2022-08-09-privatepreview, 2022-09-01-privatepreview, 2022-10-14-preview, 2022-12-09-privatepreview, 2023-01-28-privatepreview, 2023-01-30-preview, 2023-03-03-privatepreview, 2023-03-21-privatepreview,</li>
+</ul>
+<ul>
+<li>2023-03-30-privatepreview, 2023-04-06-preview, 2023-05-15-privatepreview, 2023-05-18-privatepreview, 2023-07-07-preview, 2021-07-12, 2022-09-09, 2023-09-05&#39;. The supported locations are &#39;chinaeast2,</li>
+</ul>
+<ul>
+<li>chinanorth2&#39;.</li>
+</ul>
+<ul>
+<li>&#39;2019-01-23-preview, 2019-09-24-preview, 2019-12-10-preview, 2020-09-21-preview, 2020-10-19-preview, 2020-11-02-preview, 2020-11-10-preview, 2021-01-14-preview, 2021-02-01-preview, 2021-03-09-preview,</li>
+</ul>
+<ul>
+<li>2021-04-01-preview, 2021-05-13-preview, 2021-08-04-preview, 2021-09-03-preview, 2021-09-17-privatepreview, 2022-01-12-privatepreview, 2022-02-10-preview, 2022-04-01-preview, 2022-06-03-privatepreview,</li>
+</ul>
+<ul>
+<li>2022-07-05-preview, 2022-08-09-privatepreview, 2022-09-01-privatepreview, 2022-10-14-preview, 2022-12-09-privatepreview, 2023-01-28-privatepreview, 2023-01-30-preview, 2023-03-03-privatepreview,</li>
+</ul>
+<ul>
+<li>2023-03-21-privatepreview, 2023-03-30-privatepreview, 2023-04-06-preview, 2023-05-15-privatepreview, 2023-05-18-privatepreview, 2023-07-07-preview, 2021-07-12, 2022-09-09, 2023-09-05&#39;. The supported</li>
+</ul>
+<ul>
+<li>locations are &#39;chinaeast2, chinanorth2&#39;.</li>
+</ul>
+<ul>
+<li>$token_type = &quot;Bearer&quot;</li>
+</ul>
+<ul>
+<li>$access_token = &quot;*****&quot;</li>
+</ul>
+<ul>
+<li>$headerParams = @{&#39;Authorization&#39;=&quot;$($token_type) $($access_token)&quot;}</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>经过如上调整后，相应的配置成功应用到AVD环境中。Logic app/ Automation的运行结果都是成功的。进一步查看Automation的日志信息：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>严格按照文档准备好前提条件后，分别下载的两个脚本CreateOrUpdateAzAutoAccount.ps1和CreateOrUpdateAzLogicApp.ps1也有需要改动的地方。</li>
+</ul>
+<ul>
+<li>CreateOrUpdateAzAutoAccount.ps1  针对这个脚本需要调整如下信息：</li>
+</ul>
+<ul>
+<li>CreateOrUpdateAzLogicApp.ps1 针对这个脚本需要调整如下信息：</li>
+</ul>
+<ul>
+<li>Get-AzWvdHostPool : No registered resource provider found for location &#39;chinanorth2&#39; and API version &#39;2023-10-04-preview&#39; for type &#39;hostpools&#39;. The supported api-versions are &#39;2019-01-23-preview,</li>
+</ul>
+<ul>
+<li>Get-AzWvdSessionHost : No registered resource provider found for location &#39;chinanorth2&#39; and API version &#39;2023-10-04-preview&#39; for type &#39;hostpools/sessionhosts&#39;. The supported api-versions are</li>
+</ul>
+<ul>
+<li>由于如上2个命令对应的API版本在中国北2不支持。因此需要调整脚步中调用的命令直接使用API调用</li>
+</ul>
+<ul>
+<li>详情参考以下截图部分，对脚本进行修改注释之前的$HostPoolInfo和$SessionHostsList，并直接在下面新增以上信息。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>中国区的官方文档：<a href="https://docs.azure.cn/zh-cn/virtual-desktop/set-up-scaling-script，可以实现azure中国区的AVD自动伸缩功能。" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/set-up-scaling-script，可以实现azure中国区的AVD自动伸缩功能。</a></li>
+</ul>
+<ul>
+<li>$uri = &quot;<a href="https://$($customerId).ods.opinsights.azure.$(if" target="_blank" rel="noopener">https://$($customerId).ods.opinsights.azure.$(if</a> ($AzContext.Environment.Name -eq &#39;AzureUSGovernment&#39;) { &#39;us&#39; } else { &#39;cn&#39; })$($resource)?api-version=2016-04-01&quot;</li>
+</ul>
+<ul>
+<li>$HostPoolInfo = Invoke-RestMethod -Method &quot;GET&quot; -Uri &quot;<a href="https://management.chinacloudapi.cn/subscriptions/****" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/****</a><strong>/resourceGroups/</strong>*<strong>/providers/Microsoft.DesktopVirtualization/hostPools/</strong>*****?api-version=2023-09-05&quot; -Headers $headerParams</li>
+</ul>
+<ul>
+<li>$HostPoolInfo = Invoke-RestMethod -Method &quot;GET&quot; -Uri &quot;<a href="https://management.chinacloudapi.cn/subscriptions/****" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/****</a><strong>/resourceGroups/</strong>*<strong>/providers/Microsoft.DesktopVirtualization/hostPools/</strong>*****/sessionHosts?api-version=2023-09-05&quot; -Headers $headerParams</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/7/16</p>
+<p>中国区的官方文档：<a href="https://docs.azure.cn/zh-cn/virtual-desktop/set-up-scaling-script，可以实现azure中国区的AVD自动伸缩功能。" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/set-up-scaling-script，可以实现azure中国区的AVD自动伸缩功能。</a></p>
+<p>严格按照文档准备好前提条件后，分别下载的两个脚本CreateOrUpdateAzAutoAccount.ps1和CreateOrUpdateAzLogicApp.ps1也有需要改动的地方。</p>
+<p>CreateOrUpdateAzAutoAccount.ps1  针对这个脚本需要调整如下信息：</p>
+<p>$uri = &quot;<a href="https://$($customerId).ods.opinsights.azure.$(if" target="_blank" rel="noopener">https://$($customerId).ods.opinsights.azure.$(if</a> ($AzContext.Environment.Name -eq &#39;AzureUSGovernment&#39;) { &#39;us&#39; } else { &#39;cn&#39; })$($resource)?api-version=2016-04-01&quot;</p>
+<p>CreateOrUpdateAzLogicApp.ps1 针对这个脚本需要调整如下信息：</p>
+<p>Get-AzWvdHostPool : No registered resource provider found for location &#39;chinanorth2&#39; and API version &#39;2023-10-04-preview&#39; for type &#39;hostpools&#39;. The supported api-versions are &#39;2019-01-23-preview,</p>
+<p>2019-09-24-preview, 2019-12-10-preview, 2020-09-21-preview, 2020-10-19-preview, 2020-11-02-preview, 2020-11-10-preview, 2021-01-14-preview, 2021-02-01-preview, 2021-03-09-preview, 2021-04-01-preview,</p>
+<p>2021-05-13-preview, 2021-08-04-preview, 2021-09-03-preview, 2021-09-17-privatepreview, 2022-01-12-privatepreview, 2022-02-10-preview, 2022-04-01-preview, 2022-06-03-privatepreview, 2022-07-05-preview,</p>
+<p>2022-08-09-privatepreview, 2022-09-01-privatepreview, 2022-10-14-preview, 2022-12-09-privatepreview, 2023-01-28-privatepreview, 2023-01-30-preview, 2023-03-03-privatepreview, 2023-03-21-privatepreview,</p>
+<p>2023-03-30-privatepreview, 2023-04-06-preview, 2023-05-15-privatepreview, 2023-05-18-privatepreview, 2023-07-07-preview, 2021-07-12, 2022-09-09, 2023-09-05&#39;. The supported locations are &#39;chinaeast2,</p>
+<p>chinanorth2&#39;.</p>
+<p>Get-AzWvdSessionHost : No registered resource provider found for location &#39;chinanorth2&#39; and API version &#39;2023-10-04-preview&#39; for type &#39;hostpools/sessionhosts&#39;. The supported api-versions are</p>
+<p>&#39;2019-01-23-preview, 2019-09-24-preview, 2019-12-10-preview, 2020-09-21-preview, 2020-10-19-preview, 2020-11-02-preview, 2020-11-10-preview, 2021-01-14-preview, 2021-02-01-preview, 2021-03-09-preview,</p>
+<p>2021-04-01-preview, 2021-05-13-preview, 2021-08-04-preview, 2021-09-03-preview, 2021-09-17-privatepreview, 2022-01-12-privatepreview, 2022-02-10-preview, 2022-04-01-preview, 2022-06-03-privatepreview,</p>
+<p>2022-07-05-preview, 2022-08-09-privatepreview, 2022-09-01-privatepreview, 2022-10-14-preview, 2022-12-09-privatepreview, 2023-01-28-privatepreview, 2023-01-30-preview, 2023-03-03-privatepreview,</p>
+<p>2023-03-21-privatepreview, 2023-03-30-privatepreview, 2023-04-06-preview, 2023-05-15-privatepreview, 2023-05-18-privatepreview, 2023-07-07-preview, 2021-07-12, 2022-09-09, 2023-09-05&#39;. The supported</p>
+<p>locations are &#39;chinaeast2, chinanorth2&#39;.</p>
+<p>由于如上2个命令对应的API版本在中国北2不支持。因此需要调整脚步中调用的命令直接使用API调用</p>
+<p>$token_type = &quot;Bearer&quot;</p>
+<p>$access_token = &quot;*****&quot;</p>
+<p>$headerParams = @{&#39;Authorization&#39;=&quot;$($token_type) $($access_token)&quot;}</p>
+<p>$HostPoolInfo = Invoke-RestMethod -Method &quot;GET&quot; -Uri &quot;<a href="https://management.chinacloudapi.cn/subscriptions/****" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/****</a><strong>/resourceGroups/</strong>*<strong>/providers/Microsoft.DesktopVirtualization/hostPools/</strong>*****?api-version=2023-09-05&quot; -Headers $headerParams</p>
+<p>$HostPoolInfo = Invoke-RestMethod -Method &quot;GET&quot; -Uri &quot;<a href="https://management.chinacloudapi.cn/subscriptions/****" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/****</a><strong>/resourceGroups/</strong>*<strong>/providers/Microsoft.DesktopVirtualization/hostPools/</strong>*****/sessionHosts?api-version=2023-09-05&quot; -Headers $headerParams</p>
+<p>详情参考以下截图部分，对脚本进行修改注释之前的$HostPoolInfo和$SessionHostsList，并直接在下面新增以上信息。</p>
+<p>经过如上调整后，相应的配置成功应用到AVD环境中。Logic app/ Automation的运行结果都是成功的。进一步查看Automation的日志信息：</p></article>

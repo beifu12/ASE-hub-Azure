@@ -1,0 +1,807 @@
+<article class="kb-article" data-title="Readiness"><h1>Readiness</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Roadmap.one</li>
+<li>Section: Roadmap</li>
+<li>最近修改: 2025-10-09 17:17:20</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>At least one domain must be associated with a route and the endpoint during creation. Endpoints cannot be associated directly to routes without a domain.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>At least one domain must be associated with a route and the endpoint during creation. Endpoints cannot be associated directly to routes without a domain.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>AFD is scheduled to go GA on 8/22. Kindly ensure that the engineers (or a subset of them) are prepared on this topic by the GA date.</li>
+</ul>
+<ul>
+<li>Attachment:</li>
+</ul>
+<ul>
+<li>Introduction</li>
+</ul>
+<ul>
+<li>Please note:</li>
+</ul>
+<ul>
+<li>AFD is available in China North 3 and China East 3.</li>
+</ul>
+<ul>
+<li>There are China-specific configurations such as ICP filing for custom domains and some limitations that are not supported in Azure China yet. Details are captured in this documentation.</li>
+</ul>
+<ul>
+<li>This document outlines the scope of the preview, known limitations, diagnostic tooling, and pricing guidance. It is intended for technical teams responsible for CDN configuration, security policy enforcement, and performance optimisation in the China Azure region.</li>
+</ul>
+<ul>
+<li>Supported Scenarios</li>
+</ul>
+<ul>
+<li>The following features are in scope for validation during the private preview:</li>
+</ul>
+<ul>
+<li>CRUD operations for AFD resources:</li>
+</ul>
+<ul>
+<li>AFD Profiles (custom create only)</li>
+</ul>
+<ul>
+<li>AFD Endpoints</li>
+</ul>
+<ul>
+<li>Custom domains with ICP filing</li>
+</ul>
+<ul>
+<li>Routes</li>
+</ul>
+<ul>
+<li>Caching and Compression</li>
+</ul>
+<ul>
+<li>Secrets (Bring Your Own Certificate only)</li>
+</ul>
+<ul>
+<li>Origin Groups and Origins</li>
+</ul>
+<ul>
+<li>Private Link (ChinaNorth3 and ChinaEast3 only)</li>
+</ul>
+<ul>
+<li>Security Policies</li>
+</ul>
+<ul>
+<li>Rule Sets and Rules</li>
+</ul>
+<ul>
+<li>Metrics</li>
+</ul>
+<ul>
+<li>Out of Private Preview Scope</li>
+</ul>
+<ul>
+<li>The following features are not included in the private preview:</li>
+</ul>
+<ul>
+<li>Reports</li>
+</ul>
+<ul>
+<li>Security Report</li>
+</ul>
+<ul>
+<li>Azure Recommendations/Advisor</li>
+</ul>
+<ul>
+<li>CRUD operations for WAF resources</li>
+</ul>
+<ul>
+<li>Known Limitations</li>
+</ul>
+<ul>
+<li>The following limitations apply to the Azure China deployment of AFD during the private preview:</li>
+</ul>
+<ul>
+<li>No Quick Create Support</li>
+</ul>
+<ul>
+<li>Due to ICP requirements, quick creation of AFD profiles is not supported. All resources must be created through the custom create.</li>
+</ul>
+<ul>
+<li>Domain Requirement for Endpoint Association</li>
+</ul>
+<ul>
+<li>No Managed Certificate Support</li>
+</ul>
+<ul>
+<li>Only Bring Your Own Certificate (BYOC) is supported. Managed certificates are not available in Azure China.</li>
+</ul>
+<ul>
+<li>Private Link Availability</li>
+</ul>
+<ul>
+<li>Private Link support is limited to ChinaNorth3 and ChinaEast3 regions. Only Storage, Azure Container App are supported as the PL origins.</li>
+</ul>
+<ul>
+<li>Private Preview Limitation only</li>
+</ul>
+<ul>
+<li>Supports only API version 2024, custom cipher suite and origin authentication using managed identity is unsupported.</li>
+</ul>
+<ul>
+<li>Step-by-step Guidance</li>
+</ul>
+<ul>
+<li>Week</li>
+</ul>
+<ul>
+<li>General Topic</li>
+</ul>
+<ul>
+<li>Component</li>
+</ul>
+<ul>
+<li>ETA (hr)</li>
+</ul>
+<ul>
+<li>Key Learning</li>
+</ul>
+<ul>
+<li>Material</li>
+</ul>
+<ul>
+<li>胡明月</li>
+</ul>
+<ul>
+<li>傅张良</li>
+</ul>
+<ul>
+<li>王书文</li>
+</ul>
+<ul>
+<li>辛岳凤</li>
+</ul>
+<ul>
+<li>李海涛</li>
+</ul>
+<ul>
+<li>田 甜</li>
+</ul>
+<ul>
+<li>邢相佳</li>
+</ul>
+<ul>
+<li>傅子豪</li>
+</ul>
+<ul>
+<li>邵俊杰</li>
+</ul>
+<ul>
+<li>唐 鑫</li>
+</ul>
+<ul>
+<li>李美慧</li>
+</ul>
+<ul>
+<li>杨嘉庆</li>
+</ul>
+<ul>
+<li>范昱</li>
+</ul>
+<ul>
+<li>马骁</li>
+</ul>
+<ul>
+<li>曹义澎</li>
+</ul>
+<ul>
+<li>Introduction to Azure Front Door</li>
+</ul>
+<ul>
+<li>Overview of Azure Front Door</li>
+</ul>
+<ul>
+<li>0.5</li>
+</ul>
+<ul>
+<li>Understand the purpose, architecture, and use cases of Azure Front Door.</li>
+</ul>
+<ul>
+<li>Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Azure Front Door - Best practices | Azure Docs</li>
+</ul>
+<ul>
+<li>Azure Front Door frequently asked questions (FAQ) | Azure Docs</li>
+</ul>
+<ul>
+<li>Y</li>
+</ul>
+<ul>
+<li>0.1</li>
+</ul>
+<ul>
+<li>Comparison between Azure Front Door and Azure CDN services | Azure Docs</li>
+</ul>
+<ul>
+<li>y</li>
+</ul>
+<ul>
+<li>Routing</li>
+</ul>
+<ul>
+<li>1</li>
+</ul>
+<ul>
+<li>Routing architecture - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>How requests get matched to a route configuration - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Routing limits - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Health probes - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>AFD Configurations</li>
+</ul>
+<ul>
+<li>Create your first AFD [hands-on lab]</li>
+</ul>
+<ul>
+<li>1.5</li>
+</ul>
+<ul>
+<li>Create an AFD and get familiar with all configuration components</li>
+</ul>
+<ul>
+<li>Understand Mooncake limitations</li>
+</ul>
+<ul>
+<li>Add a new endpoint with Front Door manager - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>How to add a custom domain - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Configure HTTPS for your custom domain - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Configure rule sets in Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Configuration components of AFD</li>
+</ul>
+<ul>
+<li>Understand AFD components in configuration:</li>
+</ul>
+<ul>
+<li>front door manager,</li>
+</ul>
+<ul>
+<li>profiles,</li>
+</ul>
+<ul>
+<li>endpoints,</li>
+</ul>
+<ul>
+<li>routes,</li>
+</ul>
+<ul>
+<li>domains,</li>
+</ul>
+<ul>
+<li>rule sets,</li>
+</ul>
+<ul>
+<li>Origins/origin groups.</li>
+</ul>
+<ul>
+<li>Endpoints in Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Front Door manager | Azure Docs</li>
+</ul>
+<ul>
+<li>Domains in Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>What is a rule set? - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Origins and origin groups - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>AFD Best Practices</li>
+</ul>
+<ul>
+<li>Scenarios of AFD usage</li>
+</ul>
+<ul>
+<li>Know how AFD is used in typical scenarios with web app or storage.</li>
+</ul>
+<ul>
+<li>Accelerate and Secure Your Web Application with Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Use Azure Front Door with Azure Storage blobs | Azure Docs</li>
+</ul>
+<ul>
+<li>Reliable file upload to Azure Storage Blob through Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>AFD Features</li>
+</ul>
+<ul>
+<li>Security</li>
+</ul>
+<ul>
+<li>DDoS protection on Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>TLS encryption - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Azure Front Door sensitive data protection | Azure Docs</li>
+</ul>
+<ul>
+<li>Web Application Firewall (WAF) on Azure Front Door | Microsoft Learn (there&#39;s no correspondent content in China doc, please reference to this global one)</li>
+</ul>
+<ul>
+<li>Caching</li>
+</ul>
+<ul>
+<li>0.2</li>
+</ul>
+<ul>
+<li>Know how to configure caching and purge the cache.</li>
+</ul>
+<ul>
+<li>Caching with Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Cache purging for Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>compression</li>
+</ul>
+<ul>
+<li>Know how compression works with AFD and how to configure it.</li>
+</ul>
+<ul>
+<li>Improve performance by compressing files - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Private Link (only for premium)</li>
+</ul>
+<ul>
+<li>Know how AFD can access origin with PL.</li>
+</ul>
+<ul>
+<li>Secure your Origin with Private Link in Azure Front Door Premium | Azure Docs</li>
+</ul>
+<ul>
+<li>WebSocket</li>
+</ul>
+<ul>
+<li>Know how WebSocket works with AFD.</li>
+</ul>
+<ul>
+<li>Azure Front Door WebSocket | Azure Docs</li>
+</ul>
+<ul>
+<li>HTTP/2</li>
+</ul>
+<ul>
+<li>Know how HTTP/2 works with AFD.</li>
+</ul>
+<ul>
+<li>HTTP/2 support in Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>AFD Operational Excellence</li>
+</ul>
+<ul>
+<li>Monitoring</li>
+</ul>
+<ul>
+<li>Monitoring data reference for Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Billing</li>
+</ul>
+<ul>
+<li>Learn how to estimate and manage costs for Azure Front Door.</li>
+</ul>
+<ul>
+<li>Understand Azure Front Door billing | Azure Docs</li>
+</ul>
+<ul>
+<li>Configuration</li>
+</ul>
+<ul>
+<li>0.3</li>
+</ul>
+<ul>
+<li>ARM Requests - Incoming request</li>
+</ul>
+<ul>
+<li>↓</li>
+</ul>
+<ul>
+<li>ARM Requests - EventServiceEntries</li>
+</ul>
+<ul>
+<li>CDN Resource Provider</li>
+</ul>
+<ul>
+<li>WIKI TSG - CRUD Investigation | AFD Standard-Premium – Overview (please see PDF)</li>
+</ul>
+<ul>
+<li>Example:</li>
+</ul>
+<ul>
+<li>AFDCPAPIevent （CA mooncake→AFDControlPlaneAPI→AFDCPAPIevent)</li>
+</ul>
+<ul>
+<li>Health probe</li>
+</ul>
+<ul>
+<li>TSG - Health Probes | AFD Standard-Premium - Overview    (please see PDF)</li>
+</ul>
+<ul>
+<li>Example：</li>
+</ul>
+<ul>
+<li>(Need change ACCOUNT to  Search_FrontDoor_Mooncake in Mooncake</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Azure Front Door (AFD) is a modern, cloud-native content delivery network (CDN) and application acceleration platform that provides secure, scalable, and high-performance delivery of web applications. As part of Microsoft’s commitment to expanding Azure services in sovereign cloud regions, this private preview introduces AFD capabilities in the Azure China, enabling customers to evaluate and validate core CDN and security features tailored to local compliance and infrastructure requirements.</li>
+</ul>
+<ul>
+<li>Log scrubbing</li>
+</ul>
+<ul>
+<li>Diagnostic Logs</li>
+</ul>
+<ul>
+<li>WAF Portal Limitations</li>
+</ul>
+<ul>
+<li>The WAF portal experience is not available. Users must configure WAF policies through AFD security policies.</li>
+</ul>
+<ul>
+<li>Diagnostic log is not available yet, but you can refer to Metrics.</li>
+</ul>
+<ul>
+<li>Please see the AFD Public documentation available at Quickstart: Create an Azure Front Door using the Azure portal | Microsoft Learn</li>
+</ul>
+<ul>
+<li>Understand how the traffic routes through the AFD and the limits.</li>
+</ul>
+<ul>
+<li>Traffic acceleration - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Traffic routing methods to origin - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Quickstart: Create an Azure Front Door using the Azure portal | Azure Docs</li>
+</ul>
+<ul>
+<li>Know measures to secure traffic through out AFD.</li>
+</ul>
+<ul>
+<li>Secure traffic to origins - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Learn how to monitor traffic and diagnose issues using Azure Monitor and Logs.</li>
+</ul>
+<ul>
+<li>Troubleshooting</li>
+</ul>
+<ul>
+<li>Troubleshooting  scenario</li>
+</ul>
+<ul>
+<li>Learn the Troubleshooting scenario from the official document</li>
+</ul>
+<ul>
+<li>Troubleshoot 4xx and 5xx Errors Using Reference String - Azure Front Door | Azure Docs</li>
+</ul>
+<ul>
+<li>Learn  use ASC or Javis action to check the Azure Front Door config</li>
+</ul>
+<ul>
+<li>ASC:ASC | Resource Explorer</li>
+</ul>
+<ul>
+<li>Troubleshooting control plane</li>
+</ul>
+<ul>
+<li>Control plane log (CA mooncake→MCCDNPRODRPV2→ApiAnalytics&amp; Logs)</li>
+</ul>
+<ul>
+<li>Troubleshooting data plane</li>
+</ul>
+<ul>
+<li>Common Log resource:</li>
+</ul>
+<ul>
+<li>Health probe logs</li>
+</ul>
+<ul>
+<li>Customer access logs</li>
+</ul>
+<ul>
+<li>WAF logs</li>
+</ul>
+<ul>
+<li>Impression log</li>
+</ul>
+<ul>
+<li>Dashboard</li>
+</ul>
+<ul>
+<li>Endpoint Health Dashboard</li>
+</ul>
+<ul>
+<li>Partner Dashboard</li>
+</ul>
+<ul>
+<li>Impression log concept</li>
+</ul>
+<ul>
+<li>Impression Logs Explained - Overview (please see PDF)</li>
+</ul>
+<ul>
+<li>Impression log search tool.</li>
+</ul>
+<ul>
+<li>Impression Log Search</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Only AFD standard and premium SKU’s are supported in Azure China.</li>
+</ul>
+<ul>
+<li>SKU upgrade</li>
+</ul>
+<ul>
+<li>Azure Front Door SKUs</li>
+</ul>
+<ul>
+<li>Learn the differences between Standard and Premium SKUs.</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>AFD preview link:  (only for CE3 and CN3) <a href="https://aka.ms/afdx/mooncake/privatepreview" target="_blank" rel="noopener">https://aka.ms/afdx/mooncake/privatepreview</a></li>
+</ul>
+<ul>
+<li>Javis action example <a href="https://portal.microsoftgeneva.com/74882FB3?genevatraceguid=43c876ef-070e-4fed-9316-8b6051e48728" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/74882FB3?genevatraceguid=43c876ef-070e-4fed-9316-8b6051e48728</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/D452DE6E" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/D452DE6E</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/logs/dgrep?page=logs&amp;be=DGrep&amp;offset=-2&amp;offsetUnit=Days&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=AFDControlPlaneAPI&amp;en=AfdCpApiEvent&amp;conditions=[[&quot;AnyField&quot;,&quot;contains&quot;,&quot;xiaohanAFD&quot;]]&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/logs/dgrep?page=logs&amp;be=DGrep&amp;offset=-2&amp;offsetUnit=Days&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=AFDControlPlaneAPI&amp;en=AfdCpApiEvent&amp;conditions=[[&quot;AnyField&quot;,&quot;contains&quot;,&quot;xiaohanAFD&quot;]]&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20</a></li>
+</ul>
+<ul>
+<li><a href="https://supportability.visualstudio.com/AzureNetworking/_wiki/wikis/Wiki/541024/Log-Sources-for-AFD-and-CDN?anchor=jarvis-logs" target="_blank" rel="noopener">https://supportability.visualstudio.com/AzureNetworking/_wiki/wikis/Wiki/541024/Log-Sources-for-AFD-and-CDN?anchor=jarvis-logs</a></li>
+</ul>
+<ul>
+<li><a href="https://supportability.visualstudio.com/AzureNetworking/_wiki/wikis/Wiki/541024/Log-Sources-for-AFD-and-CDN?anchor=waf---customer-logs" target="_blank" rel="noopener">https://supportability.visualstudio.com/AzureNetworking/_wiki/wikis/Wiki/541024/Log-Sources-for-AFD-and-CDN?anchor=waf---customer-logs</a></li>
+</ul>
+<ul>
+<li><a href="https://supportability.visualstudio.com/AzureNetworking/_wiki/wikis/Wiki/447045/TSG-Health-Probes-AFD-Standard-Premium?anchor=logging" target="_blank" rel="noopener">https://supportability.visualstudio.com/AzureNetworking/_wiki/wikis/Wiki/447045/TSG-Health-Probes-AFD-Standard-Premium?anchor=logging</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/E150F559?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/2a6b6250-fbfe-4f11-9af2-b81f0ee26453/resourcegroups/Xiaohan-AFD-rg/providers/Microsoft.Cdn/profiles/xiaohanAFD&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Partner&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;0dd0be81-a9b9-42a9-8265-cd7bade90852_xiaohanAFD&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ApplicationEndpointPool&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/E150F559?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/2a6b6250-fbfe-4f11-9af2-b81f0ee26453/resourcegroups/Xiaohan-AFD-rg/providers/Microsoft.Cdn/profiles/xiaohanAFD&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Partner&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;0dd0be81-a9b9-42a9-8265-cd7bade90852_xiaohanAFD&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ApplicationEndpointPool&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>AFD is scheduled to go GA on 8/22. Kindly ensure that the engineers (or a subset of them) are prepared on this topic by the GA date.</p>
+<p>Attachment:</p>
+<p>AFD preview link:  (only for CE3 and CN3) <a href="https://aka.ms/afdx/mooncake/privatepreview" target="_blank" rel="noopener">https://aka.ms/afdx/mooncake/privatepreview</a></p>
+<p>Introduction</p>
+<p>Azure Front Door (AFD) is a modern, cloud-native content delivery network (CDN) and application acceleration platform that provides secure, scalable, and high-performance delivery of web applications. As part of Microsoft’s commitment to expanding Azure services in sovereign cloud regions, this private preview introduces AFD capabilities in the Azure China, enabling customers to evaluate and validate core CDN and security features tailored to local compliance and infrastructure requirements.</p>
+<p>Please note:</p>
+<p>AFD is available in China North 3 and China East 3.</p>
+<p>Only AFD standard and premium SKU’s are supported in Azure China.</p>
+<p>There are China-specific configurations such as ICP filing for custom domains and some limitations that are not supported in Azure China yet. Details are captured in this documentation.</p>
+<p>This document outlines the scope of the preview, known limitations, diagnostic tooling, and pricing guidance. It is intended for technical teams responsible for CDN configuration, security policy enforcement, and performance optimisation in the China Azure region.</p>
+<p>Supported Scenarios</p>
+<p>The following features are in scope for validation during the private preview:</p>
+<p>CRUD operations for AFD resources:</p>
+<p>AFD Profiles (custom create only)</p>
+<p>AFD Endpoints</p>
+<p>Custom domains with ICP filing</p>
+<p>Routes</p>
+<p>Caching and Compression</p>
+<p>Secrets (Bring Your Own Certificate only)</p>
+<p>SKU upgrade</p>
+<p>Log scrubbing</p>
+<p>Origin Groups and Origins</p>
+<p>Private Link (ChinaNorth3 and ChinaEast3 only)</p>
+<p>Security Policies</p>
+<p>Rule Sets and Rules</p>
+<p>Metrics</p>
+<p>Out of Private Preview Scope</p>
+<p>The following features are not included in the private preview:</p>
+<p>Reports</p>
+<p>Security Report</p>
+<p>Diagnostic Logs</p>
+<p>Azure Recommendations/Advisor</p>
+<p>CRUD operations for WAF resources</p>
+<p>Known Limitations</p>
+<p>The following limitations apply to the Azure China deployment of AFD during the private preview:</p>
+<p>No Quick Create Support</p>
+<p>Due to ICP requirements, quick creation of AFD profiles is not supported. All resources must be created through the custom create.</p>
+<p>Domain Requirement for Endpoint Association</p>
+<p>At least one domain must be associated with a route and the endpoint during creation. Endpoints cannot be associated directly to routes without a domain.</p>
+<p>No Managed Certificate Support</p>
+<p>Only Bring Your Own Certificate (BYOC) is supported. Managed certificates are not available in Azure China.</p>
+<p>Private Link Availability</p>
+<p>Private Link support is limited to ChinaNorth3 and ChinaEast3 regions. Only Storage, Azure Container App are supported as the PL origins.</p>
+<p>WAF Portal Limitations</p>
+<p>The WAF portal experience is not available. Users must configure WAF policies through AFD security policies.</p>
+<p>Private Preview Limitation only</p>
+<p>Supports only API version 2024, custom cipher suite and origin authentication using managed identity is unsupported.</p>
+<p>Diagnostic log is not available yet, but you can refer to Metrics.</p>
+<p>Step-by-step Guidance</p>
+<p>Please see the AFD Public documentation available at Quickstart: Create an Azure Front Door using the Azure portal | Microsoft Learn</p>
+<p>Week</p>
+<p>General Topic</p>
+<p>Component</p>
+<p>ETA (hr)</p>
+<p>Key Learning</p>
+<p>Material</p>
+<p>胡明月</p>
+<p>傅张良</p>
+<p>王书文</p>
+<p>辛岳凤</p>
+<p>李海涛</p>
+<p>田 甜</p>
+<p>邢相佳</p>
+<p>傅子豪</p>
+<p>邵俊杰</p>
+<p>唐 鑫</p>
+<p>李美慧</p>
+<p>杨嘉庆</p>
+<p>范昱</p>
+<p>马骁</p>
+<p>曹义澎</p>
+<p>Introduction to Azure Front Door</p>
+<p>Overview of Azure Front Door</p>
+<p>0.5</p>
+<p>Understand the purpose, architecture, and use cases of Azure Front Door.</p>
+<p>Azure Front Door | Azure Docs</p>
+<p>Azure Front Door - Best practices | Azure Docs</p>
+<p>Azure Front Door frequently asked questions (FAQ) | Azure Docs</p>
+<p>Y</p>
+<p>Azure Front Door SKUs</p>
+<p>0.1</p>
+<p>Learn the differences between Standard and Premium SKUs.</p>
+<p>Comparison between Azure Front Door and Azure CDN services | Azure Docs</p>
+<p>y</p>
+<p>Routing</p>
+<p>1</p>
+<p>Understand how the traffic routes through the AFD and the limits.</p>
+<p>Routing architecture - Azure Front Door | Azure Docs</p>
+<p>How requests get matched to a route configuration - Azure Front Door | Azure Docs</p>
+<p>Routing limits - Azure Front Door | Azure Docs</p>
+<p>Traffic acceleration - Azure Front Door | Azure Docs</p>
+<p>Traffic routing methods to origin - Azure Front Door | Azure Docs</p>
+<p>Health probes - Azure Front Door | Azure Docs</p>
+<p>AFD Configurations</p>
+<p>Create your first AFD [hands-on lab]</p>
+<p>1.5</p>
+<p>Create an AFD and get familiar with all configuration components</p>
+<p>Understand Mooncake limitations</p>
+<p>Quickstart: Create an Azure Front Door using the Azure portal | Azure Docs</p>
+<p>Add a new endpoint with Front Door manager - Azure Front Door | Azure Docs</p>
+<p>How to add a custom domain - Azure Front Door | Azure Docs</p>
+<p>Configure HTTPS for your custom domain - Azure Front Door | Azure Docs</p>
+<p>Configure rule sets in Azure Front Door | Azure Docs</p>
+<p>Configuration components of AFD</p>
+<p>Understand AFD components in configuration:</p>
+<p>front door manager,</p>
+<p>profiles,</p>
+<p>endpoints,</p>
+<p>routes,</p>
+<p>domains,</p>
+<p>rule sets,</p>
+<p>Origins/origin groups.</p>
+<p>Endpoints in Azure Front Door | Azure Docs</p>
+<p>Front Door manager | Azure Docs</p>
+<p>Domains in Azure Front Door | Azure Docs</p>
+<p>What is a rule set? - Azure Front Door | Azure Docs</p>
+<p>Origins and origin groups - Azure Front Door | Azure Docs</p>
+<p>AFD Best Practices</p>
+<p>Scenarios of AFD usage</p>
+<p>Know how AFD is used in typical scenarios with web app or storage.</p>
+<p>Accelerate and Secure Your Web Application with Azure Front Door | Azure Docs</p>
+<p>Use Azure Front Door with Azure Storage blobs | Azure Docs</p>
+<p>Reliable file upload to Azure Storage Blob through Azure Front Door | Azure Docs</p>
+<p>AFD Features</p>
+<p>Security</p>
+<p>Know measures to secure traffic through out AFD.</p>
+<p>DDoS protection on Azure Front Door | Azure Docs</p>
+<p>TLS encryption - Azure Front Door | Azure Docs</p>
+<p>Azure Front Door sensitive data protection | Azure Docs</p>
+<p>Secure traffic to origins - Azure Front Door | Azure Docs</p>
+<p>Web Application Firewall (WAF) on Azure Front Door | Microsoft Learn (there&#39;s no correspondent content in China doc, please reference to this global one)</p>
+<p>Caching</p>
+<p>0.2</p>
+<p>Know how to configure caching and purge the cache.</p>
+<p>Caching with Azure Front Door | Azure Docs</p>
+<p>Cache purging for Azure Front Door | Azure Docs</p>
+<p>compression</p>
+<p>Know how compression works with AFD and how to configure it.</p>
+<p>Improve performance by compressing files - Azure Front Door | Azure Docs</p>
+<p>Private Link (only for premium)</p>
+<p>Know how AFD can access origin with PL.</p>
+<p>Secure your Origin with Private Link in Azure Front Door Premium | Azure Docs</p>
+<p>WebSocket</p>
+<p>Know how WebSocket works with AFD.</p>
+<p>Azure Front Door WebSocket | Azure Docs</p>
+<p>HTTP/2</p>
+<p>Know how HTTP/2 works with AFD.</p>
+<p>HTTP/2 support in Azure Front Door | Azure Docs</p>
+<p>AFD Operational Excellence</p>
+<p>Monitoring</p>
+<p>Learn how to monitor traffic and diagnose issues using Azure Monitor and Logs.</p>
+<p>Monitoring data reference for Azure Front Door | Azure Docs</p>
+<p>Billing</p>
+<p>Learn how to estimate and manage costs for Azure Front Door.</p>
+<p>Understand Azure Front Door billing | Azure Docs</p>
+<p>Troubleshooting</p>
+<p>Troubleshooting  scenario</p>
+<p>Learn the Troubleshooting scenario from the official document</p>
+<p>Troubleshoot 4xx and 5xx Errors Using Reference String - Azure Front Door | Azure Docs</p>
+<p>Configuration</p>
+<p>0.3</p>
+<p>Learn  use ASC or Javis action to check the Azure Front Door config</p>
+<p>ASC:ASC | Resource Explorer</p>
+<p>Javis action example <a href="https://portal.microsoftgeneva.com/74882FB3?genevatraceguid=43c876ef-070e-4fed-9316-8b6051e48728" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/74882FB3?genevatraceguid=43c876ef-070e-4fed-9316-8b6051e48728</a></p>
+<p>Troubleshooting control plane</p>
+<p>ARM Requests - Incoming request</p>
+<p>↓</p>
+<p>ARM Requests - EventServiceEntries</p>
+<p>CDN Resource Provider</p>
+<p>WIKI TSG - CRUD Investigation | AFD Standard-Premium – Overview (please see PDF)</p>
+<p>Control plane log (CA mooncake→MCCDNPRODRPV2→ApiAnalytics&amp; Logs)</p>
+<p>Example:</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/D452DE6E" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/D452DE6E</a></p>
+<p>AFDCPAPIevent （CA mooncake→AFDControlPlaneAPI→AFDCPAPIevent)</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/logs/dgrep?page=logs&amp;be=DGrep&amp;offset=-2&amp;offsetUnit=Days&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=AFDControlPlaneAPI&amp;en=AfdCpApiEvent&amp;conditions=[[&quot;AnyField&quot;,&quot;contains&quot;,&quot;xiaohanAFD&quot;]]&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/logs/dgrep?page=logs&amp;be=DGrep&amp;offset=-2&amp;offsetUnit=Days&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=AFDControlPlaneAPI&amp;en=AfdCpApiEvent&amp;conditions=[[&quot;AnyField&quot;,&quot;contains&quot;,&quot;xiaohanAFD&quot;]]&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20</a></p>
+<p>Troubleshooting data plane</p>
+<p>Common Log resource:</p>
+<p>Health probe logs</p>
+<p>Customer access logs</p>
+<p>WAF logs</p>
+<p>Impression log</p>
+<p>Dashboard</p>
+<p>Endpoint Health Dashboard</p>
+<p>Partner Dashboard</p>
+<p>Health probe</p>
+<p>TSG - Health Probes | AFD Standard-Premium - Overview    (please see PDF)</p>
+<p><a href="https://supportability.visualstudio.com/AzureNetworking/_wiki/wikis/Wiki/541024/Log-Sources-for-AFD-and-CDN?anchor=jarvis-logs" target="_blank" rel="noopener">https://supportability.visualstudio.com/AzureNetworking/_wiki/wikis/Wiki/541024/Log-Sources-for-AFD-and-CDN?anchor=jarvis-logs</a></p>
+<p><a href="https://supportability.visualstudio.com/AzureNetworking/_wiki/wikis/Wiki/541024/Log-Sources-for-AFD-and-CDN?anchor=waf---customer-logs" target="_blank" rel="noopener">https://supportability.visualstudio.com/AzureNetworking/_wiki/wikis/Wiki/541024/Log-Sources-for-AFD-and-CDN?anchor=waf---customer-logs</a></p>
+<p>Impression log concept</p>
+<p>Impression Logs Explained - Overview (please see PDF)</p>
+<p>Impression log search tool.</p>
+<p>Impression Log Search</p>
+<p><a href="https://supportability.visualstudio.com/AzureNetworking/_wiki/wikis/Wiki/447045/TSG-Health-Probes-AFD-Standard-Premium?anchor=logging" target="_blank" rel="noopener">https://supportability.visualstudio.com/AzureNetworking/_wiki/wikis/Wiki/447045/TSG-Health-Probes-AFD-Standard-Premium?anchor=logging</a></p>
+<p>Example：</p>
+<p><a href="https://portal.microsoftgeneva.com/s/E150F559?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/2a6b6250-fbfe-4f11-9af2-b81f0ee26453/resourcegroups/Xiaohan-AFD-rg/providers/Microsoft.Cdn/profiles/xiaohanAFD&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Partner&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;0dd0be81-a9b9-42a9-8265-cd7bade90852_xiaohanAFD&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ApplicationEndpointPool&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/E150F559?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/2a6b6250-fbfe-4f11-9af2-b81f0ee26453/resourcegroups/Xiaohan-AFD-rg/providers/Microsoft.Cdn/profiles/xiaohanAFD&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Partner&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;0dd0be81-a9b9-42a9-8265-cd7bade90852_xiaohanAFD&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ApplicationEndpointPool&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20</a></p>
+<p>(Need change ACCOUNT to  Search_FrontDoor_Mooncake in Mooncake</p></article>

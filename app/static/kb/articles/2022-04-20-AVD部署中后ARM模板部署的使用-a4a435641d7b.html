@@ -1,0 +1,69 @@
+<article class="kb-article" data-title="AVD部署中后ARM模板部署的使用"><h1>AVD部署中后ARM模板部署的使用</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-04-20 20:10:26</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>将部署脚放到本互联网可以访问的链接，并复制链接粘贴到URL位置即可，如果模板中有错误会有相应提示，无法继续。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>将部署脚放到本互联网可以访问的链接，并复制链接粘贴到URL位置即可，如果模板中有错误会有相应提示，无法继续。</li>
+</ul>
+<ul>
+<li>另外注意主机顺序通常开始是以0开始，因为为虚拟机安装扩展，需要指定主机名的资源ID，如果错误，会出现报错的情况：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>其中的参数，需要根据主机池的名称和数量设置</li>
+</ul>
+<ul>
+<li>如</li>
+</ul>
+<ul>
+<li>实现对多个VM的部是靠copyIndex() 和 range() 函数实现的：</li>
+</ul>
+<ul>
+<li>具体可以参考：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>脚本使用注意事项：</li>
+</ul>
+<ul>
+<li>部署脚本最后部署，也即所有主机建立后在运行部署模板进行部署。</li>
+</ul>
+<ul>
+<li>如需要对主机池中的所有主机进行部署，主机池中的名称前缀，以及虚拟机的数量和脚本参数相匹配</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/copy-resources" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/copy-resources</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-functions-array#range" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-functions-array#range</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022-04-21</p>
+<p>将部署脚放到本互联网可以访问的链接，并复制链接粘贴到URL位置即可，如果模板中有错误会有相应提示，无法继续。</p>
+<p>脚本使用注意事项：</p>
+<p>其中的参数，需要根据主机池的名称和数量设置</p>
+<p>部署脚本最后部署，也即所有主机建立后在运行部署模板进行部署。</p>
+<p>如需要对主机池中的所有主机进行部署，主机池中的名称前缀，以及虚拟机的数量和脚本参数相匹配</p>
+<p>如</p>
+<p>另外注意主机顺序通常开始是以0开始，因为为虚拟机安装扩展，需要指定主机名的资源ID，如果错误，会出现报错的情况：</p>
+<p>实现对多个VM的部是靠copyIndex() 和 range() 函数实现的：</p>
+<p>具体可以参考：</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/copy-resources" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/copy-resources</a></p>
+<p><a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-functions-array#range" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-functions-array#range</a></p></article>

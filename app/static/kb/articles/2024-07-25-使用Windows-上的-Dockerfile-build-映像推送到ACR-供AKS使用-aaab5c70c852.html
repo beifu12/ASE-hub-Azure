@@ -1,0 +1,315 @@
+<article class="kb-article" data-title="使用Windows 上的 Dockerfile build 映像推送到ACR 供AKS使用"><h1>使用Windows 上的 Dockerfile build 映像推送到ACR 供AKS使用</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-25 11:12:45</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<h1>Sets a command or process that will run each time a container is run from the new image.测试使用如下，到后面映像部署运行时会报错。实际使用时替换为 CMD [ &quot;ping&quot;, &quot;localhost&quot;, &quot;-t&quot; ]</h1>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li># Sets a command or process that will run each time a container is run from the new image.测试使用如下，到后面映像部署运行时会报错。实际使用时替换为 CMD [ &quot;ping&quot;, &quot;localhost&quot;, &quot;-t&quot; ]</li>
+</ul>
+<ul>
+<li>For example, if you have NSG rules set up so that a VM can pull images only from your Azure container registry, Docker will pull failures for foreign/non-distributable layers. For example, a Windows Server Core image would contain foreign layer references to Azure container registry in its manifest and would fail to pull in this scenario.</li>
+</ul>
+<ul>
+<li>Steps to reproduce the issue:</li>
+</ul>
+<ul>
+<li>Closing this issue!</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>操作系统环境Windows Server 2016</li>
+</ul>
+<ul>
+<li>Install-Module -Name DockerMsftProvider -Repository PSGallery –Force</li>
+</ul>
+<ul>
+<li>Import-Packageprovider -Name DockerMsftProvider -Force</li>
+</ul>
+<ul>
+<li>Install-Package -Name docker -ProviderName DockerMsftProvider</li>
+</ul>
+<ul>
+<li>提示&#39;C:\Users\zhangwx\AppData\Local\Temp\2\DockerMsftProvider\DockerDefault_DockerSearchIndex.json&#39; because it does not exist.</li>
+</ul>
+<ul>
+<li>可能重新打开窗口执行</li>
+</ul>
+<ul>
+<li>Restart-Computer -Force</li>
+</ul>
+<ul>
+<li>更新</li>
+</ul>
+<ul>
+<li>Install-Package -Name Docker -ProviderName DockerMsftProvider -Update –Force</li>
+</ul>
+<ul>
+<li>Start-Service Docker</li>
+</ul>
+<ul>
+<li>创建的 Dockerfile 不得带扩展名。</li>
+</ul>
+<ul>
+<li># Sample Dockerfile</li>
+</ul>
+<ul>
+<li># Indicates that the windowsservercore image will be used as the base image.</li>
+</ul>
+<ul>
+<li>FROM mcr.microsoft.com/windows/servercore:ltsc2019</li>
+</ul>
+<ul>
+<li># Metadata indicating an image maintainer.</li>
+</ul>
+<ul>
+<li># Uses dism.exe to install the IIS role.</li>
+</ul>
+<ul>
+<li># Creates an HTML file and adds content to this file.</li>
+</ul>
+<ul>
+<li>RUN echo &quot;Hello World - Dockerfile&quot; &gt; c:\inetpub\wwwroot\index.html</li>
+</ul>
+<ul>
+<li>CMD [ &quot;cmd&quot; ]</li>
+</ul>
+<ul>
+<li>下载基础映像</li>
+</ul>
+<ul>
+<li>执行</li>
+</ul>
+<ul>
+<li>docker build -t iis .</li>
+</ul>
+<ul>
+<li>上传映像到ACR</li>
+</ul>
+<ul>
+<li>上面出现了 Skipped Foreign layer</li>
+</ul>
+<ul>
+<li>--allow-nondistributable-artifacts</li>
+</ul>
+<ul>
+<li>reStart-Service Docker</li>
+</ul>
+<ul>
+<li>部署后可以运行，但</li>
+</ul>
+<ul>
+<li>CMD [ &quot;ping&quot;, &quot;localhost&quot;, &quot;-t&quot; ]</li>
+</ul>
+<ul>
+<li>How do I push non-distributable layers to a registry?</li>
+</ul>
+<ul>
+<li>A non-distributable layer in a manifest contains a URL parameter that content may be fetched from. Some possible use cases for enabling non-distributable layer pushes are for network restricted registries, air-gapped registries with restricted access, or for registries with no internet connectivity.</li>
+</ul>
+<ul>
+<li>Edit the daemon.json file, which is located in /etc/docker/ on Linux hosts and at C:\ProgramData\docker\config\daemon.json on Windows Server. Assuming the file was previously empty, add the following contents:</li>
+</ul>
+<ul>
+<li>JSONCopy</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;allow-nondistributable-artifacts&quot;: [&quot;myregistry.azsacr.&lt;regionname&gt;.&lt;fqdn&gt;&quot;]</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>Note</li>
+</ul>
+<ul>
+<li>The value is an array of registry addresses, separated by commas.</li>
+</ul>
+<ul>
+<li>Save and exit the file.</li>
+</ul>
+<ul>
+<li>Restart Docker.</li>
+</ul>
+<ul>
+<li>When you push images to the registries in the list, their non-distributable layers are pushed to the registry.</li>
+</ul>
+<ul>
+<li>Warning</li>
+</ul>
+<ul>
+<li>Non-distributable artifacts typically have restrictions on how and where they can be distributed and shared. Use this feature only to push artifacts to private registries. Ensure that you are in compliance with any terms that cover redistributing non-distributable artifacts.</li>
+</ul>
+<ul>
+<li>docker pull microsoft/windowsservercore:10.0.14393.1198</li>
+</ul>
+<ul>
+<li>Configure &quot;allow-nondistributable-artifacts&quot;: [&quot;myregistry.local&quot;] in the daemon and restart</li>
+</ul>
+<ul>
+<li>docker tag microsoft/windowsservercore:10.0.14393.1198 myregistry.local/microsoft/windowsservercore:10.0.14393.1198</li>
+</ul>
+<ul>
+<li>docker push myregistry.local/microsoft/windowsservercore:10.0.14393.1198</li>
+</ul>
+<ul>
+<li>Delete all local images</li>
+</ul>
+<ul>
+<li>docker pull myregistry.local/microsoft/windowsservercore:10.0.14393.1198 (GOOD - Downloads from local registry)</li>
+</ul>
+<ul>
+<li>Create a new image with &quot;FROM windowsservercore:10.0.14393.1198&quot; and push it to &quot;myregistry.local&quot;</li>
+</ul>
+<ul>
+<li>Pull the image created on step 7 (BAD - Downloads foreign layer from MS servers)</li>
+</ul>
+<ul>
+<li>Amazingly enough, all I had to do was to run this command:</li>
+</ul>
+<ul>
+<li>docker pull myregistry.local/myimage &amp;&amp; docker push myregistry.local/myimage</li>
+</ul>
+<ul>
+<li>As my laptop has the configuration for allow-nondistributable-artifacts, this seems to rewrite the image metadata in the server to point to the correct location, and now the docker pull on any other machine downloads the foreign layers from the private registry.</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>也可以使用ACR build 参考命令</li>
+</ul>
+<ul>
+<li>az acr build --image myiis --registry akssource --file Dockerfile . --platform Windows</li>
+</ul>
+<ul>
+<li>使用cmd命令 build 容器一直会重启容器</li>
+</ul>
+<ul>
+<li>Dockerfile 文件中使用如下命令替换后image运行正常</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12</li>
+</ul>
+<ul>
+<li>LABEL maintainer=&quot;jshelton@contoso.com&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>RUN dism.exe /online /enable-feature /all /featurename:iis-webserver /NoRestart</li>
+</ul>
+<ul>
+<li>测试映像可以通过windows node进行拉取</li>
+</ul>
+<ul>
+<li>To enable pushing of non-distributable layers:</li>
+</ul>
+<ul>
+<li>The long-term solution will be to configure our build agents with allow-nondistributable-artifacts.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/virtualization/windowscontainers/quick-start/set-up-environment?tabs=Windows-Server" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/virtualization/windowscontainers/quick-start/set-up-environment?tabs=Windows-Server</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/virtualization/windowscontainers/manage-docker/manage-windows-dockerfile#docker-build" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/virtualization/windowscontainers/manage-docker/manage-windows-dockerfile#docker-build</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/faq#how-do-i-make-my-container-images-available-on-air-gapped-machines-" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/faq#how-do-i-make-my-container-images-available-on-air-gapped-machines-</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.docker.com/engine/reference/commandline/dockerd/#on-windows" target="_blank" rel="noopener">https://docs.docker.com/engine/reference/commandline/dockerd/#on-windows</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://learn.microsoft.com/en-us/azure-stack/user/container-registry-faq?view=azs-2311&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure-stack/user/container-registry-faq?view=azs-2311&gt;</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://github.com/moby/moby/issues/34216&gt;" target="_blank" rel="noopener">https://github.com/moby/moby/issues/34216&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-07-28</p>
+<p>操作系统环境Windows Server 2016</p>
+<p>[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12</p>
+<p>Install-Module -Name DockerMsftProvider -Repository PSGallery –Force</p>
+<p>Import-Packageprovider -Name DockerMsftProvider -Force</p>
+<p>Install-Package -Name docker -ProviderName DockerMsftProvider</p>
+<p>提示&#39;C:\Users\zhangwx\AppData\Local\Temp\2\DockerMsftProvider\DockerDefault_DockerSearchIndex.json&#39; because it does not exist.</p>
+<p>可能重新打开窗口执行</p>
+<p>Restart-Computer -Force</p>
+<p><a href="https://docs.microsoft.com/zh-cn/virtualization/windowscontainers/quick-start/set-up-environment?tabs=Windows-Server" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/virtualization/windowscontainers/quick-start/set-up-environment?tabs=Windows-Server</a></p>
+<p>更新</p>
+<p>Install-Package -Name Docker -ProviderName DockerMsftProvider -Update –Force</p>
+<p>Start-Service Docker</p>
+<p><a href="https://docs.microsoft.com/zh-cn/virtualization/windowscontainers/manage-docker/manage-windows-dockerfile#docker-build" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/virtualization/windowscontainers/manage-docker/manage-windows-dockerfile#docker-build</a></p>
+<p>创建的 Dockerfile 不得带扩展名。</p>
+<h1>Sample Dockerfile</h1>
+<h1>Indicates that the windowsservercore image will be used as the base image.</h1>
+<p>FROM mcr.microsoft.com/windows/servercore:ltsc2019</p>
+<h1>Metadata indicating an image maintainer.</h1>
+<p>LABEL maintainer=&quot;jshelton@contoso.com&quot;</p>
+<h1>Uses dism.exe to install the IIS role.</h1>
+<p>RUN dism.exe /online /enable-feature /all /featurename:iis-webserver /NoRestart</p>
+<h1>Creates an HTML file and adds content to this file.</h1>
+<p>RUN echo &quot;Hello World - Dockerfile&quot; &gt; c:\inetpub\wwwroot\index.html</p>
+<h1>Sets a command or process that will run each time a container is run from the new image.测试使用如下，到后面映像部署运行时会报错。实际使用时替换为 CMD [ &quot;ping&quot;, &quot;localhost&quot;, &quot;-t&quot; ]</h1>
+<p>CMD [ &quot;cmd&quot; ]</p>
+<p>下载基础映像</p>
+<p>执行</p>
+<p>docker build -t iis .</p>
+<p>上传映像到ACR</p>
+<p>上面出现了 Skipped Foreign layer</p>
+<p><a href="https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/faq#how-do-i-make-my-container-images-available-on-air-gapped-machines-" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/virtualization/windowscontainers/about/faq#how-do-i-make-my-container-images-available-on-air-gapped-machines-</a></p>
+<p><a href="https://docs.docker.com/engine/reference/commandline/dockerd/#on-windows" target="_blank" rel="noopener">https://docs.docker.com/engine/reference/commandline/dockerd/#on-windows</a></p>
+<p>--allow-nondistributable-artifacts</p>
+<p>reStart-Service Docker</p>
+<p>也可以使用ACR build 参考命令</p>
+<p>az acr build --image myiis --registry akssource --file Dockerfile . --platform Windows</p>
+<p>测试映像可以通过windows node进行拉取</p>
+<p>部署后可以运行，但</p>
+<p>使用cmd命令 build 容器一直会重启容器</p>
+<p>Dockerfile 文件中使用如下命令替换后image运行正常</p>
+<p>CMD [ &quot;ping&quot;, &quot;localhost&quot;, &quot;-t&quot; ]</p>
+<p>How do I push non-distributable layers to a registry?</p>
+<p>A non-distributable layer in a manifest contains a URL parameter that content may be fetched from. Some possible use cases for enabling non-distributable layer pushes are for network restricted registries, air-gapped registries with restricted access, or for registries with no internet connectivity.</p>
+<p>For example, if you have NSG rules set up so that a VM can pull images only from your Azure container registry, Docker will pull failures for foreign/non-distributable layers. For example, a Windows Server Core image would contain foreign layer references to Azure container registry in its manifest and would fail to pull in this scenario.</p>
+<p>To enable pushing of non-distributable layers:</p>
+<p>Edit the daemon.json file, which is located in /etc/docker/ on Linux hosts and at C:\ProgramData\docker\config\daemon.json on Windows Server. Assuming the file was previously empty, add the following contents:</p>
+<p>JSONCopy</p>
+<p>{</p>
+<p>&quot;allow-nondistributable-artifacts&quot;: [&quot;myregistry.azsacr.&lt;regionname&gt;.&lt;fqdn&gt;&quot;]</p>
+<p>}</p>
+<p>Note</p>
+<p>The value is an array of registry addresses, separated by commas.</p>
+<p>Save and exit the file.</p>
+<p>Restart Docker.</p>
+<p>When you push images to the registries in the list, their non-distributable layers are pushed to the registry.</p>
+<p>Warning</p>
+<p>Non-distributable artifacts typically have restrictions on how and where they can be distributed and shared. Use this feature only to push artifacts to private registries. Ensure that you are in compliance with any terms that cover redistributing non-distributable artifacts.</p>
+<p>From &lt;<a href="https://learn.microsoft.com/en-us/azure-stack/user/container-registry-faq?view=azs-2311&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure-stack/user/container-registry-faq?view=azs-2311&gt;</a></p>
+<p>Steps to reproduce the issue:</p>
+<p>docker pull microsoft/windowsservercore:10.0.14393.1198</p>
+<p>Configure &quot;allow-nondistributable-artifacts&quot;: [&quot;myregistry.local&quot;] in the daemon and restart</p>
+<p>docker tag microsoft/windowsservercore:10.0.14393.1198 myregistry.local/microsoft/windowsservercore:10.0.14393.1198</p>
+<p>docker push myregistry.local/microsoft/windowsservercore:10.0.14393.1198</p>
+<p>Delete all local images</p>
+<p>docker pull myregistry.local/microsoft/windowsservercore:10.0.14393.1198 (GOOD - Downloads from local registry)</p>
+<p>Create a new image with &quot;FROM windowsservercore:10.0.14393.1198&quot; and push it to &quot;myregistry.local&quot;</p>
+<p>Pull the image created on step 7 (BAD - Downloads foreign layer from MS servers)</p>
+<p>Amazingly enough, all I had to do was to run this command:</p>
+<p>docker pull myregistry.local/myimage &amp;&amp; docker push myregistry.local/myimage</p>
+<p>As my laptop has the configuration for allow-nondistributable-artifacts, this seems to rewrite the image metadata in the server to point to the correct location, and now the docker pull on any other machine downloads the foreign layers from the private registry.</p>
+<p>The long-term solution will be to configure our build agents with allow-nondistributable-artifacts.</p>
+<p>Closing this issue!</p>
+<p>From &lt;<a href="https://github.com/moby/moby/issues/34216&gt;" target="_blank" rel="noopener">https://github.com/moby/moby/issues/34216&gt;</a></p></article>

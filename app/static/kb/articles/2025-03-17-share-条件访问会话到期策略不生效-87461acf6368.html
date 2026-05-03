@@ -1,0 +1,45 @@
+<article class="kb-article" data-title="[share]条件访问会话到期策略不生效"><h1>[share]条件访问会话到期策略不生效</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-03-17 09:13:14</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Windows Hello for Business （WHFB）登录的情况，也属于MFA，所以这种场景24H的SIF基本捕捉不到超时，会直接最左边的路走完。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Windows Hello for Business （WHFB）登录的情况，也属于MFA，所以这种场景24H的SIF基本捕捉不到超时，会直接最左边的路走完。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025.3.16</li>
+</ul>
+<ul>
+<li>Conditional Access adaptive session lifetime policies - Microsoft Entra ID | Microsoft Learn</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>客户使用加入Entra ID的Windows设备登陆，并使用Exchange online App应用，希望通过条件访问设置定期用户重新登录、验证使用Exchange online App，但是发现不生效。</li>
+</ul>
+<ul>
+<li>通过进一步排查不生效用户的登陆日志，发现是由于客户登陆使用了面部识别或者PIN登陆（WHFB），由于这种方式的登陆也属于MFA，所以导致客户设置的条件访问会话到期策略不生效。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025.3.16</p>
+<p>客户使用加入Entra ID的Windows设备登陆，并使用Exchange online App应用，希望通过条件访问设置定期用户重新登录、验证使用Exchange online App，但是发现不生效。</p>
+<p>通过进一步排查不生效用户的登陆日志，发现是由于客户登陆使用了面部识别或者PIN登陆（WHFB），由于这种方式的登陆也属于MFA，所以导致客户设置的条件访问会话到期策略不生效。</p>
+<p>Conditional Access adaptive session lifetime policies - Microsoft Entra ID | Microsoft Learn</p>
+<p>Windows Hello for Business （WHFB）登录的情况，也属于MFA，所以这种场景24H的SIF基本捕捉不到超时，会直接最左边的路走完。</p></article>

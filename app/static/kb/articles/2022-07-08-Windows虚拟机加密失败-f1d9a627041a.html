@@ -1,0 +1,104 @@
+<article class="kb-article" data-title="Windows虚拟机加密失败"><h1>Windows虚拟机加密失败</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-07-08 09:54:21</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>加密是虚拟机操作系统日志有警告日志BitLocker问题，客户反馈现象也是虚拟机加入了AzureAD后出现的此问题</li>
+</ul>
+<ul>
+<li>通过系统日志可以找到加密失败的原因在于虚拟机加密扩展组件进行加密时，返回如下错误：</li>
+</ul>
+<ul>
+<li>2022-07-05T02:47:39.3293409Z    [Error]:    Win32EncryptableVolumeWrap::Encrypt failed with 2147942487</li>
+</ul>
+<ul>
+<li>通过对该错误的分析，我们怀疑加密失败与系统内部安全策略有关，参考文档如下：</li>
+</ul>
+<ul>
+<li>对比了可以正常加密的虚拟机，发现在加密失败的虚拟机上增加了多条用户自定义的安全策略；在参照默认正常的注册表配置信息进行删除之后，磁盘加密的操作可以正确完成。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>关联工单：20220622173037</li>
+</ul>
+<ul>
+<li>虚拟机满足加密支持条件，向用户索要磁盘测试当作为数据磁盘附加到其它虚拟机上时是可以正常加密的。</li>
+</ul>
+<ul>
+<li>2022-07-05T02:47:39.3137155Z    [Info]:    Win32EncryptableVolumeWrap::GetEncryptionMethod osVer = WindowsServer2016, osBuild = 19042; EncryptionMethod.XTS256</li>
+</ul>
+<ul>
+<li>Encrypt method of the Win32_EncryptableVolume class - Win32 apps | Microsoft Docs</li>
+</ul>
+<ul>
+<li>客户环境中的原有注册表配置信息如下：</li>
+</ul>
+<ul>
+<li>Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\FVE</li>
+</ul>
+<ul>
+<li>默认正常的注册表配置信息如下：</li>
+</ul>
+<ul>
+<li>参考文档：Windows VM 上的Azure 磁盘加密方案- Azure Virtual Machines | Azure Docs</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>portal加密虚拟机OS磁盘和数据磁盘时提示报错</li>
+</ul>
+<ul>
+<li>问题排查：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<ul>
+<li>在开启Azure磁盘加密之前，如果虚拟机中存在先前部署失败的AzureDiskEncryption扩展，需要先将磁盘加密disable掉，再删除AzureDiskEncryption扩展。</li>
+</ul>
+<ul>
+<li>在调整完注册表并重启后，第一次开启磁盘加密时如果报错，建议再执行一次disable磁盘加密-delete扩展的操作，再次尝试开启磁盘加密。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>WangZhaoqing</p>
+<p>关联工单：20220622173037</p>
+<p>问题现象：</p>
+<p>portal加密虚拟机OS磁盘和数据磁盘时提示报错</p>
+<p>虚拟机满足加密支持条件，向用户索要磁盘测试当作为数据磁盘附加到其它虚拟机上时是可以正常加密的。</p>
+<p>问题排查：</p>
+<p>加密是虚拟机操作系统日志有警告日志BitLocker问题，客户反馈现象也是虚拟机加入了AzureAD后出现的此问题</p>
+<p>通过系统日志可以找到加密失败的原因在于虚拟机加密扩展组件进行加密时，返回如下错误：</p>
+<p>2022-07-05T02:47:39.3137155Z    [Info]:    Win32EncryptableVolumeWrap::GetEncryptionMethod osVer = WindowsServer2016, osBuild = 19042; EncryptionMethod.XTS256</p>
+<p>2022-07-05T02:47:39.3293409Z    [Error]:    Win32EncryptableVolumeWrap::Encrypt failed with 2147942487</p>
+<p>通过对该错误的分析，我们怀疑加密失败与系统内部安全策略有关，参考文档如下：</p>
+<p>Encrypt method of the Win32_EncryptableVolume class - Win32 apps | Microsoft Docs</p>
+<p>对比了可以正常加密的虚拟机，发现在加密失败的虚拟机上增加了多条用户自定义的安全策略；在参照默认正常的注册表配置信息进行删除之后，磁盘加密的操作可以正确完成。</p>
+<p>客户环境中的原有注册表配置信息如下：</p>
+<p>Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\FVE</p>
+<p>默认正常的注册表配置信息如下：</p>
+<p>解决方案：</p>
+<p>在开启Azure磁盘加密之前，如果虚拟机中存在先前部署失败的AzureDiskEncryption扩展，需要先将磁盘加密disable掉，再删除AzureDiskEncryption扩展。</p>
+<p>参考文档：Windows VM 上的Azure 磁盘加密方案- Azure Virtual Machines | Azure Docs</p>
+<p>在调整完注册表并重启后，第一次开启磁盘加密时如果报错，建议再执行一次disable磁盘加密-delete扩展的操作，再次尝试开启磁盘加密。</p></article>

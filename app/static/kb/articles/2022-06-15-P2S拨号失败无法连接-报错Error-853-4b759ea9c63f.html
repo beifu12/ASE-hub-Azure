@@ -1,0 +1,165 @@
+<article class="kb-article" data-title="P2S拨号失败无法连接  报错Error 853"><h1>P2S拨号失败无法连接  报错Error 853</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-06-15 09:30:23</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Issuer: CN=P2SRootCertForShared</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Issuer: CN=P2SRootCertForShared</li>
+</ul>
+<ul>
+<li>在没有安装3方CSP的计算机上，用户有很多证书，VPN拨号选择了内部颁发的证书，VPN 拨号失败，报错为853</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_2018102468834 _ [T100]Vpn 连接错误</li>
+</ul>
+<ul>
+<li>问题症状1</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>运行框里输入 regedit  按确定（回车）即可进入注册表</li>
+</ul>
+<ul>
+<li>注册表路径：HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\Defaults\Provider</li>
+</ul>
+<ul>
+<li>另外需要注意的是在删除注册表之前先对该注册表做备份，方便回滚操作。</li>
+</ul>
+<ul>
+<li>Or</li>
+</ul>
+<ul>
+<li>做完以上操作，删除VPN证书重新安装。如果问题依旧，请在客户端做step 3。</li>
+</ul>
+<ul>
+<li>以下是如何定位证书私钥的方法。</li>
+</ul>
+<ul>
+<li>用户证书私钥的路径如下,username为当前登录用户名，SID名字也会改变。</li>
+</ul>
+<ul>
+<li>C:\Users\username\AppData\Roaming\Microsoft\Crypto\RSA\S-1-5-21-946853905-3146225928-1844126038-1106</li>
+</ul>
+<ul>
+<li>我们打开上面的路径会发现很多私钥，我们可以用以下方法来确定那个是VPN证书的对应私钥。</li>
+</ul>
+<ul>
+<li>Cert.txt的输出结果如下，其中标黄部分为对应的私钥名字。</li>
+</ul>
+<ul>
+<li>Serial Number: 1ea79cc17ce3b58946f5d34e9e855629</li>
+</ul>
+<ul>
+<li>NotBefore: 4/23/2018 5:14 PM</li>
+</ul>
+<ul>
+<li>NotAfter: 3/23/2019 12:17 PM</li>
+</ul>
+<ul>
+<li>Subject: CN=P2SChildCertLenly</li>
+</ul>
+<ul>
+<li>Non-root Certificate</li>
+</ul>
+<ul>
+<li>Template:</li>
+</ul>
+<ul>
+<li>Cert Hash(sha1): d5 b8 2b 84 02 33 42 4b d3 cd 5c 60 e7 9d 59 c3 0b 93 69 ed</li>
+</ul>
+<ul>
+<li>Unique container name: db9b2db028f9b13a520e9220dcf1808f_080c081a-3305-481c-8e4f-e6adac41c7d9</li>
+</ul>
+<ul>
+<li>Private key is NOT exportable</li>
+</ul>
+<ul>
+<li>问题症状2</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>客户端既有VPN证书又有communication server的证书，这时候VPN验证选择的communication  server的证书，报错为853，表示证书无法做VPN验证。</li>
+</ul>
+<ul>
+<li>针对此案例的现象，首先第一点先确认问题客户端是否安装了三方CSP，并且检查type键值是否存在。如果不存在将三方CSP删除测。以下截图是没有安装三方的CSP，选中CSP，窗口右边就可以查看type是否存在。</li>
+</ul>
+<ul>
+<li>删除了没有type的CSP之后，将VPN的证书删除，并删除对应私钥。然后倒入证书测试。以下就是大概的步骤。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>运行命令certutil -user -store “my” &gt;cert.txt</li>
+</ul>
+<ul>
+<li>针对这一问题的解决方案，我们需要在VPN证书中添加SAN名字并使其包含UPN名称，并且UPN的名称不能与其他证书的UPN名称重复。以下是生成带有UPN证书的命令。将新证书发送给用户重新安装即可，用户在VPN拨号时会跳出对话框提示选择那张证书做验证。</li>
+</ul>
+<ul>
+<li>New-SelfSignedCertificate -Type Custom -KeySpec Signature -Subject &quot;CN=P2SChildCertwin7&quot; -KeyExportPolicy Exportable -HashAlgorithm sha256 -KeyLength 2048 -CertStoreLocation &quot;Cert:\CurrentUser\My&quot; -Signer $cert -TextExtension @(&quot;2.5.29.37={text}1.3.6.1.5.5.7.3.2&quot;,&quot;2.5.29.17={text}upn=enhu@Microsoft.com&quot;)</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Key Container = te-e9d474bb-e0d4-4afa-8be2-0670446b17be</li>
+</ul>
+<ul>
+<li>Provider = Microsoft Strong Cryptographic Provider</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>出现此问题的原因是因为客户端有很多符合VPN验证的证书，在这种情况下客户端只会选择证书SAN包含UPN名字的证书。在我们之前的VPN证书中SAN没有包含UPN，因此导致VPN拨号选择了错误的证书。</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2018102468834 _ [T100]Vpn 连接错误</p>
+<p>问题症状1</p>
+<p>========</p>
+<p>客户端既有VPN证书又有communication server的证书，这时候VPN验证选择的communication  server的证书，报错为853，表示证书无法做VPN验证。</p>
+<p>解决方案</p>
+<p>针对此案例的现象，首先第一点先确认问题客户端是否安装了三方CSP，并且检查type键值是否存在。如果不存在将三方CSP删除测。以下截图是没有安装三方的CSP，选中CSP，窗口右边就可以查看type是否存在。</p>
+<p>运行框里输入 regedit  按确定（回车）即可进入注册表</p>
+<p>注册表路径：HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\Defaults\Provider</p>
+<p>另外需要注意的是在删除注册表之前先对该注册表做备份，方便回滚操作。</p>
+<p>Or</p>
+<p>做完以上操作，删除VPN证书重新安装。如果问题依旧，请在客户端做step 3。</p>
+<p>删除了没有type的CSP之后，将VPN的证书删除，并删除对应私钥。然后倒入证书测试。以下就是大概的步骤。</p>
+<p>以下是如何定位证书私钥的方法。</p>
+<p>用户证书私钥的路径如下,username为当前登录用户名，SID名字也会改变。</p>
+<p>C:\Users\username\AppData\Roaming\Microsoft\Crypto\RSA\S-1-5-21-946853905-3146225928-1844126038-1106</p>
+<p>我们打开上面的路径会发现很多私钥，我们可以用以下方法来确定那个是VPN证书的对应私钥。</p>
+<p>运行命令certutil -user -store “my” &gt;cert.txt</p>
+<p>Cert.txt的输出结果如下，其中标黄部分为对应的私钥名字。</p>
+<p>Serial Number: 1ea79cc17ce3b58946f5d34e9e855629</p>
+<p>Issuer: CN=P2SRootCertForShared</p>
+<p>NotBefore: 4/23/2018 5:14 PM</p>
+<p>NotAfter: 3/23/2019 12:17 PM</p>
+<p>Subject: CN=P2SChildCertLenly</p>
+<p>Non-root Certificate</p>
+<p>Template:</p>
+<p>Cert Hash(sha1): d5 b8 2b 84 02 33 42 4b d3 cd 5c 60 e7 9d 59 c3 0b 93 69 ed</p>
+<p>Key Container = te-e9d474bb-e0d4-4afa-8be2-0670446b17be</p>
+<p>Unique container name: db9b2db028f9b13a520e9220dcf1808f_080c081a-3305-481c-8e4f-e6adac41c7d9</p>
+<p>Provider = Microsoft Strong Cryptographic Provider</p>
+<p>Private key is NOT exportable</p>
+<p>问题症状2</p>
+<p>在没有安装3方CSP的计算机上，用户有很多证书，VPN拨号选择了内部颁发的证书，VPN 拨号失败，报错为853</p>
+<p>=======</p>
+<p>出现此问题的原因是因为客户端有很多符合VPN验证的证书，在这种情况下客户端只会选择证书SAN包含UPN名字的证书。在我们之前的VPN证书中SAN没有包含UPN，因此导致VPN拨号选择了错误的证书。</p>
+<p>针对这一问题的解决方案，我们需要在VPN证书中添加SAN名字并使其包含UPN名称，并且UPN的名称不能与其他证书的UPN名称重复。以下是生成带有UPN证书的命令。将新证书发送给用户重新安装即可，用户在VPN拨号时会跳出对话框提示选择那张证书做验证。</p>
+<p>New-SelfSignedCertificate -Type Custom -KeySpec Signature -Subject &quot;CN=P2SChildCertwin7&quot; -KeyExportPolicy Exportable -HashAlgorithm sha256 -KeyLength 2048 -CertStoreLocation &quot;Cert:\CurrentUser\My&quot; -Signer $cert -TextExtension @(&quot;2.5.29.37={text}1.3.6.1.5.5.7.3.2&quot;,&quot;2.5.29.17={text}upn=enhu@Microsoft.com&quot;)</p></article>

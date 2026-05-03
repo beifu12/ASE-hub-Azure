@@ -1,0 +1,87 @@
+<article class="kb-article" data-title="监控显示一台服务器CPU utilization超过100%"><h1>监控显示一台服务器CPU utilization超过100%</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-09-26 14:21:52</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2017081403766 _ [HMC]监控显示一台服务器CPU utilization超过100%</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2017081403766 _ [HMC]监控显示一台服务器CPU utilization超过100%</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>监控显示一台服务器CPU utilization超过100%</li>
+</ul>
+<ul>
+<li>首先，Azure上的虚拟机操作系统和本地数据中心的操作系统没有任何区别。因此，如果我们使用虚拟机内部的agent来获取虚拟机的性能数据，这些性能数据是和Azure环境本身没有关系的。</li>
+</ul>
+<ul>
+<li>为了说明方便，我在Azure平台上创建了一台2核的Windows的虚拟机，然后，设法让这个虚拟机的每个CPU处在100%忙碌的状态。在这种情况下，使用两个方法抽取CPU的性能数据：一个是通过Perfmon，这个也就是我们常说的原始数据，很多监控程序都是通过perfmon的数据来进一步加工的。另一个是在Azure管理界面上启用的性能数据。</li>
+</ul>
+<ul>
+<li>从图中可看出，如果我们采样单个CPU性能，可到的数据最大值只能是100%。但是如果我们通过Process的CPU使用率来计算CPU的系能，最大值可以达到200%。</li>
+</ul>
+<ul>
+<li>在Azure平台上，我们在用户见面看到的CPU使用率，数据的最大值是100%，也就是一个CPU的整体负载程度，不需要再去考虑CPU的个数。</li>
+</ul>
+<ul>
+<li>若一段时间内发现监控数据不正常，请找到对应时间段的表，导出到excel进行存档和分析。</li>
+</ul>
+<ul>
+<li>此次，一般这些数据是在100%以下，但是在某些特定情况，特别是当虚拟机的负载突然增大，而虚拟机的主机的CPU又支持一些动态的负载调整能力，例如Intel Turbo Boost，在这种情况下，会产生数据超过100%的情况。</li>
+</ul>
+<ul>
+<li>例如，在核定的CPU主频下，系统会认为在单位时间内采样的次数应该是100次，而在Turbo Boost的时间段，由于主频升高，其数据的采样次数可能到达150次，这样会造成 采样次数x系统认为的采样间隔 / (100 x 系统认为的采样间隔)大于100。Turbo Boost是在主机端控制，虚拟机层面不能得知是否当前是在Turbo Boost模式以及当前Turbo Boost的具体信息。一般为了多租户环境中得到一致的虚拟机性能体验，虚拟机不会长期运行在此模式。</li>
+</ul>
+<ul>
+<li>CNAZEMARSPPDB02的当前主机CPU型号为Intel® Xeon® Processor E5-2660，支持Turbo Boost技术。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>针对于Windows平台，系统可以提供针对于单个CPU或是CPU总共的负载状况，也可以提供根据进程记录的CPU的负载状况。根据计算方法的不同，我们会看到一些系能数据会超过100%，而另一些CPU 的性能数据最大值只能为100%。一些监控程序可以根据自己的需要来获取原始数据再加以处理。这个同具体的监控程序相关。如果某个数据的值可能同实际情况不一致，我们需要和监控程序的提供者进一步确认。</li>
+</ul>
+<ul>
+<li>对于zabbix提供的数据，我们需要和zabbix确认数据的计算方法。据我们的经验，一些监控程序在某个特定的情况可能出现一些不正常的数值，但是考虑到连续多个采样点的数据，应该还是可以正常反应系统的负载。</li>
+</ul>
+<ul>
+<li>对于中国区的Azure虚拟机，目前在Azure门户中看到的性能视图，是从以WADMetircs为前缀的表中提取数据的。PT1H是过去一小时的统计值；PT1M是过去一分钟的统计值。该表每十天会更换一次。可以使用Azure Storage Explorer工具进行查看。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>另外，在Azure平台上除了通过Agent来读取虚拟机的性能数据，我们也可以通过Hyper-V平台取得一定的性能数据，但是由于是从Hyper-V主机上得到的数据，数据的精确程度可能不如虚拟机内部采样的数据。但是从Hyper-v主机上的数据也可以大致反应虚拟机的运行状况。</li>
+</ul>
+<ul>
+<li>首先，% user time不能正确反映CPU负载的指标，建议使用% Process Time（% User Time + % Privilege Time）</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>当启用了Azure虚拟机的监控数据后，您可以参考这篇文章来查看历史数据：<a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/extensions-diagnostics-template" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/extensions-diagnostics-template</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>监控显示一台服务器CPU utilization超过100%</p>
+<p>SR_2017081403766 _ [HMC]监控显示一台服务器CPU utilization超过100%</p>
+<p>首先，Azure上的虚拟机操作系统和本地数据中心的操作系统没有任何区别。因此，如果我们使用虚拟机内部的agent来获取虚拟机的性能数据，这些性能数据是和Azure环境本身没有关系的。</p>
+<p>针对于Windows平台，系统可以提供针对于单个CPU或是CPU总共的负载状况，也可以提供根据进程记录的CPU的负载状况。根据计算方法的不同，我们会看到一些系能数据会超过100%，而另一些CPU 的性能数据最大值只能为100%。一些监控程序可以根据自己的需要来获取原始数据再加以处理。这个同具体的监控程序相关。如果某个数据的值可能同实际情况不一致，我们需要和监控程序的提供者进一步确认。</p>
+<p>为了说明方便，我在Azure平台上创建了一台2核的Windows的虚拟机，然后，设法让这个虚拟机的每个CPU处在100%忙碌的状态。在这种情况下，使用两个方法抽取CPU的性能数据：一个是通过Perfmon，这个也就是我们常说的原始数据，很多监控程序都是通过perfmon的数据来进一步加工的。另一个是在Azure管理界面上启用的性能数据。</p>
+<p>从图中可看出，如果我们采样单个CPU性能，可到的数据最大值只能是100%。但是如果我们通过Process的CPU使用率来计算CPU的系能，最大值可以达到200%。</p>
+<p>在Azure平台上，我们在用户见面看到的CPU使用率，数据的最大值是100%，也就是一个CPU的整体负载程度，不需要再去考虑CPU的个数。</p>
+<p>对于zabbix提供的数据，我们需要和zabbix确认数据的计算方法。据我们的经验，一些监控程序在某个特定的情况可能出现一些不正常的数值，但是考虑到连续多个采样点的数据，应该还是可以正常反应系统的负载。</p>
+<p>另外，在Azure平台上除了通过Agent来读取虚拟机的性能数据，我们也可以通过Hyper-V平台取得一定的性能数据，但是由于是从Hyper-V主机上得到的数据，数据的精确程度可能不如虚拟机内部采样的数据。但是从Hyper-v主机上的数据也可以大致反应虚拟机的运行状况。</p>
+<p>当启用了Azure虚拟机的监控数据后，您可以参考这篇文章来查看历史数据：<a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/extensions-diagnostics-template" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/extensions-diagnostics-template</a></p>
+<p>对于中国区的Azure虚拟机，目前在Azure门户中看到的性能视图，是从以WADMetircs为前缀的表中提取数据的。PT1H是过去一小时的统计值；PT1M是过去一分钟的统计值。该表每十天会更换一次。可以使用Azure Storage Explorer工具进行查看。</p>
+<p>若一段时间内发现监控数据不正常，请找到对应时间段的表，导出到excel进行存档和分析。</p>
+<p>首先，% user time不能正确反映CPU负载的指标，建议使用% Process Time（% User Time + % Privilege Time）</p>
+<p>此次，一般这些数据是在100%以下，但是在某些特定情况，特别是当虚拟机的负载突然增大，而虚拟机的主机的CPU又支持一些动态的负载调整能力，例如Intel Turbo Boost，在这种情况下，会产生数据超过100%的情况。</p>
+<p>例如，在核定的CPU主频下，系统会认为在单位时间内采样的次数应该是100次，而在Turbo Boost的时间段，由于主频升高，其数据的采样次数可能到达150次，这样会造成 采样次数x系统认为的采样间隔 / (100 x 系统认为的采样间隔)大于100。Turbo Boost是在主机端控制，虚拟机层面不能得知是否当前是在Turbo Boost模式以及当前Turbo Boost的具体信息。一般为了多租户环境中得到一致的虚拟机性能体验，虚拟机不会长期运行在此模式。</p>
+<p>CNAZEMARSPPDB02的当前主机CPU型号为Intel® Xeon® Processor E5-2660，支持Turbo Boost技术。</p></article>

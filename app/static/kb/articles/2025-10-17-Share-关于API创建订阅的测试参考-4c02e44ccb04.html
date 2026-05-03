@@ -1,0 +1,253 @@
+<article class="kb-article" data-title="【Share】关于API创建订阅的测试参考"><h1>【Share】关于API创建订阅的测试参考</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-17 13:32:16</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Write-Error &quot;请求失败: $_&quot;</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Write-Error &quot;请求失败: $_&quot;</li>
+</ul>
+<ul>
+<li>Write-Error &quot;订阅 $subscriptionId 取消失败: $_&quot;</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>和商务同事测试了API创建订阅的可行性，参考文档：Alias - Create - REST API (Azure Subscription) | Microsoft Learn</li>
+</ul>
+<ul>
+<li># 设置变量</li>
+</ul>
+<ul>
+<li>$apiVersion = &quot;2021-10-01&quot;</li>
+</ul>
+<ul>
+<li>$accessToken = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6ImVBV1FhQ29vTGpVb012S1JzRWxRTnVJTF9KVSIsImtpZCI6ImVBV1FhQ29vTGpVb012S1JzRxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx手动打码&quot;  # 从Azure AD获取的访问令牌，获取方式自行查找。</li>
+</ul>
+<ul>
+<li># 循环，创建3个订阅，其他数量自行修改。</li>
+</ul>
+<ul>
+<li>for ($i = 1; $i -le 3; $i++) {</li>
+</ul>
+<ul>
+<li>$aliasName = $i</li>
+</ul>
+<ul>
+<li>$displayName = &quot;Clara-$i&quot;</li>
+</ul>
+<ul>
+<li># 构造请求URL</li>
+</ul>
+<ul>
+<li>$requestUri = &quot;$managementEndpoint/providers/Microsoft.Subscription/aliases/&lt;$aliasName&gt;?api-version=$apiVersion&quot;</li>
+</ul>
+<ul>
+<li># 请求体（原始JSON字符串）</li>
+</ul>
+<ul>
+<li>$jsonBody = @&quot;</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;properties&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;displayName&quot;: &quot;$displayName&quot;,</li>
+</ul>
+<ul>
+<li>&quot;workload&quot;: &quot;Production&quot;,</li>
+</ul>
+<ul>
+<li>&quot;billingScope&quot;: &quot;/billingAccounts/e6525215-d5f0-53bb-275b-552df3c7535d:d693cb20-3c35-4454-a9b2-e03cfaa56723_2019-05-31/billingProfiles/2PIJ-ZTYV-BG7-ZV67-SGB/invoiceSections/ASHN-AFRZ-PJA-JTXG-SGB&quot;,</li>
+</ul>
+<ul>
+<li>&quot;subscriptionId&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;additionalProperties&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;managementGroupId&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;subscriptionTenantId&quot;: &quot;57d39c5e-28e3-4021-8866-a0074c06cbb6&quot;,</li>
+</ul>
+<ul>
+<li>&quot;subscriptionOwnerId&quot;: &quot;631832e8-47cd-4747-817d-9e8723050bc7&quot;,</li>
+</ul>
+<ul>
+<li>&quot;tags&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;tag1&quot;: &quot;Clara&quot;,</li>
+</ul>
+<ul>
+<li>&quot;tag2&quot;: &quot;API&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>&quot;@</li>
+</ul>
+<ul>
+<li># 设置HTTP头</li>
+</ul>
+<ul>
+<li>$headers = @{</li>
+</ul>
+<ul>
+<li>&quot;Authorization&quot; = &quot;Bearer $accessToken&quot;</li>
+</ul>
+<ul>
+<li>&quot;Content-Type&quot; = &quot;application/json&quot;</li>
+</ul>
+<ul>
+<li># 发送PUT请求</li>
+</ul>
+<ul>
+<li>try {</li>
+</ul>
+<ul>
+<li>$response = Invoke-RestMethod -Method PUT -Uri $requestUri -Headers $headers -Body $jsonBody</li>
+</ul>
+<ul>
+<li>Write-Host &quot;响应: $($response | ConvertTo-Json)&quot;</li>
+</ul>
+<ul>
+<li>} catch {</li>
+</ul>
+<ul>
+<li>Update: Cancel 的API 可以使用，参考如下：</li>
+</ul>
+<ul>
+<li># 1. 获取访问令牌</li>
+</ul>
+<ul>
+<li>$accessToken = &quot;eyJ0eXAiOiJKV1QiLC手动打码&quot;  # 从Azure AD获取的访问令牌</li>
+</ul>
+<ul>
+<li># 订阅ID列表</li>
+</ul>
+<ul>
+<li>$subscriptionIds = @(</li>
+</ul>
+<ul>
+<li>&quot;102d5726-75b3-4981-94d2-6cbed73bb4a9&quot;,</li>
+</ul>
+<ul>
+<li>&quot;f669e4b8-25fd-4d42-bdda-192523ef393b&quot;</li>
+</ul>
+<ul>
+<li>)</li>
+</ul>
+<ul>
+<li># 循环处理每个订阅</li>
+</ul>
+<ul>
+<li>foreach ($subscriptionId in $subscriptionIds) {</li>
+</ul>
+<ul>
+<li>$requestUri = &quot;$managementEndpoint/subscriptions/$subscriptionId/providers/Microsoft.Subscription/cancel?api-version=$apiVersion&quot;</li>
+</ul>
+<ul>
+<li># 发送POST请求</li>
+</ul>
+<ul>
+<li>$response = Invoke-RestMethod -Method POST -Uri $requestUri -Headers $headers</li>
+</ul>
+<ul>
+<li>Write-Host &quot;订阅 $subscriptionId 取消成功: $($response | ConvertTo-Json)&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>测试使用Postman创建成功，我尝试写了一个脚本来实现批量创建订阅的需求，可使用Powershell实现，无需其他模块。测试创建成功，回显201 Accepted, 目前测试删除的API不能用（删除后第二天还在，并且尝试时有时候报403）。</li>
+</ul>
+<ul>
+<li>az cloud set --name AzureChinaCloud</li>
+</ul>
+<ul>
+<li>az login</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>$token = az account get-access-token --resource <a href="https://management.chinacloudapi.cn" target="_blank" rel="noopener">https://management.chinacloudapi.cn</a> --query accessToken -o tsv</li>
+</ul>
+<ul>
+<li>$managementEndpoint = &quot;<a href="https://management.chinacloudapi.cn&quot;" target="_blank" rel="noopener">https://management.chinacloudapi.cn&quot;</a>  # Azure China endpoint</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/9/29</p>
+<p>和商务同事测试了API创建订阅的可行性，参考文档：Alias - Create - REST API (Azure Subscription) | Microsoft Learn</p>
+<p>测试使用Postman创建成功，我尝试写了一个脚本来实现批量创建订阅的需求，可使用Powershell实现，无需其他模块。测试创建成功，回显201 Accepted, 目前测试删除的API不能用（删除后第二天还在，并且尝试时有时候报403）。</p>
+<h1>设置变量</h1>
+<p>az cloud set --name AzureChinaCloud</p>
+<p>az login</p>
+<p>$token = az account get-access-token --resource <a href="https://management.chinacloudapi.cn" target="_blank" rel="noopener">https://management.chinacloudapi.cn</a> --query accessToken -o tsv</p>
+<p>$apiVersion = &quot;2021-10-01&quot;</p>
+<p>$managementEndpoint = &quot;<a href="https://management.chinacloudapi.cn&quot;" target="_blank" rel="noopener">https://management.chinacloudapi.cn&quot;</a>  # Azure China endpoint</p>
+<p>$accessToken = &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6ImVBV1FhQ29vTGpVb012S1JzRWxRTnVJTF9KVSIsImtpZCI6ImVBV1FhQ29vTGpVb012S1JzRxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx手动打码&quot;  # 从Azure AD获取的访问令牌，获取方式自行查找。</p>
+<h1>循环，创建3个订阅，其他数量自行修改。</h1>
+<p>for ($i = 1; $i -le 3; $i++) {</p>
+<p>$aliasName = $i</p>
+<p>$displayName = &quot;Clara-$i&quot;</p>
+<h1>构造请求URL</h1>
+<p>$requestUri = &quot;$managementEndpoint/providers/Microsoft.Subscription/aliases/&lt;$aliasName&gt;?api-version=$apiVersion&quot;</p>
+<h1>请求体（原始JSON字符串）</h1>
+<p>$jsonBody = @&quot;</p>
+<p>{</p>
+<p>&quot;properties&quot;: {</p>
+<p>&quot;displayName&quot;: &quot;$displayName&quot;,</p>
+<p>&quot;workload&quot;: &quot;Production&quot;,</p>
+<p>&quot;billingScope&quot;: &quot;/billingAccounts/e6525215-d5f0-53bb-275b-552df3c7535d:d693cb20-3c35-4454-a9b2-e03cfaa56723_2019-05-31/billingProfiles/2PIJ-ZTYV-BG7-ZV67-SGB/invoiceSections/ASHN-AFRZ-PJA-JTXG-SGB&quot;,</p>
+<p>&quot;subscriptionId&quot;: null,</p>
+<p>&quot;additionalProperties&quot;: {</p>
+<p>&quot;managementGroupId&quot;: null,</p>
+<p>&quot;subscriptionTenantId&quot;: &quot;57d39c5e-28e3-4021-8866-a0074c06cbb6&quot;,</p>
+<p>&quot;subscriptionOwnerId&quot;: &quot;631832e8-47cd-4747-817d-9e8723050bc7&quot;,</p>
+<p>&quot;tags&quot;: {</p>
+<p>&quot;tag1&quot;: &quot;Clara&quot;,</p>
+<p>&quot;tag2&quot;: &quot;API&quot;</p>
+<p>}</p>
+<p>&quot;@</p>
+<h1>设置HTTP头</h1>
+<p>$headers = @{</p>
+<p>&quot;Authorization&quot; = &quot;Bearer $accessToken&quot;</p>
+<p>&quot;Content-Type&quot; = &quot;application/json&quot;</p>
+<h1>发送PUT请求</h1>
+<p>try {</p>
+<p>$response = Invoke-RestMethod -Method PUT -Uri $requestUri -Headers $headers -Body $jsonBody</p>
+<p>Write-Host &quot;响应: $($response | ConvertTo-Json)&quot;</p>
+<p>} catch {</p>
+<p>Write-Error &quot;请求失败: $_&quot;</p>
+<p>Update: Cancel 的API 可以使用，参考如下：</p>
+<h1>1. 获取访问令牌</h1>
+<p>$accessToken = &quot;eyJ0eXAiOiJKV1QiLC手动打码&quot;  # 从Azure AD获取的访问令牌</p>
+<h1>订阅ID列表</h1>
+<p>$subscriptionIds = @(</p>
+<p>&quot;102d5726-75b3-4981-94d2-6cbed73bb4a9&quot;,</p>
+<p>&quot;f669e4b8-25fd-4d42-bdda-192523ef393b&quot;</p>
+<p>)</p>
+<h1>循环处理每个订阅</h1>
+<p>foreach ($subscriptionId in $subscriptionIds) {</p>
+<p>$requestUri = &quot;$managementEndpoint/subscriptions/$subscriptionId/providers/Microsoft.Subscription/cancel?api-version=$apiVersion&quot;</p>
+<h1>发送POST请求</h1>
+<p>$response = Invoke-RestMethod -Method POST -Uri $requestUri -Headers $headers</p>
+<p>Write-Host &quot;订阅 $subscriptionId 取消成功: $($response | ConvertTo-Json)&quot;</p>
+<p>Write-Error &quot;订阅 $subscriptionId 取消失败: $_&quot;</p></article>

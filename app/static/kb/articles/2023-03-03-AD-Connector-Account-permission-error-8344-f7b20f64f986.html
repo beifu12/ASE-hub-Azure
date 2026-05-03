@@ -1,0 +1,131 @@
+<article class="kb-article" data-title="AD Connector  Account permission --error 8344"><h1>AD Connector  Account permission --error 8344</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-03-03 11:11:52</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>If you met the below error, you can refer to the following steps to fix the issue</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>If you met the below error, you can refer to the following steps to fix the issue</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</li>
+</ul>
+<ul>
+<li>1, Find out the AD Connector account:</li>
+</ul>
+<ul>
+<li>PS C:\Users\leo&gt; Import-Module &quot;C:\Program Files\Microsoft Azure Active Directory Connect\AdSyncConfig\AdSyncConfig.psm1&quot;</li>
+</ul>
+<ul>
+<li>PS C:\Users\leo&gt; Get-ADSyncADConnectorAccount</li>
+</ul>
+<ul>
+<li>ADConnectorName ADConnectorForest ADConnectorAccountName ADConnectorAccountDomain</li>
+</ul>
+<ul>
+<li>--------------- ----------------- ---------------------- ------------------------</li>
+</ul>
+<ul>
+<li>leo2022.com     leo2022.com       leoadsync              leo2022.com</li>
+</ul>
+<ul>
+<li>3, Configure permission:</li>
+</ul>
+<ul>
+<li>###Replace “CN=leoadsync,CN=Users,DC=leo2022,DC=com”  with the DN of your AD Connector account in step 2:</li>
+</ul>
+<ul>
+<li>Install-WindowsFeature RSAT-AD-Tools</li>
+</ul>
+<ul>
+<li>Import-Module &quot;C:\Program Files\Microsoft Azure Active Directory Connect\AdSyncConfig\AdSyncConfig.psm1&quot;</li>
+</ul>
+<ul>
+<li>4, Push “permissions” to DC</li>
+</ul>
+<ul>
+<li>Power shell: repadmin /syncall</li>
+</ul>
+<ul>
+<li>5, Restart service “Microsoft Azure AD Sync”</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2, Check the ‘DN’ to the connector account</li>
+</ul>
+<ul>
+<li>7, Check AD Connect service and have a look if there is any issue/error:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Run powershell command:</li>
+</ul>
+<ul>
+<li>Powershell</li>
+</ul>
+<ul>
+<li>Set-ADSyncBasicReadPermissions -ADConnectorAccountDN &quot;CN=leoadsync,CN=Users,DC=leo2022,DC=com&quot;</li>
+</ul>
+<ul>
+<li>Set-ADSyncPasswordHashSyncPermissions -ADConnectorAccountDN &quot;CN=leoadsync,CN=Users,DC=leo2022,DC=com&quot;</li>
+</ul>
+<ul>
+<li>Set-ADSyncPasswordWritebackPermissions -ADConnectorAccountDN &quot;CN=leoadsync,CN=Users,DC=leo2022,DC=com&quot;</li>
+</ul>
+<ul>
+<li>Set-ADSyncExchangeHybridPermissions -ADConnectorAccountDN &quot;CN=leoadsync,CN=Users,DC=leo2022,DC=com&quot;</li>
+</ul>
+<ul>
+<li>Set-ADSyncMsDsConsistencyGuidPermissions -ADConnectorAccountDN &quot;CN=leoadsync,CN=Users,DC=leo2022,DC=com&quot;</li>
+</ul>
+<ul>
+<li>Set-ADSyncUnifiedGroupWritebackPermissions -ADConnectorAccountDN &quot;CN=leoadsync,CN=Users,DC=leo2022,DC=com&quot;</li>
+</ul>
+<ul>
+<li>6, Run command in Powershell:  Start-ADSyncSyncCycle -PolicyType Delta</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Download and install Active Directory Explorer: <a href="https://learn.microsoft.com/en-us/sysinternals/downloads/adexplorer" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/sysinternals/downloads/adexplorer</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>If you met the below error, you can refer to the following steps to fix the issue</p>
+<p>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</p>
+<p>1, Find out the AD Connector account:</p>
+<p>Run powershell command:</p>
+<p>PS C:\Users\leo&gt; Import-Module &quot;C:\Program Files\Microsoft Azure Active Directory Connect\AdSyncConfig\AdSyncConfig.psm1&quot;</p>
+<p>PS C:\Users\leo&gt; Get-ADSyncADConnectorAccount</p>
+<p>ADConnectorName ADConnectorForest ADConnectorAccountName ADConnectorAccountDomain</p>
+<p>--------------- ----------------- ---------------------- ------------------------</p>
+<p>leo2022.com     leo2022.com       leoadsync              leo2022.com</p>
+<p>2, Check the ‘DN’ to the connector account</p>
+<p>Download and install Active Directory Explorer: <a href="https://learn.microsoft.com/en-us/sysinternals/downloads/adexplorer" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/sysinternals/downloads/adexplorer</a></p>
+<p>3, Configure permission:</p>
+<p>###Replace “CN=leoadsync,CN=Users,DC=leo2022,DC=com”  with the DN of your AD Connector account in step 2:</p>
+<p>Powershell</p>
+<p>Install-WindowsFeature RSAT-AD-Tools</p>
+<p>Import-Module &quot;C:\Program Files\Microsoft Azure Active Directory Connect\AdSyncConfig\AdSyncConfig.psm1&quot;</p>
+<p>Set-ADSyncBasicReadPermissions -ADConnectorAccountDN &quot;CN=leoadsync,CN=Users,DC=leo2022,DC=com&quot;</p>
+<p>Set-ADSyncPasswordHashSyncPermissions -ADConnectorAccountDN &quot;CN=leoadsync,CN=Users,DC=leo2022,DC=com&quot;</p>
+<p>Set-ADSyncPasswordWritebackPermissions -ADConnectorAccountDN &quot;CN=leoadsync,CN=Users,DC=leo2022,DC=com&quot;</p>
+<p>Set-ADSyncExchangeHybridPermissions -ADConnectorAccountDN &quot;CN=leoadsync,CN=Users,DC=leo2022,DC=com&quot;</p>
+<p>Set-ADSyncMsDsConsistencyGuidPermissions -ADConnectorAccountDN &quot;CN=leoadsync,CN=Users,DC=leo2022,DC=com&quot;</p>
+<p>Set-ADSyncUnifiedGroupWritebackPermissions -ADConnectorAccountDN &quot;CN=leoadsync,CN=Users,DC=leo2022,DC=com&quot;</p>
+<p>4, Push “permissions” to DC</p>
+<p>Power shell: repadmin /syncall</p>
+<p>5, Restart service “Microsoft Azure AD Sync”</p>
+<p>6, Run command in Powershell:  Start-ADSyncSyncCycle -PolicyType Delta</p>
+<p>7, Check AD Connect service and have a look if there is any issue/error:</p></article>

@@ -1,0 +1,80 @@
+<article class="kb-article" data-title="Databricks引起AAD非交互式登录日志中，产生几千条BadTokenDueToSignInFrequency - The refresh token has expired or is invalid due to sign-in frequency checks by Conditional Access. The token was issued on {issueDate} and the maximum allowed lifetime for this request is {time}.)"><h1>Databricks引起AAD非交互式登录日志中，产生几千条BadTokenDueToSignInFrequency - The refresh token has expired or is invalid due to sign-in frequency checks by Conditional Access. The token was issued on {issueDate} and the maximum allowed lifetime for this request is {time}.)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: Kusto Jarvis常用命令</li>
+<li>最近修改: 2024-08-30 13:36:19</li>
+<li>JD 相关性: 自动化/命令工具; Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>1. 根据您提供的报错，是条件访问中配置了用户登录频率。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>1. 根据您提供的报错，是条件访问中配置了用户登录频率。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>##问题描述：</li>
+</ul>
+<ul>
+<li>帮忙查下产生具体原因</li>
+</ul>
+<ul>
+<li>##问题原因：</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>参考截图：</li>
+</ul>
+<ul>
+<li>此案例中，用户使用的应用是Databricks</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2. 经排查，您的条件访问中设置了14天的sign-in frequency, 到期要求用户重新验证。用户没有重新验证，旧的刷新令牌和访问令牌过期，应用无法使用过期的刷新令牌获取新的访问和刷新令牌对，同时，为了保持Session，应用要不断地去尝试获取新的令牌，AAD中就产生了很多失败的日志。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>该报错原因是在什么情况下会产生“BadTokenDueToSignInFrequency - The refresh token has expired or is invalid due to sign-in frequency checks by Conditional Access. The token was issued on {issueDate} and the maximum allowed lifetime for this request is {time}.)”</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/entra/identity/conditional-access/concept-conditional-access-session#sign-in-frequency" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/conditional-access/concept-conditional-access-session#sign-in-frequency</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/entra/identity/conditional-access/concept-session-lifetime#user-sign-in-frequency" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/conditional-access/concept-session-lifetime#user-sign-in-frequency</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/entra/identity/conditional-access/concept-conditional-access-session" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/conditional-access/concept-conditional-access-session</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/entra/identity-platform/refresh-tokens" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity-platform/refresh-tokens</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/answers/questions/1853412/non-interactive-sign-in-logs-by-past-employee-with" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/answers/questions/1853412/non-interactive-sign-in-logs-by-past-employee-with</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/08/30</p>
+<p>##问题描述：</p>
+<p>该报错原因是在什么情况下会产生“BadTokenDueToSignInFrequency - The refresh token has expired or is invalid due to sign-in frequency checks by Conditional Access. The token was issued on {issueDate} and the maximum allowed lifetime for this request is {time}.)”</p>
+<p>帮忙查下产生具体原因</p>
+<p>##问题原因：</p>
+<p>1. 根据您提供的报错，是条件访问中配置了用户登录频率。</p>
+<p>参考文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/entra/identity/conditional-access/concept-conditional-access-session#sign-in-frequency" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/conditional-access/concept-conditional-access-session#sign-in-frequency</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/entra/identity/conditional-access/concept-session-lifetime#user-sign-in-frequency" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/conditional-access/concept-session-lifetime#user-sign-in-frequency</a></p>
+<p>参考截图：</p>
+<p>2. 经排查，您的条件访问中设置了14天的sign-in frequency, 到期要求用户重新验证。用户没有重新验证，旧的刷新令牌和访问令牌过期，应用无法使用过期的刷新令牌获取新的访问和刷新令牌对，同时，为了保持Session，应用要不断地去尝试获取新的令牌，AAD中就产生了很多失败的日志。</p>
+<p><a href="https://learn.microsoft.com/zh-cn/entra/identity/conditional-access/concept-conditional-access-session" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/conditional-access/concept-conditional-access-session</a></p>
+<p><a href="https://learn.microsoft.com/zh-cn/entra/identity-platform/refresh-tokens" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity-platform/refresh-tokens</a></p>
+<p><a href="https://learn.microsoft.com/en-us/answers/questions/1853412/non-interactive-sign-in-logs-by-past-employee-with" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/answers/questions/1853412/non-interactive-sign-in-logs-by-past-employee-with</a></p>
+<p>此案例中，用户使用的应用是Databricks</p></article>

@@ -1,0 +1,129 @@
+<article class="kb-article" data-title="[MCVKB][LogA][Kusto] best practices when use log A/Kusto query"><h1>[MCVKB][LogA][Kusto] best practices when use log A/Kusto query</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: logic app</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-08-18 17:36:55</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>In this case, you may need to think about the below best practice to avoid any unexpected issue.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>In this case, you may need to think about the below best practice to avoid any unexpected issue.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Use time filters first</li>
+</ul>
+<ul>
+<li>For example:</li>
+</ul>
+<ul>
+<li>Perf</li>
+</ul>
+<ul>
+<li>| where TimeGenerated &gt; ago(24h)</li>
+</ul>
+<ul>
+<li>| where ObjectName == &#39;Container&#39; and CounterName  == &quot;Memory Usage MB&quot;</li>
+</ul>
+<ul>
+<li>Use aggregation for large data</li>
+</ul>
+<ul>
+<li>Comments: If you need to export the data as a chart (like time chart etc), it is recommend to Aggregation before the chart generation. This is to let the sample data in chart be smooth.</li>
+</ul>
+<ul>
+<li>| summarize value = avg(CounterValue) by bin(TimeGenerated, 1m), Computer</li>
+</ul>
+<ul>
+<li>| render timechart</li>
+</ul>
+<ul>
+<li>Careful when query cross tables</li>
+</ul>
+<ul>
+<li>Comments:</li>
+</ul>
+<ul>
+<li>To have better query performance, it is recommended to use a small dataset to join a large dataset.</li>
+</ul>
+<ul>
+<li>2）Please choice right join kind when do table join.</li>
+</ul>
+<ul>
+<li>For example, if you expect the right table may have no data but still want to do cross table query, use leftouter as join kind:</li>
+</ul>
+<ul>
+<li>Heartbeat</li>
+</ul>
+<ul>
+<li>| where TimeGenerated &gt; ago(1h)</li>
+</ul>
+<ul>
+<li>| where Computer == &#39;myvm&#39;</li>
+</ul>
+<ul>
+<li>| distinct Computer</li>
+</ul>
+<ul>
+<li>| join kind=leftouter (</li>
+</ul>
+<ul>
+<li>) on $left.Computer == $right.Computer</li>
+</ul>
+<ul>
+<li>You may refer to the below article for more information:</li>
+</ul>
+<ul>
+<li>join operator - Azure Data Explorer | Microsoft Docs</li>
+</ul>
+<ul>
+<li>Query best practices - Azure Data Explorer | Microsoft Docs</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Customer may expect to use Log Analytics query result as an output. For example, use Log Analytics query action in Logic App workflow and export the query result as a time chart image.</li>
+</ul>
+<ul>
+<li>Comments: In most case, Log Analytics tables (or Kusto tables) are use Timestamp as the key/index. So it is recommended to use time filter as your query’s first where condition which will lead to a better performance.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Customer may expect to use Log Analytics query result as an output. For example, use Log Analytics query action in Logic App workflow and export the query result as a time chart image.</p>
+<p>In this case, you may need to think about the below best practice to avoid any unexpected issue.</p>
+<p>Use time filters first</p>
+<p>Comments: In most case, Log Analytics tables (or Kusto tables) are use Timestamp as the key/index. So it is recommended to use time filter as your query’s first where condition which will lead to a better performance.</p>
+<p>For example:</p>
+<p>Perf</p>
+<p>| where TimeGenerated &gt; ago(24h)</p>
+<p>| where ObjectName == &#39;Container&#39; and CounterName  == &quot;Memory Usage MB&quot;</p>
+<p>Use aggregation for large data</p>
+<p>Comments: If you need to export the data as a chart (like time chart etc), it is recommend to Aggregation before the chart generation. This is to let the sample data in chart be smooth.</p>
+<p>| summarize value = avg(CounterValue) by bin(TimeGenerated, 1m), Computer</p>
+<p>| render timechart</p>
+<p>Careful when query cross tables</p>
+<p>Comments:</p>
+<p>To have better query performance, it is recommended to use a small dataset to join a large dataset.</p>
+<p>2）Please choice right join kind when do table join.</p>
+<p>For example, if you expect the right table may have no data but still want to do cross table query, use leftouter as join kind:</p>
+<p>Heartbeat</p>
+<p>| where TimeGenerated &gt; ago(1h)</p>
+<p>| where Computer == &#39;myvm&#39;</p>
+<p>| distinct Computer</p>
+<p>| join kind=leftouter (</p>
+<p>) on $left.Computer == $right.Computer</p>
+<p>You may refer to the below article for more information:</p>
+<p>join operator - Azure Data Explorer | Microsoft Docs</p>
+<p>Query best practices - Azure Data Explorer | Microsoft Docs</p></article>

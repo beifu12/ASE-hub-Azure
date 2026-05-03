@@ -1,0 +1,66 @@
+<article class="kb-article" data-title="[AKS]AKS升级后Identity由于低版本导致权限不足报错"><h1>[AKS]AKS升级后Identity由于低版本导致权限不足报错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-07-06 15:14:55</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>AKS环境为CNI网络模型，系统分配的托管标识, 版本从1.18.17升级为最新版本之后出现了当前报错信息。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>AKS环境为CNI网络模型，系统分配的托管标识, 版本从1.18.17升级为最新版本之后出现了当前报错信息。</li>
+</ul>
+<ul>
+<li>[Known Issue] LinkedAuthorizationFailed with AKS clusters · Issue #753 · Azure/aad-pod-identity · GitHub</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>#kubectl describe pod mic-68974f6cb8-cgxhf</li>
+</ul>
+<ul>
+<li>经后台反馈该问题为aad-pod-identity 1.6之前版本的已知问题：</li>
+</ul>
+<ul>
+<li>如果想选择其他版本，例如1.7.1，可以使用：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>可通过查看POD 来查看当前identity version, 若identity为1.6及更低会出现此问题   查看方式如下截图</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>例如使用以下命令可以将aad-pod-identity升级到最新的1.8.0:</li>
+</ul>
+<ul>
+<li>另外需要注意的是，aad-pod-identity 1.6以上版本需要和AGIC 1.2以上版本配合使用，请先确认AGIC在1.2以上版本，可以使用helm list命令查看AGIC版本：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>可以通过升级aad-pod-identity版本到1.6以上来解决。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>kubectl create -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment-rbac.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment-rbac.yaml</a></li>
+</ul>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.7.1/deploy/infra/deployment-rbac.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.7.1/deploy/infra/deployment-rbac.yaml</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>AKS环境为CNI网络模型，系统分配的托管标识, 版本从1.18.17升级为最新版本之后出现了当前报错信息。</p>
+<p>可通过查看POD 来查看当前identity version, 若identity为1.6及更低会出现此问题   查看方式如下截图</p>
+<p>#kubectl describe pod mic-68974f6cb8-cgxhf</p>
+<p>经后台反馈该问题为aad-pod-identity 1.6之前版本的已知问题：</p>
+<p>[Known Issue] LinkedAuthorizationFailed with AKS clusters · Issue #753 · Azure/aad-pod-identity · GitHub</p>
+<p>可以通过升级aad-pod-identity版本到1.6以上来解决。</p>
+<p>例如使用以下命令可以将aad-pod-identity升级到最新的1.8.0:</p>
+<p>kubectl create -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment-rbac.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/master/deploy/infra/deployment-rbac.yaml</a></p>
+<p>如果想选择其他版本，例如1.7.1，可以使用：</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.7.1/deploy/infra/deployment-rbac.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.7.1/deploy/infra/deployment-rbac.yaml</a></p>
+<p>另外需要注意的是，aad-pod-identity 1.6以上版本需要和AGIC 1.2以上版本配合使用，请先确认AGIC在1.2以上版本，可以使用helm list命令查看AGIC版本：</p></article>

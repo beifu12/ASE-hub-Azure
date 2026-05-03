@@ -1,0 +1,148 @@
+<article class="kb-article" data-title="[Share] 加密网络导致虚拟机创建后无私网IP"><h1>[Share] 加密网络导致虚拟机创建后无私网IP</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-11-24 11:27:05</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>当前页面显示VM状态running，boot diagnostic中截屏能显示登陆界面，但是properties中agent status unknown.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>当前页面显示VM状态running，boot diagnostic中截屏能显示登陆界面，但是properties中agent status unknown.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Gao Xieen</li>
+</ul>
+<ul>
+<li>问题情况：</li>
+</ul>
+<ul>
+<li>机器可能出现的情况：</li>
+</ul>
+<ul>
+<li>创建新的虚拟机会一直卡住。</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>由于虚拟网络加密功能目前仍在preview。导致虚拟机内部不能获得内网IP，因此不能完成预配置。</li>
+</ul>
+<ul>
+<li>参考：</li>
+</ul>
+<ul>
+<li>什么是 Azure 虚拟网络加密？ - Azure Virtual Network | Azure Docs</li>
+</ul>
+<ul>
+<li>在虚拟机网络的属性中，关闭虚拟网络加密。</li>
+</ul>
+<ul>
+<li>调查和测试过程：</li>
+</ul>
+<ul>
+<li>请参考以下的演示。</li>
+</ul>
+<ul>
+<li>在虚拟网络的安全设置中找到加密选项。</li>
+</ul>
+<ul>
+<li>开启网络加密。</li>
+</ul>
+<ul>
+<li>部署到对应已经启用加密的网络中。</li>
+</ul>
+<ul>
+<li>此时虚拟机创建会一直卡住。</li>
+</ul>
+<ul>
+<li>Boot Diagnostics 会一直处于黑屏。</li>
+</ul>
+<ul>
+<li>Redeploy这台机器。</li>
+</ul>
+<ul>
+<li>此时可以使用serial console登入。但是会发现IP和DNS地址丢失。</li>
+</ul>
+<ul>
+<li>将虚拟机尝试停止。</li>
+</ul>
+<ul>
+<li>禁用网络加密。</li>
+</ul>
+<ul>
+<li>尝试开机</li>
+</ul>
+<ul>
+<li>此时网络恢复。</li>
+</ul>
+<ul>
+<li>Ip获取正常。</li>
+</ul>
+<ul>
+<li>恢复的虚拟机是没有安装agent的。可以后续RDP到虚拟机中安装。</li>
+</ul>
+<ul>
+<li>后续测试在该网络中在创建一个新的虚拟机。</li>
+</ul>
+<ul>
+<li>建立正常。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>ASC中会显示加密。</li>
+</ul>
+<ul>
+<li>可以查看 boot diag，但是没有网络。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>问题解决方案：</li>
+</ul>
+<ul>
+<li>经过测试，我们最终定位到虚拟网络开启了虚拟网络加密导致无法创建：什么是 Azure 虚拟网络加密？ - Azure Virtual Network | Azure Docs。目前测试可以透过关闭该功能来修复该问题。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Gao Xieen</p>
+<p>问题情况：</p>
+<p>当前页面显示VM状态running，boot diagnostic中截屏能显示登陆界面，但是properties中agent status unknown.</p>
+<p>机器可能出现的情况：</p>
+<p>创建新的虚拟机会一直卡住。</p>
+<p>问题原因：</p>
+<p>由于虚拟网络加密功能目前仍在preview。导致虚拟机内部不能获得内网IP，因此不能完成预配置。</p>
+<p>参考：</p>
+<p>什么是 Azure 虚拟网络加密？ - Azure Virtual Network | Azure Docs</p>
+<p>问题解决方案：</p>
+<p>在虚拟机网络的属性中，关闭虚拟网络加密。</p>
+<p>调查和测试过程：</p>
+<p>经过测试，我们最终定位到虚拟网络开启了虚拟网络加密导致无法创建：什么是 Azure 虚拟网络加密？ - Azure Virtual Network | Azure Docs。目前测试可以透过关闭该功能来修复该问题。</p>
+<p>ASC中会显示加密。</p>
+<p>请参考以下的演示。</p>
+<p>在虚拟网络的安全设置中找到加密选项。</p>
+<p>开启网络加密。</p>
+<p>部署到对应已经启用加密的网络中。</p>
+<p>此时虚拟机创建会一直卡住。</p>
+<p>Boot Diagnostics 会一直处于黑屏。</p>
+<p>Redeploy这台机器。</p>
+<p>可以查看 boot diag，但是没有网络。</p>
+<p>此时可以使用serial console登入。但是会发现IP和DNS地址丢失。</p>
+<p>将虚拟机尝试停止。</p>
+<p>禁用网络加密。</p>
+<p>尝试开机</p>
+<p>此时网络恢复。</p>
+<p>Ip获取正常。</p>
+<p>恢复的虚拟机是没有安装agent的。可以后续RDP到虚拟机中安装。</p>
+<p>后续测试在该网络中在创建一个新的虚拟机。</p>
+<p>建立正常。</p></article>

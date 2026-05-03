@@ -1,0 +1,224 @@
+<article class="kb-article" data-title="Doc verification"><h1>Doc verification</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Data Box Disk</li>
+<li>最近修改: 2022-07-06 14:41:57</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>==&gt; Microsoft Azure Data Box Disk FAQ | Azure Docs tell it&#39;s up to 5 business days. But Cx may not read the FAQ until they met issue. so it is better to mention the estimated SLA in this doc.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>==&gt;  Microsoft Azure Data Box Disk FAQ | Azure Docs tell it&#39;s up to 5 business days. But Cx may not read the FAQ until they met issue. so it is better to mention the estimated SLA in this doc.</li>
+</ul>
+<ul>
+<li>3. Microsoft Azure Data Box Disk FAQ | Azure Docs the FAQ didn&#39;t mention how long it will take between disk received at DC and data copy begin. Our testing seems smooths, both began within 2 hours. But Cx do have experience that the copy didn&#39;t start after several days? In most situation, that are due to the issue mention above of the shipping label issue. Can we add a FAQ of this common issue?</li>
+</ul>
+<ul>
+<li>during ops preparing for disks and data importing, when there is issue the progress/status will not change for several days. But from cx view, they only feel the service is slow. So in the future, when having backend issue, can we proactively post some information to cx so they will know the real status?</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Doc verification</li>
+</ul>
+<ul>
+<li>Overall Experience:</li>
+</ul>
+<ul>
+<li>Link</li>
+</ul>
+<ul>
+<li>Self-Managed Shipment</li>
+</ul>
+<ul>
+<li>MS-Managed Shipment</li>
+</ul>
+<ul>
+<li>Both</li>
+</ul>
+<ul>
+<li>Azure Data Box Disk overview | Azure Docs</li>
+</ul>
+<ul>
+<li>Done</li>
+</ul>
+<ul>
+<li>Quickstart for Azure Data Box Disk | Azure Docs</li>
+</ul>
+<ul>
+<li>The docs actually provide technical details that customer asked frequently. But some statement are ambiguous.</li>
+</ul>
+<ul>
+<li>Tutorial to order Azure Data Box Disk | Azure Docs</li>
+</ul>
+<ul>
+<li>1. The docs for self-managed shipment is not localized: Microsoft Azure Data Box Disk self-managed Shipping | Microsoft Docs  ==&gt; I have sent email to azure.cn docs team for localization</li>
+</ul>
+<ul>
+<li>1.</li>
+</ul>
+<ul>
+<li>The department, c/o will not be printed out in the shipping label. It has the possibility that carrier could not find the correct address to deliver. It is better to let cx know which lines in the address table will be printed out in the shipping label so Cx can fill in the information correctly.</li>
+</ul>
+<ul>
+<li>1. The default email address in mooncake is not a real mail box. If cx left it as default, Cx will never receive the notification email. It is better to add a reminder here to ask cx to input an valid mail box address.</li>
+</ul>
+<ul>
+<li>2. The docs didn&#39;t tell how long will need for disk prepare done. During our test, BJB took 1 day, but CE3 took 3 days.</li>
+</ul>
+<ul>
+<li>Microsoft Azure Data Box Disk self-managed Shipping | Microsoft Docs</li>
+</ul>
+<ul>
+<li>In self-managed mode, the address should not require. But workflow requires information must not be empty here.</li>
+</ul>
+<ul>
+<li>It is very kind that the notification email provided English/Chinese version. But the address provided in notification email are all English. It is not easy to use English version address to locate in China. Suggest to provide a Chinese version Address.</li>
+</ul>
+<ul>
+<li>Not applicable</li>
+</ul>
+<ul>
+<li>Tutorial to unpack, connect to, unlock Azure Data Box Disk | Azure Docs</li>
+</ul>
+<ul>
+<li>1. It is better to highlight some critical information in the guide or during email notification. For example: the shipping label to return disk. To tell the Cx that if using different tracking id to return disk, it will cause the information mismatch and action delay. We do have customer didn&#39;t keep the label and used a new label which cause data copy delay.</li>
+</ul>
+<ul>
+<li>Tutorial to copy data to Azure Data Box Disk | Azure Docs</li>
+</ul>
+<ul>
+<li>--&gt; per my test, the files under AzureFile will not uploaded as block blobs but will be uploaded to a default fileshare databox-&lt;jobname&gt;-&lt;number&gt;. The doc didn&#39;t provide correct caveats.</li>
+</ul>
+<ul>
+<li>Tutorial to ship Azure Data Box Disk back | Azure Docs</li>
+</ul>
+<ul>
+<li>The email only contain China East DC, for China north DC, is the contact working?</li>
+</ul>
+<ul>
+<li>2.</li>
+</ul>
+<ul>
+<li>1. The doc (nor other docs) didn&#39;t mention how long will it take between received and data copy. We do had several tickets that cx query why data copy didn&#39;t start after several days of received.</li>
+</ul>
+<ul>
+<li>The docs didn&#39;t tell how long will data copy happen after disk received. Even the FAQ didn&#39;t provide an estimate SLA. We do have cx reported that  copy didn&#39;t start after several days. Can we have an estimated SLA so that cx will have correct expectation? And Cx can know how long they should contact support or operation to have an update.</li>
+</ul>
+<ul>
+<li>NA</li>
+</ul>
+<ul>
+<li>Azure Data Box Disk security features | Azure Docs</li>
+</ul>
+<ul>
+<li>Microsoft Azure Data Box Disk FAQ | Azure Docs</li>
+</ul>
+<ul>
+<li>Some questions that Cx asks frequently but no answer in FAQ:</li>
+</ul>
+<ul>
+<li>1. Microsoft Azure Data Box Disk FAQ | Azure Docs the job location is always China East, FAQ has pointed out that. But how Cx can tell where the actual disk prepare location(region)? If cx can choose the preferred disk prepare location(region)?</li>
+</ul>
+<ul>
+<li>2. Since there is self-managed shipment, how the price is different with the MSM shipment? Will Cx be charged shipment fee or not?</li>
+</ul>
+<ul>
+<li>Other observation</li>
+</ul>
+<ul>
+<li>After going through all the docs and working on different tickets, we found that the docs contain many tech details but not with a clear architecture. The tech details are scattered across different documents. Cx needs to review different docs for a certain question.</li>
+</ul>
+<ul>
+<li>e.g.  the docs of QuickStart, copy data, and limitations mentioned how data will upload to azure, but in different details. Cx may need to read all the 3 docs to have a full understanding about the truth.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>The section only suggested cx to run validate. But didn&#39;t tell what will happen if run or not. Suggest to add more details data import logic:</li>
+</ul>
+<ul>
+<li>3.  The estimated SLA is up to 5 business day for disk preparation. Cx may not be willing to wait for so long. Can Cx get an option in portal to push the dispatch in case of some urgent situation so backend can priority the order?</li>
+</ul>
+<ul>
+<li>During communicating with Operation team, I was told that once the disks are ready, Customer will wait 1 ~ 2 working days to let DC apply for security record. The security record is for the situation that people who pick up or drop off package will enter DC gate. But in China, carrier usually pick up and drop off package around the gate where DC operator will take the package to. So, it does not require the security record. Thus, once operation team acknowledged the pickup request and provided the Authorization code in Portal, Customer should have been able to contact DC operator to pick up the disk.</li>
+</ul>
+<ul>
+<li>Another question is about the working time of DC operator. For MS managed shipment, DC operator says Fedex doesn’t work during weekend. But for self-managed shipment, the available time is still business day. This didn’t help to save the shipment time comparing to MSM. We need to confirm if DC operator are okay to provide pickup/drop-off service during weekend.</li>
+</ul>
+<ul>
+<li>Per our testing, phone number 400.889.6066 ext. 3693 cannot reach. E-mail works. May need to verify?</li>
+</ul>
+<ul>
+<li>Azure Data Box Disk portal admin guide | Azure Docs</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/en-us/databox/data-box-disk-deploy-upload-verify" target="_blank" rel="noopener">https://docs.azure.cn/en-us/databox/data-box-disk-deploy-upload-verify</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/en-us/databox/data-box-disk-system-requirements" target="_blank" rel="noopener">https://docs.azure.cn/en-us/databox/data-box-disk-system-requirements</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/en-us/databox/data-box-disk-limits" target="_blank" rel="noopener">https://docs.azure.cn/en-us/databox/data-box-disk-limits</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Doc verification</p>
+<p>Overall Experience:</p>
+<p>Link</p>
+<p>Self-Managed Shipment</p>
+<p>MS-Managed Shipment</p>
+<p>Both</p>
+<p>Azure Data Box Disk overview | Azure Docs</p>
+<p>Done</p>
+<p>Quickstart for Azure Data Box Disk | Azure Docs</p>
+<p>The docs actually provide technical details that customer asked frequently. But some statement are ambiguous.</p>
+<p>The section only suggested cx to run validate. But didn&#39;t tell what will happen if run or not. Suggest to add more details data import logic:</p>
+<p>Tutorial to order Azure Data Box Disk | Azure Docs</p>
+<p>1. The docs for self-managed shipment is not localized: Microsoft Azure Data Box Disk self-managed Shipping | Microsoft Docs  ==&gt; I have sent email to azure.cn docs team for localization</p>
+<p>1.</p>
+<p>The department, c/o will not be printed out in the shipping label. It has the possibility that carrier could not find the correct address to deliver. It is better to let cx know which lines in the address table will be printed out in the shipping label so Cx can fill in the information correctly.</p>
+<p>1. The default email address in mooncake is not a real mail box. If cx left it as default, Cx will never receive the notification email. It is better to add a reminder here to ask cx to input an valid mail box address.</p>
+<p>2. The docs didn&#39;t tell how long will need for disk prepare done. During our test, BJB took 1 day, but CE3 took 3 days.</p>
+<p>==&gt;  Microsoft Azure Data Box Disk FAQ | Azure Docs tell it&#39;s up to 5 business days. But Cx may not read the FAQ until they met issue. so it is better to mention the estimated SLA in this doc.</p>
+<p>3.  The estimated SLA is up to 5 business day for disk preparation. Cx may not be willing to wait for so long. Can Cx get an option in portal to push the dispatch in case of some urgent situation so backend can priority the order?</p>
+<p>Microsoft Azure Data Box Disk self-managed Shipping | Microsoft Docs</p>
+<p>In self-managed mode, the address should not require. But workflow requires information must not be empty here.</p>
+<p>During communicating with Operation team, I was told that once the disks are ready, Customer will wait 1 ~ 2 working days to let DC apply for security record. The security record is for the situation that people who pick up or drop off package will enter DC gate. But in China, carrier usually pick up and drop off package around the gate where DC operator will take the package to. So, it does not require the security record. Thus, once operation team acknowledged the pickup request and provided the Authorization code in Portal, Customer should have been able to contact DC operator to pick up the disk.</p>
+<p>Another question is about the working time of DC operator. For MS managed shipment, DC operator says Fedex doesn’t work during weekend. But for self-managed shipment, the available time is still business day. This didn’t help to save the shipment time comparing to MSM. We need to confirm if DC operator are okay to provide pickup/drop-off service during weekend.</p>
+<p>It is very kind that the notification email provided English/Chinese version. But the address provided in notification email are all English. It is not easy to use English version address to locate in China. Suggest to provide a Chinese version Address.</p>
+<p>Not applicable</p>
+<p>Tutorial to unpack, connect to, unlock Azure Data Box Disk | Azure Docs</p>
+<p>1. It is better to highlight some critical information in the guide or during email notification. For example: the shipping label to return disk. To tell the Cx that if using different tracking id to return disk, it will cause the information mismatch and action delay. We do have customer didn&#39;t keep the label and used a new label which cause data copy delay.</p>
+<p>Tutorial to copy data to Azure Data Box Disk | Azure Docs</p>
+<p>--&gt; per my test, the files under AzureFile will not uploaded as block blobs but will be uploaded to a default fileshare databox-&lt;jobname&gt;-&lt;number&gt;. The doc didn&#39;t provide correct caveats.</p>
+<p>Tutorial to ship Azure Data Box Disk back | Azure Docs</p>
+<p>The email only contain China East DC, for China north DC, is the contact working?</p>
+<p>2.</p>
+<p>Per our testing, phone number 400.889.6066 ext. 3693 cannot reach. E-mail works. May need to verify?</p>
+<p>1. The doc (nor other docs) didn&#39;t mention how long will it take between received and data copy. We do had several tickets that cx query why data copy didn&#39;t start after several days of received.</p>
+<p><a href="https://docs.azure.cn/en-us/databox/data-box-disk-deploy-upload-verify" target="_blank" rel="noopener">https://docs.azure.cn/en-us/databox/data-box-disk-deploy-upload-verify</a></p>
+<p>The docs didn&#39;t tell how long will data copy happen after disk received. Even the FAQ didn&#39;t provide an estimate SLA. We do have cx reported that  copy didn&#39;t start after several days. Can we have an estimated SLA so that cx will have correct expectation? And Cx can know how long they should contact support or operation to have an update.</p>
+<p><a href="https://docs.azure.cn/en-us/databox/data-box-disk-system-requirements" target="_blank" rel="noopener">https://docs.azure.cn/en-us/databox/data-box-disk-system-requirements</a></p>
+<p>NA</p>
+<p><a href="https://docs.azure.cn/en-us/databox/data-box-disk-limits" target="_blank" rel="noopener">https://docs.azure.cn/en-us/databox/data-box-disk-limits</a></p>
+<p>Azure Data Box Disk security features | Azure Docs</p>
+<p>Microsoft Azure Data Box Disk FAQ | Azure Docs</p>
+<p>Some questions that Cx asks frequently but no answer in FAQ:</p>
+<p>1. Microsoft Azure Data Box Disk FAQ | Azure Docs the job location is always China East, FAQ has pointed out that. But how Cx can tell where the actual disk prepare location(region)? If cx can choose the preferred disk prepare location(region)?</p>
+<p>2. Since there is self-managed shipment, how the price is different with the MSM shipment? Will Cx be charged shipment fee or not?</p>
+<p>3. Microsoft Azure Data Box Disk FAQ | Azure Docs the FAQ didn&#39;t mention how long it will take between disk received at DC and data copy begin. Our testing seems smooths, both began within 2 hours. But Cx do have experience that the copy didn&#39;t start after several days? In most situation, that are due to the issue mention above of the shipping label issue. Can we add a FAQ of this common issue?</p>
+<p>Azure Data Box Disk portal admin guide | Azure Docs</p>
+<p>Other observation</p>
+<p>during ops preparing for disks and data importing, when there is issue the progress/status will not change for several days. But from cx view, they only feel the service is slow. So in the future, when having backend issue, can we proactively post some information to cx so they will know the real status?</p>
+<p>After going through all the docs and working on different tickets, we found that the docs contain many tech details but not with a clear architecture. The tech details are scattered across different documents. Cx needs to review different docs for a certain question.</p>
+<p>e.g.  the docs of QuickStart, copy data, and limitations mentioned how data will upload to azure, but in different details. Cx may need to read all the 3 docs to have a full understanding about the truth.</p></article>

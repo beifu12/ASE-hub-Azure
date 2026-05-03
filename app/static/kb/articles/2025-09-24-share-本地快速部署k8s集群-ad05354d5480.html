@@ -1,0 +1,157 @@
+<article class="kb-article" data-title="【share】本地快速部署k8s集群"><h1>【share】本地快速部署k8s集群</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-24 16:34:46</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Azure 可以通过ARC 纳管 本地的k8s 集群进行管理，让本地的k8s 集群享有部分aks 集群的功能。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Azure 可以通过ARC 纳管 本地的k8s 集群进行管理，让本地的k8s 集群享有部分aks 集群的功能。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>这里提供一个快速部署本地k8s 的方式，供大家参考。</li>
+</ul>
+<ul>
+<li>环境： ubuntu22.04</li>
+</ul>
+<ul>
+<li>1 部署docker :</li>
+</ul>
+<ul>
+<li>参考文档 Ubuntu | Docker Docs</li>
+</ul>
+<ul>
+<li>1.1最简单的方式是在如下连接进行必要的docker 组件包安装， 可以下载这一套组件包</li>
+</ul>
+<ul>
+<li>Index of linux/ubuntu/dists/jammy/pool/stable/amd64/</li>
+</ul>
+<ul>
+<li>containerd.io_1.6.21-1_&lt;arch&gt;.deb</li>
+</ul>
+<ul>
+<li>docker-ce_5:24.0.7-1~ubuntu.22.04~&lt;arch&gt;.deb</li>
+</ul>
+<ul>
+<li>docker-ce-cli_5:24.0.7-1~ubuntu.22.04~&lt;arch&gt;.deb</li>
+</ul>
+<ul>
+<li>docker-buildx-plugin_0.11.2-1~ubuntu.22.04~&lt;arch&gt;.deb</li>
+</ul>
+<ul>
+<li>docker-compose-plugin_2.21.0-1~ubuntu.22.04~&lt;arch&gt;.deb</li>
+</ul>
+<ul>
+<li>1.2    上传，解压</li>
+</ul>
+<ul>
+<li>在/home/hana/docker-debs 下执行   sudo dpkg -i *.deb</li>
+</ul>
+<ul>
+<li>1.3 启动docker 服务：</li>
+</ul>
+<ul>
+<li>sudo systemctl start docker</li>
+</ul>
+<ul>
+<li>2 部署minikube</li>
+</ul>
+<ul>
+<li>参考文档： minikube start | minikube</li>
+</ul>
+<ul>
+<li>2.1 下载minikube 包</li>
+</ul>
+<ul>
+<li>sudo dpkg -i minikube_latest_amd64.deb</li>
+</ul>
+<ul>
+<li>2.2 启动minikube 时 会拉取对应镜像，因为网络原因原因，需要调整镜像库地址：</li>
+</ul>
+<ul>
+<li>2.3  安装kubectl</li>
+</ul>
+<ul>
+<li>此处不做赘述 ，参考文档即可</li>
+</ul>
+<ul>
+<li>Install and Set Up kubectl on Linux | Kubernetes</li>
+</ul>
+<ul>
+<li>image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/kindest/kindnetd:v20241108-5c6d2daf</li>
+</ul>
+<ul>
+<li>成功部署的样子如下：</li>
+</ul>
+<ul>
+<li>2.5 Minikube 安装完成，如后续需要启动Minikube（比如虚拟机关机重启后需要启动Minikube），仅需运行minikube start --driver=docker 即可</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>修改 daemonet kindnet 命令</li>
+</ul>
+<ul>
+<li>kubectl edit  daemonset kindnet -n kube-system</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>minikube start --driver=docker --base-image=&quot;registry.cn-hangzhou.aliyuncs.com/google_containers/kicbase:v0.0.40&quot; --image-mirror-country=&#39;cn&#39; --image-repository=&#39;registry.cn-hangzhou.aliyuncs.com/google_containers&#39;  --force</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Azure 可以通过ARC 纳管 本地的k8s 集群进行管理，让本地的k8s 集群享有部分aks 集群的功能。</li>
+</ul>
+<ul>
+<li>sudo systemctl enable docker</li>
+</ul>
+<ul>
+<li>2.4  kindnet  是一个网络控件， 需要修改 daemonet kindnet   的镜像地址，否则会拉取不到。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>curl -LO <a href="https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb" target="_blank" rel="noopener">https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Azure 可以通过ARC 纳管 本地的k8s 集群进行管理，让本地的k8s 集群享有部分aks 集群的功能。</p>
+<p>这里提供一个快速部署本地k8s 的方式，供大家参考。</p>
+<p>环境： ubuntu22.04</p>
+<p>1 部署docker :</p>
+<p>参考文档 Ubuntu | Docker Docs</p>
+<p>1.1最简单的方式是在如下连接进行必要的docker 组件包安装， 可以下载这一套组件包</p>
+<p>Index of linux/ubuntu/dists/jammy/pool/stable/amd64/</p>
+<p>containerd.io_1.6.21-1_&lt;arch&gt;.deb</p>
+<p>docker-ce_5:24.0.7-1~ubuntu.22.04~&lt;arch&gt;.deb</p>
+<p>docker-ce-cli_5:24.0.7-1~ubuntu.22.04~&lt;arch&gt;.deb</p>
+<p>docker-buildx-plugin_0.11.2-1~ubuntu.22.04~&lt;arch&gt;.deb</p>
+<p>docker-compose-plugin_2.21.0-1~ubuntu.22.04~&lt;arch&gt;.deb</p>
+<p>1.2    上传，解压</p>
+<p>在/home/hana/docker-debs 下执行   sudo dpkg -i *.deb</p>
+<p>1.3 启动docker 服务：</p>
+<p>sudo systemctl start docker</p>
+<p>sudo systemctl enable docker</p>
+<p>2 部署minikube</p>
+<p>参考文档： minikube start | minikube</p>
+<p>2.1 下载minikube 包</p>
+<p>curl -LO <a href="https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb" target="_blank" rel="noopener">https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb</a></p>
+<p>sudo dpkg -i minikube_latest_amd64.deb</p>
+<p>2.2 启动minikube 时 会拉取对应镜像，因为网络原因原因，需要调整镜像库地址：</p>
+<p>minikube start --driver=docker --base-image=&quot;registry.cn-hangzhou.aliyuncs.com/google_containers/kicbase:v0.0.40&quot; --image-mirror-country=&#39;cn&#39; --image-repository=&#39;registry.cn-hangzhou.aliyuncs.com/google_containers&#39;  --force</p>
+<p>2.3  安装kubectl</p>
+<p>此处不做赘述 ，参考文档即可</p>
+<p>Install and Set Up kubectl on Linux | Kubernetes</p>
+<p>2.4  kindnet  是一个网络控件， 需要修改 daemonet kindnet   的镜像地址，否则会拉取不到。</p>
+<p>修改 daemonet kindnet 命令</p>
+<p>kubectl edit  daemonset kindnet -n kube-system</p>
+<p>image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/kindest/kindnetd:v20241108-5c6d2daf</p>
+<p>成功部署的样子如下：</p>
+<p>2.5 Minikube 安装完成，如后续需要启动Minikube（比如虚拟机关机重启后需要启动Minikube），仅需运行minikube start --driver=docker 即可</p></article>

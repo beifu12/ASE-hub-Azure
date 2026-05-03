@@ -1,0 +1,144 @@
+<article class="kb-article" data-title="ARC问题重装+AMA扩展问题完整重装步骤分享"><h1>ARC问题重装+AMA扩展问题完整重装步骤分享</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Arc</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-22 17:22:45</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>ARC 使用问题排查，含AMA Agent</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>ARC 使用问题排查，含AMA Agent</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>ARC安装登录问题：20250828370571</li>
+</ul>
+<ul>
+<li>ARC AMA    问题：20250728365393</li>
+</ul>
+<ul>
+<li>ARC安装重装问题</li>
+</ul>
+<ul>
+<li>一、停止四个服务</li>
+</ul>
+<ul>
+<li>Azure Arc Proxy</li>
+</ul>
+<ul>
+<li>Guest Configuration Extension Service</li>
+</ul>
+<ul>
+<li>Guest Configuration Arc Service</li>
+</ul>
+<ul>
+<li>Azure Hybrid Instance Metadata Service</li>
+</ul>
+<ul>
+<li>二、删除三个目录</li>
+</ul>
+<ul>
+<li>C:\ProgramData\GuestConfig</li>
+</ul>
+<ul>
+<li>C:\ProgramData\AzureConnectedMachineAgent</li>
+</ul>
+<ul>
+<li>ARC 的AMA扩展问题重装</li>
+</ul>
+<ul>
+<li>1. Azure Arc Proxy</li>
+</ul>
+<ul>
+<li>2. Guest Configuration Extension Service</li>
+</ul>
+<ul>
+<li>3.Guest Configuration Arc Service</li>
+</ul>
+<ul>
+<li>4.Azure Hybrid Instance Metadata Service</li>
+</ul>
+<ul>
+<li>二、停止进程</li>
+</ul>
+<ul>
+<li>1.AMAExtHealthMonitor.exe</li>
+</ul>
+<ul>
+<li>三、删除注册表键：</li>
+</ul>
+<ul>
+<li>Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\AzureMonitorAgent\Secrets and remove the key &quot;persistenceKeyCreated&quot;</li>
+</ul>
+<ul>
+<li>四、删除三个目录</li>
+</ul>
+<ul>
+<li>C:\Resources\Directory\AMA*</li>
+</ul>
+<ul>
+<li>四、重装ARC Agent，使用DCR 添加虚拟机发起AMA 扩展安装。</li>
+</ul>
+<ul>
+<li>官方参考文档</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>ARC 使用问题排查，含AMA Agent</li>
+</ul>
+<ul>
+<li>1、排查 Azure Connected Machine 代理连接问题 - Azure Arc | Azure Docs</li>
+</ul>
+<ul>
+<li>2、排查已启用 Azure Arc 的服务器 VM 扩展问题 - Azure Arc | Azure Docs</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>三、重装ARC Agent，单个链接脚本无效时，可采取多个服务器使用服务主体链接的方式。</li>
+</ul>
+<ul>
+<li>常用参考命令  azcmagent check   azcmagent CLI 参考 - Azure Arc | Azure Docs</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/09/17</p>
+<p>ARC 使用问题排查，含AMA Agent</p>
+<p>ARC安装登录问题：20250828370571</p>
+<p>ARC AMA    问题：20250728365393</p>
+<p>ARC安装重装问题</p>
+<p>一、停止四个服务</p>
+<p>Azure Arc Proxy</p>
+<p>Guest Configuration Extension Service</p>
+<p>Guest Configuration Arc Service</p>
+<p>Azure Hybrid Instance Metadata Service</p>
+<p>二、删除三个目录</p>
+<p>C:\ProgramData\GuestConfig</p>
+<p>C:\ProgramData\AzureConnectedMachineAgent</p>
+<p>三、重装ARC Agent，单个链接脚本无效时，可采取多个服务器使用服务主体链接的方式。</p>
+<p>ARC 的AMA扩展问题重装</p>
+<p>1. Azure Arc Proxy</p>
+<p>2. Guest Configuration Extension Service</p>
+<p>3.Guest Configuration Arc Service</p>
+<p>4.Azure Hybrid Instance Metadata Service</p>
+<p>二、停止进程</p>
+<p>1.AMAExtHealthMonitor.exe</p>
+<p>三、删除注册表键：</p>
+<p>Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\AzureMonitorAgent\Secrets and remove the key &quot;persistenceKeyCreated&quot;</p>
+<p>四、删除三个目录</p>
+<p>C:\Resources\Directory\AMA*</p>
+<p>四、重装ARC Agent，使用DCR 添加虚拟机发起AMA 扩展安装。</p>
+<p>常用参考命令  azcmagent check   azcmagent CLI 参考 - Azure Arc | Azure Docs</p>
+<p>官方参考文档</p>
+<p>1、排查 Azure Connected Machine 代理连接问题 - Azure Arc | Azure Docs</p>
+<p>2、排查已启用 Azure Arc 的服务器 VM 扩展问题 - Azure Arc | Azure Docs</p></article>

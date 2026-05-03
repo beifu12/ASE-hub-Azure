@@ -1,0 +1,188 @@
+<article class="kb-article" data-title="Linux制作P2S证书步骤 &amp; Windows命令行方式导出证书步骤"><h1>Linux制作P2S证书步骤 &amp; Windows命令行方式导出证书步骤</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-06-12 15:07:15</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>【客户需求】</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>【客户需求】</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>【客户需求】</li>
+</ul>
+<ul>
+<li>【测试结果】</li>
+</ul>
+<ul>
+<li>使用OpenSSL建立自己的CA, 创建自签名根证书目录及其子目录存储私钥，证书等</li>
+</ul>
+<ul>
+<li>mkdir  -p ~/ssl/demoCA/{certs,newcerts,crl,private}</li>
+</ul>
+<ul>
+<li>cd ~/ssl/demoCA</li>
+</ul>
+<ul>
+<li>Touch index.txt</li>
+</ul>
+<ul>
+<li>echo &quot;01&quot; &gt; serial</li>
+</ul>
+<ul>
+<li>修改openssl.cnf文件，默认使用sha256算法的密钥，并求改『ca_default』下的的目录名称， 与你所创建的目录一致</li>
+</ul>
+<ul>
+<li>sudo cp /etc/ssl/openssl.cnf  ~/ssl/openssl.cnf</li>
+</ul>
+<ul>
+<li>vi ~/ssl/openssl.cnf</li>
+</ul>
+<ul>
+<li>在~/ssl目录下生成CA根证书及密钥</li>
+</ul>
+<ul>
+<li>openssl req -new -x509 -newkey rsa:4096  -keyout cakey.key -out cacert.crt -config openssl.cnf -days 365</li>
+</ul>
+<ul>
+<li>-----------------这里ca.pem 即可用作传输到Azure上的自签名根证书-----------------------------------</li>
+</ul>
+<ul>
+<li>创建客户端私钥</li>
+</ul>
+<ul>
+<li>openssl genrsa -out client.key 4096</li>
+</ul>
+<ul>
+<li>用该客户端私钥生成证书申请文件</li>
+</ul>
+<ul>
+<li>openssl req -new -key client.key -out client.csr -config openssl.cnf</li>
+</ul>
+<ul>
+<li>通过证书申请文件，用根证书签发客户端证书</li>
+</ul>
+<ul>
+<li>openssl ca -in client.csr -out client.crt -cert cacert.crt -keyfile cakey.key -config openssl.cnf</li>
+</ul>
+<ul>
+<li>把客户端证书保存为.pem格式</li>
+</ul>
+<ul>
+<li>cat client.crt client.key &gt; client.pem</li>
+</ul>
+<ul>
+<li>如需导出到windows 供P2S使用,需转换成.pfx格式</li>
+</ul>
+<ul>
+<li>openssl pkcs12 -export -inkey client.key -in client.pem -out client.pfx</li>
+</ul>
+<ul>
+<li>本次测试结果：</li>
+</ul>
+<ul>
+<li>导出所有客户端证书到一个.pfx文件：</li>
+</ul>
+<ul>
+<li>$mypwd = ConvertTo-SecureString -String &quot;xxxx&quot; -Force -AsPlainText</li>
+</ul>
+<ul>
+<li>导出单个证书到一个.pfx文件：</li>
+</ul>
+<ul>
+<li>将以上粗体部分更改成自己相应的路径及证书的信息</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>【Linux证书制作步骤】</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Linux是否可以使用命令行的方式进行证书制作，留在本地或者上传供P2S VPN使用</li>
+</ul>
+<ul>
+<li>Windows是否可以采用命令行的方式进行客户端证书导出</li>
+</ul>
+<ul>
+<li>Windows 10和windows 2016 可以使用powershell 命令行进行客户端证书导出</li>
+</ul>
+<ul>
+<li>【windows证书导出命令】</li>
+</ul>
+<ul>
+<li>Windows10生成的客户端证书默认位于“Certificates - Current User\Personal\Certificates”中,可以使用powershell 命令行进行证书导出：</li>
+</ul>
+<ul>
+<li>Get-ChildItem -Path cert:\CurrentUser\My | Export-PfxCertificate -FilePath C:\xxx.pfx -Password $mypwd</li>
+</ul>
+<ul>
+<li>Get-ChildItem -Path &quot;Cert:\CurrentUser\My\THUMBPRINT&quot; | Export-PfxCertificate -FilePath C:\xxx.pfx -Password $mypwd</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>default_md = sha256</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在Azure P2S VPN中，可以为每个客户端生成唯一证书，也可以对多个客户端使用同一证书。 若想在linux中生成唯一客户端证书，可以通过生成不同的客户端私钥及证书申请文件（即4， 5），再由根证书签发出不同的客户端证书，存储在相应文件夹，或者导出到windows客户端</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Linux中可以基于openssl 命令的实现自签名证书制作，以供P2S VPN 使用，相关证书制作工具及注意事项请参考官网 <a href="https://docs.microsoft.com/zh-cn/azure/vpn-gateway/vpn-gateway-howto-point-to-site-rm-ps#addremovecert" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/vpn-gateway/vpn-gateway-howto-point-to-site-rm-ps#addremovecert</a></li>
+</ul>
+<ul>
+<li>点到站点连接，证书问题排查， 请参考 <a href="https://docs.microsoft.com/zh-cn/azure/vpn-gateway/vpn-gateway-troubleshoot-vpn-point-to-site-connection-problems" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/vpn-gateway/vpn-gateway-troubleshoot-vpn-point-to-site-connection-problems</a></li>
+</ul>
+<ul>
+<li>更多powershell证书导出命令， 请参考<a href="https://docs.microsoft.com/en-us/powershell/module/pkiclient/export-pfxcertificate?view=win10-ps" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/pkiclient/export-pfxcertificate?view=win10-ps</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>【客户需求】</p>
+<p>Linux是否可以使用命令行的方式进行证书制作，留在本地或者上传供P2S VPN使用</p>
+<p>Windows是否可以采用命令行的方式进行客户端证书导出</p>
+<p>【测试结果】</p>
+<p>Linux中可以基于openssl 命令的实现自签名证书制作，以供P2S VPN 使用，相关证书制作工具及注意事项请参考官网 <a href="https://docs.microsoft.com/zh-cn/azure/vpn-gateway/vpn-gateway-howto-point-to-site-rm-ps#addremovecert" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/vpn-gateway/vpn-gateway-howto-point-to-site-rm-ps#addremovecert</a></p>
+<p>点到站点连接，证书问题排查， 请参考 <a href="https://docs.microsoft.com/zh-cn/azure/vpn-gateway/vpn-gateway-troubleshoot-vpn-point-to-site-connection-problems" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/vpn-gateway/vpn-gateway-troubleshoot-vpn-point-to-site-connection-problems</a></p>
+<p>Windows 10和windows 2016 可以使用powershell 命令行进行客户端证书导出</p>
+<p>【Linux证书制作步骤】</p>
+<p>使用OpenSSL建立自己的CA, 创建自签名根证书目录及其子目录存储私钥，证书等</p>
+<p>mkdir  -p ~/ssl/demoCA/{certs,newcerts,crl,private}</p>
+<p>cd ~/ssl/demoCA</p>
+<p>Touch index.txt</p>
+<p>echo &quot;01&quot; &gt; serial</p>
+<p>修改openssl.cnf文件，默认使用sha256算法的密钥，并求改『ca_default』下的的目录名称， 与你所创建的目录一致</p>
+<p>sudo cp /etc/ssl/openssl.cnf  ~/ssl/openssl.cnf</p>
+<p>vi ~/ssl/openssl.cnf</p>
+<p>default_md = sha256</p>
+<p>在~/ssl目录下生成CA根证书及密钥</p>
+<p>openssl req -new -x509 -newkey rsa:4096  -keyout cakey.key -out cacert.crt -config openssl.cnf -days 365</p>
+<p>-----------------这里ca.pem 即可用作传输到Azure上的自签名根证书-----------------------------------</p>
+<p>创建客户端私钥</p>
+<p>openssl genrsa -out client.key 4096</p>
+<p>用该客户端私钥生成证书申请文件</p>
+<p>openssl req -new -key client.key -out client.csr -config openssl.cnf</p>
+<p>通过证书申请文件，用根证书签发客户端证书</p>
+<p>openssl ca -in client.csr -out client.crt -cert cacert.crt -keyfile cakey.key -config openssl.cnf</p>
+<p>把客户端证书保存为.pem格式</p>
+<p>cat client.crt client.key &gt; client.pem</p>
+<p>如需导出到windows 供P2S使用,需转换成.pfx格式</p>
+<p>openssl pkcs12 -export -inkey client.key -in client.pem -out client.pfx</p>
+<p>在Azure P2S VPN中，可以为每个客户端生成唯一证书，也可以对多个客户端使用同一证书。 若想在linux中生成唯一客户端证书，可以通过生成不同的客户端私钥及证书申请文件（即4， 5），再由根证书签发出不同的客户端证书，存储在相应文件夹，或者导出到windows客户端</p>
+<p>本次测试结果：</p>
+<p>【windows证书导出命令】</p>
+<p>Windows10生成的客户端证书默认位于“Certificates - Current User\Personal\Certificates”中,可以使用powershell 命令行进行证书导出：</p>
+<p>导出所有客户端证书到一个.pfx文件：</p>
+<p>$mypwd = ConvertTo-SecureString -String &quot;xxxx&quot; -Force -AsPlainText</p>
+<p>Get-ChildItem -Path cert:\CurrentUser\My | Export-PfxCertificate -FilePath C:\xxx.pfx -Password $mypwd</p>
+<p>导出单个证书到一个.pfx文件：</p>
+<p>Get-ChildItem -Path &quot;Cert:\CurrentUser\My\THUMBPRINT&quot; | Export-PfxCertificate -FilePath C:\xxx.pfx -Password $mypwd</p>
+<p>将以上粗体部分更改成自己相应的路径及证书的信息</p>
+<p>更多powershell证书导出命令， 请参考<a href="https://docs.microsoft.com/en-us/powershell/module/pkiclient/export-pfxcertificate?view=win10-ps" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/pkiclient/export-pfxcertificate?view=win10-ps</a></p></article>

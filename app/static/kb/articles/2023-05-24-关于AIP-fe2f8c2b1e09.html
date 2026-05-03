@@ -1,0 +1,190 @@
+<article class="kb-article" data-title="关于AIP"><h1>关于AIP</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: EMS E3 and AIP P1</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-05-24 14:48:35</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_20211117132708_[MS-LED]Local AIP policy failed</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_20211117132708_[MS-LED]Local AIP policy failed</li>
+</ul>
+<ul>
+<li>SR_20211202135568_Microsoft Information Protection Sync Service总是自动禁用，导致AIP功能不可用</li>
+</ul>
+<ul>
+<li>目前现象不能获取标签信息</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>相关工单参考：</li>
+</ul>
+<ul>
+<li>SR_20211129134819_aip client is not working</li>
+</ul>
+<ul>
+<li>SR_20211202135688_AIP 大批量不能使用</li>
+</ul>
+<ul>
+<li>1、为租户启用权限。</li>
+</ul>
+<ul>
+<li>Install-Module AipService</li>
+</ul>
+<ul>
+<li>Import-Module AipService</li>
+</ul>
+<ul>
+<li>Connect-AipService -environmentname azurechinacloud</li>
+</ul>
+<ul>
+<li>(Get-AipServiceConfiguration).FunctionalState</li>
+</ul>
+<ul>
+<li>2、添加“Microsoft 信息保护同步服务”服务主体。</li>
+</ul>
+<ul>
+<li>另外注意该应用的启用状态：</li>
+</ul>
+<ul>
+<li>参考AIP工单：</li>
+</ul>
+<ul>
+<li>Microsoft Azure Information Protection：</li>
+</ul>
+<ul>
+<li>3、为不同客户端配置 DNS 加密。</li>
+</ul>
+<ul>
+<li>Windows：</li>
+</ul>
+<ul>
+<li>(Get-AipServiceConfiguration).RightsManagementServiceId</li>
+</ul>
+<ul>
+<li>4、安装和配置 AIP 统一标签客户端。</li>
+</ul>
+<ul>
+<li>5、在 Windows 桌面应用中配置 AIP。</li>
+</ul>
+<ul>
+<li>Windows 上的 AIP 应用需要以下注册表项，用于指向 Azure China 的正确主权云：</li>
+</ul>
+<ul>
+<li>注册表节点 = HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\MSIP</li>
+</ul>
+<ul>
+<li>名称 = CloudEnvType</li>
+</ul>
+<ul>
+<li>值 = 6（默认 = 0）</li>
+</ul>
+<ul>
+<li>类型 = REG_DWORD</li>
+</ul>
+<ul>
+<li>相关资源：</li>
+</ul>
+<ul>
+<li>CSS sharing Video ：\\172.31.212.130\Training-Related PoD\VM\20210223-AIP P1</li>
+</ul>
+<ul>
+<li>O365登录URL:</li>
+</ul>
+<ul>
+<li>测试账号：</li>
+</ul>
+<ul>
+<li>用户名: test01@watsforo365.partner.onmschina.cn</li>
+</ul>
+<ul>
+<li>密码: Wats2021@@</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>简要步骤：</li>
+</ul>
+<ul>
+<li>排查问题时需要收集客户端日志以及fiddler包：</li>
+</ul>
+<ul>
+<li>用户访问下载标签时 Fiddler抓包</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>New-AzADServicePrincipal -ApplicationId 870c4f2e-85b6-4d43-bdda-6ed9a579b725 并添加请添加服务所需的相关权限。</li>
+</ul>
+<ul>
+<li>New-AzADServicePrincipal -ApplicationId 00000012-0000-0000-c000-000000000000</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Enable-AipService</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>安装：<a href="https://docs.microsoft.com/zh-cn/microsoft-365/admin/services-in-china/parity-between-azure-information-protection?view=o365-21vianet#configure-aip-for-customers-in-china" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/microsoft-365/admin/services-in-china/parity-between-azure-information-protection?view=o365-21vianet#configure-aip-for-customers-in-china</a></li>
+</ul>
+<ul>
+<li>扫描器安装配置：<a href="https://docs.microsoft.com/zh-cn/azure/information-protection/rms-client/clientv2-admin-guide-powershell#how-to-label-files-non-interactively-for-azure-information-protection" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/information-protection/rms-client/clientv2-admin-guide-powershell#how-to-label-files-non-interactively-for-azure-information-protection</a></li>
+</ul>
+<ul>
+<li><a href="https://www.microsoft.com/download/details.aspx?id=53018" target="_blank" rel="noopener">https://www.microsoft.com/download/details.aspx?id=53018</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.partner.microsoftonline.cn/Home" target="_blank" rel="noopener">https://portal.partner.microsoftonline.cn/Home</a></li>
+</ul>
+<ul>
+<li>管理页面:<a href="https://portal.partner.microsoftonline.cn/AdminPortal/Home#/homepage" target="_blank" rel="noopener">https://portal.partner.microsoftonline.cn/AdminPortal/Home#/homepage</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>安装：<a href="https://docs.microsoft.com/zh-cn/microsoft-365/admin/services-in-china/parity-between-azure-information-protection?view=o365-21vianet#configure-aip-for-customers-in-china" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/microsoft-365/admin/services-in-china/parity-between-azure-information-protection?view=o365-21vianet#configure-aip-for-customers-in-china</a></p>
+<p>扫描器安装配置：<a href="https://docs.microsoft.com/zh-cn/azure/information-protection/rms-client/clientv2-admin-guide-powershell#how-to-label-files-non-interactively-for-azure-information-protection" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/information-protection/rms-client/clientv2-admin-guide-powershell#how-to-label-files-non-interactively-for-azure-information-protection</a></p>
+<p>相关工单参考：</p>
+<p>SR_20211117132708_[MS-LED]Local AIP policy failed</p>
+<p>SR_20211129134819_aip client is not working</p>
+<p>SR_20211202135688_AIP 大批量不能使用</p>
+<p>简要步骤：</p>
+<p>1、为租户启用权限。</p>
+<p>Install-Module AipService</p>
+<p>Import-Module AipService</p>
+<p>Connect-AipService -environmentname azurechinacloud</p>
+<p>(Get-AipServiceConfiguration).FunctionalState</p>
+<p>Enable-AipService</p>
+<p>2、添加“Microsoft 信息保护同步服务”服务主体。</p>
+<p>New-AzADServicePrincipal -ApplicationId 870c4f2e-85b6-4d43-bdda-6ed9a579b725 并添加请添加服务所需的相关权限。</p>
+<p>另外注意该应用的启用状态：</p>
+<p>参考AIP工单：</p>
+<p>SR_20211202135568_Microsoft Information Protection Sync Service总是自动禁用，导致AIP功能不可用</p>
+<p>Microsoft Azure Information Protection：</p>
+<p>New-AzADServicePrincipal -ApplicationId 00000012-0000-0000-c000-000000000000</p>
+<p>3、为不同客户端配置 DNS 加密。</p>
+<p>Windows：</p>
+<p>(Get-AipServiceConfiguration).RightsManagementServiceId</p>
+<p>4、安装和配置 AIP 统一标签客户端。</p>
+<p><a href="https://www.microsoft.com/download/details.aspx?id=53018" target="_blank" rel="noopener">https://www.microsoft.com/download/details.aspx?id=53018</a></p>
+<p>5、在 Windows 桌面应用中配置 AIP。</p>
+<p>Windows 上的 AIP 应用需要以下注册表项，用于指向 Azure China 的正确主权云：</p>
+<p>注册表节点 = HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\MSIP</p>
+<p>名称 = CloudEnvType</p>
+<p>值 = 6（默认 = 0）</p>
+<p>类型 = REG_DWORD</p>
+<p>排查问题时需要收集客户端日志以及fiddler包：</p>
+<p>目前现象不能获取标签信息</p>
+<p>用户访问下载标签时 Fiddler抓包</p>
+<p>相关资源：</p>
+<p>CSS sharing Video ：\\172.31.212.130\Training-Related PoD\VM\20210223-AIP P1</p>
+<p>O365登录URL:</p>
+<p><a href="https://portal.partner.microsoftonline.cn/Home" target="_blank" rel="noopener">https://portal.partner.microsoftonline.cn/Home</a></p>
+<p>测试账号：</p>
+<p>用户名: test01@watsforo365.partner.onmschina.cn</p>
+<p>密码: Wats2021@@</p>
+<p>管理页面:<a href="https://portal.partner.microsoftonline.cn/AdminPortal/Home#/homepage" target="_blank" rel="noopener">https://portal.partner.microsoftonline.cn/AdminPortal/Home#/homepage</a></p></article>

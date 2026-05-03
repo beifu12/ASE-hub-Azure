@@ -1,0 +1,116 @@
+<article class="kb-article" data-title="Node从2012升级到2016导致虚拟机启动时间长"><h1>Node从2012升级到2016导致虚拟机启动时间长</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-08-16 13:56:29</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>对于升级到2016的Node来说，上面如果运行的Linux机器的LIS版本比较低的话，会导致虚拟机启动的时候网卡默认启动失败，导致连接不上。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>对于升级到2016的Node来说，上面如果运行的Linux机器的LIS版本比较低的话，会导致虚拟机启动的时候网卡默认启动失败，导致连接不上。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>PreciseTimeStamp</li>
+</ul>
+<ul>
+<li>EntityState</li>
+</ul>
+<ul>
+<li>NodeID</li>
+</ul>
+<ul>
+<li>Detail0</li>
+</ul>
+<ul>
+<li>2017-12-08T16:25:24.8387406Z</li>
+</ul>
+<ul>
+<li>VMGuestHEInitialization</li>
+</ul>
+<ul>
+<li>eb88b248-d00c-4b17-83e4-ff7bf476e436</li>
+</ul>
+<ul>
+<li>OSBaseImage: WAOS_WSR2.171115-2320.6002.19782.amd64fre.longhorn_rd_1117.171115-2320_SERVERENTERPRISE, GuestAgentPackage:</li>
+</ul>
+<ul>
+<li>参考案例：</li>
+</ul>
+<ul>
+<li>Case 2017120925258：</li>
+</ul>
+<ul>
+<li>SLA的截图：</li>
+</ul>
+<ul>
+<li>Case 2017122027293：</li>
+</ul>
+<ul>
+<li>注意事项：</li>
+</ul>
+<ul>
+<li>对于这种情况，可以console登陆到虚拟机上，执行ifup eth0把网卡起起来，然后按照附件的文档帮客户升级一下LIS版本就可以了。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>[Jarvis][Logs]抽取VM SLA数据发现问题时间VMGuestHEInitialization</li>
+</ul>
+<ul>
+<li>[Jarvis][Logs][Node]查看</li>
+</ul>
+<ul>
+<li>登陆jumpbox,抽取node系统日志，验证系统更新（筛选6009）可以看到版本更新到10.**</li>
+</ul>
+<ul>
+<li>描述：这个case中，客户做了一次Resize操作，Resize之后大约半小时之后机器才能够登陆，经过排查发现Resize导致虚拟机迁移到了一个新的node上，这个node启动后，升级系统到2016，然后虚拟机才启动成功。</li>
+</ul>
+<ul>
+<li>Node（eb88b248-d00c-4b17-83e4-ff7bf476e436）的Event Log：</li>
+</ul>
+<ul>
+<li>描述：这个case中，客户做了一次固定内网IP的操作，由于修改的IP和当前DHCP得到的地址不同，虚拟机发生了重启，但是重启过了20多分钟仍然没有完成，客户就进行了关机再开机的操作，完成后虚拟机可以连接。查看日志发现，在更改IP的过程中虚拟机迁移到的另外一个Node上，这个Node也经过了系统升级到2016，这也是客户这边重启延误的原因。</li>
+</ul>
+<ul>
+<li>Node （e765d45b-f668-4e21-be91-e181c1b1b074） Event log截图：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>发现deploying an image WAOS_WS16**.vhd，（Internal RCA：node从2012更新2016系统&amp;后续部署配置）</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>[Jarvis][Logs]抽取VM SLA数据发现问题时间VMGuestHEInitialization</p>
+<p>PreciseTimeStamp</p>
+<p>EntityState</p>
+<p>NodeID</p>
+<p>Detail0</p>
+<p>2017-12-08T16:25:24.8387406Z</p>
+<p>VMGuestHEInitialization</p>
+<p>eb88b248-d00c-4b17-83e4-ff7bf476e436</p>
+<p>OSBaseImage: WAOS_WSR2.171115-2320.6002.19782.amd64fre.longhorn_rd_1117.171115-2320_SERVERENTERPRISE, GuestAgentPackage:</p>
+<p>[Jarvis][Logs][Node]查看</p>
+<p>发现deploying an image WAOS_WS16**.vhd，（Internal RCA：node从2012更新2016系统&amp;后续部署配置）</p>
+<p>登陆jumpbox,抽取node系统日志，验证系统更新（筛选6009）可以看到版本更新到10.**</p>
+<p>参考案例：</p>
+<p>Case 2017120925258：</p>
+<p>描述：这个case中，客户做了一次Resize操作，Resize之后大约半小时之后机器才能够登陆，经过排查发现Resize导致虚拟机迁移到了一个新的node上，这个node启动后，升级系统到2016，然后虚拟机才启动成功。</p>
+<p>SLA的截图：</p>
+<p>Node（eb88b248-d00c-4b17-83e4-ff7bf476e436）的Event Log：</p>
+<p>Case 2017122027293：</p>
+<p>描述：这个case中，客户做了一次固定内网IP的操作，由于修改的IP和当前DHCP得到的地址不同，虚拟机发生了重启，但是重启过了20多分钟仍然没有完成，客户就进行了关机再开机的操作，完成后虚拟机可以连接。查看日志发现，在更改IP的过程中虚拟机迁移到的另外一个Node上，这个Node也经过了系统升级到2016，这也是客户这边重启延误的原因。</p>
+<p>Node （e765d45b-f668-4e21-be91-e181c1b1b074） Event log截图：</p>
+<p>注意事项：</p>
+<p>对于升级到2016的Node来说，上面如果运行的Linux机器的LIS版本比较低的话，会导致虚拟机启动的时候网卡默认启动失败，导致连接不上。</p>
+<p>对于这种情况，可以console登陆到虚拟机上，执行ifup eth0把网卡起起来，然后按照附件的文档帮客户升级一下LIS版本就可以了。</p></article>

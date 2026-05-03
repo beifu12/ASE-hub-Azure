@@ -1,0 +1,119 @@
+<article class="kb-article" data-title="[share]使用 Azure Monitor 代理收集自定义日志"><h1>[share]使用 Azure Monitor 代理收集自定义日志</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-05-25 19:26:46</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2025.5.25</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2025.5.25</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025.5.25</li>
+</ul>
+<ul>
+<li>$tableParams = @&#39;</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;properties&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;schema&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;columns&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;TimeGenerated&quot;,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;DateTime&quot;</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;RawData&quot;,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;String&quot;</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;FilePath&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Computer&quot;,</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>&#39;@</li>
+</ul>
+<ul>
+<li>新建DCR</li>
+</ul>
+<ul>
+<li>关联LAW</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>&quot;name&quot;: &quot;walogs25331_CL&quot;,</li>
+</ul>
+<ul>
+<li>设置自定义日志路径，填写上面步骤PS创建的表单名称</li>
+</ul>
+<ul>
+<li>后续在DCR中再添加需要监视的虚拟机资源即可，经过验证需等待一段时间后可以查询到收集的自定义日志信息：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>修改使用下面PS命令创建LAW自定义日志表</li>
+</ul>
+<ul>
+<li>Invoke-AzRestMethod -Path &quot;/subscriptions/xxxxxx/resourceGroups/paulrge21/providers/Microsoft.OperationalInsights/workspaces/testloga/tables/walogs25331_CL?api-version=2021-12-01-preview&quot; -Method PUT -payload $tableParams</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025.5.25</p>
+<p>修改使用下面PS命令创建LAW自定义日志表</p>
+<p>$tableParams = @&#39;</p>
+<p>{</p>
+<p>&quot;properties&quot;: {</p>
+<p>&quot;schema&quot;: {</p>
+<p>&quot;name&quot;: &quot;walogs25331_CL&quot;,</p>
+<p>&quot;columns&quot;: [</p>
+<p>&quot;name&quot;: &quot;TimeGenerated&quot;,</p>
+<p>&quot;type&quot;: &quot;DateTime&quot;</p>
+<p>},</p>
+<p>&quot;name&quot;: &quot;RawData&quot;,</p>
+<p>&quot;type&quot;: &quot;String&quot;</p>
+<p>&quot;name&quot;: &quot;FilePath&quot;,</p>
+<p>&quot;name&quot;: &quot;Computer&quot;,</p>
+<p>}</p>
+<p>]</p>
+<p>&#39;@</p>
+<p>Invoke-AzRestMethod -Path &quot;/subscriptions/xxxxxx/resourceGroups/paulrge21/providers/Microsoft.OperationalInsights/workspaces/testloga/tables/walogs25331_CL?api-version=2021-12-01-preview&quot; -Method PUT -payload $tableParams</p>
+<p>新建DCR</p>
+<p>设置自定义日志路径，填写上面步骤PS创建的表单名称</p>
+<p>关联LAW</p>
+<p>后续在DCR中再添加需要监视的虚拟机资源即可，经过验证需等待一段时间后可以查询到收集的自定义日志信息：</p></article>

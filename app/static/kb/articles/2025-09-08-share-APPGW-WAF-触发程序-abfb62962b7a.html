@@ -1,0 +1,117 @@
+<article class="kb-article" data-title="【share】APPGW WAF 触发程序"><h1>【share】APPGW WAF 触发程序</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-08 09:51:14</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>在这种情况下，经过我的测试，我发现是可以正确的返回403的。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>在这种情况下，经过我的测试，我发现是可以正确的返回403的。</li>
+</ul>
+<ul>
+<li>在这种情况下，经过我的测试，依旧是可以返回403的状态。</li>
+</ul>
+<ul>
+<li>在这种情况下，经过我的测试，返回的是502。</li>
+</ul>
+<ul>
+<li>如果流量可以触发路由规则检测，那么此路由将会受到WAF的限制，返回403（WAF规则匹配则会返回对应HTTP error code）</li>
+</ul>
+<ul>
+<li>如果流量未能触发路由规则检测，那么此路由将在RNM上直接被丢弃，返回502。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025 09/08</li>
+</ul>
+<ul>
+<li>APPGW的WAF:</li>
+</ul>
+<ul>
+<li>这里的WAF，是附着在APPGW的instance上，由其中的IIS组件所衍生出的模块来进行使用：</li>
+</ul>
+<ul>
+<li>Modsecurity Project</li>
+</ul>
+<ul>
+<li>Compilation recipes for v3.x · owasp-modsecurity/ModSecurity Wiki</li>
+</ul>
+<ul>
+<li>默认来说，ModSec这个组件会在IIS上直接开启：</li>
+</ul>
+<ul>
+<li>我们在APPGW上的WAF，flow的走向为：</li>
+</ul>
+<ul>
+<li>因此，WAF的触发程序，应该在其中的最后一步。</li>
+</ul>
+<ul>
+<li>我们来预演一下目前的情况，我们假设目前我们有一个APPGW，然后配置了WAF：</li>
+</ul>
+<ul>
+<li>在WAF上，我们配置了对应的IP rule进行block触发。</li>
+</ul>
+<ul>
+<li>测试一：配置对应rule+正确后端池：</li>
+</ul>
+<ul>
+<li>测试二：配置对应rule+非正确后端池（后端池健康监测为不健康状态）：</li>
+</ul>
+<ul>
+<li>测试三：配置对应rule+无后端池（后端池里没有任何对应机器/IP/FQDN）:</li>
+</ul>
+<ul>
+<li>根据目前的测试结果，总结如下：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>NRP-&gt;RNM(Resource Network Manager)-&gt;BrkGWM-&gt;GWT(AppGW instance)</li>
+</ul>
+<ul>
+<li>排查“错误的网关”错误 - Azure 应用程序网关 | Azure Docs</li>
+</ul>
+<ul>
+<li>根据验证，在网关本身无法路由任何请求的时候，会直接在RNM这步停住，不再向Brk以及GWT（WAF）转发请求，因此直接返回502.</li>
+</ul>
+<ul>
+<li>Client-&gt;NRP-&gt;RNM(Resource Network Manager)-&gt;BrkGWM-&gt;GWT(AppGW instance)(WAF)</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025 09/08</p>
+<p>APPGW的WAF:</p>
+<p>这里的WAF，是附着在APPGW的instance上，由其中的IIS组件所衍生出的模块来进行使用：</p>
+<p>Modsecurity Project</p>
+<p>Compilation recipes for v3.x · owasp-modsecurity/ModSecurity Wiki</p>
+<p>默认来说，ModSec这个组件会在IIS上直接开启：</p>
+<p>我们在APPGW上的WAF，flow的走向为：</p>
+<p>NRP-&gt;RNM(Resource Network Manager)-&gt;BrkGWM-&gt;GWT(AppGW instance)</p>
+<p>因此，WAF的触发程序，应该在其中的最后一步。</p>
+<p>我们来预演一下目前的情况，我们假设目前我们有一个APPGW，然后配置了WAF：</p>
+<p>在WAF上，我们配置了对应的IP rule进行block触发。</p>
+<p>测试一：配置对应rule+正确后端池：</p>
+<p>在这种情况下，经过我的测试，我发现是可以正确的返回403的。</p>
+<p>测试二：配置对应rule+非正确后端池（后端池健康监测为不健康状态）：</p>
+<p>在这种情况下，经过我的测试，依旧是可以返回403的状态。</p>
+<p>测试三：配置对应rule+无后端池（后端池里没有任何对应机器/IP/FQDN）:</p>
+<p>在这种情况下，经过我的测试，返回的是502。</p>
+<p>排查“错误的网关”错误 - Azure 应用程序网关 | Azure Docs</p>
+<p>根据验证，在网关本身无法路由任何请求的时候，会直接在RNM这步停住，不再向Brk以及GWT（WAF）转发请求，因此直接返回502.</p>
+<p>根据目前的测试结果，总结如下：</p>
+<p>Client-&gt;NRP-&gt;RNM(Resource Network Manager)-&gt;BrkGWM-&gt;GWT(AppGW instance)(WAF)</p>
+<p>如果流量可以触发路由规则检测，那么此路由将会受到WAF的限制，返回403（WAF规则匹配则会返回对应HTTP error code）</p>
+<p>如果流量未能触发路由规则检测，那么此路由将在RNM上直接被丢弃，返回502。</p></article>

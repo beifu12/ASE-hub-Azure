@@ -1,0 +1,334 @@
+<article class="kb-article" data-title="LVS 负载均衡和DSR"><h1>LVS 负载均衡和DSR</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LB</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-02-14 16:20:46</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>四层负载均衡的网络模型，主要是对TCP数据连接进行修改</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>四层负载均衡的网络模型，主要是对TCP数据连接进行修改</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>四层负载均衡的网络模型，主要是对TCP数据连接进行修改</li>
+</ul>
+<ul>
+<li>另外还有各种负载均衡算法，比如：1、RR、WRR 2、Source IP Hash 3、5 Tuples Hash 4、LC最少连接数等等</li>
+</ul>
+<ul>
+<li>LVS提供四层的负载均衡，主要有以下几种网络负载均衡模型。</li>
+</ul>
+<ul>
+<li>模型中用到的IP名称：</li>
+</ul>
+<ul>
+<li>CIP:客户端IP</li>
+</ul>
+<ul>
+<li>VIP:对外提供服务的IP</li>
+</ul>
+<ul>
+<li>DIP：Director Server的IP</li>
+</ul>
+<ul>
+<li>RIP：Real Server的IP，也就是后端服务器的IP</li>
+</ul>
+<ul>
+<li>1、NAT模型，最简单也是最容易理解的模型。</li>
+</ul>
+<ul>
+<li>2、DR模型，Direct Routing （直接路由）</li>
+</ul>
+<ul>
+<li>根据VIP和DIP/RIP 在不在同一个网段，分为下面两种</li>
+</ul>
+<ul>
+<li>（1）VIP和DIP/RIP 在一个网段</li>
+</ul>
+<ul>
+<li>（2）VIP和DIP/RIP 不在一个网段</li>
+</ul>
+<ul>
+<li>3、Tun模型，Tunnel隧道模型</li>
+</ul>
+<ul>
+<li>什么是DSR：</li>
+</ul>
+<ul>
+<li>DSR是负载均衡中的一个概念。在DSR模型下，对于客户端请求，LB会修改数据包的目的MAC为后端服务器的MAC地址，然后将请求转</li>
+</ul>
+<ul>
+<li>发到后端服务器，服务器直接回复客户端而不再经过LB。</li>
+</ul>
+<ul>
+<li>Direct server return is usually shortened to DSR.</li>
+</ul>
+<ul>
+<li>In DSR mode, the load-balancer routes packets to the backends without changing anything in it but the destination MAC address.</li>
+</ul>
+<ul>
+<li>The backends process the requests and answer directly to the clients, without passing through the load-balancer.</li>
+</ul>
+<ul>
+<li>The backends must have the service IP configured on a loopback to be able to accept the requests.</li>
+</ul>
+<ul>
+<li>按照回包经不经过LB，我觉得大概分为两类：1、NAT 2、DSR。</li>
+</ul>
+<ul>
+<li>4、Fullnat模型。</li>
+</ul>
+<ul>
+<li>DIP与RIP不在同一个网段或者物理网络.</li>
+</ul>
+<ul>
+<li>曾经有一个工单-SR_2015111716756_LVS fullnat  咨询过这个问题</li>
+</ul>
+<ul>
+<li>下面讲DR模型的配置，这里的环境VIP和DIP在同一个网段</li>
+</ul>
+<ul>
+<li>IPvS已经内置在内核中了，一般不需要重新编译内核启用，在LB上需要安装仅仅只是管理IPVS规则的软件ipvsadm。</li>
+</ul>
+<ul>
+<li>配置之前请注意集群中所有机器时间一致</li>
+</ul>
+<ul>
+<li>（1）在LB上的配置</li>
+</ul>
+<ul>
+<li>1、yum install -y ipvsadm</li>
+</ul>
+<ul>
+<li>2、给网卡添加VIP地址</li>
+</ul>
+<ul>
+<li>如果需要永久有效，请在/etc/sysconfig/network-scripts/中新建eth0:0的配置文件</li>
+</ul>
+<ul>
+<li>3、添加集群服务，这里以WEB服务为例</li>
+</ul>
+<ul>
+<li>Ipvsadm -A -t 192.168.1.200:80 -r rr</li>
+</ul>
+<ul>
+<li>-A 说明添加一个集群服务</li>
+</ul>
+<ul>
+<li>-t 指明服务使用TCP协议</li>
+</ul>
+<ul>
+<li>-r 指定调度算法，rr是轮询，默认是wlc</li>
+</ul>
+<ul>
+<li>4、添加两个Server</li>
+</ul>
+<ul>
+<li>Ipvsadm -a -t 192.168.1.200:80 -r 192.168.1.105</li>
+</ul>
+<ul>
+<li>Ipvsadm -a -t 192.168.1.200:80 -r 192.168.1.106</li>
+</ul>
+<ul>
+<li>（2）配置Real Server</li>
+</ul>
+<ul>
+<li>1、安装web服务</li>
+</ul>
+<ul>
+<li>Yum install -y httpd</li>
+</ul>
+<ul>
+<li>2、配置内核参数，使RS不响应Router对VIP的ARP请求.</li>
+</ul>
+<ul>
+<li>/proc/sys/net/ipv4/conf/all/arp_ignore=1</li>
+</ul>
+<ul>
+<li>/proc/sys/net/ipv4/conf/[NICName]/arp_ignore=1</li>
+</ul>
+<ul>
+<li>/proc/sys/net/ipv4/conf/all/arp_announce=2</li>
+</ul>
+<ul>
+<li>/proc/sys/net/ipv4/conf/[NICName]/arp_announce=2</li>
+</ul>
+<ul>
+<li>net.ipv4.conf.all.arp_ignore=1</li>
+</ul>
+<ul>
+<li>net.ipv4.conf.ens33.arp_ignore=1</li>
+</ul>
+<ul>
+<li>net.ipv4.conf.all.arp_announce=2</li>
+</ul>
+<ul>
+<li>net.ipv4.conf.ens33.arp_announce=2</li>
+</ul>
+<ul>
+<li>参数解释：</li>
+</ul>
+<ul>
+<li>arp_ignore:定义接到目标为自己IP的ARP请求时的响应级别。可设置为0,1,2三个值，默认为0</li>
+</ul>
+<ul>
+<li>arp_announce:可设置为0,1,2三个值，默认为0</li>
+</ul>
+<ul>
+<li>对网络接口（网卡）上发出的ARP请求包中的源IP地址作出相应的限制；主机会根据这个参数值的不同选择使用IP数据包的源IP或当前网络接口卡的IP地址作为ARP请求包的源IP地址。</li>
+</ul>
+<ul>
+<li>具体意义请google,资料有很多。</li>
+</ul>
+<ul>
+<li>同时ARP协议的报文，需要了解一下。</li>
+</ul>
+<ul>
+<li>linux默认是使用ip数据包的源ip地址作为arp里面的源ip地址，而不是使用发送设备上面网络接口卡的ip地址 （默认arp_announce的值为0）。这样在lvs架构下，所有arp请求包的源地址都是同一个VIP地址，那么arp请求就会包括VIP地址和设备 Mac。而路由器收到这个arp请求就会更新自己的arp缓存，这样就会造成ip欺骗了，VIP被抢夺，VIP对应的MAC不是Director Server的MAC了，所以就会有问题。</li>
+</ul>
+<ul>
+<li>arp缓存为什么会更新了，什么时候更新呢？这是ARP的机制问题。为了减少arp请求的次数，当主机接收到询问自己的arp请求的时候，就会把源ip和源Mac放入自己的arp表里面，方便接下来的通讯。如果收到不是询问自己的包（arp是广播的，所有人都收到），就会丢掉，这样不会造成arp表里面无用数据太多导致有用的记录被删除。总结起来就是收到请求自己IP的MAC请求时，会依据ARP请求的源IP和MAC更新自己的ARP表。</li>
+</ul>
+<ul>
+<li>设置为2，总是使用最合适的本地IP作为ARP请求的源IP地址。</li>
+</ul>
+<ul>
+<li>此模式下将忽略IP报文的源IP，并尝试选择能与目标IP地址通信的本机IP。首先查找当前网卡中跟IP报文目的IP在一个子网的IP；如果没有找到，查遍历所有接口的IP地址，直到找到第一个 scope 小等于 RT_SCOPE_LINK 的IP。</li>
+</ul>
+<ul>
+<li>0 - (默认) 在任意网络接口（eth0,lo，Eth1…）上使用任何本机地址进行ARP请求。也就是说如果IP数据包中的源IP与当前发送ARP请求的网络接口卡IP地址不同时（但这个IP依然是本主机上其他网络接口卡上的IP地址），ARP请求包中的源IP地址将使用与IP数据包中的源IP相同的本主机上的IP地址，而不是使用当前发送ARP请求的网络接口卡的IP地址。</li>
+</ul>
+<ul>
+<li>2、在lo配置VIP</li>
+</ul>
+<ul>
+<li>如果需要永久有效，请在/etc/sysconfig/network-scripts/中新建lo:0的配置文件</li>
+</ul>
+<ul>
+<li>测试访问</li>
+</ul>
+<ul>
+<li>Iptables -F -&gt;CentOS6系列</li>
+</ul>
+<ul>
+<li>Systemctl stop firewalld-&gt;CentOS7系列</li>
+</ul>
+<ul>
+<li>在Azure负载均衡中启用DSR，也可以访问虚拟机</li>
+</ul>
+<ul>
+<li>需要在后端Server上配置LB的公网IP，IP 放在Lo上。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>同时可以在LB上查看连接情况</li>
+</ul>
+<ul>
+<li>注意，如果出现不通，请检查LB和后端服务器的防火墙状态</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Ip addr add 192.168.1.200/24 dev eth0 label eth0:0</li>
+</ul>
+<ul>
+<li>ip addr add 192.168.1.200/32 dev lo label lo:0</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>建议写入/etc/sysctl.conf中永久有效</li>
+</ul>
+<ul>
+<li>在设置参数的时候将arp_ignore 设置为1，意味着当别人的arp请求过来的时候，如果接收的网络接口卡上面没有这个ip，就不做出响应。默认是0，只要这台机器上面任何一个设备上面有这个ip，就响应arp请求，并发送mac地址。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>zhang博士已经对这个问题做了说明：<a href="http://zh.linuxvirtualserver.org/node/155" target="_blank" rel="noopener">http://zh.linuxvirtualserver.org/node/155</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2018/09/02</p>
+<p>四层负载均衡的网络模型，主要是对TCP数据连接进行修改</p>
+<p>另外还有各种负载均衡算法，比如：1、RR、WRR 2、Source IP Hash 3、5 Tuples Hash 4、LC最少连接数等等</p>
+<p>LVS提供四层的负载均衡，主要有以下几种网络负载均衡模型。</p>
+<p>模型中用到的IP名称：</p>
+<p>CIP:客户端IP</p>
+<p>VIP:对外提供服务的IP</p>
+<p>DIP：Director Server的IP</p>
+<p>RIP：Real Server的IP，也就是后端服务器的IP</p>
+<p>1、NAT模型，最简单也是最容易理解的模型。</p>
+<p>2、DR模型，Direct Routing （直接路由）</p>
+<p>根据VIP和DIP/RIP 在不在同一个网段，分为下面两种</p>
+<p>（1）VIP和DIP/RIP 在一个网段</p>
+<p>（2）VIP和DIP/RIP 不在一个网段</p>
+<p>zhang博士已经对这个问题做了说明：<a href="http://zh.linuxvirtualserver.org/node/155" target="_blank" rel="noopener">http://zh.linuxvirtualserver.org/node/155</a></p>
+<p>3、Tun模型，Tunnel隧道模型</p>
+<p>什么是DSR：</p>
+<p>DSR是负载均衡中的一个概念。在DSR模型下，对于客户端请求，LB会修改数据包的目的MAC为后端服务器的MAC地址，然后将请求转</p>
+<p>发到后端服务器，服务器直接回复客户端而不再经过LB。</p>
+<p>Direct server return is usually shortened to DSR.</p>
+<p>In DSR mode, the load-balancer routes packets to the backends without changing anything in it but the destination MAC address.</p>
+<p>The backends process the requests and answer directly to the clients, without passing through the load-balancer.</p>
+<p>The backends must have the service IP configured on a loopback to be able to accept the requests.</p>
+<p>按照回包经不经过LB，我觉得大概分为两类：1、NAT 2、DSR。</p>
+<p>4、Fullnat模型。</p>
+<p>DIP与RIP不在同一个网段或者物理网络.</p>
+<p>曾经有一个工单-SR_2015111716756_LVS fullnat  咨询过这个问题</p>
+<p>下面讲DR模型的配置，这里的环境VIP和DIP在同一个网段</p>
+<p>IPvS已经内置在内核中了，一般不需要重新编译内核启用，在LB上需要安装仅仅只是管理IPVS规则的软件ipvsadm。</p>
+<p>配置之前请注意集群中所有机器时间一致</p>
+<p>（1）在LB上的配置</p>
+<p>1、yum install -y ipvsadm</p>
+<p>2、给网卡添加VIP地址</p>
+<p>Ip addr add 192.168.1.200/24 dev eth0 label eth0:0</p>
+<p>如果需要永久有效，请在/etc/sysconfig/network-scripts/中新建eth0:0的配置文件</p>
+<p>3、添加集群服务，这里以WEB服务为例</p>
+<p>Ipvsadm -A -t 192.168.1.200:80 -r rr</p>
+<p>-A 说明添加一个集群服务</p>
+<p>-t 指明服务使用TCP协议</p>
+<p>-r 指定调度算法，rr是轮询，默认是wlc</p>
+<p>4、添加两个Server</p>
+<p>Ipvsadm -a -t 192.168.1.200:80 -r 192.168.1.105</p>
+<p>Ipvsadm -a -t 192.168.1.200:80 -r 192.168.1.106</p>
+<p>（2）配置Real Server</p>
+<p>1、安装web服务</p>
+<p>Yum install -y httpd</p>
+<p>2、配置内核参数，使RS不响应Router对VIP的ARP请求.</p>
+<p>建议写入/etc/sysctl.conf中永久有效</p>
+<p>/proc/sys/net/ipv4/conf/all/arp_ignore=1</p>
+<p>/proc/sys/net/ipv4/conf/[NICName]/arp_ignore=1</p>
+<p>/proc/sys/net/ipv4/conf/all/arp_announce=2</p>
+<p>/proc/sys/net/ipv4/conf/[NICName]/arp_announce=2</p>
+<p>net.ipv4.conf.all.arp_ignore=1</p>
+<p>net.ipv4.conf.ens33.arp_ignore=1</p>
+<p>net.ipv4.conf.all.arp_announce=2</p>
+<p>net.ipv4.conf.ens33.arp_announce=2</p>
+<p>参数解释：</p>
+<p>arp_ignore:定义接到目标为自己IP的ARP请求时的响应级别。可设置为0,1,2三个值，默认为0</p>
+<p>在设置参数的时候将arp_ignore 设置为1，意味着当别人的arp请求过来的时候，如果接收的网络接口卡上面没有这个ip，就不做出响应。默认是0，只要这台机器上面任何一个设备上面有这个ip，就响应arp请求，并发送mac地址。</p>
+<p>arp_announce:可设置为0,1,2三个值，默认为0</p>
+<p>对网络接口（网卡）上发出的ARP请求包中的源IP地址作出相应的限制；主机会根据这个参数值的不同选择使用IP数据包的源IP或当前网络接口卡的IP地址作为ARP请求包的源IP地址。</p>
+<p>具体意义请google,资料有很多。</p>
+<p>同时ARP协议的报文，需要了解一下。</p>
+<p>linux默认是使用ip数据包的源ip地址作为arp里面的源ip地址，而不是使用发送设备上面网络接口卡的ip地址 （默认arp_announce的值为0）。这样在lvs架构下，所有arp请求包的源地址都是同一个VIP地址，那么arp请求就会包括VIP地址和设备 Mac。而路由器收到这个arp请求就会更新自己的arp缓存，这样就会造成ip欺骗了，VIP被抢夺，VIP对应的MAC不是Director Server的MAC了，所以就会有问题。</p>
+<p>arp缓存为什么会更新了，什么时候更新呢？这是ARP的机制问题。为了减少arp请求的次数，当主机接收到询问自己的arp请求的时候，就会把源ip和源Mac放入自己的arp表里面，方便接下来的通讯。如果收到不是询问自己的包（arp是广播的，所有人都收到），就会丢掉，这样不会造成arp表里面无用数据太多导致有用的记录被删除。总结起来就是收到请求自己IP的MAC请求时，会依据ARP请求的源IP和MAC更新自己的ARP表。</p>
+<p>设置为2，总是使用最合适的本地IP作为ARP请求的源IP地址。</p>
+<p>此模式下将忽略IP报文的源IP，并尝试选择能与目标IP地址通信的本机IP。首先查找当前网卡中跟IP报文目的IP在一个子网的IP；如果没有找到，查遍历所有接口的IP地址，直到找到第一个 scope 小等于 RT_SCOPE_LINK 的IP。</p>
+<p>0 - (默认) 在任意网络接口（eth0,lo，Eth1…）上使用任何本机地址进行ARP请求。也就是说如果IP数据包中的源IP与当前发送ARP请求的网络接口卡IP地址不同时（但这个IP依然是本主机上其他网络接口卡上的IP地址），ARP请求包中的源IP地址将使用与IP数据包中的源IP相同的本主机上的IP地址，而不是使用当前发送ARP请求的网络接口卡的IP地址。</p>
+<p>2、在lo配置VIP</p>
+<p>ip addr add 192.168.1.200/32 dev lo label lo:0</p>
+<p>如果需要永久有效，请在/etc/sysconfig/network-scripts/中新建lo:0的配置文件</p>
+<p>测试访问</p>
+<p>同时可以在LB上查看连接情况</p>
+<p>注意，如果出现不通，请检查LB和后端服务器的防火墙状态</p>
+<p>Iptables -F -&gt;CentOS6系列</p>
+<p>Systemctl stop firewalld-&gt;CentOS7系列</p>
+<p>在Azure负载均衡中启用DSR，也可以访问虚拟机</p>
+<p>需要在后端Server上配置LB的公网IP，IP 放在Lo上。</p></article>

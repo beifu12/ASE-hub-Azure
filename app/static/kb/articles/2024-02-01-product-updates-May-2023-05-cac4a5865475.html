@@ -1,0 +1,415 @@
+<article class="kb-article" data-title="product updates May 2023/05"><h1>product updates May 2023/05</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: CDN Operation Guideline</li>
+<li>最近修改: 2024-02-01 15:11:26</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Known issue</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Known issue</li>
+</ul>
+<ul>
+<li>白山不支持Http2。对于一些创建较早的、使用白山的域名，用户在门户网站启用http2会失败，需要联系产品团队线下配置。</li>
+</ul>
+<ul>
+<li>白山实际上支持HTTP2.0，只是Azure CDN在调用对方接口时存在一些问题，目前无法配置。</li>
+</ul>
+<ul>
+<li>配置证书时，KeyVaulty的“网络配置”必须选择“Allow All Network”，否则会导致加载证书失败。</li>
+</ul>
+<ul>
+<li>启用Https后，用户无法自行关闭，需要联系产品。</li>
+</ul>
+<ul>
+<li>用户通过CDN上传文件的大小是有限制的，不同供应商限制不同。如果超过这个限制，客户端可能会看到400的报错。</li>
+</ul>
+<ul>
+<li>error msg can be also found in the backend:</li>
+</ul>
+<ul>
+<li>CDN默认的回源超时时间为10秒。对于通过CDN上传文件的场景，如果文件不能在10秒之内传完，那么客户端会看到上传失败，返回504的报错。可以联系PG调整这个超时时间，最高配置为1分钟。</li>
+</ul>
+<ul>
+<li>CDN profile在创建时无法添加多个origin</li>
+</ul>
+<ul>
+<li>20230403221703</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Product Knowledge</li>
+</ul>
+<ul>
+<li>last update date</li>
+</ul>
+<ul>
+<li>Type</li>
+</ul>
+<ul>
+<li>Description</li>
+</ul>
+<ul>
+<li>Discussion</li>
+</ul>
+<ul>
+<li>Related case</li>
+</ul>
+<ul>
+<li>Question</li>
+</ul>
+<ul>
+<li>不可以</li>
+</ul>
+<ul>
+<li>每个订阅每天文件刷新额度为2000，目录刷新额度为500，如超过这个额度，是否可以手动增加？</li>
+</ul>
+<ul>
+<li>可以</li>
+</ul>
+<ul>
+<li>如果某个请求不匹配任何客户自定义的缓存规则，那么就会匹配默认的缓存规则，即使默认的缓存规则已经从管理门户中删除？</li>
+</ul>
+<ul>
+<li>在缓存规则的官方文档说明中，对于默认规则用了“xxx,xxx等类型的文件不缓存”或者“xxx,xxx等类型的文件缓存一个月”之类的说法，是否可以理解为如果客户发现某些文件没有在配置的规则中，也不在默认规则中，但是被缓存了或者没有被缓存的情形，说明这些文件就是在这里所说的“等类型的文件”。</li>
+</ul>
+<ul>
+<li>文件的缓存时间取决于规则中配置的缓存时间，同时也受控于http response中的max-age这个字段，且后者会覆盖缓存规则中的设置？</li>
+</ul>
+<ul>
+<li>是</li>
+</ul>
+<ul>
+<li>客户反馈在门户配置任何规则或者上传证书都需要等待较长的时间，是否有优化的空间？</li>
+</ul>
+<ul>
+<li>启用Https时，证书只能通过Key vault配置，暂不支持其他方式配置证书？</li>
+</ul>
+<ul>
+<li>目前已支持用户手动上传证书。</li>
+</ul>
+<ul>
+<li>SNI默认是支持的，无需特殊配置。</li>
+</ul>
+<ul>
+<li>RTMP /FLV配置是哪种offline配置？</li>
+</ul>
+<ul>
+<li>直播都需要进行offline配置</li>
+</ul>
+<ul>
+<li>使用REST API获取到的回源IP列表有近千条，是否可以合并以减少这个条目。</li>
+</ul>
+<ul>
+<li>PG会对此进行评估。</li>
+</ul>
+<ul>
+<li>will standard configuration override nonstandard configuration? -- this depends on provider behavior; PG will consider to restrict nonstandard operation requests</li>
+</ul>
+<ul>
+<li>20230130209377</li>
+</ul>
+<ul>
+<li>百度对于Cache-Control这个标头的支持有问题。如果源站的响应中包含了Cache-control: no cache, 但是页面是可以满足缓存规则的，百度依然会缓存这个页面。</li>
+</ul>
+<ul>
+<li>需要联系产品团队解决此问题。</li>
+</ul>
+<ul>
+<li>百度会自动删除源站中的Set-cookie这个header，导致一些特殊页面（如登录页面）出现问题。</li>
+</ul>
+<ul>
+<li>此问题已于2022年11月解决，当前日志延迟为4小时左右。</li>
+</ul>
+<ul>
+<li>使用REST API获取的回源IP地址仅包含国内供应商的节点，不包含海外加速节点，即使加速域名为“全球加速”也是如此。</li>
+</ul>
+<ul>
+<li>PG正在讨论如何改进。如有客户提出此需求，请提交IcM给产品团队，由产品团队从后台提取。</li>
+</ul>
+<ul>
+<li>PG will work on the fix.</li>
+</ul>
+<ul>
+<li>20230216212898</li>
+</ul>
+<ul>
+<li>This modification is now supported.</li>
+</ul>
+<ul>
+<li>20230216212859</li>
+</ul>
+<ul>
+<li>对于图片处理加速，Image在处理中可能会携带错误EXIF- Orientation信息，导致图片旋转90°。（该问题可能偶发产生）</li>
+</ul>
+<ul>
+<li>例如，请求虽然只携带了缩放的参数（basic=60p），但图片却可能被旋转90度。</li>
+</ul>
+<ul>
+<li>20230209211553</li>
+</ul>
+<ul>
+<li>当前通过REST API启用Https时，仅支持手动上传证书，不支持使用KV中现有的证书。此功能正在开发中。通过REST API启用Https的文档只有中文版本，没有英文版本。</li>
+</ul>
+<ul>
+<li>Doc will be updated.</li>
+</ul>
+<ul>
+<li>2302150010001040</li>
+</ul>
+<ul>
+<li>PG will further discuss the improvement  internally</li>
+</ul>
+<ul>
+<li>20230314217803</li>
+</ul>
+<ul>
+<li>Tips</li>
+</ul>
+<ul>
+<li>PG表示不会更改此设计。</li>
+</ul>
+<ul>
+<li>文档已更新。</li>
+</ul>
+<ul>
+<li>CDN节点在回源时，会插入x-forwarded-for标头，其中可能包含多个IP地址。第一个地址为真实客户端的IP，后面的地址是CDN供应商的上层节点IP。</li>
+</ul>
+<ul>
+<li>文档已更新 Azure CDN FAQ - Azure feature related | Azure Docs</li>
+</ul>
+<ul>
+<li>对于源站返回3xx（重定向）的请求，有些供应商可以支持缓存，有些不支持。</li>
+</ul>
+<ul>
+<li>如果客户配置的比较早的话，可以支持HTTPS回源。后来在2022/3月份，产品统一做了修改不支持图片加速的Https回源，只支持HTTP回源。</li>
+</ul>
+<ul>
+<li>如果是Image processing，回源配置只有HTTP可选wendang</li>
+</ul>
+<ul>
+<li>此设计已经更改。</li>
+</ul>
+<ul>
+<li>创建CDN时，provider会校验客户的域名是否有备案，但是并不会对客户提供的ICP信息进行。如果目前有客户需要更改ICP备案信息的请求，可以直接上IcM请PG处理。(DO NOT deliver this info. to cx.)</li>
+</ul>
+<ul>
+<li>20230303216047</li>
+</ul>
+<ul>
+<li>在使用泛域名时，预加载提交的URL目前需要在路径中包含完整子域名，例如，*.mycompany.com/static.mycompany.com/file.</li>
+</ul>
+<ul>
+<li>PG会优化界面提示，并进一步看看是否能优化前端提交的URL格式</li>
+</ul>
+<ul>
+<li>20230308216674</li>
+</ul>
+<ul>
+<li>20230322219565</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>对于Pending在portal的操作，Engineering team每天都会清理一遍（在工作时间内），因此最多不会超过24个小时。</li>
+</ul>
+<ul>
+<li>CDN dashboard中的Log query查询日志的延迟在20个小时以上，严重影响需要依赖于访问日志排查的问题。</li>
+</ul>
+<ul>
+<li>访问控制功能一年多前从v1升级到了v2版本，会导致有的较早的域名无法加载访问控制界面或者显示旧的v1配置，导致无法更改配置。如果客户需要在portal更新访问控制规则，需要找PG手动升级至v2（v1版本的访问控制规则比v2规则的精细度更高，有的规则v2已经不支持了）。</li>
+</ul>
+<ul>
+<li>可以在CDN Dashboard中查看域名的CDN启用是否正常</li>
+</ul>
+<ul>
+<li>可以尝试更改CDN供应商来验证问题是否为当前CDN供应商的问题。在CDN的dashboard中找到secondary供应商为加速域名配置的CNAME，解析出该CNAME的IP地址，修改host文件，将加速域名指向该IP地址。</li>
+</ul>
+<ul>
+<li>图片处理加速不支持Https回源。如果遇到客户创建、更新图片加速配置失败，或者图片加速域名回源失败时（可能返回400），需要特别留意“回源协议”的配置，确认其设置为“http”。</li>
+</ul>
+<ul>
+<li>对于客户上传的Https证书（手动上传或者通过KV上传），平台会验证证书中的CDP （Crl Distribution Point）的内容是否为空。如果是的话，那么校验会失败，即使该证书启用了OCSP验证。</li>
+</ul>
+<ul>
+<li>图片处理加速在回源时会删除客户端请求中的查询字符串（query string），因此如果源站是Blob，必须允许公开访问。不支持SAS Token访问的方式，因为这种方式就是通过在URL后追加查询字符串来进行鉴权的。</li>
+</ul>
+<ul>
+<li>will update the doc to explain that multiple origin will be needed to set in CDN portal.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>是否可以配置CDN前端的特殊端口，比如使用非标准的80或者443来访问CDN节点。是否可以配置特殊的回源端口，比如CDN节点使用非标准的80或者443访问源站；</li>
+</ul>
+<ul>
+<li>目前CDN提供的访问日志中只有CDN节点返回给客户端的Http状态码，能否将源站返回的状态码也加入到日志中？</li>
+</ul>
+<ul>
+<li>目前无法实现，因为供应商提供给Azure的原始日志中就没有包含源站的状态码。</li>
+</ul>
+<ul>
+<li>对于之前通过非标操作修改过回源目标端口的域名，用户在后续进行操作时（比如更新证书），如何避免业务中断？比如启用了Https，但回源目标端口之前通过非标操作修改为了7002，用户在门户更新Https证书时，是否会覆盖原来配置的特殊端口？</li>
+</ul>
+<ul>
+<li>Image processing service type dose not support https and followRquest as origin protocol</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>默认规则会一直起作用，客户如果不需要缓存某个文件，需要显式定义规则并将TTL设置为0</li>
+</ul>
+<ul>
+<li>与供应商有关，不同供应商默认缓存的文件后缀不一样。客户如果明确不需要缓存特定的文件，需要显示定义缓存规则并将TTL设置为0来禁用。</li>
+</ul>
+<ul>
+<li>在Portal上无法修改图片处理加速的源站IP地址，只能修改为域名；但通过REST API可以将源站修改为IP地址。</li>
+</ul>
+<ul>
+<li>This is confirmed to be a CDN bug. Current workaround is to use REST API to modify the origin IP.</li>
+</ul>
+<ul>
+<li>Workaround: 使用basic=exif参数查看EXIF中的Orientation信息，根据客户具体的情况去使用basic={Degree}r进行修正。</li>
+</ul>
+<ul>
+<li>provide workaround, fix priority depends on case volume</li>
+</ul>
+<ul>
+<li>使用目录刷新时，如果源站文件的last modify值没有变化，那么意味着CDN节点不会到源站重新取数据，这种情况下只能使用文件刷新。使用文件刷新时，必须指定具体的文件名称，否则无法刷新。如果客户需要刷新多个文件时，可以通过API进行。</li>
+</ul>
+<ul>
+<li>与供应商的配置有关。建议在目录刷新无法解决问题的情况下，尝试使用文件刷新再试一遍</li>
+</ul>
+<ul>
+<li>可以使用F12来查看哪些文件命中了缓存，这个对排查性能问题也很有帮助。客户的网页上可能存在很多不同类型的文件，客户抱怨启用CDN之后没有什么加速效果，可以通过F12查看哪些文件命中了缓存，并用这些文件的加载时间来与源站进行对比。对于没有命中缓存的文件，CDN节点需要回源再将结果返回客户端，可能需要花费更长的时间。</li>
+</ul>
+<ul>
+<li>如果是更新证书，建议在域名管理界面绑定（防止回源跟随更改了之前的配置）</li>
+</ul>
+<ul>
+<li>用户只有开启Https加速之后，才能从门户选择回源协议（协议跟随，https或者http）。对于没有开启Https的加速域名，实际也是可以配置Https回源的（前端为Http，回源为Https）。如果客户有此需求，可以通过非标操作的流程向PM申请。</li>
+</ul>
+<ul>
+<li>PG will look for on better solution.</li>
+</ul>
+<ul>
+<li>在使用图片加速时，对于一个domain name的请求，如果cache MISS而回源，请求数量将有限制，默认限制为60 requests per 5s，当超限时访问会提示throttled。如有需要可以找PG修改默认限制。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>SNI需要进行offline配置，适用的场景是？假如Host Name配置为www.a.com，那么SNI可以配置为www.b.com吗？</li>
+</ul>
+<ul>
+<li>文档中有说明<a href="https://docs.azure.cn/zh-cn/cdn/cdn-image-processing" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-image-processing</a></li>
+</ul>
+<ul>
+<li>CDN可以从后台开启或者关闭Range回源。Range是Http协议中规定的一种请求方式：<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests" target="_blank" rel="noopener">https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Product Knowledge</p>
+<p>last update date</p>
+<p>Type</p>
+<p>Description</p>
+<p>Discussion</p>
+<p>Related case</p>
+<p>Question</p>
+<p>是否可以配置CDN前端的特殊端口，比如使用非标准的80或者443来访问CDN节点。是否可以配置特殊的回源端口，比如CDN节点使用非标准的80或者443访问源站；</p>
+<p>不可以</p>
+<p>每个订阅每天文件刷新额度为2000，目录刷新额度为500，如超过这个额度，是否可以手动增加？</p>
+<p>可以</p>
+<p>如果某个请求不匹配任何客户自定义的缓存规则，那么就会匹配默认的缓存规则，即使默认的缓存规则已经从管理门户中删除？</p>
+<p>默认规则会一直起作用，客户如果不需要缓存某个文件，需要显式定义规则并将TTL设置为0</p>
+<p>在缓存规则的官方文档说明中，对于默认规则用了“xxx,xxx等类型的文件不缓存”或者“xxx,xxx等类型的文件缓存一个月”之类的说法，是否可以理解为如果客户发现某些文件没有在配置的规则中，也不在默认规则中，但是被缓存了或者没有被缓存的情形，说明这些文件就是在这里所说的“等类型的文件”。</p>
+<p>与供应商有关，不同供应商默认缓存的文件后缀不一样。客户如果明确不需要缓存特定的文件，需要显示定义缓存规则并将TTL设置为0来禁用。</p>
+<p>文件的缓存时间取决于规则中配置的缓存时间，同时也受控于http response中的max-age这个字段，且后者会覆盖缓存规则中的设置？</p>
+<p>是</p>
+<p>客户反馈在门户配置任何规则或者上传证书都需要等待较长的时间，是否有优化的空间？</p>
+<p>对于Pending在portal的操作，Engineering team每天都会清理一遍（在工作时间内），因此最多不会超过24个小时。</p>
+<p>启用Https时，证书只能通过Key vault配置，暂不支持其他方式配置证书？</p>
+<p>目前已支持用户手动上传证书。</p>
+<p>SNI需要进行offline配置，适用的场景是？假如Host Name配置为www.a.com，那么SNI可以配置为www.b.com吗？</p>
+<p>SNI默认是支持的，无需特殊配置。</p>
+<p>RTMP /FLV配置是哪种offline配置？</p>
+<p>直播都需要进行offline配置</p>
+<p>使用REST API获取到的回源IP列表有近千条，是否可以合并以减少这个条目。</p>
+<p>PG会对此进行评估。</p>
+<p>目前CDN提供的访问日志中只有CDN节点返回给客户端的Http状态码，能否将源站返回的状态码也加入到日志中？</p>
+<p>目前无法实现，因为供应商提供给Azure的原始日志中就没有包含源站的状态码。</p>
+<p>2023/3/3</p>
+<p>对于之前通过非标操作修改过回源目标端口的域名，用户在后续进行操作时（比如更新证书），如何避免业务中断？比如启用了Https，但回源目标端口之前通过非标操作修改为了7002，用户在门户更新Https证书时，是否会覆盖原来配置的特殊端口？</p>
+<p>will standard configuration override nonstandard configuration? -- this depends on provider behavior; PG will consider to restrict nonstandard operation requests</p>
+<p>20230130209377</p>
+<p>Known issue</p>
+<p>百度对于Cache-Control这个标头的支持有问题。如果源站的响应中包含了Cache-control: no cache, 但是页面是可以满足缓存规则的，百度依然会缓存这个页面。</p>
+<p>需要联系产品团队解决此问题。</p>
+<p>百度会自动删除源站中的Set-cookie这个header，导致一些特殊页面（如登录页面）出现问题。</p>
+<p>CDN dashboard中的Log query查询日志的延迟在20个小时以上，严重影响需要依赖于访问日志排查的问题。</p>
+<p>此问题已于2022年11月解决，当前日志延迟为4小时左右。</p>
+<p>2023/2/9</p>
+<p>使用REST API获取的回源IP地址仅包含国内供应商的节点，不包含海外加速节点，即使加速域名为“全球加速”也是如此。</p>
+<p>PG正在讨论如何改进。如有客户提出此需求，请提交IcM给产品团队，由产品团队从后台提取。</p>
+<p>白山不支持Http2。对于一些创建较早的、使用白山的域名，用户在门户网站启用http2会失败，需要联系产品团队线下配置。</p>
+<p>白山实际上支持HTTP2.0，只是Azure CDN在调用对方接口时存在一些问题，目前无法配置。</p>
+<p>PG will work on the fix.</p>
+<p>20230216212898</p>
+<p>2023/5/10</p>
+<p>在Portal上无法修改图片处理加速的源站IP地址，只能修改为域名；但通过REST API可以将源站修改为IP地址。</p>
+<p>This modification is now supported.</p>
+<p>This is confirmed to be a CDN bug. Current workaround is to use REST API to modify the origin IP.</p>
+<p>20230216212859</p>
+<p>对于图片处理加速，Image在处理中可能会携带错误EXIF- Orientation信息，导致图片旋转90°。（该问题可能偶发产生）</p>
+<p>例如，请求虽然只携带了缩放的参数（basic=60p），但图片却可能被旋转90度。</p>
+<p>Workaround: 使用basic=exif参数查看EXIF中的Orientation信息，根据客户具体的情况去使用basic={Degree}r进行修正。</p>
+<p>provide workaround, fix priority depends on case volume</p>
+<p>20230209211553</p>
+<p>当前通过REST API启用Https时，仅支持手动上传证书，不支持使用KV中现有的证书。此功能正在开发中。通过REST API启用Https的文档只有中文版本，没有英文版本。</p>
+<p>Doc will be updated.</p>
+<p>2302150010001040</p>
+<p>2023/4/7</p>
+<p>访问控制功能一年多前从v1升级到了v2版本，会导致有的较早的域名无法加载访问控制界面或者显示旧的v1配置，导致无法更改配置。如果客户需要在portal更新访问控制规则，需要找PG手动升级至v2（v1版本的访问控制规则比v2规则的精细度更高，有的规则v2已经不支持了）。</p>
+<p>PG will further discuss the improvement  internally</p>
+<p>20230314217803</p>
+<p>Tips</p>
+<p>使用目录刷新时，如果源站文件的last modify值没有变化，那么意味着CDN节点不会到源站重新取数据，这种情况下只能使用文件刷新。使用文件刷新时，必须指定具体的文件名称，否则无法刷新。如果客户需要刷新多个文件时，可以通过API进行。</p>
+<p>与供应商的配置有关。建议在目录刷新无法解决问题的情况下，尝试使用文件刷新再试一遍</p>
+<p>可以在CDN Dashboard中查看域名的CDN启用是否正常</p>
+<p>可以尝试更改CDN供应商来验证问题是否为当前CDN供应商的问题。在CDN的dashboard中找到secondary供应商为加速域名配置的CNAME，解析出该CNAME的IP地址，修改host文件，将加速域名指向该IP地址。</p>
+<p>可以使用F12来查看哪些文件命中了缓存，这个对排查性能问题也很有帮助。客户的网页上可能存在很多不同类型的文件，客户抱怨启用CDN之后没有什么加速效果，可以通过F12查看哪些文件命中了缓存，并用这些文件的加载时间来与源站进行对比。对于没有命中缓存的文件，CDN节点需要回源再将结果返回客户端，可能需要花费更长的时间。</p>
+<p>配置证书时，KeyVaulty的“网络配置”必须选择“Allow All Network”，否则会导致加载证书失败。</p>
+<p>PG表示不会更改此设计。</p>
+<p>启用Https后，用户无法自行关闭，需要联系产品。</p>
+<p>文档已更新。</p>
+<p>CDN节点在回源时，会插入x-forwarded-for标头，其中可能包含多个IP地址。第一个地址为真实客户端的IP，后面的地址是CDN供应商的上层节点IP。</p>
+<p>用户通过CDN上传文件的大小是有限制的，不同供应商限制不同。如果超过这个限制，客户端可能会看到400的报错。</p>
+<p>文档已更新 Azure CDN FAQ - Azure feature related | Azure Docs</p>
+<p>对于源站返回3xx（重定向）的请求，有些供应商可以支持缓存，有些不支持。</p>
+<p>图片处理加速不支持Https回源。如果遇到客户创建、更新图片加速配置失败，或者图片加速域名回源失败时（可能返回400），需要特别留意“回源协议”的配置，确认其设置为“http”。</p>
+<p>如果客户配置的比较早的话，可以支持HTTPS回源。后来在2022/3月份，产品统一做了修改不支持图片加速的Https回源，只支持HTTP回源。</p>
+<p>如果是Image processing，回源配置只有HTTP可选wendang</p>
+<p>文档中有说明<a href="https://docs.azure.cn/zh-cn/cdn/cdn-image-processing" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-image-processing</a></p>
+<p>如果是更新证书，建议在域名管理界面绑定（防止回源跟随更改了之前的配置）</p>
+<p>error msg can be also found in the backend:</p>
+<p>Image processing service type dose not support https and followRquest as origin protocol</p>
+<p>对于客户上传的Https证书（手动上传或者通过KV上传），平台会验证证书中的CDP （Crl Distribution Point）的内容是否为空。如果是的话，那么校验会失败，即使该证书启用了OCSP验证。</p>
+<p>此设计已经更改。</p>
+<p>用户只有开启Https加速之后，才能从门户选择回源协议（协议跟随，https或者http）。对于没有开启Https的加速域名，实际也是可以配置Https回源的（前端为Http，回源为Https）。如果客户有此需求，可以通过非标操作的流程向PM申请。</p>
+<p>CDN默认的回源超时时间为10秒。对于通过CDN上传文件的场景，如果文件不能在10秒之内传完，那么客户端会看到上传失败，返回504的报错。可以联系PG调整这个超时时间，最高配置为1分钟。</p>
+<p>CDN可以从后台开启或者关闭Range回源。Range是Http协议中规定的一种请求方式：<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests" target="_blank" rel="noopener">https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests</a></p>
+<p>图片处理加速在回源时会删除客户端请求中的查询字符串（query string），因此如果源站是Blob，必须允许公开访问。不支持SAS Token访问的方式，因为这种方式就是通过在URL后追加查询字符串来进行鉴权的。</p>
+<p>创建CDN时，provider会校验客户的域名是否有备案，但是并不会对客户提供的ICP信息进行。如果目前有客户需要更改ICP备案信息的请求，可以直接上IcM请PG处理。(DO NOT deliver this info. to cx.)</p>
+<p>PG will look for on better solution.</p>
+<p>20230303216047</p>
+<p>在使用泛域名时，预加载提交的URL目前需要在路径中包含完整子域名，例如，*.mycompany.com/static.mycompany.com/file.</p>
+<p>PG会优化界面提示，并进一步看看是否能优化前端提交的URL格式</p>
+<p>20230308216674</p>
+<p>2023/5/29</p>
+<p>在使用图片加速时，对于一个domain name的请求，如果cache MISS而回源，请求数量将有限制，默认限制为60 requests per 5s，当超限时访问会提示throttled。如有需要可以找PG修改默认限制。</p>
+<p>20230322219565</p>
+<p>CDN profile在创建时无法添加多个origin</p>
+<p>will update the doc to explain that multiple origin will be needed to set in CDN portal.</p>
+<p>20230403221703</p></article>

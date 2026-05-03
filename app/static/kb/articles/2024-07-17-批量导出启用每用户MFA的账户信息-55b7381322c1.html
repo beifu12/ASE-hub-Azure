@@ -1,0 +1,106 @@
+<article class="kb-article" data-title="批量导出启用每用户MFA的账户信息"><h1>批量导出启用每用户MFA的账户信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-17 14:57:40</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Zhang Lihong</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<ul>
+<li>参考截图：</li>
+</ul>
+<ul>
+<li>1.请您先安装msonline模块。</li>
+</ul>
+<ul>
+<li>Install-Module MSOnline</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>2.连接到账户。</li>
+</ul>
+<ul>
+<li>Connect-MsolService -AzureEnvironment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>3．获取启用MFA用户的信息。</li>
+</ul>
+<ul>
+<li>$sta = @()</li>
+</ul>
+<ul>
+<li>4 获取未启用MFA 用户的信息。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>具体步骤：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>对于每用户MFA，您可以使用Azure PowerShell批量导出用户。</li>
+</ul>
+<ul>
+<li>安装命令：</li>
+</ul>
+<ul>
+<li>参考命令：</li>
+</ul>
+<ul>
+<li>Get-MsolUser -All | Where{$_.StrongAuthenticationRequirements -ne $sta}</li>
+</ul>
+<ul>
+<li>Get-MsolUser -All | Where-Object { $_.StrongAuthenticationRequirements.Count -eq 0 }</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/powershell/azure/active-directory/install-msonlinev1?view=azureadps-1.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/azure/active-directory/install-msonlinev1?view=azureadps-1.0</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/powershell/module/msonline/connect-msolservice?view=azureadps-1.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/msonline/connect-msolservice?view=azureadps-1.0</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/powershell/module/msonline/get-msoluser?view=azureadps-1.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/msonline/get-msoluser?view=azureadps-1.0</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/MicrosoftDocs/azure-docs/issues/10926" target="_blank" rel="noopener">https://github.com/MicrosoftDocs/azure-docs/issues/10926</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang Lihong</p>
+<p>对于每用户MFA，您可以使用Azure PowerShell批量导出用户。</p>
+<p>参考截图：</p>
+<p>具体步骤：</p>
+<p>1.请您先安装msonline模块。</p>
+<p>安装命令：</p>
+<p>Install-Module MSOnline</p>
+<p>参考文档：</p>
+<p><a href="https://docs.microsoft.com/en-us/powershell/azure/active-directory/install-msonlinev1?view=azureadps-1.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/azure/active-directory/install-msonlinev1?view=azureadps-1.0</a></p>
+<p>2.连接到账户。</p>
+<p>参考命令：</p>
+<p>Connect-MsolService -AzureEnvironment AzureChinaCloud</p>
+<p><a href="https://docs.microsoft.com/en-us/powershell/module/msonline/connect-msolservice?view=azureadps-1.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/msonline/connect-msolservice?view=azureadps-1.0</a></p>
+<p>3．获取启用MFA用户的信息。</p>
+<p>$sta = @()</p>
+<p>Get-MsolUser -All | Where{$_.StrongAuthenticationRequirements -ne $sta}</p>
+<p>4 获取未启用MFA 用户的信息。</p>
+<p>Get-MsolUser -All | Where-Object { $_.StrongAuthenticationRequirements.Count -eq 0 }</p>
+<p><a href="https://docs.microsoft.com/en-us/powershell/module/msonline/get-msoluser?view=azureadps-1.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/msonline/get-msoluser?view=azureadps-1.0</a></p>
+<p><a href="https://github.com/MicrosoftDocs/azure-docs/issues/10926" target="_blank" rel="noopener">https://github.com/MicrosoftDocs/azure-docs/issues/10926</a></p></article>

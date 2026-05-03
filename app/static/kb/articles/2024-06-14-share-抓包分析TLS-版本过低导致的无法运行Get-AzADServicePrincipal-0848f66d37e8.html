@@ -1,0 +1,111 @@
+<article class="kb-article" data-title="【share】抓包分析TLS 版本过低导致的无法运行Get-AzADServicePrincipal"><h1>【share】抓包分析TLS 版本过低导致的无法运行Get-AzADServicePrincipal</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2024-06-14 14:24:18</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：SR_20240517294243_Get-AzADServicePrincipal failed with error Az.MSGraph.internal\Get-AzADServicePrincipal : An error occurred while sending the request.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：SR_20240517294243_Get-AzADServicePrincipal failed with error Az.MSGraph.internal\Get-AzADServicePrincipal : An error occurred while sending the request.</li>
+</ul>
+<ul>
+<li>用户使用同样的tenant ID 的情况下在Azure VM上power shell无法正常运行Get-AzADServicePrincipal 报错</li>
+</ul>
+<ul>
+<li>Az.MSGraph.internal\Get-AzADServicePrincipal : An error occurred while sending the request.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>MiyaHu</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>+     Az.MSGraph.internal\Get-AzADServicePrincipal @PSBoundParameters</li>
+</ul>
+<ul>
+<li>+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</li>
+</ul>
+<ul>
+<li>+ CategoryInfo          : NotSpecified: (:) [Get-AzADServicePrincipal_List], HttpRequestException</li>
+</ul>
+<ul>
+<li>===========</li>
+</ul>
+<ul>
+<li>筛选条件：tls.handshake.extensions_server_name == &quot;microsoftgraph.chinacloudapi.cn&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>2， Azure 的VM 所在子网配置了自定义路由缺省路由走自己的NVA 设备。由于NVA 设备当时的管理权限不在用户手上，我们首先在问题客户端上抓包分析。</li>
+</ul>
+<ul>
+<li>4， 对比用户问题客户端和正常客户端的请求，可以明显看到客户端的请求发到了目标服务器，但目标服务器立即回复了rest 报文。进一步排查发现问题客户端使用的TLS 版本非服务器要求的TLS1.2</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>At C:\Program Files\WindowsPowerShell\Modules\Az.Resources\6.16.2\MSGraph.Autorest\custom\Get-AzADServicePrincipal.ps1:221 char:5</li>
+</ul>
+<ul>
+<li>+ FullyQualifiedErrorId : Microsoft.Azure.PowerShell.Cmdlets.Resources.MSGraph.Cmdlets.GetAzADServicePrincipal_List</li>
+</ul>
+<ul>
+<li>1， 用户可以正常登录Azure portal并执行其他命令，例如get-azVM</li>
+</ul>
+<ul>
+<li>3， 通过抓包运行命令Get-AzADServicePrincipal 过程中抓包并结合AAD 工程师的确认客户端会首先发请求到microsoftgraph.chinacloudapi.cn</li>
+</ul>
+<ul>
+<li>5，提供用户如下命令调整客户端的TLS 版本为1.2 后问题得到解决。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>检查tls版本：[Net.ServicePointManager]::SecurityProtocol</li>
+</ul>
+<ul>
+<li>修改tls版本：[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>MiyaHu</p>
+<p>参考工单：SR_20240517294243_Get-AzADServicePrincipal failed with error Az.MSGraph.internal\Get-AzADServicePrincipal : An error occurred while sending the request.</p>
+<p>问题描述：</p>
+<p>==========</p>
+<p>用户使用同样的tenant ID 的情况下在Azure VM上power shell无法正常运行Get-AzADServicePrincipal 报错</p>
+<p>Az.MSGraph.internal\Get-AzADServicePrincipal : An error occurred while sending the request.</p>
+<p>At C:\Program Files\WindowsPowerShell\Modules\Az.Resources\6.16.2\MSGraph.Autorest\custom\Get-AzADServicePrincipal.ps1:221 char:5</p>
+<p>+     Az.MSGraph.internal\Get-AzADServicePrincipal @PSBoundParameters</p>
+<p>+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</p>
+<p>+ CategoryInfo          : NotSpecified: (:) [Get-AzADServicePrincipal_List], HttpRequestException</p>
+<p>+ FullyQualifiedErrorId : Microsoft.Azure.PowerShell.Cmdlets.Resources.MSGraph.Cmdlets.GetAzADServicePrincipal_List</p>
+<p>排查过程：</p>
+<p>===========</p>
+<p>1， 用户可以正常登录Azure portal并执行其他命令，例如get-azVM</p>
+<p>2， Azure 的VM 所在子网配置了自定义路由缺省路由走自己的NVA 设备。由于NVA 设备当时的管理权限不在用户手上，我们首先在问题客户端上抓包分析。</p>
+<p>3， 通过抓包运行命令Get-AzADServicePrincipal 过程中抓包并结合AAD 工程师的确认客户端会首先发请求到microsoftgraph.chinacloudapi.cn</p>
+<p>筛选条件：tls.handshake.extensions_server_name == &quot;microsoftgraph.chinacloudapi.cn&quot;</p>
+<p>4， 对比用户问题客户端和正常客户端的请求，可以明显看到客户端的请求发到了目标服务器，但目标服务器立即回复了rest 报文。进一步排查发现问题客户端使用的TLS 版本非服务器要求的TLS1.2</p>
+<p>5，提供用户如下命令调整客户端的TLS 版本为1.2 后问题得到解决。</p>
+<p>检查tls版本：[Net.ServicePointManager]::SecurityProtocol</p>
+<p>修改tls版本：[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12</p></article>

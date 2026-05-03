@@ -1,0 +1,101 @@
+<article class="kb-article" data-title="通过备份还原时，storage pool格式是否能保持？"><h1>通过备份还原时，storage pool格式是否能保持？</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RecoveryService</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-01-26 17:37:54</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>相关工单 ：SR_2020122370579_[S500]VM通过保管库还原失败</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>相关工单 ：SR_2020122370579_[S500]VM通过保管库还原失败</li>
+</ul>
+<ul>
+<li>恢复到本机器上，提示失败，因为不支持</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>通过备份还原时，storage pool格式是否能保持？</li>
+</ul>
+<ul>
+<li>2021/1/1626</li>
+</ul>
+<ul>
+<li>Zuo Xiaojing</li>
+</ul>
+<ul>
+<li>主要技术点：做了storage pool的虚拟机备份，还原后，新虚拟机磁盘是否依然保持storage pool形式？</li>
+</ul>
+<ul>
+<li>测试结果： （以下两种方法均可以保持storage pool形式）</li>
+</ul>
+<ul>
+<li>还原文件时</li>
+</ul>
+<ul>
+<li>还原整个虚拟机</li>
+</ul>
+<ul>
+<li>测试过程：</li>
+</ul>
+<ul>
+<li>注：</li>
+</ul>
+<ul>
+<li>恢复文件时，不能将文件还原到更旧或更新的操作系统版本。 例如，不能将文件从 Windows Server 2016 VM 还原到 Windows Server 2012 或 Windows 8 计算机。 可将 VM 中的文件还原到相同的服务器操作系统，或还原到兼容的客户端操作系统。</li>
+</ul>
+<ul>
+<li>源机器文件（以storage pool形式组成一块F盘，机器上还有另外一块儿系统C盘）</li>
+</ul>
+<ul>
+<li>恢复到另外一个机器上（源机器上的C盘及F盘均被挂载上）</li>
+</ul>
+<ul>
+<li>恢复出来的文件可正常浏览，无数据损坏</li>
+</ul>
+<ul>
+<li>直接创建虚拟机后也可以保持storage pool（门户截图情况）</li>
+</ul>
+<ul>
+<li>系统内部磁盘显示情况</li>
+</ul>
+<ul>
+<li>文件可正常打开</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>无法在具有storage pool的机器上运行还原文件的可执行脚本，可将脚本放到同一区域一个符合要求的计算机上运行，然后将需要的文件复制出来。说明见<a href="https://docs.azure.cn/zh-cn/backup/backup-azure-restore-files-from-vm#step-2-ensure-the-machine-meets-the-requirements-before-executing-the-script中不支持情况" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/backup-azure-restore-files-from-vm#step-2-ensure-the-machine-meets-the-requirements-before-executing-the-script中不支持情况</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>通过备份还原时，storage pool格式是否能保持？</p>
+<p>2021/1/1626</p>
+<p>Zuo Xiaojing</p>
+<p>相关工单 ：SR_2020122370579_[S500]VM通过保管库还原失败</p>
+<p>主要技术点：做了storage pool的虚拟机备份，还原后，新虚拟机磁盘是否依然保持storage pool形式？</p>
+<p>测试结果： （以下两种方法均可以保持storage pool形式）</p>
+<p>还原文件时</p>
+<p>还原整个虚拟机</p>
+<p>测试过程：</p>
+<p>注：</p>
+<p>恢复文件时，不能将文件还原到更旧或更新的操作系统版本。 例如，不能将文件从 Windows Server 2016 VM 还原到 Windows Server 2012 或 Windows 8 计算机。 可将 VM 中的文件还原到相同的服务器操作系统，或还原到兼容的客户端操作系统。</p>
+<p>无法在具有storage pool的机器上运行还原文件的可执行脚本，可将脚本放到同一区域一个符合要求的计算机上运行，然后将需要的文件复制出来。说明见<a href="https://docs.azure.cn/zh-cn/backup/backup-azure-restore-files-from-vm#step-2-ensure-the-machine-meets-the-requirements-before-executing-the-script中不支持情况" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/backup-azure-restore-files-from-vm#step-2-ensure-the-machine-meets-the-requirements-before-executing-the-script中不支持情况</a></p>
+<p>源机器文件（以storage pool形式组成一块F盘，机器上还有另外一块儿系统C盘）</p>
+<p>恢复到本机器上，提示失败，因为不支持</p>
+<p>恢复到另外一个机器上（源机器上的C盘及F盘均被挂载上）</p>
+<p>恢复出来的文件可正常浏览，无数据损坏</p>
+<p>直接创建虚拟机后也可以保持storage pool（门户截图情况）</p>
+<p>系统内部磁盘显示情况</p>
+<p>文件可正常打开</p></article>

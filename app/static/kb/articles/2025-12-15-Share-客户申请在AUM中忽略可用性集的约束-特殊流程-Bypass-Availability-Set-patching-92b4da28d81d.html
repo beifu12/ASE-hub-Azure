@@ -1,0 +1,102 @@
+<article class="kb-article" data-title="【Share】客户申请在AUM中忽略可用性集的约束(特殊流程 Bypass Availability Set patching)"><h1>【Share】客户申请在AUM中忽略可用性集的约束(特殊流程 Bypass Availability Set patching)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-15 11:42:10</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>AUM将这一批虚拟机统一在同一维护时段重启时，由于可用性集功能的故障域机制，有部分虚拟机无法完成重启。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>AUM将这一批虚拟机统一在同一维护时段重启时，由于可用性集功能的故障域机制，有部分虚拟机无法完成重启。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题说明：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>如上图，客户的一批虚拟机部署在可用性集中，这一批虚拟机属于同一个AUM自动更新的维护范围。</li>
+</ul>
+<ul>
+<li>客户需求：</li>
+</ul>
+<ul>
+<li>客户提供了2个订阅，需要在AUM更新维护窗口期间，将2个订阅中的虚拟机排除在所在可用性集合的约束以外，所有虚拟机在自动更新维护窗口中可以忽略可用性集合的约束，全部进行重启。</li>
+</ul>
+<ul>
+<li>申请流程：</li>
+</ul>
+<ul>
+<li>此需求开通了ICM：Incident-713224896 Details - IcM</li>
+</ul>
+<ul>
+<li>在ICM中PG提供了Bypass Availability Set patching的申请方法：</li>
+</ul>
+<ul>
+<li>Bypass Availability Set patching</li>
+</ul>
+<ul>
+<li>Currently we patch Azure Virtual Machines in availability first manner in case of Schedule Patching. Machines are patched UD by UD. Because of this, all the machines might not get patched in the schedule. In this TSG, if customers want to bypass this constraint (patch all machines parallelly), we need to follow these steps -</li>
+</ul>
+<ul>
+<li>Get all the virtual machines subscriptions from the customer.</li>
+</ul>
+<ul>
+<li>Send an email to assing@microsoft.com, aumeng@microsoft.com for registering &quot;Microsoft.Compute/VMInGuestPatchIgnoreAvailabilitySetConstraint&quot; feature flag with cloud environment of subscription (Public/Fairfax/Mooncake).</li>
+</ul>
+<ul>
+<li>Once feature flag is registered, ask customer to follow below steps -</li>
+</ul>
+<ul>
+<li>Add IgnoreAvailabilitySetConstraint text as part of exclusion list as part of maintenance configuration as per below screenshot -</li>
+</ul>
+<ul>
+<li>Save this schedule. It will patch all the machine parallelly in the availability set.</li>
+</ul>
+<ul>
+<li>为aumeng@microsoft.com 团队发送申请，为客户订阅启用Microsoft.Compute/VMInGuestPatchIgnoreAvailabilitySetConstraint功能</li>
+</ul>
+<ul>
+<li>启用完成后，客户需要在下一次AUM更新维护配置中添加:IgnoreAvailabilitySetConstraint</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>经客户验证，在维护配置中添加配置后，虚拟机已忽略了可用性集的约束，可以进行统一重启。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/10</p>
+<p>问题说明：</p>
+<p>========</p>
+<p>如上图，客户的一批虚拟机部署在可用性集中，这一批虚拟机属于同一个AUM自动更新的维护范围。</p>
+<p>AUM将这一批虚拟机统一在同一维护时段重启时，由于可用性集功能的故障域机制，有部分虚拟机无法完成重启。</p>
+<p>客户需求：</p>
+<p>客户提供了2个订阅，需要在AUM更新维护窗口期间，将2个订阅中的虚拟机排除在所在可用性集合的约束以外，所有虚拟机在自动更新维护窗口中可以忽略可用性集合的约束，全部进行重启。</p>
+<p>申请流程：</p>
+<p>此需求开通了ICM：Incident-713224896 Details - IcM</p>
+<p>在ICM中PG提供了Bypass Availability Set patching的申请方法：</p>
+<p>Bypass Availability Set patching</p>
+<p>Currently we patch Azure Virtual Machines in availability first manner in case of Schedule Patching. Machines are patched UD by UD. Because of this, all the machines might not get patched in the schedule. In this TSG, if customers want to bypass this constraint (patch all machines parallelly), we need to follow these steps -</p>
+<p>Get all the virtual machines subscriptions from the customer.</p>
+<p>Send an email to assing@microsoft.com, aumeng@microsoft.com for registering &quot;Microsoft.Compute/VMInGuestPatchIgnoreAvailabilitySetConstraint&quot; feature flag with cloud environment of subscription (Public/Fairfax/Mooncake).</p>
+<p>Once feature flag is registered, ask customer to follow below steps -</p>
+<p>Add IgnoreAvailabilitySetConstraint text as part of exclusion list as part of maintenance configuration as per below screenshot -</p>
+<p>Save this schedule. It will patch all the machine parallelly in the availability set.</p>
+<p>为aumeng@microsoft.com 团队发送申请，为客户订阅启用Microsoft.Compute/VMInGuestPatchIgnoreAvailabilitySetConstraint功能</p>
+<p>启用完成后，客户需要在下一次AUM更新维护配置中添加:IgnoreAvailabilitySetConstraint</p>
+<p>经客户验证，在维护配置中添加配置后，虚拟机已忽略了可用性集的约束，可以进行统一重启。</p></article>

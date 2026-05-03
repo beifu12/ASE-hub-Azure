@@ -1,0 +1,92 @@
+<article class="kb-article" data-title="安全删除保留分区"><h1>安全删除保留分区</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-11-22 12:15:02</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>扩容磁盘后无法执行Extend Volume操作, 虚拟机没有使用Azure的官方镜像,磁盘管理中存储保留分区。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>扩容磁盘后无法执行Extend Volume操作, 虚拟机没有使用Azure的官方镜像,磁盘管理中存储保留分区。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Ruifeng</li>
+</ul>
+<ul>
+<li>1) 启动到Windows OS，运行具有管理员权限的CMD.exe，然后输入：</li>
+</ul>
+<ul>
+<li>diskpart</li>
+</ul>
+<ul>
+<li>sel disk 0</li>
+</ul>
+<ul>
+<li>list vol</li>
+</ul>
+<ul>
+<li>sel vol 0</li>
+</ul>
+<ul>
+<li>inactive</li>
+</ul>
+<ul>
+<li>sel vol 1</li>
+</ul>
+<ul>
+<li>active</li>
+</ul>
+<ul>
+<li>C:\windows\system32\bcdboot.exe C:\windows /s C:</li>
+</ul>
+<ul>
+<li>具体配置截图如下，经测试成功完成，工单关闭。</li>
+</ul>
+<ul>
+<li>根据实际情况配置，因为当前 Vol 1 是Active的状态</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>2) 退出diskpart之后，继续在CMD.exe输入下列命令：</li>
+</ul>
+<ul>
+<li>select volume 1 -&gt;inactive</li>
+</ul>
+<ul>
+<li>select volume 0 -&gt;active</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>请谨慎操作，可能会导致操作系统无法启动的问题，建议经过测试过再进行生产环境实施，另外操作为了保证数据安全建议提前做好数据备份工作。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Ruifeng</p>
+<p>扩容磁盘后无法执行Extend Volume操作, 虚拟机没有使用Azure的官方镜像,磁盘管理中存储保留分区。</p>
+<p>请谨慎操作，可能会导致操作系统无法启动的问题，建议经过测试过再进行生产环境实施，另外操作为了保证数据安全建议提前做好数据备份工作。</p>
+<p>1) 启动到Windows OS，运行具有管理员权限的CMD.exe，然后输入：</p>
+<p>diskpart</p>
+<p>sel disk 0</p>
+<p>list vol</p>
+<p>sel vol 0</p>
+<p>inactive</p>
+<p>sel vol 1</p>
+<p>active</p>
+<p>2) 退出diskpart之后，继续在CMD.exe输入下列命令：</p>
+<p>C:\windows\system32\bcdboot.exe C:\windows /s C:</p>
+<p>具体配置截图如下，经测试成功完成，工单关闭。</p>
+<p>根据实际情况配置，因为当前 Vol 1 是Active的状态</p>
+<p>select volume 1 -&gt;inactive</p>
+<p>select volume 0 -&gt;active</p></article>

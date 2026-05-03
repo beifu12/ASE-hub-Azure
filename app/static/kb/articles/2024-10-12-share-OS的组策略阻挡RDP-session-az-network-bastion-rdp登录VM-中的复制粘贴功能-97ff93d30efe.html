@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="【share】OS的组策略阻挡RDP session（az network bastion rdp登录VM） 中的复制粘贴功能"><h1>【share】OS的组策略阻挡RDP session（az network bastion rdp登录VM） 中的复制粘贴功能</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Bastion</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-10-12 16:43:22</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>用户通过  az network bastion rdp的方式通过Bastion 访问到后端服务器后，copy paste 的功能键都变成了灰色。 该copy/paste 功能之前都一直正常。</li>
+</ul>
+<ul>
+<li>=========</li>
+</ul>
+<ul>
+<li>1， 根据官网说明及测试， 通过az network bastion rdp的方式通过Bastion 访问到后端服务器后是可以正常复制粘贴的。</li>
+</ul>
+<ul>
+<li>参考：</li>
+</ul>
+<ul>
+<li>2， 客户端copy paste 到客户端自身没有问题， 服务器copy paste 到服务器自身也没有问题。 只有在通过bastion访问后， 客户端到服务器的copy paste 功能键为灰色。</li>
+</ul>
+<ul>
+<li>bastion 的配置是沟选了 copy and paste 功能的：</li>
+</ul>
+<ul>
+<li>3， 查RDP 文件本身的clipboard 是勾选状态：</li>
+</ul>
+<ul>
+<li>： Get help with the clipboard - Microsoft Support</li>
+</ul>
+<ul>
+<li>Computer Configuration &gt; Administrative Templates &gt; Windows Components &gt; Remote Desktop Services &gt; Remote Desktop Session Host &gt; Device and Resource Redirection &gt;</li>
+</ul>
+<ul>
+<li>组策略确实可以阻挡RDP session 中的clipboard file copy的功能。组策略默认状态是not configured。 这里的每一项的解释和使用均有相应的解释。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>4， 根据微软官网检查Clipboard 的配置：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az network bastion rdp --name &quot;cn3-infra01-bas&quot; --resource-group &quot;vgcn-cn3-bastion-rg&quot; --target-resource-id &quot;/subscriptions/52124592-a676-49c7-8f0c-d4b63e9ab995/resourceGroups/VGCN-CN3-Vmtest-RG/providers/Microsoft.Compute/virtualMachines/C153683T01VM10&quot;  --enable-mfa –config</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>5， 进一步查询系统层面的组策略配置发现这里的“Do not allow drive redirection” 设置为Not configured 或者为Disable可以解决问题</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/bastion/vm-upload-download-native#upload-and-download-files---windows-client-and-rdp" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/bastion/vm-upload-download-native#upload-and-download-files---windows-client-and-rdp</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/10/12</p>
+<p>问题现象：</p>
+<p>========</p>
+<p>用户通过  az network bastion rdp的方式通过Bastion 访问到后端服务器后，copy paste 的功能键都变成了灰色。 该copy/paste 功能之前都一直正常。</p>
+<p>az network bastion rdp --name &quot;cn3-infra01-bas&quot; --resource-group &quot;vgcn-cn3-bastion-rg&quot; --target-resource-id &quot;/subscriptions/52124592-a676-49c7-8f0c-d4b63e9ab995/resourceGroups/VGCN-CN3-Vmtest-RG/providers/Microsoft.Compute/virtualMachines/C153683T01VM10&quot;  --enable-mfa –config</p>
+<p>排查过程：</p>
+<p>=========</p>
+<p>1， 根据官网说明及测试， 通过az network bastion rdp的方式通过Bastion 访问到后端服务器后是可以正常复制粘贴的。</p>
+<p>参考：</p>
+<p><a href="https://docs.azure.cn/zh-cn/bastion/vm-upload-download-native#upload-and-download-files---windows-client-and-rdp" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/bastion/vm-upload-download-native#upload-and-download-files---windows-client-and-rdp</a></p>
+<p>2， 客户端copy paste 到客户端自身没有问题， 服务器copy paste 到服务器自身也没有问题。 只有在通过bastion访问后， 客户端到服务器的copy paste 功能键为灰色。</p>
+<p>bastion 的配置是沟选了 copy and paste 功能的：</p>
+<p>3， 查RDP 文件本身的clipboard 是勾选状态：</p>
+<p>4， 根据微软官网检查Clipboard 的配置：</p>
+<p>： Get help with the clipboard - Microsoft Support</p>
+<p>5， 进一步查询系统层面的组策略配置发现这里的“Do not allow drive redirection” 设置为Not configured 或者为Disable可以解决问题</p>
+<p>Computer Configuration &gt; Administrative Templates &gt; Windows Components &gt; Remote Desktop Services &gt; Remote Desktop Session Host &gt; Device and Resource Redirection &gt;</p>
+<p>组策略确实可以阻挡RDP session 中的clipboard file copy的功能。组策略默认状态是not configured。 这里的每一项的解释和使用均有相应的解释。</p></article>

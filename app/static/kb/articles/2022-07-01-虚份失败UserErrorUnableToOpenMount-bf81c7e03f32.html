@@ -1,0 +1,103 @@
+<article class="kb-article" data-title="虚份失败UserErrorUnableToOpenMount"><h1>虚份失败UserErrorUnableToOpenMount</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RecoveryService</li>
+<li>Section: Backup Agent</li>
+<li>最近修改: 2022-07-01 12:04:26</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错截图：客户是通过文件恢复后，忘记了卸载临时挂载的磁盘：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错截图：客户是通过文件恢复后，忘记了卸载临时挂载的磁盘：</li>
+</ul>
+<ul>
+<li>但是客户尝试还是备份失败。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>johnny</li>
+</ul>
+<ul>
+<li>成功生成了如下挂载点：</li>
+</ul>
+<ul>
+<li>再看挂载点已经清除了：</li>
+</ul>
+<ul>
+<li>之后尝试手动立即备份，可以成功完成备份：</li>
+</ul>
+<ul>
+<li>但是远程给客户操作，客户不能删除iscsi节点：看出是资源还在调用：</li>
+</ul>
+<ul>
+<li>客户备份成功。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过官方文档，可以确认问题是由于没有协助挂载点：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>正常思路是让客户重新下载脚本+clean参数删除iscsi对应的相关连接：</li>
+</ul>
+<ul>
+<li>但是客户脚本已经删除，且忘记了之前脚本执行是需要的平台密码。</li>
+</ul>
+<ul>
+<li>这里重新下载脚本，然后用clean命令清楚，且能备份成功：</li>
+</ul>
+<ul>
+<li>脚本运行截图：</li>
+</ul>
+<ul>
+<li>运行脚本时有如下显示：</li>
+</ul>
+<ul>
+<li>尝试用脚本加上clean 参数：</li>
+</ul>
+<ul>
+<li>查找az cli或者powershell命令也没有强制卸载的命令。</li>
+</ul>
+<ul>
+<li>分析脚本，发现都是用iscsiadm命令连接的挂载点：（附上脚本，pythy格式的）</li>
+</ul>
+<ul>
+<li>最终通过重启，再用命令删除成功了：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/backup/backup-azure-restore-files-from-vm#step-6-closing-the-connection" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/backup/backup-azure-restore-files-from-vm#step-6-closing-the-connection</a></li>
+</ul>
+<ul>
+<li>后我通过iscsi命令删除session和node，然后备份成功：（参考文档：<a href="https://blog.csdn.net/onlyshenmin/article/details/81075209）" target="_blank" rel="noopener">https://blog.csdn.net/onlyshenmin/article/details/81075209）</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>johnny</p>
+<p>报错截图：客户是通过文件恢复后，忘记了卸载临时挂载的磁盘：</p>
+<p>通过官方文档，可以确认问题是由于没有协助挂载点：</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/backup/backup-azure-restore-files-from-vm#step-6-closing-the-connection" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/backup/backup-azure-restore-files-from-vm#step-6-closing-the-connection</a></p>
+<p>正常思路是让客户重新下载脚本+clean参数删除iscsi对应的相关连接：</p>
+<p>但是客户脚本已经删除，且忘记了之前脚本执行是需要的平台密码。</p>
+<p>这里重新下载脚本，然后用clean命令清楚，且能备份成功：</p>
+<p>脚本运行截图：</p>
+<p>运行脚本时有如下显示：</p>
+<p>成功生成了如下挂载点：</p>
+<p>尝试用脚本加上clean 参数：</p>
+<p>再看挂载点已经清除了：</p>
+<p>之后尝试手动立即备份，可以成功完成备份：</p>
+<p>但是客户尝试还是备份失败。</p>
+<p>查找az cli或者powershell命令也没有强制卸载的命令。</p>
+<p>分析脚本，发现都是用iscsiadm命令连接的挂载点：（附上脚本，pythy格式的）</p>
+<p>后我通过iscsi命令删除session和node，然后备份成功：（参考文档：<a href="https://blog.csdn.net/onlyshenmin/article/details/81075209）" target="_blank" rel="noopener">https://blog.csdn.net/onlyshenmin/article/details/81075209）</a></p>
+<p>但是远程给客户操作，客户不能删除iscsi节点：看出是资源还在调用：</p>
+<p>最终通过重启，再用命令删除成功了：</p>
+<p>客户备份成功。</p></article>

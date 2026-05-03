@@ -1,0 +1,92 @@
+<article class="kb-article" data-title="wvd负载均衡测试and用户连接时启动虚拟机"><h1>wvd负载均衡测试and用户连接时启动虚拟机</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-09-07 15:48:58</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>第一次登陆失败，但是弹出了密码。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>第一次登陆失败，但是弹出了密码。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2021年9月7日</li>
+</ul>
+<ul>
+<li>johnny</li>
+</ul>
+<ul>
+<li>通过我这里测试。</li>
+</ul>
+<ul>
+<li>使用广度优先，通过两个账号登录不同的虚拟机桌面：</li>
+</ul>
+<ul>
+<li>分别是0 这台vm 对应M和1这台vm 对应 A账号：</li>
+</ul>
+<ul>
+<li>然后我关闭一台1这台vm A账号对应的链接 关闭：</li>
+</ul>
+<ul>
+<li>再尝试重新登录：</li>
+</ul>
+<ul>
+<li>第二次登录成功：</li>
+</ul>
+<ul>
+<li>点击yes：</li>
+</ul>
+<ul>
+<li>A账号登录成功，且踢掉了M账号。</li>
+</ul>
+<ul>
+<li>从测试看，广度优先是可以支持在关闭一台vm时，让登录关闭vm上登录的账号，再其他虚拟桌面上登录的。</li>
+</ul>
+<ul>
+<li>而且在配置页面有删除会话主机和注销用户，所以您直接删除虚拟机后，可以在会话页面删除会话主机：</li>
+</ul>
+<ul>
+<li>引用链接：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>另外，登录开启的功能当前测试时中国区还不生效，bob还在确认。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/start-virtual-machine-connect" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/start-virtual-machine-connect</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/configure-host-pool-load-balancing" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/configure-host-pool-load-balancing</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021年9月7日</p>
+<p>johnny</p>
+<p>通过我这里测试。</p>
+<p>使用广度优先，通过两个账号登录不同的虚拟机桌面：</p>
+<p>分别是0 这台vm 对应M和1这台vm 对应 A账号：</p>
+<p>然后我关闭一台1这台vm A账号对应的链接 关闭：</p>
+<p>再尝试重新登录：</p>
+<p>第一次登陆失败，但是弹出了密码。</p>
+<p>第二次登录成功：</p>
+<p>点击yes：</p>
+<p>A账号登录成功，且踢掉了M账号。</p>
+<p>从测试看，广度优先是可以支持在关闭一台vm时，让登录关闭vm上登录的账号，再其他虚拟桌面上登录的。</p>
+<p>而且在配置页面有删除会话主机和注销用户，所以您直接删除虚拟机后，可以在会话页面删除会话主机：</p>
+<p>引用链接：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/start-virtual-machine-connect" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/start-virtual-machine-connect</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/configure-host-pool-load-balancing" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/configure-host-pool-load-balancing</a></p>
+<p>另外，登录开启的功能当前测试时中国区还不生效，bob还在确认。</p></article>

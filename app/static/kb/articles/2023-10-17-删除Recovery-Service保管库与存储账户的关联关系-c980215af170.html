@@ -1,0 +1,81 @@
+<article class="kb-article" data-title="删除Recovery Service保管库与存储账户的关联关系"><h1>删除Recovery Service保管库与存储账户的关联关系</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: 平台信息</li>
+<li>最近修改: 2023-10-17 13:11:24</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>Recovery Service保管库配置Azure File备份后清理了所有资源依然无法删除保管库，页面提示有关联未删除。</li>
+</ul>
+<ul>
+<li>配置存储账户备份时即时不对存储账户开始备份，选中存储账户后平台会自动将存储账户与Recovery Service保管库进行注册绑定。导致无法删除保管库。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Case num:20231017257464</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>#获取Recovery Service保管库信息</li>
+</ul>
+<ul>
+<li>$VaultToDelete = Get-AzRecoveryServicesVault -Name sadsa -ResourceGroupName auto</li>
+</ul>
+<ul>
+<li>#获取Recovery Service保管库中关联的存储账户信息</li>
+</ul>
+<ul>
+<li>$StorageAccounts = Get-AzRecoveryServicesBackupContainer -ContainerType AzureStorage -VaultId $VaultToDelete.ID</li>
+</ul>
+<ul>
+<li>#解除存储账户与Recovery Service保管库的关联关系</li>
+</ul>
+<ul>
+<li>Unregister-AzRecoveryServicesBackupContainer -container $StorageAccounts -Force -VaultId $VaultToDelete.ID</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>该注册关系在保管库与存储账户页面中均无法看到，仅能通过命令进行查询。</li>
+</ul>
+<ul>
+<li>使用powershell 进行解绑，解绑后可进行删除。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/07/22</p>
+<p>Case num:20231017257464</p>
+<p>问题现象：</p>
+<p>Recovery Service保管库配置Azure File备份后清理了所有资源依然无法删除保管库，页面提示有关联未删除。</p>
+<p>问题原因：</p>
+<p>配置存储账户备份时即时不对存储账户开始备份，选中存储账户后平台会自动将存储账户与Recovery Service保管库进行注册绑定。导致无法删除保管库。</p>
+<p>该注册关系在保管库与存储账户页面中均无法看到，仅能通过命令进行查询。</p>
+<p>解决方案：</p>
+<p>使用powershell 进行解绑，解绑后可进行删除。</p>
+<p>#获取Recovery Service保管库信息</p>
+<p>$VaultToDelete = Get-AzRecoveryServicesVault -Name sadsa -ResourceGroupName auto</p>
+<p>#获取Recovery Service保管库中关联的存储账户信息</p>
+<p>$StorageAccounts = Get-AzRecoveryServicesBackupContainer -ContainerType AzureStorage -VaultId $VaultToDelete.ID</p>
+<p>#解除存储账户与Recovery Service保管库的关联关系</p>
+<p>Unregister-AzRecoveryServicesBackupContainer -container $StorageAccounts -Force -VaultId $VaultToDelete.ID</p></article>

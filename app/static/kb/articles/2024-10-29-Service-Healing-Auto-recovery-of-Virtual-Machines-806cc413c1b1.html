@@ -1,0 +1,142 @@
+<article class="kb-article" data-title="Service Healing (Auto-recovery of Virtual Machines)"><h1>Service Healing (Auto-recovery of Virtual Machines)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Restart RCA</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-10-29 10:04:43</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>如下涉及到内部信息的不要提供给客户</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>如下涉及到内部信息的不要提供给客户</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>如下涉及到内部信息的不要提供给客户</li>
+</ul>
+<ul>
+<li>关联的升级工单：[PODVM]SR_20231025258969[MS-LED]/Qingdao Teld B... - TrackingID#2310250030001122</li>
+</ul>
+<ul>
+<li>Public Explanation</li>
+</ul>
+<ul>
+<li>Fabric Service Healing</li>
+</ul>
+<ul>
+<li>Currently the fault handing is only at the node level and not at the container level.</li>
+</ul>
+<ul>
+<li>To confirm Service Healing via Node:</li>
+</ul>
+<ul>
+<li>cluster(&quot;azcsupfollower&quot;).database(&quot;AzureCM&quot;).ServiceHealingTriggerEtwTable</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp between(datetime({StartTime})..24h) and NodeId == &quot;{NodeId}&quot;</li>
+</ul>
+<ul>
+<li>To understand if a tenant was service healed:</li>
+</ul>
+<ul>
+<li>cluster(&quot;azcsupfollower&quot;).database(&quot;AzureCM&quot;).TMMgmtTenantEventsEtwTable</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp between(datetime({StartTime})..24h) and TenantName == &quot;{TenantName}&quot;</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, TaskName, TenantName, Message</li>
+</ul>
+<ul>
+<li>To understand tenant status for service healing:</li>
+</ul>
+<ul>
+<li>cluster(&quot;azcsupfollower&quot;).database(&quot;AzureCM&quot;).ServiceHealingTenantStatusEtwTable</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, State, Message</li>
+</ul>
+<ul>
+<li>cluster(&quot;azcsupfollower&quot;).database(&quot;AzureCM&quot;).AzSMServiceHealingTriggerEvents</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp between(datetime({StartTime})..24h) and tenantName == &quot;{TenantName}&quot;</li>
+</ul>
+<ul>
+<li>Customer vs Platform initiated Service Healing</li>
+</ul>
+<ul>
+<li>Service Healing Trigger. Type:UnhealthyNode (which means platform initiated)</li>
+</ul>
+<ul>
+<li>Service Healing Trigger. Type:CustomerInitiatedMigration (which means customer initiated)</li>
+</ul>
+<ul>
+<li>Delayed Service Healing</li>
+</ul>
+<ul>
+<li>If the initial recovery attempt fails to recover the node, Azure collects additional detailed deep diagnostics telemetry understand and address such incidents.  Azure then proceeds to power cycle the node as a final step in the recovery attempt. If the node fails to return to healthy state even after power cycle, the node will be taken out of production for investigation. At this stage, the VMs are service healed to a healthy node. In this such a scenario, the total time taken for detection, initially recovery effort, collection of diagnostics data, and the power cycle, can delay service healing in this specific scenario.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>There is a component called Service Health Manager (SHM) within the Fabric Controller which is responsible for Service Healing. SHM constantly probes the nodes to check the health of the node.   When the SHM is not able to communicate with Host Agent the node will eventually move to Human Investigate. If there is a problem with the hardware of the node like for example if the disk goes bad and is out for replacement then that node will no longer be available for allocation and will marked as Out for Repair (OFR).</li>
+</ul>
+<ul>
+<li>Human Investigate and Out for repair(OFR) are the only two states that are defined as terminal unhealthy which means someone has to manually recover these nodes.</li>
+</ul>
+<ul>
+<li>Kusto Queries to detect/investigate Service Healing</li>
+</ul>
+<ul>
+<li>Using the Kusto query for &quot;TMMgmtTenantEventsEtwTable&quot; we can see &quot;who&quot; triggered the service healing:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>Note: A delayed service healing could also be caused by a TOR failure, because then the communication between Host and Fabric could be impacted.</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>This a public documentation which can be shared with customers to explain a VM &quot;service healing&quot; event: <a href="https://azure.microsoft.com/en-us/blog/service-healing-auto-recovery-of-virtual-machines/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/blog/service-healing-auto-recovery-of-virtual-machines/</a> (Opens in new window or tab)</li>
+</ul>
+<ul>
+<li>The physical node where the VMs are running may become unhealthy for a few different reasons. Azure monitors the node &amp; detects unhealthy nodes, and attempts to recover the node is without impact to VMs. More information on this effort is posted :<a href="https://azure.microsoft.com/en-us/blog/improving-azure-virtual-machines-resiliency-with-project-tardigrade/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/blog/improving-azure-virtual-machines-resiliency-with-project-tardigrade/</a> (Opens in new window or tab)</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>如下涉及到内部信息的不要提供给客户</p>
+<p>关联的升级工单：[PODVM]SR_20231025258969[MS-LED]/Qingdao Teld B... - TrackingID#2310250030001122</p>
+<p>Public Explanation</p>
+<p>This a public documentation which can be shared with customers to explain a VM &quot;service healing&quot; event: <a href="https://azure.microsoft.com/en-us/blog/service-healing-auto-recovery-of-virtual-machines/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/blog/service-healing-auto-recovery-of-virtual-machines/</a> (Opens in new window or tab)</p>
+<p>Fabric Service Healing</p>
+<p>There is a component called Service Health Manager (SHM) within the Fabric Controller which is responsible for Service Healing. SHM constantly probes the nodes to check the health of the node.   When the SHM is not able to communicate with Host Agent the node will eventually move to Human Investigate. If there is a problem with the hardware of the node like for example if the disk goes bad and is out for replacement then that node will no longer be available for allocation and will marked as Out for Repair (OFR).</p>
+<p>Currently the fault handing is only at the node level and not at the container level.</p>
+<p>Human Investigate and Out for repair(OFR) are the only two states that are defined as terminal unhealthy which means someone has to manually recover these nodes.</p>
+<p>Kusto Queries to detect/investigate Service Healing</p>
+<p>To confirm Service Healing via Node:</p>
+<p>cluster(&quot;azcsupfollower&quot;).database(&quot;AzureCM&quot;).ServiceHealingTriggerEtwTable</p>
+<p>| where PreciseTimeStamp between(datetime({StartTime})..24h) and NodeId == &quot;{NodeId}&quot;</p>
+<p>To understand if a tenant was service healed:</p>
+<p>cluster(&quot;azcsupfollower&quot;).database(&quot;AzureCM&quot;).TMMgmtTenantEventsEtwTable</p>
+<p>| where PreciseTimeStamp between(datetime({StartTime})..24h) and TenantName == &quot;{TenantName}&quot;</p>
+<p>| project PreciseTimeStamp, TaskName, TenantName, Message</p>
+<p>To understand tenant status for service healing:</p>
+<p>cluster(&quot;azcsupfollower&quot;).database(&quot;AzureCM&quot;).ServiceHealingTenantStatusEtwTable</p>
+<p>| project PreciseTimeStamp, State, Message</p>
+<p>cluster(&quot;azcsupfollower&quot;).database(&quot;AzureCM&quot;).AzSMServiceHealingTriggerEvents</p>
+<p>| where PreciseTimeStamp between(datetime({StartTime})..24h) and tenantName == &quot;{TenantName}&quot;</p>
+<p>Customer vs Platform initiated Service Healing</p>
+<p>Using the Kusto query for &quot;TMMgmtTenantEventsEtwTable&quot; we can see &quot;who&quot; triggered the service healing:</p>
+<p>Service Healing Trigger. Type:UnhealthyNode (which means platform initiated)</p>
+<p>Service Healing Trigger. Type:CustomerInitiatedMigration (which means customer initiated)</p>
+<p>Delayed Service Healing</p>
+<p>The physical node where the VMs are running may become unhealthy for a few different reasons. Azure monitors the node &amp; detects unhealthy nodes, and attempts to recover the node is without impact to VMs. More information on this effort is posted :<a href="https://azure.microsoft.com/en-us/blog/improving-azure-virtual-machines-resiliency-with-project-tardigrade/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/blog/improving-azure-virtual-machines-resiliency-with-project-tardigrade/</a> (Opens in new window or tab)</p>
+<p>If the initial recovery attempt fails to recover the node, Azure collects additional detailed deep diagnostics telemetry understand and address such incidents.  Azure then proceeds to power cycle the node as a final step in the recovery attempt. If the node fails to return to healthy state even after power cycle, the node will be taken out of production for investigation. At this stage, the VMs are service healed to a healthy node. In this such a scenario, the total time taken for detection, initially recovery effort, collection of diagnostics data, and the power cycle, can delay service healing in this specific scenario.</p>
+<p>Note: A delayed service healing could also be caused by a TOR failure, because then the communication between Host and Fabric could be impacted.</p></article>

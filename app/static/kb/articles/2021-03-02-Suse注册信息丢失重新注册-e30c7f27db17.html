@@ -1,0 +1,337 @@
+<article class="kb-article" data-title="Suse注册信息丢失重新注册"><h1>Suse注册信息丢失重新注册</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-03-02 10:10:32</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>工单ID：SR_2021021980273_[S500]zypper 401 Unauthorized</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>工单ID：SR_2021021980273_[S500]zypper 401 Unauthorized</li>
+</ul>
+<ul>
+<li>问题描述：suse的订阅注册信息丢失zypper ref报错，体统注册状态提示注册信息被删除</li>
+</ul>
+<ul>
+<li>用户尝试过并不能重新注册，在clearup阶段就开始报错</li>
+</ul>
+<ul>
+<li>self._raise_ssl_error(self._ssl, result)</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/OpenSSL/SSL.py&quot;, line 1454, in _raise_ssl_error</li>
+</ul>
+<ul>
+<li>_raise_current_error()</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/OpenSSL/_util.py&quot;, line 54, in exception_from_error_queue</li>
+</ul>
+<ul>
+<li>raise exception_type(errors)</li>
+</ul>
+<ul>
+<li>raise ssl.SSLError(&#39;bad handshake: %r&#39; % e)</li>
+</ul>
+<ul>
+<li>raise MaxRetryError(_pool, url, error or ResponseError(cause))</li>
+</ul>
+<ul>
+<li>raise SSLError(e, request=request)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>判断此问题是suse源的问题后通过邮件反馈到&#39;microsoftsupport@suse.com&#39;后问题解决。（发现我们邮箱似乎收不到suse邮箱发来的邮件）</li>
+</ul>
+<ul>
+<li>1. Stop the service:</li>
+</ul>
+<ul>
+<li>hostname:~ # systemctl stop guestregister.service</li>
+</ul>
+<ul>
+<li>3. Manually reregister</li>
+</ul>
+<ul>
+<li>hostname:~ # /usr/sbin/registercloudguest --force-new</li>
+</ul>
+<ul>
+<li>hostname:~ # zypper repos</li>
+</ul>
+<ul>
+<li>or</li>
+</ul>
+<ul>
+<li>hostname:~ # zypper lr</li>
+</ul>
+<ul>
+<li>如何处理SUSE构建密钥更新可参考SUSE官方KB:    Handling SUSE build key renewal | Support | SUSE</li>
+</ul>
+<ul>
+<li>Updating / installing...</li>
+</ul>
+<ul>
+<li>1:regionServiceClientConfigAzure-1.################################# [100%]</li>
+</ul>
+<ul>
+<li>salt:~ # registercloudguest --force-new</li>
+</ul>
+<ul>
+<li>Traceback (most recent call last):</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/urllib3/contrib/pyopenssl.py&quot;, line 456, in wrap_socket</li>
+</ul>
+<ul>
+<li>cnx.do_handshake()</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/OpenSSL/SSL.py&quot;, line 1714, in do_handshake</li>
+</ul>
+<ul>
+<li>During handling of the above exception, another exception occurred:</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/urllib3/connectionpool.py&quot;, line 600, in urlopen</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/urllib3/connectionpool.py&quot;, line 343, in _make_request</li>
+</ul>
+<ul>
+<li>conn.connect()</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/urllib3/connection.py&quot;, line 344, in connect</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/urllib3/util/ssl_.py&quot;, line 345, in ssl_wrap_socket</li>
+</ul>
+<ul>
+<li>return context.wrap_socket(sock, server_hostname=server_hostname)</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/urllib3/contrib/pyopenssl.py&quot;, line 462, in wrap_socket</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/requests/adapters.py&quot;, line 449, in send</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/urllib3/connectionpool.py&quot;, line 638, in urlopen</li>
+</ul>
+<ul>
+<li>_stacktrace=sys.exc_info()[2])</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/urllib3/util/retry.py&quot;, line 399, in increment</li>
+</ul>
+<ul>
+<li>File &quot;/usr/sbin/registercloudguest&quot;, line 481, in &lt;module&gt;</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/requests/api.py&quot;, line 75, in get</li>
+</ul>
+<ul>
+<li>return request(&#39;get&#39;, url, params=params, **kwargs)</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/requests/api.py&quot;, line 60, in request</li>
+</ul>
+<ul>
+<li>return session.request(method=method, url=url, **kwargs)</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/requests/sessions.py&quot;, line 533, in request</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/requests/sessions.py&quot;, line 646, in send</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/requests/adapters.py&quot;, line 514, in send</li>
+</ul>
+<ul>
+<li>zypper install --force python3-certifi</li>
+</ul>
+<ul>
+<li>registercloudguest --force-new</li>
+</ul>
+<ul>
+<li>rpm -Uvh --force regionServiceClientConfigAzure-1.0.4-3.9.1.noarch.rpm</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>创建与用户一样版本的SUSE 12 SP4的镜像复现了zypper ref报错的问题。使用SUSEConnect –status可以查看当前suse订阅的注册状态。如下所示，我的suse注册状态是已注册的。</li>
+</ul>
+<ul>
+<li>随后用户验证发现他的系统无法查看注册信息，报上方截图中的认证被删除的提示，需要进行重新注册。</li>
+</ul>
+<ul>
+<li>4. Check for configured repositories:</li>
+</ul>
+<ul>
+<li>然后再次尝试执行SUSEConnect –status查看。</li>
+</ul>
+<ul>
+<li>用户反馈在执行步骤3时会卡住。且最终无法重新注册。</li>
+</ul>
+<ul>
+<li>OpenSSL.SSL.Error: [(&#39;SSL routines&#39;, &#39;ssl3_get_server_certificate&#39;, &#39;certificate verify failed&#39;)]</li>
+</ul>
+<ul>
+<li>self._validate_conn(conn)</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python3.4/site-packages/urllib3/connectionpool.py&quot;, line 839, in _validate_conn</li>
+</ul>
+<ul>
+<li>ssl.SSLError: (&quot;bad handshake: Error([(&#39;SSL routines&#39;, &#39;ssl3_get_server_certificate&#39;, &#39;certificate verify failed&#39;)],)&quot;,)</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如果上述命令出现问题，继续执行以下操作：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>chunked=chunked)</li>
+</ul>
+<ul>
+<li>ssl_context=context)</li>
+</ul>
+<ul>
+<li>timeout=timeout</li>
+</ul>
+<ul>
+<li>headers=headers</li>
+</ul>
+<ul>
+<li>resp = self.send(prep, **send_kwargs)</li>
+</ul>
+<ul>
+<li>r = adapter.send(request, **kwargs)</li>
+</ul>
+<ul>
+<li>export REQUESTS_CA_BUNDLE=/etc/ssl/ca-bundle.pem</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host=&#39;smt-azure.susecloud.net&#39;, port=443): Max retries exceeded with url: /connect/systems/products?identifier=sles&amp;version=12.4&amp;arch=x86_64 (Caused by SSLError(SSLError(&quot;bad handshake: Error([(&#39;SSL routines&#39;, &#39;ssl3_get_server_certificate&#39;, &#39;certificate verify failed&#39;)],)&quot;,),))</li>
+</ul>
+<ul>
+<li>requests.exceptions.SSLError: HTTPSConnectionPool(host=&#39;smt-azure.susecloud.net&#39;, port=443): Max retries exceeded with url: /connect/systems/products?identifier=sles&amp;version=12.4&amp;arch=x86_64 (Caused by SSLError(SSLError(&quot;bad handshake: Error([(&#39;SSL routines&#39;, &#39;ssl3_get_server_certificate&#39;, &#39;certificate verify failed&#39;)],)&quot;,),))</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>建议用户执行如下操作</li>
+</ul>
+<ul>
+<li>目前建议您可以先尝试如下步骤：</li>
+</ul>
+<ul>
+<li>2. Disable the service:</li>
+</ul>
+<ul>
+<li>hostname:~ # systemctl disable guestregister.service</li>
+</ul>
+<ul>
+<li>之后得到SUSE响应建议用户执行SUSEConnect –cleanup，然后使用有效的订阅重新注册。</li>
+</ul>
+<ul>
+<li>随后Suse建议用户使用下载rpm的方式进行重新注册，安装rpm之后，运行 registercloudguest --force-new 有以下报错：</li>
+</ul>
+<ul>
+<li>SUSE判断系统之前应该是使用了PIP安装了一个叫Certifi的包，导致系统查找证书时找到错误的位置了。所以建议用户执行以下操作。</li>
+</ul>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>从<a href="https://suse.my.salesforce.com/sfc/p/1i000000gLOd/a/1i000000ISuL/bKB8TjISshqRHT_A12sosrUfU_GF1d00Tfl7FywKdac" target="_blank" rel="noopener">https://suse.my.salesforce.com/sfc/p/1i000000gLOd/a/1i000000ISuL/bKB8TjISshqRHT_A12sosrUfU_GF1d00Tfl7FywKdac</a> 下载rpm文件到虚拟机内，然后运行以下命令：</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/3/2</p>
+<p>工单ID：SR_2021021980273_[S500]zypper 401 Unauthorized</p>
+<p>问题描述：suse的订阅注册信息丢失zypper ref报错，体统注册状态提示注册信息被删除</p>
+<p>排查过程：</p>
+<p>创建与用户一样版本的SUSE 12 SP4的镜像复现了zypper ref报错的问题。使用SUSEConnect –status可以查看当前suse订阅的注册状态。如下所示，我的suse注册状态是已注册的。</p>
+<p>判断此问题是suse源的问题后通过邮件反馈到&#39;microsoftsupport@suse.com&#39;后问题解决。（发现我们邮箱似乎收不到suse邮箱发来的邮件）</p>
+<p>随后用户验证发现他的系统无法查看注册信息，报上方截图中的认证被删除的提示，需要进行重新注册。</p>
+<p>建议用户执行如下操作</p>
+<p>目前建议您可以先尝试如下步骤：</p>
+<p>1. Stop the service:</p>
+<p>hostname:~ # systemctl stop guestregister.service</p>
+<p>2. Disable the service:</p>
+<p>hostname:~ # systemctl disable guestregister.service</p>
+<p>3. Manually reregister</p>
+<p>hostname:~ # /usr/sbin/registercloudguest --force-new</p>
+<p>4. Check for configured repositories:</p>
+<p>hostname:~ # zypper repos</p>
+<p>or</p>
+<p>hostname:~ # zypper lr</p>
+<p>然后再次尝试执行SUSEConnect –status查看。</p>
+<p>用户反馈在执行步骤3时会卡住。且最终无法重新注册。</p>
+<p>之后得到SUSE响应建议用户执行SUSEConnect –cleanup，然后使用有效的订阅重新注册。</p>
+<p>如何处理SUSE构建密钥更新可参考SUSE官方KB:    Handling SUSE build key renewal | Support | SUSE</p>
+<p>用户尝试过并不能重新注册，在clearup阶段就开始报错</p>
+<p>随后Suse建议用户使用下载rpm的方式进行重新注册，安装rpm之后，运行 registercloudguest --force-new 有以下报错：</p>
+<p>Updating / installing...</p>
+<p>1:regionServiceClientConfigAzure-1.################################# [100%]</p>
+<p>salt:~ # registercloudguest --force-new</p>
+<p>Traceback (most recent call last):</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/urllib3/contrib/pyopenssl.py&quot;, line 456, in wrap_socket</p>
+<p>cnx.do_handshake()</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/OpenSSL/SSL.py&quot;, line 1714, in do_handshake</p>
+<p>self._raise_ssl_error(self._ssl, result)</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/OpenSSL/SSL.py&quot;, line 1454, in _raise_ssl_error</p>
+<p>_raise_current_error()</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/OpenSSL/_util.py&quot;, line 54, in exception_from_error_queue</p>
+<p>raise exception_type(errors)</p>
+<p>OpenSSL.SSL.Error: [(&#39;SSL routines&#39;, &#39;ssl3_get_server_certificate&#39;, &#39;certificate verify failed&#39;)]</p>
+<p>During handling of the above exception, another exception occurred:</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/urllib3/connectionpool.py&quot;, line 600, in urlopen</p>
+<p>chunked=chunked)</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/urllib3/connectionpool.py&quot;, line 343, in _make_request</p>
+<p>self._validate_conn(conn)</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/urllib3/connectionpool.py&quot;, line 839, in _validate_conn</p>
+<p>conn.connect()</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/urllib3/connection.py&quot;, line 344, in connect</p>
+<p>ssl_context=context)</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/urllib3/util/ssl_.py&quot;, line 345, in ssl_wrap_socket</p>
+<p>return context.wrap_socket(sock, server_hostname=server_hostname)</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/urllib3/contrib/pyopenssl.py&quot;, line 462, in wrap_socket</p>
+<p>raise ssl.SSLError(&#39;bad handshake: %r&#39; % e)</p>
+<p>ssl.SSLError: (&quot;bad handshake: Error([(&#39;SSL routines&#39;, &#39;ssl3_get_server_certificate&#39;, &#39;certificate verify failed&#39;)],)&quot;,)</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/requests/adapters.py&quot;, line 449, in send</p>
+<p>timeout=timeout</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/urllib3/connectionpool.py&quot;, line 638, in urlopen</p>
+<p>_stacktrace=sys.exc_info()[2])</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/urllib3/util/retry.py&quot;, line 399, in increment</p>
+<p>raise MaxRetryError(_pool, url, error or ResponseError(cause))</p>
+<p>urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host=&#39;smt-azure.susecloud.net&#39;, port=443): Max retries exceeded with url: /connect/systems/products?identifier=sles&amp;version=12.4&amp;arch=x86_64 (Caused by SSLError(SSLError(&quot;bad handshake: Error([(&#39;SSL routines&#39;, &#39;ssl3_get_server_certificate&#39;, &#39;certificate verify failed&#39;)],)&quot;,),))</p>
+<p>File &quot;/usr/sbin/registercloudguest&quot;, line 481, in &lt;module&gt;</p>
+<p>headers=headers</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/requests/api.py&quot;, line 75, in get</p>
+<p>return request(&#39;get&#39;, url, params=params, **kwargs)</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/requests/api.py&quot;, line 60, in request</p>
+<p>return session.request(method=method, url=url, **kwargs)</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/requests/sessions.py&quot;, line 533, in request</p>
+<p>resp = self.send(prep, **send_kwargs)</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/requests/sessions.py&quot;, line 646, in send</p>
+<p>r = adapter.send(request, **kwargs)</p>
+<p>File &quot;/usr/lib/python3.4/site-packages/requests/adapters.py&quot;, line 514, in send</p>
+<p>raise SSLError(e, request=request)</p>
+<p>requests.exceptions.SSLError: HTTPSConnectionPool(host=&#39;smt-azure.susecloud.net&#39;, port=443): Max retries exceeded with url: /connect/systems/products?identifier=sles&amp;version=12.4&amp;arch=x86_64 (Caused by SSLError(SSLError(&quot;bad handshake: Error([(&#39;SSL routines&#39;, &#39;ssl3_get_server_certificate&#39;, &#39;certificate verify failed&#39;)],)&quot;,),))</p>
+<p>SUSE判断系统之前应该是使用了PIP安装了一个叫Certifi的包，导致系统查找证书时找到错误的位置了。所以建议用户执行以下操作。</p>
+<p>export REQUESTS_CA_BUNDLE=/etc/ssl/ca-bundle.pem</p>
+<p>zypper install --force python3-certifi</p>
+<p>registercloudguest --force-new</p>
+<p>解决方案：</p>
+<p>从<a href="https://suse.my.salesforce.com/sfc/p/1i000000gLOd/a/1i000000ISuL/bKB8TjISshqRHT_A12sosrUfU_GF1d00Tfl7FywKdac" target="_blank" rel="noopener">https://suse.my.salesforce.com/sfc/p/1i000000gLOd/a/1i000000ISuL/bKB8TjISshqRHT_A12sosrUfU_GF1d00Tfl7FywKdac</a> 下载rpm文件到虚拟机内，然后运行以下命令：</p>
+<p>rpm -Uvh --force regionServiceClientConfigAzure-1.0.4-3.9.1.noarch.rpm</p>
+<p>如果上述命令出现问题，继续执行以下操作：</p></article>

@@ -1,0 +1,112 @@
+<article class="kb-article" data-title="Aks 群集节点开启Swap分区"><h1>Aks 群集节点开启Swap分区</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-07 13:08:29</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>配置步骤如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>配置步骤如下：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>创建过程具体输出： 如下黄色部分显示创建了 &quot;swapFileSizeMb&quot;: 1500 ：</li>
+</ul>
+<ul>
+<li>==================</li>
+</ul>
+<ul>
+<li>[root@centos821 ~]# az aks create --name aksswap1 --resource-group aks --kubelet-config ./kubeletconfig.json --linux-os-config ./linuxosconfig.json</li>
+</ul>
+<ul>
+<li>The behavior of this command has been altered by the following extension: aks-preview</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>……</li>
+</ul>
+<ul>
+<li>&quot;kubeletDiskType&quot;: &quot;OS&quot;,</li>
+</ul>
+<ul>
+<li>&quot;linuxOsConfig&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;swapFileSizeMb&quot;: 1500,</li>
+</ul>
+<ul>
+<li>&quot;sysctls&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;fsAioMaxNr&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;tags&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;Microsoft.ContainerService/ManagedClusters&quot;,</li>
+</ul>
+<ul>
+<li>&quot;windowsProfile&quot;: null</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>针对文档自定义 node 配置，就是给 node 配置 swap 交互分区，测试结果是成功的，请您参考。</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>配置步骤如下：</li>
+</ul>
+<ul>
+<li>创建成功后，登录 node 查看， swap 的情况，可以看到 swap 数值为与配置值基本一致：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/custom-node-configuration" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/custom-node-configuration</a></li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.io/docs/concepts/architecture/nodes/#swap-memory" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/architecture/nodes/#swap-memory</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/4/7</p>
+<p>配置步骤如下：</p>
+<p>创建过程具体输出： 如下黄色部分显示创建了 &quot;swapFileSizeMb&quot;: 1500 ：</p>
+<p>==================</p>
+<p>[root@centos821 ~]# az aks create --name aksswap1 --resource-group aks --kubelet-config ./kubeletconfig.json --linux-os-config ./linuxosconfig.json</p>
+<p>The behavior of this command has been altered by the following extension: aks-preview</p>
+<p>{</p>
+<p>……</p>
+<p>&quot;kubeletDiskType&quot;: &quot;OS&quot;,</p>
+<p>&quot;linuxOsConfig&quot;: {</p>
+<p>&quot;swapFileSizeMb&quot;: 1500,</p>
+<p>&quot;sysctls&quot;: {</p>
+<p>&quot;fsAioMaxNr&quot;: null,</p>
+<p>&quot;tags&quot;: null,</p>
+<p>&quot;type&quot;: &quot;Microsoft.ContainerService/ManagedClusters&quot;,</p>
+<p>&quot;windowsProfile&quot;: null</p>
+<p>}</p>
+<p>创建成功后，登录 node 查看， swap 的情况，可以看到 swap 数值为与配置值基本一致：</p>
+<p>针对文档自定义 node 配置，就是给 node 配置 swap 交互分区，测试结果是成功的，请您参考。</p>
+<p>参考文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/custom-node-configuration" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/custom-node-configuration</a></p>
+<p><a href="https://kubernetes.io/docs/concepts/architecture/nodes/#swap-memory" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/architecture/nodes/#swap-memory</a></p></article>

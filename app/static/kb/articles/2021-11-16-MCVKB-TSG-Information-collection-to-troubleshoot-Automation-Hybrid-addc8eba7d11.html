@@ -1,0 +1,377 @@
+<article class="kb-article" data-title="[MCVKB][TSG] Information collection to troubleshoot Automation Hybrid worker related issues"><h1>[MCVKB][TSG] Information collection to troubleshoot Automation Hybrid worker related issues</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2021-11-16 18:20:43</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Hi team,</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Hi team,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi team,</li>
+</ul>
+<ul>
+<li>Sample query:</li>
+</ul>
+<ul>
+<li>EtwAll</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP between (StartTime .. EndTime)</li>
+</ul>
+<ul>
+<li>| where * contains JobID</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP, TaskName, EventMessage, Message</li>
+</ul>
+<ul>
+<li>| limit 10000</li>
+</ul>
+<ul>
+<li>Collect Automation account ID.</li>
+</ul>
+<ul>
+<li>EtwSubscriptionIdAccountNameAccountId</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt; ago(1d)</li>
+</ul>
+<ul>
+<li>| where subscriptionId  == subId</li>
+</ul>
+<ul>
+<li>| where accountName == AccountName</li>
+</ul>
+<ul>
+<li>| distinct accountId</li>
+</ul>
+<ul>
+<li>Collect hybrid worker machine name &amp; ID.</li>
+</ul>
+<ul>
+<li>JRDSEtwHybridWorkerPing</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP between (START .. END)</li>
+</ul>
+<ul>
+<li>| where accountId == AAID</li>
+</ul>
+<ul>
+<li>| limit ROWLIMIT</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP, workerGroup, machineId, machineName, workerVersion, SourceNamespace</li>
+</ul>
+<ul>
+<li>TIMESTAMP</li>
+</ul>
+<ul>
+<li>workerGroup</li>
+</ul>
+<ul>
+<li>machineId</li>
+</ul>
+<ul>
+<li>machineName</li>
+</ul>
+<ul>
+<li>workerVersion</li>
+</ul>
+<ul>
+<li>SourceNamespace</li>
+</ul>
+<ul>
+<li>2020-06-29 06:25:15.5678251</li>
+</ul>
+<ul>
+<li>cheshhybridgroup</li>
+</ul>
+<ul>
+<li>058ed206-f745-494f-b88b-66f18a55eb98</li>
+</ul>
+<ul>
+<li>cheshdv3</li>
+</ul>
+<ul>
+<li>7.3.837.0</li>
+</ul>
+<ul>
+<li>OaaSMKJrdsSha2s1</li>
+</ul>
+<ul>
+<li>2020-06-29 06:25:45.5910574</li>
+</ul>
+<ul>
+<li>Confirm the hybrid worker has heartbeat with automation service, make sure that the string is continuous. If not, confirm with customer if the hybrid worker was deallocated or stopped.</li>
+</ul>
+<ul>
+<li>| where workerGroup == WORKERGROUP</li>
+</ul>
+<ul>
+<li>| where machineId == MACHINEID</li>
+</ul>
+<ul>
+<li>| summarize event_count=count() by bin(TIMESTAMP, 30s)</li>
+</ul>
+<ul>
+<li>| render timechart</li>
+</ul>
+<ul>
+<li>Heartbeat</li>
+</ul>
+<ul>
+<li>| where Computer == &quot;cheshdv3&quot;</li>
+</ul>
+<ul>
+<li>| where TimeGenerated &gt;= ago(1d) //start time</li>
+</ul>
+<ul>
+<li>| where TimeGenerated &lt;= now() // end time</li>
+</ul>
+<ul>
+<li>| summarize event_count=count() by bin(TimeGenerated, 1m)</li>
+</ul>
+<ul>
+<li>Other information needed (must collect):</li>
+</ul>
+<ul>
+<li>Subscription ID:</li>
+</ul>
+<ul>
+<li>Automation Account Name:</li>
+</ul>
+<ul>
+<li>Automation Account ID:</li>
+</ul>
+<ul>
+<li>Hybrid work group name:</li>
+</ul>
+<ul>
+<li>Machine name and machine ID:</li>
+</ul>
+<ul>
+<li>Job ID:</li>
+</ul>
+<ul>
+<li>Automation Account region:</li>
+</ul>
+<ul>
+<li>Windows machine or Linux machine - Microsoft Monitoring Agent version:</li>
+</ul>
+<ul>
+<li>Time zone of the hybrid worker:</li>
+</ul>
+<ul>
+<li>Best regards,</li>
+</ul>
+<ul>
+<li>Steve Shi | Support Escalation Engineer</li>
+</ul>
+<ul>
+<li>Customer Service and Support | Asia Pacific &amp; Greater China Region</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Recently we found the automation logs in Jarvis are not complete, which made it difficult for 21V members to finish initial troubleshoot.</li>
+</ul>
+<ul>
+<li>Please see the following TSG by leveraging Kusto:</li>
+</ul>
+<ul>
+<li>Cloud side logs:</li>
+</ul>
+<ul>
+<li>Kusto cluster for Automation:</li>
+</ul>
+<ul>
+<li>EtwAll logs.</li>
+</ul>
+<ul>
+<li>Confirm the hybrid worker has heartbeat with the associated Log Analytics workspace, make sure that the string is continuous.</li>
+</ul>
+<ul>
+<li>Linked Log Analytics workspace name and ID:</li>
+</ul>
+<ul>
+<li>On-prem side logs:</li>
+</ul>
+<ul>
+<li>Check Agent connectivity issue in following conditions:</li>
+</ul>
+<ul>
+<li>If you see no pings in JRDSEtwHybridPing table in Kusto.</li>
+</ul>
+<ul>
+<li>If you see registration failures logged in EtwAll logs.</li>
+</ul>
+<ul>
+<li>Check documents:</li>
+</ul>
+<ul>
+<li>For Linux servers, collect worker.log file under /home/nxautomation/run folder.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>let JobID = &quot;&lt;job id&gt;&quot;;</li>
+</ul>
+<ul>
+<li>let StartTime = datetime(6/22/2020 1:16:00 AM);</li>
+</ul>
+<ul>
+<li>let EndTime = datetime(6/29/2020 11:16:00 AM);</li>
+</ul>
+<ul>
+<li>let subId = &quot;&lt;Sub ID&gt;&quot;;</li>
+</ul>
+<ul>
+<li>let AccountName = &quot;&lt;Account name&gt;&quot;;</li>
+</ul>
+<ul>
+<li>let START = ago(1d);</li>
+</ul>
+<ul>
+<li>let END = now();</li>
+</ul>
+<ul>
+<li>let AAID = &quot;&lt;account ID&gt;&quot;;</li>
+</ul>
+<ul>
+<li>let ROWLIMIT = 100;</li>
+</ul>
+<ul>
+<li>let WORKERGROUP = &quot;&lt;work group name&gt;&quot;;</li>
+</ul>
+<ul>
+<li>let MACHINEID = &quot;&lt;machine ID&gt;&quot;;</li>
+</ul>
+<ul>
+<li>let ROWLIMIT = 500;</li>
+</ul>
+<ul>
+<li>For windows servers, collect AMALogs by asking customer to run the script with elevated PowerShell. The output will be saved in C:\CaseLogs\Caselogs-xxxxxx.zip file.</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Permission for CSS: Join security group Redmond\OaaSKustoGovUsers via IDweb.</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://oaasprodmc.chinanorth2.kusto.chinacloudapi.cn" target="_blank" rel="noopener">https://oaasprodmc.chinanorth2.kusto.chinacloudapi.cn</a></li>
+</ul>
+<ul>
+<li>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://oaasprodmc.chinanorth2.kusto.chinacloudapi.cn/oaasprodmc" target="_blank" rel="noopener">https://oaasprodmc.chinanorth2.kusto.chinacloudapi.cn/oaasprodmc</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/agent-windows-troubleshoot#connectivity-issues" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/agent-windows-troubleshoot#connectivity-issues</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/automation/automation-hybrid-runbook-worker#network-planning." target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/automation-hybrid-runbook-worker#network-planning.</a></li>
+</ul>
+<ul>
+<li>For CSS members, see more detailed information on <a href="https://supportability.visualstudio.com/AzureAutomation." target="_blank" rel="noopener">https://supportability.visualstudio.com/AzureAutomation.</a></li>
+</ul>
+<ul>
+<li>Office: +86-21-52638043 | www.microsoft.com/microsoftservices</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi team,</p>
+<p>Recently we found the automation logs in Jarvis are not complete, which made it difficult for 21V members to finish initial troubleshoot.</p>
+<p>Please see the following TSG by leveraging Kusto:</p>
+<p>Cloud side logs:</p>
+<p>Kusto cluster for Automation:</p>
+<p><a href="https://oaasprodmc.chinanorth2.kusto.chinacloudapi.cn" target="_blank" rel="noopener">https://oaasprodmc.chinanorth2.kusto.chinacloudapi.cn</a></p>
+<p>Permission for CSS: Join security group Redmond\OaaSKustoGovUsers via IDweb.</p>
+<p>EtwAll logs.</p>
+<p>Sample query:</p>
+<p>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://oaasprodmc.chinanorth2.kusto.chinacloudapi.cn/oaasprodmc" target="_blank" rel="noopener">https://oaasprodmc.chinanorth2.kusto.chinacloudapi.cn/oaasprodmc</a></p>
+<p>let JobID = &quot;&lt;job id&gt;&quot;;</p>
+<p>let StartTime = datetime(6/22/2020 1:16:00 AM);</p>
+<p>let EndTime = datetime(6/29/2020 11:16:00 AM);</p>
+<p>EtwAll</p>
+<p>| where TIMESTAMP between (StartTime .. EndTime)</p>
+<p>| where * contains JobID</p>
+<p>| project TIMESTAMP, TaskName, EventMessage, Message</p>
+<p>| limit 10000</p>
+<p>Collect Automation account ID.</p>
+<p>let subId = &quot;&lt;Sub ID&gt;&quot;;</p>
+<p>let AccountName = &quot;&lt;Account name&gt;&quot;;</p>
+<p>EtwSubscriptionIdAccountNameAccountId</p>
+<p>| where TIMESTAMP &gt; ago(1d)</p>
+<p>| where subscriptionId  == subId</p>
+<p>| where accountName == AccountName</p>
+<p>| distinct accountId</p>
+<p>Collect hybrid worker machine name &amp; ID.</p>
+<p>let START = ago(1d);</p>
+<p>let END = now();</p>
+<p>let AAID = &quot;&lt;account ID&gt;&quot;;</p>
+<p>let ROWLIMIT = 100;</p>
+<p>JRDSEtwHybridWorkerPing</p>
+<p>| where TIMESTAMP between (START .. END)</p>
+<p>| where accountId == AAID</p>
+<p>| limit ROWLIMIT</p>
+<p>| project TIMESTAMP, workerGroup, machineId, machineName, workerVersion, SourceNamespace</p>
+<p>TIMESTAMP</p>
+<p>workerGroup</p>
+<p>machineId</p>
+<p>machineName</p>
+<p>workerVersion</p>
+<p>SourceNamespace</p>
+<p>2020-06-29 06:25:15.5678251</p>
+<p>cheshhybridgroup</p>
+<p>058ed206-f745-494f-b88b-66f18a55eb98</p>
+<p>cheshdv3</p>
+<p>7.3.837.0</p>
+<p>OaaSMKJrdsSha2s1</p>
+<p>2020-06-29 06:25:45.5910574</p>
+<p>Confirm the hybrid worker has heartbeat with automation service, make sure that the string is continuous. If not, confirm with customer if the hybrid worker was deallocated or stopped.</p>
+<p>let WORKERGROUP = &quot;&lt;work group name&gt;&quot;;</p>
+<p>let MACHINEID = &quot;&lt;machine ID&gt;&quot;;</p>
+<p>let ROWLIMIT = 500;</p>
+<p>| where workerGroup == WORKERGROUP</p>
+<p>| where machineId == MACHINEID</p>
+<p>| summarize event_count=count() by bin(TIMESTAMP, 30s)</p>
+<p>| render timechart</p>
+<p>Confirm the hybrid worker has heartbeat with the associated Log Analytics workspace, make sure that the string is continuous.</p>
+<p>Heartbeat</p>
+<p>| where Computer == &quot;cheshdv3&quot;</p>
+<p>| where TimeGenerated &gt;= ago(1d) //start time</p>
+<p>| where TimeGenerated &lt;= now() // end time</p>
+<p>| summarize event_count=count() by bin(TimeGenerated, 1m)</p>
+<p>Other information needed (must collect):</p>
+<p>Subscription ID:</p>
+<p>Automation Account Name:</p>
+<p>Automation Account ID:</p>
+<p>Hybrid work group name:</p>
+<p>Machine name and machine ID:</p>
+<p>Job ID:</p>
+<p>Automation Account region:</p>
+<p>Windows machine or Linux machine - Microsoft Monitoring Agent version:</p>
+<p>Time zone of the hybrid worker:</p>
+<p>Linked Log Analytics workspace name and ID:</p>
+<p>On-prem side logs:</p>
+<p>Check Agent connectivity issue in following conditions:</p>
+<p>If you see no pings in JRDSEtwHybridPing table in Kusto.</p>
+<p>If you see registration failures logged in EtwAll logs.</p>
+<p>Check documents:</p>
+<p><a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/agent-windows-troubleshoot#connectivity-issues" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/agent-windows-troubleshoot#connectivity-issues</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/automation/automation-hybrid-runbook-worker#network-planning." target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/automation-hybrid-runbook-worker#network-planning.</a></p>
+<p>For windows servers, collect AMALogs by asking customer to run the script with elevated PowerShell. The output will be saved in C:\CaseLogs\Caselogs-xxxxxx.zip file.</p>
+<p>For Linux servers, collect worker.log file under /home/nxautomation/run folder.</p>
+<p>For CSS members, see more detailed information on <a href="https://supportability.visualstudio.com/AzureAutomation." target="_blank" rel="noopener">https://supportability.visualstudio.com/AzureAutomation.</a></p>
+<p>Best regards,</p>
+<p>Steve Shi | Support Escalation Engineer</p>
+<p>Customer Service and Support | Asia Pacific &amp; Greater China Region</p>
+<p>Office: +86-21-52638043 | www.microsoft.com/microsoftservices</p></article>

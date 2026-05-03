@@ -1,0 +1,111 @@
+<article class="kb-article" data-title="高级文件存储设置NFS文件共享测试"><h1>高级文件存储设置NFS文件共享测试</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-01-05 12:26:00</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>（存储资源管理器之类的工具将无法用于 NFS 共享，也无法在 Azure 门户中浏览 NFS 共享数据。目前不支持 AzCopy。）</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>（存储资源管理器之类的工具将无法用于 NFS 共享，也无法在 Azure 门户中浏览 NFS 共享数据。目前不支持 AzCopy。）</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang wenxin</li>
+</ul>
+<ul>
+<li>文件共享测试</li>
+</ul>
+<ul>
+<li>在中国东2和中国北2可以创建高级的File存储</li>
+</ul>
+<ul>
+<li>-ProviderNamespace Microsoft.Storage `</li>
+</ul>
+<ul>
+<li>-FeatureName AllowNfsFileShares</li>
+</ul>
+<ul>
+<li>添加文件共享并选择NFS模式</li>
+</ul>
+<ul>
+<li>之后需要设置如下才可以访问：</li>
+</ul>
+<ul>
+<li>设置专用连接</li>
+</ul>
+<ul>
+<li>禁用安全传输</li>
+</ul>
+<ul>
+<li>设置好后，一下以ubuntu为例安装nfs工具</li>
+</ul>
+<ul>
+<li>挂载NFS并测试</li>
+</ul>
+<ul>
+<li>默认no root squash可以修改权限</li>
+</ul>
+<ul>
+<li>root squash目前测试不能更改权限</li>
+</ul>
+<ul>
+<li>All squash也可以更改权限</li>
+</ul>
+<ul>
+<li>先关说明如下：</li>
+</ul>
+<ul>
+<li>no_root_squash 访问共享目录时，用户如果是root权限，对共享目录也具有root权限（最好不要设置，增加服务安全隐患，稍后再提）</li>
+</ul>
+<ul>
+<li>root_squash 如果访问共享目录是root的权限用户，对共享目录的权限会被压缩为用户的权</li>
+</ul>
+<ul>
+<li>all_squash 不管你访问共享目录的用户是谁，都必须压缩为nfsnobody用户的权限</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>确认已经注册资源提供程序</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Get-AzProviderFeature `</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考：<a href="https://docs.microsoft.com/zh-cn/azure/storage/files/storage-files-how-to-create-nfs-shares?tabs=azure-portal" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/files/storage-files-how-to-create-nfs-shares?tabs=azure-portal</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang wenxin</p>
+<p>文件共享测试</p>
+<p>参考：<a href="https://docs.microsoft.com/zh-cn/azure/storage/files/storage-files-how-to-create-nfs-shares?tabs=azure-portal" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/files/storage-files-how-to-create-nfs-shares?tabs=azure-portal</a></p>
+<p>在中国东2和中国北2可以创建高级的File存储</p>
+<p>确认已经注册资源提供程序</p>
+<p>Get-AzProviderFeature `</p>
+<p>-ProviderNamespace Microsoft.Storage `</p>
+<p>-FeatureName AllowNfsFileShares</p>
+<p>添加文件共享并选择NFS模式</p>
+<p>（存储资源管理器之类的工具将无法用于 NFS 共享，也无法在 Azure 门户中浏览 NFS 共享数据。目前不支持 AzCopy。）</p>
+<p>之后需要设置如下才可以访问：</p>
+<p>设置专用连接</p>
+<p>禁用安全传输</p>
+<p>设置好后，一下以ubuntu为例安装nfs工具</p>
+<p>挂载NFS并测试</p>
+<p>默认no root squash可以修改权限</p>
+<p>root squash目前测试不能更改权限</p>
+<p>All squash也可以更改权限</p>
+<p>先关说明如下：</p>
+<p>no_root_squash 访问共享目录时，用户如果是root权限，对共享目录也具有root权限（最好不要设置，增加服务安全隐患，稍后再提）</p>
+<p>root_squash 如果访问共享目录是root的权限用户，对共享目录的权限会被压缩为用户的权</p>
+<p>all_squash 不管你访问共享目录的用户是谁，都必须压缩为nfsnobody用户的权限</p></article>

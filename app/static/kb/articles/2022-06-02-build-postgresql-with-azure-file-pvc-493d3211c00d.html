@@ -1,0 +1,378 @@
+<article class="kb-article" data-title="build postgresql with azure file pvc"><h1>build postgresql with azure file pvc</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: Bug</li>
+<li>最近修改: 2022-06-02 20:32:32</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_20211012125459</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_20211012125459</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_20211012125459</li>
+</ul>
+<ul>
+<li>客户使用 azure file 作为pvc 在aks 中 搭建 postgresql ，</li>
+</ul>
+<ul>
+<li>pvc 挂载目录为/var/lib/postgresql</li>
+</ul>
+<ul>
+<li>postgresql的数据目录为/var/lib/postgresql/data</li>
+</ul>
+<ul>
+<li>postgresql数据库可以正常使用</li>
+</ul>
+<ul>
+<li>但在Storage accounts-file 里没有任何文件，只有data空目录</li>
+</ul>
+<ul>
+<li>使用如下yaml 可以复现客户的问题</li>
+</ul>
+<ul>
+<li>cat azure-file-sc2.yaml</li>
+</ul>
+<ul>
+<li>kind: StorageClass</li>
+</ul>
+<ul>
+<li>apiVersion: storage.k8s.io/v1</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: cx-disk2</li>
+</ul>
+<ul>
+<li>provisioner: kubernetes.io/azure-file</li>
+</ul>
+<ul>
+<li>mountOptions:</li>
+</ul>
+<ul>
+<li>- dir_mode=0777</li>
+</ul>
+<ul>
+<li>- file_mode=0777</li>
+</ul>
+<ul>
+<li>- uid=000</li>
+</ul>
+<ul>
+<li>- gid=000</li>
+</ul>
+<ul>
+<li>- mfsymlinks</li>
+</ul>
+<ul>
+<li>- cache=strict</li>
+</ul>
+<ul>
+<li>- actimeo=30</li>
+</ul>
+<ul>
+<li>parameters:</li>
+</ul>
+<ul>
+<li>cat azure-file-pvc2.yaml</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: PersistentVolumeClaim</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>accessModes:</li>
+</ul>
+<ul>
+<li>- ReadWriteMany</li>
+</ul>
+<ul>
+<li>storageClassName: cx-disk2</li>
+</ul>
+<ul>
+<li>resources:</li>
+</ul>
+<ul>
+<li>requests:</li>
+</ul>
+<ul>
+<li>storage: 5Gi</li>
+</ul>
+<ul>
+<li>cat cx-pvc-files2.yaml</li>
+</ul>
+<ul>
+<li>kind: Pod</li>
+</ul>
+<ul>
+<li>name: cx-pg2</li>
+</ul>
+<ul>
+<li>containers:</li>
+</ul>
+<ul>
+<li>- name: cx-pg2</li>
+</ul>
+<ul>
+<li>image: postgres:latest</li>
+</ul>
+<ul>
+<li>cpu: 100m</li>
+</ul>
+<ul>
+<li>memory: 128Mi</li>
+</ul>
+<ul>
+<li>limits:</li>
+</ul>
+<ul>
+<li>cpu: 250m</li>
+</ul>
+<ul>
+<li>memory: 256Mi</li>
+</ul>
+<ul>
+<li>env:</li>
+</ul>
+<ul>
+<li>- name: POSTGRES_USER</li>
+</ul>
+<ul>
+<li>value: pgbench</li>
+</ul>
+<ul>
+<li>- name: PGUSER</li>
+</ul>
+<ul>
+<li>- name: POSTGRES_PASSWORD</li>
+</ul>
+<ul>
+<li>value: admin123</li>
+</ul>
+<ul>
+<li>- name: PGBENCH_PASSWORD</li>
+</ul>
+<ul>
+<li>value: superpostgres</li>
+</ul>
+<ul>
+<li>- name: PGDATA</li>
+</ul>
+<ul>
+<li>value: /var/lib/postgresql</li>
+</ul>
+<ul>
+<li>volumeMounts:</li>
+</ul>
+<ul>
+<li>- mountPath: /var/lib/postgresql</li>
+</ul>
+<ul>
+<li>name: volume</li>
+</ul>
+<ul>
+<li>volumes:</li>
+</ul>
+<ul>
+<li>- name: volume</li>
+</ul>
+<ul>
+<li>persistentVolumeClaim:</li>
+</ul>
+<ul>
+<li>claimName: cx-disk2</li>
+</ul>
+<ul>
+<li>根据github和stackoverflow的相关文章，Azure file 对于PostgreSQL支持有问题。</li>
+</ul>
+<ul>
+<li>PostgreSQL does not work with Azure file. This is because PostgreSQL requires hard links in the Azure File directory, and since Azure File does not support hard links the pod fails to start.</li>
+</ul>
+<ul>
+<li>使用 azure disk 并 使用 subPath 才可以完成 PostgreSQL  PVC 对azure disk  的配置</li>
+</ul>
+<ul>
+<li>cat cx-pg-disk1.yaml</li>
+</ul>
+<ul>
+<li>name: cx-pg-disk1</li>
+</ul>
+<ul>
+<li>- name: cx-pg-disk1</li>
+</ul>
+<ul>
+<li>value: /var/lib/postgresql/data/pgdata</li>
+</ul>
+<ul>
+<li>- mountPath: /var/lib/postgresql/data</li>
+</ul>
+<ul>
+<li>subPath: pgdata</li>
+</ul>
+<ul>
+<li>azureDisk:</li>
+</ul>
+<ul>
+<li>kind: Managed</li>
+</ul>
+<ul>
+<li>diskName: pgdisk</li>
+</ul>
+<ul>
+<li>在pod中dd 1G文件在/var/lib/postgresql/data/pgdata/111.test中，文件写入azure disk 挂载盘中，并未写入pod的根中。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在挂载目录 /var/lib/postgresql/data 下 dd 1GB文件 ，通过df查看写在了pod /下，未写在 存储账户中</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>skuName: Standard_LRS</li>
+</ul>
+<ul>
+<li>diskURI: /subscriptions/fb8c917d-c54c-4ce0-88a2-a9ca5a54c9a2/resourceGroups/MC_jasonrg_aks_chinanorth2/providers/Microsoft.Compute/disks/pgdisk1</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://stackoverflow.com/questions/47101940/using-azure-file-storage-with-kubernetes-and-azure-container-service-aks-per" target="_blank" rel="noopener">https://stackoverflow.com/questions/47101940/using-azure-file-storage-with-kubernetes-and-azure-container-service-aks-per</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/docker-library/postgres/issues/548" target="_blank" rel="noopener">https://github.com/docker-library/postgres/issues/548</a></li>
+</ul>
+<ul>
+<li>参考文章 <a href="https://stackoverflow.com/questions/65347707/mount-azure-disk-to-azure-kubernetes-for-postgresql-pod" target="_blank" rel="noopener">https://stackoverflow.com/questions/65347707/mount-azure-disk-to-azure-kubernetes-for-postgresql-pod</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_20211012125459</p>
+<p>客户使用 azure file 作为pvc 在aks 中 搭建 postgresql ，</p>
+<p>pvc 挂载目录为/var/lib/postgresql</p>
+<p>postgresql的数据目录为/var/lib/postgresql/data</p>
+<p>postgresql数据库可以正常使用</p>
+<p>但在Storage accounts-file 里没有任何文件，只有data空目录</p>
+<p>使用如下yaml 可以复现客户的问题</p>
+<p>cat azure-file-sc2.yaml</p>
+<p>kind: StorageClass</p>
+<p>apiVersion: storage.k8s.io/v1</p>
+<p>metadata:</p>
+<p>name: cx-disk2</p>
+<p>provisioner: kubernetes.io/azure-file</p>
+<p>mountOptions:</p>
+<ul>
+<li>dir_mode=0777</li>
+</ul>
+<ul>
+<li>file_mode=0777</li>
+</ul>
+<ul>
+<li>uid=000</li>
+</ul>
+<ul>
+<li>gid=000</li>
+</ul>
+<ul>
+<li>mfsymlinks</li>
+</ul>
+<ul>
+<li>cache=strict</li>
+</ul>
+<ul>
+<li>actimeo=30</li>
+</ul>
+<p>parameters:</p>
+<p>skuName: Standard_LRS</p>
+<p>cat azure-file-pvc2.yaml</p>
+<p>apiVersion: v1</p>
+<p>kind: PersistentVolumeClaim</p>
+<p>spec:</p>
+<p>accessModes:</p>
+<ul>
+<li>ReadWriteMany</li>
+</ul>
+<p>storageClassName: cx-disk2</p>
+<p>resources:</p>
+<p>requests:</p>
+<p>storage: 5Gi</p>
+<p>cat cx-pvc-files2.yaml</p>
+<p>kind: Pod</p>
+<p>name: cx-pg2</p>
+<p>containers:</p>
+<ul>
+<li>name: cx-pg2</li>
+</ul>
+<p>image: postgres:latest</p>
+<p>cpu: 100m</p>
+<p>memory: 128Mi</p>
+<p>limits:</p>
+<p>cpu: 250m</p>
+<p>memory: 256Mi</p>
+<p>env:</p>
+<ul>
+<li>name: POSTGRES_USER</li>
+</ul>
+<p>value: pgbench</p>
+<ul>
+<li>name: PGUSER</li>
+</ul>
+<ul>
+<li>name: POSTGRES_PASSWORD</li>
+</ul>
+<p>value: admin123</p>
+<ul>
+<li>name: PGBENCH_PASSWORD</li>
+</ul>
+<p>value: superpostgres</p>
+<ul>
+<li>name: PGDATA</li>
+</ul>
+<p>value: /var/lib/postgresql</p>
+<p>volumeMounts:</p>
+<ul>
+<li>mountPath: /var/lib/postgresql</li>
+</ul>
+<p>name: volume</p>
+<p>volumes:</p>
+<ul>
+<li>name: volume</li>
+</ul>
+<p>persistentVolumeClaim:</p>
+<p>claimName: cx-disk2</p>
+<p>在挂载目录 /var/lib/postgresql/data 下 dd 1GB文件 ，通过df查看写在了pod /下，未写在 存储账户中</p>
+<p>根据github和stackoverflow的相关文章，Azure file 对于PostgreSQL支持有问题。</p>
+<p><a href="https://stackoverflow.com/questions/47101940/using-azure-file-storage-with-kubernetes-and-azure-container-service-aks-per" target="_blank" rel="noopener">https://stackoverflow.com/questions/47101940/using-azure-file-storage-with-kubernetes-and-azure-container-service-aks-per</a></p>
+<p>PostgreSQL does not work with Azure file. This is because PostgreSQL requires hard links in the Azure File directory, and since Azure File does not support hard links the pod fails to start.</p>
+<p><a href="https://github.com/docker-library/postgres/issues/548" target="_blank" rel="noopener">https://github.com/docker-library/postgres/issues/548</a></p>
+<p>使用 azure disk 并 使用 subPath 才可以完成 PostgreSQL  PVC 对azure disk  的配置</p>
+<p>参考文章 <a href="https://stackoverflow.com/questions/65347707/mount-azure-disk-to-azure-kubernetes-for-postgresql-pod" target="_blank" rel="noopener">https://stackoverflow.com/questions/65347707/mount-azure-disk-to-azure-kubernetes-for-postgresql-pod</a></p>
+<p>cat cx-pg-disk1.yaml</p>
+<p>name: cx-pg-disk1</p>
+<ul>
+<li>name: cx-pg-disk1</li>
+</ul>
+<p>value: /var/lib/postgresql/data/pgdata</p>
+<ul>
+<li>mountPath: /var/lib/postgresql/data</li>
+</ul>
+<p>subPath: pgdata</p>
+<p>azureDisk:</p>
+<p>kind: Managed</p>
+<p>diskName: pgdisk</p>
+<p>diskURI: /subscriptions/fb8c917d-c54c-4ce0-88a2-a9ca5a54c9a2/resourceGroups/MC_jasonrg_aks_chinanorth2/providers/Microsoft.Compute/disks/pgdisk1</p>
+<p>在pod中dd 1G文件在/var/lib/postgresql/data/pgdata/111.test中，文件写入azure disk 挂载盘中，并未写入pod的根中。</p></article>

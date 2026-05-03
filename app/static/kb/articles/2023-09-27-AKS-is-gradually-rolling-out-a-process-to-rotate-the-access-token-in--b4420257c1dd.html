@@ -1,0 +1,116 @@
+<article class="kb-article" data-title="AKS is gradually rolling out a process to rotate the access token in the cluster kubeconfig credentials."><h1>AKS is gradually rolling out a process to rotate the access token in the cluster kubeconfig credentials.</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: Bug</li>
+<li>最近修改: 2023-09-27 16:05:05</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单SR_20230808245737_原config文件无法连接aks集群</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单SR_20230808245737_原config文件无法连接aks集群</li>
+</ul>
+<ul>
+<li>此问题出现在2023/8/8日下午，客户的多个集群都遇到了原config文件无法连接aks集群的问题。</li>
+</ul>
+<ul>
+<li>2 ．对于通知机制，我在github的issue上提交了下疑问。</li>
+</ul>
+<ul>
+<li>//| where level == &quot;error&quot;</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>具体请您参考以下文档：</li>
+</ul>
+<ul>
+<li>//群集活动状态日志消息</li>
+</ul>
+<ul>
+<li>union cluster(&quot;akscn&quot;).database(&quot;AKSprod&quot;).FrontEndContextActivity,cluster(&quot;akscn&quot;).database(&quot;AKSprod&quot;).AsyncContextActivity,cluster(&quot;akscn&quot;).database(&quot;AKSprod&quot;).HcpAsyncContextActivity //union HcpAsyncContextActivity,HcpSyncContextActivity</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt; datetime(2023-08-06 04:31:00.0000000) and PreciseTimeStamp &lt; datetime(2023-08-10 04:44:00.0000000)</li>
+</ul>
+<ul>
+<li>//| where TIMESTAMP &gt;= ago(4d)</li>
+</ul>
+<ul>
+<li>| where resourceName contains &quot;JP-MIDP-DEV-E2-AKS002&quot;</li>
+</ul>
+<ul>
+<li>| where subscriptionID contains &quot;98169ff5-8761-4eb4-a91d-02724512cafa&quot;</li>
+</ul>
+<ul>
+<li>//| where level != &quot;info&quot;</li>
+</ul>
+<ul>
+<li>//| where level != &quot;warning&quot;</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp+8h, resourceGroupName, resourceName, level, msg, httpMethod, correlationID</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>经确认，此情况是受平台正在推出的以下变更的影响。</li>
+</ul>
+<ul>
+<li>查看Github的Comment进展，AKS团队已经给出了回应，供您参考。</li>
+</ul>
+<ul>
+<li>Kusto查询</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用命令重新获取凭据后，可以连接AKS集群。</li>
+</ul>
+<ul>
+<li>az aks get-credentials --resource-group xx --name xx</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/Azure/AKS/issues/3753" target="_blank" rel="noopener">https://github.com/Azure/AKS/issues/3753</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/Azure/AKS/releases/tag/2023-05-14" target="_blank" rel="noopener">https://github.com/Azure/AKS/releases/tag/2023-05-14</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/09/27</p>
+<p>参考工单SR_20230808245737_原config文件无法连接aks集群</p>
+<p>问题描述：</p>
+<p>此问题出现在2023/8/8日下午，客户的多个集群都遇到了原config文件无法连接aks集群的问题。</p>
+<p>使用命令重新获取凭据后，可以连接AKS集群。</p>
+<p>az aks get-credentials --resource-group xx --name xx</p>
+<p>问题原因：</p>
+<p>经确认，此情况是受平台正在推出的以下变更的影响。</p>
+<p>具体请您参考以下文档：</p>
+<p><a href="https://github.com/Azure/AKS/issues/3753" target="_blank" rel="noopener">https://github.com/Azure/AKS/issues/3753</a></p>
+<p><a href="https://github.com/Azure/AKS/releases/tag/2023-05-14" target="_blank" rel="noopener">https://github.com/Azure/AKS/releases/tag/2023-05-14</a></p>
+<p>2 ．对于通知机制，我在github的issue上提交了下疑问。</p>
+<p>查看Github的Comment进展，AKS团队已经给出了回应，供您参考。</p>
+<p>Kusto查询</p>
+<p>//群集活动状态日志消息</p>
+<p>union cluster(&quot;akscn&quot;).database(&quot;AKSprod&quot;).FrontEndContextActivity,cluster(&quot;akscn&quot;).database(&quot;AKSprod&quot;).AsyncContextActivity,cluster(&quot;akscn&quot;).database(&quot;AKSprod&quot;).HcpAsyncContextActivity //union HcpAsyncContextActivity,HcpSyncContextActivity</p>
+<p>| where PreciseTimeStamp &gt; datetime(2023-08-06 04:31:00.0000000) and PreciseTimeStamp &lt; datetime(2023-08-10 04:44:00.0000000)</p>
+<p>//| where TIMESTAMP &gt;= ago(4d)</p>
+<p>| where resourceName contains &quot;JP-MIDP-DEV-E2-AKS002&quot;</p>
+<p>| where subscriptionID contains &quot;98169ff5-8761-4eb4-a91d-02724512cafa&quot;</p>
+<p>//| where level != &quot;info&quot;</p>
+<p>//| where level != &quot;warning&quot;</p>
+<p>//| where level == &quot;error&quot;</p>
+<p>| project PreciseTimeStamp+8h, resourceGroupName, resourceName, level, msg, httpMethod, correlationID</p></article>

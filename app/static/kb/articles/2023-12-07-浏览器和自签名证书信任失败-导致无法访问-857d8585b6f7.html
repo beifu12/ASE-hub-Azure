@@ -1,0 +1,92 @@
+<article class="kb-article" data-title="浏览器和自签名证书信任失败，导致无法访问"><h1>浏览器和自签名证书信任失败，导致无法访问</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-12-07 10:23:17</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>用户侧报错如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>用户侧报错如下：</li>
+</ul>
+<ul>
+<li>这个报错代表Client无法从任意一个Revocation server获取正确的SSL证书。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>120021821000130/NET/联想集团有限公司/SR_2020021806634_[TEC]上传的自证书在其他浏览器下都能用，在chrome下不能用</li>
+</ul>
+<ul>
+<li>您提供的证书有效期远大于现在、在此期间自签名证书只有签发方（即自己）能revoke；同时您在其他浏览器都可以用同一张证书访问、我们的测试环境配置信任证书列表后 IE/Edge/Firefox均可以正常访问，这些代表这张证书没有被Revoke、站点正常提供服务。</li>
+</ul>
+<ul>
+<li>在我们测试环境（Chrome 版本：80.0.3987.106，OS: Win10）中，IE/Edge/Firefox都可直接访问，显示站点已标识、连接已加密。</li>
+</ul>
+<ul>
+<li>总之，</li>
+</ul>
+<ul>
+<li>可以尝试在chrome://components/ 中更新CRLSet至最新版本、清除Chrome的cookie、关闭所有Chrome窗口、再启动并尝试访问。</li>
+</ul>
+<ul>
+<li>我的测试环境中CRLSet版本为5698（最新），Chrome 版本：80.0.3987.106（最新），OS: Win10。这个版本用目前证书访问后报警ERR_CERT_COMMON_NAME_INVALID，可以bypass访问，或修改自签名证书的SAN解决这个报警。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>Chrome提示报错（左图），但可以bypass后继续前往该站点，报错如下：“This server could not prove that it is pscd-support.lenovo.com; its security certificate does not specify Subject Alternative Names (SAN). This may be caused by a misconfiguration or an attacker intercepting your connection”。这代表这个自签名证书没有配置SAN被测试环境Chrome认为不安全。从证书看，的确没有设置主题备用名称（Subject Alternative Names）这个字段（右图）。</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>我们建议，</li>
+</ul>
+<ul>
+<li>如果仍然报错相同（ERR_CERT_REVOKED），可能和您Chrome版本和OS有关。如果方便，建议使用最新版本的Chrome浏览器（默认使用最新版CRLSet等配置）再尝试访问；</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>用户访问目标网站（<a href="https://pscd-support.lenovo.com/）时" target="_blank" rel="noopener">https://pscd-support.lenovo.com/）时</a> ，通过Chrome浏览器报错如下，通过其他浏览器访问正常，对此存在疑问希望排查是否证书正常或chrome浏览器如何需要调整。如果您对上述描述有任何疑问，或者需要补充，请随时与我联系。</li>
+</ul>
+<ul>
+<li>对于这张自签名证书为什么在Chrome不可用，由于这是Chrome/Google的安全逻辑，我们只能根据经验推测但无法确定，也花费了一些时间搜索，还望您理解。根据网上资料搜索，初步判断是部分版本Chrome+OS环境下 对不完善的自签名证书存在兼容/安全问题，参考论坛：<a href="https://bugs.chromium.org/p/chromium/issues/list?q=ERR_CERT_REVOKED&amp;can=1。" target="_blank" rel="noopener">https://bugs.chromium.org/p/chromium/issues/list?q=ERR_CERT_REVOKED&amp;can=1。</a></li>
+</ul>
+<ul>
+<li>缺少SAN会被部分安全逻辑判定为站点不可信，影响实际使用，如果希望了解更多SAN的说明可以参考这里：<a href="https://www.digicert.com/subject-alternative-name.htm。" target="_blank" rel="noopener">https://www.digicert.com/subject-alternative-name.htm。</a></li>
+</ul>
+<ul>
+<li>使用makecert创建的证书无法默认配置SAN字段，因此创建的自签名证书无法在所有浏览器通用，可以考虑使用openssl、powershell的New-SelfSignedCertificate等命令创建。参考自：<a href="https://stackoverflow.com/questions/6383054/add-or-create-subject-alternative-name-field-to-self-signed-certificate-using" target="_blank" rel="noopener">https://stackoverflow.com/questions/6383054/add-or-create-subject-alternative-name-field-to-self-signed-certificate-using</a></li>
+</ul>
+<ul>
+<li>Google会逐步更新CRLSet并使用更新的信任CA标准，参考案例：<a href="https://stackoverflow.com/questions/34364459/neterr-cert-revoked-in-chrome-when-the-certificate-is-not-actually-revoked，这会导致部分版本Chrome" target="_blank" rel="noopener">https://stackoverflow.com/questions/34364459/neterr-cert-revoked-in-chrome-when-the-certificate-is-not-actually-revoked，这会导致部分版本Chrome</a> + OS环境下，不完整的自签名证书报错不同，影响实际访问。</li>
+</ul>
+<ul>
+<li>目前我们确认证书可用、站点正常，由于这个报错取决于Chrome/Google的安全逻辑，建议您或配置这个证书的同事向Chrome论坛（比如<a href="https://bugs.chromium.org/）咨询是否有特殊设置，或我们未知的限制、来做对应修复。" target="_blank" rel="noopener">https://bugs.chromium.org/）咨询是否有特殊设置，或我们未知的限制、来做对应修复。</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020/03/04</p>
+<p>120021821000130/NET/联想集团有限公司/SR_2020021806634_[TEC]上传的自证书在其他浏览器下都能用，在chrome下不能用</p>
+<p>用户访问目标网站（<a href="https://pscd-support.lenovo.com/）时" target="_blank" rel="noopener">https://pscd-support.lenovo.com/）时</a> ，通过Chrome浏览器报错如下，通过其他浏览器访问正常，对此存在疑问希望排查是否证书正常或chrome浏览器如何需要调整。如果您对上述描述有任何疑问，或者需要补充，请随时与我联系。</p>
+<p>用户侧报错如下：</p>
+<p>这个报错代表Client无法从任意一个Revocation server获取正确的SSL证书。</p>
+<p>您提供的证书有效期远大于现在、在此期间自签名证书只有签发方（即自己）能revoke；同时您在其他浏览器都可以用同一张证书访问、我们的测试环境配置信任证书列表后 IE/Edge/Firefox均可以正常访问，这些代表这张证书没有被Revoke、站点正常提供服务。</p>
+<p>对于这张自签名证书为什么在Chrome不可用，由于这是Chrome/Google的安全逻辑，我们只能根据经验推测但无法确定，也花费了一些时间搜索，还望您理解。根据网上资料搜索，初步判断是部分版本Chrome+OS环境下 对不完善的自签名证书存在兼容/安全问题，参考论坛：<a href="https://bugs.chromium.org/p/chromium/issues/list?q=ERR_CERT_REVOKED&amp;can=1。" target="_blank" rel="noopener">https://bugs.chromium.org/p/chromium/issues/list?q=ERR_CERT_REVOKED&amp;can=1。</a></p>
+<p>在我们测试环境（Chrome 版本：80.0.3987.106，OS: Win10）中，IE/Edge/Firefox都可直接访问，显示站点已标识、连接已加密。</p>
+<p>Chrome提示报错（左图），但可以bypass后继续前往该站点，报错如下：“This server could not prove that it is pscd-support.lenovo.com; its security certificate does not specify Subject Alternative Names (SAN). This may be caused by a misconfiguration or an attacker intercepting your connection”。这代表这个自签名证书没有配置SAN被测试环境Chrome认为不安全。从证书看，的确没有设置主题备用名称（Subject Alternative Names）这个字段（右图）。</p>
+<p>缺少SAN会被部分安全逻辑判定为站点不可信，影响实际使用，如果希望了解更多SAN的说明可以参考这里：<a href="https://www.digicert.com/subject-alternative-name.htm。" target="_blank" rel="noopener">https://www.digicert.com/subject-alternative-name.htm。</a></p>
+<p>使用makecert创建的证书无法默认配置SAN字段，因此创建的自签名证书无法在所有浏览器通用，可以考虑使用openssl、powershell的New-SelfSignedCertificate等命令创建。参考自：<a href="https://stackoverflow.com/questions/6383054/add-or-create-subject-alternative-name-field-to-self-signed-certificate-using" target="_blank" rel="noopener">https://stackoverflow.com/questions/6383054/add-or-create-subject-alternative-name-field-to-self-signed-certificate-using</a></p>
+<p>总之，</p>
+<p>Google会逐步更新CRLSet并使用更新的信任CA标准，参考案例：<a href="https://stackoverflow.com/questions/34364459/neterr-cert-revoked-in-chrome-when-the-certificate-is-not-actually-revoked，这会导致部分版本Chrome" target="_blank" rel="noopener">https://stackoverflow.com/questions/34364459/neterr-cert-revoked-in-chrome-when-the-certificate-is-not-actually-revoked，这会导致部分版本Chrome</a> + OS环境下，不完整的自签名证书报错不同，影响实际访问。</p>
+<p>我们建议，</p>
+<p>可以尝试在chrome://components/ 中更新CRLSet至最新版本、清除Chrome的cookie、关闭所有Chrome窗口、再启动并尝试访问。</p>
+<p>如果仍然报错相同（ERR_CERT_REVOKED），可能和您Chrome版本和OS有关。如果方便，建议使用最新版本的Chrome浏览器（默认使用最新版CRLSet等配置）再尝试访问；</p>
+<p>我的测试环境中CRLSet版本为5698（最新），Chrome 版本：80.0.3987.106（最新），OS: Win10。这个版本用目前证书访问后报警ERR_CERT_COMMON_NAME_INVALID，可以bypass访问，或修改自签名证书的SAN解决这个报警。</p>
+<p>目前我们确认证书可用、站点正常，由于这个报错取决于Chrome/Google的安全逻辑，建议您或配置这个证书的同事向Chrome论坛（比如<a href="https://bugs.chromium.org/）咨询是否有特殊设置，或我们未知的限制、来做对应修复。" target="_blank" rel="noopener">https://bugs.chromium.org/）咨询是否有特殊设置，或我们未知的限制、来做对应修复。</a></p></article>

@@ -1,0 +1,190 @@
+<article class="kb-article" data-title="经典虚拟机迁移到ARM模式下-cloud service  name及VM Public IP是否会改变"><h1>经典虚拟机迁移到ARM模式下-cloud service  name及VM Public IP是否会改变</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2024-05-29 11:52:01</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2022.1.22</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2022.1.22</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2022.1.22</li>
+</ul>
+<ul>
+<li>相关工单：20220119144920</li>
+</ul>
+<ul>
+<li>用户问题：如将Classic VM迁移到ARM模式下，Cloud Service的DNS name是否会改变，虚拟机的公网ip是否会改变。</li>
+</ul>
+<ul>
+<li>按如下方法创建经典模式下的虚拟 机：</li>
+</ul>
+<ul>
+<li>经典虚拟的配置如下所示，网络部分为其新建了VNet、Subnet，可用性集没有启用，没安装任何扩展(extension)：</li>
+</ul>
+<ul>
+<li>经典虚拟机创建完成后虚拟机的概述以及IP配置情况，包含IP分配方式，注意如classic VM是在Cloud service中部署服务时创建的实例，则其没有VNet属性，没有专用IP配置：</li>
+</ul>
+<ul>
+<li>经典Cloud Service的概述：</li>
+</ul>
+<ul>
+<li>经典虚拟迁移到ARM的方法参考文档：</li>
+</ul>
+<ul>
+<li>Select-AzSubscription –SubscriptionName &quot;My Azure Subscription&quot;   #如账号下有多个订阅，需要选择Clasic VM所在的订阅</li>
+</ul>
+<ul>
+<li>Register-AzResourceProvider  -ProviderNamespace Microsoft.ClassicInfrastructureMigrate  #将你要使用的订阅账号注册上迁移服务，这一步完成实际很快，文档有写等待5分钟。</li>
+</ul>
+<ul>
+<li>Select-AzureSubscription –SubscriptionName &quot;My Azure Subscription&quot;   #如有多个订阅，需要选择Classic VM所在的订阅</li>
+</ul>
+<ul>
+<li>$vnetName = &quot;Group classic-group classic-group&quot;     #定义vnetname这一变量，并赋值为上一步获取到的完整classic VNet名称 。</li>
+</ul>
+<ul>
+<li>Move-AzureVirtualNetwork -Prepare -VirtualNetworkName $vnetName   #准备进行迁移，需要等待8分钟左右，执行完会输出结果，Succeeded则正常。</li>
+</ul>
+<ul>
+<li>LB   #正式提交执行最后的迁移，等待4分钟左右，执行完操作状态显示为Succeeded则正常。</li>
+</ul>
+<ul>
+<li>继续进行存储账户的迁移（classic storage account）:</li>
+</ul>
+<ul>
+<li>$storageAccountName = &quot;classicgroup029809&quot;    #这里指定创建classic VM时定义的classic storage account的名称。</li>
+</ul>
+<ul>
+<li>Move-AzureStorageAccount -Prepare -StorageAccountName $storageAccountName   #进行迁移的准备，等待3分钟左右，执行完成后操作状态为Succeeded即正常。</li>
+</ul>
+<ul>
+<li>Move-AzureStorageAccount -Commit -StorageAccountName $storageAccountName  #提交迁移操作，使迁移最终生效，等2分钟左右，执行完成后操作状态为Succeeded即正常。</li>
+</ul>
+<ul>
+<li>在迁移完成后，不要对VM执行Stop\Start操作，并立即修改Public IP的分配方式，点击上图中的IP地址，进入Settings---Configuration，将IP address assignment改为Static：</li>
+</ul>
+<ul>
+<li>修改为Static，变更过程不会对虚拟机产生影响，虚拟机一直保持Running:</li>
+</ul>
+<ul>
+<li>完成这一步操作后，在对VM执行Stop\Start操作时，公共IP才不会变。</li>
+</ul>
+<ul>
+<li>迁移完成后，原Classic VM所涉及的VNet、Storage account、Cloud Service都会分别放到以原资源名命名+Migrated结尾的资源组：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Portal中创建经典模式下的虚拟机：部署一台处于VNet中的Classic VM：</li>
+</ul>
+<ul>
+<li>在Azure China Portal的Marketplace中搜索出要使用的虚拟机镜像，如CentOS .</li>
+</ul>
+<ul>
+<li>详细步骤（整个迁移过程中VM保持Running状态，本地长ping ，Windows默认发包间隔，有丢2个包，没仔细观察丢包时间点；整个过程耗时十几分钟）：</li>
+</ul>
+<ul>
+<li>使用VM在一个Vnet中的步骤进行迁移，如Classic VM是按照上图选择了Vnet的方式进行创建的，那么这就是一台处于一个VNet中的Classic VM，也可以理解为通过Portal中直接找到Classic VM进行创建的。对于文档中描述的处于Cloud Service中的VM则要使用不同的迁移步骤，此测试中的VM处于一个VNet中，如果针对处于VNet中的classic VM用处于Cloud Service 中的迁移方式进行迁移，在进行迁移前的验证时会报错：</li>
+</ul>
+<ul>
+<li>处于Cloud Service 中的VM其创建方式是在Portal中直接找到Cloud Service(classic)创建一个Cloud Service，然后部署Cloud Service时所创建的虚拟机实例，这一实例即为处于Cloud Service中的VM。VM在一个Vnet中其进行迁移步骤如下：</li>
+</ul>
+<ul>
+<li>Move-AzureVirtualNetwork -Validate -VirtualNetworkName $vnetName  # 进行迁移前的验证工作，验证通过（Passed)才能进行一步：</li>
+</ul>
+<ul>
+<li>Move-AzureStorageAccount -Validate -StorageAccountName $storageAccountName   #进行迁移前的验证，验证Passed才可进行下一步。</li>
+</ul>
+<ul>
+<li>在storage account(classic) Portal中能看到原class VM的OS磁盘还在，同时ARM下的 storage account会有一个同名的存储账户，其Containers中会有同样的OS磁盘文件，但从修改时间上能够看到迁移后的VM已开始使用此处的os.vhd文件。</li>
+</ul>
+<ul>
+<li>迁移完成后观察VM的Public IP及其对应的DNS Name如下，对比原Cloud service DNS name和Public IP，没有发生改变：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Migrate to Resource Manager with PowerShell - Azure Virtual Machines | Microsoft Docs</li>
+</ul>
+<ul>
+<li>操作工具：Azure PowerShell</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud      #使用PowerShell登录上Azure China  （ARM模式）</li>
+</ul>
+<ul>
+<li>Get-AzSubscription | Sort Name | Select Name</li>
+</ul>
+<ul>
+<li>Get-AzResourceProvider -ProviderNamespace Microsoft.ClassicInfrastructureMigrate  #查看注册的结果，显示为Registered即正常。</li>
+</ul>
+<ul>
+<li>Get-AzVMUsage -Location &quot;China North2&quot;  #确认当前Region中ARM模式下可用的vCPU配额是否足够，根据Classic VM的size来对照检查。</li>
+</ul>
+<ul>
+<li>Add-AzureAccount    -Environment AzureChinaCloud #使用PowerShell登录上 Azure China (经典模式）：</li>
+</ul>
+<ul>
+<li>Get-AzureSubscription | Sort SubscriptionName | Select SubscriptionName</li>
+</ul>
+<ul>
+<li>Get-AzureVnetSite | Select -Property Name    #获取经典模式下VNet的完整名称：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>实际验证结果：两者都不会改变，仍可以通过Cloud Service DNS name访问到迁移后的虚拟机。从Azure官方文档中也找不到此类信息会发生改变的描述。现将测试的相关步骤记录如下。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022.1.22</p>
+<p>相关工单：20220119144920</p>
+<p>用户问题：如将Classic VM迁移到ARM模式下，Cloud Service的DNS name是否会改变，虚拟机的公网ip是否会改变。</p>
+<p>实际验证结果：两者都不会改变，仍可以通过Cloud Service DNS name访问到迁移后的虚拟机。从Azure官方文档中也找不到此类信息会发生改变的描述。现将测试的相关步骤记录如下。</p>
+<p>Portal中创建经典模式下的虚拟机：部署一台处于VNet中的Classic VM：</p>
+<p>在Azure China Portal的Marketplace中搜索出要使用的虚拟机镜像，如CentOS .</p>
+<p>按如下方法创建经典模式下的虚拟 机：</p>
+<p>经典虚拟的配置如下所示，网络部分为其新建了VNet、Subnet，可用性集没有启用，没安装任何扩展(extension)：</p>
+<p>经典虚拟机创建完成后虚拟机的概述以及IP配置情况，包含IP分配方式，注意如classic VM是在Cloud service中部署服务时创建的实例，则其没有VNet属性，没有专用IP配置：</p>
+<p>经典Cloud Service的概述：</p>
+<p>经典虚拟迁移到ARM的方法参考文档：</p>
+<p>Migrate to Resource Manager with PowerShell - Azure Virtual Machines | Microsoft Docs</p>
+<p>操作工具：Azure PowerShell</p>
+<p>详细步骤（整个迁移过程中VM保持Running状态，本地长ping ，Windows默认发包间隔，有丢2个包，没仔细观察丢包时间点；整个过程耗时十几分钟）：</p>
+<p>Connect-AzAccount -Environment AzureChinaCloud      #使用PowerShell登录上Azure China  （ARM模式）</p>
+<p>Get-AzSubscription | Sort Name | Select Name</p>
+<p>Select-AzSubscription –SubscriptionName &quot;My Azure Subscription&quot;   #如账号下有多个订阅，需要选择Clasic VM所在的订阅</p>
+<p>Register-AzResourceProvider  -ProviderNamespace Microsoft.ClassicInfrastructureMigrate  #将你要使用的订阅账号注册上迁移服务，这一步完成实际很快，文档有写等待5分钟。</p>
+<p>Get-AzResourceProvider -ProviderNamespace Microsoft.ClassicInfrastructureMigrate  #查看注册的结果，显示为Registered即正常。</p>
+<p>Get-AzVMUsage -Location &quot;China North2&quot;  #确认当前Region中ARM模式下可用的vCPU配额是否足够，根据Classic VM的size来对照检查。</p>
+<p>Add-AzureAccount    -Environment AzureChinaCloud #使用PowerShell登录上 Azure China (经典模式）：</p>
+<p>Get-AzureSubscription | Sort SubscriptionName | Select SubscriptionName</p>
+<p>Select-AzureSubscription –SubscriptionName &quot;My Azure Subscription&quot;   #如有多个订阅，需要选择Classic VM所在的订阅</p>
+<p>使用VM在一个Vnet中的步骤进行迁移，如Classic VM是按照上图选择了Vnet的方式进行创建的，那么这就是一台处于一个VNet中的Classic VM，也可以理解为通过Portal中直接找到Classic VM进行创建的。对于文档中描述的处于Cloud Service中的VM则要使用不同的迁移步骤，此测试中的VM处于一个VNet中，如果针对处于VNet中的classic VM用处于Cloud Service 中的迁移方式进行迁移，在进行迁移前的验证时会报错：</p>
+<p>处于Cloud Service 中的VM其创建方式是在Portal中直接找到Cloud Service(classic)创建一个Cloud Service，然后部署Cloud Service时所创建的虚拟机实例，这一实例即为处于Cloud Service中的VM。VM在一个Vnet中其进行迁移步骤如下：</p>
+<p>Get-AzureVnetSite | Select -Property Name    #获取经典模式下VNet的完整名称：</p>
+<p>$vnetName = &quot;Group classic-group classic-group&quot;     #定义vnetname这一变量，并赋值为上一步获取到的完整classic VNet名称 。</p>
+<p>Move-AzureVirtualNetwork -Validate -VirtualNetworkName $vnetName  # 进行迁移前的验证工作，验证通过（Passed)才能进行一步：</p>
+<p>Move-AzureVirtualNetwork -Prepare -VirtualNetworkName $vnetName   #准备进行迁移，需要等待8分钟左右，执行完会输出结果，Succeeded则正常。</p>
+<p>LB   #正式提交执行最后的迁移，等待4分钟左右，执行完操作状态显示为Succeeded则正常。</p>
+<p>继续进行存储账户的迁移（classic storage account）:</p>
+<p>$storageAccountName = &quot;classicgroup029809&quot;    #这里指定创建classic VM时定义的classic storage account的名称。</p>
+<p>Move-AzureStorageAccount -Validate -StorageAccountName $storageAccountName   #进行迁移前的验证，验证Passed才可进行下一步。</p>
+<p>Move-AzureStorageAccount -Prepare -StorageAccountName $storageAccountName   #进行迁移的准备，等待3分钟左右，执行完成后操作状态为Succeeded即正常。</p>
+<p>Move-AzureStorageAccount -Commit -StorageAccountName $storageAccountName  #提交迁移操作，使迁移最终生效，等2分钟左右，执行完成后操作状态为Succeeded即正常。</p>
+<p>在storage account(classic) Portal中能看到原class VM的OS磁盘还在，同时ARM下的 storage account会有一个同名的存储账户，其Containers中会有同样的OS磁盘文件，但从修改时间上能够看到迁移后的VM已开始使用此处的os.vhd文件。</p>
+<p>迁移完成后观察VM的Public IP及其对应的DNS Name如下，对比原Cloud service DNS name和Public IP，没有发生改变：</p>
+<p>在迁移完成后，不要对VM执行Stop\Start操作，并立即修改Public IP的分配方式，点击上图中的IP地址，进入Settings---Configuration，将IP address assignment改为Static：</p>
+<p>修改为Static，变更过程不会对虚拟机产生影响，虚拟机一直保持Running:</p>
+<p>完成这一步操作后，在对VM执行Stop\Start操作时，公共IP才不会变。</p>
+<p>迁移完成后，原Classic VM所涉及的VNet、Storage account、Cloud Service都会分别放到以原资源名命名+Migrated结尾的资源组：</p></article>

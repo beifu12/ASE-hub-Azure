@@ -1,0 +1,111 @@
+<article class="kb-article" data-title="【share】排查存储账户用量大的问题"><h1>【share】排查存储账户用量大的问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-09-26 11:55:54</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>最近接了两个排查存储账户用量大的工单，基本就是开了软删除或者版本控制或者快照。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>最近接了两个排查存储账户用量大的工单，基本就是开了软删除或者版本控制或者快照。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Select-AzSubscription -SubscriptionId 57e04838-xxxxxx1d73c5154c0</li>
+</ul>
+<ul>
+<li>$stoAccountName= &quot;nomanagegroupdisks&quot;</li>
+</ul>
+<ul>
+<li>$resourceGroupName= &quot;nomanage_group&quot;</li>
+</ul>
+<ul>
+<li>$stoaccount = Get-AzStorageAccount -Name $stoAccountName -ResourceGroupName $resourceGroupName</li>
+</ul>
+<ul>
+<li>如果输出比较多，可以用Out-GridView比较方便。</li>
+</ul>
+<ul>
+<li>清除块blob的历史版本或者快照，通过生命周期管理即可，但生命周期目前是只针对块blob和追加blob可用。</li>
+</ul>
+<ul>
+<li>$stoAccountName= teststorageaccount</li>
+</ul>
+<ul>
+<li>$resourceGroupName= testresourcegroup</li>
+</ul>
+<ul>
+<li>$stoaccount = Get-AzStorageAccount -Name $stoAccountName  -ResourceGroupName $resourceGroupName</li>
+</ul>
+<ul>
+<li>$historyversioning=Get-AzStorageBlob -IncludeVersion -Container test -Context $stoaccount.Context   | Select-Object Name, VersionId, LastModified, IsLatestVersion, BlobType | Where-Object {$_.VersionId -ne $null}  | Where-Object {$_.IsLatestVersion -eq $null}</li>
+</ul>
+<ul>
+<li>$Context=$stoaccount.Context</li>
+</ul>
+<ul>
+<li>foreach($historyversioning2 in $historyversioning)</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>最近接了两个排查存储账户用量大的工单，基本就是开了软删除或者版本控制或者快照。</li>
+</ul>
+<ul>
+<li>Login-AzAccount -EnvironmentName AzureChinaCloud</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>但如何确认是否有2blob正处于软删除状态或存在历史版本或快照，portal和storage explorer都不方便看，可以通过命令确认。</li>
+</ul>
+<ul>
+<li>Get-AzStorageContainer -Name test -Context $stoaccount.Context | Get-AzStorageBlob  -IncludeVersion -IncludeDeleted  ##这里需要修改您要统计的容器名称</li>
+</ul>
+<ul>
+<li>Get-AzStorageContainer -Name test -Context $stoaccount.Context | Get-AzStorageBlob  -IncludeVersion -IncludeDeleted  | Out-GridView</li>
+</ul>
+<ul>
+<li>写了一个删除所有历史版本且是Pageblob的脚本，请客户全面评估后参考使用：</li>
+</ul>
+<ul>
+<li>Remove-AzStorageBlob -Container &quot;test&quot; -Blob $historyversioning2.Name  -VersionId $historyversioning2.VersionId -Context $Context</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>最近接了两个排查存储账户用量大的工单，基本就是开了软删除或者版本控制或者快照。</p>
+<p>但如何确认是否有2blob正处于软删除状态或存在历史版本或快照，portal和storage explorer都不方便看，可以通过命令确认。</p>
+<p>Login-AzAccount -EnvironmentName AzureChinaCloud</p>
+<p>Select-AzSubscription -SubscriptionId 57e04838-xxxxxx1d73c5154c0</p>
+<p>$stoAccountName= &quot;nomanagegroupdisks&quot;</p>
+<p>$resourceGroupName= &quot;nomanage_group&quot;</p>
+<p>$stoaccount = Get-AzStorageAccount -Name $stoAccountName -ResourceGroupName $resourceGroupName</p>
+<p>Get-AzStorageContainer -Name test -Context $stoaccount.Context | Get-AzStorageBlob  -IncludeVersion -IncludeDeleted  ##这里需要修改您要统计的容器名称</p>
+<p>如果输出比较多，可以用Out-GridView比较方便。</p>
+<p>Get-AzStorageContainer -Name test -Context $stoaccount.Context | Get-AzStorageBlob  -IncludeVersion -IncludeDeleted  | Out-GridView</p>
+<p>清除块blob的历史版本或者快照，通过生命周期管理即可，但生命周期目前是只针对块blob和追加blob可用。</p>
+<p>写了一个删除所有历史版本且是Pageblob的脚本，请客户全面评估后参考使用：</p>
+<p>$stoAccountName= teststorageaccount</p>
+<p>$resourceGroupName= testresourcegroup</p>
+<p>$stoaccount = Get-AzStorageAccount -Name $stoAccountName  -ResourceGroupName $resourceGroupName</p>
+<p>$historyversioning=Get-AzStorageBlob -IncludeVersion -Container test -Context $stoaccount.Context   | Select-Object Name, VersionId, LastModified, IsLatestVersion, BlobType | Where-Object {$_.VersionId -ne $null}  | Where-Object {$_.IsLatestVersion -eq $null}</p>
+<p>$Context=$stoaccount.Context</p>
+<p>foreach($historyversioning2 in $historyversioning)</p>
+<p>{</p>
+<p>Remove-AzStorageBlob -Container &quot;test&quot; -Blob $historyversioning2.Name  -VersionId $historyversioning2.VersionId -Context $Context</p>
+<p>}</p></article>

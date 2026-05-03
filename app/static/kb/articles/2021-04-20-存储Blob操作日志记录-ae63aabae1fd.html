@@ -1,0 +1,96 @@
+<article class="kb-article" data-title="存储Blob操作日志记录"><h1>存储Blob操作日志记录</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-04-20 16:31:32</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>目前Azure存储账户诊断配置（经典）支持1.0和2.0日志记录版本，2.0版本可以配置存储结合Azure AD身份验证方式以便对用户操作Blob增删的行为进行查询。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>目前Azure存储账户诊断配置（经典）支持1.0和2.0日志记录版本，2.0版本可以配置存储结合Azure AD身份验证方式以便对用户操作Blob增删的行为进行查询。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>具体操作如下：（本次实验以AAD用户为安全主体进行测试）</li>
+</ul>
+<ul>
+<li>赋予目标用户存储Blob数据权限（本次实验以单个容器为配置对象并赋予“存储blob数据参与者”权限，也可以基于存储账户配置）</li>
+</ul>
+<ul>
+<li>备注：当前Azure内置的可用权限如下：</li>
+</ul>
+<ul>
+<li>删除该容器中blob（略）</li>
+</ul>
+<ul>
+<li>2.0日志格式：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>目前Azure存储账户诊断配置（经典）支持1.0和2.0日志记录版本，2.0版本可以配置存储结合Azure AD身份验证方式以便对用户操作Blob增删的行为进行查询。</li>
+</ul>
+<ul>
+<li>目的：当前可以记录到具体用户信息的方式为“使用2.0日志记录版本+AzureAD身份验证“相结合。</li>
+</ul>
+<ul>
+<li>启用诊断配置及选择2.0日志记录版本：</li>
+</ul>
+<ul>
+<li>切换身份验证方法为Azure AD用户账户，请参考如下：</li>
+</ul>
+<ul>
+<li>查看日志</li>
+</ul>
+<ul>
+<li>通过2.0日志中的“对象ID”，到Azure Active Derectory中查询具体的用户</li>
+</ul>
+<ul>
+<li>以上方法会稍微复杂了一些，但是可以查到您需要的信息。后续我们会推出“诊断配置（预览）”功能，届时在配置上会更加的便捷，且可以将日志保存到多个位置（e.g. Log Analytics）方便查询。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>存储分析日志格式：<a href="https://docs.microsoft.com/zh-cn/rest/api/storageservices/storage-analytics-log-format" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/rest/api/storageservices/storage-analytics-log-format</a></li>
+</ul>
+<ul>
+<li>通过Azure AD授权：<a href="https://docs.microsoft.com/zh-cn/azure/storage/common/storage-auth-aad" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/common/storage-auth-aad</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/rest/api/storageservices/authorize-with-azure-active-directory#manage-access-rights-with-rbac" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/rest/api/storageservices/authorize-with-azure-active-directory#manage-access-rights-with-rbac</a></li>
+</ul>
+<ul>
+<li>2.0;2021-04-20T07:44:51.4553665Z;DeleteBlob;OAuthSuccess;202;8;8;bearer;lytxstore;lytxstore;blob;&quot;<a href="https://lytxstore.blob.core.chinacloudapi.cn/test01/anaconda.log?_=1618904691203&quot;;&quot;/lytxstore/test01/anaconda.log&quot;;58ef7954-801e-0009-3eb9-35d774000000;0;210.12.171.116:52516;2020-02-10;2269;0;303;0;0;;;;;;&quot;Mozilla/5.0" target="_blank" rel="noopener">https://lytxstore.blob.core.chinacloudapi.cn/test01/anaconda.log?_=1618904691203&quot;;&quot;/lytxstore/test01/anaconda.log&quot;;58ef7954-801e-0009-3eb9-35d774000000;0;210.12.171.116:52516;2020-02-10;2269;0;303;0;0;;;;;;&quot;Mozilla/5.0</a> (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36&quot;;&quot;<a href="https://storage.hosting.azureportal.chinacloudapi.cn/&quot;;;&quot;a1a16567-06ae-47f4-975b-dd13df0ad1eb&quot;;&quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;;&quot;691458b9-1327-4635-9f55-ed83a7f1b41c&quot;;&quot;https://storage.azure.com/&quot;;&quot;https://sts.chinacloudapi.cn/b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/&quot;;&quot;luyitong@microsoftinternal.partner.onmschina.cn&quot;;;&quot;[{&amp;quot;action&amp;quot;:&amp;quot;Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete&amp;quot;," target="_blank" rel="noopener">https://storage.hosting.azureportal.chinacloudapi.cn/&quot;;;&quot;a1a16567-06ae-47f4-975b-dd13df0ad1eb&quot;;&quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;;&quot;691458b9-1327-4635-9f55-ed83a7f1b41c&quot;;&quot;https://storage.azure.com/&quot;;&quot;https://sts.chinacloudapi.cn/b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/&quot;;&quot;luyitong@microsoftinternal.partner.onmschina.cn&quot;;;&quot;[{&amp;quot;action&amp;quot;:&amp;quot;Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete&amp;quot;,</a> &amp;quot;roleAssignmentId&amp;quot;:&amp;quot;a097aa7e-1d6a-44d6-b51e-925537eecbee&amp;quot;, &amp;quot;roleDefinitionId&amp;quot;:&amp;quot;ba92f5b4-2d11-453d-a403-e96b0029c9fe&amp;quot;, &amp;quot;principals&amp;quot;: [{&amp;quot;id&amp;quot;: &amp;quot;a1a16567-06ae-47f4-975b-dd13df0ad1eb&amp;quot;, &amp;quot;type&amp;quot;:&amp;quot;User&amp;quot;}], &amp;quot;denyAssignmentId&amp;quot;:&amp;quot;&amp;quot;}]&quot;</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-04-20</p>
+<p>目前Azure存储账户诊断配置（经典）支持1.0和2.0日志记录版本，2.0版本可以配置存储结合Azure AD身份验证方式以便对用户操作Blob增删的行为进行查询。</p>
+<p>目的：当前可以记录到具体用户信息的方式为“使用2.0日志记录版本+AzureAD身份验证“相结合。</p>
+<p>参考文档：</p>
+<p>存储分析日志格式：<a href="https://docs.microsoft.com/zh-cn/rest/api/storageservices/storage-analytics-log-format" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/rest/api/storageservices/storage-analytics-log-format</a></p>
+<p>通过Azure AD授权：<a href="https://docs.microsoft.com/zh-cn/azure/storage/common/storage-auth-aad" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/common/storage-auth-aad</a></p>
+<p>具体操作如下：（本次实验以AAD用户为安全主体进行测试）</p>
+<p>启用诊断配置及选择2.0日志记录版本：</p>
+<p>赋予目标用户存储Blob数据权限（本次实验以单个容器为配置对象并赋予“存储blob数据参与者”权限，也可以基于存储账户配置）</p>
+<p>备注：当前Azure内置的可用权限如下：</p>
+<p><a href="https://docs.microsoft.com/zh-cn/rest/api/storageservices/authorize-with-azure-active-directory#manage-access-rights-with-rbac" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/rest/api/storageservices/authorize-with-azure-active-directory#manage-access-rights-with-rbac</a></p>
+<p>切换身份验证方法为Azure AD用户账户，请参考如下：</p>
+<p>删除该容器中blob（略）</p>
+<p>查看日志</p>
+<p>2.0日志格式：</p>
+<p>2.0;2021-04-20T07:44:51.4553665Z;DeleteBlob;OAuthSuccess;202;8;8;bearer;lytxstore;lytxstore;blob;&quot;<a href="https://lytxstore.blob.core.chinacloudapi.cn/test01/anaconda.log?_=1618904691203&quot;;&quot;/lytxstore/test01/anaconda.log&quot;;58ef7954-801e-0009-3eb9-35d774000000;0;210.12.171.116:52516;2020-02-10;2269;0;303;0;0;;;;;;&quot;Mozilla/5.0" target="_blank" rel="noopener">https://lytxstore.blob.core.chinacloudapi.cn/test01/anaconda.log?_=1618904691203&quot;;&quot;/lytxstore/test01/anaconda.log&quot;;58ef7954-801e-0009-3eb9-35d774000000;0;210.12.171.116:52516;2020-02-10;2269;0;303;0;0;;;;;;&quot;Mozilla/5.0</a> (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36&quot;;&quot;<a href="https://storage.hosting.azureportal.chinacloudapi.cn/&quot;;;&quot;a1a16567-06ae-47f4-975b-dd13df0ad1eb&quot;;&quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;;&quot;691458b9-1327-4635-9f55-ed83a7f1b41c&quot;;&quot;https://storage.azure.com/&quot;;&quot;https://sts.chinacloudapi.cn/b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/&quot;;&quot;luyitong@microsoftinternal.partner.onmschina.cn&quot;;;&quot;[{&amp;quot;action&amp;quot;:&amp;quot;Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete&amp;quot;," target="_blank" rel="noopener">https://storage.hosting.azureportal.chinacloudapi.cn/&quot;;;&quot;a1a16567-06ae-47f4-975b-dd13df0ad1eb&quot;;&quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;;&quot;691458b9-1327-4635-9f55-ed83a7f1b41c&quot;;&quot;https://storage.azure.com/&quot;;&quot;https://sts.chinacloudapi.cn/b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/&quot;;&quot;luyitong@microsoftinternal.partner.onmschina.cn&quot;;;&quot;[{&amp;quot;action&amp;quot;:&amp;quot;Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete&amp;quot;,</a> &amp;quot;roleAssignmentId&amp;quot;:&amp;quot;a097aa7e-1d6a-44d6-b51e-925537eecbee&amp;quot;, &amp;quot;roleDefinitionId&amp;quot;:&amp;quot;ba92f5b4-2d11-453d-a403-e96b0029c9fe&amp;quot;, &amp;quot;principals&amp;quot;: [{&amp;quot;id&amp;quot;: &amp;quot;a1a16567-06ae-47f4-975b-dd13df0ad1eb&amp;quot;, &amp;quot;type&amp;quot;:&amp;quot;User&amp;quot;}], &amp;quot;denyAssignmentId&amp;quot;:&amp;quot;&amp;quot;}]&quot;</p>
+<p>通过2.0日志中的“对象ID”，到Azure Active Derectory中查询具体的用户</p>
+<p>以上方法会稍微复杂了一些，但是可以查到您需要的信息。后续我们会推出“诊断配置（预览）”功能，届时在配置上会更加的便捷，且可以将日志保存到多个位置（e.g. Log Analytics）方便查询。</p></article>

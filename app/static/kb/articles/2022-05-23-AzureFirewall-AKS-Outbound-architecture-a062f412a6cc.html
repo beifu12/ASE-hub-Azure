@@ -1,0 +1,92 @@
+<article class="kb-article" data-title="[AzureFirewall&amp;AKS Outbound architecture]"><h1>[AzureFirewall&amp;AKS Outbound architecture]</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-05-23 12:35:31</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>#添加AKS 的路由，开放Kubectl API 接口对应的路由，需要发布到Internet。注：这个就是您配置默认路由后，无法连接AKS的原因。如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>#添加AKS 的路由，开放Kubectl API 接口对应的路由，需要发布到Internet。注：这个就是您配置默认路由后，无法连接AKS的原因。如下：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20200901</li>
+</ul>
+<ul>
+<li>拓扑如下：</li>
+</ul>
+<ul>
+<li>默认情况下，AKS 使用负载均衡的Outbound IP进行出站连接，如下：</li>
+</ul>
+<ul>
+<li>#负载均衡的前端IP地址为139.217.249.23</li>
+</ul>
+<ul>
+<li>#此时，在AKS  Pod中发起Outbound 连接，请求我的外部连接地址curl shaobosupport.chinacloudapp.cn:81</li>
+</ul>
+<ul>
+<li>#在目标外部服务器上，可以看到源IP地址是使用的负载均衡的IP地址，如下：</li>
+</ul>
+<ul>
+<li>地址：aksshaobo002-dns-304550c3.hcp.chinaeast2.cx.prod.service.azk8s.cn</li>
+</ul>
+<ul>
+<li>IP：52.130.75.168</li>
+</ul>
+<ul>
+<li>#接下来配置默认路由，将出站所以的流量都指向Azure Firewall 的Private IP地址上，如下：</li>
+</ul>
+<ul>
+<li>#在Azure Firewall 上配置网络规则，允许流量出站，进行SNAT：</li>
+</ul>
+<ul>
+<li>至此，配置完毕，进行检测：</li>
+</ul>
+<ul>
+<li>日志如下：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>接下来配置AKS 和Azure Firewall 的架构，核心的步骤如下：</li>
+</ul>
+<ul>
+<li>确认仍然可以正常管理Kubectl，Pod，Node 资源</li>
+</ul>
+<ul>
+<li>进一步发起出站连接，查看源IP地址变为Azure Firewall 前端地址：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>因此，需要配置路由条目，如下：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20200901</p>
+<p>拓扑如下：</p>
+<p>默认情况下，AKS 使用负载均衡的Outbound IP进行出站连接，如下：</p>
+<p>#负载均衡的前端IP地址为139.217.249.23</p>
+<p>#此时，在AKS  Pod中发起Outbound 连接，请求我的外部连接地址curl shaobosupport.chinacloudapp.cn:81</p>
+<p>#在目标外部服务器上，可以看到源IP地址是使用的负载均衡的IP地址，如下：</p>
+<p>接下来配置AKS 和Azure Firewall 的架构，核心的步骤如下：</p>
+<p>#添加AKS 的路由，开放Kubectl API 接口对应的路由，需要发布到Internet。注：这个就是您配置默认路由后，无法连接AKS的原因。如下：</p>
+<p>地址：aksshaobo002-dns-304550c3.hcp.chinaeast2.cx.prod.service.azk8s.cn</p>
+<p>IP：52.130.75.168</p>
+<p>因此，需要配置路由条目，如下：</p>
+<p>#接下来配置默认路由，将出站所以的流量都指向Azure Firewall 的Private IP地址上，如下：</p>
+<p>#在Azure Firewall 上配置网络规则，允许流量出站，进行SNAT：</p>
+<p>至此，配置完毕，进行检测：</p>
+<p>确认仍然可以正常管理Kubectl，Pod，Node 资源</p>
+<p>进一步发起出站连接，查看源IP地址变为Azure Firewall 前端地址：</p>
+<p>日志如下：</p></article>

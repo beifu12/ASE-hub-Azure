@@ -1,0 +1,103 @@
+<article class="kb-article" data-title="[share]AKS 升级版本导致的appgateway 502 问题"><h1>[share]AKS 升级版本导致的appgateway 502 问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-03-25 11:20:19</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>用户使用这样的架构：独立application gateway+ nginx ingress controller（LB type）+ AKS 群集， 这里的独立application gateway 是指用户单独创建的， 并不是通过AGIC 的方式与AKS 群集集成管理的情况。用户对AKS 版本做了升级后，application gateway 访问不到后端应用，报错502 bad gateway 的情况.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>用户使用这样的架构：独立application gateway+ nginx ingress controller（LB type）+ AKS 群集， 这里的独立application gateway 是指用户单独创建的， 并不是通过AGIC 的方式与AKS 群集集成管理的情况。用户对AKS 版本做了升级后，application gateway 访问不到后端应用，报错502 bad gateway 的情况.</li>
+</ul>
+<ul>
+<li>6， 在这个架构中：独立application gateway+ nginx ingress controller（LB type）+ AKS 群集，AKS 升级版本本身不会导致application gateway 的配置发生变化，是因为升级后影响了ingress controller  的入站失败，间接影响appgateway 探测不到后端实际的服务。 调整好ingress controller 正常入站后， appgateway 可以恢复正常访问。</li>
+</ul>
+<ul>
+<li>参考工单：SR_20230325220113_agw-omni-prod-chinaeast2-001 应用程序网关 报 502 Bad Gateway</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Humingyue</li>
+</ul>
+<ul>
+<li>背景：</li>
+</ul>
+<ul>
+<li>最近经常遇到这样的问题：</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>对于使用了kubenet 插件的AKS 群集， 它的node 节点所在的子网应用了NSG 规则也应用了UDR。 这个UDR 也可能会受升级影响。 需要注意一下是否对应的pod 的地址段的下一跳是正确的node 的地址。</li>
+</ul>
+<ul>
+<li>AKS node 所在的子网：</li>
+</ul>
+<ul>
+<li>AKS node 所在的子网应用的UDR：</li>
+</ul>
+<ul>
+<li>如果是AKS 群集使用的CNI 网络插件， 就没有如上的UDR。</li>
+</ul>
+<ul>
+<li>Miya（胡明月）| Azure Network Support Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查思路：</li>
+</ul>
+<ul>
+<li>由于AKS 版本升级后与AKS 群集相关的手动配置的规则可能会被重置到默认状态。比如， 如果之前有服务是通过LB 发布的， 自己又手动在portal上对LB 做了配置调整等， 这些手动操作的内容在AKS 版本升级后不会保留。</li>
+</ul>
+<ul>
+<li>4，用户通过LB 类型来发布的服务， 你都可以对应地在portal上看到LB 的配置。 对于AKS 版本升级后的问题， 需要注意的是这个LB 的配置可能都是对的， 但探测并没有实际生效。 一般可以尝试的操作是将探测删除新建。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>AKS 版本升级后，非常明显影响的是AKS 群集的NODE 所在的子网应用的NSG 规则一定会被重置为默认状态， 即没有开放任何外网应用端口入站规则的情况。这时需要手动添加。</li>
+</ul>
+<ul>
+<li>5 ， 以上排查的前提是LB里配置的探测的端口是AKS群集里服务实际侦听的端口且内网访问正常。如果内网访问端口都不通，就需要从AKS 群集内部查应用服务本身的相关问题。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Support direct line: 010-56060226 Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></li>
+</ul>
+<ul>
+<li>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Humingyue</p>
+<p>背景：</p>
+<p>最近经常遇到这样的问题：</p>
+<p>用户使用这样的架构：独立application gateway+ nginx ingress controller（LB type）+ AKS 群集， 这里的独立application gateway 是指用户单独创建的， 并不是通过AGIC 的方式与AKS 群集集成管理的情况。用户对AKS 版本做了升级后，application gateway 访问不到后端应用，报错502 bad gateway 的情况.</p>
+<p>排查思路：</p>
+<p>==========</p>
+<p>由于AKS 版本升级后与AKS 群集相关的手动配置的规则可能会被重置到默认状态。比如， 如果之前有服务是通过LB 发布的， 自己又手动在portal上对LB 做了配置调整等， 这些手动操作的内容在AKS 版本升级后不会保留。</p>
+<p>AKS 版本升级后，非常明显影响的是AKS 群集的NODE 所在的子网应用的NSG 规则一定会被重置为默认状态， 即没有开放任何外网应用端口入站规则的情况。这时需要手动添加。</p>
+<p>对于使用了kubenet 插件的AKS 群集， 它的node 节点所在的子网应用了NSG 规则也应用了UDR。 这个UDR 也可能会受升级影响。 需要注意一下是否对应的pod 的地址段的下一跳是正确的node 的地址。</p>
+<p>AKS node 所在的子网：</p>
+<p>AKS node 所在的子网应用的UDR：</p>
+<p>如果是AKS 群集使用的CNI 网络插件， 就没有如上的UDR。</p>
+<p>4，用户通过LB 类型来发布的服务， 你都可以对应地在portal上看到LB 的配置。 对于AKS 版本升级后的问题， 需要注意的是这个LB 的配置可能都是对的， 但探测并没有实际生效。 一般可以尝试的操作是将探测删除新建。</p>
+<p>5 ， 以上排查的前提是LB里配置的探测的端口是AKS群集里服务实际侦听的端口且内网访问正常。如果内网访问端口都不通，就需要从AKS 群集内部查应用服务本身的相关问题。</p>
+<p>6， 在这个架构中：独立application gateway+ nginx ingress controller（LB type）+ AKS 群集，AKS 升级版本本身不会导致application gateway 的配置发生变化，是因为升级后影响了ingress controller  的入站失败，间接影响appgateway 探测不到后端实际的服务。 调整好ingress controller 正常入站后， appgateway 可以恢复正常访问。</p>
+<p>参考工单：SR_20230325220113_agw-omni-prod-chinaeast2-001 应用程序网关 报 502 Bad Gateway</p>
+<p>Miya（胡明月）| Azure Network Support Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060226 Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></p>
+<p>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</p></article>

@@ -1,0 +1,1149 @@
+<article class="kb-article" data-title="Blobfuse2挂载到linux ,并修改日志文件位置"><h1>Blobfuse2挂载到linux ,并修改日志文件位置</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-03-28 15:05:13</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>dpkg: fuse: dependency problems, but removing anyway as you requested:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>dpkg: fuse: dependency problems, but removing anyway as you requested:</li>
+</ul>
+<ul>
+<li>#  disk-timeout-sec: &lt;default disk cache eviction timeout (in sec). Default - 120 sec&gt;</li>
+</ul>
+<ul>
+<li>timeout-sec: 120 #&lt;default cache eviction timeout (in sec). Default - 120 sec&gt;</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>安装：</li>
+</ul>
+<ul>
+<li>Resolving packages.microsoft.com (packages.microsoft.com)... 13.107.246.74, 2620:1ec:bdf::74</li>
+</ul>
+<ul>
+<li>Connecting to packages.microsoft.com (packages.microsoft.com)|13.107.246.74|:443... connected.</li>
+</ul>
+<ul>
+<li>HTTP request sent, awaiting response... 200 OK</li>
+</ul>
+<ul>
+<li>Length: 3690 (3.6K) [application/octet-stream]</li>
+</ul>
+<ul>
+<li>Saving to: ‘packages-microsoft-prod.deb’</li>
+</ul>
+<ul>
+<li>packages-microsoft-prod.deb                     100%[[REDACTED_STORAGE_KEY]&gt;]   3.60K  --.-KB/s    in 0s</li>
+</ul>
+<ul>
+<li>2024-08-15 13:56:55 (50.3 MB/s) - ‘packages-microsoft-prod.deb’ saved [3690/3690]</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# sudo dpkg -i packages-microsoft-prod.deb</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package packages-microsoft-prod.</li>
+</ul>
+<ul>
+<li>(Reading database ... 144139 files and directories currently installed.)</li>
+</ul>
+<ul>
+<li>Preparing to unpack packages-microsoft-prod.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking packages-microsoft-prod (1.0-ubuntu20.04.1) ...</li>
+</ul>
+<ul>
+<li>Setting up packages-microsoft-prod (1.0-ubuntu20.04.1) ...</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# sudo apt-get update</li>
+</ul>
+<ul>
+<li>Fetched 528 kB in 1s (541 kB/s)</li>
+</ul>
+<ul>
+<li>Reading package lists... Done</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# sudo apt-get install libfuse3-dev fuse3</li>
+</ul>
+<ul>
+<li>Building dependency tree</li>
+</ul>
+<ul>
+<li>Reading state information... Done</li>
+</ul>
+<ul>
+<li>The following additional packages will be installed:</li>
+</ul>
+<ul>
+<li>libc-dev-bin libc6-dev libcrypt-dev libfuse3-3 libpcre2-16-0 libpcre2-32-0 libpcre2-dev libpcre2-posix2 libselinux1-dev libsepol1-dev linux-libc-dev manpages-dev</li>
+</ul>
+<ul>
+<li>Suggested packages:</li>
+</ul>
+<ul>
+<li>glibc-doc</li>
+</ul>
+<ul>
+<li>The following packages will be REMOVED:</li>
+</ul>
+<ul>
+<li>fuse</li>
+</ul>
+<ul>
+<li>The following NEW packages will be installed:</li>
+</ul>
+<ul>
+<li>fuse3 libc-dev-bin libc6-dev libcrypt-dev libfuse3-3 libfuse3-dev libpcre2-16-0 libpcre2-32-0 libpcre2-dev libpcre2-posix2 libselinux1-dev libsepol1-dev linux-libc-dev manpages-dev</li>
+</ul>
+<ul>
+<li>0 upgraded, 14 newly installed, 1 to remove and 81 not upgraded.</li>
+</ul>
+<ul>
+<li>Need to get 7834 kB of archives.</li>
+</ul>
+<ul>
+<li>After this operation, 37.9 MB of additional disk space will be used.</li>
+</ul>
+<ul>
+<li>Do you want to continue? [Y/n] y</li>
+</ul>
+<ul>
+<li>Fetched 7834 kB in 4s (1826 kB/s)</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package libfuse3-3:amd64.</li>
+</ul>
+<ul>
+<li>(Reading database ... 144147 files and directories currently installed.)</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../libfuse3-3_3.9.0-2_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking libfuse3-3:amd64 (3.9.0-2) ...</li>
+</ul>
+<ul>
+<li>snapd depends on fuse3 (&gt;= 3.10.5-1) | fuse; however:</li>
+</ul>
+<ul>
+<li>Package fuse3 is not installed.</li>
+</ul>
+<ul>
+<li>Package fuse is to be removed.</li>
+</ul>
+<ul>
+<li>ntfs-3g depends on fuse.</li>
+</ul>
+<ul>
+<li>(Reading database ... 144155 files and directories currently installed.)</li>
+</ul>
+<ul>
+<li>Removing fuse (2.9.9-3) ...</li>
+</ul>
+<ul>
+<li>update-initramfs: deferring update (trigger activated)</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package fuse3.</li>
+</ul>
+<ul>
+<li>(Reading database ... 144145 files and directories currently installed.)</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../00-fuse3_3.9.0-2_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking fuse3 (3.9.0-2) ...</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package libc-dev-bin.</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../01-libc-dev-bin_2.31-0ubuntu9.16_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking libc-dev-bin (2.31-0ubuntu9.16) ...</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package linux-libc-dev:amd64.</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../02-linux-libc-dev_5.4.0-192.212_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking linux-libc-dev:amd64 (5.4.0-192.212) ...</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package libcrypt-dev:amd64.</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../03-libcrypt-dev_1%3a4.4.10-10ubuntu4_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking libcrypt-dev:amd64 (1:4.4.10-10ubuntu4) ...</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package libc6-dev:amd64.</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../04-libc6-dev_2.31-0ubuntu9.16_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking libc6-dev:amd64 (2.31-0ubuntu9.16) ...</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package libsepol1-dev:amd64.</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../05-libsepol1-dev_3.0-1ubuntu0.1_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking libsepol1-dev:amd64 (3.0-1ubuntu0.1) ...</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package libpcre2-16-0:amd64.</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../06-libpcre2-16-0_10.34-7ubuntu0.1_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking libpcre2-16-0:amd64 (10.34-7ubuntu0.1) ...</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package libpcre2-32-0:amd64.</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../07-libpcre2-32-0_10.34-7ubuntu0.1_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking libpcre2-32-0:amd64 (10.34-7ubuntu0.1) ...</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package libpcre2-posix2:amd64.</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../08-libpcre2-posix2_10.34-7ubuntu0.1_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking libpcre2-posix2:amd64 (10.34-7ubuntu0.1) ...</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package libpcre2-dev:amd64.</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../09-libpcre2-dev_10.34-7ubuntu0.1_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking libpcre2-dev:amd64 (10.34-7ubuntu0.1) ...</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package libselinux1-dev:amd64.</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../10-libselinux1-dev_3.0-1build2_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking libselinux1-dev:amd64 (3.0-1build2) ...</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package libfuse3-dev.</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../11-libfuse3-dev_3.9.0-2_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking libfuse3-dev (3.9.0-2) ...</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package manpages-dev.</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../12-manpages-dev_5.05-1_all.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking manpages-dev (5.05-1) ...</li>
+</ul>
+<ul>
+<li>Setting up manpages-dev (5.05-1) ...</li>
+</ul>
+<ul>
+<li>Setting up libsepol1-dev:amd64 (3.0-1ubuntu0.1) ...</li>
+</ul>
+<ul>
+<li>Setting up linux-libc-dev:amd64 (5.4.0-192.212) ...</li>
+</ul>
+<ul>
+<li>Setting up libpcre2-16-0:amd64 (10.34-7ubuntu0.1) ...</li>
+</ul>
+<ul>
+<li>Setting up libpcre2-32-0:amd64 (10.34-7ubuntu0.1) ...</li>
+</ul>
+<ul>
+<li>Setting up libpcre2-posix2:amd64 (10.34-7ubuntu0.1) ...</li>
+</ul>
+<ul>
+<li>Setting up libfuse3-3:amd64 (3.9.0-2) ...</li>
+</ul>
+<ul>
+<li>Setting up libcrypt-dev:amd64 (1:4.4.10-10ubuntu4) ...</li>
+</ul>
+<ul>
+<li>Setting up libc-dev-bin (2.31-0ubuntu9.16) ...</li>
+</ul>
+<ul>
+<li>Setting up fuse3 (3.9.0-2) ...</li>
+</ul>
+<ul>
+<li>Installing new version of config file /etc/fuse.conf ...</li>
+</ul>
+<ul>
+<li>Setting up libc6-dev:amd64 (2.31-0ubuntu9.16) ...</li>
+</ul>
+<ul>
+<li>Setting up libpcre2-dev:amd64 (10.34-7ubuntu0.1) ...</li>
+</ul>
+<ul>
+<li>Setting up libselinux1-dev:amd64 (3.0-1build2) ...</li>
+</ul>
+<ul>
+<li>Setting up libfuse3-dev (3.9.0-2) ...</li>
+</ul>
+<ul>
+<li>Processing triggers for libc-bin (2.31-0ubuntu9.16) ...</li>
+</ul>
+<ul>
+<li>Processing triggers for man-db (2.9.1-1) ...</li>
+</ul>
+<ul>
+<li>Processing triggers for initramfs-tools (0.136ubuntu6.7) ...</li>
+</ul>
+<ul>
+<li>update-initramfs: Generating /boot/initrd.img-5.15.0-1070-azure</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# sudo apt-get install blobfuse2</li>
+</ul>
+<ul>
+<li>blobfuse2</li>
+</ul>
+<ul>
+<li>0 upgraded, 1 newly installed, 0 to remove and 81 not upgraded.</li>
+</ul>
+<ul>
+<li>Need to get 13.6 MB of archives.</li>
+</ul>
+<ul>
+<li>After this operation, 26.1 MB of additional disk space will be used.</li>
+</ul>
+<ul>
+<li>Fetched 13.6 MB in 6s (2137 kB/s)</li>
+</ul>
+<ul>
+<li>Selecting previously unselected package blobfuse2.</li>
+</ul>
+<ul>
+<li>(Reading database ... 148279 files and directories currently installed.)</li>
+</ul>
+<ul>
+<li>Preparing to unpack .../blobfuse2_2.3.0_amd64.deb ...</li>
+</ul>
+<ul>
+<li>Unpacking blobfuse2 (2.3.0) ...</li>
+</ul>
+<ul>
+<li>Setting up blobfuse2 (2.3.0) ...</li>
+</ul>
+<ul>
+<li>:programname, isequal, &quot;blobfuse2&quot; {</li>
+</ul>
+<ul>
+<li>:msg, contains, &quot;REQUEST&quot; {</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>stop</li>
+</ul>
+<ul>
+<li>下载配置文件：</li>
+</ul>
+<ul>
+<li>进行相关修改：</li>
+</ul>
+<ul>
+<li># Pipeline configuration. Choose components to be engaged. The order below is the priority order that needs to be followed.</li>
+</ul>
+<ul>
+<li>components:</li>
+</ul>
+<ul>
+<li>- libfuse</li>
+</ul>
+<ul>
+<li>#  - block_cache</li>
+</ul>
+<ul>
+<li>- file_cache</li>
+</ul>
+<ul>
+<li>#  - attr_cache</li>
+</ul>
+<ul>
+<li>- azstorage</li>
+</ul>
+<ul>
+<li># Block cache related configuration</li>
+</ul>
+<ul>
+<li>#block_cache:</li>
+</ul>
+<ul>
+<li>#  block-size-mb: &lt;size of each block to be cached in memory (in MB). Default - 16 MB&gt;</li>
+</ul>
+<ul>
+<li>#  mem-size-mb: &lt;total amount of memory to be preallocated for block cache (in MB). Default - 80% of free memory&gt;</li>
+</ul>
+<ul>
+<li>#  path: &lt;path to local disk cache where downloaded blocked will be stored&gt;</li>
+</ul>
+<ul>
+<li>#  disk-size-mb: &lt;maximum disk cache size allowed. Default - 80% of free disk space&gt;</li>
+</ul>
+<ul>
+<li>#  prefetch: &lt;number of blocks to be prefetched in serial read case. Min - 11, Default - 2 times number of CPU cores&gt;</li>
+</ul>
+<ul>
+<li>#  parallelism: &lt;number of parallel threads downloading the data and writing to disk cache. Default - 3 times number of CPU cores&gt;</li>
+</ul>
+<ul>
+<li># Disk cache related configuration</li>
+</ul>
+<ul>
+<li>file_cache:</li>
+</ul>
+<ul>
+<li># Required</li>
+</ul>
+<ul>
+<li>path: /mnt/blobfuse2tmp  #&lt;path to local disk cache&gt;</li>
+</ul>
+<ul>
+<li># Optional</li>
+</ul>
+<ul>
+<li>max-size-mb: 4096 #&lt;maximum cache size allowed. Default - 80% of free disk space&gt;</li>
+</ul>
+<ul>
+<li># Azure storage configuration</li>
+</ul>
+<ul>
+<li>azstorage:</li>
+</ul>
+<ul>
+<li>type: block #|adls &lt;type of storage account to be connected. Default - block&gt;</li>
+</ul>
+<ul>
+<li>account-name: n2rg1diag #&lt;name of the storage account&gt;</li>
+</ul>
+<ul>
+<li>container: blobfuse2 # &lt;name of the storage container to be mounted&gt;</li>
+</ul>
+<ul>
+<li>mode: key  #|sas|spn|msi|azcli &lt;kind of authentication to be used&gt;</li>
+</ul>
+<ul>
+<li>account-key: [REDACTED_STORAGE_KEY] # &lt;storage account key&gt;</li>
+</ul>
+<ul>
+<li># OR</li>
+</ul>
+<ul>
+<li>#  sas: &lt;storage account sas&gt;</li>
+</ul>
+<ul>
+<li># appid: &lt;storage account app id / client id for MSI&gt;</li>
+</ul>
+<ul>
+<li>#resid: &lt;storage account resource id for MSI&gt;</li>
+</ul>
+<ul>
+<li>#tenantid: &lt;storage account tenant id for SPN&gt;</li>
+</ul>
+<ul>
+<li>#clientid: &lt;storage account client id for SPN&gt;</li>
+</ul>
+<ul>
+<li>#clientsecret: &lt;storage account client secret for SPN&gt;</li>
+</ul>
+<ul>
+<li>#oauth-token-path: &lt;path to file containing the OAuth token&gt;</li>
+</ul>
+<ul>
+<li>挂载：</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# blobfuse2 /blobfuse/  --config-file=./config.yaml</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# df -Rh</li>
+</ul>
+<ul>
+<li>df: invalid option -- &#39;R&#39;</li>
+</ul>
+<ul>
+<li>Try &#39;df --help&#39; for more information.</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# df -Th</li>
+</ul>
+<ul>
+<li>Filesystem     Type      Size  Used Avail Use% Mounted on</li>
+</ul>
+<ul>
+<li>/dev/root      ext4       29G   15G   15G  51% /</li>
+</ul>
+<ul>
+<li>devtmpfs       devtmpfs  3.9G     0  3.9G   0% /dev</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     3.9G     0  3.9G   0% /dev/shm</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     795M  1.1M  793M   1% /run</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     5.0M     0  5.0M   0% /run/lock</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     3.9G     0  3.9G   0% /sys/fs/cgroup</li>
+</ul>
+<ul>
+<li>/dev/loop1     squashfs   64M   64M     0 100% /snap/core20/2318</li>
+</ul>
+<ul>
+<li>/dev/loop0     squashfs   64M   64M     0 100% /snap/core20/2264</li>
+</ul>
+<ul>
+<li>/dev/loop3     squashfs   92M   92M     0 100% /snap/lxd/29619</li>
+</ul>
+<ul>
+<li>/dev/loop4     squashfs   39M   39M     0 100% /snap/snapd/21759</li>
+</ul>
+<ul>
+<li>/dev/sdb15     vfat      105M  6.1M   99M   6% /boot/efi</li>
+</ul>
+<ul>
+<li>/dev/loop2     squashfs   92M   92M     0 100% /snap/lxd/24061</li>
+</ul>
+<ul>
+<li>/dev/loop5     squashfs   39M   39M     0 100% /snap/snapd/21465</li>
+</ul>
+<ul>
+<li>/dev/sda1      ext4       16G   32K   15G   1% /mnt</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     794M     0  794M   0% /run/user/1000</li>
+</ul>
+<ul>
+<li>blobfuse2      fuse      4.0G  4.0K  4.0G   1% /blobfuse</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# cd /blobfuse/</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:/blobfuse# ls</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:/blobfuse# touch 123.txt</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~#</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Processing triggers for rsyslog (8.2001.0-1ubuntu1.3) ...</li>
+</ul>
+<ul>
+<li>安装完成后rsyslog配置文件默认会添加blobfuse日志文件：</li>
+</ul>
+<ul>
+<li>*.* /var/log/blobfuse2.log</li>
+</ul>
+<ul>
+<li>*.* /var/log/blobfuse2-rest.log</li>
+</ul>
+<ul>
+<li>&quot;/etc/rsyslog.d/11-blobfuse2.conf&quot; 8L, 147C</li>
+</ul>
+<ul>
+<li># Logger configuration</li>
+</ul>
+<ul>
+<li>logging:</li>
+</ul>
+<ul>
+<li>type: syslog  # |silent|base   # &lt;type of logger to be used by the system. silent = no logger, base = file based logger. Default - syslog&gt;</li>
+</ul>
+<ul>
+<li>#  file-path: &lt;path where log files shall be stored. Default - &#39;$HOME/.blobfuse2/blobfuse2.log&#39;&gt;  没有配置默认配置文件路径</li>
+</ul>
+<ul>
+<li>查看创建文件后已经产生日志</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:/blobfuse# vim /var/log/blobfuse2</li>
+</ul>
+<ul>
+<li>blobfuse2-rest.log  blobfuse2.log</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:/blobfuse# vim /var/log/blobfuse2.log</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:/blobfuse# cat /var/log/blobfuse2.log</li>
+</ul>
+<ul>
+<li>2024-08-16T17:56:31.095848+08:00 Ubuntu20 blobfuse2[17247]: [/blobfuse] LOG_CRIT [mount.go (407)]: Starting Blobfuse2 Mount : 2.3.0 on [Ubuntu 20.04.4 LTS]</li>
+</ul>
+<ul>
+<li>2024-08-16T17:56:31.146822+08:00 Ubuntu20 blobfuse2[17247]: [/blobfuse] LOG_INFO [mount.go (408)]: Mount Command: [blobfuse2 /blobfuse/ --config-file=./config.yaml]</li>
+</ul>
+<ul>
+<li>2024-08-16T17:56:31.146955+08:00 Ubuntu20 blobfuse2[17247]: [/blobfuse] LOG_CRIT [mount.go (409)]: Logging level set to : LOG_DEBUG</li>
+</ul>
+<ul>
+<li>2024-08-16T17:56:31.147044+08:00 Ubuntu20 blobfuse2[17247]: [/blobfuse] LOG_DEBUG [mount.go (410)]: Mount allowed on nonempty path : false</li>
+</ul>
+<ul>
+<li>再通过修改rsyslog服务，修改日志文件路径：从/var/log 改为 /usr/log  下</li>
+</ul>
+<ul>
+<li>*.* /usr/log/blobfuse2.log</li>
+</ul>
+<ul>
+<li>*.* /usr/log/blobfuse2-rest.log</li>
+</ul>
+<ul>
+<li>重启rsyslog服务</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# systemctl restart rsyslog.service</li>
+</ul>
+<ul>
+<li>在/usr/log 目录下没有生成新的日志文件</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# ls /usr/log/</li>
+</ul>
+<ul>
+<li>且/var/log/blobfuse2.log 也不会再有重启rsyslog服务时间点后的新日志记录</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# tail /var/log/blobfuse2.log</li>
+</ul>
+<ul>
+<li>2024-08-17T18:48:46.692130+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [utils.go (151)]: SDK(Retry) : response 200</li>
+</ul>
+<ul>
+<li>2024-08-17T18:48:46.692199+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [utils.go (151)]: SDK(Retry) : exit due to non-retriable status code</li>
+</ul>
+<ul>
+<li>2024-08-17T18:48:46.692261+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [azstorage.go (306)]: AzStorage::StreamDir : Retrieved 2 objects with  marker for Path</li>
+</ul>
+<ul>
+<li>2024-08-17T18:48:46.692687+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_TRACE [libfuse_handler.go (493)]: Libfuse::libfuse_releasedir : , handle: 1</li>
+</ul>
+<ul>
+<li>2024-08-17T18:49:36.204312+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [cache_policy.go (97)]: cachePolicy::getUsagePercentage : current cache usage : 0.000095%</li>
+</ul>
+<ul>
+<li>2024-08-17T18:50:36.197756+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [cache_policy.go (97)]: cachePolicy::getUsagePercentage : current cache usage : 0.000095%</li>
+</ul>
+<ul>
+<li>2024-08-17T18:50:36.229779+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_TRACE [lru_policy.go (287)]: lruPolicy::Clear-timeout monitor</li>
+</ul>
+<ul>
+<li>2024-08-17T18:50:36.229883+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_TRACE [lru_policy.go (358)]: lruPolicy::updateMarker</li>
+</ul>
+<ul>
+<li>2024-08-17T18:50:36.229952+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [lru_policy.go (381)]: lruPolicy::deleteExpiredNodes : Starts</li>
+</ul>
+<ul>
+<li>后排查系统日志，发现是没有权限写入：</li>
+</ul>
+<ul>
+<li>vim /var/log/syslog</li>
+</ul>
+<ul>
+<li>查看 /var/log 和 /usr/log 目录权限并进行修改：</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:/usr/log# ll -d /usr/log/</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root 4096 Aug 17 18:39 /usr/log/</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:/usr/log# ll -d /var/log/</li>
+</ul>
+<ul>
+<li>drwxrwxr-x 11 root syslog 4096 Aug 17 19:33 /var/log/</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# chown root.syslog /usr/log</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# ll -d /usr/log/</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root syslog 4096 Aug 17 18:39 /usr/log/</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# chmod 774 /usr/log/</li>
+</ul>
+<ul>
+<li>drwxrwxr-- 2 root syslog 4096 Aug 17 18:39 /usr/log/</li>
+</ul>
+<ul>
+<li>修改相关权限后，可以在 /usr/log 目录下看到新生成的blobfuse日志：</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# tail /usr/log/blobfuse2.log</li>
+</ul>
+<ul>
+<li>2024-08-17T19:48:42.561581+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_DEBUG [block_blob.go (924)]: BlockBlob::WriteFromFile : Upload complete of blob 111.txt</li>
+</ul>
+<ul>
+<li>2024-08-17T19:48:42.561989+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_TRACE [libfuse_handler.go (858)]: Libfuse::libfuse_release : 111.txt, handle: 3</li>
+</ul>
+<ul>
+<li>2024-08-17T19:48:42.562224+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_TRACE [file_cache.go (1019)]: FileCache::closeFileInternal : name=111.txt, handle=3</li>
+</ul>
+<ul>
+<li>2024-08-17T19:48:42.562450+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_TRACE [file_cache.go (1206)]: FileCache::FlushFile : handle=3, path=111.txt</li>
+</ul>
+<ul>
+<li>2024-08-17T19:48:42.562853+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_TRACE [lru_policy.go (179)]: lruPolicy::CacheInvalidate : /mnt/blobfuse2tmp/111.txt</li>
+</ul>
+<ul>
+<li>2024-08-17T19:49:30.348462+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_DEBUG [cache_policy.go (97)]: cachePolicy::getUsagePercentage : current cache usage : 0.000191%</li>
+</ul>
+<ul>
+<li>2024-08-17T19:50:30.350706+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_DEBUG [cache_policy.go (97)]: cachePolicy::getUsagePercentage : current cache usage : 0.000191%</li>
+</ul>
+<ul>
+<li>2024-08-17T19:50:30.351154+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_TRACE [lru_policy.go (287)]: lruPolicy::Clear-timeout monitor</li>
+</ul>
+<ul>
+<li>2024-08-17T19:50:30.351237+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_TRACE [lru_policy.go (358)]: lruPolicy::updateMarker</li>
+</ul>
+<ul>
+<li>2024-08-17T19:50:30.351306+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_DEBUG [lru_policy.go (381)]: lruPolicy::deleteExpiredNodes : Starts</li>
+</ul>
+<ul>
+<li>所以从测试结果看，通过修改 rsyslog服务的配置文件，可以修改blobfuse的日志存放位置，但是要注意，对应目录需要让syslog 组有写权限。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>#objid: &lt;object id for MSI - needs Azure CLI on system&gt;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>level: log_debug        #log_off|log_crit|log_err|log_warning|log_info|log_trace|log_debug   #&lt;log level. Default - log_warning&gt; &lt;log_debug will also enable sdk-trace logs&gt;</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>root@Ubuntu20:~# sudo wget <a href="https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb" target="_blank" rel="noopener">https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb</a></li>
+</ul>
+<ul>
+<li>--2024-08-15 13:56:55--  <a href="https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb" target="_blank" rel="noopener">https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb</a></li>
+</ul>
+<ul>
+<li>Hit:1 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal InRelease</li>
+</ul>
+<ul>
+<li>Get:2 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates InRelease [128 kB]</li>
+</ul>
+<ul>
+<li>Hit:3 <a href="https://packages.microsoft.com/repos/azure-cli" target="_blank" rel="noopener">https://packages.microsoft.com/repos/azure-cli</a> focal InRelease</li>
+</ul>
+<ul>
+<li>Get:4 <a href="https://packages.microsoft.com/ubuntu/20.04/prod" target="_blank" rel="noopener">https://packages.microsoft.com/ubuntu/20.04/prod</a> focal InRelease [3632 B]</li>
+</ul>
+<ul>
+<li>Get:5 <a href="https://packages.microsoft.com/ubuntu/20.04/prod" target="_blank" rel="noopener">https://packages.microsoft.com/ubuntu/20.04/prod</a> focal/main arm64 Packages [63.4 kB]</li>
+</ul>
+<ul>
+<li>Hit:6 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-backports InRelease</li>
+</ul>
+<ul>
+<li>Hit:7 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-security InRelease</li>
+</ul>
+<ul>
+<li>Get:8 <a href="https://packages.microsoft.com/ubuntu/20.04/prod" target="_blank" rel="noopener">https://packages.microsoft.com/ubuntu/20.04/prod</a> focal/main amd64 Packages [308 kB]</li>
+</ul>
+<ul>
+<li>Get:9 <a href="https://packages.microsoft.com/ubuntu/20.04/prod" target="_blank" rel="noopener">https://packages.microsoft.com/ubuntu/20.04/prod</a> focal/main armhf Packages [22.5 kB]</li>
+</ul>
+<ul>
+<li>Get:10 <a href="https://packages.microsoft.com/ubuntu/20.04/prod" target="_blank" rel="noopener">https://packages.microsoft.com/ubuntu/20.04/prod</a> focal/main all Packages [2714 B]</li>
+</ul>
+<ul>
+<li>Get:1 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal/universe amd64 libfuse3-3 amd64 3.9.0-2 [74.0 kB]</li>
+</ul>
+<ul>
+<li>Get:2 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal/universe amd64 fuse3 amd64 3.9.0-2 [24.7 kB]</li>
+</ul>
+<ul>
+<li>Get:3 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libc-dev-bin amd64 2.31-0ubuntu9.16 [71.6 kB]</li>
+</ul>
+<ul>
+<li>Get:4 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 linux-libc-dev amd64 5.4.0-192.212 [1145 kB]</li>
+</ul>
+<ul>
+<li>Get:5 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal/main amd64 libcrypt-dev amd64 1:4.4.10-10ubuntu4 [104 kB]</li>
+</ul>
+<ul>
+<li>Get:6 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libc6-dev amd64 2.31-0ubuntu9.16 [2520 kB]</li>
+</ul>
+<ul>
+<li>Get:7 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libsepol1-dev amd64 3.0-1ubuntu0.1 [325 kB]</li>
+</ul>
+<ul>
+<li>Get:8 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libpcre2-16-0 amd64 10.34-7ubuntu0.1 [181 kB]</li>
+</ul>
+<ul>
+<li>Get:9 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libpcre2-32-0 amd64 10.34-7ubuntu0.1 [170 kB]</li>
+</ul>
+<ul>
+<li>Get:10 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libpcre2-posix2 amd64 10.34-7ubuntu0.1 [5988 B]</li>
+</ul>
+<ul>
+<li>Get:11 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libpcre2-dev amd64 10.34-7ubuntu0.1 [672 kB]</li>
+</ul>
+<ul>
+<li>Get:12 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal/main amd64 libselinux1-dev amd64 3.0-1build2 [151 kB]</li>
+</ul>
+<ul>
+<li>Get:13 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal/universe amd64 libfuse3-dev amd64 3.9.0-2 [123 kB]</li>
+</ul>
+<ul>
+<li>Get:14 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal/main amd64 manpages-dev all 5.05-1 [2266 kB]</li>
+</ul>
+<ul>
+<li>Get:1 <a href="https://packages.microsoft.com/ubuntu/20.04/prod" target="_blank" rel="noopener">https://packages.microsoft.com/ubuntu/20.04/prod</a> focal/main amd64 blobfuse2 amd64 2.3.0 [13.6 MB]</li>
+</ul>
+<ul>
+<li><a href="https://github.com/Azure/azure-storage-fuse/blob/main/setup/baseConfig.yaml" target="_blank" rel="noopener">https://github.com/Azure/azure-storage-fuse/blob/main/setup/baseConfig.yaml</a></li>
+</ul>
+<ul>
+<li>endpoint:  <a href="https://n2rg1diag.blob.core.chinacloudapi.cn" target="_blank" rel="noopener">https://n2rg1diag.blob.core.chinacloudapi.cn</a> # &lt;storage account endpoint (example - <a href="https://account-name.blob.core.windows.net)&gt;" target="_blank" rel="noopener">https://account-name.blob.core.windows.net)&gt;</a></li>
+</ul>
+<ul>
+<li>2024-08-17T18:48:46.692001+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [utils.go (151)]: SDK(Response) : ==&gt; REQUEST/RESPONSE (Try=1/17.760441ms, OpTime=17.804442ms) -- RESPONSE RECEIVED#012   GET <a href="https://n2rg1diag.blob.core.chinacloudapi.cn/blobfuse2?comp=list&amp;delimiter=%2F&amp;include=metadata&amp;marker=&amp;maxresults=5000&amp;prefix=&amp;restype=container#012" target="_blank" rel="noopener">https://n2rg1diag.blob.core.chinacloudapi.cn/blobfuse2?comp=list&amp;delimiter=%2F&amp;include=metadata&amp;marker=&amp;maxresults=5000&amp;prefix=&amp;restype=container#012</a>   Accept: application/xml#012   Authorization: REDACTED#012   User-Agent: Azure-Storage-Fuse/2.3.0 (Ubuntu 20.04.4 LTS) azsdk-go-azblob/v1.3.2 (go1.22.1; linux)#012   X-Ms-Date: Sat, 17 Aug 2024 10:48:46 GMT#012   x-ms-version: 2023-11-03#012   --------------------------------------------------------------------------------#012   RESPONSE Status: 200 OK#012   Content-Type: application/xml#012   Date: Sat, 17 Aug 2024 10:48:45 GMT#012   Server: Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0#012   X-Ms-Request-Id: e3c58115-601e-000f-6993-f04f32000000#012   X-Ms-Version: 2023-11-03</li>
+</ul>
+<ul>
+<li>2024-08-17T19:24:24.752281+08:00 Ubuntu20 rsyslogd: file &#39;/usr/log/blobfuse2.log&#39;: open error: Permission denied [v8.2001.0 try <a href="https://www.rsyslog.com/e/2433" target="_blank" rel="noopener">https://www.rsyslog.com/e/2433</a> ]</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/8/17</p>
+<p>安装：</p>
+<p>root@Ubuntu20:~# sudo wget <a href="https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb" target="_blank" rel="noopener">https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb</a></p>
+<p>--2024-08-15 13:56:55--  <a href="https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb" target="_blank" rel="noopener">https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb</a></p>
+<p>Resolving packages.microsoft.com (packages.microsoft.com)... 13.107.246.74, 2620:1ec:bdf::74</p>
+<p>Connecting to packages.microsoft.com (packages.microsoft.com)|13.107.246.74|:443... connected.</p>
+<p>HTTP request sent, awaiting response... 200 OK</p>
+<p>Length: 3690 (3.6K) [application/octet-stream]</p>
+<p>Saving to: ‘packages-microsoft-prod.deb’</p>
+<p>packages-microsoft-prod.deb                     100%[[REDACTED_STORAGE_KEY]&gt;]   3.60K  --.-KB/s    in 0s</p>
+<p>2024-08-15 13:56:55 (50.3 MB/s) - ‘packages-microsoft-prod.deb’ saved [3690/3690]</p>
+<p>root@Ubuntu20:~# sudo dpkg -i packages-microsoft-prod.deb</p>
+<p>Selecting previously unselected package packages-microsoft-prod.</p>
+<p>(Reading database ... 144139 files and directories currently installed.)</p>
+<p>Preparing to unpack packages-microsoft-prod.deb ...</p>
+<p>Unpacking packages-microsoft-prod (1.0-ubuntu20.04.1) ...</p>
+<p>Setting up packages-microsoft-prod (1.0-ubuntu20.04.1) ...</p>
+<p>root@Ubuntu20:~# sudo apt-get update</p>
+<p>Hit:1 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal InRelease</p>
+<p>Get:2 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates InRelease [128 kB]</p>
+<p>Hit:3 <a href="https://packages.microsoft.com/repos/azure-cli" target="_blank" rel="noopener">https://packages.microsoft.com/repos/azure-cli</a> focal InRelease</p>
+<p>Get:4 <a href="https://packages.microsoft.com/ubuntu/20.04/prod" target="_blank" rel="noopener">https://packages.microsoft.com/ubuntu/20.04/prod</a> focal InRelease [3632 B]</p>
+<p>Get:5 <a href="https://packages.microsoft.com/ubuntu/20.04/prod" target="_blank" rel="noopener">https://packages.microsoft.com/ubuntu/20.04/prod</a> focal/main arm64 Packages [63.4 kB]</p>
+<p>Hit:6 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-backports InRelease</p>
+<p>Hit:7 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-security InRelease</p>
+<p>Get:8 <a href="https://packages.microsoft.com/ubuntu/20.04/prod" target="_blank" rel="noopener">https://packages.microsoft.com/ubuntu/20.04/prod</a> focal/main amd64 Packages [308 kB]</p>
+<p>Get:9 <a href="https://packages.microsoft.com/ubuntu/20.04/prod" target="_blank" rel="noopener">https://packages.microsoft.com/ubuntu/20.04/prod</a> focal/main armhf Packages [22.5 kB]</p>
+<p>Get:10 <a href="https://packages.microsoft.com/ubuntu/20.04/prod" target="_blank" rel="noopener">https://packages.microsoft.com/ubuntu/20.04/prod</a> focal/main all Packages [2714 B]</p>
+<p>Fetched 528 kB in 1s (541 kB/s)</p>
+<p>Reading package lists... Done</p>
+<p>root@Ubuntu20:~# sudo apt-get install libfuse3-dev fuse3</p>
+<p>Building dependency tree</p>
+<p>Reading state information... Done</p>
+<p>The following additional packages will be installed:</p>
+<p>libc-dev-bin libc6-dev libcrypt-dev libfuse3-3 libpcre2-16-0 libpcre2-32-0 libpcre2-dev libpcre2-posix2 libselinux1-dev libsepol1-dev linux-libc-dev manpages-dev</p>
+<p>Suggested packages:</p>
+<p>glibc-doc</p>
+<p>The following packages will be REMOVED:</p>
+<p>fuse</p>
+<p>The following NEW packages will be installed:</p>
+<p>fuse3 libc-dev-bin libc6-dev libcrypt-dev libfuse3-3 libfuse3-dev libpcre2-16-0 libpcre2-32-0 libpcre2-dev libpcre2-posix2 libselinux1-dev libsepol1-dev linux-libc-dev manpages-dev</p>
+<p>0 upgraded, 14 newly installed, 1 to remove and 81 not upgraded.</p>
+<p>Need to get 7834 kB of archives.</p>
+<p>After this operation, 37.9 MB of additional disk space will be used.</p>
+<p>Do you want to continue? [Y/n] y</p>
+<p>Get:1 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal/universe amd64 libfuse3-3 amd64 3.9.0-2 [74.0 kB]</p>
+<p>Get:2 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal/universe amd64 fuse3 amd64 3.9.0-2 [24.7 kB]</p>
+<p>Get:3 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libc-dev-bin amd64 2.31-0ubuntu9.16 [71.6 kB]</p>
+<p>Get:4 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 linux-libc-dev amd64 5.4.0-192.212 [1145 kB]</p>
+<p>Get:5 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal/main amd64 libcrypt-dev amd64 1:4.4.10-10ubuntu4 [104 kB]</p>
+<p>Get:6 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libc6-dev amd64 2.31-0ubuntu9.16 [2520 kB]</p>
+<p>Get:7 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libsepol1-dev amd64 3.0-1ubuntu0.1 [325 kB]</p>
+<p>Get:8 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libpcre2-16-0 amd64 10.34-7ubuntu0.1 [181 kB]</p>
+<p>Get:9 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libpcre2-32-0 amd64 10.34-7ubuntu0.1 [170 kB]</p>
+<p>Get:10 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libpcre2-posix2 amd64 10.34-7ubuntu0.1 [5988 B]</p>
+<p>Get:11 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal-updates/main amd64 libpcre2-dev amd64 10.34-7ubuntu0.1 [672 kB]</p>
+<p>Get:12 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal/main amd64 libselinux1-dev amd64 3.0-1build2 [151 kB]</p>
+<p>Get:13 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal/universe amd64 libfuse3-dev amd64 3.9.0-2 [123 kB]</p>
+<p>Get:14 <a href="http://azure.archive.ubuntu.com/ubuntu" target="_blank" rel="noopener">http://azure.archive.ubuntu.com/ubuntu</a> focal/main amd64 manpages-dev all 5.05-1 [2266 kB]</p>
+<p>Fetched 7834 kB in 4s (1826 kB/s)</p>
+<p>Selecting previously unselected package libfuse3-3:amd64.</p>
+<p>(Reading database ... 144147 files and directories currently installed.)</p>
+<p>Preparing to unpack .../libfuse3-3_3.9.0-2_amd64.deb ...</p>
+<p>Unpacking libfuse3-3:amd64 (3.9.0-2) ...</p>
+<p>dpkg: fuse: dependency problems, but removing anyway as you requested:</p>
+<p>snapd depends on fuse3 (&gt;= 3.10.5-1) | fuse; however:</p>
+<p>Package fuse3 is not installed.</p>
+<p>Package fuse is to be removed.</p>
+<p>ntfs-3g depends on fuse.</p>
+<p>(Reading database ... 144155 files and directories currently installed.)</p>
+<p>Removing fuse (2.9.9-3) ...</p>
+<p>update-initramfs: deferring update (trigger activated)</p>
+<p>Selecting previously unselected package fuse3.</p>
+<p>(Reading database ... 144145 files and directories currently installed.)</p>
+<p>Preparing to unpack .../00-fuse3_3.9.0-2_amd64.deb ...</p>
+<p>Unpacking fuse3 (3.9.0-2) ...</p>
+<p>Selecting previously unselected package libc-dev-bin.</p>
+<p>Preparing to unpack .../01-libc-dev-bin_2.31-0ubuntu9.16_amd64.deb ...</p>
+<p>Unpacking libc-dev-bin (2.31-0ubuntu9.16) ...</p>
+<p>Selecting previously unselected package linux-libc-dev:amd64.</p>
+<p>Preparing to unpack .../02-linux-libc-dev_5.4.0-192.212_amd64.deb ...</p>
+<p>Unpacking linux-libc-dev:amd64 (5.4.0-192.212) ...</p>
+<p>Selecting previously unselected package libcrypt-dev:amd64.</p>
+<p>Preparing to unpack .../03-libcrypt-dev_1%3a4.4.10-10ubuntu4_amd64.deb ...</p>
+<p>Unpacking libcrypt-dev:amd64 (1:4.4.10-10ubuntu4) ...</p>
+<p>Selecting previously unselected package libc6-dev:amd64.</p>
+<p>Preparing to unpack .../04-libc6-dev_2.31-0ubuntu9.16_amd64.deb ...</p>
+<p>Unpacking libc6-dev:amd64 (2.31-0ubuntu9.16) ...</p>
+<p>Selecting previously unselected package libsepol1-dev:amd64.</p>
+<p>Preparing to unpack .../05-libsepol1-dev_3.0-1ubuntu0.1_amd64.deb ...</p>
+<p>Unpacking libsepol1-dev:amd64 (3.0-1ubuntu0.1) ...</p>
+<p>Selecting previously unselected package libpcre2-16-0:amd64.</p>
+<p>Preparing to unpack .../06-libpcre2-16-0_10.34-7ubuntu0.1_amd64.deb ...</p>
+<p>Unpacking libpcre2-16-0:amd64 (10.34-7ubuntu0.1) ...</p>
+<p>Selecting previously unselected package libpcre2-32-0:amd64.</p>
+<p>Preparing to unpack .../07-libpcre2-32-0_10.34-7ubuntu0.1_amd64.deb ...</p>
+<p>Unpacking libpcre2-32-0:amd64 (10.34-7ubuntu0.1) ...</p>
+<p>Selecting previously unselected package libpcre2-posix2:amd64.</p>
+<p>Preparing to unpack .../08-libpcre2-posix2_10.34-7ubuntu0.1_amd64.deb ...</p>
+<p>Unpacking libpcre2-posix2:amd64 (10.34-7ubuntu0.1) ...</p>
+<p>Selecting previously unselected package libpcre2-dev:amd64.</p>
+<p>Preparing to unpack .../09-libpcre2-dev_10.34-7ubuntu0.1_amd64.deb ...</p>
+<p>Unpacking libpcre2-dev:amd64 (10.34-7ubuntu0.1) ...</p>
+<p>Selecting previously unselected package libselinux1-dev:amd64.</p>
+<p>Preparing to unpack .../10-libselinux1-dev_3.0-1build2_amd64.deb ...</p>
+<p>Unpacking libselinux1-dev:amd64 (3.0-1build2) ...</p>
+<p>Selecting previously unselected package libfuse3-dev.</p>
+<p>Preparing to unpack .../11-libfuse3-dev_3.9.0-2_amd64.deb ...</p>
+<p>Unpacking libfuse3-dev (3.9.0-2) ...</p>
+<p>Selecting previously unselected package manpages-dev.</p>
+<p>Preparing to unpack .../12-manpages-dev_5.05-1_all.deb ...</p>
+<p>Unpacking manpages-dev (5.05-1) ...</p>
+<p>Setting up manpages-dev (5.05-1) ...</p>
+<p>Setting up libsepol1-dev:amd64 (3.0-1ubuntu0.1) ...</p>
+<p>Setting up linux-libc-dev:amd64 (5.4.0-192.212) ...</p>
+<p>Setting up libpcre2-16-0:amd64 (10.34-7ubuntu0.1) ...</p>
+<p>Setting up libpcre2-32-0:amd64 (10.34-7ubuntu0.1) ...</p>
+<p>Setting up libpcre2-posix2:amd64 (10.34-7ubuntu0.1) ...</p>
+<p>Setting up libfuse3-3:amd64 (3.9.0-2) ...</p>
+<p>Setting up libcrypt-dev:amd64 (1:4.4.10-10ubuntu4) ...</p>
+<p>Setting up libc-dev-bin (2.31-0ubuntu9.16) ...</p>
+<p>Setting up fuse3 (3.9.0-2) ...</p>
+<p>Installing new version of config file /etc/fuse.conf ...</p>
+<p>Setting up libc6-dev:amd64 (2.31-0ubuntu9.16) ...</p>
+<p>Setting up libpcre2-dev:amd64 (10.34-7ubuntu0.1) ...</p>
+<p>Setting up libselinux1-dev:amd64 (3.0-1build2) ...</p>
+<p>Setting up libfuse3-dev (3.9.0-2) ...</p>
+<p>Processing triggers for libc-bin (2.31-0ubuntu9.16) ...</p>
+<p>Processing triggers for man-db (2.9.1-1) ...</p>
+<p>Processing triggers for initramfs-tools (0.136ubuntu6.7) ...</p>
+<p>update-initramfs: Generating /boot/initrd.img-5.15.0-1070-azure</p>
+<p>root@Ubuntu20:~# sudo apt-get install blobfuse2</p>
+<p>blobfuse2</p>
+<p>0 upgraded, 1 newly installed, 0 to remove and 81 not upgraded.</p>
+<p>Need to get 13.6 MB of archives.</p>
+<p>After this operation, 26.1 MB of additional disk space will be used.</p>
+<p>Get:1 <a href="https://packages.microsoft.com/ubuntu/20.04/prod" target="_blank" rel="noopener">https://packages.microsoft.com/ubuntu/20.04/prod</a> focal/main amd64 blobfuse2 amd64 2.3.0 [13.6 MB]</p>
+<p>Fetched 13.6 MB in 6s (2137 kB/s)</p>
+<p>Selecting previously unselected package blobfuse2.</p>
+<p>(Reading database ... 148279 files and directories currently installed.)</p>
+<p>Preparing to unpack .../blobfuse2_2.3.0_amd64.deb ...</p>
+<p>Unpacking blobfuse2 (2.3.0) ...</p>
+<p>Setting up blobfuse2 (2.3.0) ...</p>
+<p>Processing triggers for rsyslog (8.2001.0-1ubuntu1.3) ...</p>
+<p>安装完成后rsyslog配置文件默认会添加blobfuse日志文件：</p>
+<p>:programname, isequal, &quot;blobfuse2&quot; {</p>
+<p>*.* /var/log/blobfuse2.log</p>
+<p>:msg, contains, &quot;REQUEST&quot; {</p>
+<p>*.* /var/log/blobfuse2-rest.log</p>
+<p>}</p>
+<p>stop</p>
+<p>&quot;/etc/rsyslog.d/11-blobfuse2.conf&quot; 8L, 147C</p>
+<p>下载配置文件：</p>
+<p><a href="https://github.com/Azure/azure-storage-fuse/blob/main/setup/baseConfig.yaml" target="_blank" rel="noopener">https://github.com/Azure/azure-storage-fuse/blob/main/setup/baseConfig.yaml</a></p>
+<p>进行相关修改：</p>
+<h1>Logger configuration</h1>
+<p>logging:</p>
+<p>type: syslog  # |silent|base   # &lt;type of logger to be used by the system. silent = no logger, base = file based logger. Default - syslog&gt;</p>
+<p>level: log_debug        #log_off|log_crit|log_err|log_warning|log_info|log_trace|log_debug   #&lt;log level. Default - log_warning&gt; &lt;log_debug will also enable sdk-trace logs&gt;</p>
+<h1>file-path: &lt;path where log files shall be stored. Default - &#39;$HOME/.blobfuse2/blobfuse2.log&#39;&gt;  没有配置默认配置文件路径</h1>
+<h1>Pipeline configuration. Choose components to be engaged. The order below is the priority order that needs to be followed.</h1>
+<p>components:</p>
+<ul>
+<li>libfuse</li>
+</ul>
+<h1>- block_cache</h1>
+<ul>
+<li>file_cache</li>
+</ul>
+<h1>- attr_cache</h1>
+<ul>
+<li>azstorage</li>
+</ul>
+<h1>Block cache related configuration</h1>
+<p>#block_cache:</p>
+<h1>block-size-mb: &lt;size of each block to be cached in memory (in MB). Default - 16 MB&gt;</h1>
+<h1>mem-size-mb: &lt;total amount of memory to be preallocated for block cache (in MB). Default - 80% of free memory&gt;</h1>
+<h1>path: &lt;path to local disk cache where downloaded blocked will be stored&gt;</h1>
+<h1>disk-size-mb: &lt;maximum disk cache size allowed. Default - 80% of free disk space&gt;</h1>
+<h1>disk-timeout-sec: &lt;default disk cache eviction timeout (in sec). Default - 120 sec&gt;</h1>
+<h1>prefetch: &lt;number of blocks to be prefetched in serial read case. Min - 11, Default - 2 times number of CPU cores&gt;</h1>
+<h1>parallelism: &lt;number of parallel threads downloading the data and writing to disk cache. Default - 3 times number of CPU cores&gt;</h1>
+<h1>Disk cache related configuration</h1>
+<p>file_cache:</p>
+<h1>Required</h1>
+<p>path: /mnt/blobfuse2tmp  #&lt;path to local disk cache&gt;</p>
+<h1>Optional</h1>
+<p>timeout-sec: 120 #&lt;default cache eviction timeout (in sec). Default - 120 sec&gt;</p>
+<p>max-size-mb: 4096 #&lt;maximum cache size allowed. Default - 80% of free disk space&gt;</p>
+<h1>Azure storage configuration</h1>
+<p>azstorage:</p>
+<p>type: block #|adls &lt;type of storage account to be connected. Default - block&gt;</p>
+<p>account-name: n2rg1diag #&lt;name of the storage account&gt;</p>
+<p>container: blobfuse2 # &lt;name of the storage container to be mounted&gt;</p>
+<p>endpoint:  <a href="https://n2rg1diag.blob.core.chinacloudapi.cn" target="_blank" rel="noopener">https://n2rg1diag.blob.core.chinacloudapi.cn</a> # &lt;storage account endpoint (example - <a href="https://account-name.blob.core.windows.net)&gt;" target="_blank" rel="noopener">https://account-name.blob.core.windows.net)&gt;</a></p>
+<p>mode: key  #|sas|spn|msi|azcli &lt;kind of authentication to be used&gt;</p>
+<p>account-key: [REDACTED_STORAGE_KEY] # &lt;storage account key&gt;</p>
+<h1>OR</h1>
+<h1>sas: &lt;storage account sas&gt;</h1>
+<h1>appid: &lt;storage account app id / client id for MSI&gt;</h1>
+<p>#resid: &lt;storage account resource id for MSI&gt;</p>
+<p>#objid: &lt;object id for MSI - needs Azure CLI on system&gt;</p>
+<p>#tenantid: &lt;storage account tenant id for SPN&gt;</p>
+<p>#clientid: &lt;storage account client id for SPN&gt;</p>
+<p>#clientsecret: &lt;storage account client secret for SPN&gt;</p>
+<p>#oauth-token-path: &lt;path to file containing the OAuth token&gt;</p>
+<p>挂载：</p>
+<p>root@Ubuntu20:~# blobfuse2 /blobfuse/  --config-file=./config.yaml</p>
+<p>root@Ubuntu20:~# df -Rh</p>
+<p>df: invalid option -- &#39;R&#39;</p>
+<p>Try &#39;df --help&#39; for more information.</p>
+<p>root@Ubuntu20:~# df -Th</p>
+<p>Filesystem     Type      Size  Used Avail Use% Mounted on</p>
+<p>/dev/root      ext4       29G   15G   15G  51% /</p>
+<p>devtmpfs       devtmpfs  3.9G     0  3.9G   0% /dev</p>
+<p>tmpfs          tmpfs     3.9G     0  3.9G   0% /dev/shm</p>
+<p>tmpfs          tmpfs     795M  1.1M  793M   1% /run</p>
+<p>tmpfs          tmpfs     5.0M     0  5.0M   0% /run/lock</p>
+<p>tmpfs          tmpfs     3.9G     0  3.9G   0% /sys/fs/cgroup</p>
+<p>/dev/loop1     squashfs   64M   64M     0 100% /snap/core20/2318</p>
+<p>/dev/loop0     squashfs   64M   64M     0 100% /snap/core20/2264</p>
+<p>/dev/loop3     squashfs   92M   92M     0 100% /snap/lxd/29619</p>
+<p>/dev/loop4     squashfs   39M   39M     0 100% /snap/snapd/21759</p>
+<p>/dev/sdb15     vfat      105M  6.1M   99M   6% /boot/efi</p>
+<p>/dev/loop2     squashfs   92M   92M     0 100% /snap/lxd/24061</p>
+<p>/dev/loop5     squashfs   39M   39M     0 100% /snap/snapd/21465</p>
+<p>/dev/sda1      ext4       16G   32K   15G   1% /mnt</p>
+<p>tmpfs          tmpfs     794M     0  794M   0% /run/user/1000</p>
+<p>blobfuse2      fuse      4.0G  4.0K  4.0G   1% /blobfuse</p>
+<p>查看创建文件后已经产生日志</p>
+<p>root@Ubuntu20:~# cd /blobfuse/</p>
+<p>root@Ubuntu20:/blobfuse# ls</p>
+<p>root@Ubuntu20:/blobfuse# touch 123.txt</p>
+<p>root@Ubuntu20:/blobfuse# vim /var/log/blobfuse2</p>
+<p>blobfuse2-rest.log  blobfuse2.log</p>
+<p>root@Ubuntu20:/blobfuse# vim /var/log/blobfuse2.log</p>
+<p>root@Ubuntu20:/blobfuse# cat /var/log/blobfuse2.log</p>
+<p>2024-08-16T17:56:31.095848+08:00 Ubuntu20 blobfuse2[17247]: [/blobfuse] LOG_CRIT [mount.go (407)]: Starting Blobfuse2 Mount : 2.3.0 on [Ubuntu 20.04.4 LTS]</p>
+<p>2024-08-16T17:56:31.146822+08:00 Ubuntu20 blobfuse2[17247]: [/blobfuse] LOG_INFO [mount.go (408)]: Mount Command: [blobfuse2 /blobfuse/ --config-file=./config.yaml]</p>
+<p>2024-08-16T17:56:31.146955+08:00 Ubuntu20 blobfuse2[17247]: [/blobfuse] LOG_CRIT [mount.go (409)]: Logging level set to : LOG_DEBUG</p>
+<p>2024-08-16T17:56:31.147044+08:00 Ubuntu20 blobfuse2[17247]: [/blobfuse] LOG_DEBUG [mount.go (410)]: Mount allowed on nonempty path : false</p>
+<p>再通过修改rsyslog服务，修改日志文件路径：从/var/log 改为 /usr/log  下</p>
+<p>*.* /usr/log/blobfuse2.log</p>
+<p>*.* /usr/log/blobfuse2-rest.log</p>
+<p>重启rsyslog服务</p>
+<p>root@Ubuntu20:~# systemctl restart rsyslog.service</p>
+<p>root@Ubuntu20:~#</p>
+<p>在/usr/log 目录下没有生成新的日志文件</p>
+<p>root@Ubuntu20:~# ls /usr/log/</p>
+<p>且/var/log/blobfuse2.log 也不会再有重启rsyslog服务时间点后的新日志记录</p>
+<p>root@Ubuntu20:~# tail /var/log/blobfuse2.log</p>
+<p>2024-08-17T18:48:46.692001+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [utils.go (151)]: SDK(Response) : ==&gt; REQUEST/RESPONSE (Try=1/17.760441ms, OpTime=17.804442ms) -- RESPONSE RECEIVED#012   GET <a href="https://n2rg1diag.blob.core.chinacloudapi.cn/blobfuse2?comp=list&amp;delimiter=%2F&amp;include=metadata&amp;marker=&amp;maxresults=5000&amp;prefix=&amp;restype=container#012" target="_blank" rel="noopener">https://n2rg1diag.blob.core.chinacloudapi.cn/blobfuse2?comp=list&amp;delimiter=%2F&amp;include=metadata&amp;marker=&amp;maxresults=5000&amp;prefix=&amp;restype=container#012</a>   Accept: application/xml#012   Authorization: REDACTED#012   User-Agent: Azure-Storage-Fuse/2.3.0 (Ubuntu 20.04.4 LTS) azsdk-go-azblob/v1.3.2 (go1.22.1; linux)#012   X-Ms-Date: Sat, 17 Aug 2024 10:48:46 GMT#012   x-ms-version: 2023-11-03#012   --------------------------------------------------------------------------------#012   RESPONSE Status: 200 OK#012   Content-Type: application/xml#012   Date: Sat, 17 Aug 2024 10:48:45 GMT#012   Server: Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0#012   X-Ms-Request-Id: e3c58115-601e-000f-6993-f04f32000000#012   X-Ms-Version: 2023-11-03</p>
+<p>2024-08-17T18:48:46.692130+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [utils.go (151)]: SDK(Retry) : response 200</p>
+<p>2024-08-17T18:48:46.692199+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [utils.go (151)]: SDK(Retry) : exit due to non-retriable status code</p>
+<p>2024-08-17T18:48:46.692261+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [azstorage.go (306)]: AzStorage::StreamDir : Retrieved 2 objects with  marker for Path</p>
+<p>2024-08-17T18:48:46.692687+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_TRACE [libfuse_handler.go (493)]: Libfuse::libfuse_releasedir : , handle: 1</p>
+<p>2024-08-17T18:49:36.204312+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [cache_policy.go (97)]: cachePolicy::getUsagePercentage : current cache usage : 0.000095%</p>
+<p>2024-08-17T18:50:36.197756+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [cache_policy.go (97)]: cachePolicy::getUsagePercentage : current cache usage : 0.000095%</p>
+<p>2024-08-17T18:50:36.229779+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_TRACE [lru_policy.go (287)]: lruPolicy::Clear-timeout monitor</p>
+<p>2024-08-17T18:50:36.229883+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_TRACE [lru_policy.go (358)]: lruPolicy::updateMarker</p>
+<p>2024-08-17T18:50:36.229952+08:00 Ubuntu20 blobfuse2[8441]: [/blobfuse] LOG_DEBUG [lru_policy.go (381)]: lruPolicy::deleteExpiredNodes : Starts</p>
+<p>后排查系统日志，发现是没有权限写入：</p>
+<p>vim /var/log/syslog</p>
+<p>2024-08-17T19:24:24.752281+08:00 Ubuntu20 rsyslogd: file &#39;/usr/log/blobfuse2.log&#39;: open error: Permission denied [v8.2001.0 try <a href="https://www.rsyslog.com/e/2433" target="_blank" rel="noopener">https://www.rsyslog.com/e/2433</a> ]</p>
+<p>查看 /var/log 和 /usr/log 目录权限并进行修改：</p>
+<p>root@Ubuntu20:/usr/log# ll -d /usr/log/</p>
+<p>drwxr-xr-x 2 root root 4096 Aug 17 18:39 /usr/log/</p>
+<p>root@Ubuntu20:/usr/log# ll -d /var/log/</p>
+<p>drwxrwxr-x 11 root syslog 4096 Aug 17 19:33 /var/log/</p>
+<p>root@Ubuntu20:~# chown root.syslog /usr/log</p>
+<p>root@Ubuntu20:~# ll -d /usr/log/</p>
+<p>drwxr-xr-x 2 root syslog 4096 Aug 17 18:39 /usr/log/</p>
+<p>root@Ubuntu20:~# chmod 774 /usr/log/</p>
+<p>drwxrwxr-- 2 root syslog 4096 Aug 17 18:39 /usr/log/</p>
+<p>修改相关权限后，可以在 /usr/log 目录下看到新生成的blobfuse日志：</p>
+<p>root@Ubuntu20:~# tail /usr/log/blobfuse2.log</p>
+<p>2024-08-17T19:48:42.561581+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_DEBUG [block_blob.go (924)]: BlockBlob::WriteFromFile : Upload complete of blob 111.txt</p>
+<p>2024-08-17T19:48:42.561989+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_TRACE [libfuse_handler.go (858)]: Libfuse::libfuse_release : 111.txt, handle: 3</p>
+<p>2024-08-17T19:48:42.562224+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_TRACE [file_cache.go (1019)]: FileCache::closeFileInternal : name=111.txt, handle=3</p>
+<p>2024-08-17T19:48:42.562450+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_TRACE [file_cache.go (1206)]: FileCache::FlushFile : handle=3, path=111.txt</p>
+<p>2024-08-17T19:48:42.562853+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_TRACE [lru_policy.go (179)]: lruPolicy::CacheInvalidate : /mnt/blobfuse2tmp/111.txt</p>
+<p>2024-08-17T19:49:30.348462+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_DEBUG [cache_policy.go (97)]: cachePolicy::getUsagePercentage : current cache usage : 0.000191%</p>
+<p>2024-08-17T19:50:30.350706+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_DEBUG [cache_policy.go (97)]: cachePolicy::getUsagePercentage : current cache usage : 0.000191%</p>
+<p>2024-08-17T19:50:30.351154+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_TRACE [lru_policy.go (287)]: lruPolicy::Clear-timeout monitor</p>
+<p>2024-08-17T19:50:30.351237+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_TRACE [lru_policy.go (358)]: lruPolicy::updateMarker</p>
+<p>2024-08-17T19:50:30.351306+08:00 Ubuntu20 blobfuse2[6642]: [/blobfuse] LOG_DEBUG [lru_policy.go (381)]: lruPolicy::deleteExpiredNodes : Starts</p>
+<p>所以从测试结果看，通过修改 rsyslog服务的配置文件，可以修改blobfuse的日志存放位置，但是要注意，对应目录需要让syslog 组有写权限。</p></article>

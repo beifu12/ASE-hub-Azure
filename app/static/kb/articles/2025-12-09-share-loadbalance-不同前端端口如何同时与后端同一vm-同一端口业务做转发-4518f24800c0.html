@@ -1,0 +1,137 @@
+<article class="kb-article" data-title="【share】loadbalance 不同前端端口如何同时与后端同一vm 同一端口业务做转发"><h1>【share】loadbalance 不同前端端口如何同时与后端同一vm 同一端口业务做转发</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AzureResourceMover</li>
+<li>Section: Azure Resource Mover</li>
+<li>最近修改: 2025-12-09 19:46:25</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>【测试】可以复现用户的现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>【测试】可以复现用户的现象：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1，它应是 Azure 控制平面（ARM）在保存配置时做的一层“数据库唯一性校验”。</li>
+</ul>
+<ul>
+<li>转发：可以叫做Direct Server Return（DSR）或者半 NAT 模式，全程透传，无额外封装。</li>
+</ul>
+<ul>
+<li>收到 FrontendIP:Port 的包 → 查流表 → 把目的 IP/port 改成 BackendIP:Port → 直接给到后端 NIC。</li>
+</ul>
+<ul>
+<li>回包到达后端 NIC 后，LB 再把源 IP/port 改回 FrontendIP:Port → 送回客户端。</li>
+</ul>
+<ul>
+<li>2，控制平面</li>
+</ul>
+<ul>
+<li>2） 每类规则内部还要保证“五元组 → 后端”映射唯一：</li>
+</ul>
+<ul>
+<li>- LB 类：(vip，protocal，vip port，backend pool ，backend port)</li>
+</ul>
+<ul>
+<li>- NAT 类：(vip，protocal，vip port，backend pool ，backend port)</li>
+</ul>
+<ul>
+<li>重复会被拒绝，以保证数据平面流表键唯一。</li>
+</ul>
+<ul>
+<li>如果允许两条规则同时声明：</li>
+</ul>
+<ul>
+<li>A  前:1.2.3.4:1883  TCP  →  后:10.0.0.5:1883</li>
+</ul>
+<ul>
+<li>B  前:1.2.3.4:1886  TCP  →  后:10.0.0.5:1883</li>
+</ul>
+<ul>
+<li>方案1：LB 前端再部署一个ip：frontend ip1 1883 port 代理backend poolA 1883 port，frontend ip2 1886 port代理新建相同vm的backend poolB 1883 port.</li>
+</ul>
+<ul>
+<li>即配置两条loadbalance rule 满足。</li>
+</ul>
+<ul>
+<li>方案2：LB loadbalance rule，配置frontend ip 1883 port代理 backend pool 1883 port。 nat rule 同frontend ip  1886代理同vm 的backend pool 1883 port。</li>
+</ul>
+<ul>
+<li>即一条loadbalance rule加一条nat rule，此时nat规则和loadbalance rule 是不冲突的。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>【share】loadbalance 不同前端端口如何同时与后端同一vm 同一端口业务做转发</li>
+</ul>
+<ul>
+<li>【问题背景】需求是入站的1883/1886两个端口，转发至后端同一个虚拟机的1883端口，无法保存。</li>
+</ul>
+<ul>
+<li>Error 提示：“输入的后端池、端口和协议组合与此负载均衡器使用的另一个规则匹配。负载均衡器上的每个负载均衡规则及入站 NAT 规则的入站 NAT 规则(网络 IP 配置)和端口组合都必须是唯一的。”</li>
+</ul>
+<ul>
+<li>Error 英文提示：The frontend, protocol and port combination you entered matches another rule used by this load balancer. The frontend, protocol and port combination of each load balancing rule and inbound NAT rule on a load balancer must be unique.</li>
+</ul>
+<ul>
+<li>【问题分析】LB属于四层透传分流代理，产品设计上：vip，protocal，vip port，backend pool/vm ，backend port等要求唯一，转发时，网关处应是会根据vip+后端ip+后端端口，反查vip 端口，协议等。</li>
+</ul>
+<ul>
+<li>1） 任何两条规则（LB 或 NAT）都不能出现重复的 (前端 IP, 协议, 前端端口)，否则 ARM 在提交阶段直接报错。</li>
+</ul>
+<ul>
+<li>数据平面看到的“目的”都是 10.0.0.5:1883，回包时它必须把源换回原来那个前端端口（1883 或 1886）。</li>
+</ul>
+<ul>
+<li>这会需要LB 记住双向流表，流表索引是(frontend IP, frontend port, protocol, backend IP, backend port)。</li>
+</ul>
+<ul>
+<li>若两条规则的后端元组完全相同，索引会重复，数据平面无法区分回包到底该用 1883 还是 1886 作为源端口，因此控制平面会先禁止这种配置出现。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>【解决方案】</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>【share】loadbalance 不同前端端口如何同时与后端同一vm 同一端口业务做转发</p>
+<p>2025/12/09</p>
+<p>【问题背景】需求是入站的1883/1886两个端口，转发至后端同一个虚拟机的1883端口，无法保存。</p>
+<p>Error 提示：“输入的后端池、端口和协议组合与此负载均衡器使用的另一个规则匹配。负载均衡器上的每个负载均衡规则及入站 NAT 规则的入站 NAT 规则(网络 IP 配置)和端口组合都必须是唯一的。”</p>
+<p>Error 英文提示：The frontend, protocol and port combination you entered matches another rule used by this load balancer. The frontend, protocol and port combination of each load balancing rule and inbound NAT rule on a load balancer must be unique.</p>
+<p>【测试】可以复现用户的现象：</p>
+<p>【问题分析】LB属于四层透传分流代理，产品设计上：vip，protocal，vip port，backend pool/vm ，backend port等要求唯一，转发时，网关处应是会根据vip+后端ip+后端端口，反查vip 端口，协议等。</p>
+<p>1，它应是 Azure 控制平面（ARM）在保存配置时做的一层“数据库唯一性校验”。</p>
+<p>转发：可以叫做Direct Server Return（DSR）或者半 NAT 模式，全程透传，无额外封装。</p>
+<p>收到 FrontendIP:Port 的包 → 查流表 → 把目的 IP/port 改成 BackendIP:Port → 直接给到后端 NIC。</p>
+<p>回包到达后端 NIC 后，LB 再把源 IP/port 改回 FrontendIP:Port → 送回客户端。</p>
+<p>2，控制平面</p>
+<p>1） 任何两条规则（LB 或 NAT）都不能出现重复的 (前端 IP, 协议, 前端端口)，否则 ARM 在提交阶段直接报错。</p>
+<p>2） 每类规则内部还要保证“五元组 → 后端”映射唯一：</p>
+<ul>
+<li>LB 类：(vip，protocal，vip port，backend pool ，backend port)</li>
+</ul>
+<ul>
+<li>NAT 类：(vip，protocal，vip port，backend pool ，backend port)</li>
+</ul>
+<p>重复会被拒绝，以保证数据平面流表键唯一。</p>
+<p>如果允许两条规则同时声明：</p>
+<p>A  前:1.2.3.4:1883  TCP  →  后:10.0.0.5:1883</p>
+<p>B  前:1.2.3.4:1886  TCP  →  后:10.0.0.5:1883</p>
+<p>数据平面看到的“目的”都是 10.0.0.5:1883，回包时它必须把源换回原来那个前端端口（1883 或 1886）。</p>
+<p>这会需要LB 记住双向流表，流表索引是(frontend IP, frontend port, protocol, backend IP, backend port)。</p>
+<p>若两条规则的后端元组完全相同，索引会重复，数据平面无法区分回包到底该用 1883 还是 1886 作为源端口，因此控制平面会先禁止这种配置出现。</p>
+<p>【解决方案】</p>
+<p>方案1：LB 前端再部署一个ip：frontend ip1 1883 port 代理backend poolA 1883 port，frontend ip2 1886 port代理新建相同vm的backend poolB 1883 port.</p>
+<p>即配置两条loadbalance rule 满足。</p>
+<p>方案2：LB loadbalance rule，配置frontend ip 1883 port代理 backend pool 1883 port。 nat rule 同frontend ip  1886代理同vm 的backend pool 1883 port。</p>
+<p>即一条loadbalance rule加一条nat rule，此时nat规则和loadbalance rule 是不冲突的。</p></article>

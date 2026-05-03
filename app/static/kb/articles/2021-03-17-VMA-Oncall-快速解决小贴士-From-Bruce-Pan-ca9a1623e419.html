@@ -1,0 +1,209 @@
+<article class="kb-article" data-title="VMA Oncall 快速解决小贴士 ---- From Bruce Pan"><h1>VMA Oncall 快速解决小贴士 ---- From Bruce Pan</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2021-03-17 11:09:42</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>由于VMA的特殊性，客户会在无法访问虚拟机的时候，半夜call进来, 需要我们不得不爬起来，顶着晕乎乎的脑袋，帮他解决问题，那么如何能在最短时间内把问题解决掉，继续睡我们的回笼觉，就变得非常有意义了，也是本文的宗旨所在</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>由于VMA的特殊性，客户会在无法访问虚拟机的时候，半夜call进来, 需要我们不得不爬起来，顶着晕乎乎的脑袋，帮他解决问题，那么如何能在最短时间内把问题解决掉，继续睡我们的回笼觉，就变得非常有意义了，也是本文的宗旨所在</li>
+</ul>
+<ul>
+<li>虚拟机无法连接或者登陆.</li>
+</ul>
+<ul>
+<li>如果再细分下虚拟机无法连接或者登陆的原因呢, 大致分为以下几种情况:</li>
+</ul>
+<ul>
+<li>那么思路有了，剩下的就是实战，一位熟练工，可以花5分钟搭好console环境，同时让客户加入到远程会议中，10分钟搞定一个虚拟机无法访问的A的case！但是，台前十分钟，台下十年功！练好基本功才是王道！</li>
+</ul>
+<ul>
+<li>基本功之如何快速定位启动故障：</li>
+</ul>
+<ul>
+<li>==Linux启动故障一</li>
+</ul>
+<ul>
+<li>复制完毕后，通过console进入单用户模式，针对报错的文件系统进行fsck。</li>
+</ul>
+<ul>
+<li>如果这一切依然无法解决问题，那你就摊上大事了，请毫不犹豫的把CSS的工程师们call起来，让他们去折腾！</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>闲言少叙，对于虚拟机的问题，大致分以下两类：</li>
+</ul>
+<ul>
+<li>其他</li>
+</ul>
+<ul>
+<li>看到此处，会觉得内容这么简单，手段这么粗暴？答案是：</li>
+</ul>
+<ul>
+<li>对的！就这么简单！</li>
+</ul>
+<ul>
+<li>基本功之如何快速搭建console环境：</li>
+</ul>
+<ul>
+<li>&lt;Han Xu will put the tips here&gt;</li>
+</ul>
+<ul>
+<li>基本功之登录Linux单用户模式：</li>
+</ul>
+<ul>
+<li>登录console环境，重启虚拟机</li>
+</ul>
+<ul>
+<li>弹出grub界面时，按“e”</li>
+</ul>
+<ul>
+<li>选择启动项，按“e”</li>
+</ul>
+<ul>
+<li>进入grub编辑模式，选择kernel行，按“e”</li>
+</ul>
+<ul>
+<li>删除包含有ttyS0的项，如：console=ttyS0,115200n8 earlyprintk=ttyS0等</li>
+</ul>
+<ul>
+<li>修改ro为rw</li>
+</ul>
+<ul>
+<li>在行末加入“ showopt init=/bin/bash”</li>
+</ul>
+<ul>
+<li>完成后，回车结束，并按“ctrl+x”或者“b”启动（参考下方的提示）</li>
+</ul>
+<ul>
+<li>基本功之如何重启SSH/RDP服务：</li>
+</ul>
+<ul>
+<li>==重启SSH服务</li>
+</ul>
+<ul>
+<li># service sshd stop|start</li>
+</ul>
+<ul>
+<li>Or</li>
+</ul>
+<ul>
+<li># systemctl stop|start sshd.service</li>
+</ul>
+<ul>
+<li># /etc/init.d/sshd stop|start</li>
+</ul>
+<ul>
+<li>==重启RDP服务</li>
+</ul>
+<ul>
+<li>点击开始-&gt;运行-&gt;services.msc</li>
+</ul>
+<ul>
+<li>选择Remote Desktop Services</li>
+</ul>
+<ul>
+<li>右键点击 stop|start|restart</li>
+</ul>
+<ul>
+<li>Fsck的用法如下：# fsck -yM &lt;file system name&gt;</li>
+</ul>
+<ul>
+<li>==未完待续</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>登录console，检查虚拟机是否正常运行，如果正常运行，则检查终结点的ACL，NSG的外部访问规则是否有限制。如果非正常运行或者卡死，则参见下一步。</li>
+</ul>
+<ul>
+<li>如果Console界面显示黑屏（Linux）或者蓝屏（Windows），则虚拟机基本处于僵死状态或者启动失败，重启虚拟机可以解决大部分，如果问题依旧，检查启动日志（Linux）和启动过程中的报错信息（Windows）。</li>
+</ul>
+<ul>
+<li>步骤如下：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>启动后，会进入root权限的命令提示符下，进行修改和检查的操作。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>虚拟机的SSH/RDP端口可以ping通，但是无法正常登录访问。</li>
+</ul>
+<ul>
+<li>虚拟机的SSH/RDP端口无法ping通</li>
+</ul>
+<ul>
+<li>询问客户是否修改过SSH或者RDP的端口或者配置，是否添加修改过防火墙访问规则. 如果没有参见下一步。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>阅读本文之前，请一定要跟客户沟通好，如下操作是快速恢复他们的业务，如需保留现场环境用作RCA分析用，本文并不适用。</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案: 此类情况，一般都是虚拟机正在运行中，但是SSH服务或者RDP服务没有正常工作，通过Console登录虚拟机，进行排查，重启SSH服务或者RDP服务。</li>
+</ul>
+<ul>
+<li>解决方案:</li>
+</ul>
+<ul>
+<li>文件系统故障，需要手动fsck修复</li>
+</ul>
+<ul>
+<li>建议客户复制vhd，因为fsck过程中，损坏的数据和问题会被删除。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>由于VMA的特殊性，客户会在无法访问虚拟机的时候，半夜call进来, 需要我们不得不爬起来，顶着晕乎乎的脑袋，帮他解决问题，那么如何能在最短时间内把问题解决掉，继续睡我们的回笼觉，就变得非常有意义了，也是本文的宗旨所在</p>
+<p>阅读本文之前，请一定要跟客户沟通好，如下操作是快速恢复他们的业务，如需保留现场环境用作RCA分析用，本文并不适用。</p>
+<p>闲言少叙，对于虚拟机的问题，大致分以下两类：</p>
+<p>虚拟机无法连接或者登陆.</p>
+<p>其他</p>
+<p>如果再细分下虚拟机无法连接或者登陆的原因呢, 大致分为以下几种情况:</p>
+<p>虚拟机的SSH/RDP端口可以ping通，但是无法正常登录访问。</p>
+<p>解决方案: 此类情况，一般都是虚拟机正在运行中，但是SSH服务或者RDP服务没有正常工作，通过Console登录虚拟机，进行排查，重启SSH服务或者RDP服务。</p>
+<p>虚拟机的SSH/RDP端口无法ping通</p>
+<p>解决方案:</p>
+<p>询问客户是否修改过SSH或者RDP的端口或者配置，是否添加修改过防火墙访问规则. 如果没有参见下一步。</p>
+<p>登录console，检查虚拟机是否正常运行，如果正常运行，则检查终结点的ACL，NSG的外部访问规则是否有限制。如果非正常运行或者卡死，则参见下一步。</p>
+<p>如果Console界面显示黑屏（Linux）或者蓝屏（Windows），则虚拟机基本处于僵死状态或者启动失败，重启虚拟机可以解决大部分，如果问题依旧，检查启动日志（Linux）和启动过程中的报错信息（Windows）。</p>
+<p>看到此处，会觉得内容这么简单，手段这么粗暴？答案是：</p>
+<p>对的！就这么简单！</p>
+<p>那么思路有了，剩下的就是实战，一位熟练工，可以花5分钟搭好console环境，同时让客户加入到远程会议中，10分钟搞定一个虚拟机无法访问的A的case！但是，台前十分钟，台下十年功！练好基本功才是王道！</p>
+<p>基本功之如何快速搭建console环境：</p>
+<p>&lt;Han Xu will put the tips here&gt;</p>
+<p>基本功之登录Linux单用户模式：</p>
+<p>登录console环境，重启虚拟机</p>
+<p>弹出grub界面时，按“e”</p>
+<p>选择启动项，按“e”</p>
+<p>进入grub编辑模式，选择kernel行，按“e”</p>
+<p>删除包含有ttyS0的项，如：console=ttyS0,115200n8 earlyprintk=ttyS0等</p>
+<p>修改ro为rw</p>
+<p>在行末加入“ showopt init=/bin/bash”</p>
+<p>完成后，回车结束，并按“ctrl+x”或者“b”启动（参考下方的提示）</p>
+<p>启动后，会进入root权限的命令提示符下，进行修改和检查的操作。</p>
+<p>基本功之如何重启SSH/RDP服务：</p>
+<p>==重启SSH服务</p>
+<h1>service sshd stop|start</h1>
+<p>Or</p>
+<h1>systemctl stop|start sshd.service</h1>
+<h1>/etc/init.d/sshd stop|start</h1>
+<p>==重启RDP服务</p>
+<p>点击开始-&gt;运行-&gt;services.msc</p>
+<p>选择Remote Desktop Services</p>
+<p>右键点击 stop|start|restart</p>
+<p>基本功之如何快速定位启动故障：</p>
+<p>==Linux启动故障一</p>
+<p>文件系统故障，需要手动fsck修复</p>
+<p>步骤如下：</p>
+<p>建议客户复制vhd，因为fsck过程中，损坏的数据和问题会被删除。</p>
+<p>复制完毕后，通过console进入单用户模式，针对报错的文件系统进行fsck。</p>
+<p>Fsck的用法如下：# fsck -yM &lt;file system name&gt;</p>
+<p>==未完待续</p>
+<p>如果这一切依然无法解决问题，那你就摊上大事了，请毫不犹豫的把CSS的工程师们call起来，让他们去折腾！</p></article>

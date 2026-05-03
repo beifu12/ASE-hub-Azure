@@ -1,0 +1,52 @@
+<article class="kb-article" data-title="December 2022 - Mooncake CDN PG/Support Update"><h1>December 2022 - Mooncake CDN PG/Support Update</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: CDN Operation Guideline</li>
+<li>最近修改: 2023-05-10 07:27:52</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>How to identify the problem: customer reporting missing telemetry reflecting their global CDN usage. This issue is limited to customers using global acceleration with mooncake CDN. All other services are working as expected.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>How to identify the problem: customer reporting missing telemetry reflecting their global CDN usage. This issue is limited to customers using global acceleration with mooncake CDN. All other services are working as expected.</li>
+</ul>
+<ul>
+<li>Cache header setting behavior with Baidu – Provider Baidu has an unique behavior where it weighs cache rules over cache-header: private or no cache. Meaning, if a customer is on Baidu with cache rules, the default behavior is to respect cache rules for caching even though cache header is set to no-cache. Please engage PG if you encounter a customer on Baidu and has issues with cache header behaviors, work arounds will need to be addressed case by case.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Known items being tracked:</li>
+</ul>
+<ul>
+<li>大部分CDN逻辑是把cache-header: no cache 或者private default评定为权重最高， 但是百度的设计逻辑于此不同， 如遇到客户使用百度CDN时对cache header和caching rules的问题，请提交工单至PG予以协助。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Newly discovered issue – Mooncake CDN customers using Global Acceleration service may not see log reflecting their traffic usage specifically related to global traffic segment. The issue is limited to logs and does not impact customer production traffic.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>True fix: there is no work around now and engineering team is actively working with provider to resolve this problem. Issue was introduced by provider changing their API parameters, and we expect this API integration to be fixed by next week.</li>
+</ul>
+<ul>
+<li>CDN logs not available for newly created endpoints with a specific provider. Not resolved yet as provider is still working on fix.</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Newly discovered issue – Mooncake CDN customers using Global Acceleration service may not see log reflecting their traffic usage specifically related to global traffic segment. The issue is limited to logs and does not impact customer production traffic.</p>
+<p>How to identify the problem: customer reporting missing telemetry reflecting their global CDN usage. This issue is limited to customers using global acceleration with mooncake CDN. All other services are working as expected.</p>
+<p>True fix: there is no work around now and engineering team is actively working with provider to resolve this problem. Issue was introduced by provider changing their API parameters, and we expect this API integration to be fixed by next week.</p>
+<p>Known items being tracked:</p>
+<p>CDN logs not available for newly created endpoints with a specific provider. Not resolved yet as provider is still working on fix.</p>
+<p>Cache header setting behavior with Baidu – Provider Baidu has an unique behavior where it weighs cache rules over cache-header: private or no cache. Meaning, if a customer is on Baidu with cache rules, the default behavior is to respect cache rules for caching even though cache header is set to no-cache. Please engage PG if you encounter a customer on Baidu and has issues with cache header behaviors, work arounds will need to be addressed case by case.</p>
+<p>大部分CDN逻辑是把cache-header: no cache 或者private default评定为权重最高， 但是百度的设计逻辑于此不同， 如遇到客户使用百度CDN时对cache header和caching rules的问题，请提交工单至PG予以协助。</p></article>

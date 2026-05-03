@@ -1,0 +1,49 @@
+<article class="kb-article" data-title="CBP related error"><h1>CBP related error</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-16 16:57:12</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>For CBPIcMetadataValidationFailure See details in attach.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>For CBPIcMetadataValidationFailure See details in attach.</li>
+</ul>
+<ul>
+<li>From the error you are getting (CBPEncryptionKeyCacheInvalid) seems that it might be an issue with the OnlineBackup.KEK inside the scratch folder.  If customer knows the passphrase I would recommend re-registering MARS    Move the current kek file to an alternate location Make sure AV exceptions are configured Open console and register MARS</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>For WSBServerThrewException, No wiki.</li>
+</ul>
+<ul>
+<li>Some internal discussion about CBPEncryptionKeyCacheInvalid</li>
+</ul>
+<ul>
+<li>(See attach for some materials about OnlineBackup.KEK)</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>check if the Onlinebackup.kek file is available under in the Scratch folder, the default path for scratch folder is &quot;C:\Program Files\Microsoft Azure Recovery Services Agent\Scratch&quot;. if customer has moved the scratch location, make sure that the Onlinebackup.kek is copied into the new location.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>For CBPIcMetadataValidationFailure See details in attach.</p>
+<p>For WSBServerThrewException, No wiki.</p>
+<p>Some internal discussion about CBPEncryptionKeyCacheInvalid</p>
+<p>From the error you are getting (CBPEncryptionKeyCacheInvalid) seems that it might be an issue with the OnlineBackup.KEK inside the scratch folder.  If customer knows the passphrase I would recommend re-registering MARS    Move the current kek file to an alternate location Make sure AV exceptions are configured Open console and register MARS</p>
+<p>check if the Onlinebackup.kek file is available under in the Scratch folder, the default path for scratch folder is &quot;C:\Program Files\Microsoft Azure Recovery Services Agent\Scratch&quot;. if customer has moved the scratch location, make sure that the Onlinebackup.kek is copied into the new location.</p>
+<p>(See attach for some materials about OnlineBackup.KEK)</p></article>

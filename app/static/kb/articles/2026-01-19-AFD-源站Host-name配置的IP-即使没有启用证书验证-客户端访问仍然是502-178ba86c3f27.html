@@ -1,0 +1,137 @@
+<article class="kb-article" data-title="AFD 源站Host name配置的IP ,即使没有启用证书验证,客户端访问仍然是502"><h1>AFD 源站Host name配置的IP ,即使没有启用证书验证,客户端访问仍然是502</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AFD</li>
+<li>Section: Troubleshooting</li>
+<li>最近修改: 2026-01-19 15:56:36</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>如果AFD的源站的host Name配置的是IP, 可能通过AFD会访问遇到502的问题, 这一般是由于这种场景下,AFD 发起的SSL 协商没有SNI 字段,会导致源站响应不是预期中的证书而SSL握手失败.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>如果AFD的源站的host Name配置的是IP, 可能通过AFD会访问遇到502的问题, 这一般是由于这种场景下,AFD 发起的SSL 协商没有SNI 字段,会导致源站响应不是预期中的证书而SSL握手失败.</li>
+</ul>
+<ul>
+<li>现象同样是，客户通过AFD的请求返回是502。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述:</li>
+</ul>
+<ul>
+<li>====================</li>
+</ul>
+<ul>
+<li>=====================</li>
+</ul>
+<ul>
+<li>不能正常响应证书的示例:</li>
+</ul>
+<ul>
+<li>==============================</li>
+</ul>
+<ul>
+<li>1  修改源站的证书配置, 将默认站点替换为正确的证书</li>
+</ul>
+<ul>
+<li>2  AFD的Host Name配置域名替代IP</li>
+</ul>
+<ul>
+<li>***相关类似问题的补充：</li>
+</ul>
+<ul>
+<li>Case ID: 20251022378514</li>
+</ul>
+<ul>
+<li>问题：</li>
+</ul>
+<ul>
+<li>并且源中的host name是配置的IP地址。</li>
+</ul>
+<ul>
+<li>通过openssl的测试源的SSL证书：.\openssl.exe s_client -connect 40.162.208.125:443 -servername 40.162.208.125 -showcerts。可以看到这个这个证书是过期的。也可以看到这里返回的域名，并不是上面的加速域名，而是另一个域名campaign-bo.hermes.cn。</li>
+</ul>
+<ul>
+<li>结论：</li>
+</ul>
+<ul>
+<li>AFD在forward流量的时候，由于使用的也是IP，不是SNI，所以会和上面openssl的探测结果是一致的。根据咱们在组会中的讨论，如果Appgw有Basic的侦听器，那肯定是直接返回Basic的侦听器的证书。如果是目前这种情况，没有Basic侦听器，就会按照优先级最高的这个Routing rule返回相应的证书。</li>
+</ul>
+<ul>
+<li>解法：</li>
+</ul>
+<ul>
+<li>解决方式就是，客户直接更新了campaign-bo.hermes.cn的证书。访问恢复正常。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>验证的方法:</li>
+</ul>
+<ul>
+<li>排查：</li>
+</ul>
+<ul>
+<li>通过排查，可以看到，客户AFD的加速域名是maisonwindow.hermes.cn。</li>
+</ul>
+<ul>
+<li>如果查看源，会发现，源其实是Appgw。这种情况下，客户的AFD源站的host name是确实肯定是要写IP的，不可能放域名，因为公网DNS解析是会指向AFD的。</li>
+</ul>
+<ul>
+<li>进一步查看侦听器，会发现其中最后一个的域名配置，和AFD的加速域名是一致的，而campaign-bo.hermes.cn也包含在侦听器配置中。</li>
+</ul>
+<ul>
+<li>而继续查看Routing rule的优先级，可以看到campaign-bo.hermes.cn的优先级是最高的。</li>
+</ul>
+<ul>
+<li>最后就能解释为什么客户的请求返回了502，因为AFD认为客户的源证书是过期的。这一点可以从AFD的Roxy日志中查看。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>源站部署在AKS的ingrss 控制器后端pod中, 执行openssl命令测试源站响应的证书是ingress 控制器的默认证书</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>可以通过   openssl s_client   -servername &quot; &quot;  -connect  源站IP:443   或者    openssl s_client -connect 源站IP:443  不写servername 字段  进行验证,源站响应的证书是否正确</li>
+</ul>
+<ul>
+<li>可能de解决方法:</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/10/24</p>
+<p>问题描述:</p>
+<p>====================</p>
+<p>如果AFD的源站的host Name配置的是IP, 可能通过AFD会访问遇到502的问题, 这一般是由于这种场景下,AFD 发起的SSL 协商没有SNI 字段,会导致源站响应不是预期中的证书而SSL握手失败.</p>
+<p>验证的方法:</p>
+<p>=====================</p>
+<p>可以通过   openssl s_client   -servername &quot; &quot;  -connect  源站IP:443   或者    openssl s_client -connect 源站IP:443  不写servername 字段  进行验证,源站响应的证书是否正确</p>
+<p>不能正常响应证书的示例:</p>
+<p>源站部署在AKS的ingrss 控制器后端pod中, 执行openssl命令测试源站响应的证书是ingress 控制器的默认证书</p>
+<p>可能de解决方法:</p>
+<p>==============================</p>
+<p>1  修改源站的证书配置, 将默认站点替换为正确的证书</p>
+<p>2  AFD的Host Name配置域名替代IP</p>
+<p>***相关类似问题的补充：</p>
+<p>2025/10/28</p>
+<p>Case ID: 20251022378514</p>
+<p>问题：</p>
+<p>现象同样是，客户通过AFD的请求返回是502。</p>
+<p>排查：</p>
+<p>通过排查，可以看到，客户AFD的加速域名是maisonwindow.hermes.cn。</p>
+<p>并且源中的host name是配置的IP地址。</p>
+<p>通过openssl的测试源的SSL证书：.\openssl.exe s_client -connect 40.162.208.125:443 -servername 40.162.208.125 -showcerts。可以看到这个这个证书是过期的。也可以看到这里返回的域名，并不是上面的加速域名，而是另一个域名campaign-bo.hermes.cn。</p>
+<p>如果查看源，会发现，源其实是Appgw。这种情况下，客户的AFD源站的host name是确实肯定是要写IP的，不可能放域名，因为公网DNS解析是会指向AFD的。</p>
+<p>进一步查看侦听器，会发现其中最后一个的域名配置，和AFD的加速域名是一致的，而campaign-bo.hermes.cn也包含在侦听器配置中。</p>
+<p>而继续查看Routing rule的优先级，可以看到campaign-bo.hermes.cn的优先级是最高的。</p>
+<p>结论：</p>
+<p>AFD在forward流量的时候，由于使用的也是IP，不是SNI，所以会和上面openssl的探测结果是一致的。根据咱们在组会中的讨论，如果Appgw有Basic的侦听器，那肯定是直接返回Basic的侦听器的证书。如果是目前这种情况，没有Basic侦听器，就会按照优先级最高的这个Routing rule返回相应的证书。</p>
+<p>最后就能解释为什么客户的请求返回了502，因为AFD认为客户的源证书是过期的。这一点可以从AFD的Roxy日志中查看。</p>
+<p>解法：</p>
+<p>解决方式就是，客户直接更新了campaign-bo.hermes.cn的证书。访问恢复正常。</p></article>

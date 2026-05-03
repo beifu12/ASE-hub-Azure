@@ -1,0 +1,157 @@
+<article class="kb-article" data-title="AMigrate 物理服务器azure模拟环境（所有操作都可以实现）"><h1>AMigrate 物理服务器azure模拟环境（所有操作都可以实现）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Migrate</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-04-02 14:43:44</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错临时磁盘：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错临时磁盘：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny</li>
+</ul>
+<ul>
+<li>2023/4/11、12 update</li>
+</ul>
+<ul>
+<li>我发现服务器和复制服务器都是azure上的vm：</li>
+</ul>
+<ul>
+<li>安装发现服务器：</li>
+</ul>
+<ul>
+<li>且发现3台虚拟机成功：</li>
+</ul>
+<ul>
+<li>安装复制服务器：</li>
+</ul>
+<ul>
+<li>安装完成后注册:</li>
+</ul>
+<ul>
+<li>注意保存通行短语：</li>
+</ul>
+<ul>
+<li>复制：</li>
+</ul>
+<ul>
+<li>到这里选择虚拟机时由于是模拟物理机就发现不了：</li>
+</ul>
+<ul>
+<li>通过在被发现虚拟机中安装移动服务：</li>
+</ul>
+<ul>
+<li>找到对应版本的移动服务安装文件：</li>
+</ul>
+<ul>
+<li>复制到要被复制的虚拟机中：</li>
+</ul>
+<ul>
+<li>安装移动服务：</li>
+</ul>
+<ul>
+<li>注册到复制设备</li>
+</ul>
+<ul>
+<li>CD</li>
+</ul>
+<ul>
+<li>我这台虚拟机就一个系统盘，会把临时磁盘也识别处理，且会复制到azure</li>
+</ul>
+<ul>
+<li>可以选择只复制os磁盘，数据盘都可以去掉：</li>
+</ul>
+<ul>
+<li>重试选择就复制os磁盘，复制成功：</li>
+</ul>
+<ul>
+<li>迁移：</li>
+</ul>
+<ul>
+<li>测试迁移：</li>
+</ul>
+<ul>
+<li>完成：</li>
+</ul>
+<ul>
+<li>清理测试迁移：</li>
+</ul>
+<ul>
+<li>测试迁移清理后，就可以迁移了：</li>
+</ul>
+<ul>
+<li>物理机不支持自动关闭:</li>
+</ul>
+<ul>
+<li>迁移成功：</li>
+</ul>
+<ul>
+<li>最后可以停止复制：</li>
+</ul>
+<ul>
+<li>测试完成，整个过程都可以在azure环境中模拟了。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>azure上可以部署migrate 基于物理服务器的模拟环境，需要安装步骤的可以试试</li>
+</ul>
+<ul>
+<li>portal上再刷新就可以刷出configuration server了：</li>
+</ul>
+<ul>
+<li>portal中识别成功：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/migrate/tutorial-migrate-physical-virtual-machines#install-the-mobility-service" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/migrate/tutorial-migrate-physical-virtual-machines#install-the-mobility-service</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/4/10</p>
+<p>Johnny</p>
+<p>2023/4/11、12 update</p>
+<p>azure上可以部署migrate 基于物理服务器的模拟环境，需要安装步骤的可以试试</p>
+<p>我发现服务器和复制服务器都是azure上的vm：</p>
+<p>安装发现服务器：</p>
+<p>且发现3台虚拟机成功：</p>
+<p>安装复制服务器：</p>
+<p>安装完成后注册:</p>
+<p>注意保存通行短语：</p>
+<p>portal上再刷新就可以刷出configuration server了：</p>
+<p>复制：</p>
+<p>到这里选择虚拟机时由于是模拟物理机就发现不了：</p>
+<p>通过在被发现虚拟机中安装移动服务：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/migrate/tutorial-migrate-physical-virtual-machines#install-the-mobility-service" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/migrate/tutorial-migrate-physical-virtual-machines#install-the-mobility-service</a></p>
+<p>找到对应版本的移动服务安装文件：</p>
+<p>复制到要被复制的虚拟机中：</p>
+<p>安装移动服务：</p>
+<p>注册到复制设备</p>
+<p>CD</p>
+<p>portal中识别成功：</p>
+<p>我这台虚拟机就一个系统盘，会把临时磁盘也识别处理，且会复制到azure</p>
+<p>可以选择只复制os磁盘，数据盘都可以去掉：</p>
+<p>报错临时磁盘：</p>
+<p>重试选择就复制os磁盘，复制成功：</p>
+<p>迁移：</p>
+<p>测试迁移：</p>
+<p>完成：</p>
+<p>清理测试迁移：</p>
+<p>测试迁移清理后，就可以迁移了：</p>
+<p>物理机不支持自动关闭:</p>
+<p>迁移成功：</p>
+<p>最后可以停止复制：</p>
+<p>测试完成，整个过程都可以在azure环境中模拟了。</p></article>

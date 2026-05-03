@@ -1,0 +1,312 @@
+<article class="kb-article" data-title="Kusto排查aks升级是否有异常"><h1>Kusto排查aks升级是否有异常</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: TroubleShooting</li>
+<li>最近修改: 2023-07-11 09:27:13</li>
+<li>JD 相关性: 售后排障; AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>| where subscriptionID has &#39;53ce8880-1f95-4fd0-b503-11378b782ba2&#39;</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>| where subscriptionID has &#39;53ce8880-1f95-4fd0-b503-11378b782ba2&#39;</li>
+</ul>
+<ul>
+<li>error</li>
+</ul>
+<ul>
+<li>Failed to persist Succeeded provisioning state of aks cluster to the EntityStore</li>
+</ul>
+<ul>
+<li>errorDetails</li>
+</ul>
+<ul>
+<li>Failed</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;EntityStoreOperationError&quot;,</li>
+</ul>
+<ul>
+<li>EntityStoreOperationError</li>
+</ul>
+<ul>
+<li>GetEntityFailed</li>
+</ul>
+<ul>
+<li>53ce8880-1f95-4fd0-b503-11378b782ba2</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zhanglihong</li>
+</ul>
+<ul>
+<li>SR_2020092454007_[S500]  update，status always updating，can&#39;t update to newer version</li>
+</ul>
+<ul>
+<li>2020-09-23 03:18:22.4979743 //upgrade timestamp</li>
+</ul>
+<ul>
+<li>union AsyncContextActivity, HcpSyncContextActivity</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt; ago(6d) //datetime(2020-08-26 00:00:00) and PreciseTimeStamp &lt; datetime(2020-09-10 23:59:59)</li>
+</ul>
+<ul>
+<li>| where resourceGroupName has &#39;RG-AKSCSZ-CICD-PR&#39;</li>
+</ul>
+<ul>
+<li>| where resourceName has &#39;AKSCSZ-CICD&#39;</li>
+</ul>
+<ul>
+<li>| where operationID contains &quot;1471654c-861d-461f-a5a6-c70b90f59edd&quot;</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, level, operationID, msg, namespace, correlationID</li>
+</ul>
+<ul>
+<li>| where level != &#39;info&#39;</li>
+</ul>
+<ul>
+<li>PreciseTimeStamp</li>
+</ul>
+<ul>
+<li>level</li>
+</ul>
+<ul>
+<li>operationID</li>
+</ul>
+<ul>
+<li>msg</li>
+</ul>
+<ul>
+<li>namespace</li>
+</ul>
+<ul>
+<li>correlationID</li>
+</ul>
+<ul>
+<li>2020-09-23 03:20:54.0000000</li>
+</ul>
+<ul>
+<li>1471654c-861d-461f-a5a6-c70b90f59edd</li>
+</ul>
+<ul>
+<li>containerservice-async</li>
+</ul>
+<ul>
+<li>7a12e73e-07e1-da13-212d-fcfb08a839b0</li>
+</ul>
+<ul>
+<li>2020-09-23 03:23:43.0000000</li>
+</ul>
+<ul>
+<li>2020-09-23 03:26:13.0000000</li>
+</ul>
+<ul>
+<li>2020-09-23 03:28:45.0000000</li>
+</ul>
+<ul>
+<li>warning</li>
+</ul>
+<ul>
+<li>2020-09-23 03:31:15.0000000</li>
+</ul>
+<ul>
+<li>Pointer of type *common_model.ManagedCluster was nil</li>
+</ul>
+<ul>
+<li>insertionTime</li>
+</ul>
+<ul>
+<li>Count</li>
+</ul>
+<ul>
+<li>operationName</li>
+</ul>
+<ul>
+<li>suboperationName</li>
+</ul>
+<ul>
+<li>agentPoolName</li>
+</ul>
+<ul>
+<li>result</li>
+</ul>
+<ul>
+<li>resultCode</li>
+</ul>
+<ul>
+<li>resultSubCode</li>
+</ul>
+<ul>
+<li>k8sCurrentVersion</li>
+</ul>
+<ul>
+<li>k8sGoalVersion</li>
+</ul>
+<ul>
+<li>subscriptionID</li>
+</ul>
+<ul>
+<li>resourceGroupName</li>
+</ul>
+<ul>
+<li>resourceName</li>
+</ul>
+<ul>
+<li>region</li>
+</ul>
+<ul>
+<li>pod</li>
+</ul>
+<ul>
+<li>Underlay</li>
+</ul>
+<ul>
+<li>2020-09-23T03:18:23.8701096Z</li>
+</ul>
+<ul>
+<li>2</li>
+</ul>
+<ul>
+<li>PutManagedClusterHandler.PUT</li>
+</ul>
+<ul>
+<li>Updating</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>1.16.13</li>
+</ul>
+<ul>
+<li>RG-AKSCSZ-CICD-PR</li>
+</ul>
+<ul>
+<li>AKSCSZ-CICD</li>
+</ul>
+<ul>
+<li>chinaeast2</li>
+</ul>
+<ul>
+<li>containerserviceasync-55fdb477dc-ln2lb</li>
+</ul>
+<ul>
+<li>svc-1</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>skip log overlayReconcile metrics due to nil underlayProfile</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://armmcadx.chinaeast2.kusto.chinacloudapi.cn/armmc" target="_blank" rel="noopener">https://armmcadx.chinaeast2.kusto.chinacloudapi.cn/armmc</a></li>
+</ul>
+<ul>
+<li>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://akscn.kusto.chinacloudapi.cn/AKSprod" target="_blank" rel="noopener">https://akscn.kusto.chinacloudapi.cn/AKSprod</a></li>
+</ul>
+<ul>
+<li>Failed to list agent pools with skip token 0 from database, Get <a href="https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD/agentPools?skipToken=0:" target="_blank" rel="noopener">https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD/agentPools?skipToken=0:</a> x509: certificate is valid for ingress.local, not hcp-api.chinaeast2.svc.prod.service.azk8s.cn</li>
+</ul>
+<ul>
+<li>Could not set provisioning state for agentpools because list returned error: Get <a href="https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD/agentPools?skipToken=0:" target="_blank" rel="noopener">https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD/agentPools?skipToken=0:</a> x509: certificate is valid for ingress.local, not hcp-api.chinaeast2.svc.prod.service.azk8s.cn.</li>
+</ul>
+<ul>
+<li>Failed to persist managedcluster to db, error:  Put <a href="https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:" target="_blank" rel="noopener">https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:</a> x509: certificate is valid for ingress.local, not hcp-api.chinaeast2.svc.prod.service.azk8s.cn</li>
+</ul>
+<ul>
+<li>GetManagedClusterGoalState: managedCluster entity returned by data store, but also got an error: Get <a href="https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:" target="_blank" rel="noopener">https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:</a> x509: certificate is valid for ingress.local, not hcp-api.chinaeast2.svc.prod.service.azk8s.cn</li>
+</ul>
+<ul>
+<li>unable to get managed cluster: Get <a href="https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:" target="_blank" rel="noopener">https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:</a> x509: certificate is valid for ingress.local, not hcp-api.chinaeast2.svc.prod.service.azk8s.cn</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;unable to get managed cluster: Get <a href="https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:" target="_blank" rel="noopener">https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:</a> x509: certificate is valid for ingress.local, not hcp-api.chinaeast2.svc.prod.service.azk8s.cn&quot;</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zhanglihong</p>
+<p>SR_2020092454007_[S500]  update，status always updating，can&#39;t update to newer version</p>
+<p>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://armmcadx.chinaeast2.kusto.chinacloudapi.cn/armmc" target="_blank" rel="noopener">https://armmcadx.chinaeast2.kusto.chinacloudapi.cn/armmc</a></p>
+<p>2020-09-23 03:18:22.4979743 //upgrade timestamp</p>
+<p>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://akscn.kusto.chinacloudapi.cn/AKSprod" target="_blank" rel="noopener">https://akscn.kusto.chinacloudapi.cn/AKSprod</a></p>
+<p>union AsyncContextActivity, HcpSyncContextActivity</p>
+<p>| where PreciseTimeStamp &gt; ago(6d) //datetime(2020-08-26 00:00:00) and PreciseTimeStamp &lt; datetime(2020-09-10 23:59:59)</p>
+<p>| where subscriptionID has &#39;53ce8880-1f95-4fd0-b503-11378b782ba2&#39;</p>
+<p>| where resourceGroupName has &#39;RG-AKSCSZ-CICD-PR&#39;</p>
+<p>| where resourceName has &#39;AKSCSZ-CICD&#39;</p>
+<p>| where operationID contains &quot;1471654c-861d-461f-a5a6-c70b90f59edd&quot;</p>
+<p>| project PreciseTimeStamp, level, operationID, msg, namespace, correlationID</p>
+<p>| where level != &#39;info&#39;</p>
+<p>PreciseTimeStamp</p>
+<p>level</p>
+<p>operationID</p>
+<p>msg</p>
+<p>namespace</p>
+<p>correlationID</p>
+<p>2020-09-23 03:20:54.0000000</p>
+<p>error</p>
+<p>1471654c-861d-461f-a5a6-c70b90f59edd</p>
+<p>skip log overlayReconcile metrics due to nil underlayProfile</p>
+<p>containerservice-async</p>
+<p>7a12e73e-07e1-da13-212d-fcfb08a839b0</p>
+<p>2020-09-23 03:23:43.0000000</p>
+<p>Failed to list agent pools with skip token 0 from database, Get <a href="https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD/agentPools?skipToken=0:" target="_blank" rel="noopener">https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD/agentPools?skipToken=0:</a> x509: certificate is valid for ingress.local, not hcp-api.chinaeast2.svc.prod.service.azk8s.cn</p>
+<p>Could not set provisioning state for agentpools because list returned error: Get <a href="https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD/agentPools?skipToken=0:" target="_blank" rel="noopener">https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD/agentPools?skipToken=0:</a> x509: certificate is valid for ingress.local, not hcp-api.chinaeast2.svc.prod.service.azk8s.cn.</p>
+<p>2020-09-23 03:26:13.0000000</p>
+<p>Failed to persist managedcluster to db, error:  Put <a href="https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:" target="_blank" rel="noopener">https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:</a> x509: certificate is valid for ingress.local, not hcp-api.chinaeast2.svc.prod.service.azk8s.cn</p>
+<p>Failed to persist Succeeded provisioning state of aks cluster to the EntityStore</p>
+<p>2020-09-23 03:28:45.0000000</p>
+<p>GetManagedClusterGoalState: managedCluster entity returned by data store, but also got an error: Get <a href="https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:" target="_blank" rel="noopener">https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:</a> x509: certificate is valid for ingress.local, not hcp-api.chinaeast2.svc.prod.service.azk8s.cn</p>
+<p>warning</p>
+<p>unable to get managed cluster: Get <a href="https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:" target="_blank" rel="noopener">https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:</a> x509: certificate is valid for ingress.local, not hcp-api.chinaeast2.svc.prod.service.azk8s.cn</p>
+<p>2020-09-23 03:31:15.0000000</p>
+<p>Pointer of type *common_model.ManagedCluster was nil</p>
+<p>insertionTime</p>
+<p>Count</p>
+<p>operationName</p>
+<p>suboperationName</p>
+<p>agentPoolName</p>
+<p>result</p>
+<p>errorDetails</p>
+<p>resultCode</p>
+<p>resultSubCode</p>
+<p>k8sCurrentVersion</p>
+<p>k8sGoalVersion</p>
+<p>subscriptionID</p>
+<p>resourceGroupName</p>
+<p>resourceName</p>
+<p>region</p>
+<p>pod</p>
+<p>Underlay</p>
+<p>2020-09-23T03:18:23.8701096Z</p>
+<p>2</p>
+<p>PutManagedClusterHandler.PUT</p>
+<p>Updating</p>
+<p>Failed</p>
+<p>{</p>
+<p>&quot;code&quot;: &quot;EntityStoreOperationError&quot;,</p>
+<p>&quot;message&quot;: &quot;unable to get managed cluster: Get <a href="https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:" target="_blank" rel="noopener">https://hcp-api.chinaeast2.svc.prod.service.azk8s.cn/subscriptions/53ce8880-1f95-4fd0-b503-11378b782ba2/resourceGroups/RG-AKSCSZ-CICD-PR/managedClusters/AKSCSZ-CICD:</a> x509: certificate is valid for ingress.local, not hcp-api.chinaeast2.svc.prod.service.azk8s.cn&quot;</p>
+<p>}</p>
+<p>EntityStoreOperationError</p>
+<p>GetEntityFailed</p>
+<p>1.16.13</p>
+<p>53ce8880-1f95-4fd0-b503-11378b782ba2</p>
+<p>RG-AKSCSZ-CICD-PR</p>
+<p>AKSCSZ-CICD</p>
+<p>chinaeast2</p>
+<p>containerserviceasync-55fdb477dc-ln2lb</p>
+<p>svc-1</p></article>

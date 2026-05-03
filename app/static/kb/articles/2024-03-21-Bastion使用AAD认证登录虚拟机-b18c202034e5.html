@@ -1,0 +1,118 @@
+<article class="kb-article" data-title="Bastion使用AAD认证登录虚拟机"><h1>Bastion使用AAD认证登录虚拟机</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Bastion</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-03-21 13:46:25</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>HI All,</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>HI All,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>HI All,</li>
+</ul>
+<ul>
+<li>遇到客户需要使用AAD认证的方式使用Bastion登录VM，和大家分享一下具体使用方法</li>
+</ul>
+<ul>
+<li>=== AAD认证前提条件===</li>
+</ul>
+<ul>
+<li>支持的 Windows Server 2019 Datacenter 和更高版本，Windows 10 1809 和更高版本，Windows 11 21H2 更高版本</li>
+</ul>
+<ul>
+<li>3.   为  VM 启用 Azure AD 登录</li>
+</ul>
+<ul>
+<li>Azure 门户（创建 Windows VM 时）。</li>
+</ul>
+<ul>
+<li>4.   为 VM 配置角色分配</li>
+</ul>
+<ul>
+<li>虚拟机管理员登录：分配了此角色的用户可以使用管理员权限登录到 Azure 虚拟机。</li>
+</ul>
+<ul>
+<li>虚拟机用户登录：分配了此角色的用户可以使用常规用户权限登录到 Azure 虚拟机。</li>
+</ul>
+<ul>
+<li>仅允许从 Windows 10 或更高版本的电脑远程连接到已联接到 Azure AD 的 VM，而这些电脑需已注册了 Azure AD</li>
+</ul>
+<ul>
+<li>联接到 Azure AD 或向 VM 所联接到的同一目录进行了混合 Azure AD 联接。 此外，对于使用 Azure AD 凭证的 RDP，用户必须属于两个 Azure 角色之一，即虚拟机管理员登录或虚拟机用户登录。</li>
+</ul>
+<ul>
+<li>为Bastion启用本机客户端支持</li>
+</ul>
+<ul>
+<li>客户端加入AAD. 在客户端和Azure VM上都启用了NLA</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>5.    通过 Azure AD 使用密码/有限无密码身份验证登录</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Azure CLI，在创建 Windows VM 或使用现有 Windows VM 时。</li>
+</ul>
+<ul>
+<li>===Bastion配置和命令===</li>
+</ul>
+<ul>
+<li>Bastion运行连接命令</li>
+</ul>
+<ul>
+<li>az network bastion rdp  --name &quot;azz&quot; --resource-group &quot;0522&quot; --target-resource-id &quot;/subscriptions/88f28261-7c20-44dd-914f-1ce7ac0e76d2/resourceGroups/0522/providers/Microsoft.Compute/virtualMachines/a123321&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>确保 VM 网络配置允许通过 TCP 端口 443 对以下终结点进行出站访问</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://enterpriseregistration.partner.microsoftonline.cn：用于设备注册。" target="_blank" rel="noopener">https://enterpriseregistration.partner.microsoftonline.cn：用于设备注册。</a></li>
+</ul>
+<ul>
+<li><a href="http://169.254.169.254：Azure" target="_blank" rel="noopener">http://169.254.169.254：Azure</a> 实例元数据服务终结点。</li>
+</ul>
+<ul>
+<li><a href="https://login.chinacloudapi.cn：用于身份验证流。" target="_blank" rel="noopener">https://login.chinacloudapi.cn：用于身份验证流。</a></li>
+</ul>
+<ul>
+<li><a href="https://pas.chinacloudapi.cn：用于" target="_blank" rel="noopener">https://pas.chinacloudapi.cn：用于</a> Azure RBAC 流。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/06/26</p>
+<p>HI All,</p>
+<p>遇到客户需要使用AAD认证的方式使用Bastion登录VM，和大家分享一下具体使用方法</p>
+<p>=== AAD认证前提条件===</p>
+<p>支持的 Windows Server 2019 Datacenter 和更高版本，Windows 10 1809 和更高版本，Windows 11 21H2 更高版本</p>
+<p>确保 VM 网络配置允许通过 TCP 端口 443 对以下终结点进行出站访问</p>
+<p><a href="https://enterpriseregistration.partner.microsoftonline.cn：用于设备注册。" target="_blank" rel="noopener">https://enterpriseregistration.partner.microsoftonline.cn：用于设备注册。</a></p>
+<p><a href="http://169.254.169.254：Azure" target="_blank" rel="noopener">http://169.254.169.254：Azure</a> 实例元数据服务终结点。</p>
+<p><a href="https://login.chinacloudapi.cn：用于身份验证流。" target="_blank" rel="noopener">https://login.chinacloudapi.cn：用于身份验证流。</a></p>
+<p><a href="https://pas.chinacloudapi.cn：用于" target="_blank" rel="noopener">https://pas.chinacloudapi.cn：用于</a> Azure RBAC 流。</p>
+<p>3.   为  VM 启用 Azure AD 登录</p>
+<p>Azure 门户（创建 Windows VM 时）。</p>
+<p>Azure CLI，在创建 Windows VM 或使用现有 Windows VM 时。</p>
+<p>4.   为 VM 配置角色分配</p>
+<p>虚拟机管理员登录：分配了此角色的用户可以使用管理员权限登录到 Azure 虚拟机。</p>
+<p>虚拟机用户登录：分配了此角色的用户可以使用常规用户权限登录到 Azure 虚拟机。</p>
+<p>5.    通过 Azure AD 使用密码/有限无密码身份验证登录</p>
+<p>仅允许从 Windows 10 或更高版本的电脑远程连接到已联接到 Azure AD 的 VM，而这些电脑需已注册了 Azure AD</p>
+<p>联接到 Azure AD 或向 VM 所联接到的同一目录进行了混合 Azure AD 联接。 此外，对于使用 Azure AD 凭证的 RDP，用户必须属于两个 Azure 角色之一，即虚拟机管理员登录或虚拟机用户登录。</p>
+<p>===Bastion配置和命令===</p>
+<p>为Bastion启用本机客户端支持</p>
+<p>客户端加入AAD. 在客户端和Azure VM上都启用了NLA</p>
+<p>Bastion运行连接命令</p>
+<p>az network bastion rdp  --name &quot;azz&quot; --resource-group &quot;0522&quot; --target-resource-id &quot;/subscriptions/88f28261-7c20-44dd-914f-1ce7ac0e76d2/resourceGroups/0522/providers/Microsoft.Compute/virtualMachines/a123321&quot;</p></article>

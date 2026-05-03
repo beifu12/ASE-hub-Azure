@@ -1,0 +1,206 @@
+<article class="kb-article" data-title="[ARM-APPGW-multi-site-SNI]微信支付回调无法正常访问APPGW"><h1>[ARM-APPGW-multi-site-SNI]微信支付回调无法正常访问APPGW</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-09-23 16:54:11</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>微信侧请求中没有包含SNI这个Extension，于是多站点的AppGW无法知道这个请求应该被转发给哪个后端Website，因此在SSL的Handshake阶段发了RST</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>微信侧请求中没有包含SNI这个Extension，于是多站点的AppGW无法知道这个请求应该被转发给哪个后端Website，因此在SSL的Handshake阶段发了RST</li>
+</ul>
+<ul>
+<li>您的AppGW无法收到来自微信的所有主动请求（无论是回调，还是二维码等），这是由于 微信侧发来的请求中没有携带SNI 导致的。</li>
+</ul>
+<ul>
+<li>在此也提醒贵方，多站点服务端的HTTPS架构中，微信侧请求如果不带SNI，是无法正常工作的（无论是我们一直研究的微信回调问题，还是其他微信请求）。</li>
+</ul>
+<ul>
+<li>模拟微信回调请求有无法完全一致/无法复现的风险，如您之前测试，在虚拟机上您测试模拟请求访问AppGW，是可以访问的到的。因此之前没有这么做，而是尝试联系您看看测试单站点AppGW是否能重建，还望您理解！</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_2018041429952_[MS-LED]微信支付回调被WAF拦截</li>
+</ul>
+<ul>
+<li>8129/8130/8139 包代表微信和AppGW正常建立了TCP连接</li>
+</ul>
+<ul>
+<li>-&gt; 网络层通，TCP可以建立</li>
+</ul>
+<ul>
+<li>8140这个包，140.207.54.73（微信提供的白名单网段中上海联通出口网段）的Client Hello请求到达了AppGW</li>
+</ul>
+<ul>
+<li>8142这个包，AppGW在Handshake阶段没有回复Server Hello，而是RST</li>
+</ul>
+<ul>
+<li>这个Handshake过程中，</li>
+</ul>
+<ul>
+<li>Client Hello中微信侧应向AppGW提供以下信息：</li>
+</ul>
+<ul>
+<li>（1） 支持的协议版本，比如TLS 1.0版。</li>
+</ul>
+<ul>
+<li>（2） 一个客户端生成的随机数，稍后用于生成&quot;对话密钥&quot;。</li>
+</ul>
+<ul>
+<li>（3） 支持的加密方法，比如RSA公钥加密。</li>
+</ul>
+<ul>
+<li>（4） 支持的压缩方法。</li>
+</ul>
+<ul>
+<li>（5） Server Name Indication扩展。&lt;-- 老版的TLS协议中客户端发送的信息不包括服务器的域名，也就是说这样的请求只能发往单个网站的服务器，否则服务器会分不清应该向客户端提供哪一个网站的数字证书。这对于多站点AppGW以及其他虚拟主机的情景都不适用。2006年，TLS协议加入了一个Server Name Indication扩展，允许客户端向服务器提供它所请求的域名。</li>
+</ul>
+<ul>
+<li>我对比了其他访问这个多站点AppGW的请求，可以看到成功的SSL Handshake中Client Hello携带了以下字段：</li>
+</ul>
+<ul>
+<li>比对了其他Client Hello中发来的内容，没有发现明显的问题</li>
+</ul>
+<ul>
+<li>微信侧使用了TLSv1.2，这在AppGW默认policy中是支持的</li>
+</ul>
+<ul>
+<li>同时，微信侧请求包含了70个Cipher Suites，我对比了AppGW默认Policy支持的版本，可以正常匹配。</li>
+</ul>
+<ul>
+<li>In conclusion,</li>
+</ul>
+<ul>
+<li>$sslpolicy = Get-AzureRmApplicationGatewaySslPolicy -ApplicationGateway $gw</li>
+</ul>
+<ul>
+<li>$sslpolicy</li>
+</ul>
+<ul>
+<li>非常遗憾贵方遇到了微信回调这个问题，在有限的信息下很难或花了很长时间来解决。</li>
+</ul>
+<ul>
+<li>这不是AppGW的设计或者bug，而是 行业RFC规范中对TLS实现多站点需要启用SNI字段就有定义。</li>
+</ul>
+<ul>
+<li>我们理解贵方为了搭建测试环境需要耗费额外的人力财力，也完全理解您说的生产环境不易轻易变动。</li>
+</ul>
+<ul>
+<li>鉴于这个微信回调请求实际是由业务触发的，（1）如您所说，大家都很难让微信主动给我们发请求以便测试；（2）我们请dev的相关团队尝试了简单的微信主动发请求给单站点AppGW的场景，和您昨晚单站点的测试一样，是可以正常访问的；（3）我们没有对应的微信回调接口做测试。</li>
+</ul>
+<ul>
+<li>我们这边可以为您单独搭建一套单站点的AppGW，尝试通过Fiddler或其他工具来模拟微信的请求，尽力尝试复现您的问题。</li>
+</ul>
+<ul>
+<li>没有单站点的WAF，很难在排除SNI的情况下看看两种微信请求为何有不一样的结果。</li>
+</ul>
+<ul>
+<li>对于要测试多久的问题，建立完毕后，只需要：</li>
+</ul>
+<ul>
+<li>给我们一些余量时间，我们把AppGW上的日志拷贝到本地</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>根据抓包分析，我们发现 微信主动发起的请求抵达了应用程序网关，因未携带SNI字段，在Handshake阶段被AppGW 拒绝（发了RST）</li>
+</ul>
+<ul>
+<li>详细抓包分析如下，</li>
+</ul>
+<ul>
+<li>昨天下午在物理节点上抓包的截图，140.207.54.73是微信侧，139.219.64.167是AppGW</li>
+</ul>
+<ul>
+<li>从抓包可以看到，</li>
+</ul>
+<ul>
+<li>麻烦贵方确认是否曾手动指定过AppGW的Policy，我再Double Confirm一下目前使用的Policy会不会有其他问题</li>
+</ul>
+<ul>
+<li>$gw = Get-AzureRmApplicationGateway -Name joi-certVerify -ResourceGroup appgw-rg</li>
+</ul>
+<ul>
+<li>对于IIS部署的多站点服务端，没有SNI字段即无法确认请求被发送给哪个Web Service。</li>
+</ul>
+<ul>
+<li>尝试微信回调（失败的请求），我们在AppGW上抓包，情况与之前抓包相同</li>
+</ul>
+<ul>
+<li>尝试其他微信请求（成功的请求），我们同样会在AppGW上抓包</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>确认方法可以在PowerShell中执行以下命令，如果$sslpolicy为空 代表使用的是默认的Policy，如果不为空 麻烦客户提供一下结果</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>不修改架构的前提下，建议与微信侧沟通/从代码开发的角度，找个办法让微信侧的请求中携带SNI字段，否则多站点AppGW无法知道这个请求应被发给哪个WebService，因此无法正常工作</li>
+</ul>
+<ul>
+<li>修改架构的Workaround：AppGW上不使用Multi-site，单个站点的AppGW不会有此问题</li>
+</ul>
+<ul>
+<li>一般我们建议保留测试环境直至问题解决，但如果您有财力人力上的顾虑，至此可以将此单站点AppGW删除，我们会与产品组继续排查，如产品组在后续排查中有需要问题复现来验证，我们再看对策。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>AppGW默认Policy可参考：<a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-ssl-policy-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-ssl-policy-overview</a></li>
+</ul>
+<ul>
+<li>您可以参考RFC7525 （<a href="https://tools.ietf.org/html/rfc7525），截取部分如下" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc7525），截取部分如下</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2018041429952_[MS-LED]微信支付回调被WAF拦截</p>
+<p>根据抓包分析，我们发现 微信主动发起的请求抵达了应用程序网关，因未携带SNI字段，在Handshake阶段被AppGW 拒绝（发了RST）</p>
+<p>详细抓包分析如下，</p>
+<p>昨天下午在物理节点上抓包的截图，140.207.54.73是微信侧，139.219.64.167是AppGW</p>
+<p>8129/8130/8139 包代表微信和AppGW正常建立了TCP连接</p>
+<p>-&gt; 网络层通，TCP可以建立</p>
+<p>8140这个包，140.207.54.73（微信提供的白名单网段中上海联通出口网段）的Client Hello请求到达了AppGW</p>
+<p>8142这个包，AppGW在Handshake阶段没有回复Server Hello，而是RST</p>
+<p>这个Handshake过程中，</p>
+<p>Client Hello中微信侧应向AppGW提供以下信息：</p>
+<p>（1） 支持的协议版本，比如TLS 1.0版。</p>
+<p>（2） 一个客户端生成的随机数，稍后用于生成&quot;对话密钥&quot;。</p>
+<p>（3） 支持的加密方法，比如RSA公钥加密。</p>
+<p>（4） 支持的压缩方法。</p>
+<p>（5） Server Name Indication扩展。&lt;-- 老版的TLS协议中客户端发送的信息不包括服务器的域名，也就是说这样的请求只能发往单个网站的服务器，否则服务器会分不清应该向客户端提供哪一个网站的数字证书。这对于多站点AppGW以及其他虚拟主机的情景都不适用。2006年，TLS协议加入了一个Server Name Indication扩展，允许客户端向服务器提供它所请求的域名。</p>
+<p>从抓包可以看到，</p>
+<p>微信侧请求中没有包含SNI这个Extension，于是多站点的AppGW无法知道这个请求应该被转发给哪个后端Website，因此在SSL的Handshake阶段发了RST</p>
+<p>我对比了其他访问这个多站点AppGW的请求，可以看到成功的SSL Handshake中Client Hello携带了以下字段：</p>
+<p>比对了其他Client Hello中发来的内容，没有发现明显的问题</p>
+<p>微信侧使用了TLSv1.2，这在AppGW默认policy中是支持的</p>
+<p>同时，微信侧请求包含了70个Cipher Suites，我对比了AppGW默认Policy支持的版本，可以正常匹配。</p>
+<p>AppGW默认Policy可参考：<a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-ssl-policy-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-ssl-policy-overview</a></p>
+<p>In conclusion,</p>
+<p>不修改架构的前提下，建议与微信侧沟通/从代码开发的角度，找个办法让微信侧的请求中携带SNI字段，否则多站点AppGW无法知道这个请求应被发给哪个WebService，因此无法正常工作</p>
+<p>修改架构的Workaround：AppGW上不使用Multi-site，单个站点的AppGW不会有此问题</p>
+<p>麻烦贵方确认是否曾手动指定过AppGW的Policy，我再Double Confirm一下目前使用的Policy会不会有其他问题</p>
+<p>确认方法可以在PowerShell中执行以下命令，如果$sslpolicy为空 代表使用的是默认的Policy，如果不为空 麻烦客户提供一下结果</p>
+<p>$gw = Get-AzureRmApplicationGateway -Name joi-certVerify -ResourceGroup appgw-rg</p>
+<p>$sslpolicy = Get-AzureRmApplicationGatewaySslPolicy -ApplicationGateway $gw</p>
+<p>$sslpolicy</p>
+<p>非常遗憾贵方遇到了微信回调这个问题，在有限的信息下很难或花了很长时间来解决。</p>
+<p>您的AppGW无法收到来自微信的所有主动请求（无论是回调，还是二维码等），这是由于 微信侧发来的请求中没有携带SNI 导致的。</p>
+<p>对于IIS部署的多站点服务端，没有SNI字段即无法确认请求被发送给哪个Web Service。</p>
+<p>这不是AppGW的设计或者bug，而是 行业RFC规范中对TLS实现多站点需要启用SNI字段就有定义。</p>
+<p>您可以参考RFC7525 （<a href="https://tools.ietf.org/html/rfc7525），截取部分如下" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc7525），截取部分如下</a></p>
+<p>在此也提醒贵方，多站点服务端的HTTPS架构中，微信侧请求如果不带SNI，是无法正常工作的（无论是我们一直研究的微信回调问题，还是其他微信请求）。</p>
+<p>我们理解贵方为了搭建测试环境需要耗费额外的人力财力，也完全理解您说的生产环境不易轻易变动。</p>
+<p>鉴于这个微信回调请求实际是由业务触发的，（1）如您所说，大家都很难让微信主动给我们发请求以便测试；（2）我们请dev的相关团队尝试了简单的微信主动发请求给单站点AppGW的场景，和您昨晚单站点的测试一样，是可以正常访问的；（3）我们没有对应的微信回调接口做测试。</p>
+<p>我们这边可以为您单独搭建一套单站点的AppGW，尝试通过Fiddler或其他工具来模拟微信的请求，尽力尝试复现您的问题。</p>
+<p>模拟微信回调请求有无法完全一致/无法复现的风险，如您之前测试，在虚拟机上您测试模拟请求访问AppGW，是可以访问的到的。因此之前没有这么做，而是尝试联系您看看测试单站点AppGW是否能重建，还望您理解！</p>
+<p>没有单站点的WAF，很难在排除SNI的情况下看看两种微信请求为何有不一样的结果。</p>
+<p>对于要测试多久的问题，建立完毕后，只需要：</p>
+<p>尝试微信回调（失败的请求），我们在AppGW上抓包，情况与之前抓包相同</p>
+<p>尝试其他微信请求（成功的请求），我们同样会在AppGW上抓包</p>
+<p>给我们一些余量时间，我们把AppGW上的日志拷贝到本地</p>
+<p>一般我们建议保留测试环境直至问题解决，但如果您有财力人力上的顾虑，至此可以将此单站点AppGW删除，我们会与产品组继续排查，如产品组在后续排查中有需要问题复现来验证，我们再看对策。</p></article>

@@ -1,0 +1,63 @@
+<article class="kb-article" data-title="自定义镜像安装中文语言包后部署avd报错"><h1>自定义镜像安装中文语言包后部署avd报错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Microsoft Sentinel</li>
+<li>Section: Azure VD</li>
+<li>最近修改: 2022-04-18 15:55:14</li>
+<li>JD 相关性: Defender/Sentinel/安全</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>中文版windows 10镜像部署avd，</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>中文版windows 10镜像部署avd，</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>中文版windows 10镜像部署avd，</li>
+</ul>
+<ul>
+<li>WinRM is already set up to receive requests on this computer.</li>
+</ul>
+<ul>
+<li>添加如下防护墙策略制作镜像，可以成功加入AVD的环境中</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>portal报错信息：wsmanfault&quot; Code=&quot;2&quot; Machine=&quot;chinaavd2-0.tmcsoft.cn&quot;&gt;&lt;f:Message&gt;Unable to check the status of the firewall. &lt;/f:Message&gt;</li>
+</ul>
+<ul>
+<li>内部确认：</li>
+</ul>
+<ul>
+<li>PS C:\Users\test01&gt; Set-WSManQuickConfig -SkipNetworkProfileCheck -Force</li>
+</ul>
+<ul>
+<li>tp://schemas.microsoft.com/wbem/wsman/1/wsmanfault&quot; Code=&quot;2&quot; Machine=&quot;newchinesev-0&quot;&gt;&lt;f:Message&gt;Unable to check the status of the firewall. &lt;/f:Message&gt;&lt;/f:WSManFault&gt;&lt;/f:ProviderFault&gt;&lt;/f:Message&gt;&lt;/f:WSManFault&gt;</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>netsh advfirewall firewall add rule name=&quot;Windows Remote Management (HTTP-In)&quot; dir=in action=allow service=any enable=yes profile=any localport=5985 protocol=tcp</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Set-WSManQuickConfig : &lt;f:WSManFault xmlns:f=&quot;<a href="http://schemas.microsoft.com/wbem/wsman/1/wsmanfault&quot;" target="_blank" rel="noopener">http://schemas.microsoft.com/wbem/wsman/1/wsmanfault&quot;</a> Code=&quot;2&quot; Machine=&quot;localhost&quot;&gt;&lt;f:Message&gt;&lt;f:ProviderFault provider=&quot;Config provider&quot; path=&quot;%systemroot%\system32\WsmSvc.dll&quot;&gt;&lt;f:WSManFault xmlns:f=&quot;ht</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022-04-18</p>
+<p>中文版windows 10镜像部署avd，</p>
+<p>portal报错信息：wsmanfault&quot; Code=&quot;2&quot; Machine=&quot;chinaavd2-0.tmcsoft.cn&quot;&gt;&lt;f:Message&gt;Unable to check the status of the firewall. &lt;/f:Message&gt;</p>
+<p>内部确认：</p>
+<p>PS C:\Users\test01&gt; Set-WSManQuickConfig -SkipNetworkProfileCheck -Force</p>
+<p>WinRM is already set up to receive requests on this computer.</p>
+<p>Set-WSManQuickConfig : &lt;f:WSManFault xmlns:f=&quot;<a href="http://schemas.microsoft.com/wbem/wsman/1/wsmanfault&quot;" target="_blank" rel="noopener">http://schemas.microsoft.com/wbem/wsman/1/wsmanfault&quot;</a> Code=&quot;2&quot; Machine=&quot;localhost&quot;&gt;&lt;f:Message&gt;&lt;f:ProviderFault provider=&quot;Config provider&quot; path=&quot;%systemroot%\system32\WsmSvc.dll&quot;&gt;&lt;f:WSManFault xmlns:f=&quot;ht</p>
+<p>tp://schemas.microsoft.com/wbem/wsman/1/wsmanfault&quot; Code=&quot;2&quot; Machine=&quot;newchinesev-0&quot;&gt;&lt;f:Message&gt;Unable to check the status of the firewall. &lt;/f:Message&gt;&lt;/f:WSManFault&gt;&lt;/f:ProviderFault&gt;&lt;/f:Message&gt;&lt;/f:WSManFault&gt;</p>
+<p>添加如下防护墙策略制作镜像，可以成功加入AVD的环境中</p>
+<p>netsh advfirewall firewall add rule name=&quot;Windows Remote Management (HTTP-In)&quot; dir=in action=allow service=any enable=yes profile=any localport=5985 protocol=tcp</p></article>

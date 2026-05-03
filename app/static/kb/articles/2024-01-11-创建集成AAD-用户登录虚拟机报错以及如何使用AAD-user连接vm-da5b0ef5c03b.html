@@ -1,0 +1,263 @@
+<article class="kb-article" data-title="创建集成AAD 用户登录虚拟机报错以及如何使用AAD user连接vm"><h1>创建集成AAD 用户登录虚拟机报错以及如何使用AAD user连接vm</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2024-01-11 13:19:32</li>
+<li>JD 相关性: 售后排障; Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错信息：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错信息：</li>
+</ul>
+<ul>
+<li>创建虚拟机报错如下：</li>
+</ul>
+<ul>
+<li>serviceRequestId：95fefbe0-07fb-48d4-adbd-b1cb101a5648。&quot;status&quot;: &quot;Failed&quot;,</li>
+</ul>
+<ul>
+<li>&quot;error&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;VMExtensionProvisioningError&quot;,</li>
+</ul>
+<ul>
+<li>2024-01-09T03:38:16.6983236Z  [Information]:    TenantInfo::Discover: DsrBeginDiscover failed. 0x80072efd</li>
+</ul>
+<ul>
+<li>2024-01-09T03:38:16.6983236Z  [Information]:    AzureSecureVMJoinOperation: DsrCmdAzureHelper::Discover with tenantId &#39;fa1e608b-a7d3-42f4-b32c-7b45d3736396&#39; failed 0x801c0021.</li>
+</ul>
+<ul>
+<li>2024-01-09T03:38:16.6983236Z  [Error]:  AAD Join failed with status code -2145648607.</li>
+</ul>
+<ul>
+<li>按照文档配置后无法登陆成功：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>测试创建了虚拟机选择了集成使用aad 登录：</li>
+</ul>
+<ul>
+<li>可以部署成功：</li>
+</ul>
+<ul>
+<li>对比扩展日志：</li>
+</ul>
+<ul>
+<li>2024-01-09T03:38:16.6670213Z  [Information]:    Targeting host name:169.254.169.254, url path: /metadata/instance/compute?api-version=2017-12-01</li>
+</ul>
+<ul>
+<li>2024-01-09T03:38:16.6685195Z  [Information]:    Received Content (size 508):</li>
+</ul>
+<ul>
+<li>2024-01-09T03:38:16.6722028Z  [Information]:               {&quot;location&quot;:&quot;ChinaNorth3&quot;,&quot;name&quot;:&quot;21vd1jumphost2&quot;,&quot;offer&quot;:&quot;windows-11&quot;,&quot;osType&quot;: ... _D4s_v5&quot;,&quot;zone&quot;:&quot;&quot;}</li>
+</ul>
+<ul>
+<li>2024-01-09T03:38:16.6826889Z  [Information]:    Getting Tenant ID from MSI.</li>
+</ul>
+<ul>
+<li>2024-01-09T03:38:16.6826889Z  [Information]:    Targeting host name:169.254.169.254, url path: /metadata/identity/info?api-version=2018-02-01</li>
+</ul>
+<ul>
+<li>2024-01-09T03:38:16.6826889Z  [Information]:    Received Content (size 52):</li>
+</ul>
+<ul>
+<li>2024-01-09T03:38:16.6826889Z  [Information]:    {&quot;tenantId&quot;:&quot;fa1e608b-a7d3-42f4-b32c-7b45d3736396&quot;}</li>
+</ul>
+<ul>
+<li>2024-01-09T03:38:16.6983236Z  [Information]:    Discover tenant info with Tenant ID fa1e608b-a7d3-42f4-b32c-7b45d3736396.</li>
+</ul>
+<ul>
+<li>2024-01-09T03:38:16.7139483Z  [Information]:    Reporting handler status.</li>
+</ul>
+<ul>
+<li>=============================</li>
+</ul>
+<ul>
+<li>我这里测试正常加入的日志：</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:14.9638441Z  [Information]:    Targeting host name:169.254.169.254, url path: /metadata/identity/info?api-version=2018-02-01</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:14.9638441Z  [Information]:    Received Content (size 52):</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:14.9794741Z  [Information]:    {&quot;tenantId&quot;:&quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;}</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:14.9794741Z  [Information]:    Discover tenant info with Tenant ID b388b808-0ec9-4a09-a414-a7cbbd8b7e9b.</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:14.9794741Z  [Information]:    Getting MSI token for app urn:ms-drs:enterpriseregistration.partner.microsoftonline.cn.</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:14.9794741Z  [Information]:    Targeting host name:169.254.169.254, url path: /metadata/identity/oauth2/token?resource=urn:ms-drs:enterpriseregistration.partner.microsoftonline.cn&amp;api-version=2018-02-01</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:14.9950993Z  [Information]:    Received Content (size 1619):</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:14.9950993Z  [Information]:     {&quot;access_token&quot;:&quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IkNNMlVJR21DMFNEZTl ... ken_type&quot;:&quot;Bearer&quot;}</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:14.9950993Z  [Information]:    Starting join process with MSI credential.</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:14.9950993Z  [Information]:    Join request ID: 7411198f-d9a5-4e6b-833f-212f26437ee7</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:15.0107223Z  [Information]:    Join response time: Tue, 09 Jan 2024 04:12:14 GMT</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:15.0107223Z  [Information]:    Join HTTP status: 200</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:15.0263456Z  [Information]:    Successfully joined machine to AAD.</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:15.0263456Z  [Information]:    Reporting handler status.</li>
+</ul>
+<ul>
+<li>我这里的网络安全组没有限制访问外网。</li>
+</ul>
+<ul>
+<li>后客户创建虚拟机成功，接下来是使用aad user登录 vm的问题。</li>
+</ul>
+<ul>
+<li>我这里测试了，正常需要使用AAD user 登录 vm，需要登陆的客户端电脑也加入 Azure Ad。</li>
+</ul>
+<ul>
+<li>非官方处理方法：</li>
+</ul>
+<ul>
+<li>编辑文件，加入如下两行：</li>
+</ul>
+<ul>
+<li>authentication level:i:2</li>
+</ul>
+<ul>
+<li>还需要提前关闭NLA：</li>
+</ul>
+<ul>
+<li>然后双击打开rdp文件时注意用户名先需要添加azuread\用户名</li>
+</ul>
+<ul>
+<li>然后就可以登录成功了：</li>
+</ul>
+<ul>
+<li>注意启用per-user MFA 后就不可以登录了：</li>
+</ul>
+<ul>
+<li>所以不能使用每用户MFA，如需要MFA需要通过条件访问配置MFA。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2024-01-09T03:38:16.7139483Z  [Information]:    Handler Status: [{&quot;status&quot;:{&quot;code&quot;:-2145648607,&quot;formattedMessage&quot;:{&quot;lang&quot;:&quot;en-US&quot;,&quot;message&quot;:&quot;AAD Join failed with status code: -2145648607. AzureSecureVMJoinOperation: DsrCmdAzureHelper::Discover with tenantId &#39;fa1e608b-a7d3-42f4-b32c-7b45d3736396&#39; failed 0x801c0021.&quot;},&quot;name&quot;:&quot;Microsoft.Azure.ActiveDirectory.AADLoginForWindows&quot;,&quot;operation&quot;:&quot;AADJoin&quot;,&quot;status&quot;:&quot;error&quot;,&quot;substatus&quot;:null},&quot;timestampUTC&quot;:&quot;\/Date(1704771496713)\/&quot;,&quot;version&quot;:&quot;1&quot;}]</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:15.0107223Z  [Information]:    Adding AADLogonForWindowsExtensionJoined registry setting</li>
+</ul>
+<ul>
+<li>2024-01-09T04:12:15.0263456Z  [Information]:    Handler Status: [{&quot;status&quot;:{&quot;code&quot;:0,&quot;formattedMessage&quot;:{&quot;lang&quot;:&quot;en-US&quot;,&quot;message&quot;:&quot;Successfully joined machine to AAD.&quot;},&quot;name&quot;:&quot;Microsoft.Azure.ActiveDirectory.AADLoginForWindows&quot;,&quot;operation&quot;:&quot;AADJoin&quot;,&quot;status&quot;:&quot;success&quot;,&quot;substatus&quot;:null},&quot;timestampUTC&quot;:&quot;\/Date(1704773535026)\/&quot;,&quot;version&quot;:&quot;1&quot;}]</li>
+</ul>
+<ul>
+<li>客户是使用的已有NSG，请客户查看网络是否允许如下域名或者ip放行：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>若要为 Azure 中的 Windows VM 启用 Microsoft Entra 身份验证，你需要确保 VM 网络配置允许通过 TCP 端口 443 对以下终结点进行出站访问。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>2024-01-09T03:38:16.6761787Z  [Information]:    Azure resource Id:/subscriptions/fbea1ead-1706-4f11-9791-dea7d084e2c8/resourceGroups/Datasolutionchina/providers/Microsoft.Compute/virtualMachines/21vd1jumphost2</li>
+</ul>
+<ul>
+<li>可以通过修改RDP文件的方式：</li>
+</ul>
+<ul>
+<li>enablecredsspsupport:i:0</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>&quot;message&quot;: &quot;VM 在处理扩展“AADLoginForWindows”(发布者“Microsoft.Azure.ActiveDirectory”，类型“AADLoginForWindows”)时报告了故障。错误消息:“AAD Join failed with status code: -2145648607. AzureSecureVMJoinOperation: DsrCmdAzureHelper::Discover with tenantId &#39;fa1e608b-a7d3-42f4-b32c-7b45d3736396&#39; failed 0x801c0021.”。有关故障排除的详细信息，请访问 <a href="https://aka.ms/vmextensionwindowstroubleshoot。&quot;" target="_blank" rel="noopener">https://aka.ms/vmextensionwindowstroubleshoot。&quot;</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/entra/identity/devices/howto-vm-sign-in-azure-ad-windows" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/devices/howto-vm-sign-in-azure-ad-windows</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/virtual-desktop/azure-ad-joined-session-hosts" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-desktop/azure-ad-joined-session-hosts</a></li>
+</ul>
+<ul>
+<li><a href="https://www.niallbrady.com/2017/08/23/how-can-i-rdp-to-an-azure-ad-joined-windows-10-device/" target="_blank" rel="noopener">https://www.niallbrady.com/2017/08/23/how-can-i-rdp-to-an-azure-ad-joined-windows-10-device/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/1/11</p>
+<p>报错信息：</p>
+<p>创建虚拟机报错如下：</p>
+<p>serviceRequestId：95fefbe0-07fb-48d4-adbd-b1cb101a5648。&quot;status&quot;: &quot;Failed&quot;,</p>
+<p>&quot;error&quot;: {</p>
+<p>&quot;code&quot;: &quot;VMExtensionProvisioningError&quot;,</p>
+<p>&quot;message&quot;: &quot;VM 在处理扩展“AADLoginForWindows”(发布者“Microsoft.Azure.ActiveDirectory”，类型“AADLoginForWindows”)时报告了故障。错误消息:“AAD Join failed with status code: -2145648607. AzureSecureVMJoinOperation: DsrCmdAzureHelper::Discover with tenantId &#39;fa1e608b-a7d3-42f4-b32c-7b45d3736396&#39; failed 0x801c0021.”。有关故障排除的详细信息，请访问 <a href="https://aka.ms/vmextensionwindowstroubleshoot。&quot;" target="_blank" rel="noopener">https://aka.ms/vmextensionwindowstroubleshoot。&quot;</a></p>
+<p>测试创建了虚拟机选择了集成使用aad 登录：</p>
+<p>可以部署成功：</p>
+<p>对比扩展日志：</p>
+<p>2024-01-09T03:38:16.6670213Z  [Information]:    Targeting host name:169.254.169.254, url path: /metadata/instance/compute?api-version=2017-12-01</p>
+<p>2024-01-09T03:38:16.6685195Z  [Information]:    Received Content (size 508):</p>
+<p>2024-01-09T03:38:16.6722028Z  [Information]:               {&quot;location&quot;:&quot;ChinaNorth3&quot;,&quot;name&quot;:&quot;21vd1jumphost2&quot;,&quot;offer&quot;:&quot;windows-11&quot;,&quot;osType&quot;: ... _D4s_v5&quot;,&quot;zone&quot;:&quot;&quot;}</p>
+<p>2024-01-09T03:38:16.6761787Z  [Information]:    Azure resource Id:/subscriptions/fbea1ead-1706-4f11-9791-dea7d084e2c8/resourceGroups/Datasolutionchina/providers/Microsoft.Compute/virtualMachines/21vd1jumphost2</p>
+<p>2024-01-09T03:38:16.6826889Z  [Information]:    Getting Tenant ID from MSI.</p>
+<p>2024-01-09T03:38:16.6826889Z  [Information]:    Targeting host name:169.254.169.254, url path: /metadata/identity/info?api-version=2018-02-01</p>
+<p>2024-01-09T03:38:16.6826889Z  [Information]:    Received Content (size 52):</p>
+<p>2024-01-09T03:38:16.6826889Z  [Information]:    {&quot;tenantId&quot;:&quot;fa1e608b-a7d3-42f4-b32c-7b45d3736396&quot;}</p>
+<p>2024-01-09T03:38:16.6983236Z  [Information]:    Discover tenant info with Tenant ID fa1e608b-a7d3-42f4-b32c-7b45d3736396.</p>
+<p>2024-01-09T03:38:16.6983236Z  [Information]:    TenantInfo::Discover: DsrBeginDiscover failed. 0x80072efd</p>
+<p>2024-01-09T03:38:16.6983236Z  [Information]:    AzureSecureVMJoinOperation: DsrCmdAzureHelper::Discover with tenantId &#39;fa1e608b-a7d3-42f4-b32c-7b45d3736396&#39; failed 0x801c0021.</p>
+<p>2024-01-09T03:38:16.6983236Z  [Error]:  AAD Join failed with status code -2145648607.</p>
+<p>2024-01-09T03:38:16.7139483Z  [Information]:    Reporting handler status.</p>
+<p>2024-01-09T03:38:16.7139483Z  [Information]:    Handler Status: [{&quot;status&quot;:{&quot;code&quot;:-2145648607,&quot;formattedMessage&quot;:{&quot;lang&quot;:&quot;en-US&quot;,&quot;message&quot;:&quot;AAD Join failed with status code: -2145648607. AzureSecureVMJoinOperation: DsrCmdAzureHelper::Discover with tenantId &#39;fa1e608b-a7d3-42f4-b32c-7b45d3736396&#39; failed 0x801c0021.&quot;},&quot;name&quot;:&quot;Microsoft.Azure.ActiveDirectory.AADLoginForWindows&quot;,&quot;operation&quot;:&quot;AADJoin&quot;,&quot;status&quot;:&quot;error&quot;,&quot;substatus&quot;:null},&quot;timestampUTC&quot;:&quot;\/Date(1704771496713)\/&quot;,&quot;version&quot;:&quot;1&quot;}]</p>
+<p>=============================</p>
+<p>我这里测试正常加入的日志：</p>
+<p>2024-01-09T04:12:14.9638441Z  [Information]:    Targeting host name:169.254.169.254, url path: /metadata/identity/info?api-version=2018-02-01</p>
+<p>2024-01-09T04:12:14.9638441Z  [Information]:    Received Content (size 52):</p>
+<p>2024-01-09T04:12:14.9794741Z  [Information]:    {&quot;tenantId&quot;:&quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;}</p>
+<p>2024-01-09T04:12:14.9794741Z  [Information]:    Discover tenant info with Tenant ID b388b808-0ec9-4a09-a414-a7cbbd8b7e9b.</p>
+<p>2024-01-09T04:12:14.9794741Z  [Information]:    Getting MSI token for app urn:ms-drs:enterpriseregistration.partner.microsoftonline.cn.</p>
+<p>2024-01-09T04:12:14.9794741Z  [Information]:    Targeting host name:169.254.169.254, url path: /metadata/identity/oauth2/token?resource=urn:ms-drs:enterpriseregistration.partner.microsoftonline.cn&amp;api-version=2018-02-01</p>
+<p>2024-01-09T04:12:14.9950993Z  [Information]:    Received Content (size 1619):</p>
+<p>2024-01-09T04:12:14.9950993Z  [Information]:     {&quot;access_token&quot;:&quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IkNNMlVJR21DMFNEZTl ... ken_type&quot;:&quot;Bearer&quot;}</p>
+<p>2024-01-09T04:12:14.9950993Z  [Information]:    Starting join process with MSI credential.</p>
+<p>2024-01-09T04:12:14.9950993Z  [Information]:    Join request ID: 7411198f-d9a5-4e6b-833f-212f26437ee7</p>
+<p>2024-01-09T04:12:15.0107223Z  [Information]:    Join response time: Tue, 09 Jan 2024 04:12:14 GMT</p>
+<p>2024-01-09T04:12:15.0107223Z  [Information]:    Join HTTP status: 200</p>
+<p>2024-01-09T04:12:15.0107223Z  [Information]:    Adding AADLogonForWindowsExtensionJoined registry setting</p>
+<p>2024-01-09T04:12:15.0263456Z  [Information]:    Successfully joined machine to AAD.</p>
+<p>2024-01-09T04:12:15.0263456Z  [Information]:    Reporting handler status.</p>
+<p>2024-01-09T04:12:15.0263456Z  [Information]:    Handler Status: [{&quot;status&quot;:{&quot;code&quot;:0,&quot;formattedMessage&quot;:{&quot;lang&quot;:&quot;en-US&quot;,&quot;message&quot;:&quot;Successfully joined machine to AAD.&quot;},&quot;name&quot;:&quot;Microsoft.Azure.ActiveDirectory.AADLoginForWindows&quot;,&quot;operation&quot;:&quot;AADJoin&quot;,&quot;status&quot;:&quot;success&quot;,&quot;substatus&quot;:null},&quot;timestampUTC&quot;:&quot;\/Date(1704773535026)\/&quot;,&quot;version&quot;:&quot;1&quot;}]</p>
+<p>我这里的网络安全组没有限制访问外网。</p>
+<p>客户是使用的已有NSG，请客户查看网络是否允许如下域名或者ip放行：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/entra/identity/devices/howto-vm-sign-in-azure-ad-windows" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/devices/howto-vm-sign-in-azure-ad-windows</a></p>
+<p>若要为 Azure 中的 Windows VM 启用 Microsoft Entra 身份验证，你需要确保 VM 网络配置允许通过 TCP 端口 443 对以下终结点进行出站访问。</p>
+<p>后客户创建虚拟机成功，接下来是使用aad user登录 vm的问题。</p>
+<p>按照文档配置后无法登陆成功：</p>
+<p>我这里测试了，正常需要使用AAD user 登录 vm，需要登陆的客户端电脑也加入 Azure Ad。</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/virtual-desktop/azure-ad-joined-session-hosts" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-desktop/azure-ad-joined-session-hosts</a></p>
+<p>非官方处理方法：</p>
+<p>可以通过修改RDP文件的方式：</p>
+<p><a href="https://www.niallbrady.com/2017/08/23/how-can-i-rdp-to-an-azure-ad-joined-windows-10-device/" target="_blank" rel="noopener">https://www.niallbrady.com/2017/08/23/how-can-i-rdp-to-an-azure-ad-joined-windows-10-device/</a></p>
+<p>编辑文件，加入如下两行：</p>
+<p>enablecredsspsupport:i:0</p>
+<p>authentication level:i:2</p>
+<p>还需要提前关闭NLA：</p>
+<p>然后双击打开rdp文件时注意用户名先需要添加azuread\用户名</p>
+<p>然后就可以登录成功了：</p>
+<p>注意启用per-user MFA 后就不可以登录了：</p>
+<p>所以不能使用每用户MFA，如需要MFA需要通过条件访问配置MFA。</p></article>

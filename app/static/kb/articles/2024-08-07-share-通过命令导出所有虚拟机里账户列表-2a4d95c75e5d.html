@@ -1,0 +1,274 @@
+<article class="kb-article" data-title="[share]通过命令导出所有虚拟机里账户列表"><h1>[share]通过命令导出所有虚拟机里账户列表</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-07 11:56:10</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Write-Host &quot;Failed to retrieve accounts from VM $($vm.Name) in resource group $($vm.ResourceGroupName). Error: $_&quot;</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Write-Host &quot;Failed to retrieve accounts from VM $($vm.Name) in resource group $($vm.ResourceGroupName). Error: $_&quot;</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</li>
+</ul>
+<ul>
+<li>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</li>
+</ul>
+<ul>
+<li>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</li>
+</ul>
+<ul>
+<li>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</li>
+</ul>
+<ul>
+<li># 登录到Azure账户</li>
+</ul>
+<ul>
+<li>Connect-AzAccount   -EnvironmentName AzureChinaCloud</li>
+</ul>
+<ul>
+<li>#指定您的订阅，用subid</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -Subscription xxxxxxxxxxxxxxxxxxx</li>
+</ul>
+<ul>
+<li># 获取所有虚拟机列表</li>
+</ul>
+<ul>
+<li>$vms = Get-AzVM</li>
+</ul>
+<ul>
+<li># 准备存储结果的变量</li>
+</ul>
+<ul>
+<li>$vmAccounts = @()</li>
+</ul>
+<ul>
+<li>foreach ($vm in $vms) {</li>
+</ul>
+<ul>
+<li>try {</li>
+</ul>
+<ul>
+<li># 获取虚拟机的实例视图，包括电源状态和代理状态</li>
+</ul>
+<ul>
+<li>$instanceView = (Get-AzVM -ResourceGroupName $vm.ResourceGroupName -Name $vm.Name -Status)</li>
+</ul>
+<ul>
+<li>$powerState = ($instanceView.Statuses | Where-Object Code -like &#39;PowerState/*&#39;).DisplayStatus</li>
+</ul>
+<ul>
+<li>$agentStatus = ($instanceView.VMAgent.Statuses | Where-Object Code -eq &#39;ProvisioningState/succeeded&#39;).DisplayStatus</li>
+</ul>
+<ul>
+<li>if ($powerState -eq &#39;VM running&#39; -and $agentStatus -eq &#39;Ready&#39;) {</li>
+</ul>
+<ul>
+<li>if ($vm.StorageProfile.OsDisk.OsType -eq &quot;Windows&quot;) {</li>
+</ul>
+<ul>
+<li># 解析结果</li>
+</ul>
+<ul>
+<li>$accounts = $result.Value[0].Message</li>
+</ul>
+<ul>
+<li>$lines = $accounts -split &quot;<code>r?</code>n&quot;</li>
+</ul>
+<ul>
+<li># 删除前两行</li>
+</ul>
+<ul>
+<li>$lines = $lines[2..($lines.Length - 1)]</li>
+</ul>
+<ul>
+<li># 删除空行</li>
+</ul>
+<ul>
+<li>$lines = $lines | Where-Object { $_ -ne &quot;&quot; }</li>
+</ul>
+<ul>
+<li>foreach ($account in $lines) {</li>
+</ul>
+<ul>
+<li>$columns = $account -split &#39;\s+&#39;</li>
+</ul>
+<ul>
+<li>$vmAccounts += [PSCustomObject]@{</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>} elseif ($vm.StorageProfile.OsDisk.OsType -eq &quot;Linux&quot;) {</li>
+</ul>
+<ul>
+<li>$command = &#39;cut -d: -f1 /etc/passwd&#39;</li>
+</ul>
+<ul>
+<li>$result = Invoke-AzVMRunCommand -ResourceGroupName $vm.ResourceGroupName -VMName $vm.Name -CommandId &#39;RunShellScript&#39; -ScriptString $command</li>
+</ul>
+<ul>
+<li>$accounts = $result.Value[0].Message -split &quot;`n&quot; | Where-Object { $_ -ne &#39;&#39; }</li>
+</ul>
+<ul>
+<li>$lines = $accounts[2..($accounts.Length - 1)]</li>
+</ul>
+<ul>
+<li># 删除最后一行</li>
+</ul>
+<ul>
+<li>$accounts = $lines[0..($lines.Length - 2)]</li>
+</ul>
+<ul>
+<li>foreach ($account in $accounts) {</li>
+</ul>
+<ul>
+<li>} else {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Skipping VM $($vm.Name). It is either not running or the agent is not ready.&quot;</li>
+</ul>
+<ul>
+<li>} catch {</li>
+</ul>
+<ul>
+<li># 导出结果到CSV文件</li>
+</ul>
+<ul>
+<li>$vmAccounts | Export-Csv -Path &quot;c:\vm_accounts.csv&quot; -NoTypeInformation</li>
+</ul>
+<ul>
+<li>效果</li>
+</ul>
+<ul>
+<li>没开机的vm显示如下</li>
+</ul>
+<ul>
+<li>我这边例子 以下四台vm开启</li>
+</ul>
+<ul>
+<li>rmps                                      windows</li>
+</ul>
+<ul>
+<li>dcclient-intune                 windows</li>
+</ul>
+<ul>
+<li>work-east2                         linux</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Write-Host &quot;Export completed. Check vm_accounts.csv for the results.&quot;</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>温馨提示： 编写脚本问题已经超出了我们的Azure技术支持范畴。为了更好的客户服务体验，我们尝试帮您分析并排查此问题。与此同时，我们也不确认一定能够为您提供更多有价值的帮助，关于这一点，希望得到您的理解。</li>
+</ul>
+<ul>
+<li># 定义要执行的命令（Windows）</li>
+</ul>
+<ul>
+<li># 执行命令获取虚拟机中的用户账户列表</li>
+</ul>
+<ul>
+<li>$result = Invoke-AzVMRunCommand -ResourceGroupName $vm.ResourceGroupName -VMName $vm.Name -CommandId &#39;RunPowerShellScript&#39; -ScriptString $command</li>
+</ul>
+<ul>
+<li># 定义要执行的命令（Linux）</li>
+</ul>
+<ul>
+<li>new-dc                                 windows</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>VMName   = $vm.Name</li>
+</ul>
+<ul>
+<li>Account  = $columns[0]</li>
+</ul>
+<ul>
+<li>Enabled  = $columns[1]</li>
+</ul>
+<ul>
+<li>Account  = $account</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>$command = &#39;Get-LocalUser | Select-Object -Property Name, Enabled&#39;</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>温馨提示： 编写脚本问题已经超出了我们的Azure技术支持范畴。为了更好的客户服务体验，我们尝试帮您分析并排查此问题。与此同时，我们也不确认一定能够为您提供更多有价值的帮助，关于这一点，希望得到您的理解。</p>
+<p>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</p>
+<p>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</p>
+<p>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</p>
+<p>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</p>
+<h1>登录到Azure账户</h1>
+<p>Connect-AzAccount   -EnvironmentName AzureChinaCloud</p>
+<p>#指定您的订阅，用subid</p>
+<p>Select-AzSubscription -Subscription xxxxxxxxxxxxxxxxxxx</p>
+<h1>获取所有虚拟机列表</h1>
+<p>$vms = Get-AzVM</p>
+<h1>准备存储结果的变量</h1>
+<p>$vmAccounts = @()</p>
+<p>foreach ($vm in $vms) {</p>
+<p>try {</p>
+<h1>获取虚拟机的实例视图，包括电源状态和代理状态</h1>
+<p>$instanceView = (Get-AzVM -ResourceGroupName $vm.ResourceGroupName -Name $vm.Name -Status)</p>
+<p>$powerState = ($instanceView.Statuses | Where-Object Code -like &#39;PowerState/*&#39;).DisplayStatus</p>
+<p>$agentStatus = ($instanceView.VMAgent.Statuses | Where-Object Code -eq &#39;ProvisioningState/succeeded&#39;).DisplayStatus</p>
+<p>if ($powerState -eq &#39;VM running&#39; -and $agentStatus -eq &#39;Ready&#39;) {</p>
+<p>if ($vm.StorageProfile.OsDisk.OsType -eq &quot;Windows&quot;) {</p>
+<h1>定义要执行的命令（Windows）</h1>
+<p>$command = &#39;Get-LocalUser | Select-Object -Property Name, Enabled&#39;</p>
+<h1>执行命令获取虚拟机中的用户账户列表</h1>
+<p>$result = Invoke-AzVMRunCommand -ResourceGroupName $vm.ResourceGroupName -VMName $vm.Name -CommandId &#39;RunPowerShellScript&#39; -ScriptString $command</p>
+<h1>解析结果</h1>
+<p>$accounts = $result.Value[0].Message</p>
+<p>$lines = $accounts -split &quot;<code>r?</code>n&quot;</p>
+<h1>删除前两行</h1>
+<p>$lines = $lines[2..($lines.Length - 1)]</p>
+<h1>删除空行</h1>
+<p>$lines = $lines | Where-Object { $_ -ne &quot;&quot; }</p>
+<p>foreach ($account in $lines) {</p>
+<p>$columns = $account -split &#39;\s+&#39;</p>
+<p>$vmAccounts += [PSCustomObject]@{</p>
+<p>VMName   = $vm.Name</p>
+<p>Account  = $columns[0]</p>
+<p>Enabled  = $columns[1]</p>
+<p>}</p>
+<p>} elseif ($vm.StorageProfile.OsDisk.OsType -eq &quot;Linux&quot;) {</p>
+<h1>定义要执行的命令（Linux）</h1>
+<p>$command = &#39;cut -d: -f1 /etc/passwd&#39;</p>
+<p>$result = Invoke-AzVMRunCommand -ResourceGroupName $vm.ResourceGroupName -VMName $vm.Name -CommandId &#39;RunShellScript&#39; -ScriptString $command</p>
+<p>$accounts = $result.Value[0].Message -split &quot;`n&quot; | Where-Object { $_ -ne &#39;&#39; }</p>
+<p>$lines = $accounts[2..($accounts.Length - 1)]</p>
+<h1>删除最后一行</h1>
+<p>$accounts = $lines[0..($lines.Length - 2)]</p>
+<p>foreach ($account in $accounts) {</p>
+<p>Account  = $account</p>
+<p>} else {</p>
+<p>Write-Host &quot;Skipping VM $($vm.Name). It is either not running or the agent is not ready.&quot;</p>
+<p>} catch {</p>
+<p>Write-Host &quot;Failed to retrieve accounts from VM $($vm.Name) in resource group $($vm.ResourceGroupName). Error: $_&quot;</p>
+<h1>导出结果到CSV文件</h1>
+<p>$vmAccounts | Export-Csv -Path &quot;c:\vm_accounts.csv&quot; -NoTypeInformation</p>
+<p>Write-Host &quot;Export completed. Check vm_accounts.csv for the results.&quot;</p>
+<p>效果</p>
+<p>没开机的vm显示如下</p>
+<p>我这边例子 以下四台vm开启</p>
+<p>rmps                                      windows</p>
+<p>dcclient-intune                 windows</p>
+<p>new-dc                                 windows</p>
+<p>work-east2                         linux</p></article>

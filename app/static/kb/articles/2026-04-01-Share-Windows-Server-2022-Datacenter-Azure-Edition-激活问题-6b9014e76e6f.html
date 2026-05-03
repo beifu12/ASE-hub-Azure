@@ -1,0 +1,442 @@
+<article class="kb-article" data-title="【Share】Windows Server 2022 Datacenter Azure Edition 激活问题"><h1>【Share】Windows Server 2022 Datacenter Azure Edition 激活问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-04-01 11:55:10</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>WARNING: TCP connect to (159.27.28.100 : 1688) failed</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>WARNING: TCP connect to (159.27.28.100 : 1688) failed</li>
+</ul>
+<ul>
+<li>WARNING: Ping to 159.27.28.100 failed with status: TimedOut</li>
+</ul>
+<ul>
+<li>WARNING: TCP connect to (163.228.64.161 : 1688) failed</li>
+</ul>
+<ul>
+<li>WARNING: Ping to 163.228.64.161 failed with status: TimedOut</li>
+</ul>
+<ul>
+<li># Print the Subject of the issuer</li>
+</ul>
+<ul>
+<li>Write-Host $cert.Issuer</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Certificate not found: &#39;$($cert.Issuer)&#39;&quot; -ForegroundColor Red</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Certificate chain validation failed&quot;</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zhanglihong</li>
+</ul>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>Zuo Teng</li>
+</ul>
+<ul>
+<li>##问题描述：</li>
+</ul>
+<ul>
+<li>客户反馈之前开过多个工单处理激活问题。</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>客户VM上的返回结果。</li>
+</ul>
+<ul>
+<li>PS H:\&gt; Test-NetConnection azkms.core.chinacloudapi.cn -port 1688</li>
+</ul>
+<ul>
+<li>Test-NetConnection kms.core.chinacloudapi.cn -port 1688</li>
+</ul>
+<ul>
+<li>ComputerName           : azkms.core.chinacloudapi.cn</li>
+</ul>
+<ul>
+<li>RemoteAddress          : 159.27.28.100</li>
+</ul>
+<ul>
+<li>RemotePort             : 1688</li>
+</ul>
+<ul>
+<li>InterfaceAlias         : Ethernet</li>
+</ul>
+<ul>
+<li>SourceAddress          : 10.249.177.8</li>
+</ul>
+<ul>
+<li>PingSucceeded          : False</li>
+</ul>
+<ul>
+<li>PingReplyDetails (RTT) : 0 ms</li>
+</ul>
+<ul>
+<li>TcpTestSucceeded       : False</li>
+</ul>
+<ul>
+<li>ComputerName           : kms.core.chinacloudapi.cn</li>
+</ul>
+<ul>
+<li>PS H:\&gt; cscript c:\windows\system32\slmgr.vbs /dlv</li>
+</ul>
+<ul>
+<li>Microsoft (R) Windows Script Host Version 10.0</li>
+</ul>
+<ul>
+<li>Copyright (C) Microsoft Corporation. All rights reserved.</li>
+</ul>
+<ul>
+<li>Software licensing service version: 10.0.20348.4647</li>
+</ul>
+<ul>
+<li>Name: Windows(R), ServerTurbine edition</li>
+</ul>
+<ul>
+<li>Description: Windows(R) Operating System, VOLUME_KMSCLIENT channel</li>
+</ul>
+<ul>
+<li>Activation ID: 19b5e0fb-4431-46bc-bac1-2f1873e4ae73</li>
+</ul>
+<ul>
+<li>Application ID: 55c92734-d682-4d71-983e-d6ec3f16059f</li>
+</ul>
+<ul>
+<li>Extended PID: 03612-04469-000-000000-03-1033-20348.0000-0692026</li>
+</ul>
+<ul>
+<li>Product Key Channel: Volume:GVLK</li>
+</ul>
+<ul>
+<li>Installation ID: 066647675310306016241433109518155464066814599376172113568306561</li>
+</ul>
+<ul>
+<li>Partial Product Key: KHMXV</li>
+</ul>
+<ul>
+<li>License Status: Licensed</li>
+</ul>
+<ul>
+<li>Volume activation expiration: 256404 minute(s) (179 day(s))</li>
+</ul>
+<ul>
+<li>Remaining Windows rearm count: 1001</li>
+</ul>
+<ul>
+<li>Trusted time: 3/12/2026 11:10:23 AM</li>
+</ul>
+<ul>
+<li>Configured Activation Type: All</li>
+</ul>
+<ul>
+<li>Most recent activation information:</li>
+</ul>
+<ul>
+<li>Key Management Service client information</li>
+</ul>
+<ul>
+<li>Client Machine ID (CMID): fb1d7dd3-3be2-4266-8f4b-7b2b8b79fd59</li>
+</ul>
+<ul>
+<li>KMS machine name from DNS: it79-debec1.beumer.com:1688</li>
+</ul>
+<ul>
+<li>KMS machine IP address: 172.31.55.27</li>
+</ul>
+<ul>
+<li>KMS machine extended PID: 03612-04573-000-517944-03-1033-20348.0000-3352025</li>
+</ul>
+<ul>
+<li>Activation interval: 120 minutes</li>
+</ul>
+<ul>
+<li>Renewal interval: 10080 minutes</li>
+</ul>
+<ul>
+<li>slmgr /skms azkms.core.chinacloudapi.cn:1688</li>
+</ul>
+<ul>
+<li>并且参考以下文档添加了自定义路由。</li>
+</ul>
+<ul>
+<li>===========================================================</li>
+</ul>
+<ul>
+<li># Get the signature</li>
+</ul>
+<ul>
+<li># Decode the signature</li>
+</ul>
+<ul>
+<li>$signature = [System.Convert]::FromBase64String($attestedDoc.signature)</li>
+</ul>
+<ul>
+<li># Get certificate chain</li>
+</ul>
+<ul>
+<li>$cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]($signature)</li>
+</ul>
+<ul>
+<li>$chain = New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Chain</li>
+</ul>
+<ul>
+<li>if (-not $chain.Build($cert)) {</li>
+</ul>
+<ul>
+<li>Write-Host $cert.Subject</li>
+</ul>
+<ul>
+<li>Write-Host $cert.Thumbprint</li>
+</ul>
+<ul>
+<li>Write-Host &quot;------------------------&quot;</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Please refer to the following link to download missing certificates:&quot; -ForegroundColor Yellow</li>
+</ul>
+<ul>
+<li>} else {</li>
+</ul>
+<ul>
+<li># Print the Subject of each certificate in the chain</li>
+</ul>
+<ul>
+<li>foreach($element in $chain.ChainElements) {</li>
+</ul>
+<ul>
+<li>Write-Host $element.Certificate.Subject</li>
+</ul>
+<ul>
+<li>Write-Host $element.Certificate.Thumbprint</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li># Get the content of the signed document</li>
+</ul>
+<ul>
+<li>Add-Type -AssemblyName System.Security</li>
+</ul>
+<ul>
+<li>$signedCms = New-Object -TypeName System.Security.Cryptography.Pkcs.SignedCms</li>
+</ul>
+<ul>
+<li>$signedCms.Decode($signature);</li>
+</ul>
+<ul>
+<li>$content = [System.Text.Encoding]::UTF8.GetString($signedCms.ContentInfo.Content)</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Attested data: &quot; $content</li>
+</ul>
+<ul>
+<li>$json = $content | ConvertFrom-Json</li>
+</ul>
+<ul>
+<li>$chain = New-Object System.Security.Cryptography.X509Certificates.X509Chain</li>
+</ul>
+<ul>
+<li>$chain.ChainPolicy.VerificationFlags = &quot;IgnoreWrongUsage&quot;</li>
+</ul>
+<ul>
+<li>之后发现激活状态正常了。</li>
+</ul>
+<ul>
+<li>最终发现客户的设备没有安装DigiCert Basic OV G2 TLS CN RSA406 SHA256 2022 CA1</li>
+</ul>
+<ul>
+<li>指导客户手动下载证书安装后，问题解决。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>##排查过程和解决：</li>
+</ul>
+<ul>
+<li>查看客户在同一网络中有激活成功的虚拟机，可以基本排除网络方面的问题。</li>
+</ul>
+<ul>
+<li>检查客户的系统日志，发现有以下报错信息，怀疑还是证书方面的问题。</li>
+</ul>
+<ul>
+<li>$chain.ChainPolicy.RevocationMode = &quot;NoCheck&quot;</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>已经参考官方文档进行了常规排查，并且，也已经执行过证书问题的相关脚本。之前有激活过，但后来又变成了未激活。</li>
+</ul>
+<ul>
+<li>2. 指导客户使用以下命令注册了Azure的DNS。</li>
+</ul>
+<ul>
+<li>客户反馈激活命令提示成功，但依然是未激活的状态。</li>
+</ul>
+<ul>
+<li>查看客户之前的工单，客户反馈之前运行过检查证书的脚本。</li>
+</ul>
+<ul>
+<li># Powershell 5.1 does not include -NoProxy</li>
+</ul>
+<ul>
+<li>但是客户反馈运行脚本后提示了证书缺失，他检查证书实际已经安装。</li>
+</ul>
+<ul>
+<li>然后，客户运行了以下脚本disable了 revocation checking</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>发现客户的VM到KMS server的1688端口不通且有自定义的KMS。</li>
+</ul>
+<ul>
+<li>Remaining SKU rearm count: 1001</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>KMS host caching is enabled</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/troubleshoot-activation-problems" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/troubleshoot-activation-problems</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/activation-watermark-appears#how-to-determine-if-any-certificates-are-missing" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/activation-watermark-appears#how-to-determine-if-any-certificates-are-missing</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/custom-routes-enable-kms-activation" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/custom-routes-enable-kms-activation</a></li>
+</ul>
+<ul>
+<li>$attestedDoc = Invoke-RestMethod -Headers @{&quot;Metadata&quot;=&quot;true&quot;} -Method GET -Uri <a href="http://169.254.169.254/metadata/attested/document?api-version=2018-10-01" target="_blank" rel="noopener">http://169.254.169.254/metadata/attested/document?api-version=2018-10-01</a></li>
+</ul>
+<ul>
+<li>#$attestedDoc = Invoke-RestMethod -Headers @{&quot;Metadata&quot;=&quot;true&quot;} -Method GET -NoProxy -Uri <a href="http://169.254.169.254/metadata/attested/document?api-version=2018-10-01" target="_blank" rel="noopener">http://169.254.169.254/metadata/attested/document?api-version=2018-10-01</a></li>
+</ul>
+<ul>
+<li>Write-Host &quot;<a href="https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-ca-details?tabs=certificate-authority-chains&quot;" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-ca-details?tabs=certificate-authority-chains&quot;</a> -ForegroundColor Yellow</li>
+</ul>
+<ul>
+<li>CN=metadata.azure.cn, O=&quot;Shanghai Blue Cloud Technology Co., Ltd.&quot;, S=Shanghai, C=CN D6D2BA106C4BAB43849DA7AD8070001B2ADD3068 ------------------------ CN=DigiCert Basic RSA CN CA G2, O=DigiCert Inc, C=US ------------------------ Certificate not found: &#39;CN=DigiCert Basic RSA CN CA G2, O=DigiCert Inc, C=US&#39; Please refer to the following link to download missing certificates: <a href="https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-ca-details?tabs=certificate-authority-chains" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-ca-details?tabs=certificate-authority-chains</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-certificate-authority-details?tabs=root-and-subordinate-cas-list#subordinate-certificate-authorities" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-certificate-authority-details?tabs=root-and-subordinate-cas-list#subordinate-certificate-authorities</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026/4/1</p>
+<p>zhanglihong</p>
+<p>Reviewer</p>
+<p>Zuo Teng</p>
+<p>##问题描述：</p>
+<p>客户反馈之前开过多个工单处理激活问题。</p>
+<p>已经参考官方文档进行了常规排查，并且，也已经执行过证书问题的相关脚本。之前有激活过，但后来又变成了未激活。</p>
+<p>参考文档：</p>
+<p><a href="https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/troubleshoot-activation-problems" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/troubleshoot-activation-problems</a></p>
+<p><a href="https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/activation-watermark-appears#how-to-determine-if-any-certificates-are-missing" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/activation-watermark-appears#how-to-determine-if-any-certificates-are-missing</a></p>
+<p>##排查过程和解决：</p>
+<p>发现客户的VM到KMS server的1688端口不通且有自定义的KMS。</p>
+<p>客户VM上的返回结果。</p>
+<p>PS H:\&gt; Test-NetConnection azkms.core.chinacloudapi.cn -port 1688</p>
+<p>Test-NetConnection kms.core.chinacloudapi.cn -port 1688</p>
+<p>WARNING: TCP connect to (159.27.28.100 : 1688) failed</p>
+<p>WARNING: Ping to 159.27.28.100 failed with status: TimedOut</p>
+<p>ComputerName           : azkms.core.chinacloudapi.cn</p>
+<p>RemoteAddress          : 159.27.28.100</p>
+<p>RemotePort             : 1688</p>
+<p>InterfaceAlias         : Ethernet</p>
+<p>SourceAddress          : 10.249.177.8</p>
+<p>PingSucceeded          : False</p>
+<p>PingReplyDetails (RTT) : 0 ms</p>
+<p>TcpTestSucceeded       : False</p>
+<p>WARNING: TCP connect to (163.228.64.161 : 1688) failed</p>
+<p>WARNING: Ping to 163.228.64.161 failed with status: TimedOut</p>
+<p>ComputerName           : kms.core.chinacloudapi.cn</p>
+<p>PS H:\&gt; cscript c:\windows\system32\slmgr.vbs /dlv</p>
+<p>Microsoft (R) Windows Script Host Version 10.0</p>
+<p>Copyright (C) Microsoft Corporation. All rights reserved.</p>
+<p>Software licensing service version: 10.0.20348.4647</p>
+<p>Name: Windows(R), ServerTurbine edition</p>
+<p>Description: Windows(R) Operating System, VOLUME_KMSCLIENT channel</p>
+<p>Activation ID: 19b5e0fb-4431-46bc-bac1-2f1873e4ae73</p>
+<p>Application ID: 55c92734-d682-4d71-983e-d6ec3f16059f</p>
+<p>Extended PID: 03612-04469-000-000000-03-1033-20348.0000-0692026</p>
+<p>Product Key Channel: Volume:GVLK</p>
+<p>Installation ID: 066647675310306016241433109518155464066814599376172113568306561</p>
+<p>Partial Product Key: KHMXV</p>
+<p>License Status: Licensed</p>
+<p>Volume activation expiration: 256404 minute(s) (179 day(s))</p>
+<p>Remaining Windows rearm count: 1001</p>
+<p>Remaining SKU rearm count: 1001</p>
+<p>Trusted time: 3/12/2026 11:10:23 AM</p>
+<p>Configured Activation Type: All</p>
+<p>Most recent activation information:</p>
+<p>Key Management Service client information</p>
+<p>Client Machine ID (CMID): fb1d7dd3-3be2-4266-8f4b-7b2b8b79fd59</p>
+<p>KMS machine name from DNS: it79-debec1.beumer.com:1688</p>
+<p>KMS machine IP address: 172.31.55.27</p>
+<p>KMS machine extended PID: 03612-04573-000-517944-03-1033-20348.0000-3352025</p>
+<p>Activation interval: 120 minutes</p>
+<p>Renewal interval: 10080 minutes</p>
+<p>KMS host caching is enabled</p>
+<p>2. 指导客户使用以下命令注册了Azure的DNS。</p>
+<p>slmgr /skms azkms.core.chinacloudapi.cn:1688</p>
+<p>并且参考以下文档添加了自定义路由。</p>
+<p><a href="https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/custom-routes-enable-kms-activation" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/custom-routes-enable-kms-activation</a></p>
+<p>客户反馈激活命令提示成功，但依然是未激活的状态。</p>
+<p>查看客户在同一网络中有激活成功的虚拟机，可以基本排除网络方面的问题。</p>
+<p>检查客户的系统日志，发现有以下报错信息，怀疑还是证书方面的问题。</p>
+<p>查看客户之前的工单，客户反馈之前运行过检查证书的脚本。</p>
+<p>===========================================================</p>
+<h1>Get the signature</h1>
+<h1>Powershell 5.1 does not include -NoProxy</h1>
+<p>$attestedDoc = Invoke-RestMethod -Headers @{&quot;Metadata&quot;=&quot;true&quot;} -Method GET -Uri <a href="http://169.254.169.254/metadata/attested/document?api-version=2018-10-01" target="_blank" rel="noopener">http://169.254.169.254/metadata/attested/document?api-version=2018-10-01</a></p>
+<p>#$attestedDoc = Invoke-RestMethod -Headers @{&quot;Metadata&quot;=&quot;true&quot;} -Method GET -NoProxy -Uri <a href="http://169.254.169.254/metadata/attested/document?api-version=2018-10-01" target="_blank" rel="noopener">http://169.254.169.254/metadata/attested/document?api-version=2018-10-01</a></p>
+<h1>Decode the signature</h1>
+<p>$signature = [System.Convert]::FromBase64String($attestedDoc.signature)</p>
+<h1>Get certificate chain</h1>
+<p>$cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]($signature)</p>
+<p>$chain = New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Chain</p>
+<p>if (-not $chain.Build($cert)) {</p>
+<h1>Print the Subject of the issuer</h1>
+<p>Write-Host $cert.Subject</p>
+<p>Write-Host $cert.Thumbprint</p>
+<p>Write-Host &quot;------------------------&quot;</p>
+<p>Write-Host $cert.Issuer</p>
+<p>Write-Host &quot;Certificate not found: &#39;$($cert.Issuer)&#39;&quot; -ForegroundColor Red</p>
+<p>Write-Host &quot;Please refer to the following link to download missing certificates:&quot; -ForegroundColor Yellow</p>
+<p>Write-Host &quot;<a href="https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-ca-details?tabs=certificate-authority-chains&quot;" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-ca-details?tabs=certificate-authority-chains&quot;</a> -ForegroundColor Yellow</p>
+<p>} else {</p>
+<h1>Print the Subject of each certificate in the chain</h1>
+<p>foreach($element in $chain.ChainElements) {</p>
+<p>Write-Host $element.Certificate.Subject</p>
+<p>Write-Host $element.Certificate.Thumbprint</p>
+<p>}</p>
+<h1>Get the content of the signed document</h1>
+<p>Add-Type -AssemblyName System.Security</p>
+<p>$signedCms = New-Object -TypeName System.Security.Cryptography.Pkcs.SignedCms</p>
+<p>$signedCms.Decode($signature);</p>
+<p>$content = [System.Text.Encoding]::UTF8.GetString($signedCms.ContentInfo.Content)</p>
+<p>Write-Host &quot;Attested data: &quot; $content</p>
+<p>$json = $content | ConvertFrom-Json</p>
+<p>但是客户反馈运行脚本后提示了证书缺失，他检查证书实际已经安装。</p>
+<p>CN=metadata.azure.cn, O=&quot;Shanghai Blue Cloud Technology Co., Ltd.&quot;, S=Shanghai, C=CN D6D2BA106C4BAB43849DA7AD8070001B2ADD3068 ------------------------ CN=DigiCert Basic RSA CN CA G2, O=DigiCert Inc, C=US ------------------------ Certificate not found: &#39;CN=DigiCert Basic RSA CN CA G2, O=DigiCert Inc, C=US&#39; Please refer to the following link to download missing certificates: <a href="https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-ca-details?tabs=certificate-authority-chains" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-ca-details?tabs=certificate-authority-chains</a></p>
+<p>然后，客户运行了以下脚本disable了 revocation checking</p>
+<p>$chain = New-Object System.Security.Cryptography.X509Certificates.X509Chain</p>
+<p>$chain.ChainPolicy.RevocationMode = &quot;NoCheck&quot;</p>
+<p>$chain.ChainPolicy.VerificationFlags = &quot;IgnoreWrongUsage&quot;</p>
+<p>Write-Host &quot;Certificate chain validation failed&quot;</p>
+<p>之后发现激活状态正常了。</p>
+<p>最终发现客户的设备没有安装DigiCert Basic OV G2 TLS CN RSA406 SHA256 2022 CA1</p>
+<p>指导客户手动下载证书安装后，问题解决。</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-certificate-authority-details?tabs=root-and-subordinate-cas-list#subordinate-certificate-authorities" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-certificate-authority-details?tabs=root-and-subordinate-cas-list#subordinate-certificate-authorities</a></p></article>

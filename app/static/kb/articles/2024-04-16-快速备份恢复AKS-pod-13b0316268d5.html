@@ -1,0 +1,299 @@
+<article class="kb-article" data-title="快速备份恢复AKS pod"><h1>快速备份恢复AKS pod</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-04-16 16:17:30</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>部分参考自：在Azure Kubernetes 服务(AKS) 中通过Azure 磁盘创建永久性卷 - Azure Kubernetes Service | Azure Docs</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>部分参考自：在Azure Kubernetes 服务(AKS) 中通过Azure 磁盘创建永久性卷 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>部分参考自：在Azure Kubernetes 服务(AKS) 中通过Azure 磁盘创建永久性卷 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>后续测试过程如下：</li>
+</ul>
+<ul>
+<li>测试yaml文件</li>
+</ul>
+<ul>
+<li>---</li>
+</ul>
+<ul>
+<li>kind: Pod</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: nginx-azuredisk-2024-04-16-2</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>nodeSelector:</li>
+</ul>
+<ul>
+<li>kubernetes.io/os: linux</li>
+</ul>
+<ul>
+<li>containers:</li>
+</ul>
+<ul>
+<li>- image: mcr.microsoft.com/oss/nginx/nginx:1.17.3-alpine</li>
+</ul>
+<ul>
+<li>name: nginx-azuredisk</li>
+</ul>
+<ul>
+<li>command:</li>
+</ul>
+<ul>
+<li>- &quot;/bin/sh&quot;</li>
+</ul>
+<ul>
+<li>- &quot;-c&quot;</li>
+</ul>
+<ul>
+<li>- while true; do echo $(date) &gt;&gt; /mnt/azuredisk/outfile; sleep 1; done</li>
+</ul>
+<ul>
+<li>volumeMounts:</li>
+</ul>
+<ul>
+<li>- mountPath: &quot;/mnt/azuredisk&quot;</li>
+</ul>
+<ul>
+<li>name: volume</li>
+</ul>
+<ul>
+<li>readOnly: false</li>
+</ul>
+<ul>
+<li>volumes:</li>
+</ul>
+<ul>
+<li>- name: volume</li>
+</ul>
+<ul>
+<li>azureDisk:</li>
+</ul>
+<ul>
+<li>kind: Managed</li>
+</ul>
+<ul>
+<li>diskName: 磁盘名称</li>
+</ul>
+<ul>
+<li>方法二、用门户创建快照后，在门户创建为磁盘，然后在AKS使用磁盘创建PV、创建PVC绑定，使用该PVC创建POD，该方法为结合文档的流程</li>
+</ul>
+<ul>
+<li>一、Create PV</li>
+</ul>
+<ul>
+<li>kind: PersistentVolume</li>
+</ul>
+<ul>
+<li>annotations:</li>
+</ul>
+<ul>
+<li>pv.kubernetes.io/provisioned-by: disk.csi.azure.com</li>
+</ul>
+<ul>
+<li>name: pv-azuredisk</li>
+</ul>
+<ul>
+<li>capacity:</li>
+</ul>
+<ul>
+<li>storage: 10Gi</li>
+</ul>
+<ul>
+<li>accessModes:</li>
+</ul>
+<ul>
+<li>- ReadWriteOnce</li>
+</ul>
+<ul>
+<li>persistentVolumeReclaimPolicy: Delete</li>
+</ul>
+<ul>
+<li>storageClassName: managed-csi</li>
+</ul>
+<ul>
+<li>csi:</li>
+</ul>
+<ul>
+<li>driver: disk.csi.azure.com</li>
+</ul>
+<ul>
+<li>volumeHandle: /subscriptions/订阅ID/resourcegroups/disk的资源组/providers/Microsoft.Compute/disks/磁盘名称</li>
+</ul>
+<ul>
+<li>volumeAttributes:</li>
+</ul>
+<ul>
+<li>fsType: ext4</li>
+</ul>
+<ul>
+<li>二、Create PVC</li>
+</ul>
+<ul>
+<li>kind: PersistentVolumeClaim</li>
+</ul>
+<ul>
+<li>name: pvc-azuredisk</li>
+</ul>
+<ul>
+<li>resources:</li>
+</ul>
+<ul>
+<li>requests:</li>
+</ul>
+<ul>
+<li>volumeName: pv-azuredisk</li>
+</ul>
+<ul>
+<li>三、通过PVC创建测试POD</li>
+</ul>
+<ul>
+<li>name: nginx-azuredisk-2024-04-16</li>
+</ul>
+<ul>
+<li>- name: azuredisk01</li>
+</ul>
+<ul>
+<li>mountPath: &quot;/mnt/azuredisk&quot;</li>
+</ul>
+<ul>
+<li>persistentVolumeClaim:</li>
+</ul>
+<ul>
+<li>claimName: pvc-azuredisk</li>
+</ul>
+<ul>
+<li>Nanrui</li>
+</ul>
+<ul>
+<li>Best Regards</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>方法一、门户创建快照，在门户创建为磁盘，使用该Disk创建POD，该方法，需要自行查找资源ID，恢复方法简化了快照和创建磁盘步骤。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>测试前提：该nginx:1.17.3-alpinePOD使用PVC创建出来后·使用命令输入文件</li>
+</ul>
+<ul>
+<li>kubectl exec nginx-azuredisk -- touch /mnt/azuredisk/test.txt</li>
+</ul>
+<ul>
+<li>kubectl exec nginx-azuredisk -- ls /mnt/azuredisk</li>
+</ul>
+<ul>
+<li>四、测试命令：kubectl exec pod名称  -- ls /mnt/azuredisk</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>diskURI: /subscriptions/订阅ID/resourceGroups/资源组名称/providers/Microsoft.Compute/disks/磁盘名称</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/04/16</p>
+<p>部分参考自：在Azure Kubernetes 服务(AKS) 中通过Azure 磁盘创建永久性卷 - Azure Kubernetes Service | Azure Docs</p>
+<p>测试前提：该nginx:1.17.3-alpinePOD使用PVC创建出来后·使用命令输入文件</p>
+<p>kubectl exec nginx-azuredisk -- touch /mnt/azuredisk/test.txt</p>
+<p>kubectl exec nginx-azuredisk -- ls /mnt/azuredisk</p>
+<p>后续测试过程如下：</p>
+<p>方法一、门户创建快照，在门户创建为磁盘，使用该Disk创建POD，该方法，需要自行查找资源ID，恢复方法简化了快照和创建磁盘步骤。</p>
+<p>测试yaml文件</p>
+<p>---</p>
+<p>kind: Pod</p>
+<p>apiVersion: v1</p>
+<p>metadata:</p>
+<p>name: nginx-azuredisk-2024-04-16-2</p>
+<p>spec:</p>
+<p>nodeSelector:</p>
+<p>kubernetes.io/os: linux</p>
+<p>containers:</p>
+<ul>
+<li>image: mcr.microsoft.com/oss/nginx/nginx:1.17.3-alpine</li>
+</ul>
+<p>name: nginx-azuredisk</p>
+<p>command:</p>
+<ul>
+<li>&quot;/bin/sh&quot;</li>
+</ul>
+<ul>
+<li>&quot;-c&quot;</li>
+</ul>
+<ul>
+<li>while true; do echo $(date) &gt;&gt; /mnt/azuredisk/outfile; sleep 1; done</li>
+</ul>
+<p>volumeMounts:</p>
+<ul>
+<li>mountPath: &quot;/mnt/azuredisk&quot;</li>
+</ul>
+<p>name: volume</p>
+<p>readOnly: false</p>
+<p>volumes:</p>
+<ul>
+<li>name: volume</li>
+</ul>
+<p>azureDisk:</p>
+<p>kind: Managed</p>
+<p>diskName: 磁盘名称</p>
+<p>diskURI: /subscriptions/订阅ID/resourceGroups/资源组名称/providers/Microsoft.Compute/disks/磁盘名称</p>
+<p>方法二、用门户创建快照后，在门户创建为磁盘，然后在AKS使用磁盘创建PV、创建PVC绑定，使用该PVC创建POD，该方法为结合文档的流程</p>
+<p>一、Create PV</p>
+<p>kind: PersistentVolume</p>
+<p>annotations:</p>
+<p>pv.kubernetes.io/provisioned-by: disk.csi.azure.com</p>
+<p>name: pv-azuredisk</p>
+<p>capacity:</p>
+<p>storage: 10Gi</p>
+<p>accessModes:</p>
+<ul>
+<li>ReadWriteOnce</li>
+</ul>
+<p>persistentVolumeReclaimPolicy: Delete</p>
+<p>storageClassName: managed-csi</p>
+<p>csi:</p>
+<p>driver: disk.csi.azure.com</p>
+<p>volumeHandle: /subscriptions/订阅ID/resourcegroups/disk的资源组/providers/Microsoft.Compute/disks/磁盘名称</p>
+<p>volumeAttributes:</p>
+<p>fsType: ext4</p>
+<p>二、Create PVC</p>
+<p>kind: PersistentVolumeClaim</p>
+<p>name: pvc-azuredisk</p>
+<p>resources:</p>
+<p>requests:</p>
+<p>volumeName: pv-azuredisk</p>
+<p>三、通过PVC创建测试POD</p>
+<p>name: nginx-azuredisk-2024-04-16</p>
+<ul>
+<li>name: azuredisk01</li>
+</ul>
+<p>mountPath: &quot;/mnt/azuredisk&quot;</p>
+<p>persistentVolumeClaim:</p>
+<p>claimName: pvc-azuredisk</p>
+<p>四、测试命令：kubectl exec pod名称  -- ls /mnt/azuredisk</p>
+<p>Nanrui</p>
+<p>Best Regards</p></article>

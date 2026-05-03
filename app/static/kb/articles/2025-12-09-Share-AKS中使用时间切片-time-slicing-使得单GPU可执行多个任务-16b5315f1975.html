@@ -1,0 +1,501 @@
+<article class="kb-article" data-title="[Share] AKS中使用时间切片（time-slicing）使得单GPU可执行多个任务"><h1>[Share] AKS中使用时间切片（time-slicing）使得单GPU可执行多个任务</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-09 10:42:35</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<h1>be rescheduled after a failure.</h1>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li># be rescheduled after a failure.</li>
+</ul>
+<ul>
+<li>- name: FAIL_ON_INIT_ERROR</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>客户问题：</li>
+</ul>
+<ul>
+<li>客户希望希望在只有一个GPU的节点上部署多个使用GPU的容器。因为客户认为他的任务不要使用一整张显卡。可以透过一张显卡执行多个任务。</li>
+</ul>
+<ul>
+<li>测试过程：</li>
+</ul>
+<ul>
+<li>参考了文档：</li>
+</ul>
+<ul>
+<li>GPU 环境搭建指南：使用 GPU Operator 加速 Kubernetes GPU 环境搭建 -</li>
+</ul>
+<ul>
+<li>一文搞懂 GPU 共享方案： NVIDIA Time Slicing -</li>
+</ul>
+<ul>
+<li>NVIDIA GPU Operator with Azure Kubernetes Service — NVIDIA GPU Operator</li>
+</ul>
+<ul>
+<li>创建一个带有T4显卡的AKS集群。并安装好驱动。</li>
+</ul>
+<ul>
+<li>部署nvidia-device-plugin。创建下方的yaml文件。</li>
+</ul>
+<ul>
+<li>apiVersion: apps/v1</li>
+</ul>
+<ul>
+<li>kind: DaemonSet</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: nvidia-device-plugin-daemonset</li>
+</ul>
+<ul>
+<li>namespace: kube-system</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>selector:</li>
+</ul>
+<ul>
+<li>matchLabels:</li>
+</ul>
+<ul>
+<li>name: nvidia-device-plugin-ds</li>
+</ul>
+<ul>
+<li>updateStrategy:</li>
+</ul>
+<ul>
+<li>type: RollingUpdate</li>
+</ul>
+<ul>
+<li>template:</li>
+</ul>
+<ul>
+<li>labels:</li>
+</ul>
+<ul>
+<li>tolerations:</li>
+</ul>
+<ul>
+<li>- key: nvidia.com/gpu</li>
+</ul>
+<ul>
+<li>operator: Exists</li>
+</ul>
+<ul>
+<li>effect: NoSchedule</li>
+</ul>
+<ul>
+<li># scheduler reserves resources for critical add-on pods so that they can</li>
+</ul>
+<ul>
+<li>priorityClassName: &quot;system-node-critical&quot;</li>
+</ul>
+<ul>
+<li>containers:</li>
+</ul>
+<ul>
+<li>- image: nvcr.io/nvidia/k8s-device-plugin:v0.17.3</li>
+</ul>
+<ul>
+<li>name: nvidia-device-plugin-ctr</li>
+</ul>
+<ul>
+<li>env:</li>
+</ul>
+<ul>
+<li>value: &quot;false&quot;</li>
+</ul>
+<ul>
+<li>securityContext:</li>
+</ul>
+<ul>
+<li>allowPrivilegeEscalation: false</li>
+</ul>
+<ul>
+<li>capabilities:</li>
+</ul>
+<ul>
+<li>volumeMounts:</li>
+</ul>
+<ul>
+<li>- name: device-plugin</li>
+</ul>
+<ul>
+<li>mountPath: /var/lib/kubelet/device-plugins</li>
+</ul>
+<ul>
+<li>volumes:</li>
+</ul>
+<ul>
+<li>hostPath:</li>
+</ul>
+<ul>
+<li>path: /var/lib/kubelet/device-plugins</li>
+</ul>
+<ul>
+<li>部署plugin。</li>
+</ul>
+<ul>
+<li>可以看到已经有1个GPU被识别到。</li>
+</ul>
+<ul>
+<li>2）部署GPU-operator</li>
+</ul>
+<ul>
+<li>创建新的命名空间。</li>
+</ul>
+<ul>
+<li>标记特权模式</li>
+</ul>
+<ul>
+<li>&amp;&amp; helm repo update</li>
+</ul>
+<ul>
+<li>helm search repo nvidia/gpu-operator --versions</li>
+</ul>
+<ul>
+<li>下载chart</li>
+</ul>
+<ul>
+<li>解压</li>
+</ul>
+<ul>
+<li>登录ACR</li>
+</ul>
+<ul>
+<li>上传NFD。该镜像在中国不能拉取。</li>
+</ul>
+<ul>
+<li>sudo docker pull registry.k8s.io/nfd/node-feature-discovery:v0.17.3</li>
+</ul>
+<ul>
+<li>docker tag registry.k8s.io/nfd/node-feature-discovery:v0.17.3 \</li>
+</ul>
+<ul>
+<li>shaneacr.azurecr.cn/nfd/node-feature-discovery:v0.17.3</li>
+</ul>
+<ul>
+<li>sudo docker push shaneacr.azurecr.cn/nfd/node-feature-discovery:v0.17.3</li>
+</ul>
+<ul>
+<li>将AKS和ACR做信任</li>
+</ul>
+<ul>
+<li>创建namespace</li>
+</ul>
+<ul>
+<li>创建pod保存acr密码</li>
+</ul>
+<ul>
+<li>--docker-server=shaneacr.azurecr.cn \</li>
+</ul>
+<ul>
+<li>--docker-username=shaneacr \</li>
+</ul>
+<ul>
+<li>--docker-password=XXX \</li>
+</ul>
+<ul>
+<li>-n gpu-operator</li>
+</ul>
+<ul>
+<li>修改values的 node-feature-discorvery</li>
+</ul>
+<ul>
+<li>部署operator</li>
+</ul>
+<ul>
+<li>helm install gpu-operator nvidia/gpu-operator \</li>
+</ul>
+<ul>
+<li>-n gpu-operator --create-namespace \</li>
+</ul>
+<ul>
+<li>-f values.yaml \</li>
+</ul>
+<ul>
+<li>--version=v25.3.2 \</li>
+</ul>
+<ul>
+<li>--set operator.runtimeClass=nvidia-container-runtime</li>
+</ul>
+<ul>
+<li>创建 time-slicing-config-all.yaml</li>
+</ul>
+<ul>
+<li>复制内容</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: ConfigMap</li>
+</ul>
+<ul>
+<li>name: time-slicing-config-all</li>
+</ul>
+<ul>
+<li>data:</li>
+</ul>
+<ul>
+<li>any: |-</li>
+</ul>
+<ul>
+<li>version: v1</li>
+</ul>
+<ul>
+<li>flags:</li>
+</ul>
+<ul>
+<li>migStrategy: none</li>
+</ul>
+<ul>
+<li>sharing:</li>
+</ul>
+<ul>
+<li>timeSlicing:</li>
+</ul>
+<ul>
+<li>renameByDefault: false</li>
+</ul>
+<ul>
+<li>failRequestsGreaterThanOne: false</li>
+</ul>
+<ul>
+<li>resources:</li>
+</ul>
+<ul>
+<li>- name: nvidia.com/gpu</li>
+</ul>
+<ul>
+<li>replicas: 4</li>
+</ul>
+<ul>
+<li>部署pod</li>
+</ul>
+<ul>
+<li>指定策略</li>
+</ul>
+<ul>
+<li>-n gpu-operator --type merge \</li>
+</ul>
+<ul>
+<li>-p &#39;{&quot;spec&quot;: {&quot;devicePlugin&quot;: {&quot;config&quot;: {&quot;name&quot;: &quot;time-slicing-config-all&quot;, &quot;default&quot;: &quot;any&quot;}}}}&#39;</li>
+</ul>
+<ul>
+<li>此时GPU变成4个</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>drop: [&quot;ALL&quot;]</li>
+</ul>
+<ul>
+<li>查看plugin状态。</li>
+</ul>
+<ul>
+<li>查看所有的节点名称。</li>
+</ul>
+<ul>
+<li>查看节点。</li>
+</ul>
+<ul>
+<li>查询gpu-operator版本。</li>
+</ul>
+<ul>
+<li>验证operator</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>kubectl apply -f nvidia-device-plugin.yml</li>
+</ul>
+<ul>
+<li>kubectl get all -A | grep -i nvidia</li>
+</ul>
+<ul>
+<li>kubectl get node -A</li>
+</ul>
+<ul>
+<li>kubectl describe node aks-gpupool-41579642-vmss000000</li>
+</ul>
+<ul>
+<li>kubectl create ns gpu-operator</li>
+</ul>
+<ul>
+<li>az aks update --name myAKSCluster --resource-group myResourceGroup --attach-acr &lt;acr-resource-id&gt;</li>
+</ul>
+<ul>
+<li>kubectl create namespace gpu-operator</li>
+</ul>
+<ul>
+<li>kubectl create secret docker-registry acr-secret \</li>
+</ul>
+<ul>
+<li>kubectl get pods -n gpu-operator -l app=nvidia-cuda-validator</li>
+</ul>
+<ul>
+<li>kubectl create -n gpu-operator -f time-slicing-config-all.yaml</li>
+</ul>
+<ul>
+<li>kubectl patch clusterpolicies.nvidia.com/cluster-policy \</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li># Mark this pod as a critical add-on; when enabled, the critical add-on</li>
+</ul>
+<ul>
+<li>--set driver.enabled=false \</li>
+</ul>
+<ul>
+<li>--set toolkit.enabled=false \</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li># See <a href="https://kubernetes.io/docs/tasks/administer-cluster/guaranteed-scheduling-critical-addon-pods/" target="_blank" rel="noopener">https://kubernetes.io/docs/tasks/administer-cluster/guaranteed-scheduling-critical-addon-pods/</a></li>
+</ul>
+<ul>
+<li>helm repo add nvidia <a href="https://helm.ngc.nvidia.com/nvidia" target="_blank" rel="noopener">https://helm.ngc.nvidia.com/nvidia</a> \</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/09</p>
+<p>客户问题：</p>
+<p>客户希望希望在只有一个GPU的节点上部署多个使用GPU的容器。因为客户认为他的任务不要使用一整张显卡。可以透过一张显卡执行多个任务。</p>
+<p>测试过程：</p>
+<p>参考了文档：</p>
+<p>GPU 环境搭建指南：使用 GPU Operator 加速 Kubernetes GPU 环境搭建 -</p>
+<p>一文搞懂 GPU 共享方案： NVIDIA Time Slicing -</p>
+<p>NVIDIA GPU Operator with Azure Kubernetes Service — NVIDIA GPU Operator</p>
+<p>创建一个带有T4显卡的AKS集群。并安装好驱动。</p>
+<p>部署nvidia-device-plugin。创建下方的yaml文件。</p>
+<p>apiVersion: apps/v1</p>
+<p>kind: DaemonSet</p>
+<p>metadata:</p>
+<p>name: nvidia-device-plugin-daemonset</p>
+<p>namespace: kube-system</p>
+<p>spec:</p>
+<p>selector:</p>
+<p>matchLabels:</p>
+<p>name: nvidia-device-plugin-ds</p>
+<p>updateStrategy:</p>
+<p>type: RollingUpdate</p>
+<p>template:</p>
+<p>labels:</p>
+<p>tolerations:</p>
+<ul>
+<li>key: nvidia.com/gpu</li>
+</ul>
+<p>operator: Exists</p>
+<p>effect: NoSchedule</p>
+<h1>Mark this pod as a critical add-on; when enabled, the critical add-on</h1>
+<h1>scheduler reserves resources for critical add-on pods so that they can</h1>
+<h1>be rescheduled after a failure.</h1>
+<h1>See <a href="https://kubernetes.io/docs/tasks/administer-cluster/guaranteed-scheduling-critical-addon-pods/" target="_blank" rel="noopener">https://kubernetes.io/docs/tasks/administer-cluster/guaranteed-scheduling-critical-addon-pods/</a></h1>
+<p>priorityClassName: &quot;system-node-critical&quot;</p>
+<p>containers:</p>
+<ul>
+<li>image: nvcr.io/nvidia/k8s-device-plugin:v0.17.3</li>
+</ul>
+<p>name: nvidia-device-plugin-ctr</p>
+<p>env:</p>
+<ul>
+<li>name: FAIL_ON_INIT_ERROR</li>
+</ul>
+<p>value: &quot;false&quot;</p>
+<p>securityContext:</p>
+<p>allowPrivilegeEscalation: false</p>
+<p>capabilities:</p>
+<p>drop: [&quot;ALL&quot;]</p>
+<p>volumeMounts:</p>
+<ul>
+<li>name: device-plugin</li>
+</ul>
+<p>mountPath: /var/lib/kubelet/device-plugins</p>
+<p>volumes:</p>
+<p>hostPath:</p>
+<p>path: /var/lib/kubelet/device-plugins</p>
+<p>部署plugin。</p>
+<p>kubectl apply -f nvidia-device-plugin.yml</p>
+<p>查看plugin状态。</p>
+<p>kubectl get all -A | grep -i nvidia</p>
+<p>查看所有的节点名称。</p>
+<p>kubectl get node -A</p>
+<p>查看节点。</p>
+<p>kubectl describe node aks-gpupool-41579642-vmss000000</p>
+<p>可以看到已经有1个GPU被识别到。</p>
+<p>2）部署GPU-operator</p>
+<p>创建新的命名空间。</p>
+<p>kubectl create ns gpu-operator</p>
+<p>标记特权模式</p>
+<p>helm repo add nvidia <a href="https://helm.ngc.nvidia.com/nvidia" target="_blank" rel="noopener">https://helm.ngc.nvidia.com/nvidia</a> \</p>
+<p>&amp;&amp; helm repo update</p>
+<p>查询gpu-operator版本。</p>
+<p>helm search repo nvidia/gpu-operator --versions</p>
+<p>下载chart</p>
+<p>解压</p>
+<p>登录ACR</p>
+<p>上传NFD。该镜像在中国不能拉取。</p>
+<p>sudo docker pull registry.k8s.io/nfd/node-feature-discovery:v0.17.3</p>
+<p>docker tag registry.k8s.io/nfd/node-feature-discovery:v0.17.3 \</p>
+<p>shaneacr.azurecr.cn/nfd/node-feature-discovery:v0.17.3</p>
+<p>sudo docker push shaneacr.azurecr.cn/nfd/node-feature-discovery:v0.17.3</p>
+<p>将AKS和ACR做信任</p>
+<p>az aks update --name myAKSCluster --resource-group myResourceGroup --attach-acr &lt;acr-resource-id&gt;</p>
+<p>创建namespace</p>
+<p>kubectl create namespace gpu-operator</p>
+<p>创建pod保存acr密码</p>
+<p>kubectl create secret docker-registry acr-secret \</p>
+<p>--docker-server=shaneacr.azurecr.cn \</p>
+<p>--docker-username=shaneacr \</p>
+<p>--docker-password=XXX \</p>
+<p>-n gpu-operator</p>
+<p>修改values的 node-feature-discorvery</p>
+<p>部署operator</p>
+<p>helm install gpu-operator nvidia/gpu-operator \</p>
+<p>-n gpu-operator --create-namespace \</p>
+<p>-f values.yaml \</p>
+<p>--version=v25.3.2 \</p>
+<p>--set driver.enabled=false \</p>
+<p>--set toolkit.enabled=false \</p>
+<p>--set operator.runtimeClass=nvidia-container-runtime</p>
+<p>验证operator</p>
+<p>kubectl get pods -n gpu-operator -l app=nvidia-cuda-validator</p>
+<p>创建 time-slicing-config-all.yaml</p>
+<p>复制内容</p>
+<p>apiVersion: v1</p>
+<p>kind: ConfigMap</p>
+<p>name: time-slicing-config-all</p>
+<p>data:</p>
+<p>any: |-</p>
+<p>version: v1</p>
+<p>flags:</p>
+<p>migStrategy: none</p>
+<p>sharing:</p>
+<p>timeSlicing:</p>
+<p>renameByDefault: false</p>
+<p>failRequestsGreaterThanOne: false</p>
+<p>resources:</p>
+<ul>
+<li>name: nvidia.com/gpu</li>
+</ul>
+<p>replicas: 4</p>
+<p>部署pod</p>
+<p>kubectl create -n gpu-operator -f time-slicing-config-all.yaml</p>
+<p>指定策略</p>
+<p>kubectl patch clusterpolicies.nvidia.com/cluster-policy \</p>
+<p>-n gpu-operator --type merge \</p>
+<p>-p &#39;{&quot;spec&quot;: {&quot;devicePlugin&quot;: {&quot;config&quot;: {&quot;name&quot;: &quot;time-slicing-config-all&quot;, &quot;default&quot;: &quot;any&quot;}}}}&#39;</p>
+<p>此时GPU变成4个</p></article>

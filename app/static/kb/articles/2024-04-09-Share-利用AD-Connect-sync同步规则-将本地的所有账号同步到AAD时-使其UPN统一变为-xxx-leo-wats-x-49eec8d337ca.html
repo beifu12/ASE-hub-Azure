@@ -1,0 +1,61 @@
+<article class="kb-article" data-title="[Share] 利用AD Connect sync同步规则，将本地的所有账号同步到AAD时，使其UPN统一变为 xxx@leo.wats.xyz  ："><h1>[Share] 利用AD Connect sync同步规则，将本地的所有账号同步到AAD时，使其UPN统一变为 xxx@leo.wats.xyz  ：</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-04-09 14:29:25</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</li>
+</ul>
+<ul>
+<li>注：由于下方是测试环境测试所得，仅供您参考</li>
+</ul>
+<ul>
+<li>1，添加一个“Outbound”方向的rule:</li>
+</ul>
+<ul>
+<li>2，Name和Description可以自定义，Precedence 要高于116，其他按照截图所示：</li>
+</ul>
+<ul>
+<li>3，Scoping filter 和 Join rules 未设置，使用默认值；</li>
+</ul>
+<ul>
+<li>4，source 内容为： Word([userPrincipalName],1,&quot;@&quot;) &amp; &quot;@leo.wats.xyz&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：<a href="https://learn.microsoft.com/zh-cn/entra/identity/hybrid/connect/howto-troubleshoot-upn-changes" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/hybrid/connect/howto-troubleshoot-upn-changes</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>2024-04-09</p>
+<p>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</p>
+<p>注：由于下方是测试环境测试所得，仅供您参考</p>
+<p>1，添加一个“Outbound”方向的rule:</p>
+<p>2，Name和Description可以自定义，Precedence 要高于116，其他按照截图所示：</p>
+<p>3，Scoping filter 和 Join rules 未设置，使用默认值；</p>
+<p>4，source 内容为： Word([userPrincipalName],1,&quot;@&quot;) &amp; &quot;@leo.wats.xyz&quot;</p>
+<p>参考文档：<a href="https://learn.microsoft.com/zh-cn/entra/identity/hybrid/connect/howto-troubleshoot-upn-changes" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/hybrid/connect/howto-troubleshoot-upn-changes</a></p></article>

@@ -1,0 +1,185 @@
+<article class="kb-article" data-title="VM Disable Hyper threading 禁用超线程"><h1>VM Disable Hyper threading 禁用超线程</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Performance</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-19 16:07:20</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>LiuWei</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>LiuWei</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>LiuWei</li>
+</ul>
+<ul>
+<li>1）指定对应tag：</li>
+</ul>
+<ul>
+<li># for VMs create</li>
+</ul>
+<ul>
+<li># for VM update</li>
+</ul>
+<ul>
+<li>-ResourceGroupName &quot;myResourceGroup&quot; `</li>
+</ul>
+<ul>
+<li>-Name &quot;myVM&quot; `</li>
+</ul>
+<ul>
+<li>-Location &quot;East US&quot; `</li>
+</ul>
+<ul>
+<li>-VirtualNetworkName &quot;myVnet&quot; `</li>
+</ul>
+<ul>
+<li>-SubnetName &quot;mySubnet&quot; `</li>
+</ul>
+<ul>
+<li>-SecurityGroupName &quot;myNetworkSecurityGroup&quot; `</li>
+</ul>
+<ul>
+<li>-PublicIpAddressName &quot;myPublicIpAddress&quot; `</li>
+</ul>
+<ul>
+<li>-ResourceGroupName &lt;RGName&gt;</li>
+</ul>
+<ul>
+<li>-Name &lt;VMName&gt;</li>
+</ul>
+<ul>
+<li>-ResourceType &quot;Microsoft.Compute/VirtualMachines&quot;</li>
+</ul>
+<ul>
+<li>1.Windows VM:</li>
+</ul>
+<ul>
+<li>如果逻辑处理器数量大于物理处理器（核心）数量，则超线程功能已启用。</li>
+</ul>
+<ul>
+<li>2. Linux VM</li>
+</ul>
+<ul>
+<li>如果 Thread(s) per core = 2，则已启用超线程功能。</li>
+</ul>
+<ul>
+<li>如果 Thread(s) per core = 1，则已禁用超线程功能。</li>
+</ul>
+<ul>
+<li>更多说明：</li>
+</ul>
+<ul>
+<li>ACU计算单元说明：</li>
+</ul>
+<ul>
+<li>其中Dv3系列（超线程）是vCPU：核心 = 2：1</li>
+</ul>
+<ul>
+<li>核心计数：</li>
+</ul>
+<ul>
+<li>创建超线程 VM 时，Azure 会为每个核心分配 2 个线程，这些线程称为 vCPU。 禁用超线程功能时，Azure 会删除一个线程并向上显示单线程核心（物理核心）。 vCPU 与 CPU 的比率为 2:1，因此禁用超线程功能后，VM 中的 CPU 计数将似乎减少了一半。 例如，D8_v3 VM 是在 8 个 vCPU（每个核心 2 个线程 x 4 个核心）上运行的超线程 VM。 禁用超线程功能后，CPU 将减至 4 个物理核心（每个核心 1 个线程）。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>后台完成对订阅xxxxxxxxxx的禁用超线程的白名单工作，后续请您参考以下步骤对当前或者新创建虚拟机需要禁用超线程设置：</li>
+</ul>
+<ul>
+<li>超线程禁用确认情况需要从虚拟机内部查看，您可以参照以下文档确认当前超线程禁用情况：</li>
+</ul>
+<ul>
+<li>CPU Get NumberOfCores,NumberOfLogicalProcessors /Format:List</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>AZ CLI:</li>
+</ul>
+<ul>
+<li>az vm create -g &lt;rg-name&gt; -n &lt;vm-name&gt; --image UbuntuLTS --tags &quot;platformsettings.host_environment.disablehyperthreading=true&quot;</li>
+</ul>
+<ul>
+<li>az resource tag --ids /subscriptions/{SubID}/resourceGroups/{ResourceGroup}/providers/Microsoft.Compute/virtualMachines/{VM} --tags platformsettings.host_environment.disablehyperthreading=true [existing_tag1=value existing_tag2=value …]</li>
+</ul>
+<ul>
+<li>Powershell:</li>
+</ul>
+<ul>
+<li>New-AzureRmVm `</li>
+</ul>
+<ul>
+<li>Set-AzureRmResource</li>
+</ul>
+<ul>
+<li>2）通过Azure门户或者命令行，对虚拟机进行redeploy操作，注意此步骤不能从虚拟机内部触发重启代替；</li>
+</ul>
+<ul>
+<li>若要从 VM 中使用 Windows 命令行检查 VM 是否启用了超线程功能，请参考下面的脚本。</li>
+</ul>
+<ul>
+<li>键入 wmic 以进入交互式界面。 然后键入以下命令来查看 VM 上的物理和逻辑处理器数量。</li>
+</ul>
+<ul>
+<li>运行 lscpu 命令:</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>-Tag @{&quot;platformsettings.host_environment.disablehyperthreading&quot;=&quot;true&quot;}</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/acu" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/acu</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/mitigate-se#enabling-additional-security" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/mitigate-se#enabling-additional-security</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>LiuWei</p>
+<p>后台完成对订阅xxxxxxxxxx的禁用超线程的白名单工作，后续请您参考以下步骤对当前或者新创建虚拟机需要禁用超线程设置：</p>
+<p>1）指定对应tag：</p>
+<p>AZ CLI:</p>
+<h1>for VMs create</h1>
+<p>az vm create -g &lt;rg-name&gt; -n &lt;vm-name&gt; --image UbuntuLTS --tags &quot;platformsettings.host_environment.disablehyperthreading=true&quot;</p>
+<h1>for VM update</h1>
+<p>az resource tag --ids /subscriptions/{SubID}/resourceGroups/{ResourceGroup}/providers/Microsoft.Compute/virtualMachines/{VM} --tags platformsettings.host_environment.disablehyperthreading=true [existing_tag1=value existing_tag2=value …]</p>
+<p>Powershell:</p>
+<p>New-AzureRmVm `</p>
+<p>-ResourceGroupName &quot;myResourceGroup&quot; `</p>
+<p>-Name &quot;myVM&quot; `</p>
+<p>-Location &quot;East US&quot; `</p>
+<p>-VirtualNetworkName &quot;myVnet&quot; `</p>
+<p>-SubnetName &quot;mySubnet&quot; `</p>
+<p>-SecurityGroupName &quot;myNetworkSecurityGroup&quot; `</p>
+<p>-PublicIpAddressName &quot;myPublicIpAddress&quot; `</p>
+<p>-Tag @{&quot;platformsettings.host_environment.disablehyperthreading&quot;=&quot;true&quot;}</p>
+<p>Set-AzureRmResource</p>
+<p>-ResourceGroupName &lt;RGName&gt;</p>
+<p>-Name &lt;VMName&gt;</p>
+<p>-ResourceType &quot;Microsoft.Compute/VirtualMachines&quot;</p>
+<p>2）通过Azure门户或者命令行，对虚拟机进行redeploy操作，注意此步骤不能从虚拟机内部触发重启代替；</p>
+<p>超线程禁用确认情况需要从虚拟机内部查看，您可以参照以下文档确认当前超线程禁用情况：</p>
+<p>1.Windows VM:</p>
+<p>若要从 VM 中使用 Windows 命令行检查 VM 是否启用了超线程功能，请参考下面的脚本。</p>
+<p>键入 wmic 以进入交互式界面。 然后键入以下命令来查看 VM 上的物理和逻辑处理器数量。</p>
+<p>CPU Get NumberOfCores,NumberOfLogicalProcessors /Format:List</p>
+<p>如果逻辑处理器数量大于物理处理器（核心）数量，则超线程功能已启用。</p>
+<p>2. Linux VM</p>
+<p>运行 lscpu 命令:</p>
+<p>如果 Thread(s) per core = 2，则已启用超线程功能。</p>
+<p>如果 Thread(s) per core = 1，则已禁用超线程功能。</p>
+<p>更多说明：</p>
+<p>ACU计算单元说明：</p>
+<p>其中Dv3系列（超线程）是vCPU：核心 = 2：1</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/acu" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/acu</a></p>
+<p>核心计数：</p>
+<p>创建超线程 VM 时，Azure 会为每个核心分配 2 个线程，这些线程称为 vCPU。 禁用超线程功能时，Azure 会删除一个线程并向上显示单线程核心（物理核心）。 vCPU 与 CPU 的比率为 2:1，因此禁用超线程功能后，VM 中的 CPU 计数将似乎减少了一半。 例如，D8_v3 VM 是在 8 个 vCPU（每个核心 2 个线程 x 4 个核心）上运行的超线程 VM。 禁用超线程功能后，CPU 将减至 4 个物理核心（每个核心 1 个线程）。</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/mitigate-se#enabling-additional-security" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/mitigate-se#enabling-additional-security</a></p></article>

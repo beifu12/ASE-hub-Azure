@@ -1,0 +1,67 @@
+<article class="kb-article" data-title="Update mobility agent on Windows machines"><h1>Update mobility agent on Windows machines</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RecoveryService</li>
+<li>Section: ASR</li>
+<li>最近修改: 2025-09-11 16:35:15</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>To update mobility agent on Windows machines, follow these steps:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>To update mobility agent on Windows machines, follow these steps:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>To update mobility agent on Windows machines, follow these steps:</li>
+</ul>
+<ul>
+<li>Open command prompt and navigate to the folder where the update package was placed.</li>
+</ul>
+<ul>
+<li>cd C:\Azure Site Recovery\Agent</li>
+</ul>
+<ul>
+<li>To extract the update package, run the following command:</li>
+</ul>
+<ul>
+<li>Microsoft-ASR_UA*Windows*release.exe /q /x:C:\Azure Site Recovery\Agent</li>
+</ul>
+<ul>
+<li>To proceed with the update, run the following command:</li>
+</ul>
+<ul>
+<li>UnifiedAgent.exe /Role &quot;MS&quot; /Platform VmWare /Silent /InstallationType Upgrade /CSType CSPrime /InstallLocation &quot;C:\Program Files (x86)\Microsoft Azure Site Recovery&quot;</li>
+</ul>
+<ul>
+<li>&quot;C:\Azure Site Recovery\Agent\agent\UnifiedAgentConfigurator.exe&quot; /SourceConfigFilePath &quot;config.json&quot; /CSType CSPrime</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Registration is triggered automatically after the agent has been updated. To manually check the status of registration, run the following command:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>From &lt;<a href="https://learn.microsoft.com/en-us/azure/site-recovery/upgrade-mobility-service-modernized#resolve-blocking-issues-for-agent-upgrade&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/site-recovery/upgrade-mobility-service-modernized#resolve-blocking-issues-for-agent-upgrade&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>To update mobility agent on Windows machines, follow these steps:</p>
+<p>Open command prompt and navigate to the folder where the update package was placed.</p>
+<p>cd C:\Azure Site Recovery\Agent</p>
+<p>To extract the update package, run the following command:</p>
+<p>Microsoft-ASR_UA*Windows*release.exe /q /x:C:\Azure Site Recovery\Agent</p>
+<p>To proceed with the update, run the following command:</p>
+<p>UnifiedAgent.exe /Role &quot;MS&quot; /Platform VmWare /Silent /InstallationType Upgrade /CSType CSPrime /InstallLocation &quot;C:\Program Files (x86)\Microsoft Azure Site Recovery&quot;</p>
+<p>Registration is triggered automatically after the agent has been updated. To manually check the status of registration, run the following command:</p>
+<p>&quot;C:\Azure Site Recovery\Agent\agent\UnifiedAgentConfigurator.exe&quot; /SourceConfigFilePath &quot;config.json&quot; /CSType CSPrime</p>
+<p>From &lt;<a href="https://learn.microsoft.com/en-us/azure/site-recovery/upgrade-mobility-service-modernized#resolve-blocking-issues-for-agent-upgrade&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/site-recovery/upgrade-mobility-service-modernized#resolve-blocking-issues-for-agent-upgrade&gt;</a></p></article>

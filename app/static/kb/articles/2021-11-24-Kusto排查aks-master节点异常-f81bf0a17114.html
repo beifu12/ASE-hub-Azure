@@ -1,0 +1,67 @@
+<article class="kb-article" data-title="Kusto排查aks master节点异常"><h1>Kusto排查aks master节点异常</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: TroubleShooting</li>
+<li>最近修改: 2021-11-24 13:18:00</li>
+<li>JD 相关性: 售后排障; AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>相关工单：119032125000215_[podvm][tiffany]SR_2019032114470_[MS-LED]AKS showing error even though service is working</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>相关工单：119032125000215_[podvm][tiffany]SR_2019032114470_[MS-LED]AKS showing error even though service is working</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zuoteng</li>
+</ul>
+<ul>
+<li>备注：contains 填写 集群的名字</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Kusto库：akscn ---&gt;  AKSprod</li>
+</ul>
+<ul>
+<li>kusto语句：</li>
+</ul>
+<ul>
+<li>可以查询到以下信息：</li>
+</ul>
+<ul>
+<li>通过以上信息可以确认SLB配置有异常，后续可以再通过jarvis查看对应网卡是否有相应报错信息</li>
+</ul>
+<ul>
+<li>备注：过滤条件为kusto查到的对应网卡信息。如此工单客户其中之前的网卡信息为：/subscriptions/6868bf2f-b60d-4b22-9216-80f7ba6a6441/resourceGroups/MC_ACE2-NPRD-AKS-RG_ACE2NPRDAKSSVCQ001_CHINAEAST2/providers/Microsoft.Network/networkInterfaces/AKS-NODEPOOL1-40655524-NIC-6</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>let starttime = datetime(2019-03-20 00:00:00.3320075); let endtime = datetime(2019-03-20 23:10:00.3320075); AsyncContextActivity | where resourceName contains &quot;ace2nprdakssvcq001&quot; | where msg contains &quot;failed&quot;</li>
+</ul>
+<ul>
+<li>let starttime = datetime(2019-03-20 00:00:00.3320075); let endtime = datetime(2019-03-20 23:10:00.3320075); AsyncContextActivity | where PreciseTimeStamp &gt;= starttime and PreciseTimeStamp &lt;= endtime | where resourceName contains &quot;ace2nprdakssvcq001&quot; | where msg contains &quot;failed&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>jarvis链接：<a href="https://jarvis-east.dc.ad.msft.net/35CCB4CA" target="_blank" rel="noopener">https://jarvis-east.dc.ad.msft.net/35CCB4CA</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zuoteng</p>
+<p>相关工单：119032125000215_[podvm][tiffany]SR_2019032114470_[MS-LED]AKS showing error even though service is working</p>
+<p>Kusto库：akscn ---&gt;  AKSprod</p>
+<p>kusto语句：</p>
+<p>let starttime = datetime(2019-03-20 00:00:00.3320075); let endtime = datetime(2019-03-20 23:10:00.3320075); AsyncContextActivity | where resourceName contains &quot;ace2nprdakssvcq001&quot; | where msg contains &quot;failed&quot;</p>
+<p>let starttime = datetime(2019-03-20 00:00:00.3320075); let endtime = datetime(2019-03-20 23:10:00.3320075); AsyncContextActivity | where PreciseTimeStamp &gt;= starttime and PreciseTimeStamp &lt;= endtime | where resourceName contains &quot;ace2nprdakssvcq001&quot; | where msg contains &quot;failed&quot;</p>
+<p>备注：contains 填写 集群的名字</p>
+<p>可以查询到以下信息：</p>
+<p>通过以上信息可以确认SLB配置有异常，后续可以再通过jarvis查看对应网卡是否有相应报错信息</p>
+<p>jarvis链接：<a href="https://jarvis-east.dc.ad.msft.net/35CCB4CA" target="_blank" rel="noopener">https://jarvis-east.dc.ad.msft.net/35CCB4CA</a></p>
+<p>备注：过滤条件为kusto查到的对应网卡信息。如此工单客户其中之前的网卡信息为：/subscriptions/6868bf2f-b60d-4b22-9216-80f7ba6a6441/resourceGroups/MC_ACE2-NPRD-AKS-RG_ACE2NPRDAKSSVCQ001_CHINAEAST2/providers/Microsoft.Network/networkInterfaces/AKS-NODEPOOL1-40655524-NIC-6</p></article>

@@ -1,0 +1,286 @@
+<article class="kb-article" data-title="DNS解析troubleshooting过程参考"><h1>DNS解析troubleshooting过程参考</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DNS</li>
+<li>Section: DNS</li>
+<li>最近修改: 2023-03-14 14:30:21</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>异常解析的时间段有一条请求</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>异常解析的时间段有一条请求</li>
+</ul>
+<ul>
+<li>[2017/05/09, 07:53:28.213] UdpSession::ClearTaskAtTimeout: moving task to delayedTaskQueue (no response for 30*0.1 sec) and updating last timeout on DNS server, t_qname=payriskapi.wecash.net, t_qtype=A</li>
+</ul>
+<ul>
+<li>这表示Azure接收到了正常qname的DNS请求并转发了出去，等待公网DNS响应但 Timeout。</li>
+</ul>
+<ul>
+<li>以此也可推测：Timeout是由于公网DNS在这段时间解析不稳定。否则Azure DNS解析失败时，其他两个DNS Server应该解析成功。</li>
+</ul>
+<ul>
+<li>整个机制最后仍解析不成功，因此用户应用上会报错 UnknownHostException。</li>
+</ul>
+<ul>
+<li>实际上从07:53:28公网DNS已经出现Timeout，一直到08:15:40客户端可能都在通过各种方式尝试解析，最终失败报UnknownHostException。</li>
+</ul>
+<ul>
+<li>用户的正常请求被Azure DNS接收、转发至公网DNS，公网DNS解析Timeout，导致客户端应用报错。这可能是由于：</li>
+</ul>
+<ul>
+<li>公网链路或DNS服务器的稳定性我们无法保证。</li>
+</ul>
+<ul>
+<li>日志全篇都是INFO信息，没有Error。</li>
+</ul>
+<ul>
+<li>没有出现之前提到的RCode=NameError。该值与用户DNS解析闪断无关。</li>
+</ul>
+<ul>
+<li>我在正常的VM上也抓了DNS Forwarder日志，同样出现NoError和NameError，这是Azure Dns解析第三方域名时的一个Flag，不会影响DNS解析。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>默认的 DNS server 为 Azure DNS Server 168.63.129.16。</li>
+</ul>
+<ul>
+<li>备用两台 DNS server 219.141.136.10 和 114.114.114.114。</li>
+</ul>
+<ul>
+<li>orwarder 日志，分析过程如下（以下时间为UTC时间）：</li>
+</ul>
+<ul>
+<li>日志中其他时间段内请求正常，请求 qname=payriskapi.wecash.net, qtype=A 。</li>
+</ul>
+<ul>
+<li>[2017/05/09, 08:15:40.602] qname=payriskapi.wecash.net.fyylf3sbfkvuhl5dkbhvn44ifd.ax.internal.chinacloudapp.cn, qtype=A</li>
+</ul>
+<ul>
+<li>表明客户端虽然希望访问的是 qname=payriskapi.wecash.net 的外部第三方域名，但还额外发起了一个 qname=payriskapi.wecash.net.fyylf3sbfkvuhl5dkbhvn44ifd.ax.internal.chinacloudapp.cn 的请求。</li>
+</ul>
+<ul>
+<li>[2017/05/09, 08:15:40.602] pri suffix: .fyylf3sbfkvuhl5dkbhvn44ifd.ax.internal.chinacloudapp.cn; query name: payriskapi.wecash.net.fyylf3sbfkvuhl5dkbhvn44ifd.ax.internal.chinacloudapp.cn</li>
+</ul>
+<ul>
+<li>综上，</li>
+</ul>
+<ul>
+<li>从日志上看，用户的配置、Azure DNS 的工作一切正常。</li>
+</ul>
+<ul>
+<li>公网链路不稳定；</li>
+</ul>
+<ul>
+<li>注册商（payriskapi.wecash.net对应万网）服务器不稳定；</li>
+</ul>
+<ul>
+<li>Azure层面出现DDos。</li>
+</ul>
+<ul>
+<li>一般来说，公网链路不稳定的可能性最大。用户测试频率非常高，公网层面不可能100%不丢包。</li>
+</ul>
+<ul>
+<li>这一做法优点在于不用担心公网DNS不稳定的问题，缺点在于如果该域名IP地址修改，需要手动修改Host文件。</li>
+</ul>
+<ul>
+<li>Xin Yuefeng (辛岳凤) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>Support direct line: 010-56060262   Customer support hot line: 400-089-0365</li>
+</ul>
+<ul>
+<li>If you have any feedback about my work, please contact me or my manager Zhang Tao on zhang.tao5@oe.21vianet.com</li>
+</ul>
+<ul>
+<li>From: 范万强 [mailto:fanwanqiang@datatang.com]</li>
+</ul>
+<ul>
+<li>Sent: Friday, May 12, 2017 11:01 AM</li>
+</ul>
+<ul>
+<li>To: Li Xiaobing &lt;li.xiaobing@oe.21vianet.com&gt;; Xin Yuefeng &lt;xin.yuefeng@oe.21vianet.com&gt;</li>
+</ul>
+<ul>
+<li>Cc: net &lt;net@oe.21vianet.com&gt;</li>
+</ul>
+<ul>
+<li>发件人: Li Xiaobing [mailto:li.xiaobing@oe.21vianet.com]</li>
+</ul>
+<ul>
+<li>发送时间: 2017年5月12日 10:59</li>
+</ul>
+<ul>
+<li>收件人: Xin Yuefeng &lt;xin.yuefeng@oe.21vianet.com&gt;; 范万强 &lt;fanwanqiang@datatang.com&gt;</li>
+</ul>
+<ul>
+<li>抄送: net &lt;net@oe.21vianet.com&gt;</li>
+</ul>
+<ul>
+<li>范先生:</li>
+</ul>
+<ul>
+<li>您好！</li>
+</ul>
+<ul>
+<li>实际上，在Azure VM上的应用访问第三方域名，将经由Azure DNS Server – 第三方DNS Server的过程，解析该域名在注册商注册的ip。</li>
+</ul>
+<ul>
+<li>因此，DNS 解析不稳定可能存在于VM -&gt; Azure DNS Server，或Azure DNS Server -&gt; 第三方 DNS Server，或第三方DNS Server自身解析过程。</li>
+</ul>
+<ul>
+<li>对于第三方 DNS Server 自身解析过程</li>
+</ul>
+<ul>
+<li>对于 VM -&gt; Azure DNS Server</li>
+</ul>
+<ul>
+<li>对于Azure DNS Server -&gt; 第三方 DNS Server</li>
+</ul>
+<ul>
+<li>分析结果：</li>
+</ul>
+<ul>
+<li>Azure DNS工作一切正常。</li>
+</ul>
+<ul>
+<li>Jack (李小兵) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>Support direct line: 010-56060237   Customer support hot line: 400-089-0365</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>SR_2017050986582 _[MS-LED]查询Linux虚拟机DNS解析记录</li>
+</ul>
+<ul>
+<li>根据用户反馈的 resolv.conf 文件内容，确认：</li>
+</ul>
+<ul>
+<li>上一次call中用户提到，解析错误时收到 .chinacloudapp.cn后缀的信息，因此再次查询 DnsF</li>
+</ul>
+<ul>
+<li>为了排查为什么有这个qname请求，查看到</li>
+</ul>
+<ul>
+<li>随后20分钟内Azure Log 无异常，客户端可能尝试用另外两个DNS Server解析这个地址，仍然解析失败。</li>
+</ul>
+<ul>
+<li>因此，根据Azure DNS机制，公网DNS解析失败后客户端会尝试添加resolv.conf中search字段后的域名后缀再做DNS请求，尝试这是否是自身服务，即我们看到的qname请求。Log中DnsAccessControlFilter 记录也证明了这一点。</li>
+</ul>
+<ul>
+<li>Subject: 答复: SR_2017050986582 _[MS-LED]查询Linux虚拟机DNS解析记录</li>
+</ul>
+<ul>
+<li>主题: RE: SR_2017050986582_[MS-LED]查询Linux虚拟机DNS解析记录</li>
+</ul>
+<ul>
+<li>目前后线团队排查如下, 请您参考:</li>
+</ul>
+<ul>
+<li>这一点依赖于第三方的解析，我们无法做Troubleshooting或优化。</li>
+</ul>
+<ul>
+<li>查询解析异常时间段物理机日志DnsForwarder（日志时间为UTC时间），由于日志较大，抓取及分析较慢还望见谅。</li>
+</ul>
+<ul>
+<li>DNS解析不稳定的原因目前还在排查中。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>查询了异常域名的注册商，通过dig 命令查询到的A记录响应server也与实际注册商匹配。</li>
+</ul>
+<ul>
+<li>请用户在虚拟机中执行命令 cat /etc/resolv.conf，将返回的结果告知我们，以便于下一步排查。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<ul>
+<li>如果用户想保障应用服务的稳定性，我们建议将常用且出现解析异常的DNS加入/etc/hosts文件。</li>
+</ul>
+<ul>
+<li>考虑到DNS解析闪断可能会影响用户应用的稳定性，建议用户暂时将常用的域名加入HOST文件中。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></li>
+</ul>
+<ul>
+<li>Cloud solution consulting: 400-161-6585   Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2017050986582 _[MS-LED]查询Linux虚拟机DNS解析记录</p>
+<p>根据用户反馈的 resolv.conf 文件内容，确认：</p>
+<p>默认的 DNS server 为 Azure DNS Server 168.63.129.16。</p>
+<p>备用两台 DNS server 219.141.136.10 和 114.114.114.114。</p>
+<p>上一次call中用户提到，解析错误时收到 .chinacloudapp.cn后缀的信息，因此再次查询 DnsF</p>
+<p>orwarder 日志，分析过程如下（以下时间为UTC时间）：</p>
+<p>日志中其他时间段内请求正常，请求 qname=payriskapi.wecash.net, qtype=A 。</p>
+<p>异常解析的时间段有一条请求</p>
+<p>[2017/05/09, 08:15:40.602] qname=payriskapi.wecash.net.fyylf3sbfkvuhl5dkbhvn44ifd.ax.internal.chinacloudapp.cn, qtype=A</p>
+<p>表明客户端虽然希望访问的是 qname=payriskapi.wecash.net 的外部第三方域名，但还额外发起了一个 qname=payriskapi.wecash.net.fyylf3sbfkvuhl5dkbhvn44ifd.ax.internal.chinacloudapp.cn 的请求。</p>
+<p>为了排查为什么有这个qname请求，查看到</p>
+<p>[2017/05/09, 07:53:28.213] UdpSession::ClearTaskAtTimeout: moving task to delayedTaskQueue (no response for 30*0.1 sec) and updating last timeout on DNS server, t_qname=payriskapi.wecash.net, t_qtype=A</p>
+<p>这表示Azure接收到了正常qname的DNS请求并转发了出去，等待公网DNS响应但 Timeout。</p>
+<p>随后20分钟内Azure Log 无异常，客户端可能尝试用另外两个DNS Server解析这个地址，仍然解析失败。</p>
+<p>以此也可推测：Timeout是由于公网DNS在这段时间解析不稳定。否则Azure DNS解析失败时，其他两个DNS Server应该解析成功。</p>
+<p>因此，根据Azure DNS机制，公网DNS解析失败后客户端会尝试添加resolv.conf中search字段后的域名后缀再做DNS请求，尝试这是否是自身服务，即我们看到的qname请求。Log中DnsAccessControlFilter 记录也证明了这一点。</p>
+<p>[2017/05/09, 08:15:40.602] pri suffix: .fyylf3sbfkvuhl5dkbhvn44ifd.ax.internal.chinacloudapp.cn; query name: payriskapi.wecash.net.fyylf3sbfkvuhl5dkbhvn44ifd.ax.internal.chinacloudapp.cn</p>
+<p>整个机制最后仍解析不成功，因此用户应用上会报错 UnknownHostException。</p>
+<p>实际上从07:53:28公网DNS已经出现Timeout，一直到08:15:40客户端可能都在通过各种方式尝试解析，最终失败报UnknownHostException。</p>
+<p>综上，</p>
+<p>从日志上看，用户的配置、Azure DNS 的工作一切正常。</p>
+<p>用户的正常请求被Azure DNS接收、转发至公网DNS，公网DNS解析Timeout，导致客户端应用报错。这可能是由于：</p>
+<p>公网链路不稳定；</p>
+<p>注册商（payriskapi.wecash.net对应万网）服务器不稳定；</p>
+<p>Azure层面出现DDos。</p>
+<p>一般来说，公网链路不稳定的可能性最大。用户测试频率非常高，公网层面不可能100%不丢包。</p>
+<p>解决方案：</p>
+<p>公网链路或DNS服务器的稳定性我们无法保证。</p>
+<p>如果用户想保障应用服务的稳定性，我们建议将常用且出现解析异常的DNS加入/etc/hosts文件。</p>
+<p>这一做法优点在于不用担心公网DNS不稳定的问题，缺点在于如果该域名IP地址修改，需要手动修改Host文件。</p>
+<p>Xin Yuefeng (辛岳凤) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060262   Customer support hot line: 400-089-0365</p>
+<p>Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></p>
+<p>Cloud solution consulting: 400-161-6585   Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>If you have any feedback about my work, please contact me or my manager Zhang Tao on zhang.tao5@oe.21vianet.com</p>
+<p>From: 范万强 [mailto:fanwanqiang@datatang.com]</p>
+<p>Sent: Friday, May 12, 2017 11:01 AM</p>
+<p>To: Li Xiaobing &lt;li.xiaobing@oe.21vianet.com&gt;; Xin Yuefeng &lt;xin.yuefeng@oe.21vianet.com&gt;</p>
+<p>Cc: net &lt;net@oe.21vianet.com&gt;</p>
+<p>Subject: 答复: SR_2017050986582 _[MS-LED]查询Linux虚拟机DNS解析记录</p>
+<p>发件人: Li Xiaobing [mailto:li.xiaobing@oe.21vianet.com]</p>
+<p>发送时间: 2017年5月12日 10:59</p>
+<p>收件人: Xin Yuefeng &lt;xin.yuefeng@oe.21vianet.com&gt;; 范万强 &lt;fanwanqiang@datatang.com&gt;</p>
+<p>抄送: net &lt;net@oe.21vianet.com&gt;</p>
+<p>主题: RE: SR_2017050986582_[MS-LED]查询Linux虚拟机DNS解析记录</p>
+<p>范先生:</p>
+<p>您好！</p>
+<p>目前后线团队排查如下, 请您参考:</p>
+<p>查询了异常域名的注册商，通过dig 命令查询到的A记录响应server也与实际注册商匹配。</p>
+<p>实际上，在Azure VM上的应用访问第三方域名，将经由Azure DNS Server – 第三方DNS Server的过程，解析该域名在注册商注册的ip。</p>
+<p>因此，DNS 解析不稳定可能存在于VM -&gt; Azure DNS Server，或Azure DNS Server -&gt; 第三方 DNS Server，或第三方DNS Server自身解析过程。</p>
+<p>对于第三方 DNS Server 自身解析过程</p>
+<p>这一点依赖于第三方的解析，我们无法做Troubleshooting或优化。</p>
+<p>对于 VM -&gt; Azure DNS Server</p>
+<p>请用户在虚拟机中执行命令 cat /etc/resolv.conf，将返回的结果告知我们，以便于下一步排查。</p>
+<p>对于Azure DNS Server -&gt; 第三方 DNS Server</p>
+<p>查询解析异常时间段物理机日志DnsForwarder（日志时间为UTC时间），由于日志较大，抓取及分析较慢还望见谅。</p>
+<p>分析结果：</p>
+<p>Azure DNS工作一切正常。</p>
+<p>日志全篇都是INFO信息，没有Error。</p>
+<p>没有出现之前提到的RCode=NameError。该值与用户DNS解析闪断无关。</p>
+<p>我在正常的VM上也抓了DNS Forwarder日志，同样出现NoError和NameError，这是Azure Dns解析第三方域名时的一个Flag，不会影响DNS解析。</p>
+<p>DNS解析不稳定的原因目前还在排查中。</p>
+<p>考虑到DNS解析闪断可能会影响用户应用的稳定性，建议用户暂时将常用的域名加入HOST文件中。</p>
+<p>Jack (李小兵) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060237   Customer support hot line: 400-089-0365</p></article>

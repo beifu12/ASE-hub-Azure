@@ -1,0 +1,104 @@
+<article class="kb-article" data-title="用heartbeat做报警，实现虚拟机可用性监控"><h1>用heartbeat做报警，实现虚拟机可用性监控</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-10-27 17:22:15</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Johnny Lee</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Johnny Lee</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny Lee</li>
+</ul>
+<ul>
+<li>// Track VM availability</li>
+</ul>
+<ul>
+<li>// Display the VM&#39;s reported availability during the last day.</li>
+</ul>
+<ul>
+<li>Heartbeat</li>
+</ul>
+<ul>
+<li>| where Computer == &quot;centos751&quot;</li>
+</ul>
+<ul>
+<li>| summarize heartbeat_count = count() by bin(TimeGenerated, 1min)</li>
+</ul>
+<ul>
+<li>// bin is used to set the time grain to 1 minutes</li>
+</ul>
+<ul>
+<li>| extend alive=iff(heartbeat_count &gt; 0, true, false)</li>
+</ul>
+<ul>
+<li>警报条件这么设置：</li>
+</ul>
+<ul>
+<li>相当与在5分钟内，1分钟一次，如果小于5次，就说明有没有监控到heartbeat的情况。</li>
+</ul>
+<ul>
+<li>然后我关机后就可以收到邮件报警了：从晚上6点40到第二天早上9点20</li>
+</ul>
+<ul>
+<li>邮件内容：</li>
+</ul>
+<ul>
+<li>早上开机后大概延迟10分钟就不报警了（这个还是有延迟）。</li>
+</ul>
+<ul>
+<li>所以最好和客户说是辅助监控可用性，谢谢！</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过Log analytic 语句：</li>
+</ul>
+<ul>
+<li>| sort by TimeGenerated asc</li>
+</ul>
+<ul>
+<li>// sort the results by time (ascending order)</li>
+</ul>
+<ul>
+<li>效果就是每分钟检查一下是否有heartbeat：</li>
+</ul>
+<ul>
+<li>同时log analytic中报警情况如下：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Johnny Lee</p>
+<p>通过Log analytic 语句：</p>
+<p>// Track VM availability</p>
+<p>// Display the VM&#39;s reported availability during the last day.</p>
+<p>Heartbeat</p>
+<p>| where Computer == &quot;centos751&quot;</p>
+<p>| summarize heartbeat_count = count() by bin(TimeGenerated, 1min)</p>
+<p>// bin is used to set the time grain to 1 minutes</p>
+<p>| extend alive=iff(heartbeat_count &gt; 0, true, false)</p>
+<p>| sort by TimeGenerated asc</p>
+<p>// sort the results by time (ascending order)</p>
+<p>效果就是每分钟检查一下是否有heartbeat：</p>
+<p>警报条件这么设置：</p>
+<p>相当与在5分钟内，1分钟一次，如果小于5次，就说明有没有监控到heartbeat的情况。</p>
+<p>然后我关机后就可以收到邮件报警了：从晚上6点40到第二天早上9点20</p>
+<p>邮件内容：</p>
+<p>同时log analytic中报警情况如下：</p>
+<p>早上开机后大概延迟10分钟就不报警了（这个还是有延迟）。</p>
+<p>所以最好和客户说是辅助监控可用性，谢谢！</p></article>

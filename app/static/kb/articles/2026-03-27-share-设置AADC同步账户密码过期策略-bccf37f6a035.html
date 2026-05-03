@@ -1,0 +1,85 @@
+<article class="kb-article" data-title="[share]设置AADC同步账户密码过期策略"><h1>[share]设置AADC同步账户密码过期策略</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-03-27 11:26:35</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2024.11.12</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2024.11.12</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2024.11.12</li>
+</ul>
+<ul>
+<li>AADC同步账户默认的密码策略为“永不过期”</li>
+</ul>
+<ul>
+<li>Connect-MsolService -AzureEnvironment azurechinacloud</li>
+</ul>
+<ul>
+<li>#功能启用</li>
+</ul>
+<ul>
+<li>#设置使用的域名密码过期策略</li>
+</ul>
+<ul>
+<li>#设置所有同步的账号密码策略为None（默认为永不过期）使用上述设置的密码策略</li>
+</ul>
+<ul>
+<li>Connect-AzureAD -AzureEnvironmentName azurechinacloud</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#首先检查功能是否启用</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>可以通过下面PS 命令设置所有本地同步云端账号密码策略</li>
+</ul>
+<ul>
+<li>Get-MsolDirSyncFeatures</li>
+</ul>
+<ul>
+<li>Set-MsolDirSyncFeature-featureEnforceCloudPasswordPolicyForPasswordSyncedUsers $true</li>
+</ul>
+<ul>
+<li>Set-MsolPasswordPolicy -DomainName xxx.com -ValidityPeriod 过期天数 -NotificationDays 提醒天数</li>
+</ul>
+<ul>
+<li>Get-AzureADUser -All $true | Where-Object { $_.DirSyncEnabled -eq $true -and $_.PasswordPolicies -eq ‘DisablePasswordExpiration’ } | ForEach-Object { Set-AzureADUser -ObjectId $_.ObjectID -PasswordPolicies None }</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>完成设置后需要手动执行一下增量同步，另外检查一下AADC连接到云端的账号是否使用的是同步的账号（会出现过期无法同步问题），如果是建议修改为非同步的云端账号。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/entra/identity/hybrid/connect/how-to-connect-password-hash-synchronization#password-expiration-policy" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/hybrid/connect/how-to-connect-password-hash-synchronization#password-expiration-policy</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024.11.12</p>
+<p>AADC同步账户默认的密码策略为“永不过期”</p>
+<p><a href="https://learn.microsoft.com/zh-cn/entra/identity/hybrid/connect/how-to-connect-password-hash-synchronization#password-expiration-policy" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/hybrid/connect/how-to-connect-password-hash-synchronization#password-expiration-policy</a></p>
+<p>可以通过下面PS 命令设置所有本地同步云端账号密码策略</p>
+<p>#首先检查功能是否启用</p>
+<p>Connect-MsolService -AzureEnvironment azurechinacloud</p>
+<p>Get-MsolDirSyncFeatures</p>
+<p>#功能启用</p>
+<p>Set-MsolDirSyncFeature-featureEnforceCloudPasswordPolicyForPasswordSyncedUsers $true</p>
+<p>#设置使用的域名密码过期策略</p>
+<p>Set-MsolPasswordPolicy -DomainName xxx.com -ValidityPeriod 过期天数 -NotificationDays 提醒天数</p>
+<p>#设置所有同步的账号密码策略为None（默认为永不过期）使用上述设置的密码策略</p>
+<p>Connect-AzureAD -AzureEnvironmentName azurechinacloud</p>
+<p>Get-AzureADUser -All $true | Where-Object { $_.DirSyncEnabled -eq $true -and $_.PasswordPolicies -eq ‘DisablePasswordExpiration’ } | ForEach-Object { Set-AzureADUser -ObjectId $_.ObjectID -PasswordPolicies None }</p>
+<p>完成设置后需要手动执行一下增量同步，另外检查一下AADC连接到云端的账号是否使用的是同步的账号（会出现过期无法同步问题），如果是建议修改为非同步的云端账号。</p></article>

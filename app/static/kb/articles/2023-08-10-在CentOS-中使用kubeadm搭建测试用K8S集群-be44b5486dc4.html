@@ -1,0 +1,1015 @@
+<article class="kb-article" data-title="在CentOS 中使用kubeadm搭建测试用K8S集群"><h1>在CentOS 中使用kubeadm搭建测试用K8S集群</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: K8S</li>
+<li>最近修改: 2023-08-10 09:59:55</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>如果sysctl -p /etc/sysctl.d/k8s.conf出现报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>如果sysctl -p /etc/sysctl.d/k8s.conf出现报错：</li>
+</ul>
+<ul>
+<li>cp: cannot stat ‘containerd.service’: No such file or directory</li>
+</ul>
+<ul>
+<li>kubeadm init   --apiserver-advertise-address=172.26.0.4  --image-repository registry.aliyuncs.com/google_containers  --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=SystemVerification</li>
+</ul>
+<ul>
+<li>再次重试可以--ignore-preflight-errors=all</li>
+</ul>
+<ul>
+<li>--ignore-preflighterrors=SystemVerification</li>
+</ul>
+<ul>
+<li>如果coredns 无法解析可以参考如下配置修改</li>
+</ul>
+<ul>
+<li>进入集群的任意一个POD，ping不通集群内的clusterIP和service</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang wenxin</li>
+</ul>
+<ul>
+<li>准备2台CentOS</li>
+</ul>
+<ul>
+<li>一、配置主机之间无密码登录</li>
+</ul>
+<ul>
+<li>原理：客户端使用私钥，服务端使用公钥。</li>
+</ul>
+<ul>
+<li>生成公钥私钥对(既可以在服务端生成密钥对，也可以在客户端生成密钥对，还可以在其他地方生成的密钥对)，默认存储在 ~/.ssh 目录下。</li>
+</ul>
+<ul>
+<li>将客户端公钥 id_rsa.pub 追加到服务端 ~/.ssh/authorized_keys 文件中，</li>
+</ul>
+<ul>
+<li>将私钥 id_rsa 放到客户端 ~/.ssh/目录下</li>
+</ul>
+<ul>
+<li>#1、生成密钥对</li>
+</ul>
+<ul>
+<li>ssh-keygen -t rsa</li>
+</ul>
+<ul>
+<li>#(连续三次回车，即在本地生成了公钥和私钥，不设置密码，默认存储在 ~/.ssh目录下)</li>
+</ul>
+<ul>
+<li>#2、将公钥 id_rsa.pub 追加到服务端 ~/.ssh/authorized_keys 文件中</li>
+</ul>
+<ul>
+<li>#这里默认已经将公钥上传到了服务端</li>
+</ul>
+<ul>
+<li>cat id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</li>
+</ul>
+<ul>
+<li>chmod 700 ~/.ssh</li>
+</ul>
+<ul>
+<li>chmod 600 ~/.ssh/authorized_keys</li>
+</ul>
+<ul>
+<li>#3、将私钥 id_rsa 放到客户端 ~/.ssh/目录下</li>
+</ul>
+<ul>
+<li>#这里默认已经将私钥上传到了客户端</li>
+</ul>
+<ul>
+<li>mv id_rsa ~/.ssh/</li>
+</ul>
+<ul>
+<li>chmod 600 ~/.ssh/id_rsa</li>
+</ul>
+<ul>
+<li>示例拷贝操作：使用sudo su –</li>
+</ul>
+<ul>
+<li>提升为root 用户使用ssh-keygen生成证书会在/root/.ssh/id_rsa.pub，拷贝公钥到对方计算机上</li>
+</ul>
+<ul>
+<li>cat /home/azureuser/tmp/id_rsa.pub.149 &gt;&gt; ~/.ssh/authorized_keys</li>
+</ul>
+<ul>
+<li>#cat /home/azureuser/tmp/id_rsa.pub.170 &gt;&gt; ~/.ssh/authorized_keys</li>
+</ul>
+<ul>
+<li>二、修改2台机器内核以及网络参数</li>
+</ul>
+<ul>
+<li>1内核参数修改</li>
+</ul>
+<ul>
+<li># modprobe br_netfilter</li>
+</ul>
+<ul>
+<li># echo &quot;modprobe br_netfilter&quot; &gt;&gt; /etc/profile</li>
+</ul>
+<ul>
+<li>cat &gt; /etc/sysctl.d/k8s.conf &lt;&lt;EOF</li>
+</ul>
+<ul>
+<li>net.bridge.bridge-nf-call-ip6tables = 1</li>
+</ul>
+<ul>
+<li>net.bridge.bridge-nf-call-iptables = 1</li>
+</ul>
+<ul>
+<li>net.ipv4.ip_forward = 1</li>
+</ul>
+<ul>
+<li>EOF</li>
+</ul>
+<ul>
+<li># sysctl -p /etc/sysctl.d/k8s.conf</li>
+</ul>
+<ul>
+<li>设置其余node以此类推：</li>
+</ul>
+<ul>
+<li>modprobe br_netfilter</li>
+</ul>
+<ul>
+<li>2 关闭firewalld防火墙</li>
+</ul>
+<ul>
+<li>3 关闭selinux</li>
+</ul>
+<ul>
+<li>#修改selinux配置文件之后，重启机器，selinux配置才能永久生效</li>
+</ul>
+<ul>
+<li>三、 配置安装k8s组件需要的阿里云的repo源</li>
+</ul>
+<ul>
+<li>#vim  /etc/yum.repos.d/kubernetes.repo</li>
+</ul>
+<ul>
+<li>[kubernetes] name=Kubernetes</li>
+</ul>
+<ul>
+<li>四、开启 ipvs (IP Virtual Server) 实现了传输层负载均衡，也就是我们常说的4层LAN交换</li>
+</ul>
+<ul>
+<li>注意操作前需要先安装如下模块</li>
+</ul>
+<ul>
+<li>yum -y install ipvsadm</li>
+</ul>
+<ul>
+<li>cat &gt; /etc/sysconfig/modules/ipvs.modules &lt;&lt;EOF</li>
+</ul>
+<ul>
+<li>#!/bin/bash</li>
+</ul>
+<ul>
+<li>for kernel_module in ${ipvs_modules}; do</li>
+</ul>
+<ul>
+<li>/sbin/modinfo -F filename ${kernel_module} &gt; /dev/null 2&gt;&amp;1</li>
+</ul>
+<ul>
+<li>if [ 0 -eq 0 ]; then</li>
+</ul>
+<ul>
+<li>/sbin/modprobe ${kernel_module}</li>
+</ul>
+<ul>
+<li>fi</li>
+</ul>
+<ul>
+<li>done</li>
+</ul>
+<ul>
+<li>chmod 755 /etc/sysconfig/modules/ipvs.modules &amp;&amp; bash /etc/sysconfig/modules/ipvs.modules &amp;&amp; lsmod | grep ip_vs</li>
+</ul>
+<ul>
+<li>五、安装基础软件包</li>
+</ul>
+<ul>
+<li>1基础包</li>
+</ul>
+<ul>
+<li># yum install -y yum-utils device-mapper-persistent-data lvm2 wget net-tools nfs-utils lrzsz gcc gcc-c++ make cmake libxml2-devel openssl-devel curl curl-devel unzip sudo ntp libaio-devel wget vim ncurses-devel autoconf automake zlibdevel  python-devel epel-release openssh-server socat  ipvsadm conntrack ntpdate telnet ipvsadm</li>
+</ul>
+<ul>
+<li>安装iptables 如果用firewalld不习惯，可以安装iptables</li>
+</ul>
+<ul>
+<li>#安装iptables</li>
+</ul>
+<ul>
+<li>yum install iptables-services -y</li>
+</ul>
+<ul>
+<li>#禁用iptables</li>
+</ul>
+<ul>
+<li>#清空防火墙规则</li>
+</ul>
+<ul>
+<li>iptables -F</li>
+</ul>
+<ul>
+<li>六 安装docker服务</li>
+</ul>
+<ul>
+<li>1、安装docker-ce</li>
+</ul>
+<ul>
+<li>#yum install -y yum-utils</li>
+</ul>
+<ul>
+<li>#yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</li>
+</ul>
+<ul>
+<li>在每个机器上配置docker镜像加速器和驱动</li>
+</ul>
+<ul>
+<li>#vim  /etc/docker/daemon.json</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;exec-opts&quot;: [&quot;native.cgroupdriver=systemd&quot;]</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>#修改docker文件驱动为systemd，默认为cgroupfs，kubelet默认使用systemd，两者必须一致才可以。</li>
+</ul>
+<ul>
+<li># systemctl daemon-reload  &amp;&amp; systemctl restart docker</li>
+</ul>
+<ul>
+<li># systemctl status docker</li>
+</ul>
+<ul>
+<li>3、安装初始化k8s需要的软件包</li>
+</ul>
+<ul>
+<li>中国区需要使用镜像源，这里配置ali</li>
+</ul>
+<ul>
+<li>CentOS / RHEL / Fedora</li>
+</ul>
+<ul>
+<li>cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo</li>
+</ul>
+<ul>
+<li>[kubernetes]</li>
+</ul>
+<ul>
+<li>#setenforce 0</li>
+</ul>
+<ul>
+<li>ps:</li>
+</ul>
+<ul>
+<li>六、安装容器运行时</li>
+</ul>
+<ul>
+<li>containerd</li>
+</ul>
+<ul>
+<li>/etc/containerd/config.toml</li>
+</ul>
+<ul>
+<li>tar Cxzvf /usr/local containerd-1.7.3-linux-amd64.tar.gz</li>
+</ul>
+<ul>
+<li>[root@master tmp]# mkdir -p /usr/local/lib64/system/</li>
+</ul>
+<ul>
+<li>[root@master tmp]# cp containerd.service /usr/local/lib64/system/containerd.service</li>
+</ul>
+<ul>
+<li>systemctl  daemon-reload</li>
+</ul>
+<ul>
+<li>$ install -m 755 runc.amd64 /usr/local/sbin/runc</li>
+</ul>
+<ul>
+<li>安装CNI plugins:</li>
+</ul>
+<ul>
+<li>$ mkdir -p /opt/cni/bin</li>
+</ul>
+<ul>
+<li>$ tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.3.0.tgz</li>
+</ul>
+<ul>
+<li>The binaries are built statically and should work on any Linux distribution.</li>
+</ul>
+<ul>
+<li>[root@node1 ~]# cd /home/azureuser/tmp/</li>
+</ul>
+<ul>
+<li>[root@node1 tmp]#  tar Cxzvf /usr/local containerd-1.7.3-linux-amd64.tar.gz</li>
+</ul>
+<ul>
+<li>bin/</li>
+</ul>
+<ul>
+<li>bin/containerd-shim-runc-v2</li>
+</ul>
+<ul>
+<li>bin/containerd-stress</li>
+</ul>
+<ul>
+<li>bin/containerd-shim-runc-v1</li>
+</ul>
+<ul>
+<li>bin/containerd-shim</li>
+</ul>
+<ul>
+<li>bin/containerd</li>
+</ul>
+<ul>
+<li>bin/ctr</li>
+</ul>
+<ul>
+<li>[root@node1 tmp]# mkdir -p /usr/local/lib64/system/</li>
+</ul>
+<ul>
+<li>[root@node1 tmp]# cp containerd.service /usr/local/lib64/system/containerd.service</li>
+</ul>
+<ul>
+<li>[root@node1 tmp]# systemctl  daemon-reload</li>
+</ul>
+<ul>
+<li>Created symlink from /etc/systemd/system/multi-user.target.wants/containerd.service to /usr/lib/systemd/system/containerd.service.</li>
+</ul>
+<ul>
+<li>[root@node1 tmp]# install -m 755 runc.amd64 /usr/local/sbin/runc</li>
+</ul>
+<ul>
+<li>[root@node1 tmp]# mkdir -p /opt/cni/bin</li>
+</ul>
+<ul>
+<li>[root@node1 tmp]# tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.3.0.tgz</li>
+</ul>
+<ul>
+<li>./</li>
+</ul>
+<ul>
+<li>./loopback</li>
+</ul>
+<ul>
+<li>./bandwidth</li>
+</ul>
+<ul>
+<li>./ptp</li>
+</ul>
+<ul>
+<li>./vlan</li>
+</ul>
+<ul>
+<li>./host-device</li>
+</ul>
+<ul>
+<li>./tuning</li>
+</ul>
+<ul>
+<li>./vrf</li>
+</ul>
+<ul>
+<li>./sbr</li>
+</ul>
+<ul>
+<li>./tap</li>
+</ul>
+<ul>
+<li>./dhcp</li>
+</ul>
+<ul>
+<li>./static</li>
+</ul>
+<ul>
+<li>./firewall</li>
+</ul>
+<ul>
+<li>./macvlan</li>
+</ul>
+<ul>
+<li>./dummy</li>
+</ul>
+<ul>
+<li>./bridge</li>
+</ul>
+<ul>
+<li>./ipvlan</li>
+</ul>
+<ul>
+<li>./portmap</li>
+</ul>
+<ul>
+<li>./host-local</li>
+</ul>
+<ul>
+<li>[root@node1 tmp]#</li>
+</ul>
+<ul>
+<li>[root@master ~]# containerd config default &gt; /etc/containerd/config.toml</li>
+</ul>
+<ul>
+<li>[root@master ~]# vim /etc/containerd/config.toml</li>
+</ul>
+<ul>
+<li>确保不包括cri</li>
+</ul>
+<ul>
+<li>七、在master 节点上使用 kubeadm初始化k8s集群</li>
+</ul>
+<ul>
+<li>master节点网络信息</li>
+</ul>
+<ul>
+<li>node节点网络信息</li>
+</ul>
+<ul>
+<li>systemctl restart containerd</li>
+</ul>
+<ul>
+<li>[root@node1 tmp]# systemctl restart containerd</li>
+</ul>
+<ul>
+<li>[root@node1 tmp]# systemctl restart kubelet</li>
+</ul>
+<ul>
+<li>七、初始化K8s</li>
+</ul>
+<ul>
+<li>显示如下，说明安装完成：</li>
+</ul>
+<ul>
+<li>Your Kubernetes control-plane has initialized successfully!</li>
+</ul>
+<ul>
+<li>To start using your cluster, you need to run the following as a regular user:</li>
+</ul>
+<ul>
+<li>mkdir -p $HOME/.kube</li>
+</ul>
+<ul>
+<li>sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config</li>
+</ul>
+<ul>
+<li>sudo chown $(id -u):$(id -g) $HOME/.kube/config</li>
+</ul>
+<ul>
+<li>Alternatively, if you are the root user, you can run:</li>
+</ul>
+<ul>
+<li>You should now deploy a pod network to the cluster.</li>
+</ul>
+<ul>
+<li>Run &quot;kubectl apply -f [podnetwork].yaml&quot; with one of the options listed at:</li>
+</ul>
+<ul>
+<li>Then you can join any number of worker nodes by running the following on each as root:</li>
+</ul>
+<ul>
+<li>kubeadm join 172.26.0.4:6443 --token ag7dlf.8l8uiunnciwwkwr6 \</li>
+</ul>
+<ul>
+<li>--discovery-token-ca-cert-hash sha256:0b40099f0b2ee53236f0bd35d3dfec0dfcfea1339fa018f11f2c38572f63f17a</li>
+</ul>
+<ul>
+<li>[root@master tmp]#</li>
+</ul>
+<ul>
+<li>Node 加入</li>
+</ul>
+<ul>
+<li>加入前</li>
+</ul>
+<ul>
+<li>加入后</li>
+</ul>
+<ul>
+<li>注：--image-repository registry.aliyuncs.com/google_containers：手动指定仓库地址为</li>
+</ul>
+<ul>
+<li>registry.aliyuncs.com/google_containers。kubeadm默认从k8s.grc.io拉取镜像，但是k8s.gcr.io 访问不到，所以需要指定从registry.aliyuncs.com/google_containers仓库拉取镜像。</li>
+</ul>
+<ul>
+<li>kubeadm join 192.168.40.180:6443 --token gsa9je.x35o1gfhd4hq26ci \</li>
+</ul>
+<ul>
+<li>--discovery-token-ca-cert-hash sha256:8c18c824fcc6f91dd03205e63005cfeef36061f86d1b14a3ee562a6eb6ad4447</li>
+</ul>
+<ul>
+<li># mkdir -p $HOME/.kube</li>
+</ul>
+<ul>
+<li># sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config</li>
+</ul>
+<ul>
+<li># sudo chown $(id -u):$(id -g) $HOME/.kube/config</li>
+</ul>
+<ul>
+<li># kubectl get nodes</li>
+</ul>
+<ul>
+<li>此时集群状态还是NotReady状态，因为没有安装网络插件。</li>
+</ul>
+<ul>
+<li>kubeadm token create --print-join-command</li>
+</ul>
+<ul>
+<li>把node1加入k8s集群：</li>
+</ul>
+<ul>
+<li># kubeadm join 172.26.0.4:6443 --token ag7dlf.8l8uiunnciwwkwr6 \</li>
+</ul>
+<ul>
+<li>#看到上面说明节点已经加入到集群了,充当工作节点</li>
+</ul>
+<ul>
+<li>7、安装kubernetes网络组件-Calico 上传calico.yaml到master上，使用yaml文件安装calico 网络插件 。</li>
+</ul>
+<ul>
+<li># kubectl apply -f  canal.yaml</li>
+</ul>
+<ul>
+<li># kubectl get pods -n kube-system</li>
+</ul>
+<ul>
+<li>补充：</li>
+</ul>
+<ul>
+<li>=号为添加，-号为删除</li>
+</ul>
+<ul>
+<li>为节点设置角色</li>
+</ul>
+<ul>
+<li>附pod dnsutils yaml：</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: Pod</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: dnsutils</li>
+</ul>
+<ul>
+<li>namespace: default</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>containers:</li>
+</ul>
+<ul>
+<li>- name: dnsutils</li>
+</ul>
+<ul>
+<li>image: k8sgcr.azk8s.cn/e2e-test-images/jessie-dnsutils:1.3</li>
+</ul>
+<ul>
+<li>command:</li>
+</ul>
+<ul>
+<li>- sleep</li>
+</ul>
+<ul>
+<li>- &quot;infinity&quot;</li>
+</ul>
+<ul>
+<li>imagePullPolicy: IfNotPresent</li>
+</ul>
+<ul>
+<li>restartPolicy: Always</li>
+</ul>
+<ul>
+<li>修改kube-proxy的配置文件,添加mode 为ipvs。</li>
+</ul>
+<ul>
+<li>将mode标签的属性改为：ipvs</li>
+</ul>
+<ul>
+<li>mode: &quot;ipvs&quot;</li>
+</ul>
+<ul>
+<li>重启kube-proxy 的pod。</li>
+</ul>
+<ul>
+<li>设置好后，第二天重启计算机后正常</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>yum install -y --nogpgcheck kubelet kubeadm kubectl</li>
+</ul>
+<ul>
+<li>使用 containerd 作为 CRI 运行时的必要步骤：</li>
+</ul>
+<ul>
+<li>要在系统上安装 containerd请创建有效的 config.toml 配置文件后返回此步骤。在 Linux 上，containerd 的默认 CRI 套接字是 /run/containerd/containerd.sock。</li>
+</ul>
+<ul>
+<li>再次查看集群状态。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>注默认使用的提升权限的root用户，参考命令sudo su -</li>
+</ul>
+<ul>
+<li>参考命令</li>
+</ul>
+<ul>
+<li>客户端免密登录服务端命令：ssh remot_user@ip</li>
+</ul>
+<ul>
+<li>由于官网未开放同步方式, 可能会有索引gpg检查失败的情况，这时请用如下命令安装</li>
+</ul>
+<ul>
+<li>##指定下载目录及文件名，命令格式：wget 网址 -o 目录/文件名</li>
+</ul>
+<ul>
+<li>命令小结</li>
+</ul>
+<ul>
+<li>#上面命令是把node节点加入集群，需要保存下来，每个人的都不一样</li>
+</ul>
+<ul>
+<li>#配置kubectl的配置文件config，相当于对kubectl进行授权，这样kubectl命令可以使用这个证书对k8s集群进行管理</li>
+</ul>
+<ul>
+<li>6、扩容k8s集群-添加第一个工作节点在master上查看加入节点的命令：</li>
+</ul>
+<ul>
+<li>kubectl label node node1 node-role.kubernetes.io/worker=worker</li>
+</ul>
+<ul>
+<li>kubectl label node master node-role.kubernetes.io/master=</li>
+</ul>
+<ul>
+<li>kubectl exec -i -t dnsutils -- /bin/bash</li>
+</ul>
+<ul>
+<li>在master节点，执行如下命令。</li>
+</ul>
+<ul>
+<li>kubectl edit cm kube-proxy -n kube-system</li>
+</ul>
+<ul>
+<li>kubectl get pod -n kube-system | grep kube-proxy |awk &#39;{system(&quot;kubectl delete pod &quot;$1&quot; -n kube-system&quot;)}&#39;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>ipvs_modules=&quot;ip_vs ip_vs_lc ip_vs_wlc ip_vs_rr ip_vs_wrr ip_vs_lblc ip_vs_lblcr ip_vs_dh ip_vs_sh ip_vs_nq ip_vs_sed ip_vs_ftp nf_conntrack&quot;</li>
+</ul>
+<ul>
+<li>name=Kubernetes</li>
+</ul>
+<ul>
+<li>enabled=1</li>
+</ul>
+<ul>
+<li>gpgcheck=1</li>
+</ul>
+<ul>
+<li>repo_gpgcheck=1</li>
+</ul>
+<ul>
+<li>export KUBECONFIG=/etc/kubernetes/admin.conf</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法：</li>
+</ul>
+<ul>
+<li># systemctl stop firewalld ; systemctl disable firewalld</li>
+</ul>
+<ul>
+<li># sed -i &#39;s/SELINUX=enforcing/SELINUX=disabled/g&#39; /etc/selinux/config</li>
+</ul>
+<ul>
+<li>#getenforce Disabled</li>
+</ul>
+<ul>
+<li>#显示Disabled说明selinux已经关闭</li>
+</ul>
+<ul>
+<li>建议复制该文档修改并查看结果</li>
+</ul>
+<ul>
+<li>service iptables stop   &amp;&amp; systemctl disable iptables</li>
+</ul>
+<ul>
+<li>systemctl start docker &amp;&amp; systemctl enable docker.service</li>
+</ul>
+<ul>
+<li>systemctl enable kubelet &amp;&amp; systemctl start kubelet</li>
+</ul>
+<ul>
+<li>systemctl enable --now containerd</li>
+</ul>
+<ul>
+<li>[root@node1 tmp]# systemctl enable --now containerd</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>baseurl=<a href="https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/" target="_blank" rel="noopener">https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/</a> enabled=1 gpgcheck=0</li>
+</ul>
+<ul>
+<li>#yum-config-manager --add-repo <a href="https://download.docker.com/linux/centos/docker-ce.repo" target="_blank" rel="noopener">https://download.docker.com/linux/centos/docker-ce.repo</a></li>
+</ul>
+<ul>
+<li>&quot;registry-mirrors&quot;:[&quot;<a href="https://rsbud4vc.mirror.aliyuncs.com&quot;,&quot;https://registry.dockercn.com&quot;,&quot;https://docker.mirrors.ustc.edu.cn&quot;,&quot;https://dockerhub.azk8s.cn&quot;,&quot;http://hubmirror.c.163.com&quot;,&quot;http://qtid6917.mirror.aliyuncs.com&quot;," target="_blank" rel="noopener">https://rsbud4vc.mirror.aliyuncs.com&quot;,&quot;https://registry.dockercn.com&quot;,&quot;https://docker.mirrors.ustc.edu.cn&quot;,&quot;https://dockerhub.azk8s.cn&quot;,&quot;http://hubmirror.c.163.com&quot;,&quot;http://qtid6917.mirror.aliyuncs.com&quot;,</a> &quot;<a href="https://rncxm540.mirror.aliyuncs.com&quot;]," target="_blank" rel="noopener">https://rncxm540.mirror.aliyuncs.com&quot;],</a></li>
+</ul>
+<ul>
+<li>baseurl=<a href="https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/" target="_blank" rel="noopener">https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/</a></li>
+</ul>
+<ul>
+<li>gpgkey=<a href="https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg" target="_blank" rel="noopener">https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg</a> <a href="https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg" target="_blank" rel="noopener">https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</a></li>
+</ul>
+<ul>
+<li>wget <a href="https://github.com/containerd/containerd/releases/download/v1.7.3/containerd-1.7.3-linux-amd64.tar.gz" target="_blank" rel="noopener">https://github.com/containerd/containerd/releases/download/v1.7.3/containerd-1.7.3-linux-amd64.tar.gz</a></li>
+</ul>
+<ul>
+<li>wget  <a href="https://github.com/opencontainers/runc/releases/download/v1.1.8/runc.amd64" target="_blank" rel="noopener">https://github.com/opencontainers/runc/releases/download/v1.1.8/runc.amd64</a></li>
+</ul>
+<ul>
+<li>wget  <a href="https://github.com/containernetworking/plugins/releases/download/v1.3.0/cni-plugins-linux-amd64-v1.3.0.tgz" target="_blank" rel="noopener">https://github.com/containernetworking/plugins/releases/download/v1.3.0/cni-plugins-linux-amd64-v1.3.0.tgz</a></li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.io/docs/concepts/cluster-administration/addons/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/cluster-administration/addons/</a></li>
+</ul>
+<ul>
+<li>注：在线下载配置文件地址是： curl <a href="https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/canal.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/canal.yaml</a> -O。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang wenxin</p>
+<p>准备2台CentOS</p>
+<p>注默认使用的提升权限的root用户，参考命令sudo su -</p>
+<p>一、配置主机之间无密码登录</p>
+<p>原理：客户端使用私钥，服务端使用公钥。</p>
+<p>生成公钥私钥对(既可以在服务端生成密钥对，也可以在客户端生成密钥对，还可以在其他地方生成的密钥对)，默认存储在 ~/.ssh 目录下。</p>
+<p>将客户端公钥 id_rsa.pub 追加到服务端 ~/.ssh/authorized_keys 文件中，</p>
+<p>将私钥 id_rsa 放到客户端 ~/.ssh/目录下</p>
+<p>参考命令</p>
+<p>#1、生成密钥对</p>
+<p>ssh-keygen -t rsa</p>
+<p>#(连续三次回车，即在本地生成了公钥和私钥，不设置密码，默认存储在 ~/.ssh目录下)</p>
+<p>#2、将公钥 id_rsa.pub 追加到服务端 ~/.ssh/authorized_keys 文件中</p>
+<p>#这里默认已经将公钥上传到了服务端</p>
+<p>cat id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</p>
+<p>chmod 700 ~/.ssh</p>
+<p>chmod 600 ~/.ssh/authorized_keys</p>
+<p>#3、将私钥 id_rsa 放到客户端 ~/.ssh/目录下</p>
+<p>#这里默认已经将私钥上传到了客户端</p>
+<p>mv id_rsa ~/.ssh/</p>
+<p>chmod 600 ~/.ssh/id_rsa</p>
+<p>客户端免密登录服务端命令：ssh remot_user@ip</p>
+<p>示例拷贝操作：使用sudo su –</p>
+<p>提升为root 用户使用ssh-keygen生成证书会在/root/.ssh/id_rsa.pub，拷贝公钥到对方计算机上</p>
+<p>cat /home/azureuser/tmp/id_rsa.pub.149 &gt;&gt; ~/.ssh/authorized_keys</p>
+<p>#cat /home/azureuser/tmp/id_rsa.pub.170 &gt;&gt; ~/.ssh/authorized_keys</p>
+<p>二、修改2台机器内核以及网络参数</p>
+<p>1内核参数修改</p>
+<h1>modprobe br_netfilter</h1>
+<h1>echo &quot;modprobe br_netfilter&quot; &gt;&gt; /etc/profile</h1>
+<p>cat &gt; /etc/sysctl.d/k8s.conf &lt;&lt;EOF</p>
+<p>net.bridge.bridge-nf-call-ip6tables = 1</p>
+<p>net.bridge.bridge-nf-call-iptables = 1</p>
+<p>net.ipv4.ip_forward = 1</p>
+<p>EOF</p>
+<h1>sysctl -p /etc/sysctl.d/k8s.conf</h1>
+<p>设置其余node以此类推：</p>
+<p>如果sysctl -p /etc/sysctl.d/k8s.conf出现报错：</p>
+<p>解决方法：</p>
+<p>modprobe br_netfilter</p>
+<p>2 关闭firewalld防火墙</p>
+<h1>systemctl stop firewalld ; systemctl disable firewalld</h1>
+<p>3 关闭selinux</p>
+<h1>sed -i &#39;s/SELINUX=enforcing/SELINUX=disabled/g&#39; /etc/selinux/config</h1>
+<p>#修改selinux配置文件之后，重启机器，selinux配置才能永久生效</p>
+<p>#getenforce Disabled</p>
+<p>#显示Disabled说明selinux已经关闭</p>
+<p>三、 配置安装k8s组件需要的阿里云的repo源</p>
+<p>#vim  /etc/yum.repos.d/kubernetes.repo</p>
+<p>[kubernetes] name=Kubernetes</p>
+<p>baseurl=<a href="https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/" target="_blank" rel="noopener">https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/</a> enabled=1 gpgcheck=0</p>
+<p>四、开启 ipvs (IP Virtual Server) 实现了传输层负载均衡，也就是我们常说的4层LAN交换</p>
+<p>注意操作前需要先安装如下模块</p>
+<p>yum -y install ipvsadm</p>
+<p>cat &gt; /etc/sysconfig/modules/ipvs.modules &lt;&lt;EOF</p>
+<p>#!/bin/bash</p>
+<p>ipvs_modules=&quot;ip_vs ip_vs_lc ip_vs_wlc ip_vs_rr ip_vs_wrr ip_vs_lblc ip_vs_lblcr ip_vs_dh ip_vs_sh ip_vs_nq ip_vs_sed ip_vs_ftp nf_conntrack&quot;</p>
+<p>for kernel_module in ${ipvs_modules}; do</p>
+<p>/sbin/modinfo -F filename ${kernel_module} &gt; /dev/null 2&gt;&amp;1</p>
+<p>if [ 0 -eq 0 ]; then</p>
+<p>/sbin/modprobe ${kernel_module}</p>
+<p>fi</p>
+<p>done</p>
+<p>建议复制该文档修改并查看结果</p>
+<p>chmod 755 /etc/sysconfig/modules/ipvs.modules &amp;&amp; bash /etc/sysconfig/modules/ipvs.modules &amp;&amp; lsmod | grep ip_vs</p>
+<p>五、安装基础软件包</p>
+<p>1基础包</p>
+<h1>yum install -y yum-utils device-mapper-persistent-data lvm2 wget net-tools nfs-utils lrzsz gcc gcc-c++ make cmake libxml2-devel openssl-devel curl curl-devel unzip sudo ntp libaio-devel wget vim ncurses-devel autoconf automake zlibdevel  python-devel epel-release openssh-server socat  ipvsadm conntrack ntpdate telnet ipvsadm</h1>
+<p>安装iptables 如果用firewalld不习惯，可以安装iptables</p>
+<p>#安装iptables</p>
+<p>yum install iptables-services -y</p>
+<p>#禁用iptables</p>
+<p>service iptables stop   &amp;&amp; systemctl disable iptables</p>
+<p>#清空防火墙规则</p>
+<p>iptables -F</p>
+<p>六 安装docker服务</p>
+<p>1、安装docker-ce</p>
+<p>#yum install -y yum-utils</p>
+<p>#yum-config-manager --add-repo <a href="https://download.docker.com/linux/centos/docker-ce.repo" target="_blank" rel="noopener">https://download.docker.com/linux/centos/docker-ce.repo</a></p>
+<p>#yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</p>
+<p>systemctl start docker &amp;&amp; systemctl enable docker.service</p>
+<p>在每个机器上配置docker镜像加速器和驱动</p>
+<p>#vim  /etc/docker/daemon.json</p>
+<p>{</p>
+<p>&quot;registry-mirrors&quot;:[&quot;<a href="https://rsbud4vc.mirror.aliyuncs.com&quot;,&quot;https://registry.dockercn.com&quot;,&quot;https://docker.mirrors.ustc.edu.cn&quot;,&quot;https://dockerhub.azk8s.cn&quot;,&quot;http://hubmirror.c.163.com&quot;,&quot;http://qtid6917.mirror.aliyuncs.com&quot;," target="_blank" rel="noopener">https://rsbud4vc.mirror.aliyuncs.com&quot;,&quot;https://registry.dockercn.com&quot;,&quot;https://docker.mirrors.ustc.edu.cn&quot;,&quot;https://dockerhub.azk8s.cn&quot;,&quot;http://hubmirror.c.163.com&quot;,&quot;http://qtid6917.mirror.aliyuncs.com&quot;,</a> &quot;<a href="https://rncxm540.mirror.aliyuncs.com&quot;]," target="_blank" rel="noopener">https://rncxm540.mirror.aliyuncs.com&quot;],</a></p>
+<p>&quot;exec-opts&quot;: [&quot;native.cgroupdriver=systemd&quot;]</p>
+<p>}</p>
+<p>#修改docker文件驱动为systemd，默认为cgroupfs，kubelet默认使用systemd，两者必须一致才可以。</p>
+<h1>systemctl daemon-reload  &amp;&amp; systemctl restart docker</h1>
+<h1>systemctl status docker</h1>
+<p>3、安装初始化k8s需要的软件包</p>
+<p>中国区需要使用镜像源，这里配置ali</p>
+<p>CentOS / RHEL / Fedora</p>
+<p>cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo</p>
+<p>[kubernetes]</p>
+<p>name=Kubernetes</p>
+<p>baseurl=<a href="https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/" target="_blank" rel="noopener">https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/</a></p>
+<p>enabled=1</p>
+<p>gpgcheck=1</p>
+<p>repo_gpgcheck=1</p>
+<p>gpgkey=<a href="https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg" target="_blank" rel="noopener">https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg</a> <a href="https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg" target="_blank" rel="noopener">https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</a></p>
+<p>#setenforce 0</p>
+<p>yum install -y --nogpgcheck kubelet kubeadm kubectl</p>
+<p>systemctl enable kubelet &amp;&amp; systemctl start kubelet</p>
+<p>ps:</p>
+<p>由于官网未开放同步方式, 可能会有索引gpg检查失败的情况，这时请用如下命令安装</p>
+<p>六、安装容器运行时</p>
+<p>containerd</p>
+<p>使用 containerd 作为 CRI 运行时的必要步骤：</p>
+<p>要在系统上安装 containerd请创建有效的 config.toml 配置文件后返回此步骤。在 Linux 上，containerd 的默认 CRI 套接字是 /run/containerd/containerd.sock。</p>
+<p>/etc/containerd/config.toml</p>
+<p>wget <a href="https://github.com/containerd/containerd/releases/download/v1.7.3/containerd-1.7.3-linux-amd64.tar.gz" target="_blank" rel="noopener">https://github.com/containerd/containerd/releases/download/v1.7.3/containerd-1.7.3-linux-amd64.tar.gz</a></p>
+<p>tar Cxzvf /usr/local containerd-1.7.3-linux-amd64.tar.gz</p>
+<p>[root@master tmp]# mkdir -p /usr/local/lib64/system/</p>
+<p>[root@master tmp]# cp containerd.service /usr/local/lib64/system/containerd.service</p>
+<p>##指定下载目录及文件名，命令格式：wget 网址 -o 目录/文件名</p>
+<p>systemctl  daemon-reload</p>
+<p>systemctl enable --now containerd</p>
+<p>wget  <a href="https://github.com/opencontainers/runc/releases/download/v1.1.8/runc.amd64" target="_blank" rel="noopener">https://github.com/opencontainers/runc/releases/download/v1.1.8/runc.amd64</a></p>
+<p>$ install -m 755 runc.amd64 /usr/local/sbin/runc</p>
+<p>安装CNI plugins:</p>
+<p>wget  <a href="https://github.com/containernetworking/plugins/releases/download/v1.3.0/cni-plugins-linux-amd64-v1.3.0.tgz" target="_blank" rel="noopener">https://github.com/containernetworking/plugins/releases/download/v1.3.0/cni-plugins-linux-amd64-v1.3.0.tgz</a></p>
+<p>$ mkdir -p /opt/cni/bin</p>
+<p>$ tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.3.0.tgz</p>
+<p>The binaries are built statically and should work on any Linux distribution.</p>
+<p>命令小结</p>
+<p>[root@node1 ~]# cd /home/azureuser/tmp/</p>
+<p>[root@node1 tmp]#  tar Cxzvf /usr/local containerd-1.7.3-linux-amd64.tar.gz</p>
+<p>bin/</p>
+<p>bin/containerd-shim-runc-v2</p>
+<p>bin/containerd-stress</p>
+<p>bin/containerd-shim-runc-v1</p>
+<p>bin/containerd-shim</p>
+<p>bin/containerd</p>
+<p>bin/ctr</p>
+<p>[root@node1 tmp]# mkdir -p /usr/local/lib64/system/</p>
+<p>[root@node1 tmp]# cp containerd.service /usr/local/lib64/system/containerd.service</p>
+<p>cp: cannot stat ‘containerd.service’: No such file or directory</p>
+<p>[root@node1 tmp]# systemctl  daemon-reload</p>
+<p>[root@node1 tmp]# systemctl enable --now containerd</p>
+<p>Created symlink from /etc/systemd/system/multi-user.target.wants/containerd.service to /usr/lib/systemd/system/containerd.service.</p>
+<p>[root@node1 tmp]# install -m 755 runc.amd64 /usr/local/sbin/runc</p>
+<p>[root@node1 tmp]# mkdir -p /opt/cni/bin</p>
+<p>[root@node1 tmp]# tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.3.0.tgz</p>
+<p>./</p>
+<p>./loopback</p>
+<p>./bandwidth</p>
+<p>./ptp</p>
+<p>./vlan</p>
+<p>./host-device</p>
+<p>./tuning</p>
+<p>./vrf</p>
+<p>./sbr</p>
+<p>./tap</p>
+<p>./dhcp</p>
+<p>./static</p>
+<p>./firewall</p>
+<p>./macvlan</p>
+<p>./dummy</p>
+<p>./bridge</p>
+<p>./ipvlan</p>
+<p>./portmap</p>
+<p>./host-local</p>
+<p>[root@node1 tmp]#</p>
+<p>[root@master ~]# containerd config default &gt; /etc/containerd/config.toml</p>
+<p>[root@master ~]# vim /etc/containerd/config.toml</p>
+<p>确保不包括cri</p>
+<p>七、在master 节点上使用 kubeadm初始化k8s集群</p>
+<p>master节点网络信息</p>
+<p>node节点网络信息</p>
+<p>systemctl restart containerd</p>
+<p>[root@node1 tmp]# systemctl restart containerd</p>
+<p>[root@node1 tmp]# systemctl restart kubelet</p>
+<p>七、初始化K8s</p>
+<p>kubeadm init   --apiserver-advertise-address=172.26.0.4  --image-repository registry.aliyuncs.com/google_containers  --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=SystemVerification</p>
+<p>再次重试可以--ignore-preflight-errors=all</p>
+<p>显示如下，说明安装完成：</p>
+<p>Your Kubernetes control-plane has initialized successfully!</p>
+<p>To start using your cluster, you need to run the following as a regular user:</p>
+<p>mkdir -p $HOME/.kube</p>
+<p>sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config</p>
+<p>sudo chown $(id -u):$(id -g) $HOME/.kube/config</p>
+<p>Alternatively, if you are the root user, you can run:</p>
+<p>export KUBECONFIG=/etc/kubernetes/admin.conf</p>
+<p>You should now deploy a pod network to the cluster.</p>
+<p>Run &quot;kubectl apply -f [podnetwork].yaml&quot; with one of the options listed at:</p>
+<p><a href="https://kubernetes.io/docs/concepts/cluster-administration/addons/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/cluster-administration/addons/</a></p>
+<p>Then you can join any number of worker nodes by running the following on each as root:</p>
+<p>kubeadm join 172.26.0.4:6443 --token ag7dlf.8l8uiunnciwwkwr6 \</p>
+<p>--discovery-token-ca-cert-hash sha256:0b40099f0b2ee53236f0bd35d3dfec0dfcfea1339fa018f11f2c38572f63f17a</p>
+<p>[root@master tmp]#</p>
+<p>Node 加入</p>
+<p>加入前</p>
+<p>加入后</p>
+<p>注：--image-repository registry.aliyuncs.com/google_containers：手动指定仓库地址为</p>
+<p>registry.aliyuncs.com/google_containers。kubeadm默认从k8s.grc.io拉取镜像，但是k8s.gcr.io 访问不到，所以需要指定从registry.aliyuncs.com/google_containers仓库拉取镜像。</p>
+<p>kubeadm join 192.168.40.180:6443 --token gsa9je.x35o1gfhd4hq26ci \</p>
+<p>--discovery-token-ca-cert-hash sha256:8c18c824fcc6f91dd03205e63005cfeef36061f86d1b14a3ee562a6eb6ad4447</p>
+<p>#上面命令是把node节点加入集群，需要保存下来，每个人的都不一样</p>
+<p>#配置kubectl的配置文件config，相当于对kubectl进行授权，这样kubectl命令可以使用这个证书对k8s集群进行管理</p>
+<h1>mkdir -p $HOME/.kube</h1>
+<h1>sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config</h1>
+<h1>sudo chown $(id -u):$(id -g) $HOME/.kube/config</h1>
+<h1>kubectl get nodes</h1>
+<p>此时集群状态还是NotReady状态，因为没有安装网络插件。</p>
+<p>6、扩容k8s集群-添加第一个工作节点在master上查看加入节点的命令：</p>
+<p>kubeadm token create --print-join-command</p>
+<p>把node1加入k8s集群：</p>
+<h1>kubeadm join 172.26.0.4:6443 --token ag7dlf.8l8uiunnciwwkwr6 \</h1>
+<p>--ignore-preflighterrors=SystemVerification</p>
+<p>#看到上面说明节点已经加入到集群了,充当工作节点</p>
+<p>7、安装kubernetes网络组件-Calico 上传calico.yaml到master上，使用yaml文件安装calico 网络插件 。</p>
+<h1>kubectl apply -f  canal.yaml</h1>
+<p>注：在线下载配置文件地址是： curl <a href="https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/canal.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/canal.yaml</a> -O。</p>
+<p>再次查看集群状态。</p>
+<h1>kubectl get pods -n kube-system</h1>
+<p>补充：</p>
+<p>如果coredns 无法解析可以参考如下配置修改</p>
+<p>kubectl label node node1 node-role.kubernetes.io/worker=worker</p>
+<p>kubectl label node master node-role.kubernetes.io/master=</p>
+<p>=号为添加，-号为删除</p>
+<p>为节点设置角色</p>
+<p>进入集群的任意一个POD，ping不通集群内的clusterIP和service</p>
+<p>kubectl exec -i -t dnsutils -- /bin/bash</p>
+<p>附pod dnsutils yaml：</p>
+<p>apiVersion: v1</p>
+<p>kind: Pod</p>
+<p>metadata:</p>
+<p>name: dnsutils</p>
+<p>namespace: default</p>
+<p>spec:</p>
+<p>containers:</p>
+<ul>
+<li>name: dnsutils</li>
+</ul>
+<p>image: k8sgcr.azk8s.cn/e2e-test-images/jessie-dnsutils:1.3</p>
+<p>command:</p>
+<ul>
+<li>sleep</li>
+</ul>
+<ul>
+<li>&quot;infinity&quot;</li>
+</ul>
+<p>imagePullPolicy: IfNotPresent</p>
+<p>restartPolicy: Always</p>
+<p>修改kube-proxy的配置文件,添加mode 为ipvs。</p>
+<p>在master节点，执行如下命令。</p>
+<p>kubectl edit cm kube-proxy -n kube-system</p>
+<p>将mode标签的属性改为：ipvs</p>
+<p>mode: &quot;ipvs&quot;</p>
+<p>重启kube-proxy 的pod。</p>
+<p>kubectl get pod -n kube-system | grep kube-proxy |awk &#39;{system(&quot;kubectl delete pod &quot;$1&quot; -n kube-system&quot;)}&#39;</p>
+<p>设置好后，第二天重启计算机后正常</p></article>

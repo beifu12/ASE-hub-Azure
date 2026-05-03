@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="AKS support TSG update 2022/1/27"><h1>AKS support TSG update 2022/1/27</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: AKS Operation guideline</li>
+<li>最近修改: 2022-01-27 17:41:44</li>
+<li>JD 相关性: 交付流程/客户支持; AKS/容器; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Notifications of AKS --CVE-2021-4034 impact to AKS</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Notifications of AKS --CVE-2021-4034 impact to AKS</li>
+</ul>
+<ul>
+<li>Vivian CVE-2021-4034 (PwnKit) - Talking Points Published</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>All linux OS will be impacted of this CVE, including Redhat, Centos, Ubuntu, and so on.</li>
+</ul>
+<ul>
+<li>Here I just want to share the impacts to AKS, instead of talking about impacts to non-aks related VM.</li>
+</ul>
+<ul>
+<li>#########</li>
+</ul>
+<ul>
+<li>AKS cluster is based on VMSS or VM availability set with customized Ubuntu OS.</li>
+</ul>
+<ul>
+<li>We/Azure will actively update these VMs and install necessary patches timely. According to Ubuntu&#39;s official statement, this CVE patch does not require a restart to take effect.</li>
+</ul>
+<ul>
+<li>Based on the above, the VMs under the AKS cluster will automatically mitigate this CVE, and you can think your aks cluster is “NOT impacted” by this CVE.</li>
+</ul>
+<ul>
+<li>Related documents:</li>
+</ul>
+<ul>
+<li>If by the end of our investigation you do not receive a communication from Microsoft regarding a publicly disclosed vulnerability, then it is safe to assume our services and your data, are not at risk.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Regarding recent press stories discussing CVE-2021-4034 (PwnKit), present by default in major Linux distributions, the Microsoft Security Response Center (MSRC) monitors public vulnerability disclosures affecting open-source and 3rd party software to determine if further investigation is warranted based on the vulnerability, service, or product affected. When necessary, Microsoft will investigate and determine if our services/products are at risk from an open-source or 3rd party vulnerability, or if customer data has been impacted. If Microsoft services are at risk, mitigations will be implemented to ensure the security of our platform and customers. In the event impact to customer data is found, any impacted customer will be notified.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Ping me if any concerns.</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://ubuntu.com/security/CVE-2021-4034" target="_blank" rel="noopener">https://ubuntu.com/security/CVE-2021-4034</a></li>
+</ul>
+<ul>
+<li>We encourage our customers to practice industry-standard best practices for security and data protection including embracing the Zero Trust Security model and adopting robust strategies to manage security updates, antivirus updates, and passwords. More information on Zero Trust Security is available at <a href="https://aka.ms/zerotrust." target="_blank" rel="noopener">https://aka.ms/zerotrust.</a> Additional information is available at <a href="https://www.microsoft.com/en-us/security." target="_blank" rel="noopener">https://www.microsoft.com/en-us/security.</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Notifications of AKS --CVE-2021-4034 impact to AKS</p>
+<p>All linux OS will be impacted of this CVE, including Redhat, Centos, Ubuntu, and so on.</p>
+<p>Here I just want to share the impacts to AKS, instead of talking about impacts to non-aks related VM.</p>
+<p>#########</p>
+<p>AKS cluster is based on VMSS or VM availability set with customized Ubuntu OS.</p>
+<p>We/Azure will actively update these VMs and install necessary patches timely. According to Ubuntu&#39;s official statement, this CVE patch does not require a restart to take effect.</p>
+<p>Based on the above, the VMs under the AKS cluster will automatically mitigate this CVE, and you can think your aks cluster is “NOT impacted” by this CVE.</p>
+<p>Related documents:</p>
+<p><a href="https://ubuntu.com/security/CVE-2021-4034" target="_blank" rel="noopener">https://ubuntu.com/security/CVE-2021-4034</a></p>
+<p>Ping me if any concerns.</p>
+<p>Vivian CVE-2021-4034 (PwnKit) - Talking Points Published</p>
+<p>Regarding recent press stories discussing CVE-2021-4034 (PwnKit), present by default in major Linux distributions, the Microsoft Security Response Center (MSRC) monitors public vulnerability disclosures affecting open-source and 3rd party software to determine if further investigation is warranted based on the vulnerability, service, or product affected. When necessary, Microsoft will investigate and determine if our services/products are at risk from an open-source or 3rd party vulnerability, or if customer data has been impacted. If Microsoft services are at risk, mitigations will be implemented to ensure the security of our platform and customers. In the event impact to customer data is found, any impacted customer will be notified.</p>
+<p>If by the end of our investigation you do not receive a communication from Microsoft regarding a publicly disclosed vulnerability, then it is safe to assume our services and your data, are not at risk.</p>
+<p>We encourage our customers to practice industry-standard best practices for security and data protection including embracing the Zero Trust Security model and adopting robust strategies to manage security updates, antivirus updates, and passwords. More information on Zero Trust Security is available at <a href="https://aka.ms/zerotrust." target="_blank" rel="noopener">https://aka.ms/zerotrust.</a> Additional information is available at <a href="https://www.microsoft.com/en-us/security." target="_blank" rel="noopener">https://www.microsoft.com/en-us/security.</a></p></article>

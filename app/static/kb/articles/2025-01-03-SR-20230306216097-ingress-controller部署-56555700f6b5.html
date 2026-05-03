@@ -1,0 +1,301 @@
+<article class="kb-article" data-title="SR_20230306216097_ingress controller部署"><h1>SR_20230306216097_ingress controller部署</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-01-03 17:21:56</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>An AKS cluster requires an identity. This identity can be either a managed identity or a service principal. No matter what the identity is, the proper authorization that&#39;s used to pull an image from a container registry is necessary. Otherwise, you may get the...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>An AKS cluster requires an identity. This identity can be either a managed identity or a service principal. No matter what the identity is, the proper authorization that&#39;s used to pull an image from a container registry is necessary. Otherwise, you may get the following &quot;401 Unauthorized&quot; error:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Multiple Nginx Ingress Controller in AKS Cluster</li>
+</ul>
+<ul>
+<li>需求： 在一个AKS中部署的应用程序（Application）分别通过Internal和External Nginx Ingress暴露出去，配置方法如下：</li>
+</ul>
+<ul>
+<li>#The Images have imported to my ACR.</li>
+</ul>
+<ul>
+<li>#az acr import --name $REGISTRY_NAME --source $SOURCE_REGISTRY/$CONTROLLER_IMAGE:$CONTROLLER_TAG --image $CONTROLLER_IMAGE:$CONTROLLER_TAG</li>
+</ul>
+<ul>
+<li>#az acr import --name $REGISTRY_NAME --source $SOURCE_REGISTRY/$PATCH_IMAGE:$PATCH_TAG --image $PATCH_IMAGE:$PATCH_TAG</li>
+</ul>
+<ul>
+<li>#az acr import --name $REGISTRY_NAME --source $SOURCE_REGISTRY/$DEFAULTBACKEND_IMAGE:$DEFAULTBACKEND_TAG --image $DEFAULTBACKEND_IMAGE:$DEFAULTBACKEND_TAG</li>
+</ul>
+<ul>
+<li># Add the ingress-nginx repository</li>
+</ul>
+<ul>
+<li># Set variable for ACR location to use for pulling images</li>
+</ul>
+<ul>
+<li># Use Helm to deploy an NGINX ingress controller</li>
+</ul>
+<ul>
+<li>helm install nginx-ingress-external ingress-nginx/ingress-nginx \</li>
+</ul>
+<ul>
+<li>--version 4.1.3 \</li>
+</ul>
+<ul>
+<li>--namespace ingress-external \</li>
+</ul>
+<ul>
+<li>--create-namespace \</li>
+</ul>
+<ul>
+<li>--set controller.ingressClassResource.name=nginx-external \</li>
+</ul>
+<ul>
+<li>--set controller.ingressClassResource.controllerValue=&quot;k8s.io/external-ingress-nginx&quot; \</li>
+</ul>
+<ul>
+<li>--set controller.replicaCount=1 \</li>
+</ul>
+<ul>
+<li>--set controller.nodeSelector.&quot;kubernetes\.io/os&quot;=linux \</li>
+</ul>
+<ul>
+<li>--set controller.image.registry=$ACR_URL \</li>
+</ul>
+<ul>
+<li>--set controller.image.image=$CONTROLLER_IMAGE \</li>
+</ul>
+<ul>
+<li>--set controller.image.tag=$CONTROLLER_TAG \</li>
+</ul>
+<ul>
+<li>--set controller.image.digest=&quot;&quot; \</li>
+</ul>
+<ul>
+<li>--set controller.image.repository=$SOURCE_REGISTRY/$CONTROLLER_IMAGE \</li>
+</ul>
+<ul>
+<li>--set controller.admissionWebhooks.patch.nodeSelector.&quot;kubernetes\.io/os&quot;=linux \</li>
+</ul>
+<ul>
+<li>--set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path&quot;=/healthz \</li>
+</ul>
+<ul>
+<li>--set controller.admissionWebhooks.patch.image.registry=$ACR_URL \</li>
+</ul>
+<ul>
+<li>--set controller.admissionWebhooks.patch.image.image=$PATCH_IMAGE \</li>
+</ul>
+<ul>
+<li>--set controller.admissionWebhooks.patch.image.tag=$PATCH_TAG \</li>
+</ul>
+<ul>
+<li>--set controller.admissionWebhooks.patch.image.digest=&quot;&quot; \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.nodeSelector.&quot;kubernetes\.io/os&quot;=linux \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.image.registry=$ACR_URL \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.image.image=$DEFAULTBACKEND_IMAGE \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.image.tag=$DEFAULTBACKEND_TAG \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.image.repository=$SOURCE_REGISTRY/$DEFAULTBACKEND_IMAGE \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.image.digest=&quot;&quot;</li>
+</ul>
+<ul>
+<li>helm install nginx-ingress-internal ingress-nginx/ingress-nginx \</li>
+</ul>
+<ul>
+<li>--namespace ingress-internal \</li>
+</ul>
+<ul>
+<li>--set controller.ingressClassResource.name=nginx-internal \</li>
+</ul>
+<ul>
+<li>--set controller.ingressClassResource.controllerValue=&quot;k8s.io/internal-ingress-nginx&quot; \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.image.digest=&quot;&quot; \</li>
+</ul>
+<ul>
+<li>-f internal-ingress.yaml</li>
+</ul>
+<ul>
+<li>然后部署应用程序；规划了不同的namespace，将Application、及与这一Application相关的Ingress都部署在了这一namespace中。测试环境中我部署了3个Application，一个只用于External访问；一个只用于Internal访问；一个可以同时被External和Internal访问：</li>
+</ul>
+<ul>
+<li>给应用程序分别创建Internal和External的Ingress，带both标识的是External和Internal都可以访问的，各自获取对应LB前端IP：</li>
+</ul>
+<ul>
+<li>各Ingress状态符合预期：</li>
+</ul>
+<ul>
+<li>访问效果示例：</li>
+</ul>
+<ul>
+<li>附件是部署Application和Ingress的YAML文件，文件中没有指定namespace，都是在kubectl apply指令中指定的，按应用分，一个应用我就给它划了一个namespace:</li>
+</ul>
+<ul>
+<li>结论：</li>
+</ul>
+<ul>
+<li>一个应用程序要同时能从External和Internal LB访问，测试中我使用了不同的host，给集群部署两个Nginx Ingress Controller，然后给这个应用程序分别部署一个External和一个Internal的Ingress即可。</li>
+</ul>
+<ul>
+<li>只要不配置错误，增加新的Nginx Ingress Controller、 Ingress不会影响现有集群的工作。</li>
+</ul>
+<ul>
+<li>部署中用到的Yaml文件：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li># Install nginx ingress controller for external traffic</li>
+</ul>
+<ul>
+<li># Install nginx ingress controller for internal traffic</li>
+</ul>
+<ul>
+<li>如果上面的heml install执行超时，Portal中查看Pod处于镜像摘取失败的状态， pod event中有类似 如下报错：</li>
+</ul>
+<ul>
+<li>需要确认AKS有acr的 AcrPull角色，没有需要授予：</li>
+</ul>
+<ul>
+<li>需要给AKS授权访问自己的ACR，或者直接在Portal中找到ACR进行添加Role:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>分别创建两个Nginx Ingress Controller，一个External Nginx Ingress(使用Azure External LB)；一个Internal Nginx Ingress（使用Azure Internal LB）。部署脚本参考如下，注意给这2个Controller设置不同的ingressClassName和controllerValue，并分别放置在不同的namespace: 没有限定Nginx ingress controller所watch的namespace，但因为两者的classname、controllervalue不同，它会识别出来不是自己的配置变更会ignore掉不会冲突，如只是classname不同，controllervaule不指定，也没有限定watch的namespace，则会冲突，Ingress所获取IP会变来变去:</li>
+</ul>
+<ul>
+<li>az role assignment list --scope /subscriptions/fbf2ac60-19f8-4f3a-8107-9c89caf51ef6/resourceGroups/appgw-test-rg/providers/Microsoft.ContainerRegistry/registries/tianacrtest -o table</li>
+</ul>
+<ul>
+<li>az aks update -n aks01 -g agic-test-rg01 --attach-acr /subscriptions/fbf2ac60-19f8-4f3a-8107-9c89caf51ef6/resourceGroups/appgw-test-rg/providers/Microsoft.ContainerRegistry/registries/tianacrtest</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>REGISTRY_NAME=testaksacr</li>
+</ul>
+<ul>
+<li>SOURCE_REGISTRY=k8sgcr.azk8s.cn</li>
+</ul>
+<ul>
+<li>CONTROLLER_IMAGE=ingress-nginx/controller</li>
+</ul>
+<ul>
+<li>CONTROLLER_TAG=v1.2.1</li>
+</ul>
+<ul>
+<li>PATCH_IMAGE=ingress-nginx/kube-webhook-certgen</li>
+</ul>
+<ul>
+<li>PATCH_TAG=v1.1.1</li>
+</ul>
+<ul>
+<li>DEFAULTBACKEND_IMAGE=defaultbackend-amd64</li>
+</ul>
+<ul>
+<li>DEFAULTBACKEND_TAG=1.5</li>
+</ul>
+<ul>
+<li>ACR_URL=testaksacr.azurecr.cn</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Failed to pull image &quot;&lt;acrname&gt;.azurecr.io/&lt;repository:tag&gt;&quot;: [rpc error: code = Unknown desc = failed to pull and unpack image &quot;&lt;acrname&gt;.azurecr.io/&lt;repository:tag&gt;&quot;: failed to resolve reference &quot;&lt;acrname&gt;.azurecr.io/&lt;repository:tag&gt;&quot;: failed to authorize: failed to fetch oauth token: unexpected status: 401 Unauthorized</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>#helm repo add ingress-nginx <a href="https://kubernetes.github.io/ingress-nginx" target="_blank" rel="noopener">https://kubernetes.github.io/ingress-nginx</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://learn.microsoft.com/en-us/troubleshoot/azure/azure-kubernetes/cannot-pull-image-from-acr-to-aks-cluster&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/troubleshoot/azure/azure-kubernetes/cannot-pull-image-from-acr-to-aks-cluster&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Multiple Nginx Ingress Controller in AKS Cluster</p>
+<p>需求： 在一个AKS中部署的应用程序（Application）分别通过Internal和External Nginx Ingress暴露出去，配置方法如下：</p>
+<p>分别创建两个Nginx Ingress Controller，一个External Nginx Ingress(使用Azure External LB)；一个Internal Nginx Ingress（使用Azure Internal LB）。部署脚本参考如下，注意给这2个Controller设置不同的ingressClassName和controllerValue，并分别放置在不同的namespace: 没有限定Nginx ingress controller所watch的namespace，但因为两者的classname、controllervalue不同，它会识别出来不是自己的配置变更会ignore掉不会冲突，如只是classname不同，controllervaule不指定，也没有限定watch的namespace，则会冲突，Ingress所获取IP会变来变去:</p>
+<p>REGISTRY_NAME=testaksacr</p>
+<p>SOURCE_REGISTRY=k8sgcr.azk8s.cn</p>
+<p>CONTROLLER_IMAGE=ingress-nginx/controller</p>
+<p>CONTROLLER_TAG=v1.2.1</p>
+<p>PATCH_IMAGE=ingress-nginx/kube-webhook-certgen</p>
+<p>PATCH_TAG=v1.1.1</p>
+<p>DEFAULTBACKEND_IMAGE=defaultbackend-amd64</p>
+<p>DEFAULTBACKEND_TAG=1.5</p>
+<p>#The Images have imported to my ACR.</p>
+<p>#az acr import --name $REGISTRY_NAME --source $SOURCE_REGISTRY/$CONTROLLER_IMAGE:$CONTROLLER_TAG --image $CONTROLLER_IMAGE:$CONTROLLER_TAG</p>
+<p>#az acr import --name $REGISTRY_NAME --source $SOURCE_REGISTRY/$PATCH_IMAGE:$PATCH_TAG --image $PATCH_IMAGE:$PATCH_TAG</p>
+<p>#az acr import --name $REGISTRY_NAME --source $SOURCE_REGISTRY/$DEFAULTBACKEND_IMAGE:$DEFAULTBACKEND_TAG --image $DEFAULTBACKEND_IMAGE:$DEFAULTBACKEND_TAG</p>
+<h1>Add the ingress-nginx repository</h1>
+<p>#helm repo add ingress-nginx <a href="https://kubernetes.github.io/ingress-nginx" target="_blank" rel="noopener">https://kubernetes.github.io/ingress-nginx</a></p>
+<h1>Set variable for ACR location to use for pulling images</h1>
+<p>ACR_URL=testaksacr.azurecr.cn</p>
+<h1>Use Helm to deploy an NGINX ingress controller</h1>
+<h1>Install nginx ingress controller for external traffic</h1>
+<p>helm install nginx-ingress-external ingress-nginx/ingress-nginx \</p>
+<p>--version 4.1.3 \</p>
+<p>--namespace ingress-external \</p>
+<p>--create-namespace \</p>
+<p>--set controller.ingressClassResource.name=nginx-external \</p>
+<p>--set controller.ingressClassResource.controllerValue=&quot;k8s.io/external-ingress-nginx&quot; \</p>
+<p>--set controller.replicaCount=1 \</p>
+<p>--set controller.nodeSelector.&quot;kubernetes\.io/os&quot;=linux \</p>
+<p>--set controller.image.registry=$ACR_URL \</p>
+<p>--set controller.image.image=$CONTROLLER_IMAGE \</p>
+<p>--set controller.image.tag=$CONTROLLER_TAG \</p>
+<p>--set controller.image.digest=&quot;&quot; \</p>
+<p>--set controller.image.repository=$SOURCE_REGISTRY/$CONTROLLER_IMAGE \</p>
+<p>--set controller.admissionWebhooks.patch.nodeSelector.&quot;kubernetes\.io/os&quot;=linux \</p>
+<p>--set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path&quot;=/healthz \</p>
+<p>--set controller.admissionWebhooks.patch.image.registry=$ACR_URL \</p>
+<p>--set controller.admissionWebhooks.patch.image.image=$PATCH_IMAGE \</p>
+<p>--set controller.admissionWebhooks.patch.image.tag=$PATCH_TAG \</p>
+<p>--set controller.admissionWebhooks.patch.image.digest=&quot;&quot; \</p>
+<p>--set defaultBackend.nodeSelector.&quot;kubernetes\.io/os&quot;=linux \</p>
+<p>--set defaultBackend.image.registry=$ACR_URL \</p>
+<p>--set defaultBackend.image.image=$DEFAULTBACKEND_IMAGE \</p>
+<p>--set defaultBackend.image.tag=$DEFAULTBACKEND_TAG \</p>
+<p>--set defaultBackend.image.repository=$SOURCE_REGISTRY/$DEFAULTBACKEND_IMAGE \</p>
+<p>--set defaultBackend.image.digest=&quot;&quot;</p>
+<h1>Install nginx ingress controller for internal traffic</h1>
+<p>helm install nginx-ingress-internal ingress-nginx/ingress-nginx \</p>
+<p>--namespace ingress-internal \</p>
+<p>--set controller.ingressClassResource.name=nginx-internal \</p>
+<p>--set controller.ingressClassResource.controllerValue=&quot;k8s.io/internal-ingress-nginx&quot; \</p>
+<p>--set defaultBackend.image.digest=&quot;&quot; \</p>
+<p>-f internal-ingress.yaml</p>
+<p>如果上面的heml install执行超时，Portal中查看Pod处于镜像摘取失败的状态， pod event中有类似 如下报错：</p>
+<p>An AKS cluster requires an identity. This identity can be either a managed identity or a service principal. No matter what the identity is, the proper authorization that&#39;s used to pull an image from a container registry is necessary. Otherwise, you may get the following &quot;401 Unauthorized&quot; error:</p>
+<p>Failed to pull image &quot;&lt;acrname&gt;.azurecr.io/&lt;repository:tag&gt;&quot;: [rpc error: code = Unknown desc = failed to pull and unpack image &quot;&lt;acrname&gt;.azurecr.io/&lt;repository:tag&gt;&quot;: failed to resolve reference &quot;&lt;acrname&gt;.azurecr.io/&lt;repository:tag&gt;&quot;: failed to authorize: failed to fetch oauth token: unexpected status: 401 Unauthorized</p>
+<p>From &lt;<a href="https://learn.microsoft.com/en-us/troubleshoot/azure/azure-kubernetes/cannot-pull-image-from-acr-to-aks-cluster&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/troubleshoot/azure/azure-kubernetes/cannot-pull-image-from-acr-to-aks-cluster&gt;</a></p>
+<p>需要确认AKS有acr的 AcrPull角色，没有需要授予：</p>
+<p>需要给AKS授权访问自己的ACR，或者直接在Portal中找到ACR进行添加Role:</p>
+<p>az role assignment list --scope /subscriptions/fbf2ac60-19f8-4f3a-8107-9c89caf51ef6/resourceGroups/appgw-test-rg/providers/Microsoft.ContainerRegistry/registries/tianacrtest -o table</p>
+<p>az aks update -n aks01 -g agic-test-rg01 --attach-acr /subscriptions/fbf2ac60-19f8-4f3a-8107-9c89caf51ef6/resourceGroups/appgw-test-rg/providers/Microsoft.ContainerRegistry/registries/tianacrtest</p>
+<p>然后部署应用程序；规划了不同的namespace，将Application、及与这一Application相关的Ingress都部署在了这一namespace中。测试环境中我部署了3个Application，一个只用于External访问；一个只用于Internal访问；一个可以同时被External和Internal访问：</p>
+<p>给应用程序分别创建Internal和External的Ingress，带both标识的是External和Internal都可以访问的，各自获取对应LB前端IP：</p>
+<p>各Ingress状态符合预期：</p>
+<p>访问效果示例：</p>
+<p>附件是部署Application和Ingress的YAML文件，文件中没有指定namespace，都是在kubectl apply指令中指定的，按应用分，一个应用我就给它划了一个namespace:</p>
+<p>结论：</p>
+<p>一个应用程序要同时能从External和Internal LB访问，测试中我使用了不同的host，给集群部署两个Nginx Ingress Controller，然后给这个应用程序分别部署一个External和一个Internal的Ingress即可。</p>
+<p>只要不配置错误，增加新的Nginx Ingress Controller、 Ingress不会影响现有集群的工作。</p>
+<p>部署中用到的Yaml文件：</p></article>

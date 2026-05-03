@@ -1,0 +1,177 @@
+<article class="kb-article" data-title="【Share】跨tenant 关联private DNS zone 和vnet"><h1>【Share】跨tenant 关联private DNS zone 和vnet</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DNS</li>
+<li>Section: DNS</li>
+<li>最近修改: 2025-09-16 21:41:29</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Incident 675277822 : [Mooncake] | [private DNS zone ] | SR_20250821369335 | failed to link vnet in tenant B(subscription 2) to private DNS zone in tenant A(subscription1)</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Incident 675277822 : [Mooncake] | [private DNS zone ] | SR_20250821369335 | failed to link vnet in tenant B(subscription 2) to private DNS zone in tenant A(subscription1)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>============</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li># Select the subscription for the virtual network.</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -Subscription 24bb5929-5d74-4b53-8920-db385c915508</li>
+</ul>
+<ul>
+<li># Get the virtual network data.</li>
+</ul>
+<ul>
+<li>$vnet = Get-AzVirtualNetwork -Name Ford-Devops-PUVPN -ResourceGroupName NI-Ford-Devops-FOPS-RG</li>
+</ul>
+<ul>
+<li>$vnet.id</li>
+</ul>
+<ul>
+<li># Switch to the subscription which contains the private dns zone.</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -Subscription 6251ed2e-5975-4f69-bc06-852f68b768ba</li>
+</ul>
+<ul>
+<li># Get the private zone data.</li>
+</ul>
+<ul>
+<li># Create a virtual network link using the virtual network id.</li>
+</ul>
+<ul>
+<li>重新对用户进行邀请并指定vnet 的contributor 权限后</li>
+</ul>
+<ul>
+<li>再次登录 并选择订阅Subscription 6251ed2e-5975-4f69-bc06-852f68b768ba</li>
+</ul>
+<ul>
+<li>备注：</li>
+</ul>
+<ul>
+<li>Tenant B 创建user并添加 private DNS zone 的contributor 权限</li>
+</ul>
+<ul>
+<li>Tenant A 中邀请user 为来宾用户并为其授权vnet 的contributor 权限</li>
+</ul>
+<ul>
+<li>被邀请的用户不能改名字</li>
+</ul>
+<ul>
+<li>参考工单：</li>
+</ul>
+<ul>
+<li>20250821369335</li>
+</ul>
+<ul>
+<li>&gt;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>用户在使用Azure portal 将tenant A中subscription1 中的vnet 关联到tenantB 中subscription 2 中的private DNS zone 时报错租户身份验证失败：</li>
+</ul>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li># Log into all the subscriptions in all the tenants you have access for.</li>
+</ul>
+<ul>
+<li># Check all the subscriptions to see if you have access to both the subscriptions.</li>
+</ul>
+<ul>
+<li>Portal 目前仍不支持跨tenant 添加关联。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>1， 我们排查了用户的用户邀请及给的权限情况没有发现异常，我们也可以复现portal 报错情况，尝试用powershell 命令也出现如下的报错提醒：</li>
+</ul>
+<ul>
+<li>2， 提交了ICM 找产品组协助，产品组给powershell命令可以正常添加， 命令中的RemoteVirtualNetworkId 与我们使用的powershell 命令“-VirtualNetworkId&quot; 是不同的，这个参数选错导致了测试时powershell命令报错，但报错提醒却是权限问题。</li>
+</ul>
+<ul>
+<li>Get-AzSubscription</li>
+</ul>
+<ul>
+<li>Get-AzPrivateDnsZone -ResourceGroupName compliance-business-stage-rg -Name privatelink.postgres.database.chinacloudapi.cn</li>
+</ul>
+<ul>
+<li>New-AzPrivateDnsVirtualNetworkLink -ResourceGroupName compliance-business-stage-rg -Name link1 -ZoneName privatelink.postgres.database.chinacloudapi.cn -RemoteVirtualNetworkId $vnet.id</li>
+</ul>
+<ul>
+<li>3， 当再次跟用户一起尝试使用PG 提供的power shell命令进行操作时，用户环境中的user 可以登录tenant A 中subscription 1 却无法去登录tenant B 中的subcription 2 。 用户表示自己在邀请完user 之后又对user 的名字做了改变。于是建议用户重新创建user 并重新邀请和授权， 也不改变名字，再次运行powershell 命令后可以正常添加。</li>
+</ul>
+<ul>
+<li>然后运行如下命令 ，但在标黄色命令时报错提醒找不到相应的订阅。</li>
+</ul>
+<ul>
+<li>最后成功运行如下命令并添加成功。</li>
+</ul>
+<ul>
+<li>Get-AzPrivateDnsZone -ResourceGroupName compliance-business-stage-rg -Name privatelink.postgres.database.chinacloudapi.cn</li>
+</ul>
+<ul>
+<li>New-AzPrivateDnsVirtualNetworkLink -ResourceGroupName compliance-business-stage-rg -Name link1 -ZoneName privatelink.postgres.database.chinacloudapi.cn -RemoteVirtualNetworkId $vnet.id</li>
+</ul>
+<ul>
+<li>Tenant B 中接受邀请。然后执行power shell命令完成添加。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/09/03</p>
+<p>问题描述：</p>
+<p>用户在使用Azure portal 将tenant A中subscription1 中的vnet 关联到tenantB 中subscription 2 中的private DNS zone 时报错租户身份验证失败：</p>
+<p>排查过程：</p>
+<p>============</p>
+<p>1， 我们排查了用户的用户邀请及给的权限情况没有发现异常，我们也可以复现portal 报错情况，尝试用powershell 命令也出现如下的报错提醒：</p>
+<p>2， 提交了ICM 找产品组协助，产品组给powershell命令可以正常添加， 命令中的RemoteVirtualNetworkId 与我们使用的powershell 命令“-VirtualNetworkId&quot; 是不同的，这个参数选错导致了测试时powershell命令报错，但报错提醒却是权限问题。</p>
+<p>Incident 675277822 : [Mooncake] | [private DNS zone ] | SR_20250821369335 | failed to link vnet in tenant B(subscription 2) to private DNS zone in tenant A(subscription1)</p>
+<h1>Log into all the subscriptions in all the tenants you have access for.</h1>
+<p>Connect-AzAccount -Environment AzureChinaCloud</p>
+<h1>Check all the subscriptions to see if you have access to both the subscriptions.</h1>
+<p>Get-AzSubscription</p>
+<h1>Select the subscription for the virtual network.</h1>
+<p>Select-AzSubscription -Subscription 24bb5929-5d74-4b53-8920-db385c915508</p>
+<h1>Get the virtual network data.</h1>
+<p>$vnet = Get-AzVirtualNetwork -Name Ford-Devops-PUVPN -ResourceGroupName NI-Ford-Devops-FOPS-RG</p>
+<p>$vnet.id</p>
+<h1>Switch to the subscription which contains the private dns zone.</h1>
+<p>Select-AzSubscription -Subscription 6251ed2e-5975-4f69-bc06-852f68b768ba</p>
+<h1>Get the private zone data.</h1>
+<p>Get-AzPrivateDnsZone -ResourceGroupName compliance-business-stage-rg -Name privatelink.postgres.database.chinacloudapi.cn</p>
+<h1>Create a virtual network link using the virtual network id.</h1>
+<p>New-AzPrivateDnsVirtualNetworkLink -ResourceGroupName compliance-business-stage-rg -Name link1 -ZoneName privatelink.postgres.database.chinacloudapi.cn -RemoteVirtualNetworkId $vnet.id</p>
+<p>3， 当再次跟用户一起尝试使用PG 提供的power shell命令进行操作时，用户环境中的user 可以登录tenant A 中subscription 1 却无法去登录tenant B 中的subcription 2 。 用户表示自己在邀请完user 之后又对user 的名字做了改变。于是建议用户重新创建user 并重新邀请和授权， 也不改变名字，再次运行powershell 命令后可以正常添加。</p>
+<p>然后运行如下命令 ，但在标黄色命令时报错提醒找不到相应的订阅。</p>
+<p>重新对用户进行邀请并指定vnet 的contributor 权限后</p>
+<p>再次登录 并选择订阅Subscription 6251ed2e-5975-4f69-bc06-852f68b768ba</p>
+<p>最后成功运行如下命令并添加成功。</p>
+<p>Get-AzPrivateDnsZone -ResourceGroupName compliance-business-stage-rg -Name privatelink.postgres.database.chinacloudapi.cn</p>
+<p>New-AzPrivateDnsVirtualNetworkLink -ResourceGroupName compliance-business-stage-rg -Name link1 -ZoneName privatelink.postgres.database.chinacloudapi.cn -RemoteVirtualNetworkId $vnet.id</p>
+<p>备注：</p>
+<p>Tenant B 创建user并添加 private DNS zone 的contributor 权限</p>
+<p>Tenant A 中邀请user 为来宾用户并为其授权vnet 的contributor 权限</p>
+<p>Tenant B 中接受邀请。然后执行power shell命令完成添加。</p>
+<p>被邀请的用户不能改名字</p>
+<p>Portal 目前仍不支持跨tenant 添加关联。</p>
+<p>参考工单：</p>
+<p>20250821369335</p>
+<p>&gt;</p></article>

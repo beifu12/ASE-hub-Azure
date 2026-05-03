@@ -1,0 +1,101 @@
+<article class="kb-article" data-title="[Share] Bastion LogA日志查询以及Geneva日志查询"><h1>[Share] Bastion LogA日志查询以及Geneva日志查询</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Bastion</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-21 09:53:41</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>该日志中的错误信息只会显示登录失败，不会显示登录失败原因。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>该日志中的错误信息只会显示登录失败，不会显示登录失败原因。</li>
+</ul>
+<ul>
+<li>测试登录中故意输错密码，这个报错是符合预期的。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>//| project TimeGenerated, OperationName, Message, SessionStartTime, ClientIpAddress</li>
+</ul>
+<ul>
+<li>| sort by TimeGenerated desc</li>
+</ul>
+<ul>
+<li>示例：</li>
+</ul>
+<ul>
+<li>0xC000006D</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Bastion 的日志查询和其他产品一样，需要先在诊断设置中启用logA才能查询。</li>
+</ul>
+<ul>
+<li>查询语句参考如下：</li>
+</ul>
+<ul>
+<li>MicrosoftAzureBastionAuditLogs</li>
+</ul>
+<ul>
+<li>支持查询的字段：</li>
+</ul>
+<ul>
+<li>Azure Monitor Logs reference - MicrosoftAzureBastionAuditLogs - Azure Monitor | Microsoft Learn</li>
+</ul>
+<ul>
+<li>Geneva查询：</li>
+</ul>
+<ul>
+<li>geneva中bastionauditlogs 可以查到同样的结果，但是不会显示登录失败的原因：</li>
+</ul>
+<ul>
+<li>Deamonlogs中有失败原因：</li>
+</ul>
+<ul>
+<li>网上查询</li>
+</ul>
+<ul>
+<li>Status: The attempted logon is invalid. This is either due to a bad username or authentication information. (0xC000006D)</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/768B9433" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/768B9433</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/2912FB0" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/2912FB0</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://learn.microsoft.com/en-us/answers/questions/2157608/continuous-logon-failure-(0xc000006d)-for-machine&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/answers/questions/2157608/continuous-logon-failure-(0xc000006d)-for-machine&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/06/21</p>
+<p>Bastion 的日志查询和其他产品一样，需要先在诊断设置中启用logA才能查询。</p>
+<p>查询语句参考如下：</p>
+<p>MicrosoftAzureBastionAuditLogs</p>
+<p>//| project TimeGenerated, OperationName, Message, SessionStartTime, ClientIpAddress</p>
+<p>| sort by TimeGenerated desc</p>
+<p>示例：</p>
+<p>支持查询的字段：</p>
+<p>Azure Monitor Logs reference - MicrosoftAzureBastionAuditLogs - Azure Monitor | Microsoft Learn</p>
+<p>该日志中的错误信息只会显示登录失败，不会显示登录失败原因。</p>
+<p>Geneva查询：</p>
+<p>geneva中bastionauditlogs 可以查到同样的结果，但是不会显示登录失败的原因：</p>
+<p><a href="https://portal.microsoftgeneva.com/s/768B9433" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/768B9433</a></p>
+<p>Deamonlogs中有失败原因：</p>
+<p><a href="https://portal.microsoftgeneva.com/s/2912FB0" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/2912FB0</a></p>
+<p>网上查询</p>
+<p>0xC000006D</p>
+<p>From &lt;<a href="https://learn.microsoft.com/en-us/answers/questions/2157608/continuous-logon-failure-(0xc000006d)-for-machine&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/answers/questions/2157608/continuous-logon-failure-(0xc000006d)-for-machine&gt;</a></p>
+<p>Status: The attempted logon is invalid. This is either due to a bad username or authentication information. (0xC000006D)</p>
+<p>测试登录中故意输错密码，这个报错是符合预期的。</p></article>

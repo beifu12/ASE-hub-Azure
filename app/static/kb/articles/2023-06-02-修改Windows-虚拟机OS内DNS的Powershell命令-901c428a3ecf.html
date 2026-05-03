@@ -1,0 +1,158 @@
+<article class="kb-article" data-title="修改Windows 虚拟机OS内DNS的Powershell命令"><h1>修改Windows 虚拟机OS内DNS的Powershell命令</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DNS</li>
+<li>Section: DNS</li>
+<li>最近修改: 2023-06-02 15:47:32</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2017032177946_[HMC]DNS解析失败</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2017032177946_[HMC]DNS解析失败</li>
+</ul>
+<ul>
+<li>如果报错如下：</li>
+</ul>
+<ul>
+<li>DNS解析失败</li>
+</ul>
+<ul>
+<li>从3月20日下午四点以后客户的虚拟机无法正常访问外网，</li>
+</ul>
+<ul>
+<li>我们抓取了AD这台虚拟机主机上的DNS请求记录，发现在3月20日下午4点01分之前是有收到DNS请求的，并且成功将请求返回给虚拟机。（日志时间是UTC时间）4点01分之后并没有收到虚拟机发送过来的DNS请求。从这个现象来看，我们比较怀疑AD这台虚拟机在发生问题的时间段并没有正常转发DNS请求。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>重启虚拟机后依然生效</li>
+</ul>
+<ul>
+<li>cd %windir%\system32\wbem</li>
+</ul>
+<ul>
+<li>mofcomp NetAdapterCim.mof</li>
+</ul>
+<ul>
+<li>DNS问题案例总结如下：</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>此外，在问题发生后，我们也需要同时在AD服务器上抓取网络包一并进行分析。</li>
+</ul>
+<ul>
+<li>1．从下面的网站下载X64版本Netmon并安装在AD服务器上。</li>
+</ul>
+<ul>
+<li>3．从其他客户端机器复现问题。</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>=============</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>修改自定义DNS并查看</li>
+</ul>
+<ul>
+<li>恢复DNS默认设置并查看:</li>
+</ul>
+<ul>
+<li>排查步骤：</li>
+</ul>
+<ul>
+<li>排查虚拟机的DNS Server日志并没有明显的报错，所以现有的日志并不能分析出实际出问题的原因。</li>
+</ul>
+<ul>
+<li>有关如下开启DNS Debug log,方法如下：</li>
+</ul>
+<ul>
+<li>2．以管理员运行Netmon，点击左上角的“New Capture”并点击绿色按钮开始抓包。</li>
+</ul>
+<ul>
+<li>4．点击Stop停止抓包，并将抓包文件保存为.cap文件上传给我们进行分析。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter)[0].ifIndex -ServerAddresses (&quot;114.114.114.114&quot;,&quot;8.8.8.8&quot;)</li>
+</ul>
+<ul>
+<li>Set-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter)[0].ifIndex -ResetServerAddresses</li>
+</ul>
+<ul>
+<li>Set-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter)[0].ifindex -ServerAddress 202.106.0.20</li>
+</ul>
+<ul>
+<li>通过执行下面的命令得以解决：</li>
+</ul>
+<ul>
+<li>作为临时解决方案，我们通过执行下面的PowerShell 命令修改了虚拟机的DNS配置，虚拟机可以正常访问公网的资源。但是由于DNS选择了公网的服务器，修改过后的Azure虚拟机可能在解析域内的机器目前可能会存在一些问题。</li>
+</ul>
+<ul>
+<li>对于执行该命令报错的虚拟机，通过执行如下命令解决了报错问题。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>建议贵方确认DNS服务器的Debug log 有没有开启，如下次再次遇到问题，请第一时间提交新工单联系我们。</li>
+</ul>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="http://www.microsoft.com/en-us/download/details.aspx?id=4865" target="_blank" rel="noopener">http://www.microsoft.com/en-us/download/details.aspx?id=4865</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2017032177946_[HMC]DNS解析失败</p>
+<p>修改自定义DNS并查看</p>
+<p>Set-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter)[0].ifIndex -ServerAddresses (&quot;114.114.114.114&quot;,&quot;8.8.8.8&quot;)</p>
+<p>重启虚拟机后依然生效</p>
+<p>恢复DNS默认设置并查看:</p>
+<p>Set-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter)[0].ifIndex -ResetServerAddresses</p>
+<p>Set-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter)[0].ifindex -ServerAddress 202.106.0.20</p>
+<p>如果报错如下：</p>
+<p>通过执行下面的命令得以解决：</p>
+<p>cd %windir%\system32\wbem</p>
+<p>mofcomp NetAdapterCim.mof</p>
+<p>DNS问题案例总结如下：</p>
+<p>问题描述：</p>
+<p>==========</p>
+<p>DNS解析失败</p>
+<p>排查步骤：</p>
+<p>========</p>
+<p>从3月20日下午四点以后客户的虚拟机无法正常访问外网，</p>
+<p>作为临时解决方案，我们通过执行下面的PowerShell 命令修改了虚拟机的DNS配置，虚拟机可以正常访问公网的资源。但是由于DNS选择了公网的服务器，修改过后的Azure虚拟机可能在解析域内的机器目前可能会存在一些问题。</p>
+<p>对于执行该命令报错的虚拟机，通过执行如下命令解决了报错问题。</p>
+<p>我们抓取了AD这台虚拟机主机上的DNS请求记录，发现在3月20日下午4点01分之前是有收到DNS请求的，并且成功将请求返回给虚拟机。（日志时间是UTC时间）4点01分之后并没有收到虚拟机发送过来的DNS请求。从这个现象来看，我们比较怀疑AD这台虚拟机在发生问题的时间段并没有正常转发DNS请求。</p>
+<p>排查虚拟机的DNS Server日志并没有明显的报错，所以现有的日志并不能分析出实际出问题的原因。</p>
+<p>建议贵方确认DNS服务器的Debug log 有没有开启，如下次再次遇到问题，请第一时间提交新工单联系我们。</p>
+<p>有关如下开启DNS Debug log,方法如下：</p>
+<p>此外，在问题发生后，我们也需要同时在AD服务器上抓取网络包一并进行分析。</p>
+<p>1．从下面的网站下载X64版本Netmon并安装在AD服务器上。</p>
+<p><a href="http://www.microsoft.com/en-us/download/details.aspx?id=4865" target="_blank" rel="noopener">http://www.microsoft.com/en-us/download/details.aspx?id=4865</a></p>
+<p>2．以管理员运行Netmon，点击左上角的“New Capture”并点击绿色按钮开始抓包。</p>
+<p>3．从其他客户端机器复现问题。</p>
+<p>4．点击Stop停止抓包，并将抓包文件保存为.cap文件上传给我们进行分析。</p>
+<p>问题原因：</p>
+<p>=============</p>
+<p>解决方案*：</p>
+<p>==============</p></article>

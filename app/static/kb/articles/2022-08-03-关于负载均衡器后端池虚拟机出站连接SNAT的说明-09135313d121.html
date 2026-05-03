@@ -1,0 +1,229 @@
+<article class="kb-article" data-title="关于负载均衡器后端池虚拟机出站连接SNAT的说明"><h1>关于负载均衡器后端池虚拟机出站连接SNAT的说明</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LB</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-08-03 10:27:16</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>只能同时完成1024个对外连接，第1025个连接超时。与官网说明限制一致</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>只能同时完成1024个对外连接，第1025个连接超时。与官网说明限制一致</li>
+</ul>
+<ul>
+<li>只能同时完成1024个对外连接，第1025个连接超时。与官网说明一致</li>
+</ul>
+<ul>
+<li>2048个连接的后续连接就建立不起来了，出现超时connectionn timeout</li>
+</ul>
+<ul>
+<li>测试对外并发连接确实可以达到3072，超出3072的部分将报错Connectionn timeout</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>fuzhangliang</li>
+</ul>
+<ul>
+<li>VM</li>
+</ul>
+<ul>
+<li>fuzlubuntu</li>
+</ul>
+<ul>
+<li>fuzlubuntutest</li>
+</ul>
+<ul>
+<li>stardardubuntu</li>
+</ul>
+<ul>
+<li>状态</li>
+</ul>
+<ul>
+<li>具有独立公网IP</li>
+</ul>
+<ul>
+<li>位于Basic 负载均衡</li>
+</ul>
+<ul>
+<li>位于Standard SLB后</li>
+</ul>
+<ul>
+<li>对外访问。截图第一列数值表示连接数</li>
+</ul>
+<ul>
+<li>结论</li>
+</ul>
+<ul>
+<li>从上可以看出，具有独立的公网IP的虚拟机，可以同时完成对外1025个连接。具有独立公网IP的虚拟机，对外访问不受限制。</li>
+</ul>
+<ul>
+<li>注意，更改之前，我的Standard SLB的出站规则定义是空的，是默认设置</li>
+</ul>
+<ul>
+<li>因为这里的负载均衡器只有一个前端IP地址，因此首先要禁用该IP地址对应的负载均衡的规则的SNAT设置。</li>
+</ul>
+<ul>
+<li>然后添加OutBoundRule设置，这里修改SNAT的Port数量为2048</li>
+</ul>
+<ul>
+<li>figuration $lb.FrontendIpConfigurations[0] -BackendAddressPool $lb.BackendAddressPools[0]</li>
+</ul>
+<ul>
+<li>并保存配置：</li>
+</ul>
+<ul>
+<li>再次测试，可以发现虚拟机对外连接可以并发到2048，但是更高的对外连接数就达不到了。</li>
+</ul>
+<ul>
+<li>dip</li>
+</ul>
+<ul>
+<li>在大型场景中，单个IP提供的51200 个Port如果不够用，可以给Standard SLB再添加一个或多个前端IP，以进行SNAT Port扩展。</li>
+</ul>
+<ul>
+<li>我这里再给Standard SLB添加了一个公共IP地址。</li>
+</ul>
+<ul>
+<li>利用这个IP，再给后端池虚拟机添加 1024 个出站SNAT Port</li>
+</ul>
+<ul>
+<li>$lb | Add-AzureRmLoadBalancerOutboundRuleConfig -Name outrule2</li>
+</ul>
+<ul>
+<li>uration $lb.FrontendIpConfigurations[1] -BackendAddressPool $lb.BackendAddressPools[0]</li>
+</ul>
+<ul>
+<li>保存配置</li>
+</ul>
+<ul>
+<li>因此现在我后端池虚拟机的出站SNAT Port将达到2048+1024=3072。</li>
+</ul>
+<ul>
+<li>64000是每个出站规则的上限，63992是每个IP的上限</li>
+</ul>
+<ul>
+<li>BestRegards</li>
+</ul>
+<ul>
+<li>YaoYuejian | WATS</li>
+</ul>
+<ul>
+<li>抱歉，细看了下，64000是每个出站规则的上限，63992是每个IP的上限</li>
+</ul>
+<ul>
+<li>重要：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>再次查看，已经生效：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-AzureRmLoadBalancer -LoadBalancer $lb</li>
+</ul>
+<ul>
+<li>将&quot;disableOutboundSnat&quot;参数配置为True时，将不能通过门户增加负载均衡规则，需要使用powershell命令配置负载均衡规则。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>这里将我的标准负载均衡器的出站连接端口做一些更改，更改方法如下：</li>
+</ul>
+<ul>
+<li>PS C:\Users\fu.zhangliang&gt; $lb |Set-AzureRmLoadBalancerRuleConfig -Name lbrule -Protocol Tcp -FrontendPort  30022 -LoadDistribution Default -BackendPort 22 -IdleTimeoutInMin</li>
+</ul>
+<ul>
+<li>$lb | Add-AzureRmLoadBalancerOutboundRuleConfig -Name &quot;myoutrule&quot; -AllocatedOutboundPort 2048 -Protocol tcp -IdleTimeoutInMinutes 4 -FrontendIpCon</li>
+</ul>
+<ul>
+<li>#虽然Standard SLB的SNAT端口是可以修改的，但是仍然存在限制，注意官网链接的说明。</li>
+</ul>
+<ul>
+<li>-Protocol Tcp -IdleTimeoutInMinutes 4 -FrontendIpConfig</li>
+</ul>
+<ul>
+<li>标准LB，出站规则每个IP 最大分配51200端口的限制有变化，</li>
+</ul>
+<ul>
+<li>标准LB，出站规则每个IP 最大分配51200端口的限制有变化，之前最大64000，这两天发现又变成了63992</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>utes 4  -DisableOutboundSNAT  -FrontendIpConfiguration $lb.FrontendIpConfigurations[0] -BackendAddressPool $lb.BackendAddressPools[0] -Probe $lb.Probes[0]</li>
+</ul>
+<ul>
+<li>需要先将&quot;disableOutboundSnat&quot;参数设置为True，才能配置自定义SNAT规则，当负载均衡规则的&quot;disableOutboundSnat&quot;参数配饰为True，且没有自定义SNAT规则时，对应后端池中的所有虚拟机将无法主动发起到公网的访问，请充分评估并留出维护窗口再进行操作。</li>
+</ul>
+<ul>
+<li>当负载均衡规则的&quot;disableOutboundSnat&quot;参数配饰为True，且没有自定义SNAT规则时，对应后端池中的所有虚拟机将无法主动发起到公网的访问！当所有负载均衡规则的&quot;disableOutboundSnat&quot;参数配饰为True时，请慎重删除自定义SNAT规则。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>对于负载均衡器后端无公网IP的虚拟机，配置了负载均衡规则后，将使用负载均衡器的公网IP作为源进行出站连接。不论是标准Standard SLB，还是Basic SLB ，默认对每台虚拟机NIC分配1024个端口用于出站连接（后端池大小为1-50台虚拟机）。官方连接：<a href="https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outbound-connections" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outbound-connections</a></li>
+</ul>
+<ul>
+<li>这一点可以验证，下面使用三台虚拟机进行对比测试：三台虚拟机同时对外发起1025个TCP连接（对www.baidu.com:80发起TCP连接）</li>
+</ul>
+<ul>
+<li>但是，标准SLB的后端池虚拟机出站连接可用端口数量是可以更改的（同样注意其限制）。参见官方说明：<a href="https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outbound-rules-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outbound-rules-overview</a></li>
+</ul>
+<ul>
+<li>参考：<a href="https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outbound-rules-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outbound-rules-overview</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>fuzhangliang</p>
+<p>对于负载均衡器后端无公网IP的虚拟机，配置了负载均衡规则后，将使用负载均衡器的公网IP作为源进行出站连接。不论是标准Standard SLB，还是Basic SLB ，默认对每台虚拟机NIC分配1024个端口用于出站连接（后端池大小为1-50台虚拟机）。官方连接：<a href="https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outbound-connections" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outbound-connections</a></p>
+<p>这一点可以验证，下面使用三台虚拟机进行对比测试：三台虚拟机同时对外发起1025个TCP连接（对www.baidu.com:80发起TCP连接）</p>
+<p>VM</p>
+<p>fuzlubuntu</p>
+<p>fuzlubuntutest</p>
+<p>stardardubuntu</p>
+<p>状态</p>
+<p>具有独立公网IP</p>
+<p>位于Basic 负载均衡</p>
+<p>位于Standard SLB后</p>
+<p>对外访问。截图第一列数值表示连接数</p>
+<p>结论</p>
+<p>从上可以看出，具有独立的公网IP的虚拟机，可以同时完成对外1025个连接。具有独立公网IP的虚拟机，对外访问不受限制。</p>
+<p>只能同时完成1024个对外连接，第1025个连接超时。与官网说明限制一致</p>
+<p>只能同时完成1024个对外连接，第1025个连接超时。与官网说明一致</p>
+<p>但是，标准SLB的后端池虚拟机出站连接可用端口数量是可以更改的（同样注意其限制）。参见官方说明：<a href="https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outbound-rules-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outbound-rules-overview</a></p>
+<p>这里将我的标准负载均衡器的出站连接端口做一些更改，更改方法如下：</p>
+<p>注意，更改之前，我的Standard SLB的出站规则定义是空的，是默认设置</p>
+<p>因为这里的负载均衡器只有一个前端IP地址，因此首先要禁用该IP地址对应的负载均衡的规则的SNAT设置。</p>
+<p>参考：<a href="https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outbound-rules-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/load-balancer/load-balancer-outbound-rules-overview</a></p>
+<p>PS C:\Users\fu.zhangliang&gt; $lb |Set-AzureRmLoadBalancerRuleConfig -Name lbrule -Protocol Tcp -FrontendPort  30022 -LoadDistribution Default -BackendPort 22 -IdleTimeoutInMin</p>
+<p>utes 4  -DisableOutboundSNAT  -FrontendIpConfiguration $lb.FrontendIpConfigurations[0] -BackendAddressPool $lb.BackendAddressPools[0] -Probe $lb.Probes[0]</p>
+<p>然后添加OutBoundRule设置，这里修改SNAT的Port数量为2048</p>
+<p>$lb | Add-AzureRmLoadBalancerOutboundRuleConfig -Name &quot;myoutrule&quot; -AllocatedOutboundPort 2048 -Protocol tcp -IdleTimeoutInMinutes 4 -FrontendIpCon</p>
+<p>figuration $lb.FrontendIpConfigurations[0] -BackendAddressPool $lb.BackendAddressPools[0]</p>
+<p>并保存配置：</p>
+<p>Set-AzureRmLoadBalancer -LoadBalancer $lb</p>
+<p>再次查看，已经生效：</p>
+<p>再次测试，可以发现虚拟机对外连接可以并发到2048，但是更高的对外连接数就达不到了。</p>
+<p>dip</p>
+<p>2048个连接的后续连接就建立不起来了，出现超时connectionn timeout</p>
+<p>#虽然Standard SLB的SNAT端口是可以修改的，但是仍然存在限制，注意官网链接的说明。</p>
+<p>在大型场景中，单个IP提供的51200 个Port如果不够用，可以给Standard SLB再添加一个或多个前端IP，以进行SNAT Port扩展。</p>
+<p>我这里再给Standard SLB添加了一个公共IP地址。</p>
+<p>利用这个IP，再给后端池虚拟机添加 1024 个出站SNAT Port</p>
+<p>$lb | Add-AzureRmLoadBalancerOutboundRuleConfig -Name outrule2</p>
+<p>-Protocol Tcp -IdleTimeoutInMinutes 4 -FrontendIpConfig</p>
+<p>uration $lb.FrontendIpConfigurations[1] -BackendAddressPool $lb.BackendAddressPools[0]</p>
+<p>保存配置</p>
+<p>因此现在我后端池虚拟机的出站SNAT Port将达到2048+1024=3072。</p>
+<p>测试对外并发连接确实可以达到3072，超出3072的部分将报错Connectionn timeout</p>
+<p>标准LB，出站规则每个IP 最大分配51200端口的限制有变化，</p>
+<p>64000是每个出站规则的上限，63992是每个IP的上限</p>
+<p>标准LB，出站规则每个IP 最大分配51200端口的限制有变化，之前最大64000，这两天发现又变成了63992</p>
+<p>BestRegards</p>
+<p>YaoYuejian | WATS</p>
+<p>抱歉，细看了下，64000是每个出站规则的上限，63992是每个IP的上限</p>
+<p>重要：</p>
+<p>需要先将&quot;disableOutboundSnat&quot;参数设置为True，才能配置自定义SNAT规则，当负载均衡规则的&quot;disableOutboundSnat&quot;参数配饰为True，且没有自定义SNAT规则时，对应后端池中的所有虚拟机将无法主动发起到公网的访问，请充分评估并留出维护窗口再进行操作。</p>
+<p>将&quot;disableOutboundSnat&quot;参数配置为True时，将不能通过门户增加负载均衡规则，需要使用powershell命令配置负载均衡规则。</p>
+<p>当负载均衡规则的&quot;disableOutboundSnat&quot;参数配饰为True，且没有自定义SNAT规则时，对应后端池中的所有虚拟机将无法主动发起到公网的访问！当所有负载均衡规则的&quot;disableOutboundSnat&quot;参数配饰为True时，请慎重删除自定义SNAT规则。</p></article>

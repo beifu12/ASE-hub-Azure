@@ -1,0 +1,90 @@
+<article class="kb-article" data-title="【Share】AKS群集手动缩放时默认遵循的规则"><h1>【Share】AKS群集手动缩放时默认遵循的规则</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2022-10-29 18:45:42</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>3，而如果您对虚拟机可用性集有了解的话，就会发现，可用性集就是建立在其内多台VM会分布在不同的故障域和更新域中。我做了一个测试，创建了一个包含3个节点的可用性集的AKS群集：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>3，而如果您对虚拟机可用性集有了解的话，就会发现，可用性集就是建立在其内多台VM会分布在不同的故障域和更新域中。我做了一个测试，创建了一个包含3个节点的可用性集的AKS群集：</li>
+</ul>
+<ul>
+<li>通过以上测试我们会发现，使用可用性集的AKS群集，在手动进行扩容和缩放时，默认会均匀的在故障域中增加或删除节点VM，且首先删除ID最大的VM，这点与使用虚拟机规模集时是一致的。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>JiaXiaolei</li>
+</ul>
+<ul>
+<li>以下测试供大家参考：</li>
+</ul>
+<ul>
+<li>我在Azure官方文档中并没有找到直接对AKS群集使用可用性集缩放的规则，介绍缩放规则的文档皆以虚拟机规模集举例，在文档：</li>
+</ul>
+<ul>
+<li>2，针对使用虚拟机规模集的AKS群集的缩减规则：</li>
+</ul>
+<ul>
+<li>2）当我手动对群集进行缩放至2个节点时（删除了ID最大的VM）：</li>
+</ul>
+<ul>
+<li>3）将AKS群集扩容到10个节点：</li>
+</ul>
+<ul>
+<li>4）将AKS群集缩减到5个节点：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查看可用性集中节点：</li>
+</ul>
+<ul>
+<li>在可用性集中查看节点分布，2个容错域中各5个节点：</li>
+</ul>
+<ul>
+<li>在可用性集中查看节点分布，可以看到ID最大的5个VM被删除；</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az aks scale -g myResourceGroup -n aksavset --node-count 10</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>1）az aks create -g myResourceGroup -n aksavset --enable-managed-identity --node-count 3 --generate-ssh-key --vm-set-type AvailabilitySet</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/aks/concepts-scale#manually-scale-pods-or-nodes" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/aks/concepts-scale#manually-scale-pods-or-nodes</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-faq#-----------20-----15-------vm-" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-faq#-----------20-----15-------vm-</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>JiaXiaolei</p>
+<p>以下测试供大家参考：</p>
+<p>我在Azure官方文档中并没有找到直接对AKS群集使用可用性集缩放的规则，介绍缩放规则的文档皆以虚拟机规模集举例，在文档：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/aks/concepts-scale#manually-scale-pods-or-nodes" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/aks/concepts-scale#manually-scale-pods-or-nodes</a></p>
+<p>2，针对使用虚拟机规模集的AKS群集的缩减规则：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-faq#-----------20-----15-------vm-" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-faq#-----------20-----15-------vm-</a></p>
+<p>3，而如果您对虚拟机可用性集有了解的话，就会发现，可用性集就是建立在其内多台VM会分布在不同的故障域和更新域中。我做了一个测试，创建了一个包含3个节点的可用性集的AKS群集：</p>
+<p>1）az aks create -g myResourceGroup -n aksavset --enable-managed-identity --node-count 3 --generate-ssh-key --vm-set-type AvailabilitySet</p>
+<p>2）当我手动对群集进行缩放至2个节点时（删除了ID最大的VM）：</p>
+<p>查看可用性集中节点：</p>
+<p>3）将AKS群集扩容到10个节点：</p>
+<p>az aks scale -g myResourceGroup -n aksavset --node-count 10</p>
+<p>在可用性集中查看节点分布，2个容错域中各5个节点：</p>
+<p>4）将AKS群集缩减到5个节点：</p>
+<p>在可用性集中查看节点分布，可以看到ID最大的5个VM被删除；</p>
+<p>通过以上测试我们会发现，使用可用性集的AKS群集，在手动进行扩容和缩放时，默认会均匀的在故障域中增加或删除节点VM，且首先删除ID最大的VM，这点与使用虚拟机规模集时是一致的。</p></article>

@@ -1,0 +1,62 @@
+<article class="kb-article" data-title="Windows 使用Set-AzVMADDomainExtension加入windows ad"><h1>Windows 使用Set-AzVMADDomainExtension加入windows ad</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows OS related issue</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-06-15 15:47:07</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户想通过Set-AzVMADDomainExtension加入windows ad总是报错。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户想通过Set-AzVMADDomainExtension加入windows ad总是报错。</li>
+</ul>
+<ul>
+<li>测试中还测试出一个问题，如果虚拟机加入过AAD，那么加windows AD也会报错，需要先在access work or school中断开disconnect和AAD的连接：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>我这里搭建环境测试也可以复现客户的错误。</li>
+</ul>
+<ul>
+<li>以下文档参数是为了加AAD DS的所以参数没有写那么多，是不能加windows 域成功的</li>
+</ul>
+<ul>
+<li>实测需要添加 -credential 和 -joinoption</li>
+</ul>
+<ul>
+<li>如果不加-JoinOption 0x00000001，他默认会加入workgroup中：</li>
+</ul>
+<ul>
+<li>Update 退域操作：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/powershell/module/az.compute/set-azvmaddomainextension?view=azps-10.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/module/az.compute/set-azvmaddomainextension?view=azps-10.0.0</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/windows/win32/api/lmjoin/nf-lmjoin-netjoindomain" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/win32/api/lmjoin/nf-lmjoin-netjoindomain</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023-6-15</p>
+<p>客户想通过Set-AzVMADDomainExtension加入windows ad总是报错。</p>
+<p>我这里搭建环境测试也可以复现客户的错误。</p>
+<p>以下文档参数是为了加AAD DS的所以参数没有写那么多，是不能加windows 域成功的</p>
+<p><a href="https://learn.microsoft.com/zh-cn/powershell/module/az.compute/set-azvmaddomainextension?view=azps-10.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/module/az.compute/set-azvmaddomainextension?view=azps-10.0.0</a></p>
+<p>实测需要添加 -credential 和 -joinoption</p>
+<p>如果不加-JoinOption 0x00000001，他默认会加入workgroup中：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/windows/win32/api/lmjoin/nf-lmjoin-netjoindomain" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/win32/api/lmjoin/nf-lmjoin-netjoindomain</a></p>
+<p>测试中还测试出一个问题，如果虚拟机加入过AAD，那么加windows AD也会报错，需要先在access work or school中断开disconnect和AAD的连接：</p>
+<p>Update 退域操作：</p></article>

@@ -1,0 +1,81 @@
+<article class="kb-article" data-title="Aadc 修改默认端口389端口"><h1>Aadc 修改默认端口389端口</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD connect sync MFA</li>
+<li>Section: aadc 修改端口</li>
+<li>最近修改: 2023-06-13 14:26:12</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题描述：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>问题分析：</li>
+</ul>
+<ul>
+<li>通过在AADC server上打开synchronization service manager，找到连接本地AD的connector并右键打开properties。请参考下图：</li>
+</ul>
+<ul>
+<li>最后在Connect to Active Directory Forest 配置好两个选项之后，请您输入账号的密码。具体参考下图：</li>
+</ul>
+<ul>
+<li>您需要通过两个文档确保：</li>
+</ul>
+<ul>
+<li>TLS1.2是开启的。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>点击Options，check以下两个选项：</li>
+</ul>
+<ul>
+<li>作为前提条件，请您确认以下两个文档：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>需要废弃LDAP 389端口，使用LDAPS 636端口。如何在AADC上设置636端口。</li>
+</ul>
+<ul>
+<li>AD server和AADC server之间的其他端口以及AADC server和AAD的端口是打开的。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>您可以通过以下步骤进行配置：</li>
+</ul>
+<ul>
+<li>如果您遇到报错：“An error was encountered trying to retrieve the SSL cipher strength&quot; when trying to enable LDAP via SSL.”请您先在Configure Directory Patitions里点击Options进行配置，具体请参考下图：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/active-directory/hybrid/reference-connect-ports" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/active-directory/hybrid/reference-connect-ports</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/active-directory/hybrid/reference-connect-tls-enforcement" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/active-directory/hybrid/reference-connect-tls-enforcement</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>问题描述：</p>
+<p>需要废弃LDAP 389端口，使用LDAPS 636端口。如何在AADC上设置636端口。</p>
+<p>问题分析：</p>
+<p>您可以通过以下步骤进行配置：</p>
+<p>通过在AADC server上打开synchronization service manager，找到连接本地AD的connector并右键打开properties。请参考下图：</p>
+<p>点击Options，check以下两个选项：</p>
+<p>如果您遇到报错：“An error was encountered trying to retrieve the SSL cipher strength&quot; when trying to enable LDAP via SSL.”请您先在Configure Directory Patitions里点击Options进行配置，具体请参考下图：</p>
+<p>最后在Connect to Active Directory Forest 配置好两个选项之后，请您输入账号的密码。具体参考下图：</p>
+<p>作为前提条件，请您确认以下两个文档：</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/active-directory/hybrid/reference-connect-ports" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/active-directory/hybrid/reference-connect-ports</a></p>
+<p><a href="https://learn.microsoft.com/en-us/azure/active-directory/hybrid/reference-connect-tls-enforcement" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/active-directory/hybrid/reference-connect-tls-enforcement</a></p>
+<p>您需要通过两个文档确保：</p>
+<p>AD server和AADC server之间的其他端口以及AADC server和AAD的端口是打开的。</p>
+<p>TLS1.2是开启的。</p></article>

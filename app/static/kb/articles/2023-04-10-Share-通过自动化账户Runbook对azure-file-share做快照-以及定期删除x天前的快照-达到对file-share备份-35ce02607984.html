@@ -1,0 +1,151 @@
+<article class="kb-article" data-title="【Share】通过自动化账户Runbook对azure file share做快照，以及定期删除x天前的快照，达到对file share备份的需求"><h1>【Share】通过自动化账户Runbook对azure file share做快照，以及定期删除x天前的快照，达到对file share备份的需求</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2023-04-10 15:50:54</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>如何实现Azure File  SMB存储，通过runbook自动化创建和删除快照</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>###请将黄色标黄部分替换为您的实际资源值，其中“jiaxiaolei”为automation account credential.</li>
+</ul>
+<ul>
+<li>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</li>
+</ul>
+<ul>
+<li>$Cred = Get-AutomationPSCredential -Name &quot;jiaxiaolei&quot;;</li>
+</ul>
+<ul>
+<li>Add-AzAccount -Credential $Cred -EnvironmentName AzureChinaCloud;</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -SubscriptionId &quot;5e3124ff-22ad-4638-9c1c-645aa97017d1&quot;</li>
+</ul>
+<ul>
+<li>$resourceGroup = &quot;leoVaultNorth2&quot;</li>
+</ul>
+<ul>
+<li>$storageAccountName = &quot;leocentos7diag&quot;</li>
+</ul>
+<ul>
+<li>$storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroup -Name $storageAccountName</li>
+</ul>
+<ul>
+<li>$ctx = $storageAccount.Context</li>
+</ul>
+<ul>
+<li>$shareName = &quot;testprice&quot;</li>
+</ul>
+<ul>
+<li>$share = Get-AzStorageShare -Context $ctx -Name $shareName</li>
+</ul>
+<ul>
+<li>$snapshot = $share.CloudFileShare.Snapshot()</li>
+</ul>
+<ul>
+<li>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -SubscriptionId &quot;xxxxxx&quot;</li>
+</ul>
+<ul>
+<li># Generate Snapshot List</li>
+</ul>
+<ul>
+<li>$SnapshotList = Get-AzStorageShare -Context $ctx | Where-Object {$_.Name -eq $ShareName -and $_.IsSnapshot -eq $true -and $_.SnapshotTime -lt ([datetime]::UtcNow.AddDays(-4))}</li>
+</ul>
+<ul>
+<li># Delete Snapshots older than 4 days</li>
+</ul>
+<ul>
+<li>foreach ($Snapshot in $SnapshotList)</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>以下Powershell脚本用例供大家参考：</li>
+</ul>
+<ul>
+<li>1，对Azure file创建快照，请参考如下Powershell 脚本命令：</li>
+</ul>
+<ul>
+<li>2，删除N天前的Azure file快照，请参考如下Powershell 脚本命令：</li>
+</ul>
+<ul>
+<li>Remove-AzStorageShare -Share $Snapshot.CloudFileShare -Verbose -Force</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Jia.Xiaolei</p>
+<p>以下Powershell脚本用例供大家参考：</p>
+<p>问题描述：</p>
+<p>=======</p>
+<p>如何实现Azure File  SMB存储，通过runbook自动化创建和删除快照</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>1，对Azure file创建快照，请参考如下Powershell 脚本命令：</p>
+<p>###请将黄色标黄部分替换为您的实际资源值，其中“jiaxiaolei”为automation account credential.</p>
+<p>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</p>
+<p>$Cred = Get-AutomationPSCredential -Name &quot;jiaxiaolei&quot;;</p>
+<p>Add-AzAccount -Credential $Cred -EnvironmentName AzureChinaCloud;</p>
+<p>Select-AzSubscription -SubscriptionId &quot;5e3124ff-22ad-4638-9c1c-645aa97017d1&quot;</p>
+<p>$resourceGroup = &quot;leoVaultNorth2&quot;</p>
+<p>$storageAccountName = &quot;leocentos7diag&quot;</p>
+<p>$storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroup -Name $storageAccountName</p>
+<p>$ctx = $storageAccount.Context</p>
+<p>$shareName = &quot;testprice&quot;</p>
+<p>$share = Get-AzStorageShare -Context $ctx -Name $shareName</p>
+<p>$snapshot = $share.CloudFileShare.Snapshot()</p>
+<p>2，删除N天前的Azure file快照，请参考如下Powershell 脚本命令：</p>
+<p>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</p>
+<p>Select-AzSubscription -SubscriptionId &quot;xxxxxx&quot;</p>
+<h1>Generate Snapshot List</h1>
+<p>$SnapshotList = Get-AzStorageShare -Context $ctx | Where-Object {$_.Name -eq $ShareName -and $_.IsSnapshot -eq $true -and $_.SnapshotTime -lt ([datetime]::UtcNow.AddDays(-4))}</p>
+<h1>Delete Snapshots older than 4 days</h1>
+<p>foreach ($Snapshot in $SnapshotList)</p>
+<p>{</p>
+<p>Remove-AzStorageShare -Share $Snapshot.CloudFileShare -Verbose -Force</p>
+<p>}</p></article>

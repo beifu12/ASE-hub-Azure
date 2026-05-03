@@ -1,0 +1,163 @@
+<article class="kb-article" data-title="通过自定义托管 Image 创建单台机器"><h1>通过自定义托管 Image 创建单台机器</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-07-06 15:44:45</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20210706</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20210706</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20210706</li>
+</ul>
+<ul>
+<li>#设置初始变量</li>
+</ul>
+<ul>
+<li>$cred = Get-Credential</li>
+</ul>
+<ul>
+<li>$rgName = &quot;hlmrge2&quot;</li>
+</ul>
+<ul>
+<li>$location = &quot;chinaeast2&quot;</li>
+</ul>
+<ul>
+<li>$imageName = &quot;hlmwin10e2t1-image-202107060954&quot;</li>
+</ul>
+<ul>
+<li>$storageType = &#39;Premium_LRS&#39;</li>
+</ul>
+<ul>
+<li>$myVnet = &quot;hlmrge2-vnet&quot;</li>
+</ul>
+<ul>
+<li>$nsgName = &quot;hlmwin10e2t1-nsg&quot;</li>
+</ul>
+<ul>
+<li>$vmSize = &quot;Standard_D2s_v3&quot;</li>
+</ul>
+<ul>
+<li>$licenseType = &quot;Windows_Client&quot;</li>
+</ul>
+<ul>
+<li>$diagStorageName = &quot;hlmdiastoe2&quot;</li>
+</ul>
+<ul>
+<li>$vmName = &quot;hlmwin10e2t7&quot;;</li>
+</ul>
+<ul>
+<li>#读取镜像文件、虚拟网络、网络安全组信息</li>
+</ul>
+<ul>
+<li>$image = Get-AzImage -ImageName $imageName -ResourceGroupName $rgName</li>
+</ul>
+<ul>
+<li>$vnet = Get-AzVirtualNetwork -Name $myVnet -ResourceGroupName $rgName</li>
+</ul>
+<ul>
+<li>$nsg = Get-AzNetworkSecurityGroup -ResourceGroupName $rgName -Name $nsgName</li>
+</ul>
+<ul>
+<li>#设置虚拟机名称变量</li>
+</ul>
+<ul>
+<li>$nicName = &quot;$vmName-Nic&quot; ;</li>
+</ul>
+<ul>
+<li>$dataDiskName = &quot;$vmName-DataDisk01&quot; ;</li>
+</ul>
+<ul>
+<li>#$ipName = &quot;$vmName-Pip&quot;;</li>
+</ul>
+<ul>
+<li>#建立虚拟网卡</li>
+</ul>
+<ul>
+<li>$nic = New-AzNetworkInterface  -Name $nicName -ResourceGroupName $rgName -Location $location -SubnetId $vnet.Subnets[0].Id -NetworkSecurityGroupId $nsg.Id ;</li>
+</ul>
+<ul>
+<li>#建立VM配置文件（操作系统为 Windwos 系统磁盘为128GB）</li>
+</ul>
+<ul>
+<li>$vm = New-AzVMConfig -VMName $vmName -VMSize $vmSize -LicenseType $licenseType -Tags @{&quot;Daily Snapshot&quot;=&quot;True&quot;} ;</li>
+</ul>
+<ul>
+<li>$vm = Set-AzVMSourceImage -VM $vm -Id $image.Id ;</li>
+</ul>
+<ul>
+<li>$vm = Set-AzVMOSDisk -VM $vm -StorageAccountType $storageType -DiskSizeInGB 128 -CreateOption FromImage -Caching ReadWrite ;</li>
+</ul>
+<ul>
+<li>$vm = Add-AzVMNetworkInterface -VM $vm -Id $nic.Id ;</li>
+</ul>
+<ul>
+<li>#建立VM</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>经测试验证可以通过如下Azure Powershell命令创建符合贵司要求的虚拟机（指定已有资源组、虚拟网络、网络安全组、虚拟机大小、磁盘类型、LicenseType、Tag及附加一块100GB的数据磁盘）</li>
+</ul>
+<ul>
+<li>备注：以下脚本中没有定义添加数据磁盘的部分，100GB的数据磁盘建议在原始机器中进行附加，再对原始机器进行捕获，然后使用Image创建的虚拟机就会自带100GB的数据磁盘</li>
+</ul>
+<ul>
+<li>New-AzVM -VM $vm -ResourceGroupName $rgName -Location $location;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>$vm = Set-AzVMOperatingSystem -VM $vm -Windows -ComputerName $vmName -Credential $cred -ProvisionVMAgent -EnableAutoUpdate ;</li>
+</ul>
+<ul>
+<li>$vm = Set-AzVMBootDiagnostic -VM $vm -Enable -ResourceGroupName $rgName -StorageAccountName $diagStorageName</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20210706</p>
+<p>经测试验证可以通过如下Azure Powershell命令创建符合贵司要求的虚拟机（指定已有资源组、虚拟网络、网络安全组、虚拟机大小、磁盘类型、LicenseType、Tag及附加一块100GB的数据磁盘）</p>
+<p>备注：以下脚本中没有定义添加数据磁盘的部分，100GB的数据磁盘建议在原始机器中进行附加，再对原始机器进行捕获，然后使用Image创建的虚拟机就会自带100GB的数据磁盘</p>
+<p>#设置初始变量</p>
+<p>$cred = Get-Credential</p>
+<p>$rgName = &quot;hlmrge2&quot;</p>
+<p>$location = &quot;chinaeast2&quot;</p>
+<p>$imageName = &quot;hlmwin10e2t1-image-202107060954&quot;</p>
+<p>$storageType = &#39;Premium_LRS&#39;</p>
+<p>$myVnet = &quot;hlmrge2-vnet&quot;</p>
+<p>$nsgName = &quot;hlmwin10e2t1-nsg&quot;</p>
+<p>$vmSize = &quot;Standard_D2s_v3&quot;</p>
+<p>$licenseType = &quot;Windows_Client&quot;</p>
+<p>$diagStorageName = &quot;hlmdiastoe2&quot;</p>
+<p>$vmName = &quot;hlmwin10e2t7&quot;;</p>
+<p>#读取镜像文件、虚拟网络、网络安全组信息</p>
+<p>$image = Get-AzImage -ImageName $imageName -ResourceGroupName $rgName</p>
+<p>$vnet = Get-AzVirtualNetwork -Name $myVnet -ResourceGroupName $rgName</p>
+<p>$nsg = Get-AzNetworkSecurityGroup -ResourceGroupName $rgName -Name $nsgName</p>
+<p>#设置虚拟机名称变量</p>
+<p>$nicName = &quot;$vmName-Nic&quot; ;</p>
+<p>$dataDiskName = &quot;$vmName-DataDisk01&quot; ;</p>
+<p>#$ipName = &quot;$vmName-Pip&quot;;</p>
+<p>#建立虚拟网卡</p>
+<p>$nic = New-AzNetworkInterface  -Name $nicName -ResourceGroupName $rgName -Location $location -SubnetId $vnet.Subnets[0].Id -NetworkSecurityGroupId $nsg.Id ;</p>
+<p>#建立VM配置文件（操作系统为 Windwos 系统磁盘为128GB）</p>
+<p>$vm = New-AzVMConfig -VMName $vmName -VMSize $vmSize -LicenseType $licenseType -Tags @{&quot;Daily Snapshot&quot;=&quot;True&quot;} ;</p>
+<p>$vm = Set-AzVMSourceImage -VM $vm -Id $image.Id ;</p>
+<p>$vm = Set-AzVMOSDisk -VM $vm -StorageAccountType $storageType -DiskSizeInGB 128 -CreateOption FromImage -Caching ReadWrite ;</p>
+<p>$vm = Set-AzVMOperatingSystem -VM $vm -Windows -ComputerName $vmName -Credential $cred -ProvisionVMAgent -EnableAutoUpdate ;</p>
+<p>$vm = Set-AzVMBootDiagnostic -VM $vm -Enable -ResourceGroupName $rgName -StorageAccountName $diagStorageName</p>
+<p>$vm = Add-AzVMNetworkInterface -VM $vm -Id $nic.Id ;</p>
+<p>#建立VM</p>
+<p>New-AzVM -VM $vm -ResourceGroupName $rgName -Location $location;</p></article>

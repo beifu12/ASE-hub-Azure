@@ -1,0 +1,142 @@
+<article class="kb-article" data-title="Avd 没有session 自动关机排除特定主机"><h1>Avd 没有session 自动关机排除特定主机</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-02-22 15:35:08</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>帮我优化下代码提高执行效率</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>帮我优化下代码提高执行效率</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>帮我优化下代码提高执行效率</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>Select-AZSubscription -SubscriptionId &#39;97a20f90-b022-457f-95cd-72eeda*****&#39;</li>
+</ul>
+<ul>
+<li>$HostPoolName = &quot;autopoweroff&quot;</li>
+</ul>
+<ul>
+<li>$ResourceGroupName = &quot;wvd&quot;</li>
+</ul>
+<ul>
+<li>#obtain all sessionhosts in the hostpool</li>
+</ul>
+<ul>
+<li>$SessionHosts = Get-AzWvdSessionHost -HostPoolName $HostPoolName -ResourceGroupName $ResourceGroupName</li>
+</ul>
+<ul>
+<li>foreach($SessionHost in $SessionHosts)</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>#Write-Output $SessionHost.Name</li>
+</ul>
+<ul>
+<li>$notoffvms = &#39;autopoweroff/auto-0&#39;,&#39;autopoweroff/auto-1&#39;</li>
+</ul>
+<ul>
+<li>#Write-Output $notoffvms</li>
+</ul>
+<ul>
+<li>if ($SessionHost.Name  -in  $notoffvms)</li>
+</ul>
+<ul>
+<li>Write-Output $SessionHost.Name</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>else</li>
+</ul>
+<ul>
+<li>#if the session count of the sessionhost is 0, stop the VM</li>
+</ul>
+<ul>
+<li>if ($SessionHost.Session -eq 0)</li>
+</ul>
+<ul>
+<li>Stop-AzVM -Id $SessionHost.ResourceId -Force;</li>
+</ul>
+<ul>
+<li>Write-Output &quot;Host“ $SessionHost.ResourceId “has no session, stopped successfully&quot;</li>
+</ul>
+<ul>
+<li>#if the session count of the sessionhost &gt; 0</li>
+</ul>
+<ul>
+<li>if ($SessionHost.Session -gt 0)</li>
+</ul>
+<ul>
+<li>#obtain all the sessions of the sessionhost</li>
+</ul>
+<ul>
+<li>$UserSessions = Get-AzWvdUserSession -HostPoolName $HostPoolName -ResourceGroupName $ResourceGroupName -SessionHostName $SessionHost.Name.Split(&quot;/&quot;)[1]</li>
+</ul>
+<ul>
+<li>#if contains one Active session, do nothing; else stop the VM.</li>
+</ul>
+<ul>
+<li>if ($UserSessions.SessionState -contains &quot;Active&quot; )</li>
+</ul>
+<ul>
+<li>Write-Output &quot;Host“ $SessionHost.ResourceId “has active session&quot;</li>
+</ul>
+<ul>
+<li>Write-Output &quot;Host“ $SessionHost.ResourceId “has no active session, stopped successfully&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023-09-18</p>
+<p>帮我优化下代码提高执行效率</p>
+<p>Connect-AzAccount -Environment AzureChinaCloud</p>
+<p>Select-AZSubscription -SubscriptionId &#39;97a20f90-b022-457f-95cd-72eeda*****&#39;</p>
+<p>$HostPoolName = &quot;autopoweroff&quot;</p>
+<p>$ResourceGroupName = &quot;wvd&quot;</p>
+<p>#obtain all sessionhosts in the hostpool</p>
+<p>$SessionHosts = Get-AzWvdSessionHost -HostPoolName $HostPoolName -ResourceGroupName $ResourceGroupName</p>
+<p>foreach($SessionHost in $SessionHosts)</p>
+<p>{</p>
+<p>#Write-Output $SessionHost.Name</p>
+<p>$notoffvms = &#39;autopoweroff/auto-0&#39;,&#39;autopoweroff/auto-1&#39;</p>
+<p>#Write-Output $notoffvms</p>
+<p>if ($SessionHost.Name  -in  $notoffvms)</p>
+<p>Write-Output $SessionHost.Name</p>
+<p>}</p>
+<p>else</p>
+<p>#if the session count of the sessionhost is 0, stop the VM</p>
+<p>if ($SessionHost.Session -eq 0)</p>
+<p>Stop-AzVM -Id $SessionHost.ResourceId -Force;</p>
+<p>Write-Output &quot;Host“ $SessionHost.ResourceId “has no session, stopped successfully&quot;</p>
+<p>#if the session count of the sessionhost &gt; 0</p>
+<p>if ($SessionHost.Session -gt 0)</p>
+<p>#obtain all the sessions of the sessionhost</p>
+<p>$UserSessions = Get-AzWvdUserSession -HostPoolName $HostPoolName -ResourceGroupName $ResourceGroupName -SessionHostName $SessionHost.Name.Split(&quot;/&quot;)[1]</p>
+<p>#if contains one Active session, do nothing; else stop the VM.</p>
+<p>if ($UserSessions.SessionState -contains &quot;Active&quot; )</p>
+<p>Write-Output &quot;Host“ $SessionHost.ResourceId “has active session&quot;</p>
+<p>Write-Output &quot;Host“ $SessionHost.ResourceId “has no active session, stopped successfully&quot;</p></article>

@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="[Linux] CPU性能监控脚本"><h1>[Linux] CPU性能监控脚本</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LinuxNetIssue</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-07-07 16:46:25</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>这两天测试Onenote下的如下脚本：[Linux][CPU] 性能监控脚本（Top/vmstat/iostat），发现top输出信息无法成功重定向到指定文件，即使调整sleep时间后，top输出成功保存到指定文件后，但只能通过cat命令查看，无法使用vim/more/less等常用编辑器进行查看。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>这两天测试Onenote下的如下脚本：[Linux][CPU] 性能监控脚本（Top/vmstat/iostat），发现top输出信息无法成功重定向到指定文件，即使调整sleep时间后，top输出成功保存到指定文件后，但只能通过cat命令查看，无法使用vim/more/less等常用编辑器进行查看。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Thanks.</li>
+</ul>
+<ul>
+<li>Best regards,</li>
+</ul>
+<ul>
+<li>Stone He | WATS</li>
+</ul>
+<ul>
+<li>#! /bin/bash</li>
+</ul>
+<ul>
+<li>if [ $# != 2 ]; then</li>
+</ul>
+<ul>
+<li>echo &quot;Invalid option, try top_monitor.sh &lt;path&gt; &lt;hours&gt;&quot;</li>
+</ul>
+<ul>
+<li>exit</li>
+</ul>
+<ul>
+<li>fi</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>这两天测试Onenote下的如下脚本：[Linux][CPU] 性能监控脚本（Top/vmstat/iostat），发现top输出信息无法成功重定向到指定文件，即使调整sleep时间后，top输出成功保存到指定文件后，但只能通过cat命令查看，无法使用vim/more/less等常用编辑器进行查看。</li>
+</ul>
+<ul>
+<li>于是对脚本进行了下修改，使其既能成功保存到指定文件，也可以使用vim/more/less等常用编辑器进行Log查看，新的脚本命名为：top_monitor.sh，原来的脚本改名为：old_top_monitor.sh，新脚本也已同步到Onenote</li>
+</ul>
+<ul>
+<li>备注：新脚本每隔5秒搜集一次top命令的输出，有使用该脚本需求的伙伴们可以注意下。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>export dir=$1</li>
+</ul>
+<ul>
+<li>export keeps=$2</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>这两天测试Onenote下的如下脚本：[Linux][CPU] 性能监控脚本（Top/vmstat/iostat），发现top输出信息无法成功重定向到指定文件，即使调整sleep时间后，top输出成功保存到指定文件后，但只能通过cat命令查看，无法使用vim/more/less等常用编辑器进行查看。</p>
+<p>于是对脚本进行了下修改，使其既能成功保存到指定文件，也可以使用vim/more/less等常用编辑器进行Log查看，新的脚本命名为：top_monitor.sh，原来的脚本改名为：old_top_monitor.sh，新脚本也已同步到Onenote</p>
+<p>备注：新脚本每隔5秒搜集一次top命令的输出，有使用该脚本需求的伙伴们可以注意下。</p>
+<p>Thanks.</p>
+<p>Best regards,</p>
+<p>Stone He | WATS</p>
+<p>#! /bin/bash</p>
+<p>if [ $# != 2 ]; then</p>
+<p>echo &quot;Invalid option, try top_monitor.sh &lt;path&gt; &lt;hours&gt;&quot;</p>
+<p>exit</p>
+<p>fi</p>
+<p>export dir=$1</p>
+<p>export keeps=$2</p></article>

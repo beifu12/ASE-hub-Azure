@@ -1,0 +1,64 @@
+<article class="kb-article" data-title="显示Blob有删除的快照，但实际上没有对Blob创建过快照"><h1>显示Blob有删除的快照，但实际上没有对Blob创建过快照</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-23 13:55:16</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题描述：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>客户发现删除一个blob时，提示有关联的快照，但是没有创建过快照。</li>
+</ul>
+<ul>
+<li>发现Show deleted shapshots中有很多Deleted的快照，但是发现客户</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>分析排查：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>同时，发现存储账户的Data protection中的Enable soft delete for blobs并没有开启。</li>
+</ul>
+<ul>
+<li>解决方案：</li>
+</ul>
+<ul>
+<li>最终发现，在Enable soft delete for blobs的情况下，当对blob文件进行编辑后，就会产生deleted的快照。</li>
+</ul>
+<ul>
+<li>经过排查客户的操作记录，发现客户之前有Enable soft delete for blobs，在问题发生前几天，禁用了该功能。</li>
+</ul>
+<ul>
+<li>大家可以通过ASC上的Setting History查询一些存储账户内部功能的设置记录，排查中发现ASC本身显示的记录可能不全，需要点开下面的Jarvis链接，进一步确认下。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023-4-23</p>
+<p>问题描述：</p>
+<p>客户发现删除一个blob时，提示有关联的快照，但是没有创建过快照。</p>
+<p>分析排查：</p>
+<p>发现Show deleted shapshots中有很多Deleted的快照，但是发现客户</p>
+<p>同时，发现存储账户的Data protection中的Enable soft delete for blobs并没有开启。</p>
+<p>解决方案：</p>
+<p>最终发现，在Enable soft delete for blobs的情况下，当对blob文件进行编辑后，就会产生deleted的快照。</p>
+<p>经过排查客户的操作记录，发现客户之前有Enable soft delete for blobs，在问题发生前几天，禁用了该功能。</p>
+<p>大家可以通过ASC上的Setting History查询一些存储账户内部功能的设置记录，排查中发现ASC本身显示的记录可能不全，需要点开下面的Jarvis链接，进一步确认下。</p></article>

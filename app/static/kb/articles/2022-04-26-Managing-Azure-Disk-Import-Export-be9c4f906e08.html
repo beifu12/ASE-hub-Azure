@@ -1,0 +1,99 @@
+<article class="kb-article" data-title="Managing Azure Disk Import / Export"><h1>Managing Azure Disk Import / Export</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Import Export Service</li>
+<li>最近修改: 2022-04-26 08:31:56</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>You can manage the Azure Disk Import / Export service to perfrom the following activities:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>You can manage the Azure Disk Import / Export service to perfrom the following activities:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>You can manage the Azure Disk Import / Export service to perfrom the following activities:</li>
+</ul>
+<ul>
+<li>Import data to Blob Storage</li>
+</ul>
+<ul>
+<li>For detailed and updated information, refer to:  Import data to Blob Storage</li>
+</ul>
+<ul>
+<li>Import data to Azure Files</li>
+</ul>
+<ul>
+<li>For detailed and updated information, refer to: Import data to Azure Files</li>
+</ul>
+<ul>
+<li>Export data from Azure Blob storage</li>
+</ul>
+<ul>
+<li>For detailed and updated information, refer to: Export data from Azure Blob storage</li>
+</ul>
+<ul>
+<li>The Azure Import/Export version 1 tool lists all blobs to be exported, and calculates how to pack them into drives of the specified size, taking into account any necessary overhead, then estimates the number of drives needed to hold the blobs and drive usage information.</li>
+</ul>
+<ul>
+<li>You can use 2.5&quot; SSDs, 2.5&quot; HDDs, or 3.5&quot; HDDs with your export order.</li>
+</ul>
+<ul>
+<li>To find out how many physical disks you need for your export order, do these steps:</li>
+</ul>
+<ul>
+<li>Download the current release of the Azure Import/Export version 1 tool (WAImportExportV1.zip)</li>
+</ul>
+<ul>
+<li>Unzip to the default folder waimportexportv1.</li>
+</ul>
+<ul>
+<li>cd C:\WaImportExportV1</li>
+</ul>
+<ul>
+<li>WAImportExport.exe PreviewExport /ExportBlobListFile:&lt;Path to XML blob list file&gt; /DriveSize:&lt;Size of drives used&gt;</li>
+</ul>
+<ul>
+<li>For detailed and updated information, refer to: Identify disks yo use</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Check number of drives needed for an export with Azure Import/Export</li>
+</ul>
+<ul>
+<li>To check the number of disks required for the selected blobs, run the following command:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Open a PowerShell or command-line window with administrative privileges. To change directory to the unzipped folder, run the following command:</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>You can manage the Azure Disk Import / Export service to perfrom the following activities:</p>
+<p>Import data to Blob Storage</p>
+<p>For detailed and updated information, refer to:  Import data to Blob Storage</p>
+<p>Import data to Azure Files</p>
+<p>For detailed and updated information, refer to: Import data to Azure Files</p>
+<p>Export data from Azure Blob storage</p>
+<p>For detailed and updated information, refer to: Export data from Azure Blob storage</p>
+<p>Check number of drives needed for an export with Azure Import/Export</p>
+<p>The Azure Import/Export version 1 tool lists all blobs to be exported, and calculates how to pack them into drives of the specified size, taking into account any necessary overhead, then estimates the number of drives needed to hold the blobs and drive usage information.</p>
+<p>You can use 2.5&quot; SSDs, 2.5&quot; HDDs, or 3.5&quot; HDDs with your export order.</p>
+<p>To find out how many physical disks you need for your export order, do these steps:</p>
+<p>Download the current release of the Azure Import/Export version 1 tool (WAImportExportV1.zip)</p>
+<p>Unzip to the default folder waimportexportv1.</p>
+<p>Open a PowerShell or command-line window with administrative privileges. To change directory to the unzipped folder, run the following command:</p>
+<p>cd C:\WaImportExportV1</p>
+<p>To check the number of disks required for the selected blobs, run the following command:</p>
+<p>WAImportExport.exe PreviewExport /ExportBlobListFile:&lt;Path to XML blob list file&gt; /DriveSize:&lt;Size of drives used&gt;</p>
+<p>For detailed and updated information, refer to: Identify disks yo use</p></article>

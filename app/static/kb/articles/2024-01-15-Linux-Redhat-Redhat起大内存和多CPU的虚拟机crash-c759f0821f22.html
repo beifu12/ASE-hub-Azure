@@ -1,0 +1,80 @@
+<article class="kb-article" data-title="[Linux][Redhat]Redhat起大内存和多CPU的虚拟机crash"><h1>[Linux][Redhat]Redhat起大内存和多CPU的虚拟机crash</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: Bug</li>
+<li>最近修改: 2024-01-15 13:09:37</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Issue</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Issue</li>
+</ul>
+<ul>
+<li>PANIC: early exception 06 rip 10:ffffffff81c4b4ae error 0 cr2 0</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Environment</li>
+</ul>
+<ul>
+<li>Microsoft Hyper-V Virtual Machine</li>
+</ul>
+<ul>
+<li>Red Hat Enterprise Linux 6.4</li>
+</ul>
+<ul>
+<li>Red Hat Enterprise Linux 6.5</li>
+</ul>
+<ul>
+<li>Red Hat Enterprise Linux 6.4 or 6.5 guests running on a Microsoft Hyper-V virtual machine may crash if the guest is configured with more memory or CPUs than can fit in a single NUMA node.</li>
+</ul>
+<ul>
+<li>The guest stuck at the very beginning of booting:</li>
+</ul>
+<ul>
+<li>... ...</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Probing EDD (edd-off to disable)... ok</li>
+</ul>
+<ul>
+<li>Resolution</li>
+</ul>
+<ul>
+<li>To work around this issue, add the boot-time parameter &quot;numa=off&quot; to the kernel line of the virtual guest&#39;s grub.conf file to disable NUMA support in the guest. This parameter may cause performance implications for any guest that does not fit into a single NUMA node.</li>
+</ul>
+<ul>
+<li>The fix had been tracked in private Red Hat Bugzilla bug 979364 and it was closed with a resolution of ERRATA.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考链接：<a href="https://access.redhat.com/solutions/436883" target="_blank" rel="noopener">https://access.redhat.com/solutions/436883</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Environment</p>
+<p>Microsoft Hyper-V Virtual Machine</p>
+<p>Red Hat Enterprise Linux 6.4</p>
+<p>Red Hat Enterprise Linux 6.5</p>
+<p>Issue</p>
+<p>Red Hat Enterprise Linux 6.4 or 6.5 guests running on a Microsoft Hyper-V virtual machine may crash if the guest is configured with more memory or CPUs than can fit in a single NUMA node.</p>
+<p>The guest stuck at the very beginning of booting:</p>
+<p>Probing EDD (edd-off to disable)... ok</p>
+<p>... ...</p>
+<p>PANIC: early exception 06 rip 10:ffffffff81c4b4ae error 0 cr2 0</p>
+<p>Resolution</p>
+<p>To work around this issue, add the boot-time parameter &quot;numa=off&quot; to the kernel line of the virtual guest&#39;s grub.conf file to disable NUMA support in the guest. This parameter may cause performance implications for any guest that does not fit into a single NUMA node.</p>
+<p>The fix had been tracked in private Red Hat Bugzilla bug 979364 and it was closed with a resolution of ERRATA.</p>
+<p>参考链接：<a href="https://access.redhat.com/solutions/436883" target="_blank" rel="noopener">https://access.redhat.com/solutions/436883</a></p></article>

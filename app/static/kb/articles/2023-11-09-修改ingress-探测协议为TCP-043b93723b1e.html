@@ -1,0 +1,156 @@
+<article class="kb-article" data-title="修改ingress 探测协议为TCP"><h1>修改ingress 探测协议为TCP</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-11-09 18:48:57</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>修改ingress的探测方式为TCP，可以在安装的时候进行指定，您参考安装ingress的文档在 Azure Kubernetes 服务 (AKS) 中创建入口控制器 - Azure Kubernetes Service | Azure Docs</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>修改ingress的探测方式为TCP，可以在安装的时候进行指定，您参考安装ingress的文档在 Azure Kubernetes 服务 (AKS) 中创建入口控制器 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>修改ingress的探测方式为TCP，可以在安装的时候进行指定，您参考安装ingress的文档在 Azure Kubernetes 服务 (AKS) 中创建入口控制器 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>请调整标黄的部分。</li>
+</ul>
+<ul>
+<li>默认使用http get /healthz</li>
+</ul>
+<ul>
+<li>可以修改为TCP</li>
+</ul>
+<ul>
+<li>helm install ingress-nginx ingress-nginx/ingress-nginx \</li>
+</ul>
+<ul>
+<li>--version 4.1.3 \</li>
+</ul>
+<ul>
+<li>--namespace ingress-basic \</li>
+</ul>
+<ul>
+<li>--create-namespace \</li>
+</ul>
+<ul>
+<li>--set controller.replicaCount=2 \</li>
+</ul>
+<ul>
+<li>--set controller.nodeSelector.&quot;kubernetes\.io/os&quot;=linux \</li>
+</ul>
+<ul>
+<li>--set controller.image.registry=$ACR_URL \</li>
+</ul>
+<ul>
+<li>--set controller.image.image=$CONTROLLER_IMAGE \</li>
+</ul>
+<ul>
+<li>--set controller.image.tag=$CONTROLLER_TAG \</li>
+</ul>
+<ul>
+<li>--set controller.image.digest=&quot;&quot; \</li>
+</ul>
+<ul>
+<li>--set controller.image.repository=$SOURCE_REGISTRY/$CONTROLLER_IMAGE \</li>
+</ul>
+<ul>
+<li>--set controller.admissionWebhooks.patch.nodeSelector.&quot;kubernetes\.io/os&quot;=linux \</li>
+</ul>
+<ul>
+<li>--set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path&quot;=/healthz \</li>
+</ul>
+<ul>
+<li>--set controller.admissionWebhooks.patch.image.registry=$ACR_URL \</li>
+</ul>
+<ul>
+<li>--set controller.admissionWebhooks.patch.image.image=$PATCH_IMAGE \</li>
+</ul>
+<ul>
+<li>--set controller.admissionWebhooks.patch.image.tag=$PATCH_TAG \</li>
+</ul>
+<ul>
+<li>--set controller.admissionWebhooks.patch.image.digest=&quot;&quot; \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.nodeSelector.&quot;kubernetes\.io/os&quot;=linux \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.image.registry=$ACR_URL \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.image.image=$DEFAULTBACKEND_IMAGE \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.image.tag=$DEFAULTBACKEND_TAG \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.image.repository=$SOURCE_REGISTRY/$DEFAULTBACKEND_IMAGE \</li>
+</ul>
+<ul>
+<li>--set defaultBackend.image.digest=&quot;&quot;</li>
+</ul>
+<ul>
+<li>--set defaultBackend.image.digest=&quot;&quot; \</li>
+</ul>
+<ul>
+<li>安装成功后，可以看到协议已经进行修改：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>--set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/port_80_health-probe_protocol&quot;=tcp \</li>
+</ul>
+<ul>
+<li>--set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/port_443_health-probe_protocol&quot;=tcp \</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>更多请参考LB支持的注解：<a href="https://cloud-provider-azure.sigs.k8s.io/topics/loadbalancer/#custom-load-balancer-health-probe-for-port" target="_blank" rel="noopener">https://cloud-provider-azure.sigs.k8s.io/topics/loadbalancer/#custom-load-balancer-health-probe-for-port</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/03/21</p>
+<p>修改ingress的探测方式为TCP，可以在安装的时候进行指定，您参考安装ingress的文档在 Azure Kubernetes 服务 (AKS) 中创建入口控制器 - Azure Kubernetes Service | Azure Docs</p>
+<p>请调整标黄的部分。</p>
+<p>更多请参考LB支持的注解：<a href="https://cloud-provider-azure.sigs.k8s.io/topics/loadbalancer/#custom-load-balancer-health-probe-for-port" target="_blank" rel="noopener">https://cloud-provider-azure.sigs.k8s.io/topics/loadbalancer/#custom-load-balancer-health-probe-for-port</a></p>
+<p>默认使用http get /healthz</p>
+<p>可以修改为TCP</p>
+<p>helm install ingress-nginx ingress-nginx/ingress-nginx \</p>
+<p>--version 4.1.3 \</p>
+<p>--namespace ingress-basic \</p>
+<p>--create-namespace \</p>
+<p>--set controller.replicaCount=2 \</p>
+<p>--set controller.nodeSelector.&quot;kubernetes\.io/os&quot;=linux \</p>
+<p>--set controller.image.registry=$ACR_URL \</p>
+<p>--set controller.image.image=$CONTROLLER_IMAGE \</p>
+<p>--set controller.image.tag=$CONTROLLER_TAG \</p>
+<p>--set controller.image.digest=&quot;&quot; \</p>
+<p>--set controller.image.repository=$SOURCE_REGISTRY/$CONTROLLER_IMAGE \</p>
+<p>--set controller.admissionWebhooks.patch.nodeSelector.&quot;kubernetes\.io/os&quot;=linux \</p>
+<p>--set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path&quot;=/healthz \</p>
+<p>--set controller.admissionWebhooks.patch.image.registry=$ACR_URL \</p>
+<p>--set controller.admissionWebhooks.patch.image.image=$PATCH_IMAGE \</p>
+<p>--set controller.admissionWebhooks.patch.image.tag=$PATCH_TAG \</p>
+<p>--set controller.admissionWebhooks.patch.image.digest=&quot;&quot; \</p>
+<p>--set defaultBackend.nodeSelector.&quot;kubernetes\.io/os&quot;=linux \</p>
+<p>--set defaultBackend.image.registry=$ACR_URL \</p>
+<p>--set defaultBackend.image.image=$DEFAULTBACKEND_IMAGE \</p>
+<p>--set defaultBackend.image.tag=$DEFAULTBACKEND_TAG \</p>
+<p>--set defaultBackend.image.repository=$SOURCE_REGISTRY/$DEFAULTBACKEND_IMAGE \</p>
+<p>--set defaultBackend.image.digest=&quot;&quot;</p>
+<p>--set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/port_80_health-probe_protocol&quot;=tcp \</p>
+<p>--set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/port_443_health-probe_protocol&quot;=tcp \</p>
+<p>--set defaultBackend.image.digest=&quot;&quot; \</p>
+<p>安装成功后，可以看到协议已经进行修改：</p></article>

@@ -1,0 +1,153 @@
+<article class="kb-article" data-title="linuxVM迁移后对RAID0的影响完整操作步骤"><h1>linuxVM迁移后对RAID0的影响完整操作步骤</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-01-19 12:21:24</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>实验题目：linuxcentosVM迁移后对RAID0的影响完整操作步骤</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>实验题目：linuxcentosVM迁移后对RAID0的影响完整操作步骤</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>结论：RAID0不需要重新配置</li>
+</ul>
+<ul>
+<li>在 Linux 上配置软件 RAID0</li>
+</ul>
+<ul>
+<li>创建centos6.6虚拟机，附加3块10GB的数据盘</li>
+</ul>
+<ul>
+<li>Reboot</li>
+</ul>
+<ul>
+<li>Uname –r  显示内核已升级</li>
+</ul>
+<ul>
+<li># sudo yum install mdadm</li>
+</ul>
+<ul>
+<li>fdisk /dev/sdc</li>
+</ul>
+<ul>
+<li>重复fdisk /dev/sdd   fdisk /dev/sde</li>
+</ul>
+<ul>
+<li>fdisk -l /dev/sdc /dev/sdd /dev/sde</li>
+</ul>
+<ul>
+<li>mdadm --create /dev/md127 -l0  --raid-devices 3   /dev/sdc1 /dev/sdd1 /dev/sde1</li>
+</ul>
+<ul>
+<li>mkfs -t ext4 /dev/md127</li>
+</ul>
+<ul>
+<li>Mkdir /data</li>
+</ul>
+<ul>
+<li>/sbin/blkid</li>
+</ul>
+<ul>
+<li>Copy出md127的UUID</li>
+</ul>
+<ul>
+<li>/dev/md127: UUID=&quot;3d575fe5-493e-4bd9-9451-b2ec32f67d96&quot; TYPE=&quot;ext4&quot;</li>
+</ul>
+<ul>
+<li>3.在文本编辑器中打开 /etc/fstab 并为新文件系统添加新条目，例如，最后保存：</li>
+</ul>
+<ul>
+<li>Mount   显示/dev/md127 on /data type ext4 (rw)</li>
+</ul>
+<ul>
+<li>在RAID0中写文件</li>
+</ul>
+<ul>
+<li>选择要copy的1个系统盘和3个raid0的数据盘，copy到其他存储账号中。</li>
+</ul>
+<ul>
+<li>创建另一个存储账号，获取主访问密钥</li>
+</ul>
+<ul>
+<li>在Azure存储管理器上配置第二个存储账号</li>
+</ul>
+<ul>
+<li>创建公共容器vhds</li>
+</ul>
+<ul>
+<li>Copy 1个系统盘和3个raid0磁盘</li>
+</ul>
+<ul>
+<li>在虚拟机|磁盘下创建磁盘</li>
+</ul>
+<ul>
+<li>创建虚拟机来自磁盘</li>
+</ul>
+<ul>
+<li>等一定时间后，发现新复制的虚拟机的RAID0文件自动存在，不用额外设置。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>实验题目：linuxcentosVM迁移后对RAID0的影响完整操作步骤</li>
+</ul>
+<ul>
+<li>通过uname –r查看当前的kernel版本信息</li>
+</ul>
+<ul>
+<li>Reboot后，验证RAID0正常</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>通过命令yum update kernel来升级kernel版本</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>UUID=&quot;3d575fe5-493e-4bd9-9451-b2ec32f67d96&quot;  /data  ext4  defaults  0  2</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="http://azure.cn/documentation/articles/virtual-machines-linux-configure-raid" target="_blank" rel="noopener">http://azure.cn/documentation/articles/virtual-machines-linux-configure-raid</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>实验题目：linuxcentosVM迁移后对RAID0的影响完整操作步骤</p>
+<p>结论：RAID0不需要重新配置</p>
+<p>在 Linux 上配置软件 RAID0</p>
+<p><a href="http://azure.cn/documentation/articles/virtual-machines-linux-configure-raid" target="_blank" rel="noopener">http://azure.cn/documentation/articles/virtual-machines-linux-configure-raid</a></p>
+<p>创建centos6.6虚拟机，附加3块10GB的数据盘</p>
+<p>通过uname –r查看当前的kernel版本信息</p>
+<p>通过命令yum update kernel来升级kernel版本</p>
+<p>Reboot</p>
+<p>Uname –r  显示内核已升级</p>
+<h1>sudo yum install mdadm</h1>
+<p>fdisk /dev/sdc</p>
+<p>重复fdisk /dev/sdd   fdisk /dev/sde</p>
+<p>fdisk -l /dev/sdc /dev/sdd /dev/sde</p>
+<p>mdadm --create /dev/md127 -l0  --raid-devices 3   /dev/sdc1 /dev/sdd1 /dev/sde1</p>
+<p>mkfs -t ext4 /dev/md127</p>
+<p>Mkdir /data</p>
+<p>/sbin/blkid</p>
+<p>Copy出md127的UUID</p>
+<p>/dev/md127: UUID=&quot;3d575fe5-493e-4bd9-9451-b2ec32f67d96&quot; TYPE=&quot;ext4&quot;</p>
+<p>3.在文本编辑器中打开 /etc/fstab 并为新文件系统添加新条目，例如，最后保存：</p>
+<p>UUID=&quot;3d575fe5-493e-4bd9-9451-b2ec32f67d96&quot;  /data  ext4  defaults  0  2</p>
+<p>Reboot后，验证RAID0正常</p>
+<p>Mount   显示/dev/md127 on /data type ext4 (rw)</p>
+<p>在RAID0中写文件</p>
+<p>选择要copy的1个系统盘和3个raid0的数据盘，copy到其他存储账号中。</p>
+<p>创建另一个存储账号，获取主访问密钥</p>
+<p>在Azure存储管理器上配置第二个存储账号</p>
+<p>创建公共容器vhds</p>
+<p>Copy 1个系统盘和3个raid0磁盘</p>
+<p>在虚拟机|磁盘下创建磁盘</p>
+<p>创建虚拟机来自磁盘</p>
+<p>等一定时间后，发现新复制的虚拟机的RAID0文件自动存在，不用额外设置。</p></article>

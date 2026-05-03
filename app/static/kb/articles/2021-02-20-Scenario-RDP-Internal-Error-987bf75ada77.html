@@ -1,0 +1,121 @@
+<article class="kb-article" data-title="Scenario - RDP Internal Error"><h1>Scenario - RDP Internal Error</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2021-02-20 12:21:25</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SMB connections works with no issues</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SMB connections works with no issues</li>
+</ul>
+<ul>
+<li>If you try to RDP the machine multiple times, you&#39;ll get different errors between &#39;RDP internal error&#39; and &#39;This computer can&#39;t be connected to the remote computer. Try connecting again. If the problem continues, contact the owner of the remote computer or your network administrator&#39;</li>
+</ul>
+<ul>
+<li>If you see in detail the RDP attempt, the RDP is failling on the phase &#39;Configuring remote session&#39; or &#39;Securing remote connections&#39;                         &lt;-------------------------- That&#39;s the key that the issue is on the tcp-listener</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Symphtom</li>
+</ul>
+<ul>
+<li>Psping will responds just fine</li>
+</ul>
+<ul>
+<li>When to use this guide:</li>
+</ul>
+<ul>
+<li>A certificate was push to the tcp listener to secure RDP connections with the wrong hash</li>
+</ul>
+<ul>
+<li>The certificate is corrupted</li>
+</ul>
+<ul>
+<li>The certificate is expired</li>
+</ul>
+<ul>
+<li>The security level of the OS was changed to a more restricted one</li>
+</ul>
+<ul>
+<li>Action plan</li>
+</ul>
+<ul>
+<li>If a certificate was pushed to the RDP listener, then remove it on the following keys:</li>
+</ul>
+<ul>
+<li>HKLM\SYSTEM\CurrentControlSet\Control\Tqweerminal Server\WinStations\RDP-Tcp             -------------------&gt;             Delete the key named like  SSLCertificateSHA1Hash</li>
+</ul>
+<ul>
+<li>HKLM\SYSTEM\ControlSet001\Control\Terminal Server\WinStations\RDP-Tcp                    -------------------&gt;             Delete the key named like  SSLCertificateSHA1Hash</li>
+</ul>
+<ul>
+<li>HKLM\SYSTEM\ControlSet002\Control\Terminal Server\WinStations\RDP-Tcp                    -------------------&gt;             Delete the key named like  SSLCertificateSHA1Hash</li>
+</ul>
+<ul>
+<li>Or else connect to the certificate repository and remove it from there:</li>
+</ul>
+<ul>
+<li>run -&gt; mmc -&gt; file -&gt; add/remove snapin -&gt; certificates -&gt; add -&gt; computer account -&gt; next -&gt; another computer -&gt; internalforms</li>
+</ul>
+<ul>
+<li>then go into personal store -&gt; right clicked on cert -&gt; delete</li>
+</ul>
+<ul>
+<li>If the security level was changed, then change the following keys</li>
+</ul>
+<ul>
+<li>HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp\MinEncryptionLevel      ----------------&gt;      From 2 to 1</li>
+</ul>
+<ul>
+<li>HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp\SecurityLayer                  ----------------&gt;      From 1 to 0</li>
+</ul>
+<ul>
+<li>Restart the VM</li>
+</ul>
+<ul>
+<li>Example of the key to remove:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>If you check the eventlogs remotelly, the machine is running smoothly</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Symphtom</p>
+<p>Psping will responds just fine</p>
+<p>SMB connections works with no issues</p>
+<p>If you check the eventlogs remotelly, the machine is running smoothly</p>
+<p>If you try to RDP the machine multiple times, you&#39;ll get different errors between &#39;RDP internal error&#39; and &#39;This computer can&#39;t be connected to the remote computer. Try connecting again. If the problem continues, contact the owner of the remote computer or your network administrator&#39;</p>
+<p>If you see in detail the RDP attempt, the RDP is failling on the phase &#39;Configuring remote session&#39; or &#39;Securing remote connections&#39;                         &lt;-------------------------- That&#39;s the key that the issue is on the tcp-listener</p>
+<p>When to use this guide:</p>
+<p>A certificate was push to the tcp listener to secure RDP connections with the wrong hash</p>
+<p>The certificate is corrupted</p>
+<p>The certificate is expired</p>
+<p>The security level of the OS was changed to a more restricted one</p>
+<p>Action plan</p>
+<p>If a certificate was pushed to the RDP listener, then remove it on the following keys:</p>
+<p>HKLM\SYSTEM\CurrentControlSet\Control\Tqweerminal Server\WinStations\RDP-Tcp             -------------------&gt;             Delete the key named like  SSLCertificateSHA1Hash</p>
+<p>HKLM\SYSTEM\ControlSet001\Control\Terminal Server\WinStations\RDP-Tcp                    -------------------&gt;             Delete the key named like  SSLCertificateSHA1Hash</p>
+<p>HKLM\SYSTEM\ControlSet002\Control\Terminal Server\WinStations\RDP-Tcp                    -------------------&gt;             Delete the key named like  SSLCertificateSHA1Hash</p>
+<p>Or else connect to the certificate repository and remove it from there:</p>
+<p>run -&gt; mmc -&gt; file -&gt; add/remove snapin -&gt; certificates -&gt; add -&gt; computer account -&gt; next -&gt; another computer -&gt; internalforms</p>
+<p>then go into personal store -&gt; right clicked on cert -&gt; delete</p>
+<p>If the security level was changed, then change the following keys</p>
+<p>HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp\MinEncryptionLevel      ----------------&gt;      From 2 to 1</p>
+<p>HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp\SecurityLayer                  ----------------&gt;      From 1 to 0</p>
+<p>Restart the VM</p>
+<p>Example of the key to remove:</p></article>

@@ -1,0 +1,667 @@
+<article class="kb-article" data-title="Hyper-V Network Virtualization Gateway"><h1>Hyper-V Network Virtualization Gateway</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: AzurePackWiki</li>
+<li>最近修改: 2021-05-13 16:22:08</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>My intimacy issues with NVGRE – a NVGRE config guide on Hyper-V 2012 R2…. that actually works</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>My intimacy issues with NVGRE – a NVGRE config guide on Hyper-V 2012 R2…. that actually works</li>
+</ul>
+<ul>
+<li>Windows Server 2012 R2 NVGRE gateway cannot establish outgoing connections</li>
+</ul>
+<ul>
+<li>WMI Error Upon Network Service (Windows Server Gateway) Refresh in VMM 2012 R2</li>
+</ul>
+<ul>
+<li>Identifying issues related to Hyper-V Network Virtualization (HNV) gateway</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>14 Aug 13</li>
+</ul>
+<ul>
+<li>What’s New in 2012 R2: Hybrid Networking</li>
+</ul>
+<ul>
+<li>Vijay Tewari, Bala Rajagopalan</li>
+</ul>
+<ul>
+<li>28 Sep 13</li>
+</ul>
+<ul>
+<li>Multi-tenant Site-to-Site (S2S) VPN Gateway with Windows Server 2012 R2</li>
+</ul>
+<ul>
+<li>MS</li>
+</ul>
+<ul>
+<li>26 Sep 12</li>
+</ul>
+<ul>
+<li>TechNet</li>
+</ul>
+<ul>
+<li>Hyper-V Network Virtualization Gateway Architectural Guide</li>
+</ul>
+<ul>
+<li>Technet</li>
+</ul>
+<ul>
+<li>18 Sep 13</li>
+</ul>
+<ul>
+<li>Windows Server Gateway</li>
+</ul>
+<ul>
+<li>11 Oct 13</li>
+</ul>
+<ul>
+<li>8 Nov 13</li>
+</ul>
+<ul>
+<li>Microsoft reveals secrets of Azure cloud&#39;s networking underbelly</li>
+</ul>
+<ul>
+<li>The Register</li>
+</ul>
+<ul>
+<li>21 Nov 13</li>
+</ul>
+<ul>
+<li>WP</li>
+</ul>
+<ul>
+<li>Hybrid Cloud with NVGRE (WSSC 2012 R2)</li>
+</ul>
+<ul>
+<li>Nese, Riis, Zhelyazkov, Neumann</li>
+</ul>
+<ul>
+<li>24 Dec 13</li>
+</ul>
+<ul>
+<li>Rick JR Mayberry</li>
+</ul>
+<ul>
+<li>12 Jan 14</li>
+</ul>
+<ul>
+<li>WhitePaper</li>
+</ul>
+<ul>
+<li>Hybrid Cloud with NVGRE (WSSC 2012 R2) - German version translated by Daniel Neumann</li>
+</ul>
+<ul>
+<li>19 Jan 14</li>
+</ul>
+<ul>
+<li>Video</li>
+</ul>
+<ul>
+<li>Hybrid Cloud with NVGRE (WSSC 2012 R2) based on Whitepaper</li>
+</ul>
+<ul>
+<li>Kristian Nese</li>
+</ul>
+<ul>
+<li>7 Feb 14</li>
+</ul>
+<ul>
+<li>UPDATE on Microsoft NVGRE Gateway in #SCVMM 2012 R2 : Adding a New Private #Cloud and Tenant</li>
+</ul>
+<ul>
+<li>James van den Berg</li>
+</ul>
+<ul>
+<li>12 Feb 14</li>
+</ul>
+<ul>
+<li>Support</li>
+</ul>
+<ul>
+<li>MS Support</li>
+</ul>
+<ul>
+<li>14 Feb 14</li>
+</ul>
+<ul>
+<li>Connect hosting provider and tenant networks for hybrid cloud services</li>
+</ul>
+<ul>
+<li>24 Feb 14</li>
+</ul>
+<ul>
+<li>Configuring Metrics and Static Routes for your virtualization gateways</li>
+</ul>
+<ul>
+<li>3 Mar 14</li>
+</ul>
+<ul>
+<li>Connect an On-premises Network to Azure via Site to Site VPN and Extend Active Directory onto an IaaS VM DC in Azure</li>
+</ul>
+<ul>
+<li>Michael Hildebrand</li>
+</ul>
+<ul>
+<li>5 Mar 14</li>
+</ul>
+<ul>
+<li>Flemming Riis</li>
+</ul>
+<ul>
+<li>17 Mar 14</li>
+</ul>
+<ul>
+<li>Hybrid Cloud with NVGRE (WSSC 2012 R2) v3</li>
+</ul>
+<ul>
+<li>28 Mar 14</li>
+</ul>
+<ul>
+<li>Make Hybrid Cloud with Virtual S2S VPN Gateway with #WindowsAzure #SCVMM #Hyperv</li>
+</ul>
+<ul>
+<li>29 Mar 14</li>
+</ul>
+<ul>
+<li>Gallery</li>
+</ul>
+<ul>
+<li>Windows Server 2012 R2 RRAS Multitenant Gateway Deployment Guide</li>
+</ul>
+<ul>
+<li>James McIllece</li>
+</ul>
+<ul>
+<li>8 Apr 14</li>
+</ul>
+<ul>
+<li>Stanislav Zhelyazkov</li>
+</ul>
+<ul>
+<li>9 Apr 14</li>
+</ul>
+<ul>
+<li>Hybrid Cloud with NVGRE (Cloud OS) v5</li>
+</ul>
+<ul>
+<li>23 Apr 14</li>
+</ul>
+<ul>
+<li>Description of Update Rollup 2 for System Center 2012 R2 Virtual Machine Manager items related to Windows Gateway</li>
+</ul>
+<ul>
+<li>30 Apr 14</li>
+</ul>
+<ul>
+<li>System Center 2012 R2 VMM – Network Configuration Script</li>
+</ul>
+<ul>
+<li>Daniel Neumann</li>
+</ul>
+<ul>
+<li>14 May 14</li>
+</ul>
+<ul>
+<li>Understanding Hyper-V Network Virtualization: Demo Extravaganza</li>
+</ul>
+<ul>
+<li>Arnaud Lheureux, Stanislas Quastana</li>
+</ul>
+<ul>
+<li>15 May 14</li>
+</ul>
+<ul>
+<li>How IPv6 Impacts Private Cloud Deployments</li>
+</ul>
+<ul>
+<li>Edward Horley</li>
+</ul>
+<ul>
+<li>16 May 14</li>
+</ul>
+<ul>
+<li>Monitoring Site to Site Connection Windows Azure Pack</li>
+</ul>
+<ul>
+<li>27 May 14</li>
+</ul>
+<ul>
+<li>3 Jun 14</li>
+</ul>
+<ul>
+<li>Adding more external IP´s to your WAP NVGRE VM´s</li>
+</ul>
+<ul>
+<li>Niklas Akerlund</li>
+</ul>
+<ul>
+<li>9 Jun 14</li>
+</ul>
+<ul>
+<li>No-Look VPN Configuration with Azure Pack</li>
+</ul>
+<ul>
+<li>Vahric_M</li>
+</ul>
+<ul>
+<li>15 Jun 14</li>
+</ul>
+<ul>
+<li>Public IP Address Requirements within a Windows Azure Pack environment</li>
+</ul>
+<ul>
+<li>Kenon Owens</li>
+</ul>
+<ul>
+<li>17 Jun 14</li>
+</ul>
+<ul>
+<li>Adding Windows Server Gateway Cluster as Network Service in VMM 2012 R2 UR2 for Monitoring with SCOM</li>
+</ul>
+<ul>
+<li>MSDN</li>
+</ul>
+<ul>
+<li>About VPN Devices for Virtual Network</li>
+</ul>
+<ul>
+<li>7 Jul 14</li>
+</ul>
+<ul>
+<li>Why is my HNV gateway not working?</li>
+</ul>
+<ul>
+<li>Bhargav</li>
+</ul>
+<ul>
+<li>28 Jul 14</li>
+</ul>
+<ul>
+<li>Windows Azure Pack – Adding multiple public IP addresses</li>
+</ul>
+<ul>
+<li>Jesper Jensen</li>
+</ul>
+<ul>
+<li>20 Aug 14</li>
+</ul>
+<ul>
+<li>10.000 Downloads!</li>
+</ul>
+<ul>
+<li>2 Sep 14</li>
+</ul>
+<ul>
+<li>Connect Microsoft Hyper-V Network Virtualization Gateway in System Center Virtual Machine Manager</li>
+</ul>
+<ul>
+<li>Thomas Maurer</li>
+</ul>
+<ul>
+<li>3 Sep 14</li>
+</ul>
+<ul>
+<li>What is NVGRE?</li>
+</ul>
+<ul>
+<li>Nirmal Sharma</li>
+</ul>
+<ul>
+<li>8 Sep 14</li>
+</ul>
+<ul>
+<li>Intel Supports Geneve to Help Unify</li>
+</ul>
+<ul>
+<li>&amp; NVGRE</li>
+</ul>
+<ul>
+<li>Craig Matsumoto,</li>
+</ul>
+<ul>
+<li>Hyper-V Networking NVGRE do’s and don’ts</li>
+</ul>
+<ul>
+<li>Mark Scholman</li>
+</ul>
+<ul>
+<li>Windows Server 2012 R2 NVGRE Gateway mit Direct Routing in SC 2012 R2 VMM</li>
+</ul>
+<ul>
+<li>10 Sep 14</li>
+</ul>
+<ul>
+<li>Setting Up an F5 NVGRE Gateway Environment</li>
+</ul>
+<ul>
+<li>F5 Support</li>
+</ul>
+<ul>
+<li>Cross-Premises Connectivity with Site-to-Site VPN - Modernizing Your Infrastructure With Hybrid Cloud (Part 15)</li>
+</ul>
+<ul>
+<li>Kevin Remde</li>
+</ul>
+<ul>
+<li>1 Oct 14</li>
+</ul>
+<ul>
+<li>GRE Tunneling in Windows Server</li>
+</ul>
+<ul>
+<li>4 Oct 14</li>
+</ul>
+<ul>
+<li>What&#39;s New in Networking in Windows Server Technical Preview</li>
+</ul>
+<ul>
+<li>2 Nov 14</li>
+</ul>
+<ul>
+<li>Windows Azure Pack – NVGRE Gateway</li>
+</ul>
+<ul>
+<li>Romain Serre</li>
+</ul>
+<ul>
+<li>7 Nov 14</li>
+</ul>
+<ul>
+<li>How to recover a gateway that was deployed through VMM and is running Windows Server 2012 R2</li>
+</ul>
+<ul>
+<li>14 Nov 14</li>
+</ul>
+<ul>
+<li>F5 Now Providing L4-L7 &amp; NVGRE Gateway Services for Microsoft’s Hyper-V Network Virtualization</li>
+</ul>
+<ul>
+<li>Ryan Korock</li>
+</ul>
+<ul>
+<li>24 Dec 14</li>
+</ul>
+<ul>
+<li>Review of Hyper-V Network Virtualization Cookbook</li>
+</ul>
+<ul>
+<li>Hans Vredevoort</li>
+</ul>
+<ul>
+<li>26 Dec 14</li>
+</ul>
+<ul>
+<li>VPN Interoperability guide for Windows Server 2012 R2</li>
+</ul>
+<ul>
+<li>Windows Networking Team</li>
+</ul>
+<ul>
+<li>12 Jan 15</li>
+</ul>
+<ul>
+<li>How to setup Azure VPN for Site-to-Site Cross-Premises or Create a Virtual Network for Point-to-Site VPN</li>
+</ul>
+<ul>
+<li>Robert Smit</li>
+</ul>
+<ul>
+<li>26 Jan 15</li>
+</ul>
+<ul>
+<li>Adding Gateway to VM Network As Tenant Administrator</li>
+</ul>
+<ul>
+<li>StanislavZhelyazkov</li>
+</ul>
+<ul>
+<li>4 Feb 15</li>
+</ul>
+<ul>
+<li>How to work with Hyper-V network virtualization and Hyper-V replicas in VMM 2012</li>
+</ul>
+<ul>
+<li>23 Feb 15</li>
+</ul>
+<ul>
+<li>When your WAPack tenants are using VLANs instead of SDN</li>
+</ul>
+<ul>
+<li>25 Feb 15</li>
+</ul>
+<ul>
+<li>Azure Pack / SCVMM NAT Rule Port Ranges</li>
+</ul>
+<ul>
+<li>8 May 15</li>
+</ul>
+<ul>
+<li>Can&#39;t establish site-to-site VPN between HNV Gateway and Cisco ASA in Windows Server 2012 R2</li>
+</ul>
+<ul>
+<li>Microsoft</li>
+</ul>
+<ul>
+<li>7 Jul 15</li>
+</ul>
+<ul>
+<li>Kaushik Ainapure</li>
+</ul>
+<ul>
+<li>14 Jan 16</li>
+</ul>
+<ul>
+<li>Who owns the assigned Azure Pack public IP Address NEW</li>
+</ul>
+<ul>
+<li>?</li>
+</ul>
+<ul>
+<li>Overview: Setting up an F5 Networks NVGRE gateway environment</li>
+</ul>
+<ul>
+<li>F5</li>
+</ul>
+<ul>
+<li>27 dec 15</li>
+</ul>
+<ul>
+<li>Windows Server 2012 R2 VPN Interoperability with Cisco ASA NEW</li>
+</ul>
+<ul>
+<li>TOP</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Blog</li>
+</ul>
+<ul>
+<li>Creating NAT Rules though VMM dont show in Portal</li>
+</ul>
+<ul>
+<li>New and Revised Networking Technologies for Windows Server Technical Preview</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Getting Windows Server Gateway Functionality with PowerShell in VMM</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Border Gateway Protocol (BGP) with Windows Server 2012 R2</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>14 Aug 13</p>
+<p>Blog</p>
+<p>What’s New in 2012 R2: Hybrid Networking</p>
+<p>Vijay Tewari, Bala Rajagopalan</p>
+<p>28 Sep 13</p>
+<p>Multi-tenant Site-to-Site (S2S) VPN Gateway with Windows Server 2012 R2</p>
+<p>MS</p>
+<p>26 Sep 12</p>
+<p>TechNet</p>
+<p>Hyper-V Network Virtualization Gateway Architectural Guide</p>
+<p>Technet</p>
+<p>18 Sep 13</p>
+<p>Windows Server Gateway</p>
+<p>11 Oct 13</p>
+<p>Border Gateway Protocol (BGP) with Windows Server 2012 R2</p>
+<p>8 Nov 13</p>
+<p>Microsoft reveals secrets of Azure cloud&#39;s networking underbelly</p>
+<p>The Register</p>
+<p>21 Nov 13</p>
+<p>WP</p>
+<p>Hybrid Cloud with NVGRE (WSSC 2012 R2)</p>
+<p>Nese, Riis, Zhelyazkov, Neumann</p>
+<p>24 Dec 13</p>
+<p>My intimacy issues with NVGRE – a NVGRE config guide on Hyper-V 2012 R2…. that actually works</p>
+<p>Rick JR Mayberry</p>
+<p>12 Jan 14</p>
+<p>WhitePaper</p>
+<p>Hybrid Cloud with NVGRE (WSSC 2012 R2) - German version translated by Daniel Neumann</p>
+<p>19 Jan 14</p>
+<p>Video</p>
+<p>Hybrid Cloud with NVGRE (WSSC 2012 R2) based on Whitepaper</p>
+<p>Kristian Nese</p>
+<p>7 Feb 14</p>
+<p>UPDATE on Microsoft NVGRE Gateway in #SCVMM 2012 R2 : Adding a New Private #Cloud and Tenant</p>
+<p>James van den Berg</p>
+<p>12 Feb 14</p>
+<p>Support</p>
+<p>Windows Server 2012 R2 NVGRE gateway cannot establish outgoing connections</p>
+<p>MS Support</p>
+<p>14 Feb 14</p>
+<p>Connect hosting provider and tenant networks for hybrid cloud services</p>
+<p>24 Feb 14</p>
+<p>Configuring Metrics and Static Routes for your virtualization gateways</p>
+<p>3 Mar 14</p>
+<p>Connect an On-premises Network to Azure via Site to Site VPN and Extend Active Directory onto an IaaS VM DC in Azure</p>
+<p>Michael Hildebrand</p>
+<p>5 Mar 14</p>
+<p>Creating NAT Rules though VMM dont show in Portal</p>
+<p>Flemming Riis</p>
+<p>17 Mar 14</p>
+<p>Hybrid Cloud with NVGRE (WSSC 2012 R2) v3</p>
+<p>28 Mar 14</p>
+<p>Make Hybrid Cloud with Virtual S2S VPN Gateway with #WindowsAzure #SCVMM #Hyperv</p>
+<p>29 Mar 14</p>
+<p>Gallery</p>
+<p>Windows Server 2012 R2 RRAS Multitenant Gateway Deployment Guide</p>
+<p>James McIllece</p>
+<p>8 Apr 14</p>
+<p>WMI Error Upon Network Service (Windows Server Gateway) Refresh in VMM 2012 R2</p>
+<p>Stanislav Zhelyazkov</p>
+<p>9 Apr 14</p>
+<p>Hybrid Cloud with NVGRE (Cloud OS) v5</p>
+<p>23 Apr 14</p>
+<p>Description of Update Rollup 2 for System Center 2012 R2 Virtual Machine Manager items related to Windows Gateway</p>
+<p>30 Apr 14</p>
+<p>System Center 2012 R2 VMM – Network Configuration Script</p>
+<p>Daniel Neumann</p>
+<p>14 May 14</p>
+<p>Understanding Hyper-V Network Virtualization: Demo Extravaganza</p>
+<p>Arnaud Lheureux, Stanislas Quastana</p>
+<p>15 May 14</p>
+<p>How IPv6 Impacts Private Cloud Deployments</p>
+<p>Edward Horley</p>
+<p>16 May 14</p>
+<p>Monitoring Site to Site Connection Windows Azure Pack</p>
+<p>27 May 14</p>
+<p>Getting Windows Server Gateway Functionality with PowerShell in VMM</p>
+<p>3 Jun 14</p>
+<p>Adding more external IP´s to your WAP NVGRE VM´s</p>
+<p>Niklas Akerlund</p>
+<p>9 Jun 14</p>
+<p>No-Look VPN Configuration with Azure Pack</p>
+<p>Vahric_M</p>
+<p>15 Jun 14</p>
+<p>Public IP Address Requirements within a Windows Azure Pack environment</p>
+<p>Kenon Owens</p>
+<p>17 Jun 14</p>
+<p>Adding Windows Server Gateway Cluster as Network Service in VMM 2012 R2 UR2 for Monitoring with SCOM</p>
+<p>MSDN</p>
+<p>About VPN Devices for Virtual Network</p>
+<p>7 Jul 14</p>
+<p>Why is my HNV gateway not working?</p>
+<p>Bhargav</p>
+<p>28 Jul 14</p>
+<p>Windows Azure Pack – Adding multiple public IP addresses</p>
+<p>Jesper Jensen</p>
+<p>20 Aug 14</p>
+<p>10.000 Downloads!</p>
+<p>2 Sep 14</p>
+<p>Connect Microsoft Hyper-V Network Virtualization Gateway in System Center Virtual Machine Manager</p>
+<p>Thomas Maurer</p>
+<p>3 Sep 14</p>
+<p>What is NVGRE?</p>
+<p>Nirmal Sharma</p>
+<p>8 Sep 14</p>
+<p>Intel Supports Geneve to Help Unify</p>
+<p>&amp; NVGRE</p>
+<p>Craig Matsumoto,</p>
+<p>Hyper-V Networking NVGRE do’s and don’ts</p>
+<p>Mark Scholman</p>
+<p>Windows Server 2012 R2 NVGRE Gateway mit Direct Routing in SC 2012 R2 VMM</p>
+<p>10 Sep 14</p>
+<p>Setting Up an F5 NVGRE Gateway Environment</p>
+<p>F5 Support</p>
+<p>Cross-Premises Connectivity with Site-to-Site VPN - Modernizing Your Infrastructure With Hybrid Cloud (Part 15)</p>
+<p>Kevin Remde</p>
+<p>1 Oct 14</p>
+<p>GRE Tunneling in Windows Server</p>
+<p>4 Oct 14</p>
+<p>New and Revised Networking Technologies for Windows Server Technical Preview</p>
+<p>What&#39;s New in Networking in Windows Server Technical Preview</p>
+<p>2 Nov 14</p>
+<p>Windows Azure Pack – NVGRE Gateway</p>
+<p>Romain Serre</p>
+<p>7 Nov 14</p>
+<p>How to recover a gateway that was deployed through VMM and is running Windows Server 2012 R2</p>
+<p>14 Nov 14</p>
+<p>F5 Now Providing L4-L7 &amp; NVGRE Gateway Services for Microsoft’s Hyper-V Network Virtualization</p>
+<p>Ryan Korock</p>
+<p>24 Dec 14</p>
+<p>Review of Hyper-V Network Virtualization Cookbook</p>
+<p>Hans Vredevoort</p>
+<p>26 Dec 14</p>
+<p>VPN Interoperability guide for Windows Server 2012 R2</p>
+<p>Windows Networking Team</p>
+<p>12 Jan 15</p>
+<p>How to setup Azure VPN for Site-to-Site Cross-Premises or Create a Virtual Network for Point-to-Site VPN</p>
+<p>Robert Smit</p>
+<p>26 Jan 15</p>
+<p>Adding Gateway to VM Network As Tenant Administrator</p>
+<p>StanislavZhelyazkov</p>
+<p>4 Feb 15</p>
+<p>How to work with Hyper-V network virtualization and Hyper-V replicas in VMM 2012</p>
+<p>23 Feb 15</p>
+<p>When your WAPack tenants are using VLANs instead of SDN</p>
+<p>25 Feb 15</p>
+<p>Azure Pack / SCVMM NAT Rule Port Ranges</p>
+<p>8 May 15</p>
+<p>Can&#39;t establish site-to-site VPN between HNV Gateway and Cisco ASA in Windows Server 2012 R2</p>
+<p>Microsoft</p>
+<p>7 Jul 15</p>
+<p>Identifying issues related to Hyper-V Network Virtualization (HNV) gateway</p>
+<p>Kaushik Ainapure</p>
+<p>14 Jan 16</p>
+<p>Who owns the assigned Azure Pack public IP Address NEW</p>
+<p>?</p>
+<p>Overview: Setting up an F5 Networks NVGRE gateway environment</p>
+<p>F5</p>
+<p>27 dec 15</p>
+<p>Windows Server 2012 R2 VPN Interoperability with Cisco ASA NEW</p>
+<p>TOP</p></article>

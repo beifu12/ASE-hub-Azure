@@ -1,0 +1,76 @@
+<article class="kb-article" data-title="【Share】禁用Windows虚拟机超线程"><h1>【Share】禁用Windows虚拟机超线程</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-12-26 10:08:01</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Wang Yu</li>
+</ul>
+<ul>
+<li>为Windows虚拟机添加注册表值后可以禁用超线程。</li>
+</ul>
+<ul>
+<li>添加的值：</li>
+</ul>
+<ul>
+<li>reg add &quot;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management&quot; /v FeatureSettingsOverride /t REG_DWORD /d 8264 /f</li>
+</ul>
+<ul>
+<li>reg add &quot;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management&quot; /v FeatureSettingsOverrideMask /t REG_DWORD /d 3 /f</li>
+</ul>
+<ul>
+<li>添加重启后，看到Windows虚拟机禁用了超线程：</li>
+</ul>
+<ul>
+<li>使用Azure市场映像Windows 10 pro 22h2 g2创建虚拟机的注册表中默认是没有这2项键值的。</li>
+</ul>
+<ul>
+<li>将这2个注册表项删除：</li>
+</ul>
+<ul>
+<li>reg delete &quot;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management&quot; /v FeatureSettingsOverride /f</li>
+</ul>
+<ul>
+<li>reg delete &quot;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management&quot; /v FeatureSettingsOverrideMask /f</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>删除后将虚拟机重启后，看到虚拟机已经恢复了默认的4核心 8vcpu的超线程配置：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Wang Yu</p>
+<p>为Windows虚拟机添加注册表值后可以禁用超线程。</p>
+<p>添加的值：</p>
+<p>reg add &quot;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management&quot; /v FeatureSettingsOverride /t REG_DWORD /d 8264 /f</p>
+<p>reg add &quot;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management&quot; /v FeatureSettingsOverrideMask /t REG_DWORD /d 3 /f</p>
+<p>添加重启后，看到Windows虚拟机禁用了超线程：</p>
+<p>使用Azure市场映像Windows 10 pro 22h2 g2创建虚拟机的注册表中默认是没有这2项键值的。</p>
+<p>将这2个注册表项删除：</p>
+<p>reg delete &quot;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management&quot; /v FeatureSettingsOverride /f</p>
+<p>reg delete &quot;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management&quot; /v FeatureSettingsOverrideMask /f</p>
+<p>删除后将虚拟机重启后，看到虚拟机已经恢复了默认的4核心 8vcpu的超线程配置：</p></article>

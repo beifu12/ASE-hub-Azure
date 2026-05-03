@@ -1,0 +1,63 @@
+<article class="kb-article" data-title="APPGW Instance down导致探测状态未知"><h1>APPGW Instance down导致探测状态未知</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-03-07 14:01:45</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20191025</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20191025</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20191025</li>
+</ul>
+<ul>
+<li>10-10-2019 17:05:484Service Control Manager7036Windows Update!!running</li>
+</ul>
+<ul>
+<li>10-10-2019 17:20:554Service Control Manager7036Windows Update!!running</li>
+</ul>
+<ul>
+<li>由于Windows的更新导致正在运行的WAS进程停止，进而使W3SVC进程处于停止状态，因此应用程序网关实例停止服务。而应用程网关没有自动重启来mitigate该问题的机制，因此需要手动重启该实例，激活WAS和W3SVC进程，使实例的应用程序网关服务成为up状态。对于该事件的描述可参考：https:/pocs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc734995(v=ws.10)?redirectedfrom=MSDN</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>[internal only] 119101021000909/NET/Yonyou Auto Information Technology (Shanghai) Co., Ltd./SR_2019101055523 _ [MS-LED]后端运行状态未知，生产环境访问出错</li>
+</ul>
+<ul>
+<li>产品组对于该问题的排查给出了一定的反馈，和您内部同步一下（Internal           Only）。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>问题时间段down掉的实例0上有两次windows的更新日志：<a href="https://jarvis-west.dc.ad.msft.net/A6311C8D" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/A6311C8D</a></li>
+</ul>
+<ul>
+<li>从ApplicationEvent log中可以看到问题实例上Service W3SVC was not in running state, Websites cannot be started unless the World Wide Web Publishing Service (W3SVC) is running.  See: <a href="https://jarvis-west.dc.ad.msft.net/AAE07093" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/AAE07093</a></li>
+</ul>
+<ul>
+<li>对于排查过程中看到客户Portal上显示后端池服务器状态未知的现象，产品组认为也是instance down掉导致的。正常情况下，两个实例先后探测后端池， gateway manager会先后收到两个实例的探测结果，其中一个实例down掉无法正常探测，这部分探测结果portal上会显示unknown，另一个探测正常进行，portal上会显示正常，客户也就看到portal上，后端运行状态在正常和unknown之间切换的情况。由于失败的探测数不会超过阈值，后端池一直为up状态： <a href="https://jarvis-west.dc.ad.msft.net/13376B24" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/13376B24</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20191025</p>
+<p>[internal only] 119101021000909/NET/Yonyou Auto Information Technology (Shanghai) Co., Ltd./SR_2019101055523 _ [MS-LED]后端运行状态未知，生产环境访问出错</p>
+<p>产品组对于该问题的排查给出了一定的反馈，和您内部同步一下（Internal           Only）。</p>
+<p>问题时间段down掉的实例0上有两次windows的更新日志：<a href="https://jarvis-west.dc.ad.msft.net/A6311C8D" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/A6311C8D</a></p>
+<p>10-10-2019 17:05:484Service Control Manager7036Windows Update!!running</p>
+<p>10-10-2019 17:20:554Service Control Manager7036Windows Update!!running</p>
+<p>从ApplicationEvent log中可以看到问题实例上Service W3SVC was not in running state, Websites cannot be started unless the World Wide Web Publishing Service (W3SVC) is running.  See: <a href="https://jarvis-west.dc.ad.msft.net/AAE07093" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/AAE07093</a></p>
+<p>由于Windows的更新导致正在运行的WAS进程停止，进而使W3SVC进程处于停止状态，因此应用程序网关实例停止服务。而应用程网关没有自动重启来mitigate该问题的机制，因此需要手动重启该实例，激活WAS和W3SVC进程，使实例的应用程序网关服务成为up状态。对于该事件的描述可参考：https:/pocs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc734995(v=ws.10)?redirectedfrom=MSDN</p>
+<p>对于排查过程中看到客户Portal上显示后端池服务器状态未知的现象，产品组认为也是instance down掉导致的。正常情况下，两个实例先后探测后端池， gateway manager会先后收到两个实例的探测结果，其中一个实例down掉无法正常探测，这部分探测结果portal上会显示unknown，另一个探测正常进行，portal上会显示正常，客户也就看到portal上，后端运行状态在正常和unknown之间切换的情况。由于失败的探测数不会超过阈值，后端池一直为up状态： <a href="https://jarvis-west.dc.ad.msft.net/13376B24" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/13376B24</a></p></article>

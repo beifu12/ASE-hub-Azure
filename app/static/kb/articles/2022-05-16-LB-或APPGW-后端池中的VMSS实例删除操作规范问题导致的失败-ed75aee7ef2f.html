@@ -1,0 +1,133 @@
+<article class="kb-article" data-title="LB 或APPGW 后端池中的VMSS实例删除操作规范问题导致的失败："><h1>LB 或APPGW 后端池中的VMSS实例删除操作规范问题导致的失败：</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VMSS</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-05-16 12:11:45</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象： 用户直接删除了关联VMSS 实例的LB或appgw后端池，之后再对该VMSS 实例做添加其他LB 或appgw的操作时会报错被改VMSS 引用的后端池不存在导致操作失败。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象： 用户直接删除了关联VMSS 实例的LB或appgw后端池，之后再对该VMSS 实例做添加其他LB 或appgw的操作时会报错被改VMSS 引用的后端池不存在导致操作失败。</li>
+</ul>
+<ul>
+<li>Appgw 的报错</li>
+</ul>
+<ul>
+<li>&quot;status&quot;: &quot;Failed&quot;,</li>
+</ul>
+<ul>
+<li>&quot;error&quot;: {</li>
+</ul>
+<ul>
+<li>LB 的报错：</li>
+</ul>
+<ul>
+<li>这时再做其他操作时会报错：</li>
+</ul>
+<ul>
+<li>Failed to upgrade virtual machine instances aks-nodepool1-11806250-vmss_1, aks-nodepool1-11806250-vmss_0. Error: Resource MC_aks-group_akscluster-test_chinaeast2/providers/Microsoft.Network/loadBalancers/LB-aks-basic/backendAddressPools/pool3&#39;&gt;LB-aks-basic/pool3 referenced by resource /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_aks-group_akscluster-test_chinaeast2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-nodepool1-11806250-vmss was not found. Please make sure that the referenced resource exists, and that both resources are in the same region.</li>
+</ul>
+<ul>
+<li>将实例移除其他LB 后端池报错：</li>
+</ul>
+<ul>
+<li>升级VMSS实例也报错：</li>
+</ul>
+<ul>
+<li>参考工单：SR_20210705106494_[S500]APPGW删除后与VMSS的网络接口绑定未删除，VMSS无法再绑定负载均衡</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;InvalidResourceReference&quot;,</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;Resource /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_aks-group_akscluster-test_chinaeast2/providers/Microsoft.Network/applicationGateways/appgwv1-aks/backendAddressPools/pool2 referenced by resource /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_AKS-GROUP_AKSCLUSTER-TEST_CHINAEAST2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-nodepool1-11806250-vmss was not found. Please make sure that the referenced resource exists, and that both resources are in the same region.&quot;,</li>
+</ul>
+<ul>
+<li>&quot;details&quot;: []</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>Resource /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_aks-group_akscluster-test_chinaeast2/providers/Microsoft.Network/loadBalancers/LB-aks-basic/backendAddressPools/pool referenced by resource /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_aks-group_akscluster-test_chinaeast2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-nodepool1-11806250-vmss was not found. Please make sure that the referenced resource exists, and that both resources are in the same region.</li>
+</ul>
+<ul>
+<li>问题分析及复现前提测试：</li>
+</ul>
+<ul>
+<li>2，无论是LB 或appgw 后端池中添加了vmss实例时， 是不会立即显示出来， 而是需要完成VMSS 实例的更新操作后才能显示。</li>
+</ul>
+<ul>
+<li>解决办法：</li>
+</ul>
+<ul>
+<li>Miya（胡明月）| Azure Network Support Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1，正常情况下关联了VMSS 实例（做完更新操作后）的appgw或LB地址池 是不能直接被删除的，portal会出现报错。</li>
+</ul>
+<ul>
+<li>3， 用户的问题是在后端池添加了VMSS 实例，但没有对VMSS 实例做update，而后直接删除了这个后端池（appgw）。根据测试此时的后端池是可以被删除的， portal不会有报错提醒。</li>
+</ul>
+<ul>
+<li>LB 后端池Pool3关联了VMSS 实例但没有按照portal提示对VMSS 实例进行update操作后直接删除了pool3，发现VMS 实例network显示还是在POOL3地址池中。</li>
+</ul>
+<ul>
+<li>新建pool3与VMSS实例的关联， 然后再按照先移除实例后删除后端池的步骤操作，才能彻底解除关联关系。及时对vmss 实例做更新操作。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Support direct line: 010-56060226 Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></li>
+</ul>
+<ul>
+<li>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-7-5</p>
+<p>问题现象： 用户直接删除了关联VMSS 实例的LB或appgw后端池，之后再对该VMSS 实例做添加其他LB 或appgw的操作时会报错被改VMSS 引用的后端池不存在导致操作失败。</p>
+<p>Appgw 的报错</p>
+<p>{</p>
+<p>&quot;status&quot;: &quot;Failed&quot;,</p>
+<p>&quot;error&quot;: {</p>
+<p>&quot;code&quot;: &quot;InvalidResourceReference&quot;,</p>
+<p>&quot;message&quot;: &quot;Resource /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_aks-group_akscluster-test_chinaeast2/providers/Microsoft.Network/applicationGateways/appgwv1-aks/backendAddressPools/pool2 referenced by resource /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_AKS-GROUP_AKSCLUSTER-TEST_CHINAEAST2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-nodepool1-11806250-vmss was not found. Please make sure that the referenced resource exists, and that both resources are in the same region.&quot;,</p>
+<p>&quot;details&quot;: []</p>
+<p>}</p>
+<p>LB 的报错：</p>
+<p>Resource /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_aks-group_akscluster-test_chinaeast2/providers/Microsoft.Network/loadBalancers/LB-aks-basic/backendAddressPools/pool referenced by resource /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_aks-group_akscluster-test_chinaeast2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-nodepool1-11806250-vmss was not found. Please make sure that the referenced resource exists, and that both resources are in the same region.</p>
+<p>问题分析及复现前提测试：</p>
+<p>1，正常情况下关联了VMSS 实例（做完更新操作后）的appgw或LB地址池 是不能直接被删除的，portal会出现报错。</p>
+<p>2，无论是LB 或appgw 后端池中添加了vmss实例时， 是不会立即显示出来， 而是需要完成VMSS 实例的更新操作后才能显示。</p>
+<p>3， 用户的问题是在后端池添加了VMSS 实例，但没有对VMSS 实例做update，而后直接删除了这个后端池（appgw）。根据测试此时的后端池是可以被删除的， portal不会有报错提醒。</p>
+<p>LB 后端池Pool3关联了VMSS 实例但没有按照portal提示对VMSS 实例进行update操作后直接删除了pool3，发现VMS 实例network显示还是在POOL3地址池中。</p>
+<p>这时再做其他操作时会报错：</p>
+<p>Failed to upgrade virtual machine instances aks-nodepool1-11806250-vmss_1, aks-nodepool1-11806250-vmss_0. Error: Resource MC_aks-group_akscluster-test_chinaeast2/providers/Microsoft.Network/loadBalancers/LB-aks-basic/backendAddressPools/pool3&#39;&gt;LB-aks-basic/pool3 referenced by resource /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_aks-group_akscluster-test_chinaeast2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-nodepool1-11806250-vmss was not found. Please make sure that the referenced resource exists, and that both resources are in the same region.</p>
+<p>将实例移除其他LB 后端池报错：</p>
+<p>升级VMSS实例也报错：</p>
+<p>解决办法：</p>
+<p>新建pool3与VMSS实例的关联， 然后再按照先移除实例后删除后端池的步骤操作，才能彻底解除关联关系。及时对vmss 实例做更新操作。</p>
+<p>参考工单：SR_20210705106494_[S500]APPGW删除后与VMSS的网络接口绑定未删除，VMSS无法再绑定负载均衡</p>
+<p>Miya（胡明月）| Azure Network Support Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060226 Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></p>
+<p>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</p></article>

@@ -1,0 +1,59 @@
+<article class="kb-article" data-title="[share]Azure file ps1挂载脚本运行后无法正常挂载"><h1>[share]Azure file ps1挂载脚本运行后无法正常挂载</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-22 10:18:34</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>2025.6.22</li>
+</ul>
+<ul>
+<li>Liu Wei</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如果将门户中生成的脚本保存为ps1脚本在Windows客户端中运行虽然可以正在执行也没有任何报错，但检查文件共享无法正常挂载的</li>
+</ul>
+<ul>
+<li>文件共享创建后，门户中虽有提示“在正常(未提升)的 PowerShell 终端中运行 PowerShell 命令”但并不能说明不支持运行保存为ps1的脚本进行挂载：</li>
+</ul>
+<ul>
+<li>进一步排查此问题是由于挂载命令New-PSDrive 在ps1中未设置参数 -Scope global 导致，该参数在打开PowerShell窗口运行New-PSDrive命令为默认选项。</li>
+</ul>
+<ul>
+<li>解决方法是在ps1 New-PSDrive命令添加参数 -Scope global：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>有关该命令的详细信息可以参考： <a href="https://learn.microsoft.com/zh-cn/powershell/module/microsoft.powershell.management/new-psdrive?view=powershell-7.5" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/module/microsoft.powershell.management/new-psdrive?view=powershell-7.5</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>2025.6.22</p>
+<p>Liu Wei</p>
+<p>如果将门户中生成的脚本保存为ps1脚本在Windows客户端中运行虽然可以正在执行也没有任何报错，但检查文件共享无法正常挂载的</p>
+<p>文件共享创建后，门户中虽有提示“在正常(未提升)的 PowerShell 终端中运行 PowerShell 命令”但并不能说明不支持运行保存为ps1的脚本进行挂载：</p>
+<p>进一步排查此问题是由于挂载命令New-PSDrive 在ps1中未设置参数 -Scope global 导致，该参数在打开PowerShell窗口运行New-PSDrive命令为默认选项。</p>
+<p>解决方法是在ps1 New-PSDrive命令添加参数 -Scope global：</p>
+<p>有关该命令的详细信息可以参考： <a href="https://learn.microsoft.com/zh-cn/powershell/module/microsoft.powershell.management/new-psdrive?view=powershell-7.5" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/module/microsoft.powershell.management/new-psdrive?view=powershell-7.5</a></p></article>

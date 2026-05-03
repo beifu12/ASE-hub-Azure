@@ -1,0 +1,87 @@
+<article class="kb-article" data-title="使用ASR replication appliance 复制Azure虚拟机（vm作为物理机进行ASR 现代化）"><h1>使用ASR replication appliance 复制Azure虚拟机（vm作为物理机进行ASR 现代化）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RecoveryService</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-11 14:01:52</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Zhang wenxin</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Zhang wenxin</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang wenxin</li>
+</ul>
+<ul>
+<li>拷贝代理安装包到需要复制的主机解压安装包：</li>
+</ul>
+<ul>
+<li>.\Microsoft-ASR_UA*Windows*release.exe /q /x:&quot;C:\ASR&quot;</li>
+</ul>
+<ul>
+<li>进入到安装包</li>
+</ul>
+<ul>
+<li>cd &quot;C:\ASR&quot;</li>
+</ul>
+<ul>
+<li>.\UnifiedAgentInstaller.exe /Platform vmware /Silent /Role MS /CSType CSPrime /InstallLocation &quot;C:\Program Files (x86)\Microsoft Azure Site Recovery&quot;</li>
+</ul>
+<ul>
+<li>注：以上操作需要注意操作顺序和目录</li>
+</ul>
+<ul>
+<li>安装后拷贝token到appliance生成config 文件</li>
+</ul>
+<ul>
+<li>生成后回来进行注册</li>
+</ul>
+<ul>
+<li>运行C:\Program Files (x86)\Microsoft Azure Site Recovery\agent\UnifiedAgentConfigurator.exe进行注册（不需要提前在appliance中添加，对于物理机，选择credential-less），进行注册</li>
+</ul>
+<ul>
+<li>注册成功后既可以添加复制项目</li>
+</ul>
+<ul>
+<li>复制时注意此credentials 显示不需要</li>
+</ul>
+<ul>
+<li>可以看到已经开始复制了</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用如下命令安装：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>首先修改IsAzureStackHubVM=1       <strong>windows</strong> - _C:\Program Files (x86)\Microsoft Azure Site Recovery\agent\Application Data\etc\drscout.conf（ <strong>linux</strong> - _/usr/local/ASR/Vx/etc/drscout.conf），正常情况下安装后如下只为0，需要修改为1。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang wenxin</p>
+<p>拷贝代理安装包到需要复制的主机解压安装包：</p>
+<p>.\Microsoft-ASR_UA*Windows*release.exe /q /x:&quot;C:\ASR&quot;</p>
+<p>进入到安装包</p>
+<p>cd &quot;C:\ASR&quot;</p>
+<p>使用如下命令安装：</p>
+<p>.\UnifiedAgentInstaller.exe /Platform vmware /Silent /Role MS /CSType CSPrime /InstallLocation &quot;C:\Program Files (x86)\Microsoft Azure Site Recovery&quot;</p>
+<p>注：以上操作需要注意操作顺序和目录</p>
+<p>安装后拷贝token到appliance生成config 文件</p>
+<p>生成后回来进行注册</p>
+<p>首先修改IsAzureStackHubVM=1       <strong>windows</strong> - _C:\Program Files (x86)\Microsoft Azure Site Recovery\agent\Application Data\etc\drscout.conf（ <strong>linux</strong> - _/usr/local/ASR/Vx/etc/drscout.conf），正常情况下安装后如下只为0，需要修改为1。</p>
+<p>运行C:\Program Files (x86)\Microsoft Azure Site Recovery\agent\UnifiedAgentConfigurator.exe进行注册（不需要提前在appliance中添加，对于物理机，选择credential-less），进行注册</p>
+<p>注册成功后既可以添加复制项目</p>
+<p>复制时注意此credentials 显示不需要</p>
+<p>可以看到已经开始复制了</p></article>

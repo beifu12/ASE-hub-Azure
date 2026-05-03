@@ -1,0 +1,117 @@
+<article class="kb-article" data-title="[Share] 测试创建一个非公网，使用PE链接的Azure File Sync"><h1>[Share] 测试创建一个非公网，使用PE链接的Azure File Sync</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-11-11 09:34:20</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>文件同步 File Sync PE private Endpoint</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>文件同步 File Sync PE private Endpoint</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>文件同步 File Sync PE private Endpoint</li>
+</ul>
+<ul>
+<li>测试了在PE环境中启用File Sync 并且测试了AD域环境中ACL权限是否也会跟着File Sync 同步。</li>
+</ul>
+<ul>
+<li>在域中分享了一个文件夹。</li>
+</ul>
+<ul>
+<li>分别授权给两个不同的用户。</li>
+</ul>
+<ul>
+<li>两个用户只能看到自己的文件夹。</li>
+</ul>
+<ul>
+<li>在机器所在的Vnet中，创建两个单独的子网用于链接sync 和 share。</li>
+</ul>
+<ul>
+<li>创建一个北2的存储账户，并创建一个新的File Share。并且只放行信任的服务（信任服务中包含file sync）。</li>
+</ul>
+<ul>
+<li>再创建PE指向对应的子网。</li>
+</ul>
+<ul>
+<li>创建一个北2的File Sync。</li>
+</ul>
+<ul>
+<li>注意PE是可以跨区域的，选择对应创建的好的子网。</li>
+</ul>
+<ul>
+<li>进入file sync 添加同步组</li>
+</ul>
+<ul>
+<li>安装同步代理</li>
+</ul>
+<ul>
+<li>注册。</li>
+</ul>
+<ul>
+<li>添加同步组。</li>
+</ul>
+<ul>
+<li>将文件进行初始上传。</li>
+</ul>
+<ul>
+<li>添加一个新的服务终结点，进行初始下载。</li>
+</ul>
+<ul>
+<li>测试另一个账户。</li>
+</ul>
+<ul>
+<li>测试创建一个文件。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>创建后查看所有终结点状态。</li>
+</ul>
+<ul>
+<li>可以在注册的服务器上查看当前机器注册状态。</li>
+</ul>
+<ul>
+<li>可以进入查看同步状态。</li>
+</ul>
+<ul>
+<li>此时可以查看文件。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/11/06</p>
+<p>文件同步 File Sync PE private Endpoint</p>
+<p>测试了在PE环境中启用File Sync 并且测试了AD域环境中ACL权限是否也会跟着File Sync 同步。</p>
+<p>在域中分享了一个文件夹。</p>
+<p>分别授权给两个不同的用户。</p>
+<p>两个用户只能看到自己的文件夹。</p>
+<p>在机器所在的Vnet中，创建两个单独的子网用于链接sync 和 share。</p>
+<p>创建一个北2的存储账户，并创建一个新的File Share。并且只放行信任的服务（信任服务中包含file sync）。</p>
+<p>再创建PE指向对应的子网。</p>
+<p>创建一个北2的File Sync。</p>
+<p>注意PE是可以跨区域的，选择对应创建的好的子网。</p>
+<p>创建后查看所有终结点状态。</p>
+<p>进入file sync 添加同步组</p>
+<p>安装同步代理</p>
+<p>注册。</p>
+<p>可以在注册的服务器上查看当前机器注册状态。</p>
+<p>添加同步组。</p>
+<p>将文件进行初始上传。</p>
+<p>可以进入查看同步状态。</p>
+<p>添加一个新的服务终结点，进行初始下载。</p>
+<p>此时可以查看文件。</p>
+<p>测试另一个账户。</p>
+<p>测试创建一个文件。</p></article>

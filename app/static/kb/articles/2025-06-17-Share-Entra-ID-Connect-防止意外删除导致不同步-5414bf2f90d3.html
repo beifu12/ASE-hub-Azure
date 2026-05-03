@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="【Share】Entra ID Connect 防止意外删除导致不同步"><h1>【Share】Entra ID Connect 防止意外删除导致不同步</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-17 17:32:37</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>由于Entra ID Connect中任务执行是按队列的，由于之前删除用户任务报错，后面新增用户的同步也没有执行。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>由于Entra ID Connect中任务执行是按队列的，由于之前删除用户任务报错，后面新增用户的同步也没有执行。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>客户反馈Entra ID Connect不同步。</li>
+</ul>
+<ul>
+<li>获取删除用户上上限：</li>
+</ul>
+<ul>
+<li>禁用删除用户上上限：</li>
+</ul>
+<ul>
+<li>启用删除用户上限(需指定上限数量)：</li>
+</ul>
+<ul>
+<li>客户将防意外删除策略禁用后，执行增量同步可以删除和新增用户。</li>
+</ul>
+<ul>
+<li>参考链接：</li>
+</ul>
+<ul>
+<li>Microsoft Entra Connect 同步：防止意外删除 - Microsoft Entra ID | Microsoft Learn</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Entra ID Connect默认Export任务中最大的删除项是500，可以使用命令查询：</li>
+</ul>
+<ul>
+<li>Get-ADSyncExportDeletionThreshold</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>对同步任务进行排查，在Export任务中看到，由于触发了意外删除阈值，导致同步暂停。</li>
+</ul>
+<ul>
+<li>Disable-ADSyncExportDeletionThreshold</li>
+</ul>
+<ul>
+<li>Enable-ADSyncExportDeletionThreshold -DeletionThreshold 500</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/6/16</p>
+<p>问题描述：</p>
+<p>========</p>
+<p>客户反馈Entra ID Connect不同步。</p>
+<p>排查过程：</p>
+<p>对同步任务进行排查，在Export任务中看到，由于触发了意外删除阈值，导致同步暂停。</p>
+<p>由于Entra ID Connect中任务执行是按队列的，由于之前删除用户任务报错，后面新增用户的同步也没有执行。</p>
+<p>Entra ID Connect默认Export任务中最大的删除项是500，可以使用命令查询：</p>
+<p>获取删除用户上上限：</p>
+<p>Get-ADSyncExportDeletionThreshold</p>
+<p>解决方法：</p>
+<p>禁用删除用户上上限：</p>
+<p>Disable-ADSyncExportDeletionThreshold</p>
+<p>启用删除用户上限(需指定上限数量)：</p>
+<p>Enable-ADSyncExportDeletionThreshold -DeletionThreshold 500</p>
+<p>客户将防意外删除策略禁用后，执行增量同步可以删除和新增用户。</p>
+<p>参考链接：</p>
+<p>Microsoft Entra Connect 同步：防止意外删除 - Microsoft Entra ID | Microsoft Learn</p></article>

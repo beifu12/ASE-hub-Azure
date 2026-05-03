@@ -1,0 +1,128 @@
+<article class="kb-article" data-title="[Share] 使用MABS备份、还原HCI VM的完整步骤"><h1>[Share] 使用MABS备份、还原HCI VM的完整步骤</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2024-01-18 10:22:34</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<ul>
+<li>1,</li>
+</ul>
+<ul>
+<li>2,</li>
+</ul>
+<ul>
+<li>3,</li>
+</ul>
+<ul>
+<li>4,</li>
+</ul>
+<ul>
+<li>5,</li>
+</ul>
+<ul>
+<li>6,</li>
+</ul>
+<ul>
+<li>7,</li>
+</ul>
+<ul>
+<li>8,</li>
+</ul>
+<ul>
+<li>9,</li>
+</ul>
+<ul>
+<li>10</li>
+</ul>
+<ul>
+<li>11,</li>
+</ul>
+<ul>
+<li>12,</li>
+</ul>
+<ul>
+<li>13,</li>
+</ul>
+<ul>
+<li>14,</li>
+</ul>
+<ul>
+<li>15,</li>
+</ul>
+<ul>
+<li>16，</li>
+</ul>
+<ul>
+<li>17，</li>
+</ul>
+<ul>
+<li>18，</li>
+</ul>
+<ul>
+<li>##这里截图是后补的，所以从图上看状态是OK，实际应在“Critical”：</li>
+</ul>
+<ul>
+<li>##完成后界面如下：</li>
+</ul>
+<ul>
+<li>##状态恢复为OK, 至此整个备份还原操作完成</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>使用使用MABS备份、还原HCI VM的完整步骤，官方文档中还原后，缺少“Create recovery point”的步骤，会导致HCI vm在还原后处于“Replica is inconsistent”的状态，无法继续进行备份保护，文档中补充了这部分内容。后续有需要，可以参考下。</li>
+</ul>
+<ul>
+<li>19, 经与DPM后线团队确认，被保护的VM状态变为“Replica is inconsistent”是一个by design的设置，后面需要执行：“Create recovery point”for online protection</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Jia.Xiaolei</p>
+<p>使用使用MABS备份、还原HCI VM的完整步骤，官方文档中还原后，缺少“Create recovery point”的步骤，会导致HCI vm在还原后处于“Replica is inconsistent”的状态，无法继续进行备份保护，文档中补充了这部分内容。后续有需要，可以参考下。</p>
+<p>1,</p>
+<p>2,</p>
+<p>3,</p>
+<p>4,</p>
+<p>5,</p>
+<p>6,</p>
+<p>7,</p>
+<p>8,</p>
+<p>9,</p>
+<p>10</p>
+<p>11,</p>
+<p>12,</p>
+<p>13,</p>
+<p>14,</p>
+<p>15,</p>
+<p>16，</p>
+<p>17，</p>
+<p>18，</p>
+<p>19, 经与DPM后线团队确认，被保护的VM状态变为“Replica is inconsistent”是一个by design的设置，后面需要执行：“Create recovery point”for online protection</p>
+<p>##这里截图是后补的，所以从图上看状态是OK，实际应在“Critical”：</p>
+<p>##完成后界面如下：</p>
+<p>##状态恢复为OK, 至此整个备份还原操作完成</p></article>

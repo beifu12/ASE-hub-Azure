@@ -1,0 +1,41 @@
+<article class="kb-article" data-title="通过官方 Image 创建经典 VM"><h1>通过官方 Image 创建经典 VM</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-11-18 10:53:47</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Set-AzureSubscription -SubscriptionID 02f14be4-974b-4f2c-96f8-7c0f148ed2b8 -CurrentStorageAccountName zhangzhangtest9775</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Set-AzureSubscription -SubscriptionID 02f14be4-974b-4f2c-96f8-7c0f148ed2b8 -CurrentStorageAccountName zhangzhangtest9775</li>
+</ul>
+<h2>背景信息</h2>
+<p>未从原文中明确识别。</p>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-AzureSubscription -SubscriptionID 02f14be4-974b-4f2c-96f8-7c0f148ed2b8 -CurrentStorageAccountName zhangzhangtest9775</li>
+</ul>
+<ul>
+<li>New-AzureVMConfig -Name &quot;VMName&quot; -InstanceSize &quot;VMSize&quot; –ImageName &quot;ImageName&quot; | Set-AzureSubnet -SubnetName &quot;SubnetName&quot; | Add-AzureProvisioningConfig -Windows -AdminUsername &quot;LoginName&quot; -Password &quot;LoginPassword&quot; | New-AzureVM -ServiceName &quot;CloudName&quot; -Location &quot;LocationName&quot; –Vnetname &quot;Vnetname&quot;</li>
+</ul>
+<ul>
+<li>New-AzureVMConfig -Name &quot;VMName&quot; -InstanceSize &quot;VMSize&quot; –ImageName &quot;ImageName&quot; | Set-AzureSubnet -SubnetName &quot;SubnetName&quot; | Add-AzureProvisioningConfig -Linux -LinuxUser &quot;LoginName&quot; -Password &quot;LoginPassword&quot; | New-AzureVM -ServiceName &quot;CloudName&quot; -Location &quot;LocationName&quot; –Vnetname &quot;Vnetname&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Set-AzureSubscription -SubscriptionID 02f14be4-974b-4f2c-96f8-7c0f148ed2b8 -CurrentStorageAccountName zhangzhangtest9775</p>
+<p>New-AzureVMConfig -Name &quot;VMName&quot; -InstanceSize &quot;VMSize&quot; –ImageName &quot;ImageName&quot; | Set-AzureSubnet -SubnetName &quot;SubnetName&quot; | Add-AzureProvisioningConfig -Windows -AdminUsername &quot;LoginName&quot; -Password &quot;LoginPassword&quot; | New-AzureVM -ServiceName &quot;CloudName&quot; -Location &quot;LocationName&quot; –Vnetname &quot;Vnetname&quot;</p>
+<p>New-AzureVMConfig -Name &quot;VMName&quot; -InstanceSize &quot;VMSize&quot; –ImageName &quot;ImageName&quot; | Set-AzureSubnet -SubnetName &quot;SubnetName&quot; | Add-AzureProvisioningConfig -Linux -LinuxUser &quot;LoginName&quot; -Password &quot;LoginPassword&quot; | New-AzureVM -ServiceName &quot;CloudName&quot; -Location &quot;LocationName&quot; –Vnetname &quot;Vnetname&quot;</p></article>

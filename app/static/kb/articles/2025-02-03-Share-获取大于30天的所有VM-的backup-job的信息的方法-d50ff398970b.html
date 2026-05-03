@@ -1,0 +1,87 @@
+<article class="kb-article" data-title="【 Share】 获取大于30天的所有VM 的backup job的信息的方法"><h1>【 Share】 获取大于30天的所有VM 的backup job的信息的方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2025-02-03 13:36:04</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>工单号：SR_20250115335034_azure virtual machine backup issue</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>工单号：SR_20250115335034_azure virtual machine backup issue</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Humingyue</li>
+</ul>
+<ul>
+<li>用户需求：</li>
+</ul>
+<ul>
+<li>订阅中有多台虚拟机开启了backup 功能，需要定期汇报各台虚拟机的每天的备份情况，在backup center 里backup jobs 显示的最大时间是两周。询问是否有获取大于30天的所有VM 的backup job的信息的方法</li>
+</ul>
+<ul>
+<li>测试过程：</li>
+</ul>
+<ul>
+<li>2，然后在backup center 中开启backup reports 功能，选择需要的时间范围：</li>
+</ul>
+<ul>
+<li>注意事项</li>
+</ul>
+<ul>
+<li>确保Azure Backup Center的Backup Report功能已正确启用，并且日志分析工作区已正确配置。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>对于使用同一个Recovery service vault做备份的VM可以在Recovery Service Vault 的backup jobs 中查询到大于30天的所有VM 备份情况汇总：</li>
+</ul>
+<ul>
+<li>查看到对应时间段所有VM的backup job 数据信息：</li>
+</ul>
+<ul>
+<li>监控数据推送进度，并在数据开始流入日志分析工作区后等待一段时间（48小时）再查看报告。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法一：</li>
+</ul>
+<ul>
+<li>解决方法二：配置Backup Report功能提供了一个集中的视图，便于用户监控和管理备份作业的状态、存储消耗、作业成功率等关键指标。</li>
+</ul>
+<ul>
+<li>1， 首先在Recovery service vault 中将backup 数据全部发送到统一的Log Analytics 工作区中，配置诊断设置后，Azure需要一些时间将数据推送到指定的日志分析工作区。这可能需要多达24小时才能完成初始数据推送。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考官网：<a href="https://docs.azure.cn/zh-cn/backup/configure-reports?tabs=recovery-services-vaults" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/configure-reports?tabs=recovery-services-vaults</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Humingyue</p>
+<p>用户需求：</p>
+<p>订阅中有多台虚拟机开启了backup 功能，需要定期汇报各台虚拟机的每天的备份情况，在backup center 里backup jobs 显示的最大时间是两周。询问是否有获取大于30天的所有VM 的backup job的信息的方法</p>
+<p>解决方法一：</p>
+<p>对于使用同一个Recovery service vault做备份的VM可以在Recovery Service Vault 的backup jobs 中查询到大于30天的所有VM 备份情况汇总：</p>
+<p>解决方法二：配置Backup Report功能提供了一个集中的视图，便于用户监控和管理备份作业的状态、存储消耗、作业成功率等关键指标。</p>
+<p>测试过程：</p>
+<p>1， 首先在Recovery service vault 中将backup 数据全部发送到统一的Log Analytics 工作区中，配置诊断设置后，Azure需要一些时间将数据推送到指定的日志分析工作区。这可能需要多达24小时才能完成初始数据推送。</p>
+<p>2，然后在backup center 中开启backup reports 功能，选择需要的时间范围：</p>
+<p>查看到对应时间段所有VM的backup job 数据信息：</p>
+<p>注意事项</p>
+<p>确保Azure Backup Center的Backup Report功能已正确启用，并且日志分析工作区已正确配置。</p>
+<p>监控数据推送进度，并在数据开始流入日志分析工作区后等待一段时间（48小时）再查看报告。</p>
+<p>参考官网：<a href="https://docs.azure.cn/zh-cn/backup/configure-reports?tabs=recovery-services-vaults" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/configure-reports?tabs=recovery-services-vaults</a></p>
+<p>工单号：SR_20250115335034_azure virtual machine backup issue</p></article>

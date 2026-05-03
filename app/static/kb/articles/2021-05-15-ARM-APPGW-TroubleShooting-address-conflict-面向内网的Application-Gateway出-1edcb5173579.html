@@ -1,0 +1,74 @@
+<article class="kb-article" data-title="[ARM-APPGW-TroubleShooting-address conflict ]面向内网的Application Gateway出现内网地址冲突"><h1>[ARM-APPGW-TroubleShooting-address conflict ]面向内网的Application Gateway出现内网地址冲突</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-05-15 22:29:38</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错信息是网关的静态IP在使用中</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错信息是网关的静态IP在使用中</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>fuzhangliang</li>
+</ul>
+<ul>
+<li>参考工单：SR_2019042421793_[TEC]application gateway 删除了一个rule ，40分钟还没有执行完</li>
+</ul>
+<ul>
+<li>1、客户定义的前端IP</li>
+</ul>
+<ul>
+<li>2、实例的IP地址</li>
+</ul>
+<ul>
+<li>网关所在的子网地址空间是oapsubnet(10.82.71.176/28) ，因此第一个可用的内网IP是10.82.71.180, 该IP被网关实例占用</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查步骤：</li>
+</ul>
+<ul>
+<li>查询客户对网关的操作日志，可以发现尝试修改配置的task 任务最后失败</li>
+</ul>
+<ul>
+<li>进一步排查发现客户配置的网关前端内网IP和实例的IP地址重合，存在地址冲突</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>问题现象：客户在Application Gateway 新建监听端口，创建Listener，  生效都非常慢，长时间running后网关进入失败状态</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：建议客户修改网关的前端内网IP地址，尽量选取子网中较大的IP地址。客户修改为较大的IP后，问题解决。</li>
+</ul>
+<ul>
+<li>总结：因为网关的实例会占用内网IP，而平台分配内网IP一般是从较小的IP开始分配给资源占用，为了避免网关实例IP与前端IP内网冲突，建议尽量从子网中选取较大的IP充当网关前端IP地址。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/274E2887" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/274E2887</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>fuzhangliang</p>
+<p>问题现象：客户在Application Gateway 新建监听端口，创建Listener，  生效都非常慢，长时间running后网关进入失败状态</p>
+<p>参考工单：SR_2019042421793_[TEC]application gateway 删除了一个rule ，40分钟还没有执行完</p>
+<p>排查步骤：</p>
+<p>查询客户对网关的操作日志，可以发现尝试修改配置的task 任务最后失败</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/274E2887" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/274E2887</a></p>
+<p>报错信息是网关的静态IP在使用中</p>
+<p>进一步排查发现客户配置的网关前端内网IP和实例的IP地址重合，存在地址冲突</p>
+<p>1、客户定义的前端IP</p>
+<p>2、实例的IP地址</p>
+<p>网关所在的子网地址空间是oapsubnet(10.82.71.176/28) ，因此第一个可用的内网IP是10.82.71.180, 该IP被网关实例占用</p>
+<p>解决方案：建议客户修改网关的前端内网IP地址，尽量选取子网中较大的IP地址。客户修改为较大的IP后，问题解决。</p>
+<p>总结：因为网关的实例会占用内网IP，而平台分配内网IP一般是从较小的IP开始分配给资源占用，为了避免网关实例IP与前端IP内网冲突，建议尽量从子网中选取较大的IP充当网关前端IP地址。</p></article>

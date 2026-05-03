@@ -1,0 +1,141 @@
+<article class="kb-article" data-title="Azure P2S VPN基于AAD认证在windows server 中不支持及Win11中支持"><h1>Azure P2S VPN基于AAD认证在windows server 中不支持及Win11中支持</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-17 10:12:21</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Windows Server中无法安装Azure VPN Client客户端软件；安装后无法连接VPN，提示：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Windows Server中无法安装Azure VPN Client客户端软件；安装后无法连接VPN，提示：</li>
+</ul>
+<ul>
+<li>Azure VPN Client + P2S VPN (AAD Authentication)  + Windows Server 2019  (上述报错可以复现）</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>相关工单：</li>
+</ul>
+<ul>
+<li>SR_20230310217404</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>VPN Platform did not trigger connection.</li>
+</ul>
+<ul>
+<li>系统环境/应用程序信息：</li>
+</ul>
+<ul>
+<li>===============</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>截止目前P2S VPN + AAD认证，只在Windows 10和MacOS X中支持。</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>扩展：</li>
+</ul>
+<ul>
+<li>官网文档没有提到Windows 11 是否支持  AAD，实际测试：可以：</li>
+</ul>
+<ul>
+<li>如果不能使用App Store直接下载Azure VPN Client，就通过此链接下载最新的安装包（zip):</li>
+</ul>
+<ul>
+<li>App Center</li>
+</ul>
+<ul>
+<li>参照上述说明完成安装工作，安装好的Azure VPN Client版本：</li>
+</ul>
+<ul>
+<li>将下载回来的zip文件解压，获得AzureVPN文件夹，其中的azurevpnconfig XML文件即是：</li>
+</ul>
+<ul>
+<li>启动前面安装好的Azure VPN Client:</li>
+</ul>
+<ul>
+<li>Windows 11的OS版本信息：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查步骤：</li>
+</ul>
+<ul>
+<li>排查不能连接问题 ：在Windows Server 2019中。</li>
+</ul>
+<ul>
+<li>在Azure VPN Gateway Portal中下载VPN Client，获取此P2S VPn + AAD认证的配置文件：</li>
+</ul>
+<ul>
+<li>P2S VPN连接导入完成后，即可连接，输入AAD账户验证通过后，随即连接成功：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>根据文档使用Install PS脚本安装成功</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>连接过程是：Client端先通过Internet访问相应的AAD认证服务，然后Client端再去连接Azure VPN Gateway P2S VPN VIP TCP 443端口以建立VPN隧道。如下是客户端上的成功连接过程日志，供参考：</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<ul>
+<li>建议在其它支持AAD认证的OS类型的机器中使用该P2S VPN。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Windows Server 2019不支持基于AAD认证的P2S VPN: <a href="https://learn.microsoft.com/en-us/azure/vpn-gateway/work-remotely-support#p2s" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/vpn-gateway/work-remotely-support#p2s</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>相关工单：</p>
+<p>SR_20230310217404</p>
+<p>问题描述：</p>
+<p>=======</p>
+<p>Windows Server中无法安装Azure VPN Client客户端软件；安装后无法连接VPN，提示：</p>
+<p>VPN Platform did not trigger connection.</p>
+<p>系统环境/应用程序信息：</p>
+<p>===============</p>
+<p>Azure VPN Client + P2S VPN (AAD Authentication)  + Windows Server 2019  (上述报错可以复现）</p>
+<p>排查步骤：</p>
+<p>根据文档使用Install PS脚本安装成功</p>
+<p>排查不能连接问题 ：在Windows Server 2019中。</p>
+<p>问题原因：</p>
+<p>========</p>
+<p>截止目前P2S VPN + AAD认证，只在Windows 10和MacOS X中支持。</p>
+<p>Windows Server 2019不支持基于AAD认证的P2S VPN: <a href="https://learn.microsoft.com/en-us/azure/vpn-gateway/work-remotely-support#p2s" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/vpn-gateway/work-remotely-support#p2s</a></p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>建议在其它支持AAD认证的OS类型的机器中使用该P2S VPN。</p>
+<p>扩展：</p>
+<p>官网文档没有提到Windows 11 是否支持  AAD，实际测试：可以：</p>
+<p>如果不能使用App Store直接下载Azure VPN Client，就通过此链接下载最新的安装包（zip):</p>
+<p>App Center</p>
+<p>参照上述说明完成安装工作，安装好的Azure VPN Client版本：</p>
+<p>在Azure VPN Gateway Portal中下载VPN Client，获取此P2S VPn + AAD认证的配置文件：</p>
+<p>将下载回来的zip文件解压，获得AzureVPN文件夹，其中的azurevpnconfig XML文件即是：</p>
+<p>启动前面安装好的Azure VPN Client:</p>
+<p>P2S VPN连接导入完成后，即可连接，输入AAD账户验证通过后，随即连接成功：</p>
+<p>连接过程是：Client端先通过Internet访问相应的AAD认证服务，然后Client端再去连接Azure VPN Gateway P2S VPN VIP TCP 443端口以建立VPN隧道。如下是客户端上的成功连接过程日志，供参考：</p>
+<p>Windows 11的OS版本信息：</p></article>

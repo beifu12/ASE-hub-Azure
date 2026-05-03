@@ -1,0 +1,106 @@
+<article class="kb-article" data-title="排查Azure VM网络传输速度异常"><h1>排查Azure VM网络传输速度异常</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2024-06-11 16:42:41</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>涉及工单：SR_20240304280727_内部网络数据传输缓慢</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>涉及工单：SR_20240304280727_内部网络数据传输缓慢</li>
+</ul>
+<ul>
+<li>再次抓取了从同Subnet beifen9 scp文件到beifen10的数据包，发现有较为明显的丢包现象和重传现象。</li>
+</ul>
+<ul>
+<li>在同Subnet beifen8、beifen9、beifen10之间进行ICMP ping发现当beifen 10作为Destination时，基本稳定可见有3%的ICMP loss，TCP ping也有DUP ACK现象。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2024.5.28</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>用户同VNet\Subnet中名为beifen10的VM网络传入速度极慢；iperf3测带宽也只能达到几Mbps到十多Mbps。</li>
+</ul>
+<ul>
+<li>传出速率正常。100MBps</li>
+</ul>
+<ul>
+<li>问题原因：不明。</li>
+</ul>
+<ul>
+<li>问题解决：重新部署。</li>
+</ul>
+<ul>
+<li>用户反馈另一VM beifen8 CPU同样长时间满负载，但其传输速率一直很正常。</li>
+</ul>
+<ul>
+<li>在同Subnet其它VM中使用iperf3测试网络传输带宽，发现其依旧只有几Mbps或十多Mbps；同时发现从该VM往同Subnet或者其它Internet VM SCP copy文件传输速率却是正常的。</li>
+</ul>
+<ul>
+<li>测试环境中对比分析了不同Vnet 不同Region Azure VM间经VNet peering scp传输文件的过程，很明显看到几乎没有重传（十几万个包，有个位数的重传），没有丢包，传输速率几十MBps。</li>
+</ul>
+<ul>
+<li>对比了CPU负载同样很高的beifen8和beifen10，两者一个区别就是前者运行了几十天，beifen10运行已有1900多天。</li>
+</ul>
+<ul>
+<li>用户在重新部署前，我们也有尝试停止掉其中部署的应用程序，将内存都释放了，传入速度依旧是龟速。只重启VM这一步没有尝试，有可能也能恢复。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>后台排查VM性能数据VM dashboard:</li>
+</ul>
+<ul>
+<li>替换链接中黄色部分：在ASC中可以搜搜shoebox找出为；页面打开后使用VM ID作为过滤条件</li>
+</ul>
+<ul>
+<li>排查过程中我也从ASC中抽取了和用户一起测试时段的Host Analyzer，跟此VM相关的就显示一些I/O Throttle，但对beifen8同样也是有一些I/O Throttle，对比分析这点不能作为认定VM自身异常的证据，findings中跟该VM container相关的STCP重传异常 ，是否它造成了传入速率异常也不得而知。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>邀请了VM同事协助分析top指令、sar指令以分析系统性能状况；只对比出beifen10比beifen8的磁盘写入负载要高一些，但实际速率依旧非常慢几十KBps左右~1MBps，总之并没有达到磁盘SKU的IOPS瓶颈。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>最终也并没能从平台找到更直观地证据证明就是某个地方有问题，只能抱着试一试的心态建议，建议用户重新部署。（初始阶段就有建议用户尝试，用户没同意）</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/dashboard/share/BE89684D?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;AzComputeShoeboxCHINAN2&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/dashboard/share/BE89684D?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;AzComputeShoeboxCHINAN2&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20</a>  ，显示其CPU长时间处于高负载的状态（超过90%)。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024.5.28</p>
+<p>涉及工单：SR_20240304280727_内部网络数据传输缓慢</p>
+<p>问题描述：</p>
+<p>用户同VNet\Subnet中名为beifen10的VM网络传入速度极慢；iperf3测带宽也只能达到几Mbps到十多Mbps。</p>
+<p>传出速率正常。100MBps</p>
+<p>问题原因：不明。</p>
+<p>问题解决：重新部署。</p>
+<p>排查过程：</p>
+<p>后台排查VM性能数据VM dashboard:</p>
+<p>替换链接中黄色部分：在ASC中可以搜搜shoebox找出为；页面打开后使用VM ID作为过滤条件</p>
+<p><a href="https://portal.microsoftgeneva.com/dashboard/share/BE89684D?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;AzComputeShoeboxCHINAN2&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/dashboard/share/BE89684D?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;AzComputeShoeboxCHINAN2&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20</a>  ，显示其CPU长时间处于高负载的状态（超过90%)。</p>
+<p>用户反馈另一VM beifen8 CPU同样长时间满负载，但其传输速率一直很正常。</p>
+<p>在同Subnet其它VM中使用iperf3测试网络传输带宽，发现其依旧只有几Mbps或十多Mbps；同时发现从该VM往同Subnet或者其它Internet VM SCP copy文件传输速率却是正常的。</p>
+<p>邀请了VM同事协助分析top指令、sar指令以分析系统性能状况；只对比出beifen10比beifen8的磁盘写入负载要高一些，但实际速率依旧非常慢几十KBps左右~1MBps，总之并没有达到磁盘SKU的IOPS瓶颈。</p>
+<p>再次抓取了从同Subnet beifen9 scp文件到beifen10的数据包，发现有较为明显的丢包现象和重传现象。</p>
+<p>在同Subnet beifen8、beifen9、beifen10之间进行ICMP ping发现当beifen 10作为Destination时，基本稳定可见有3%的ICMP loss，TCP ping也有DUP ACK现象。</p>
+<p>测试环境中对比分析了不同Vnet 不同Region Azure VM间经VNet peering scp传输文件的过程，很明显看到几乎没有重传（十几万个包，有个位数的重传），没有丢包，传输速率几十MBps。</p>
+<p>排查过程中我也从ASC中抽取了和用户一起测试时段的Host Analyzer，跟此VM相关的就显示一些I/O Throttle，但对beifen8同样也是有一些I/O Throttle，对比分析这点不能作为认定VM自身异常的证据，findings中跟该VM container相关的STCP重传异常 ，是否它造成了传入速率异常也不得而知。</p>
+<p>对比了CPU负载同样很高的beifen8和beifen10，两者一个区别就是前者运行了几十天，beifen10运行已有1900多天。</p>
+<p>最终也并没能从平台找到更直观地证据证明就是某个地方有问题，只能抱着试一试的心态建议，建议用户重新部署。（初始阶段就有建议用户尝试，用户没同意）</p>
+<p>用户在重新部署前，我们也有尝试停止掉其中部署的应用程序，将内存都释放了，传入速度依旧是龟速。只重启VM这一步没有尝试，有可能也能恢复。</p></article>

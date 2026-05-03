@@ -1,0 +1,82 @@
+<article class="kb-article" data-title="关于服务终结点Service endpoint 的一些测试说明"><h1>关于服务终结点Service endpoint 的一些测试说明</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-05 18:03:44</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2018</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2018</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2018</li>
+</ul>
+<ul>
+<li>关于服务终结点Service endpoint 的一些说明</li>
+</ul>
+<ul>
+<li>在子网启用服务终结点后，子网内的虚拟机将使用自己的私有IP访问paas 的SQL服务和存储，同时平台会对该子网内的虚拟机添加一条特定的路由，也就是目标地址是sql和存储服务的IP段，下一跳是VirtualNetworkServiceEndpoint</li>
+</ul>
+<ul>
+<li>此时虚拟机访问sql和存储服务的流量不会走默认的0.0.0.0路由（SQL paas服务的IP都是公网IP），数据包也就不会发到Internet，所以也就不会出现将虚拟机的内网IP转化为公网IP的情况了（下一跳是Internet的流量会做地址转换，将虚拟机的内网IP转换为公网IP）</li>
+</ul>
+<ul>
+<li>同时我们也需要在Sql 或者存储服务处配置允许访问的Vnet/Subnet. 这是必不可少的。上面在Subnet处启用的服务终结点只起到了调整虚拟机路由的作用。允不允许访问SQL和存储，还需要在SQL和存储处添加允许规则。</li>
+</ul>
+<ul>
+<li>完成上述配置后。可以在虚拟机上访问数据库。</li>
+</ul>
+<ul>
+<li>如果是SQL Sever PaaS</li>
+</ul>
+<ul>
+<li>因此，使用服务终结点，可以实现使用内网访问Paas SQL和存储，这样也相对更安全。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>可以查看虚拟机的有效路由得到验证。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>可以使用下面的命令查询连接的客户端Ip地址，可以发现客户端是通过使用内网IP来进行连接的</li>
+</ul>
+<ul>
+<li>SELECT  CONNECTIONPROPERTY(&#39;PROTOCOL_TYPE&#39;) AS PROTOCOL_TYPE,CONNECTIONPROPERTY(&#39;CLIENT_NET_ADDRESS&#39;) AS CLIENT_NET_ADDRESS</li>
+</ul>
+<ul>
+<li>如果是paas  mysql，可以使用如下的命令查看客户端的连接IP</li>
+</ul>
+<ul>
+<li>SELECT substring_index(host, &#39;:&#39;,1) AS host_name,state,count(*) FROM information_schema.processlist GROUP BY state, host_name;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参见官方文档： <a href="https://docs.azure.cn/zh-cn/virtual-network/virtual-network-service-endpoints-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-network/virtual-network-service-endpoints-overview</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2018</p>
+<p>关于服务终结点Service endpoint 的一些说明</p>
+<p>在子网启用服务终结点后，子网内的虚拟机将使用自己的私有IP访问paas 的SQL服务和存储，同时平台会对该子网内的虚拟机添加一条特定的路由，也就是目标地址是sql和存储服务的IP段，下一跳是VirtualNetworkServiceEndpoint</p>
+<p>参见官方文档： <a href="https://docs.azure.cn/zh-cn/virtual-network/virtual-network-service-endpoints-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-network/virtual-network-service-endpoints-overview</a></p>
+<p>可以查看虚拟机的有效路由得到验证。</p>
+<p>此时虚拟机访问sql和存储服务的流量不会走默认的0.0.0.0路由（SQL paas服务的IP都是公网IP），数据包也就不会发到Internet，所以也就不会出现将虚拟机的内网IP转化为公网IP的情况了（下一跳是Internet的流量会做地址转换，将虚拟机的内网IP转换为公网IP）</p>
+<p>同时我们也需要在Sql 或者存储服务处配置允许访问的Vnet/Subnet. 这是必不可少的。上面在Subnet处启用的服务终结点只起到了调整虚拟机路由的作用。允不允许访问SQL和存储，还需要在SQL和存储处添加允许规则。</p>
+<p>完成上述配置后。可以在虚拟机上访问数据库。</p>
+<p>如果是SQL Sever PaaS</p>
+<p>可以使用下面的命令查询连接的客户端Ip地址，可以发现客户端是通过使用内网IP来进行连接的</p>
+<p>SELECT  CONNECTIONPROPERTY(&#39;PROTOCOL_TYPE&#39;) AS PROTOCOL_TYPE,CONNECTIONPROPERTY(&#39;CLIENT_NET_ADDRESS&#39;) AS CLIENT_NET_ADDRESS</p>
+<p>如果是paas  mysql，可以使用如下的命令查看客户端的连接IP</p>
+<p>SELECT substring_index(host, &#39;:&#39;,1) AS host_name,state,count(*) FROM information_schema.processlist GROUP BY state, host_name;</p>
+<p>因此，使用服务终结点，可以实现使用内网访问Paas SQL和存储，这样也相对更安全。</p></article>

@@ -1,0 +1,64 @@
+<article class="kb-article" data-title="【share】microsoft sentinel-Incident 触发邮件通知"><h1>【share】microsoft sentinel-Incident 触发邮件通知</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Microsoft Sentinel</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-08-08 14:46:08</li>
+<li>JD 相关性: Defender/Sentinel/安全</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_20241225331830_ playbook 没有预期运行结果</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_20241225331830_  playbook 没有预期运行结果</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_20241225331830_  playbook 没有预期运行结果</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>未实现出现新的incident而发邮件给设定邮箱的playbook. 做了如图的设计，希望对于新的incident发送邮件，内容包括incident的描述,链接等。但是有新的incident出现，没有收到邮件。 如果点run 去测试的话会受到邮件，但是不包含设定的incident的描述,链接等内容。</li>
+</ul>
+<ul>
+<li>测试结果请参考：</li>
+</ul>
+<ul>
+<li>收到邮件通知：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>需要在incident创建自动化规则-关联对应的logic APP</li>
+</ul>
+<ul>
+<li>之后手动创建incident-就会触发logic app发送邮件通知，邮件内容也会包含incident的描述内容。</li>
+</ul>
+<ul>
+<li>如果客户想自动产生的incident想实现自动触发，可以更改automation rule的trigger、conditions来实现自动触发。（注意检查是否有Action权限，权限不够，内部申请权限操作）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025-02-17</p>
+<p>SR_20241225331830_  playbook 没有预期运行结果</p>
+<p>问题描述：</p>
+<p>未实现出现新的incident而发邮件给设定邮箱的playbook. 做了如图的设计，希望对于新的incident发送邮件，内容包括incident的描述,链接等。但是有新的incident出现，没有收到邮件。 如果点run 去测试的话会受到邮件，但是不包含设定的incident的描述,链接等内容。</p>
+<p>解决方法：</p>
+<p>需要在incident创建自动化规则-关联对应的logic APP</p>
+<p>之后手动创建incident-就会触发logic app发送邮件通知，邮件内容也会包含incident的描述内容。</p>
+<p>测试结果请参考：</p>
+<p>收到邮件通知：</p>
+<p>如果客户想自动产生的incident想实现自动触发，可以更改automation rule的trigger、conditions来实现自动触发。（注意检查是否有Action权限，权限不够，内部申请权限操作）</p></article>

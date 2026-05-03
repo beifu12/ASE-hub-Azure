@@ -1,0 +1,216 @@
+<article class="kb-article" data-title="【Share】WAF 规则942340阻挡请求的排查"><h1>【Share】WAF 规则942340阻挡请求的排查</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2024-11-14 17:00:30</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>humingyue</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>通过firewall日志提醒匹配的内容如下：</li>
+</ul>
+<ul>
+<li>SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* &quot;@rx (?i:(?:[\&quot;&#39;<code>](?:\s*?(?:is\s*?(?:[\d.]+\s*?\W.*?[\&quot;&#39;</code>]|\d.+[\&quot;&#39;<code>]?\w)|\d\s*?(?:--|#))|(?:\W+[\w+-]+\s*?=\s*?\d\W+|\|?[\w-]{3,}[^\w\s.,]+)[\&quot;&#39;</code>]|[\%&amp;&lt;&gt;^=]+\d\s*?(?:between|like|x?or|and|div|=))|(?i:n?and|x?x?or|div|like|between|not|\|\||\&amp;\&amp;)\s+[\s\w+]+(?:sounds\s+like\s*?[\&quot;&#39;`]|regexp\s*?\(|[=\d]+x)|in\s*?\(+\s*?select))&quot; \</li>
+</ul>
+<ul>
+<li>&quot;id:942340,\</li>
+</ul>
+<ul>
+<li>phase:2,\</li>
+</ul>
+<ul>
+<li>block,\</li>
+</ul>
+<ul>
+<li>capture,\</li>
+</ul>
+<ul>
+<li>t:none,t:urlDecodeUni,\</li>
+</ul>
+<ul>
+<li>msg:&#39;Detects basic SQL authentication bypass attempts 3/3&#39;,\</li>
+</ul>
+<ul>
+<li>tag:&#39;application-multi&#39;,\</li>
+</ul>
+<ul>
+<li>tag:&#39;language-multi&#39;,\</li>
+</ul>
+<ul>
+<li>tag:&#39;platform-multi&#39;,\</li>
+</ul>
+<ul>
+<li>tag:&#39;attack-sqli&#39;,\</li>
+</ul>
+<ul>
+<li>tag:&#39;OWASP_CRS&#39;,\</li>
+</ul>
+<ul>
+<li>tag:&#39;OWASP_CRS/WEB_ATTACK/SQL_INJECTION&#39;,\</li>
+</ul>
+<ul>
+<li>tag:&#39;OWASP_TOP_10/A1&#39;,\</li>
+</ul>
+<ul>
+<li>tag:&#39;OWASP_AppSensor/CIE1&#39;,\</li>
+</ul>
+<ul>
+<li>tag:&#39;PCI/6.5.2&#39;,\</li>
+</ul>
+<ul>
+<li>tag:&#39;paranoia-level/2&#39;,\</li>
+</ul>
+<ul>
+<li>ver:&#39;OWASP_CRS/3.2.0&#39;,\</li>
+</ul>
+<ul>
+<li>severity:&#39;CRITICAL&#39;,\</li>
+</ul>
+<ul>
+<li>setvar:&#39;tx.sql_injection_score=+%{tx.critical_anomaly_score}&#39;,\</li>
+</ul>
+<ul>
+<li>setvar:&#39;tx.anomaly_score_pl2=+%{tx.critical_anomaly_score}&#39;&quot;</li>
+</ul>
+<ul>
+<li>3， 进一步对比发现不同版本的相同规则号的正则表达式是不一样的。结合appgateway 的firewall日志定位正则就是3.2 的正则。但从WAF 日志里匹配的pattern 内容是github 提供的3.2正则中去除@rx 字段后的内容。需要注意的是这与官网里提示的有出入。</li>
+</ul>
+<ul>
+<li>Pattern match (?i:(?:[\&quot;&#39;<code>](?:\\s*?(?:is\\s*?(?:[\\d.]+\\s*?\\W.*?[\&quot;&#39;</code>]|\\d.+[\&quot;&#39;<code>]?\\w)|\\d\\s*?(?:--|#))|(?:\\W+[\\w+-]+\\s*?=\\s*?\\d\\W+|\\|?[\\w-]{3,}[^\\w\\s.,]+)[\&quot;&#39;</code>]|[\\%&amp;&lt;&gt;^=]+\\d\\s*?(?:between|like|x?or|and|div|=))|(?i:n?and|x?x?or|div|like|between|not|\\|\\||\\&amp;\\&amp;)\\s+[\\s\\w+]+(?:sounds\\s+like\\s*?[\&quot;&#39;`]|regexp\\s*?\\(|[=\\d]+x)|in\\s*?\\(+\\s*?select)) at ARGS.&quot;</li>
+</ul>
+<ul>
+<li>@rx (?i:(?:[\&quot;&#39;<code>](?:\s*?(?:is\s*?(?:[\d.]+\s*?\W.*?[\&quot;&#39;</code>]|\d.+[\&quot;&#39;<code>]?\w)|\d\s*?(?:--|#))|(?:\W+[\w+-]+\s*?=\s*?\d\W+|\|?[\w-]{3,}[^\w\s.,]+)[\&quot;&#39;</code>]|[\%&amp;&lt;&gt;^=]+\d\s*?(?:between|like|x?or|and|div|=))|(?i:n?and|x?x?or|div|like|between|not|\|\||\&amp;\&amp;)\s+[\s\w+]+(?:sounds\s+like\s*?[\&quot;&#39;`]|regexp\s*?\(|[=\d]+x)|in\s*?\(+\s*?select))</li>
+</ul>
+<ul>
+<li>5， 我们再将该正则放入regex101: build, test, and debug regex 中并放入请求payload 中的字段会发现只要Or+ 被替换成Or空格的情况下就会匹配规则。</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>===========</li>
+</ul>
+<ul>
+<li>触发规则的请求在经过Base64编码以后没有再进行URL编码，导致传递到WAF 的+ 号会被解析为空格，这是因为WAF 默认会使用urlDecodeUrI方式。</li>
+</ul>
+<ul>
+<li>用户在如上反馈基础上进一步测试：该942340规则其中一部分问题是只要内文里面有and、or、like、between 这些字词的前面有空格就会符合条件，因此如果要解决这个事情必须确保base64编码之后不能有加号（因为加号被url解码后会变成空格）。</li>
+</ul>
+<ul>
+<li>解决办法：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>目前用户已经着手在做修正代码，接下来会采用” URL安全的Base64编码”­去实施请求。</li>
+</ul>
+<ul>
+<li>参考案例：SR_20241030322428[S500_Child]/Atlas. Copke (China) Investment Co., LTD. / Content after Base64 coding was blocked by WAF - TrackingID#2411080030005222</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>用户为了避免请求被WAF 规则block对请求进行了base 64 编码。 但仍发现有一个请求会被WAF 规则942340 阻挡， 需要协助查询匹配字段。</li>
+</ul>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>{&quot;instanceId&quot;:&quot;appgw_10&quot;,&quot;clientIp&quot;:&quot;118.160.225.133&quot;,&quot;requestUri&quot;:&quot;\/api\/workorder\/save&quot;,&quot;ruleSetType&quot;:&quot;OWASP CRS&quot;,&quot;ruleSetVersion&quot;:&quot;3.2&quot;,&quot;ruleId&quot;:&quot;942340&quot;,&quot;ruleGroup&quot;:&quot;REQUEST-942-APPLICATION-ATTACK-SQLI&quot;,&quot;message&quot;:&quot;Detects basic SQL authentication bypass attempts 3\/3&quot;,&quot;action&quot;:&quot;Matched&quot;,&quot;details&quot;:{&quot;message&quot;:&quot;Pattern match (?i:(?:[\&quot;&#39;<code>](?:\\s*?(?:is\\s*?(?:[\\d.]+\\s*?\\W.*?[\&quot;&#39;</code>]|\\d.+[\&quot;&#39;<code>]?\\w)|\\d\\s*?(?:--|#))|(?:\\W+[\\w+-]+\\s*?=\\s*?\\d\\W+|\\|?[\\w-]{3,}[^\\w\\s.,]+)[\&quot;&#39;</code>]|[\\%&amp;&lt;&gt;^=]+\\d\\s*?(?:between|like|x?or|and|div|=))|(?i:n?and|x?x?or|div|like|between|not|\\|\\||\\&amp;\\&amp;)\\s+[\\s\\w+]+(?:sounds\\s+like\\s*?[\&quot;&#39;`]|regexp\\s*?\\(|[=\\d]+x)|in\\s*?\\(+\\s*?select)) at ARGS.&quot;,&quot;data&quot;:&quot;{Or awtOWOi OAguajgOafpeivpeWPsOepuuWOi acuuacquWPkeeOsOa8j ayueeCue 8jOajgOafpeayueS9jeS9juS6juayueS9jemVnO 8jOajgOafpeWGt WNtOawtOW queOr awtOWOi WOi W3ruS4ujAuMk1QQVLjgIJcbiIsImNvbXBsYWludFR5cGUiOiLor7fpgInmi6kiLCJpbWFnZVVybHMiOiJodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC80N2QwNmMyMC1hMWYzLTRjODAtOGE1Mi1lYmY5ZTQ2NTI5ZGQuanBnLGh0dHBzOi8vc3RwMTAwMDE3NThjMDAxLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNuL2F0bGFzLXByZC9JbWFnZS8yMDI0LTEwLTI4LzNhY2E1NzI4LTAxYjAtNGVhMi1hMTQ3LTkyYjU3YWI4ZDg5ZC5qcGcsaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL0ltYWdlLzIwMjQtMTAtMjgvODc0MWQ0MDItM2ZiZS00MDliLTk1NzgtYjAwMGZiYTk2YzJiLmpwZyxodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC8zNWMzNjIxOC1kMDRiLTQ1ZDQtYTU4ZC0zOWQ4NzBkMjY1NTcuanBnLGh0dHBzOi8vc3RwMTAwMDE3NThjMDAxLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNuL2F0bGFzLXByZC9Xb3JkLzIwMjQtMTAtMjgvMzE2NDBmNmYtMjc4MS00MmJmLTg2NDAtZDA5MGVjNzJkZGI1LmRvYyxodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC83NzE0ZjMxOC1jNDg5LTRjNmItYjkzYy0xNDgyZGRhOGY0YzIuanBnIiwiaW1nVXJscyI6WyJodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC80N2QwNmMyMC1hMWYzLTRjODAtOGE1Mi1lYmY5ZTQ2NTI5ZGQuanBnIiwiaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL0ltYWdlLzIwMjQtMTAtMjgvM2FjYTU3MjgtMDFiMC00ZWEyLWExNDctOTJiNTdhYjhkODlkLmpwZyIsImh0dHBzOi8vc3RwMTAwMDE3NThjMDAxLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNuL2F0bGFzLXByZC9JbWFnZS8yMDI0LTEwLTI4Lzg3NDFkNDAyLTNmYmUtNDA5Yi05NTc4LWIwMDBmYmE5NmMyYi5qcGciLCJodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC8zNWMzNjIxOC1kMDRiLTQ1ZDQtYTU4ZC0zOWQ4NzBkMjY1NTcuanBnIiwiaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL1dvcmQvMjAyNC0xMC0yOC8zMTY0MGY2Zi0yNzgxLTQyYmYtODY0MC1kMDkwZWM3MmRkYjUuZG9jIiwiaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL0ltYWdlLzIwMjQtMTAtMjgvNzcxNGYzMTgtYzQ4OS00YzZiLWI5M2MtMTQ4MmRkYThmNGMyLmpwZyJdLCJoYXNNYXRjaGluZyI6MCwicGxhbm5lciI6IuWNouWbveWGmyIsInBsYW5uZXJFbWFpbCI6ImVhZ2x found within [ARGS:e:eyJpZCI6IjU4MmMwNjViLTg2M2EtNGMyOC04NGM3LTkyMDJiYzE0NzlkZSIsIm9yZGVyTm8iOiJXWDIwMjQxMDI4MDAwNCIsIm9yZGVyVHlwZSI6IjEiLCJvcmRlclR5cGVTdHIiOiLmlYXpmpzmiqXkv64iLCJvcmRlclN0YXR1cyI6MTAsIm9yZGVyU3RhdHVzU3RyIjoi6I2J56i\/IiwiY29tcGFueU5hbWUiOiLlmInlhbTkvZDluJXmlq\/lt6XkuJrmnInpmZDlhazlj7giLCJlbWFpbCI6ImF0bGFzaHpzaEAxNjMuY29tIiwicHJvdmluY2UiOiLmtZnmsZ\/nnIEiLCJjaXR5Ijoi5ZiJ5YW05biCIiwicmVnaW9uIjoi5Y2X5rmW5Yy6IiwiYWRkcmVzcyI6IuaIkOWKn+i3r+S4juWHjOS6kei3r+S6pOWPoyIsImNvbnRhY3ROYW1lIjoi5p2o5rC45q2mIiwiY29udGFjdE1vYmlsZSI6IjE1MzU1NzM5NTgxIiwibWFjaGluZU1vZGVsIjoiR0EzMTVWU0QrVy04LjUgMzgwVi81MEhaL0lQNjYiLCJtYWNoaW5lU2VyaWFsTm8iOiJXVVg0OTMwNTgiLCJkZXNjcmlwdGlvbiI6IuivpeepuuWOi+acuumrmOa4qeaVhemanOWBnOacuu+8jOW8gOacuui\/kOihjOa4qeW6puaMgee7reS4iuWNh+i2hei\/h+WBnOacuuWAvOaVhemanOWBnOacuuOAguajgOafpeivpeWPsOepuuWOi+acuuacquWPkeeOsOa8j+ayueeCue+8jOajgOafpeayueS9jeS9juS6juayueS9jemVnO+8jOajgOafpeWGt+WNtOawtOW+queOr+awtOWOi+OAguajgOafpeivpeWPsOepuuWOi+acuuacquWPkeeOsOa8j+ayueeCue+8jOajgOafpeayueS9jeS9juS6juayueS9jemVnO+8jOajgOafpeWGt+WNtOawtOW+queOr+awtOWOi+WOi+W3ruS4ujAuMk1QQVLjgIJcbiIsImNvbXBsYWludFR5cGUiOiLor7fpgInmi6kiLCJpbWFnZVVybHMiOiJodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC80N2QwNmMyMC1hMWYzLTRjODAtOGE1Mi1lYmY5ZTQ2NTI5ZGQuanBnLGh0dHBzOi8vc3RwMTAwMDE3NThjMDAxLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNuL2F0bGFzLXByZC9JbWFnZS8yMDI0LTEwLTI4LzNhY2E1NzI4LTAxYjAtNGVhMi1hMTQ3LTkyYjU3YWI4ZDg5ZC5qcGcsaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL0ltYWdlLzIwMjQtMTAtMjgvODc0MWQ0MDItM2ZiZS00MDliLTk1NzgtYjAwMGZiYTk2YzJiLmpwZyxodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC8zNWMzNjIxOC1kMDRiLTQ1ZDQtYTU4ZC0zOWQ4NzBkMjY1NTcuanBnLGh0dHBzOi8vc3RwMTAwMDE3NThjMDAxLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNuL2F0bGFzLXByZC9Xb3JkLzIwMjQtMTAtMjgvMzE2NDBmNmYtMjc4MS00MmJmLTg2NDAtZDA5MGVjNzJkZGI1LmRvYyxodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC83NzE0ZjMxOC1jNDg5LTRjNmItYjkzYy0xNDgyZGRhOGY0YzIuanBnIiwiaW1nVXJscyI6WyJodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC80N2QwNmMyMC1hMWYzLTRjODAtOGE1Mi1lYmY5ZTQ2NTI5ZGQuanBnIiwiaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL0ltYWdlLzIwMjQtMTAtMjgvM2FjYTU3MjgtMDFiMC00ZWEyLWExNDctOTJiNTdhYjhkODlkLmpwZyIsImh0dHBzOi8vc3RwMTAwMDE3NThjMDAxLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNuL2F0bGFzLXByZC9JbWFnZS8yMDI0LTEwLTI4Lzg3NDFkNDAyLTNmYmUtNDA5Yi05NTc4LWIwMDBmYmE5NmMyYi5qcGciLCJodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC8zNWMzNjIxOC1kMDRiLTQ1ZDQtYTU4ZC0zOWQ4NzBkMjY1NTcuanBnIiwiaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL1dvcmQvMjAyNC0xMC0yOC8zMTY0MGY2Zi0yNzgxLTQyYmYtODY0MC1kMDkwZWM3MmRkYjUuZG9jIiwiaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL0ltYWdlLzIwMjQtMTAtMjgvNzcxNGYzMTgtYzQ4OS00YzZiLWI5M2MtMTQ4MmRkYThmNGMyLmpwZyJdLCJoYXNNYXRjaGluZyI6MCwicGxhbm5lciI6IuWNouWbveWGmyIsInBsYW5uZXJFbWFpbCI6ImVhZ2xlLmx1QGF0bGFzY29wY28uY29tIiwiaXNFdmFsdWF0aW9uIjowLCJjcmVhdGVBdCI6IjIwMjQtMTAtMjkgMTQ6MTI6MTMiLCJjcmVhdGVCeSI6Ijg2ZWY4MzA1LTU2MTUtNGIwMS1iNmJmLTQ2ODEzNzAzMjk2NSIsInJlYXNvbiI6IuaEn+iwouS9v+eUqOW+ruS\/oeWwj+eoi+W6j+aPkOS6pOacjeWKoemcgOaxgu+8jOivt+aPkOS+m+eOsOWcuuajgOafpeacjeWKoeW3peWNle+8gSIsInRhZ3MiOiIiLCJwcm94eUNvbXBhbnlOYW1lIjoi5p2t5bee5LiJ55Ge5py65qKw5pyJ6ZmQ5YWs5Y+4IiwicHJveHlDb21wYW55SWQiOiI4YTRkNWQ5NC00MTU1LTRjM2ItYTkxNy04NmFmYTlkMDRhMDMiLCJ0YXhObyI6IjkxMzMwNDAwTUEySkdBQkY1OCIsIm1haW50YWluVHlwZSI6Iuivt+mAieaLqSIsImN1c3RvbWVyVHlwZSI6IkRDIiwicHJveHlDb21wYW55R3JlZW4iOiLlkKYiLCJjb21wYW55R3JlZW4iOiLlkKYiLCJ1c2VySWQiOiI4NmVmODMwNS01NjE1LTRiMDEtYjZiZi00NjgxMzcwMzI5NjUiLCJ2YWxpZEZyb20iOiIifQ==]}&quot;,&quot;file&quot;:&quot;REQUEST-942-APPLICATION-ATTACK-SQLI.conf&quot;,&quot;line&quot;:&quot;892&quot;},&quot;hostname&quot;:&quot;ctswechatprod.atlascopco.com.cn&quot;,&quot;transactionId&quot;:&quot;a2d3213a602b622e2e1d765c5ed229ab&quot;,&quot;policyId&quot;:&quot;600#_subscriptions_a5992269-072a-4cf0-8bd0-c8382c371ef2_resourceGroups_rg-cn-p-app-10007953-applicationgateway_providers_Microsoft.Network_ApplicationGatewayWebApplicationFirewallPolicies_waf-cn-p-agw-cnn3-10001758-001&quot;,&quot;policyScope&quot;:&quot;Listener&quot;,&quot;policyScopeName&quot;:&quot;ctswechatprod.atlascopco.com.cn&quot;,&quot;engine&quot;:&quot;Azwaf&quot;}</li>
+</ul>
+<ul>
+<li>logdata:&#39;Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}&#39;,\</li>
+</ul>
+<ul>
+<li>tag:&#39;WASCTC/WASC-19&#39;,\</li>
+</ul>
+<ul>
+<li>4， 问题进一步升级，多了@rx这部分。经过后线确认它本身就没有什么意义：@rx means what follows is a regular expression. http - Mod security Block GET request to URI path - Stack Overflow</li>
+</ul>
+<ul>
+<li>6， 后线这里提供工具来对正则进行可视化Regulex：JavaScript Regular Expression Visualizer可以看到当匹配各式为Or 空格……….x 时 就会触发94234规则。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>1， 首先根据用户提供的信息查appgateway 的firewall 日志，Genva链接：<a href="https://portal.microsoftgeneva.com/s/786F73B2" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/786F73B2</a></li>
+</ul>
+<ul>
+<li>2， 根据官网提供的排查方法：<a href="https://support.azure.cn/docs/azure-operations-guide/application-gateway/aog-application-gateway-qa-waf-invalid-block.html" target="_blank" rel="noopener">https://support.azure.cn/docs/azure-operations-guide/application-gateway/aog-application-gateway-qa-waf-invalid-block.html</a></li>
+</ul>
+<ul>
+<li>这里提供了用户github 上对应3.2版本的正则：<a href="https://github.com/SpiderLabs/owasp-modsecurity-crs/blob/v3.2/master/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf" target="_blank" rel="noopener">https://github.com/SpiderLabs/owasp-modsecurity-crs/blob/v3.2/master/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf</a> 并让用户通过fiddler 抓请求包，发现提示的可能匹配的字段在请求的payload 部分，但拿到相应的字段后又无法在<a href="https://regex101.com/" target="_blank" rel="noopener">https://regex101.com/</a> 匹配上3.2的正则。这里尝试使用3.0 的正则时当将请求里的+变为空格时能匹配上，但用户的实际请求并没有空格且用户使用的WAF 是3.2的版本。</li>
+</ul>
+<ul>
+<li>官网表达：<a href="https://support.azure.cn/docs/azure-operations-guide/application-gateway/aog-application-gateway-qa-waf-invalid-block.html" target="_blank" rel="noopener">https://support.azure.cn/docs/azure-operations-guide/application-gateway/aog-application-gateway-qa-waf-invalid-block.html</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>humingyue</p>
+<p>问题现象：</p>
+<p>==========</p>
+<p>用户为了避免请求被WAF 规则block对请求进行了base 64 编码。 但仍发现有一个请求会被WAF 规则942340 阻挡， 需要协助查询匹配字段。</p>
+<p>排查过程：</p>
+<p>1， 首先根据用户提供的信息查appgateway 的firewall 日志，Genva链接：<a href="https://portal.microsoftgeneva.com/s/786F73B2" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/786F73B2</a></p>
+<p>通过firewall日志提醒匹配的内容如下：</p>
+<p>{&quot;instanceId&quot;:&quot;appgw_10&quot;,&quot;clientIp&quot;:&quot;118.160.225.133&quot;,&quot;requestUri&quot;:&quot;\/api\/workorder\/save&quot;,&quot;ruleSetType&quot;:&quot;OWASP CRS&quot;,&quot;ruleSetVersion&quot;:&quot;3.2&quot;,&quot;ruleId&quot;:&quot;942340&quot;,&quot;ruleGroup&quot;:&quot;REQUEST-942-APPLICATION-ATTACK-SQLI&quot;,&quot;message&quot;:&quot;Detects basic SQL authentication bypass attempts 3\/3&quot;,&quot;action&quot;:&quot;Matched&quot;,&quot;details&quot;:{&quot;message&quot;:&quot;Pattern match (?i:(?:[\&quot;&#39;<code>](?:\\s*?(?:is\\s*?(?:[\\d.]+\\s*?\\W.*?[\&quot;&#39;</code>]|\\d.+[\&quot;&#39;<code>]?\\w)|\\d\\s*?(?:--|#))|(?:\\W+[\\w+-]+\\s*?=\\s*?\\d\\W+|\\|?[\\w-]{3,}[^\\w\\s.,]+)[\&quot;&#39;</code>]|[\\%&amp;&lt;&gt;^=]+\\d\\s*?(?:between|like|x?or|and|div|=))|(?i:n?and|x?x?or|div|like|between|not|\\|\\||\\&amp;\\&amp;)\\s+[\\s\\w+]+(?:sounds\\s+like\\s*?[\&quot;&#39;`]|regexp\\s*?\\(|[=\\d]+x)|in\\s*?\\(+\\s*?select)) at ARGS.&quot;,&quot;data&quot;:&quot;{Or awtOWOi OAguajgOafpeivpeWPsOepuuWOi acuuacquWPkeeOsOa8j ayueeCue 8jOajgOafpeayueS9jeS9juS6juayueS9jemVnO 8jOajgOafpeWGt WNtOawtOW queOr awtOWOi WOi W3ruS4ujAuMk1QQVLjgIJcbiIsImNvbXBsYWludFR5cGUiOiLor7fpgInmi6kiLCJpbWFnZVVybHMiOiJodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC80N2QwNmMyMC1hMWYzLTRjODAtOGE1Mi1lYmY5ZTQ2NTI5ZGQuanBnLGh0dHBzOi8vc3RwMTAwMDE3NThjMDAxLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNuL2F0bGFzLXByZC9JbWFnZS8yMDI0LTEwLTI4LzNhY2E1NzI4LTAxYjAtNGVhMi1hMTQ3LTkyYjU3YWI4ZDg5ZC5qcGcsaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL0ltYWdlLzIwMjQtMTAtMjgvODc0MWQ0MDItM2ZiZS00MDliLTk1NzgtYjAwMGZiYTk2YzJiLmpwZyxodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC8zNWMzNjIxOC1kMDRiLTQ1ZDQtYTU4ZC0zOWQ4NzBkMjY1NTcuanBnLGh0dHBzOi8vc3RwMTAwMDE3NThjMDAxLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNuL2F0bGFzLXByZC9Xb3JkLzIwMjQtMTAtMjgvMzE2NDBmNmYtMjc4MS00MmJmLTg2NDAtZDA5MGVjNzJkZGI1LmRvYyxodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC83NzE0ZjMxOC1jNDg5LTRjNmItYjkzYy0xNDgyZGRhOGY0YzIuanBnIiwiaW1nVXJscyI6WyJodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC80N2QwNmMyMC1hMWYzLTRjODAtOGE1Mi1lYmY5ZTQ2NTI5ZGQuanBnIiwiaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL0ltYWdlLzIwMjQtMTAtMjgvM2FjYTU3MjgtMDFiMC00ZWEyLWExNDctOTJiNTdhYjhkODlkLmpwZyIsImh0dHBzOi8vc3RwMTAwMDE3NThjMDAxLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNuL2F0bGFzLXByZC9JbWFnZS8yMDI0LTEwLTI4Lzg3NDFkNDAyLTNmYmUtNDA5Yi05NTc4LWIwMDBmYmE5NmMyYi5qcGciLCJodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC8zNWMzNjIxOC1kMDRiLTQ1ZDQtYTU4ZC0zOWQ4NzBkMjY1NTcuanBnIiwiaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL1dvcmQvMjAyNC0xMC0yOC8zMTY0MGY2Zi0yNzgxLTQyYmYtODY0MC1kMDkwZWM3MmRkYjUuZG9jIiwiaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL0ltYWdlLzIwMjQtMTAtMjgvNzcxNGYzMTgtYzQ4OS00YzZiLWI5M2MtMTQ4MmRkYThmNGMyLmpwZyJdLCJoYXNNYXRjaGluZyI6MCwicGxhbm5lciI6IuWNouWbveWGmyIsInBsYW5uZXJFbWFpbCI6ImVhZ2x found within [ARGS:e:eyJpZCI6IjU4MmMwNjViLTg2M2EtNGMyOC04NGM3LTkyMDJiYzE0NzlkZSIsIm9yZGVyTm8iOiJXWDIwMjQxMDI4MDAwNCIsIm9yZGVyVHlwZSI6IjEiLCJvcmRlclR5cGVTdHIiOiLmlYXpmpzmiqXkv64iLCJvcmRlclN0YXR1cyI6MTAsIm9yZGVyU3RhdHVzU3RyIjoi6I2J56i\/IiwiY29tcGFueU5hbWUiOiLlmInlhbTkvZDluJXmlq\/lt6XkuJrmnInpmZDlhazlj7giLCJlbWFpbCI6ImF0bGFzaHpzaEAxNjMuY29tIiwicHJvdmluY2UiOiLmtZnmsZ\/nnIEiLCJjaXR5Ijoi5ZiJ5YW05biCIiwicmVnaW9uIjoi5Y2X5rmW5Yy6IiwiYWRkcmVzcyI6IuaIkOWKn+i3r+S4juWHjOS6kei3r+S6pOWPoyIsImNvbnRhY3ROYW1lIjoi5p2o5rC45q2mIiwiY29udGFjdE1vYmlsZSI6IjE1MzU1NzM5NTgxIiwibWFjaGluZU1vZGVsIjoiR0EzMTVWU0QrVy04LjUgMzgwVi81MEhaL0lQNjYiLCJtYWNoaW5lU2VyaWFsTm8iOiJXVVg0OTMwNTgiLCJkZXNjcmlwdGlvbiI6IuivpeepuuWOi+acuumrmOa4qeaVhemanOWBnOacuu+8jOW8gOacuui\/kOihjOa4qeW6puaMgee7reS4iuWNh+i2hei\/h+WBnOacuuWAvOaVhemanOWBnOacuuOAguajgOafpeivpeWPsOepuuWOi+acuuacquWPkeeOsOa8j+ayueeCue+8jOajgOafpeayueS9jeS9juS6juayueS9jemVnO+8jOajgOafpeWGt+WNtOawtOW+queOr+awtOWOi+OAguajgOafpeivpeWPsOepuuWOi+acuuacquWPkeeOsOa8j+ayueeCue+8jOajgOafpeayueS9jeS9juS6juayueS9jemVnO+8jOajgOafpeWGt+WNtOawtOW+queOr+awtOWOi+WOi+W3ruS4ujAuMk1QQVLjgIJcbiIsImNvbXBsYWludFR5cGUiOiLor7fpgInmi6kiLCJpbWFnZVVybHMiOiJodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC80N2QwNmMyMC1hMWYzLTRjODAtOGE1Mi1lYmY5ZTQ2NTI5ZGQuanBnLGh0dHBzOi8vc3RwMTAwMDE3NThjMDAxLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNuL2F0bGFzLXByZC9JbWFnZS8yMDI0LTEwLTI4LzNhY2E1NzI4LTAxYjAtNGVhMi1hMTQ3LTkyYjU3YWI4ZDg5ZC5qcGcsaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL0ltYWdlLzIwMjQtMTAtMjgvODc0MWQ0MDItM2ZiZS00MDliLTk1NzgtYjAwMGZiYTk2YzJiLmpwZyxodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC8zNWMzNjIxOC1kMDRiLTQ1ZDQtYTU4ZC0zOWQ4NzBkMjY1NTcuanBnLGh0dHBzOi8vc3RwMTAwMDE3NThjMDAxLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNuL2F0bGFzLXByZC9Xb3JkLzIwMjQtMTAtMjgvMzE2NDBmNmYtMjc4MS00MmJmLTg2NDAtZDA5MGVjNzJkZGI1LmRvYyxodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC83NzE0ZjMxOC1jNDg5LTRjNmItYjkzYy0xNDgyZGRhOGY0YzIuanBnIiwiaW1nVXJscyI6WyJodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC80N2QwNmMyMC1hMWYzLTRjODAtOGE1Mi1lYmY5ZTQ2NTI5ZGQuanBnIiwiaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL0ltYWdlLzIwMjQtMTAtMjgvM2FjYTU3MjgtMDFiMC00ZWEyLWExNDctOTJiNTdhYjhkODlkLmpwZyIsImh0dHBzOi8vc3RwMTAwMDE3NThjMDAxLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNuL2F0bGFzLXByZC9JbWFnZS8yMDI0LTEwLTI4Lzg3NDFkNDAyLTNmYmUtNDA5Yi05NTc4LWIwMDBmYmE5NmMyYi5qcGciLCJodHRwczovL3N0cDEwMDAxNzU4YzAwMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbi9hdGxhcy1wcmQvSW1hZ2UvMjAyNC0xMC0yOC8zNWMzNjIxOC1kMDRiLTQ1ZDQtYTU4ZC0zOWQ4NzBkMjY1NTcuanBnIiwiaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL1dvcmQvMjAyNC0xMC0yOC8zMTY0MGY2Zi0yNzgxLTQyYmYtODY0MC1kMDkwZWM3MmRkYjUuZG9jIiwiaHR0cHM6Ly9zdHAxMDAwMTc1OGMwMDEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24vYXRsYXMtcHJkL0ltYWdlLzIwMjQtMTAtMjgvNzcxNGYzMTgtYzQ4OS00YzZiLWI5M2MtMTQ4MmRkYThmNGMyLmpwZyJdLCJoYXNNYXRjaGluZyI6MCwicGxhbm5lciI6IuWNouWbveWGmyIsInBsYW5uZXJFbWFpbCI6ImVhZ2xlLmx1QGF0bGFzY29wY28uY29tIiwiaXNFdmFsdWF0aW9uIjowLCJjcmVhdGVBdCI6IjIwMjQtMTAtMjkgMTQ6MTI6MTMiLCJjcmVhdGVCeSI6Ijg2ZWY4MzA1LTU2MTUtNGIwMS1iNmJmLTQ2ODEzNzAzMjk2NSIsInJlYXNvbiI6IuaEn+iwouS9v+eUqOW+ruS\/oeWwj+eoi+W6j+aPkOS6pOacjeWKoemcgOaxgu+8jOivt+aPkOS+m+eOsOWcuuajgOafpeacjeWKoeW3peWNle+8gSIsInRhZ3MiOiIiLCJwcm94eUNvbXBhbnlOYW1lIjoi5p2t5bee5LiJ55Ge5py65qKw5pyJ6ZmQ5YWs5Y+4IiwicHJveHlDb21wYW55SWQiOiI4YTRkNWQ5NC00MTU1LTRjM2ItYTkxNy04NmFmYTlkMDRhMDMiLCJ0YXhObyI6IjkxMzMwNDAwTUEySkdBQkY1OCIsIm1haW50YWluVHlwZSI6Iuivt+mAieaLqSIsImN1c3RvbWVyVHlwZSI6IkRDIiwicHJveHlDb21wYW55R3JlZW4iOiLlkKYiLCJjb21wYW55R3JlZW4iOiLlkKYiLCJ1c2VySWQiOiI4NmVmODMwNS01NjE1LTRiMDEtYjZiZi00NjgxMzcwMzI5NjUiLCJ2YWxpZEZyb20iOiIifQ==]}&quot;,&quot;file&quot;:&quot;REQUEST-942-APPLICATION-ATTACK-SQLI.conf&quot;,&quot;line&quot;:&quot;892&quot;},&quot;hostname&quot;:&quot;ctswechatprod.atlascopco.com.cn&quot;,&quot;transactionId&quot;:&quot;a2d3213a602b622e2e1d765c5ed229ab&quot;,&quot;policyId&quot;:&quot;600#_subscriptions_a5992269-072a-4cf0-8bd0-c8382c371ef2_resourceGroups_rg-cn-p-app-10007953-applicationgateway_providers_Microsoft.Network_ApplicationGatewayWebApplicationFirewallPolicies_waf-cn-p-agw-cnn3-10001758-001&quot;,&quot;policyScope&quot;:&quot;Listener&quot;,&quot;policyScopeName&quot;:&quot;ctswechatprod.atlascopco.com.cn&quot;,&quot;engine&quot;:&quot;Azwaf&quot;}</p>
+<p>2， 根据官网提供的排查方法：<a href="https://support.azure.cn/docs/azure-operations-guide/application-gateway/aog-application-gateway-qa-waf-invalid-block.html" target="_blank" rel="noopener">https://support.azure.cn/docs/azure-operations-guide/application-gateway/aog-application-gateway-qa-waf-invalid-block.html</a></p>
+<p>这里提供了用户github 上对应3.2版本的正则：<a href="https://github.com/SpiderLabs/owasp-modsecurity-crs/blob/v3.2/master/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf" target="_blank" rel="noopener">https://github.com/SpiderLabs/owasp-modsecurity-crs/blob/v3.2/master/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf</a> 并让用户通过fiddler 抓请求包，发现提示的可能匹配的字段在请求的payload 部分，但拿到相应的字段后又无法在<a href="https://regex101.com/" target="_blank" rel="noopener">https://regex101.com/</a> 匹配上3.2的正则。这里尝试使用3.0 的正则时当将请求里的+变为空格时能匹配上，但用户的实际请求并没有空格且用户使用的WAF 是3.2的版本。</p>
+<p>SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/__utm/|REQUEST_COOKIES_NAMES|ARGS_NAMES|ARGS|XML:/* &quot;@rx (?i:(?:[\&quot;&#39;<code>](?:\s*?(?:is\s*?(?:[\d.]+\s*?\W.*?[\&quot;&#39;</code>]|\d.+[\&quot;&#39;<code>]?\w)|\d\s*?(?:--|#))|(?:\W+[\w+-]+\s*?=\s*?\d\W+|\|?[\w-]{3,}[^\w\s.,]+)[\&quot;&#39;</code>]|[\%&amp;&lt;&gt;^=]+\d\s*?(?:between|like|x?or|and|div|=))|(?i:n?and|x?x?or|div|like|between|not|\|\||\&amp;\&amp;)\s+[\s\w+]+(?:sounds\s+like\s*?[\&quot;&#39;`]|regexp\s*?\(|[=\d]+x)|in\s*?\(+\s*?select))&quot; \</p>
+<p>&quot;id:942340,\</p>
+<p>phase:2,\</p>
+<p>block,\</p>
+<p>capture,\</p>
+<p>t:none,t:urlDecodeUni,\</p>
+<p>msg:&#39;Detects basic SQL authentication bypass attempts 3/3&#39;,\</p>
+<p>logdata:&#39;Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}: %{MATCHED_VAR}&#39;,\</p>
+<p>tag:&#39;application-multi&#39;,\</p>
+<p>tag:&#39;language-multi&#39;,\</p>
+<p>tag:&#39;platform-multi&#39;,\</p>
+<p>tag:&#39;attack-sqli&#39;,\</p>
+<p>tag:&#39;OWASP_CRS&#39;,\</p>
+<p>tag:&#39;OWASP_CRS/WEB_ATTACK/SQL_INJECTION&#39;,\</p>
+<p>tag:&#39;WASCTC/WASC-19&#39;,\</p>
+<p>tag:&#39;OWASP_TOP_10/A1&#39;,\</p>
+<p>tag:&#39;OWASP_AppSensor/CIE1&#39;,\</p>
+<p>tag:&#39;PCI/6.5.2&#39;,\</p>
+<p>tag:&#39;paranoia-level/2&#39;,\</p>
+<p>ver:&#39;OWASP_CRS/3.2.0&#39;,\</p>
+<p>severity:&#39;CRITICAL&#39;,\</p>
+<p>setvar:&#39;tx.sql_injection_score=+%{tx.critical_anomaly_score}&#39;,\</p>
+<p>setvar:&#39;tx.anomaly_score_pl2=+%{tx.critical_anomaly_score}&#39;&quot;</p>
+<p>3， 进一步对比发现不同版本的相同规则号的正则表达式是不一样的。结合appgateway 的firewall日志定位正则就是3.2 的正则。但从WAF 日志里匹配的pattern 内容是github 提供的3.2正则中去除@rx 字段后的内容。需要注意的是这与官网里提示的有出入。</p>
+<p>Pattern match (?i:(?:[\&quot;&#39;<code>](?:\\s*?(?:is\\s*?(?:[\\d.]+\\s*?\\W.*?[\&quot;&#39;</code>]|\\d.+[\&quot;&#39;<code>]?\\w)|\\d\\s*?(?:--|#))|(?:\\W+[\\w+-]+\\s*?=\\s*?\\d\\W+|\\|?[\\w-]{3,}[^\\w\\s.,]+)[\&quot;&#39;</code>]|[\\%&amp;&lt;&gt;^=]+\\d\\s*?(?:between|like|x?or|and|div|=))|(?i:n?and|x?x?or|div|like|between|not|\\|\\||\\&amp;\\&amp;)\\s+[\\s\\w+]+(?:sounds\\s+like\\s*?[\&quot;&#39;`]|regexp\\s*?\\(|[=\\d]+x)|in\\s*?\\(+\\s*?select)) at ARGS.&quot;</p>
+<p>@rx (?i:(?:[\&quot;&#39;<code>](?:\s*?(?:is\s*?(?:[\d.]+\s*?\W.*?[\&quot;&#39;</code>]|\d.+[\&quot;&#39;<code>]?\w)|\d\s*?(?:--|#))|(?:\W+[\w+-]+\s*?=\s*?\d\W+|\|?[\w-]{3,}[^\w\s.,]+)[\&quot;&#39;</code>]|[\%&amp;&lt;&gt;^=]+\d\s*?(?:between|like|x?or|and|div|=))|(?i:n?and|x?x?or|div|like|between|not|\|\||\&amp;\&amp;)\s+[\s\w+]+(?:sounds\s+like\s*?[\&quot;&#39;`]|regexp\s*?\(|[=\d]+x)|in\s*?\(+\s*?select))</p>
+<p>官网表达：<a href="https://support.azure.cn/docs/azure-operations-guide/application-gateway/aog-application-gateway-qa-waf-invalid-block.html" target="_blank" rel="noopener">https://support.azure.cn/docs/azure-operations-guide/application-gateway/aog-application-gateway-qa-waf-invalid-block.html</a></p>
+<p>4， 问题进一步升级，多了@rx这部分。经过后线确认它本身就没有什么意义：@rx means what follows is a regular expression. http - Mod security Block GET request to URI path - Stack Overflow</p>
+<p>5， 我们再将该正则放入regex101: build, test, and debug regex 中并放入请求payload 中的字段会发现只要Or+ 被替换成Or空格的情况下就会匹配规则。</p>
+<p>6， 后线这里提供工具来对正则进行可视化Regulex：JavaScript Regular Expression Visualizer可以看到当匹配各式为Or 空格……….x 时 就会触发94234规则。</p>
+<p>问题原因：</p>
+<p>===========</p>
+<p>触发规则的请求在经过Base64编码以后没有再进行URL编码，导致传递到WAF 的+ 号会被解析为空格，这是因为WAF 默认会使用urlDecodeUrI方式。</p>
+<p>用户在如上反馈基础上进一步测试：该942340规则其中一部分问题是只要内文里面有and、or、like、between 这些字词的前面有空格就会符合条件，因此如果要解决这个事情必须确保base64编码之后不能有加号（因为加号被url解码后会变成空格）。</p>
+<p>解决办法：</p>
+<p>========</p>
+<p>目前用户已经着手在做修正代码，接下来会采用” URL安全的Base64编码”­去实施请求。</p>
+<p>参考案例：SR_20241030322428[S500_Child]/Atlas. Copke (China) Investment Co., LTD. / Content after Base64 coding was blocked by WAF - TrackingID#2411080030005222</p></article>

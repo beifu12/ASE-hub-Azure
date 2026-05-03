@@ -1,0 +1,141 @@
+<article class="kb-article" data-title="LVM挂载以及克隆"><h1>LVM挂载以及克隆</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-05-31 13:46:52</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>注：如果w保存后有报错，例如下面的</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>注：如果w保存后有报错，例如下面的</li>
+</ul>
+<ul>
+<li>如果执行后，仍然报错，重启解决。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>LVM的结构</li>
+</ul>
+<ul>
+<li>如何为LV、VG扩容：</li>
+</ul>
+<ul>
+<li>如果LV空间不足，需要扩容，可以看看对应的VG是否还有一定的空间大小，如果有，可以扩容。</li>
+</ul>
+<ul>
+<li>VG同理</li>
+</ul>
+<ul>
+<li>LVM创建</li>
+</ul>
+<ul>
+<li>分区</li>
+</ul>
+<ul>
+<li>通过fdisk /dev/sdc进行分区。</li>
+</ul>
+<ul>
+<li>n：创建一个新的扩展分区（e：extended），</li>
+</ul>
+<ul>
+<li>对已扩展的分区，创建逻辑分区。</li>
+</ul>
+<ul>
+<li>t ： 修改分区类型为Linux LVM</li>
+</ul>
+<ul>
+<li>已改，w保存退出。</li>
+</ul>
+<ul>
+<li>PV</li>
+</ul>
+<ul>
+<li>通过pvcreate /dev/sdc5 /dev/sdc6 /dev/sdc7创建pv</li>
+</ul>
+<ul>
+<li>VG</li>
+</ul>
+<ul>
+<li>通过vgcreate vgdemo /dev/sdc5 /dev/sdc6创建vg</li>
+</ul>
+<ul>
+<li>LV</li>
+</ul>
+<ul>
+<li>通过lvcreate -n lv1 -L +30M vgdemo创建lv</li>
+</ul>
+<ul>
+<li>格式化</li>
+</ul>
+<ul>
+<li>mkfs.ext4 /dev/vgdemo/lv1</li>
+</ul>
+<ul>
+<li>挂载</li>
+</ul>
+<ul>
+<li>如果使用LVM合并、使用uuid挂载磁盘，在克隆出新的虚拟机的时候（仅os磁盘），需要先umount，再修改/etc/fstab。</li>
+</ul>
+<ul>
+<li>如果只修改/etc/fstab，是仍然起不来的。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>首先通过lsblk查看所有块设备的信息。</li>
+</ul>
+<ul>
+<li>p：查看当前的分区状态。</li>
+</ul>
+<ul>
+<li>通过vgs查看简略信息</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法：执行：partprobe /dev/sdc</li>
+</ul>
+<ul>
+<li>自动挂载：修改/etc/fstab ，可以通过device name、UUID</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023-12-07</p>
+<p>LVM的结构</p>
+<p>如何为LV、VG扩容：</p>
+<p>如果LV空间不足，需要扩容，可以看看对应的VG是否还有一定的空间大小，如果有，可以扩容。</p>
+<p>VG同理</p>
+<p>LVM创建</p>
+<p>分区</p>
+<p>首先通过lsblk查看所有块设备的信息。</p>
+<p>通过fdisk /dev/sdc进行分区。</p>
+<p>p：查看当前的分区状态。</p>
+<p>n：创建一个新的扩展分区（e：extended），</p>
+<p>对已扩展的分区，创建逻辑分区。</p>
+<p>t ： 修改分区类型为Linux LVM</p>
+<p>已改，w保存退出。</p>
+<p>注：如果w保存后有报错，例如下面的</p>
+<p>解决方法：执行：partprobe /dev/sdc</p>
+<p>如果执行后，仍然报错，重启解决。</p>
+<p>PV</p>
+<p>通过pvcreate /dev/sdc5 /dev/sdc6 /dev/sdc7创建pv</p>
+<p>VG</p>
+<p>通过vgcreate vgdemo /dev/sdc5 /dev/sdc6创建vg</p>
+<p>通过vgs查看简略信息</p>
+<p>LV</p>
+<p>通过lvcreate -n lv1 -L +30M vgdemo创建lv</p>
+<p>格式化</p>
+<p>mkfs.ext4 /dev/vgdemo/lv1</p>
+<p>挂载</p>
+<p>自动挂载：修改/etc/fstab ，可以通过device name、UUID</p>
+<p>如果使用LVM合并、使用uuid挂载磁盘，在克隆出新的虚拟机的时候（仅os磁盘），需要先umount，再修改/etc/fstab。</p>
+<p>如果只修改/etc/fstab，是仍然起不来的。</p></article>

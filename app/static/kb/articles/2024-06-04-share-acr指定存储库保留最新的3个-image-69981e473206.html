@@ -1,0 +1,55 @@
+<article class="kb-article" data-title="【share】 acr指定存储库保留最新的3个 image"><h1>【share】 acr指定存储库保留最新的3个 image</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: ACR</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-04 14:48:39</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>acr指定存储库保留最新的3个 image</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>acr指定存储库保留最新的3个 image</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>acr指定存储库保留最新的3个 image</li>
+</ul>
+<ul>
+<li>Cli</li>
+</ul>
+<ul>
+<li>Acr name  watest</li>
+</ul>
+<ul>
+<li>保留最新的三个镜像</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az acr login --name  watest</li>
+</ul>
+<ul>
+<li>az acr run --cmd &quot;$PURGE_CMD&quot; --registry watest /dev/null</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>PURGE_CMD=&quot;acr purge --filter &#39;influxdb:.*&#39; --keep 3 --ago 0d&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>acr指定存储库保留最新的3个 image</p>
+<p>Cli</p>
+<p>Acr name  watest</p>
+<p>az acr login --name  watest</p>
+<p>保留最新的三个镜像</p>
+<p>PURGE_CMD=&quot;acr purge --filter &#39;influxdb:.*&#39; --keep 3 --ago 0d&quot;</p>
+<p>az acr run --cmd &quot;$PURGE_CMD&quot; --registry watest /dev/null</p></article>

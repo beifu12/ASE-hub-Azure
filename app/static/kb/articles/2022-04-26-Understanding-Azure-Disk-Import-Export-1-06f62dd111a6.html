@@ -1,0 +1,127 @@
+<article class="kb-article" data-title="Understanding Azure Disk Import / Export"><h1>Understanding Azure Disk Import / Export</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Import Export Service</li>
+<li>最近修改: 2022-04-26 07:59:22</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Azure Import/Export service is used to securely import large amounts of data to Azure Blob storage and Azure Files by shipping disk drives to an Azure datacenter. This service can also be used to transfer data from Azure Blob storage to disk drives and ship to...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Azure Import/Export service is used to securely import large amounts of data to Azure Blob storage and Azure Files by shipping disk drives to an Azure datacenter. This service can also be used to transfer data from Azure Blob storage to disk drives and ship to your on-premises sites. Data from one or more disk drives can be imported either to Azure Blob storage or Azure Files.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Azure Import/Export service is used to securely import large amounts of data to Azure Blob storage and Azure Files by shipping disk drives to an Azure datacenter. This service can also be used to transfer data from Azure Blob storage to disk drives and ship to your on-premises sites. Data from one or more disk drives can be imported either to Azure Blob storage or Azure Files.</li>
+</ul>
+<ul>
+<li>Supply your own disk drives and transfer data with the Azure Import/Export service. You can also use disk drives supplied by Microsoft.</li>
+</ul>
+<ul>
+<li>Import/Export components</li>
+</ul>
+<ul>
+<li>Import/Export service</li>
+</ul>
+<ul>
+<li>WAImportExport tool</li>
+</ul>
+<ul>
+<li>Disk Drives</li>
+</ul>
+<ul>
+<li>How does Import/Export work</li>
+</ul>
+<ul>
+<li>Inside an import job</li>
+</ul>
+<ul>
+<li>Inside an export job</li>
+</ul>
+<ul>
+<li>Region availability</li>
+</ul>
+<ul>
+<li>The Azure Import/Export service supports copying data to and from all Azure storage accounts. You can ship disk drives to one of the listed locations. If your storage account is in an Azure location that is not specified here, an alternate shipping location is provided when you create the job.</li>
+</ul>
+<ul>
+<li>Security considerations</li>
+</ul>
+<ul>
+<li>The data on the drive is encrypted using AES 256-bit BitLocker Drive Encryption. This encryption protects your data while it is in transit.</li>
+</ul>
+<ul>
+<li>For import jobs, drives are encrypted in two ways.</li>
+</ul>
+<ul>
+<li>Specify the option when using dataset.csv file while running the WAImportExport tool during drive preparation.</li>
+</ul>
+<ul>
+<li>Deleting personal information</li>
+</ul>
+<ul>
+<li>Personal contact information may be deleted in the following ways:</li>
+</ul>
+<ul>
+<li>Data saved with the job is deleted with the job. Users can delete jobs manually and completed jobs are automatically deleted after 90 days.</li>
+</ul>
+<ul>
+<li>Pricing</li>
+</ul>
+<ul>
+<li>Drive handling fee</li>
+</ul>
+<ul>
+<li>Shipping costs</li>
+</ul>
+<ul>
+<li>Transaction costs</li>
+</ul>
+<ul>
+<li>For detailed and updated information, refer to: Azure Import/Export service</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Contact information saved in the portal settings may be removed by deleting the portal settings</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Enable BitLocker encryption manually on the drive.</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Azure Import/Export service is used to securely import large amounts of data to Azure Blob storage and Azure Files by shipping disk drives to an Azure datacenter. This service can also be used to transfer data from Azure Blob storage to disk drives and ship to your on-premises sites. Data from one or more disk drives can be imported either to Azure Blob storage or Azure Files.</p>
+<p>Supply your own disk drives and transfer data with the Azure Import/Export service. You can also use disk drives supplied by Microsoft.</p>
+<p>Import/Export components</p>
+<p>Import/Export service</p>
+<p>WAImportExport tool</p>
+<p>Disk Drives</p>
+<p>How does Import/Export work</p>
+<p>Inside an import job</p>
+<p>Inside an export job</p>
+<p>Region availability</p>
+<p>The Azure Import/Export service supports copying data to and from all Azure storage accounts. You can ship disk drives to one of the listed locations. If your storage account is in an Azure location that is not specified here, an alternate shipping location is provided when you create the job.</p>
+<p>Security considerations</p>
+<p>The data on the drive is encrypted using AES 256-bit BitLocker Drive Encryption. This encryption protects your data while it is in transit.</p>
+<p>For import jobs, drives are encrypted in two ways.</p>
+<p>Specify the option when using dataset.csv file while running the WAImportExport tool during drive preparation.</p>
+<p>Enable BitLocker encryption manually on the drive.</p>
+<p>Deleting personal information</p>
+<p>Personal contact information may be deleted in the following ways:</p>
+<p>Data saved with the job is deleted with the job. Users can delete jobs manually and completed jobs are automatically deleted after 90 days.</p>
+<p>Contact information saved in the portal settings may be removed by deleting the portal settings</p>
+<p>Pricing</p>
+<p>Drive handling fee</p>
+<p>Shipping costs</p>
+<p>Transaction costs</p>
+<p>For detailed and updated information, refer to: Azure Import/Export service</p></article>

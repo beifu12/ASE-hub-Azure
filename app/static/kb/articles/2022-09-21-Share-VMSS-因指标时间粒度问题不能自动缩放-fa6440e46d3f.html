@@ -1,0 +1,49 @@
+<article class="kb-article" data-title="【Share】VMSS 因指标时间粒度问题不能自动缩放"><h1>【Share】VMSS 因指标时间粒度问题不能自动缩放</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2022-09-21 10:33:32</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>分享一个工单SR_20220913188393_虚拟机规模集无法自动缩放节点。ONENOTE 链接</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>分享一个工单SR_20220913188393_虚拟机规模集无法自动缩放节点。ONENOTE 链接</li>
+</ul>
+<ul>
+<li>通过门户创建VMSS 缩放规则，时间粒度默认为1， 且无法修改。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>#平台指标Percentage CPU的时间粒度#</li>
+</ul>
+<ul>
+<li>更多说明：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>客户反馈她的启用了根据平台指标Percentage CPU自动缩放的VMSS只能扩展，不能缩减。排查发现，客户扩展规则使用的时间粒度为1 分钟，然而缩减规则使用的时间粒度为2分钟，然而平台指标Percentage CPU的时间粒度不包含2分钟，导致指标无法正常聚合，进而导致VMSS无法正常缩放。后续建议客户删除并重建了时间粒度为1的缩减规则，问题缓解。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>关于如何通过Azure Powershell 为VMSS 创建缩放规则，请参考官方文档 <a href="https://docs.azure.cn/zh-cn/virtual-machine-scale-sets/tutorial-autoscale-powershell?toc=%2Fazure%2Fazure-monitor%2Ftoc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machine-scale-sets/tutorial-autoscale-powershell?toc=%2Fazure%2Fazure-monitor%2Ftoc.json</a> 。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022/09/21</p>
+<p>分享一个工单SR_20220913188393_虚拟机规模集无法自动缩放节点。ONENOTE 链接</p>
+<p>客户反馈她的启用了根据平台指标Percentage CPU自动缩放的VMSS只能扩展，不能缩减。排查发现，客户扩展规则使用的时间粒度为1 分钟，然而缩减规则使用的时间粒度为2分钟，然而平台指标Percentage CPU的时间粒度不包含2分钟，导致指标无法正常聚合，进而导致VMSS无法正常缩放。后续建议客户删除并重建了时间粒度为1的缩减规则，问题缓解。</p>
+<p>#平台指标Percentage CPU的时间粒度#</p>
+<p>更多说明：</p>
+<p>通过门户创建VMSS 缩放规则，时间粒度默认为1， 且无法修改。</p>
+<p>关于如何通过Azure Powershell 为VMSS 创建缩放规则，请参考官方文档 <a href="https://docs.azure.cn/zh-cn/virtual-machine-scale-sets/tutorial-autoscale-powershell?toc=%2Fazure%2Fazure-monitor%2Ftoc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machine-scale-sets/tutorial-autoscale-powershell?toc=%2Fazure%2Fazure-monitor%2Ftoc.json</a> 。</p></article>

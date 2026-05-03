@@ -1,0 +1,152 @@
+<article class="kb-article" data-title="502[ARM-APPGW-Requests-ContentType]API server请求header访问中带的content type后，应用报502错，去掉content type以后就不报错"><h1>502[ARM-APPGW-Requests-ContentType]API server请求header访问中带的content type后，应用报502错，去掉content type以后就不报错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-08-15 10:34:42</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>分享个AWS API Server 发出的HTTP 请求带content type后得到502访问结果的工单。工单号：SR_2019062635020</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>分享个AWS API Server 发出的HTTP 请求带content type后得到502访问结果的工单。工单号：SR_2019062635020</li>
+</ul>
+<ul>
+<li>wireshark打开了API发送过来的失败的请求， 发现有“http body subdissector failed trying heuristic subdissector”的报错提示， 怀疑与API发过来的format有关。</li>
+</ul>
+<ul>
+<li>PC: 本地PC带content-type:application/json 时：请求中没有异常的format报错，也没有带trunked encording ( 用户反馈不管PC端是否带trunked， 都是可以正常访问的，可能与带trunked属性关系不大)</li>
+</ul>
+<ul>
+<li>在文章中发现关于content-Type ,trunked encording相关的报错场景：</li>
+</ul>
+<ul>
+<li>{ &amp;ei_http_subdissector_failed, { &quot;http.subdissector_failed&quot;, PI_MALFORMED, PI_NOTE, &quot;HTTP body subdissector failed, trying heuristic subdissector&quot;, EXPFILL }},</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi all，</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>content type screenshot:</li>
+</ul>
+<ul>
+<li>Request:</li>
+</ul>
+<ul>
+<li>Response:</li>
+</ul>
+<ul>
+<li>If there was no Content-Length entity header, we should accumulate all data until the end of the connection. That&#39;d require that the TCP dissector call subdissectors for all frames with FIN, even if they contain no data,</li>
+</ul>
+<ul>
+<li>which would require subdissectors to deal intelligently with empty segments.</li>
+</ul>
+<ul>
+<li>static ei_register_info ei[] = {</li>
+</ul>
+<ul>
+<li>{ &amp;ei_http_chat, { &quot;http.chat&quot;, PI_SEQUENCE, PI_CHAT, &quot;Formatted text&quot;, EXPFILL }},</li>
+</ul>
+<ul>
+<li>{ &amp;ei_http_chunked_and_length, { &quot;http.chunkd_and_length&quot;, PI_MALFORMED, PI_WARN, &quot;It is incorrect to specify a content-length header and chunked encoding together.&quot;, EXPFILL }},</li>
+</ul>
+<ul>
+<li>OneNote 链接：</li>
+</ul>
+<ul>
+<li>Miya Hu (胡明月) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>If you have any feedback about my work, please contact me or my manager Han Xu on han.xu3@oe.21vianet.com</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>用户使用Postman通过API 向AppGW做测试，Postman--------&gt;Api server ------------&gt;(port 443)AppGW------------&gt; (port 81) VM， Postman上选择content-type 为application/json时，请求返回502， 不勾选时可以正常返回200ok， 需要协助排查问题。</li>
+</ul>
+<ul>
+<li>排查经过：</li>
+</ul>
+<ul>
+<li>首先可以确认的appgw 对 application/json的content-type的支持没有问题， 经过产品组的确认。</li>
+</ul>
+<ul>
+<li>用户在后端虚拟机上进行抓包， 发现请求没有发到VM上。</li>
+</ul>
+<ul>
+<li>我们在虚拟机的NODE 上抓包，发现请求没有到虚拟机的node。</li>
+</ul>
+<ul>
+<li>我们在appgw实例上抓包，排查了抓包，发现当Postman显式声明content-type为application/json时, 从抓包来看请求并没有发往后端VM，而AppGW 将502的报错页面以text/html的方式返回给API。</li>
+</ul>
+<ul>
+<li>具体抓包分析：</li>
+</ul>
+<ul>
+<li>First, if we have a Content-Type value, check whether there&#39;s a subdissector for that media type, if We don&#39;t have a subdissector or we have one and it did not dissect the payload - try the heuristic subdissectors.</li>
+</ul>
+<ul>
+<li>问题排查结果：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>用户认可了API 发出的format 与appgw的兼容问题，将对Api 版本进行升级修复。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>根据jarvis 日志<a href="https://jarvis-west.dc.ad.msft.net/1BBF8824查发现appgw_httpStatus" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/1BBF8824查发现appgw_httpStatus</a> 是502， 但backend_httpStatus的结果为空。Timetaken很短， 这里有两点怀疑，一是包根本没有到后端服务器，appgw直接给了502的返回值。 二是包到了后端服务器但在TCP 层出问题，没有到HTTP层的处理。 我们遇到的问题是情况一。</li>
+</ul>
+<ul>
+<li>API 端： 通过AWS API server发过来的请求中，带了transfer-encording: trunked 属性， 在HTTP trunked response中提示API 发送过来的body 无法获得subdissector， 具体应用层的报错以及调用逻辑请参考RFC文档：<a href="https://cs.fit.edu/code/svn/cse2410f13team7/wireshark/epan/dissectors/packet-http.c" target="_blank" rel="noopener">https://cs.fit.edu/code/svn/cse2410f13team7/wireshark/epan/dissectors/packet-http.c</a></li>
+</ul>
+<ul>
+<li>Support direct line: 010-56060226   Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></li>
+</ul>
+<ul>
+<li>Cloud solution consulting: 400-085-0139   Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2019/07/08</p>
+<p>Hi all，</p>
+<p>分享个AWS API Server 发出的HTTP 请求带content type后得到502访问结果的工单。工单号：SR_2019062635020</p>
+<p>问题描述：</p>
+<p>用户使用Postman通过API 向AppGW做测试，Postman--------&gt;Api server ------------&gt;(port 443)AppGW------------&gt; (port 81) VM， Postman上选择content-type 为application/json时，请求返回502， 不勾选时可以正常返回200ok， 需要协助排查问题。</p>
+<p>content type screenshot:</p>
+<p>排查经过：</p>
+<p>首先可以确认的appgw 对 application/json的content-type的支持没有问题， 经过产品组的确认。</p>
+<p>根据jarvis 日志<a href="https://jarvis-west.dc.ad.msft.net/1BBF8824查发现appgw_httpStatus" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/1BBF8824查发现appgw_httpStatus</a> 是502， 但backend_httpStatus的结果为空。Timetaken很短， 这里有两点怀疑，一是包根本没有到后端服务器，appgw直接给了502的返回值。 二是包到了后端服务器但在TCP 层出问题，没有到HTTP层的处理。 我们遇到的问题是情况一。</p>
+<p>用户在后端虚拟机上进行抓包， 发现请求没有发到VM上。</p>
+<p>我们在虚拟机的NODE 上抓包，发现请求没有到虚拟机的node。</p>
+<p>我们在appgw实例上抓包，排查了抓包，发现当Postman显式声明content-type为application/json时, 从抓包来看请求并没有发往后端VM，而AppGW 将502的报错页面以text/html的方式返回给API。</p>
+<p>wireshark打开了API发送过来的失败的请求， 发现有“http body subdissector failed trying heuristic subdissector”的报错提示， 怀疑与API发过来的format有关。</p>
+<p>具体抓包分析：</p>
+<p>PC: 本地PC带content-type:application/json 时：请求中没有异常的format报错，也没有带trunked encording ( 用户反馈不管PC端是否带trunked， 都是可以正常访问的，可能与带trunked属性关系不大)</p>
+<p>Request:</p>
+<p>Response:</p>
+<p>API 端： 通过AWS API server发过来的请求中，带了transfer-encording: trunked 属性， 在HTTP trunked response中提示API 发送过来的body 无法获得subdissector， 具体应用层的报错以及调用逻辑请参考RFC文档：<a href="https://cs.fit.edu/code/svn/cse2410f13team7/wireshark/epan/dissectors/packet-http.c" target="_blank" rel="noopener">https://cs.fit.edu/code/svn/cse2410f13team7/wireshark/epan/dissectors/packet-http.c</a></p>
+<p>在文章中发现关于content-Type ,trunked encording相关的报错场景：</p>
+<p>If there was no Content-Length entity header, we should accumulate all data until the end of the connection. That&#39;d require that the TCP dissector call subdissectors for all frames with FIN, even if they contain no data,</p>
+<p>which would require subdissectors to deal intelligently with empty segments.</p>
+<p>First, if we have a Content-Type value, check whether there&#39;s a subdissector for that media type, if We don&#39;t have a subdissector or we have one and it did not dissect the payload - try the heuristic subdissectors.</p>
+<p>static ei_register_info ei[] = {</p>
+<p>{ &amp;ei_http_chat, { &quot;http.chat&quot;, PI_SEQUENCE, PI_CHAT, &quot;Formatted text&quot;, EXPFILL }},</p>
+<p>{ &amp;ei_http_chunked_and_length, { &quot;http.chunkd_and_length&quot;, PI_MALFORMED, PI_WARN, &quot;It is incorrect to specify a content-length header and chunked encoding together.&quot;, EXPFILL }},</p>
+<p>{ &amp;ei_http_subdissector_failed, { &quot;http.subdissector_failed&quot;, PI_MALFORMED, PI_NOTE, &quot;HTTP body subdissector failed, trying heuristic subdissector&quot;, EXPFILL }},</p>
+<p>问题排查结果：</p>
+<p>用户认可了API 发出的format 与appgw的兼容问题，将对Api 版本进行升级修复。</p>
+<p>OneNote 链接：</p>
+<p>Miya Hu (胡明月) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060226   Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></p>
+<p>Cloud solution consulting: 400-085-0139   Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>If you have any feedback about my work, please contact me or my manager Han Xu on han.xu3@oe.21vianet.com</p></article>

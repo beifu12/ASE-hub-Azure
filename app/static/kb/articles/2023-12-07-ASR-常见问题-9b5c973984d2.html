@@ -1,0 +1,275 @@
+<article class="kb-article" data-title="ASR-常见问题"><h1>ASR-常见问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RecoveryService</li>
+<li>Section: ASR</li>
+<li>最近修改: 2023-12-07 15:09:55</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>在 Site Recovery 中进行针对 Hyper-v 虚拟机的故障回复</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>在 Site Recovery 中进行针对 Hyper-v 虚拟机的故障回复</li>
+</ul>
+<ul>
+<li>为何对于故障回复，只有一个计划的故障转移手势？</li>
+</ul>
+<ul>
+<li>Hyper-v 的故障回复是否需要在 Azure 中使用进程服务器？</li>
+</ul>
+<ul>
+<li>不。仅当保护 VMware 虚拟机时才需要进程服务器。 Hyper-v 虚拟机的保护/故障回复均不需要部署任何其他组件。</li>
+</ul>
+<ul>
+<li>从 Azure 故障回复到本地站点VMware</li>
+</ul>
+<ul>
+<li>计划内故障切换：</li>
+</ul>
+<ul>
+<li>计划的故障转移是一个不会丢失任何数据的故障转移选项。 触发计划的故障转移时，首先会关闭源虚拟机，同步最新的数据，然后触发故障转移。</li>
+</ul>
+<ul>
+<li>可针对预期会出现的中断运行计划内故障转移，确保不丢失任何数据；或者针对意外灾难运行计划外故障转移，尽量减少数据丢失（具体取决于复制频率）。</li>
+</ul>
+<ul>
+<li>当主站点重新可用时，可以轻松地故障回复到主站点。</li>
+</ul>
+<ul>
+<li>故障转移</li>
+</ul>
+<ul>
+<li>故障转移，站点恢复会在订阅中自动创建虚拟机。与计划的故障转移的区别在于本地站点的虚拟机关闭和Azure中创建的虚拟机启动。</li>
+</ul>
+<ul>
+<li>测试故障切换：</li>
+</ul>
+<ul>
+<li>执行测试故障转移（灾难恢复演练）站点恢复会在订阅中自动创建虚拟机。与故障转移的区别在于本地站点的虚拟机和Azure中创建的虚拟机可以同时运行。</li>
+</ul>
+<ul>
+<li>清理测试故障转移:</li>
+</ul>
+<ul>
+<li>清理测试故障转移虚拟机时，对测试故障转移虚拟机所做的全部更改都会丢失。 这些更改不会复制回主虚拟机。</li>
+</ul>
+<ul>
+<li>提交,当点击时会出现提示：确定要提交虚拟机吗？一旦提交，便无法更改该虚拟机的恢复点。</li>
+</ul>
+<ul>
+<li>Hyper-V环境下出现，如果要从 Azure 故障回复，请在“数据同步”中选择设置：</li>
+</ul>
+<ul>
+<li>仅在故障转移期间同步数据（完整下载） - 如果已在 Azure 上长时间运行，则使用此选项。 此选项速度更快，因为我们预计磁盘的大部分已经更改，而且不想花时间进行校验和计算。 此选项会执行磁盘的下载。 如果已删除本地虚拟机，此选项也很有帮助。</li>
+</ul>
+<ul>
+<li>是否确实要迁移虚拟机? 完成迁移后，你将无法更改虚拟机的恢复点。</li>
+</ul>
+<ul>
+<li>仅可重新保护和故障回复到 ESXi 主机。 无法将虚拟机故障回复到 Hyper-v 主机、VMware 工作站或任何其他虚拟化平台。</li>
+</ul>
+<ul>
+<li>在不同的本地站点之间故障转移 Hyper-V 虚拟机时，若要返回到主要本地站点，必须先将虚拟机“反向复制”回到主站点，然后触发故障转移。 如果主虚拟机不可用，则在开始 反向复制 前必须从备份还原虚拟机。</li>
+</ul>
+<ul>
+<li>让应用在故障转移后保持一致</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>强制删除Hyper-V注册</li>
+</ul>
+<ul>
+<li>一般而言，凡论及灾备方案，都以RTO及RPO作为最基本的标准。RTO (Recovery Time Objective，复原时间目标)是企业可容许服务中断的时间长度。比如说灾难发生后半天内便需要恢复，RTO值就是十二小时；RPO (Recovery Point Objective，复原点目标)是指当服务恢复后，恢复得来的数据所对应时的间点。如果现时企业每天凌晨零时进行备份一次，当服务恢复后，系统内储存的只会是最近灾难发生前那个凌晨零时的资料。</li>
+</ul>
+<ul>
+<li>根据以上两个简单的原则，企业不但可以对现有的数据系统作出，也可以按照既定的RTO及RPO要求，选购最适合的灾备方案。RTO及RPO与方案售价有着密切的关系，然而完美的方案当然是RTO及RPO皆为零，表示当灾难发生后，系统立即恢复，而且完全没有数据丢失，可是其造价是非常昂贵的，而且也不一定有这个必要。因此，最佳方案必需在RTO，RPO，维护及价钱多方面，都能达致平衡。尤其是中小企业，在资源紧拙的情况，应先好好了解对RTO及RPO的要求，然后再看看价钱，那就比较容易找到，适合企业的方案了。</li>
+</ul>
+<ul>
+<li>在 Azure Site Recovery 中规划用于保护虚拟机和物理服务器的容量</li>
+</ul>
+<ul>
+<li>安装 Linux 主目标服务器</li>
+</ul>
+<ul>
+<li>按钮解释：</li>
+</ul>
+<ul>
+<li>在不中断的情况下测试,可轻松地运行灾难恢复练习，不会影响正在进行的复制。</li>
+</ul>
+<ul>
+<li>提交操作会删除服务中的所有恢复点，并且“更改恢复点”选项不再可用。</li>
+</ul>
+<ul>
+<li>重新同步</li>
+</ul>
+<ul>
+<li>阶段 1：在 Azure 中生成虚拟机的快照，并将快照复制到本地 Hyper-V 主机。 计算机将继续在 Azure 中运行。</li>
+</ul>
+<ul>
+<li>阶段 2：在 Azure 中关闭虚拟机，使其中不会发生任何新的更改。 最终的增量更改集将传输到本地服务器，本地虚拟机会启动。</li>
+</ul>
+<ul>
+<li>更改恢复点</li>
+</ul>
+<ul>
+<li>当一个虚拟机有多个恢复点时，如果想要转到虚拟机的另一个恢复点，可以使用“更改恢复点”选项。</li>
+</ul>
+<ul>
+<li>完成迁移：</li>
+</ul>
+<ul>
+<li>反向复制(VMware重新保护)，当点击时会出现提示：反向复制将为虚拟机反向启用保护。是否确实要启用它？</li>
+</ul>
+<ul>
+<li>禁用复制项:</li>
+</ul>
+<ul>
+<li>RTO 和 RPO 目标        让恢复时间目标 (RTO) 和恢复点目标 (RPO) 始终处于组织限制范围内。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>关于配置和排查，还请参考官方文档：</li>
+</ul>
+<ul>
+<li>在故障转移之前同步数据（仅同步增量更改） - 此选项可最大程度地减少虚拟机的停机时间，因为它可在不关闭虚拟机的情况下执行同步。 此选项将执行以下步骤：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Azure 是具有高可用性的环境，虚拟机将始终可用。 故障回复是一个计划的活动，可以决定进行短暂的停机，以便工作负荷在本地再次运行。 这不会丢失数据。 因此，我们只提供计划的故障转移手势，方便你关闭 Azure 中的 VM、下载最新更改，确保没有数据丢失。</li>
+</ul>
+<ul>
+<li>此操作将删除计算机，并且计算机不再受 Azure Site Recovery 保护。该计算机的保护配置和设置将被自动清除。Azure Site Recovery 将停止对该计算机收费。</li>
+</ul>
+<ul>
+<li>禁用复制并删除（推荐），这将从 Azure Site Recovery 中删除复制项，并将停止计算机复制。将自动清理对源的复制配置。计算机的 Site Recovery 将停止计费.</li>
+</ul>
+<ul>
+<li>删除：这将从 Azure Site Recovery 中删除复制项。不会清理对源的复制配置。仅当源环境已删除或无法访问时，才使用此选项。单击以了解详细信息。</li>
+</ul>
+<ul>
+<li>Site Recovery 为 Azure VM 和 VMware VM 提供持续复制，为 Hyper-V 提供低至 30 秒的复制频率。 可以通过与 Azure 流量管理器集成来进一步降低 RTO。</li>
+</ul>
+<ul>
+<li>可以通过应用程序一致性快照使用恢复点进行复制。 这些快照可捕获磁盘数据、内存中的所有数据，以及正在处理的所有事务。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-manage-registration-and-protection" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-manage-registration-and-protection</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-manage-registration-and-protection#unregister-a-connected-configuration-server" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-manage-registration-and-protection#unregister-a-connected-configuration-server</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/site-recovery/vmware-walkthrough-prerequisites" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/site-recovery/vmware-walkthrough-prerequisites</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-set-up-vmware-to-azure" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-set-up-vmware-to-azure</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-vmware-to-azure-protection-troubleshoot" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-vmware-to-azure-protection-troubleshoot</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-vmware-to-azure-manage-configuration-server" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-vmware-to-azure-manage-configuration-server</a></li>
+</ul>
+<ul>
+<li><a href="https://azure.microsoft.com/en-us/blog/best-practices-for-process-server-deployment-when-protecting-vmware-and-physical-workloads-with-azure-site-recovery/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/blog/best-practices-for-process-server-deployment-when-protecting-vmware-and-physical-workloads-with-azure-site-recovery/</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-faq" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-faq</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-monitoring-and-troubleshooting#常见的-azure-site-recovery-错误及其解决方法" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-monitoring-and-troubleshooting#常见的-azure-site-recovery-错误及其解决方法</a></li>
+</ul>
+<ul>
+<li>来自 &lt;<a href="http://blog.itpub.net/24663694/viewspace-1041733/&gt;" target="_blank" rel="noopener">http://blog.itpub.net/24663694/viewspace-1041733/&gt;</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-support-matrix-to-sec-site" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-support-matrix-to-sec-site</a></li>
+</ul>
+<ul>
+<li>来自 &lt;<a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-capacity-planner&gt;" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-capacity-planner&gt;</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-capacity-planner" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-capacity-planner</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-failback-from-azure-to-hyper-v" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-failback-from-azure-to-hyper-v</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-how-to-failback-azure-to-vmware" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-how-to-failback-azure-to-vmware</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-how-to-install-linux-master-target" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-how-to-install-linux-master-target</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p><a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-manage-registration-and-protection" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-manage-registration-and-protection</a></p>
+<p>强制删除Hyper-V注册</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-manage-registration-and-protection#unregister-a-connected-configuration-server" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-manage-registration-and-protection#unregister-a-connected-configuration-server</a></p>
+<p>关于配置和排查，还请参考官方文档：</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/site-recovery/vmware-walkthrough-prerequisites" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/site-recovery/vmware-walkthrough-prerequisites</a></p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-set-up-vmware-to-azure" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-set-up-vmware-to-azure</a></p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-vmware-to-azure-protection-troubleshoot" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-vmware-to-azure-protection-troubleshoot</a></p>
+<p><a href="https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-vmware-to-azure-manage-configuration-server" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-vmware-to-azure-manage-configuration-server</a></p>
+<p><a href="https://azure.microsoft.com/en-us/blog/best-practices-for-process-server-deployment-when-protecting-vmware-and-physical-workloads-with-azure-site-recovery/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/blog/best-practices-for-process-server-deployment-when-protecting-vmware-and-physical-workloads-with-azure-site-recovery/</a></p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-faq" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-faq</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-monitoring-and-troubleshooting#常见的-azure-site-recovery-错误及其解决方法" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-monitoring-and-troubleshooting#常见的-azure-site-recovery-错误及其解决方法</a></p>
+<p>一般而言，凡论及灾备方案，都以RTO及RPO作为最基本的标准。RTO (Recovery Time Objective，复原时间目标)是企业可容许服务中断的时间长度。比如说灾难发生后半天内便需要恢复，RTO值就是十二小时；RPO (Recovery Point Objective，复原点目标)是指当服务恢复后，恢复得来的数据所对应时的间点。如果现时企业每天凌晨零时进行备份一次，当服务恢复后，系统内储存的只会是最近灾难发生前那个凌晨零时的资料。</p>
+<p>根据以上两个简单的原则，企业不但可以对现有的数据系统作出，也可以按照既定的RTO及RPO要求，选购最适合的灾备方案。RTO及RPO与方案售价有着密切的关系，然而完美的方案当然是RTO及RPO皆为零，表示当灾难发生后，系统立即恢复，而且完全没有数据丢失，可是其造价是非常昂贵的，而且也不一定有这个必要。因此，最佳方案必需在RTO，RPO，维护及价钱多方面，都能达致平衡。尤其是中小企业，在资源紧拙的情况，应先好好了解对RTO及RPO的要求，然后再看看价钱，那就比较容易找到，适合企业的方案了。</p>
+<p>来自 &lt;<a href="http://blog.itpub.net/24663694/viewspace-1041733/&gt;" target="_blank" rel="noopener">http://blog.itpub.net/24663694/viewspace-1041733/&gt;</a></p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-support-matrix-to-sec-site" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/site-recovery/site-recovery-support-matrix-to-sec-site</a></p>
+<p>在 Azure Site Recovery 中规划用于保护虚拟机和物理服务器的容量</p>
+<p>来自 &lt;<a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-capacity-planner&gt;" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-capacity-planner&gt;</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-capacity-planner" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-capacity-planner</a></p>
+<p>在 Site Recovery 中进行针对 Hyper-v 虚拟机的故障回复</p>
+<p><a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-failback-from-azure-to-hyper-v" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-failback-from-azure-to-hyper-v</a></p>
+<p>为何对于故障回复，只有一个计划的故障转移手势？</p>
+<p>Azure 是具有高可用性的环境，虚拟机将始终可用。 故障回复是一个计划的活动，可以决定进行短暂的停机，以便工作负荷在本地再次运行。 这不会丢失数据。 因此，我们只提供计划的故障转移手势，方便你关闭 Azure 中的 VM、下载最新更改，确保没有数据丢失。</p>
+<p>Hyper-v 的故障回复是否需要在 Azure 中使用进程服务器？</p>
+<p>不。仅当保护 VMware 虚拟机时才需要进程服务器。 Hyper-v 虚拟机的保护/故障回复均不需要部署任何其他组件。</p>
+<p>从 Azure 故障回复到本地站点VMware</p>
+<p><a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-how-to-failback-azure-to-vmware" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-how-to-failback-azure-to-vmware</a></p>
+<p>安装 Linux 主目标服务器</p>
+<p><a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-how-to-install-linux-master-target" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-how-to-install-linux-master-target</a></p>
+<p>按钮解释：</p>
+<p>计划内故障切换：</p>
+<p>计划的故障转移是一个不会丢失任何数据的故障转移选项。 触发计划的故障转移时，首先会关闭源虚拟机，同步最新的数据，然后触发故障转移。</p>
+<p>可针对预期会出现的中断运行计划内故障转移，确保不丢失任何数据；或者针对意外灾难运行计划外故障转移，尽量减少数据丢失（具体取决于复制频率）。</p>
+<p>当主站点重新可用时，可以轻松地故障回复到主站点。</p>
+<p>故障转移</p>
+<p>故障转移，站点恢复会在订阅中自动创建虚拟机。与计划的故障转移的区别在于本地站点的虚拟机关闭和Azure中创建的虚拟机启动。</p>
+<p>测试故障切换：</p>
+<p>执行测试故障转移（灾难恢复演练）站点恢复会在订阅中自动创建虚拟机。与故障转移的区别在于本地站点的虚拟机和Azure中创建的虚拟机可以同时运行。</p>
+<p>在不中断的情况下测试,可轻松地运行灾难恢复练习，不会影响正在进行的复制。</p>
+<p>清理测试故障转移:</p>
+<p>清理测试故障转移虚拟机时，对测试故障转移虚拟机所做的全部更改都会丢失。 这些更改不会复制回主虚拟机。</p>
+<p>提交,当点击时会出现提示：确定要提交虚拟机吗？一旦提交，便无法更改该虚拟机的恢复点。</p>
+<p>提交操作会删除服务中的所有恢复点，并且“更改恢复点”选项不再可用。</p>
+<p>重新同步</p>
+<p>Hyper-V环境下出现，如果要从 Azure 故障回复，请在“数据同步”中选择设置：</p>
+<p>在故障转移之前同步数据（仅同步增量更改） - 此选项可最大程度地减少虚拟机的停机时间，因为它可在不关闭虚拟机的情况下执行同步。 此选项将执行以下步骤：</p>
+<p>阶段 1：在 Azure 中生成虚拟机的快照，并将快照复制到本地 Hyper-V 主机。 计算机将继续在 Azure 中运行。</p>
+<p>阶段 2：在 Azure 中关闭虚拟机，使其中不会发生任何新的更改。 最终的增量更改集将传输到本地服务器，本地虚拟机会启动。</p>
+<p>仅在故障转移期间同步数据（完整下载） - 如果已在 Azure 上长时间运行，则使用此选项。 此选项速度更快，因为我们预计磁盘的大部分已经更改，而且不想花时间进行校验和计算。 此选项会执行磁盘的下载。 如果已删除本地虚拟机，此选项也很有帮助。</p>
+<p>更改恢复点</p>
+<p>当一个虚拟机有多个恢复点时，如果想要转到虚拟机的另一个恢复点，可以使用“更改恢复点”选项。</p>
+<p>完成迁移：</p>
+<p>是否确实要迁移虚拟机? 完成迁移后，你将无法更改虚拟机的恢复点。</p>
+<p>此操作将删除计算机，并且计算机不再受 Azure Site Recovery 保护。该计算机的保护配置和设置将被自动清除。Azure Site Recovery 将停止对该计算机收费。</p>
+<p>反向复制(VMware重新保护)，当点击时会出现提示：反向复制将为虚拟机反向启用保护。是否确实要启用它？</p>
+<p>仅可重新保护和故障回复到 ESXi 主机。 无法将虚拟机故障回复到 Hyper-v 主机、VMware 工作站或任何其他虚拟化平台。</p>
+<p>在不同的本地站点之间故障转移 Hyper-V 虚拟机时，若要返回到主要本地站点，必须先将虚拟机“反向复制”回到主站点，然后触发故障转移。 如果主虚拟机不可用，则在开始 反向复制 前必须从备份还原虚拟机。</p>
+<p>禁用复制项:</p>
+<p>禁用复制并删除（推荐），这将从 Azure Site Recovery 中删除复制项，并将停止计算机复制。将自动清理对源的复制配置。计算机的 Site Recovery 将停止计费.</p>
+<p>删除：这将从 Azure Site Recovery 中删除复制项。不会清理对源的复制配置。仅当源环境已删除或无法访问时，才使用此选项。单击以了解详细信息。</p>
+<p>RTO 和 RPO 目标        让恢复时间目标 (RTO) 和恢复点目标 (RPO) 始终处于组织限制范围内。</p>
+<p>Site Recovery 为 Azure VM 和 VMware VM 提供持续复制，为 Hyper-V 提供低至 30 秒的复制频率。 可以通过与 Azure 流量管理器集成来进一步降低 RTO。</p>
+<p>让应用在故障转移后保持一致</p>
+<p>可以通过应用程序一致性快照使用恢复点进行复制。 这些快照可捕获磁盘数据、内存中的所有数据，以及正在处理的所有事务。</p></article>

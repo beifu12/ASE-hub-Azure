@@ -1,0 +1,86 @@
+<article class="kb-article" data-title="【Share】Bastion无法登录VM，报错：client.text_client_status_default"><h1>【Share】Bastion无法登录VM，报错：client.text_client_status_default</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Bastion</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-21 17:53:29</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>但是登录时碰到这个报错：</li>
+</ul>
+<ul>
+<li>失败：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Xing Xiangjia</li>
+</ul>
+<ul>
+<li>Oct 21, 2025</li>
+</ul>
+<ul>
+<li>成功：</li>
+</ul>
+<ul>
+<li>Bastion host与VM在同一个虚拟网络内，理论来说上述3个权限已经足够。</li>
+</ul>
+<ul>
+<li>Azure Bastion 常见问题解答 | Azure Docs</li>
+</ul>
+<ul>
+<li>添加了虚拟网络的Reader访问权限后，问题解决。看来文档表述可能存在问题，即使是同一个虚拟网络，也最好添加虚拟网络的Reader权限。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>客户创建了一个新的Portal账号，分配了如下权限：</li>
+</ul>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>虽然两次登录VM用的是同一个用户名，但是Portal登录用的是不同的账户。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Trying to validate credential : targetResourceId: /subscriptions/79fce2fc-e414-4205-b945-5e9b6d5bfead/resourceGroups/rg-test-workload-cnn3/providers/Microsoft.Compute/virtualMachines/vm-test-ahnoerp-cnn3, UserName: opsoft-ruantl (@rdp), Protocol: null  using private key (0), UserEmail: jacky.wu@sandvikchina2.partner.onmschina.cn, KeyboardFormat: en-us-qwerty</li>
+</ul>
+<ul>
+<li>Trying to validate credential : targetResourceId: /subscriptions/79fce2fc-e414-4205-b945-5e9b6d5bfead/resourceGroups/rg-test-workload-cnn3/providers/Microsoft.Compute/virtualMachines/vm-test-ahnoerp-cnn3, UserName: opsoft-ruantl (@rdp), Protocol: null  using private key (0), UserEmail: consultant.taolei.ruan@sandvikchina2.partner.onmschina.cn, KeyboardFormat: en-us-qwerty</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>检查Bastion日志：<a href="https://portal.microsoftgeneva.com/s/605AD161" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/605AD161</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Xing Xiangjia</p>
+<p>Oct 21, 2025</p>
+<p>问题现象：</p>
+<p>客户创建了一个新的Portal账号，分配了如下权限：</p>
+<p>但是登录时碰到这个报错：</p>
+<p>排查过程：</p>
+<p>检查Bastion日志：<a href="https://portal.microsoftgeneva.com/s/605AD161" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/605AD161</a></p>
+<p>成功：</p>
+<p>Trying to validate credential : targetResourceId: /subscriptions/79fce2fc-e414-4205-b945-5e9b6d5bfead/resourceGroups/rg-test-workload-cnn3/providers/Microsoft.Compute/virtualMachines/vm-test-ahnoerp-cnn3, UserName: opsoft-ruantl (@rdp), Protocol: null  using private key (0), UserEmail: jacky.wu@sandvikchina2.partner.onmschina.cn, KeyboardFormat: en-us-qwerty</p>
+<p>失败：</p>
+<p>Trying to validate credential : targetResourceId: /subscriptions/79fce2fc-e414-4205-b945-5e9b6d5bfead/resourceGroups/rg-test-workload-cnn3/providers/Microsoft.Compute/virtualMachines/vm-test-ahnoerp-cnn3, UserName: opsoft-ruantl (@rdp), Protocol: null  using private key (0), UserEmail: consultant.taolei.ruan@sandvikchina2.partner.onmschina.cn, KeyboardFormat: en-us-qwerty</p>
+<p>虽然两次登录VM用的是同一个用户名，但是Portal登录用的是不同的账户。</p>
+<p>Bastion host与VM在同一个虚拟网络内，理论来说上述3个权限已经足够。</p>
+<p>Azure Bastion 常见问题解答 | Azure Docs</p>
+<p>解决方案：</p>
+<p>添加了虚拟网络的Reader访问权限后，问题解决。看来文档表述可能存在问题，即使是同一个虚拟网络，也最好添加虚拟网络的Reader权限。</p></article>

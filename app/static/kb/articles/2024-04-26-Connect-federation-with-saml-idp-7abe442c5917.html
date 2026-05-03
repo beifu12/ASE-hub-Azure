@@ -1,0 +1,191 @@
+<article class="kb-article" data-title="Connect federation with saml idp"><h1>Connect federation with saml idp</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-04-26 17:15:44</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>-IssuerUri $MyURI `</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>-IssuerUri $MyURI `</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>使用 SAML2.0 标识提供者 （IdP） 进行单一登录</li>
+</ul>
+<ul>
+<li>It is recommended that you always import the latest Microsoft Entra metadata when configuring your SAML 2.0 identity provider. （Microsoft Entra ID does not read metadata from the identity provider.）</li>
+</ul>
+<ul>
+<li>2.Set up a trust between your SAML identity provider and Microsoft Entra ID</li>
+</ul>
+<ul>
+<li>$dom = &quot;contoso.com&quot;</li>
+</ul>
+<ul>
+<li>$BrandName = &quot;Sample SAML 2.0 IDP&quot;</li>
+</ul>
+<ul>
+<li>$MyURI = &quot;urn:uri:MySamlp2IDP&quot;</li>
+</ul>
+<ul>
+<li>-DomainName $dom `</li>
+</ul>
+<ul>
+<li>-FederationBrandName $BrandName `</li>
+</ul>
+<ul>
+<li>-Authentication Federated `</li>
+</ul>
+<ul>
+<li>-SigningCertificate $MySigningCert `</li>
+</ul>
+<ul>
+<li>（You can obtain the signing certificate base64 encoded string from your IDP metadata file.）</li>
+</ul>
+<ul>
+<li>3. Provision user principals to Microsoft Entra ID</li>
+</ul>
+<ul>
+<li>-UserPrincipalName elwoodf1@contoso.com `</li>
+</ul>
+<ul>
+<li>-ImmutableId ABCDEFG1234567890 `</li>
+</ul>
+<ul>
+<li>-DisplayName &quot;Elwood Folk&quot; `</li>
+</ul>
+<ul>
+<li>-FirstName Elwood `</li>
+</ul>
+<ul>
+<li>-LastName Folk `</li>
+</ul>
+<ul>
+<li>-AlternateEmailAddresses &quot;Elwood.Folk@contoso.com&quot; `</li>
+</ul>
+<ul>
+<li>-UsageLocation &quot;CN&quot;</li>
+</ul>
+<ul>
+<li>Immutable ID 生成方法依照第三方文档，如：</li>
+</ul>
+<ul>
+<li>然后判断SAMLREquest是否符合要求</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>首先确认如下3步是否成功完成：</li>
+</ul>
+<ul>
+<li>$MySigningCert = &quot;MIIC7jCCAdagAwIBAgIQRrjsbFPaXIlOG3GTv50fkjANBgkqhkiG9w0BAQsFADAzMTEwLwYDVQQDEyh BREZTIFNpZ25pbmcgLSBXUzIwMTJSMi0wLnN3aW5mb3JtZXIuY29tMB4XDTE0MDEyMDE1MTY0MFoXDT E1MDEyMDE1MTY0MFowMzExMC8GA1UEAxMoQURGUyBTaWduaW5nIC0gV1MyMDEyUjItMC5zd2luZm9yb WVyLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKe+rLVmXy1QwCwZwqgbbp1/kupQ VcjKuKLitVDbssFyqbDTjP7WRjlVMWAHBI3kgNT7oE362Gf2WMJFf1b0HcrsgLin7daRXpq4Qi6OA57 sW1YFMj3sqyuTP0eZV3S4+ZbDVob6amsZIdIwxaLP9Zfywg2bLsGnVldB0+XKedZwDbCLCVg+3ZWxd9 T/jV0hpLIIWr+LCOHqq8n8beJvlivgLmDJo8f+EITnAxWcsJUvVai/35AhHCUq9tc9sqMp5PWtabAEM b2AU72/QlX/72D2/NbGQq1BWYbqUpgpCZ2nSgvlWDHlCiUo//UGsvfox01kjTFlmqQInsJVfRxF5AcC AwEAATANBgkqhkiG9w0BAQsFAAOCAQEAi8c6C4zaTEc7aQiUgvnGQgCbMZbhUXXLGRpjvFLKaQzkwa9 eq7WLJibcSNyGXBa/SfT5wJgsm3TPKgSehGAOTirhcqHheZyvBObAScY7GOT+u9pVYp6raFrc7ez3c+ CGHeV/tNvy1hJNs12FYH4X+ZCNFIT9tprieR25NCdi5SWUbPZL0tVzJsHc1y92b2M2FxqRDohxQgJvy JOpcg2mSBzZZIkvDg7gfPSUXHVS1MQs0RHSbwq/XdQocUUhl9/e/YWCbNNxlM84BxFsBUok1dH/gzBy Sx+Fc8zYi7cOq9yaBT3RLT6cGmFGVYZJW4FyhPZOCLVNsLlnPQcX3dDg9A==&quot;</li>
+</ul>
+<ul>
+<li>-PassiveLogOnUri $LogOnUrl `</li>
+</ul>
+<ul>
+<li>-ActiveLogOnUri $ecpUrl `</li>
+</ul>
+<ul>
+<li>-LogOffUri $LogOffUrl `</li>
+</ul>
+<ul>
+<li>解析后验证必须要的属性</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-MsolDomainAuthentication `</li>
+</ul>
+<ul>
+<li>New-MsolUser `</li>
+</ul>
+<ul>
+<li>On a Domain Controller, or on a machine with Active Directory Powershell cmdlets installed, open PowerShell. Run the following command to see the immutable of a single user.</li>
+</ul>
+<ul>
+<li>Get-ADUser &lt;name&gt; | select UserPrincipalName,ObjectGuid, @{e={[system.convert]::ToBase64String($_.ObjectGuid.ToByteArray())};l=&quot;ImmutableId&quot; }</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>$Protocol = &quot;SAMLP&quot;</li>
+</ul>
+<ul>
+<li>-PreferredAuthenticationProtocol $Protocol</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-fed-saml-idp" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-fed-saml-idp</a></li>
+</ul>
+<ul>
+<li>1. Register Azure Entra ID as a service provider (SP) with the IdP of your organization. Use the SAML metadata <a href="https://nexus.partner.microsoftonline-p.cn/federationmetadata/saml20/federationmetadata.xml" target="_blank" rel="noopener">https://nexus.partner.microsoftonline-p.cn/federationmetadata/saml20/federationmetadata.xml</a></li>
+</ul>
+<ul>
+<li>$LogOnUrl = &quot;<a href="https://WS2012R2-0.contoso.com/passiveLogon&quot;" target="_blank" rel="noopener">https://WS2012R2-0.contoso.com/passiveLogon&quot;</a></li>
+</ul>
+<ul>
+<li>$LogOffUrl = &quot;<a href="https://WS2012R2-0.contoso.com/passiveLogOff&quot;" target="_blank" rel="noopener">https://WS2012R2-0.contoso.com/passiveLogOff&quot;</a></li>
+</ul>
+<ul>
+<li>$ecpUrl = &quot;<a href="https://WS2012R2-0.contoso.com/PAOS&quot;" target="_blank" rel="noopener">https://WS2012R2-0.contoso.com/PAOS&quot;</a></li>
+</ul>
+<ul>
+<li>$uri = &quot;<a href="http://WS2012R2-0.contoso.com/adfs/services/trust&quot;" target="_blank" rel="noopener">http://WS2012R2-0.contoso.com/adfs/services/trust&quot;</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.cyberark.com/identity/Latest/en/Content/Applications/AppsWeb/Office365/O365_Provisioning.htm" target="_blank" rel="noopener">https://docs.cyberark.com/identity/Latest/en/Content/Applications/AppsWeb/Office365/O365_Provisioning.htm</a></li>
+</ul>
+<ul>
+<li><a href="https://www.samltool.com/decode.php" target="_blank" rel="noopener">https://www.samltool.com/decode.php</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/02/28</p>
+<p>使用 SAML2.0 标识提供者 （IdP） 进行单一登录</p>
+<p><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-fed-saml-idp" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-fed-saml-idp</a></p>
+<p>首先确认如下3步是否成功完成：</p>
+<p>1. Register Azure Entra ID as a service provider (SP) with the IdP of your organization. Use the SAML metadata <a href="https://nexus.partner.microsoftonline-p.cn/federationmetadata/saml20/federationmetadata.xml" target="_blank" rel="noopener">https://nexus.partner.microsoftonline-p.cn/federationmetadata/saml20/federationmetadata.xml</a></p>
+<p>It is recommended that you always import the latest Microsoft Entra metadata when configuring your SAML 2.0 identity provider. （Microsoft Entra ID does not read metadata from the identity provider.）</p>
+<p>2.Set up a trust between your SAML identity provider and Microsoft Entra ID</p>
+<p>$dom = &quot;contoso.com&quot;</p>
+<p>$BrandName = &quot;Sample SAML 2.0 IDP&quot;</p>
+<p>$LogOnUrl = &quot;<a href="https://WS2012R2-0.contoso.com/passiveLogon&quot;" target="_blank" rel="noopener">https://WS2012R2-0.contoso.com/passiveLogon&quot;</a></p>
+<p>$LogOffUrl = &quot;<a href="https://WS2012R2-0.contoso.com/passiveLogOff&quot;" target="_blank" rel="noopener">https://WS2012R2-0.contoso.com/passiveLogOff&quot;</a></p>
+<p>$ecpUrl = &quot;<a href="https://WS2012R2-0.contoso.com/PAOS&quot;" target="_blank" rel="noopener">https://WS2012R2-0.contoso.com/PAOS&quot;</a></p>
+<p>$MyURI = &quot;urn:uri:MySamlp2IDP&quot;</p>
+<p>$MySigningCert = &quot;MIIC7jCCAdagAwIBAgIQRrjsbFPaXIlOG3GTv50fkjANBgkqhkiG9w0BAQsFADAzMTEwLwYDVQQDEyh BREZTIFNpZ25pbmcgLSBXUzIwMTJSMi0wLnN3aW5mb3JtZXIuY29tMB4XDTE0MDEyMDE1MTY0MFoXDT E1MDEyMDE1MTY0MFowMzExMC8GA1UEAxMoQURGUyBTaWduaW5nIC0gV1MyMDEyUjItMC5zd2luZm9yb WVyLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKe+rLVmXy1QwCwZwqgbbp1/kupQ VcjKuKLitVDbssFyqbDTjP7WRjlVMWAHBI3kgNT7oE362Gf2WMJFf1b0HcrsgLin7daRXpq4Qi6OA57 sW1YFMj3sqyuTP0eZV3S4+ZbDVob6amsZIdIwxaLP9Zfywg2bLsGnVldB0+XKedZwDbCLCVg+3ZWxd9 T/jV0hpLIIWr+LCOHqq8n8beJvlivgLmDJo8f+EITnAxWcsJUvVai/35AhHCUq9tc9sqMp5PWtabAEM b2AU72/QlX/72D2/NbGQq1BWYbqUpgpCZ2nSgvlWDHlCiUo//UGsvfox01kjTFlmqQInsJVfRxF5AcC AwEAATANBgkqhkiG9w0BAQsFAAOCAQEAi8c6C4zaTEc7aQiUgvnGQgCbMZbhUXXLGRpjvFLKaQzkwa9 eq7WLJibcSNyGXBa/SfT5wJgsm3TPKgSehGAOTirhcqHheZyvBObAScY7GOT+u9pVYp6raFrc7ez3c+ CGHeV/tNvy1hJNs12FYH4X+ZCNFIT9tprieR25NCdi5SWUbPZL0tVzJsHc1y92b2M2FxqRDohxQgJvy JOpcg2mSBzZZIkvDg7gfPSUXHVS1MQs0RHSbwq/XdQocUUhl9/e/YWCbNNxlM84BxFsBUok1dH/gzBy Sx+Fc8zYi7cOq9yaBT3RLT6cGmFGVYZJW4FyhPZOCLVNsLlnPQcX3dDg9A==&quot;</p>
+<p>$uri = &quot;<a href="http://WS2012R2-0.contoso.com/adfs/services/trust&quot;" target="_blank" rel="noopener">http://WS2012R2-0.contoso.com/adfs/services/trust&quot;</a></p>
+<p>$Protocol = &quot;SAMLP&quot;</p>
+<p>Set-MsolDomainAuthentication `</p>
+<p>-DomainName $dom `</p>
+<p>-FederationBrandName $BrandName `</p>
+<p>-Authentication Federated `</p>
+<p>-PassiveLogOnUri $LogOnUrl `</p>
+<p>-ActiveLogOnUri $ecpUrl `</p>
+<p>-SigningCertificate $MySigningCert `</p>
+<p>-IssuerUri $MyURI `</p>
+<p>-LogOffUri $LogOffUrl `</p>
+<p>-PreferredAuthenticationProtocol $Protocol</p>
+<p>（You can obtain the signing certificate base64 encoded string from your IDP metadata file.）</p>
+<p>3. Provision user principals to Microsoft Entra ID</p>
+<p>New-MsolUser `</p>
+<p>-UserPrincipalName elwoodf1@contoso.com `</p>
+<p>-ImmutableId ABCDEFG1234567890 `</p>
+<p>-DisplayName &quot;Elwood Folk&quot; `</p>
+<p>-FirstName Elwood `</p>
+<p>-LastName Folk `</p>
+<p>-AlternateEmailAddresses &quot;Elwood.Folk@contoso.com&quot; `</p>
+<p>-UsageLocation &quot;CN&quot;</p>
+<p>Immutable ID 生成方法依照第三方文档，如：</p>
+<p><a href="https://docs.cyberark.com/identity/Latest/en/Content/Applications/AppsWeb/Office365/O365_Provisioning.htm" target="_blank" rel="noopener">https://docs.cyberark.com/identity/Latest/en/Content/Applications/AppsWeb/Office365/O365_Provisioning.htm</a></p>
+<p>On a Domain Controller, or on a machine with Active Directory Powershell cmdlets installed, open PowerShell. Run the following command to see the immutable of a single user.</p>
+<p>Get-ADUser &lt;name&gt; | select UserPrincipalName,ObjectGuid, @{e={[system.convert]::ToBase64String($_.ObjectGuid.ToByteArray())};l=&quot;ImmutableId&quot; }</p>
+<p>然后判断SAMLREquest是否符合要求</p>
+<p><a href="https://www.samltool.com/decode.php" target="_blank" rel="noopener">https://www.samltool.com/decode.php</a></p>
+<p>解析后验证必须要的属性</p></article>

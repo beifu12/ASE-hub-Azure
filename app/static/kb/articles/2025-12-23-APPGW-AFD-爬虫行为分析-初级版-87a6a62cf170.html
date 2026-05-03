@@ -1,0 +1,130 @@
+<article class="kb-article" data-title="APPGW/AFD 爬虫行为分析（初级版）"><h1>APPGW/AFD 爬虫行为分析（初级版）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-23 14:53:32</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2025 12/23</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2025 12/23</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025 12/23</li>
+</ul>
+<ul>
+<li>最近一个月做了很多爬虫工单，客户这边想要寻求一个方式方法，来有效果的针对爬虫，我们首先需要将爬虫的行为完全解析，之后可以做出有效的对应策略。</li>
+</ul>
+<ul>
+<li>爬虫的行为分析：</li>
+</ul>
+<ul>
+<li>爬虫是模仿人类浏览网页的行为，且水平一般的爬虫，会有固定的行为模式。</li>
+</ul>
+<ul>
+<li>发送请求：像人类点击链接一样，程序发送HTTP请求</li>
+</ul>
+<ul>
+<li>解析响应：把服务器返回的HTML数据变成结构化的宝藏</li>
+</ul>
+<ul>
+<li>存储数据：把挖到的数据存到本地或数据库</li>
+</ul>
+<ul>
+<li>在这之后，爬虫攻击者会采用自动化执行的方式，在固定的时间（通常会选择在午夜或者凌晨），进行大量的模仿请求, 请求形态如下：</li>
+</ul>
+<ul>
+<li>通过代理IP池（IP农场）来进行不断更新的IP策略。</li>
+</ul>
+<ul>
+<li>生成随机请求头</li>
+</ul>
+<ul>
+<li>User-Agent为假， 但是在同一时间产生大量同一个/少数几个重复user-agent.</li>
+</ul>
+<ul>
+<li>基本无时间差， 请求某一个/某几个特定的path或者js</li>
+</ul>
+<ul>
+<li>Client IP: 113.119.x.x</li>
+</ul>
+<ul>
+<li>Host: yipeng.azurecn.cn</li>
+</ul>
+<ul>
+<li>Sent bytes: 1396784</li>
+</ul>
+<ul>
+<li>Total Count: 412</li>
+</ul>
+<ul>
+<li>TimeStamp: 2025-12-21 20:27:00</li>
+</ul>
+<ul>
+<li>引用：Python爬虫入门实战：从零开始爬取网页数据（附完整代码）-CSDN博客</li>
+</ul>
+<ul>
+<li>阿里云CDN有包年流量包</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>爬虫核心三步骤</li>
+</ul>
+<ul>
+<li>这里面的重点在于，爬虫之所以会被算作为攻击，是因为在客户使用具有非缓存模式的产品（APPGW）之时，爬虫攻击者会先使用/robots.txt的路径， 查看允许爬取的内容，拿到从客户服务器端发送回的byte大小之后，通过筛选，找到前几个最大byte/耗时最长的读取文件。</li>
+</ul>
+<ul>
+<li>在这种情况下，我们可以在APPGW的access log上看到如下例子:</li>
+</ul>
+<ul>
+<li>Request URI: /factor/api/logicpro/ats</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az network application-gateway waf-policy custom-rule match-condition add --name test --policy-name yipengtest --resource-group max-rg --match-variables RemoteAddr --operator IPMatch --values 203.0.113.45 198.51.100.10 192.0.2.77</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>目前Azure侧没有很好的可针对爬虫工具， 且客户侧面对此问题时暂时束手无策，我们可以通过WAF来暂时block，但与此同时，由于IP非常多，我们可以尝试用CLI来进行更新WAF的策略：</li>
+</ul>
+<ul>
+<li>另外，由于目前Azure侧没有有效针对爬虫的工具，建议客户如果有强烈需要，可以转到中国区的cloudflare/阿里云CDN</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025 12/23</p>
+<p>最近一个月做了很多爬虫工单，客户这边想要寻求一个方式方法，来有效果的针对爬虫，我们首先需要将爬虫的行为完全解析，之后可以做出有效的对应策略。</p>
+<p>爬虫的行为分析：</p>
+<p>爬虫是模仿人类浏览网页的行为，且水平一般的爬虫，会有固定的行为模式。</p>
+<p>爬虫核心三步骤</p>
+<p>发送请求：像人类点击链接一样，程序发送HTTP请求</p>
+<p>解析响应：把服务器返回的HTML数据变成结构化的宝藏</p>
+<p>存储数据：把挖到的数据存到本地或数据库</p>
+<p>这里面的重点在于，爬虫之所以会被算作为攻击，是因为在客户使用具有非缓存模式的产品（APPGW）之时，爬虫攻击者会先使用/robots.txt的路径， 查看允许爬取的内容，拿到从客户服务器端发送回的byte大小之后，通过筛选，找到前几个最大byte/耗时最长的读取文件。</p>
+<p>在这之后，爬虫攻击者会采用自动化执行的方式，在固定的时间（通常会选择在午夜或者凌晨），进行大量的模仿请求, 请求形态如下：</p>
+<p>通过代理IP池（IP农场）来进行不断更新的IP策略。</p>
+<p>生成随机请求头</p>
+<p>User-Agent为假， 但是在同一时间产生大量同一个/少数几个重复user-agent.</p>
+<p>基本无时间差， 请求某一个/某几个特定的path或者js</p>
+<p>在这种情况下，我们可以在APPGW的access log上看到如下例子:</p>
+<p>Client IP: 113.119.x.x</p>
+<p>Request URI: /factor/api/logicpro/ats</p>
+<p>Host: yipeng.azurecn.cn</p>
+<p>Sent bytes: 1396784</p>
+<p>Total Count: 412</p>
+<p>TimeStamp: 2025-12-21 20:27:00</p>
+<p>引用：Python爬虫入门实战：从零开始爬取网页数据（附完整代码）-CSDN博客</p>
+<p>目前Azure侧没有很好的可针对爬虫工具， 且客户侧面对此问题时暂时束手无策，我们可以通过WAF来暂时block，但与此同时，由于IP非常多，我们可以尝试用CLI来进行更新WAF的策略：</p>
+<p>az network application-gateway waf-policy custom-rule match-condition add --name test --policy-name yipengtest --resource-group max-rg --match-variables RemoteAddr --operator IPMatch --values 203.0.113.45 198.51.100.10 192.0.2.77</p>
+<p>另外，由于目前Azure侧没有有效针对爬虫的工具，建议客户如果有强烈需要，可以转到中国区的cloudflare/阿里云CDN</p>
+<p>阿里云CDN有包年流量包</p></article>

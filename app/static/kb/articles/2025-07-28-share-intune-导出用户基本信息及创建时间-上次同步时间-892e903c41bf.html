@@ -1,0 +1,75 @@
+<article class="kb-article" data-title="【share】intune 导出用户基本信息及创建时间，上次同步时间"><h1>【share】intune 导出用户基本信息及创建时间，上次同步时间</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-28 15:45:04</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Connect-MgGraph -ClientSecretCredential $credential -TenantId $tenantId -Environment China -NoWelcome -Verbose -ErrorAction Stop</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Connect-MgGraph -ClientSecretCredential $credential -TenantId $tenantId -Environment China -NoWelcome -Verbose -ErrorAction Stop</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Install-Module Microsoft.Graph</li>
+</ul>
+<ul>
+<li>Import-Module Microsoft.Graph</li>
+</ul>
+<ul>
+<li>$clientId = &quot;c3ad0400-8b2b-45d0-9915-d87383****e&quot;</li>
+</ul>
+<ul>
+<li>$clientSecret = &quot;qo.8ahG8_Hy2zq3-GoV_6-51*****I&quot;</li>
+</ul>
+<ul>
+<li>$tenantId = &quot;b388b808-0ec9-4a09-a414-a7c*******&quot;</li>
+</ul>
+<ul>
+<li>$securePassword = ConvertTo-SecureString $clientSecret -AsPlainText -Force</li>
+</ul>
+<ul>
+<li>$credential = New-Object System.Management.Automation.PSCredential($clientId, $securePassword)</li>
+</ul>
+<ul>
+<li># 获取用户列表</li>
+</ul>
+<ul>
+<li>$users = Get-MgUser -All -Property &quot;id,displayName,userPrincipalName,createdDateTime,lastPasswordChangeDateTime&quot;</li>
+</ul>
+<ul>
+<li># 导出到CSV</li>
+</ul>
+<ul>
+<li>$users | Select-Object id,displayName,userPrincipalName,createdDateTime,lastPasswordChangeDateTime | Export-Csv -Path &quot;C:\UsersList.csv&quot; -NoTypeInformation -Encoding UTF8</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/7/24</p>
+<p>Install-Module Microsoft.Graph</p>
+<p>Import-Module Microsoft.Graph</p>
+<p>$clientId = &quot;c3ad0400-8b2b-45d0-9915-d87383****e&quot;</p>
+<p>$clientSecret = &quot;qo.8ahG8_Hy2zq3-GoV_6-51*****I&quot;</p>
+<p>$tenantId = &quot;b388b808-0ec9-4a09-a414-a7c*******&quot;</p>
+<p>$securePassword = ConvertTo-SecureString $clientSecret -AsPlainText -Force</p>
+<p>$credential = New-Object System.Management.Automation.PSCredential($clientId, $securePassword)</p>
+<p>Connect-MgGraph -ClientSecretCredential $credential -TenantId $tenantId -Environment China -NoWelcome -Verbose -ErrorAction Stop</p>
+<h1>获取用户列表</h1>
+<p>$users = Get-MgUser -All -Property &quot;id,displayName,userPrincipalName,createdDateTime,lastPasswordChangeDateTime&quot;</p>
+<h1>导出到CSV</h1>
+<p>$users | Select-Object id,displayName,userPrincipalName,createdDateTime,lastPasswordChangeDateTime | Export-Csv -Path &quot;C:\UsersList.csv&quot; -NoTypeInformation -Encoding UTF8</p></article>

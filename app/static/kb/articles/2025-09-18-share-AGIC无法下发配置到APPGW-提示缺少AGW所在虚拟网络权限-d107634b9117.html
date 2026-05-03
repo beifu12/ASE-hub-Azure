@@ -1,0 +1,123 @@
+<article class="kb-article" data-title="【share】AGIC无法下发配置到APPGW，提示缺少AGW所在虚拟网络权限"><h1>【share】AGIC无法下发配置到APPGW，提示缺少AGW所在虚拟网络权限</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-18 17:50:00</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>===故障现象===</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>===故障现象===</li>
+</ul>
+<ul>
+<li>1.表现为AGW访问异常502，后端运行状况显示后端AKS POD探测超时</li>
+</ul>
+<ul>
+<li>出现如下报错</li>
+</ul>
+<ul>
+<li>如果有授权，则不会出现此类报错</li>
+</ul>
+<ul>
+<li>拿到报错里的Object ID，然后赋权就可以：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>近期接到多个相同问题的case，以下内容可供大家参考</li>
+</ul>
+<ul>
+<li>E0619 08:03:09.577186       1 controller.go:141]</li>
+</ul>
+<ul>
+<li>===原因分析===</li>
+</ul>
+<ul>
+<li>AKS在使用ADD-ON启用入口控制器时</li>
+</ul>
+<ul>
+<li>选择应用程序网关这一步会有两种场景, 决定AGIC是否关联AppGW的Vnet权限</li>
+</ul>
+<ul>
+<li>场景1:如果选择新建，平台会自动创建带MC-AKS前缀的资源组并部署vnet，Appgw等资源，且AGIC会自动关联vnet权限</li>
+</ul>
+<ul>
+<li>场景2:如果选择现有APPGW，AGIC没有AGW所在VNET权限，需要手动添加</li>
+</ul>
+<ul>
+<li>门户授权方法请参考：</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>请重新添加角色分配：</li>
+</ul>
+<ul>
+<li>==================</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>请检查业务环境中AGW所在VNET是否有对AKS服务主体的授权：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>2.AKS中运行如下命令检查AGIC的日志</li>
+</ul>
+<ul>
+<li>kubectl logs ingress-appgw-deployment-85c7bb546d-fgglx -n kube-system （标黄字段为APPGW INGRESS CONTROLLER的名称）</li>
+</ul>
+<ul>
+<li>AZ CLI方式授权方法请参考</li>
+</ul>
+<ul>
+<li>az role assignment create --assignee &lt;object ID&gt; --scope &lt;resource ID of the Vnet&gt; --role “Network Contributor”</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>当AGIC需要更新配置时，由于缺少AGW所在vnet的读写权限，导致无法将配置同步给AGW，AGW上还是旧有的配置</li>
+</ul>
+<ul>
+<li>===后续建议===</li>
+</ul>
+<ul>
+<li>b. 如果没有授权需要手动添加以规避此类问题</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>经过CSS的确认，此问题和平台5月发送的这个通知有关，这个限制在官网上一直有，可以在门户网站的 Service Health -&gt; Health History中找到这个通知，或者点击链接： <a href="https://portal.azure.cn/#blade/Microsoft_Azure_Health/AzureHealthBrowseBlade/trackingId/FTNK-R80" target="_blank" rel="noopener">https://portal.azure.cn/#blade/Microsoft_Azure_Health/AzureHealthBrowseBlade/trackingId/FTNK-R80</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/06/20</p>
+<p>近期接到多个相同问题的case，以下内容可供大家参考</p>
+<p>===故障现象===</p>
+<p>1.表现为AGW访问异常502，后端运行状况显示后端AKS POD探测超时</p>
+<p>2.AKS中运行如下命令检查AGIC的日志</p>
+<p>kubectl logs ingress-appgw-deployment-85c7bb546d-fgglx -n kube-system （标黄字段为APPGW INGRESS CONTROLLER的名称）</p>
+<p>出现如下报错</p>
+<p>E0619 08:03:09.577186       1 controller.go:141]</p>
+<p>===原因分析===</p>
+<p>AKS在使用ADD-ON启用入口控制器时</p>
+<p>选择应用程序网关这一步会有两种场景, 决定AGIC是否关联AppGW的Vnet权限</p>
+<p>场景1:如果选择新建，平台会自动创建带MC-AKS前缀的资源组并部署vnet，Appgw等资源，且AGIC会自动关联vnet权限</p>
+<p>场景2:如果选择现有APPGW，AGIC没有AGW所在VNET权限，需要手动添加</p>
+<p>当AGIC需要更新配置时，由于缺少AGW所在vnet的读写权限，导致无法将配置同步给AGW，AGW上还是旧有的配置</p>
+<p>经过CSS的确认，此问题和平台5月发送的这个通知有关，这个限制在官网上一直有，可以在门户网站的 Service Health -&gt; Health History中找到这个通知，或者点击链接： <a href="https://portal.azure.cn/#blade/Microsoft_Azure_Health/AzureHealthBrowseBlade/trackingId/FTNK-R80" target="_blank" rel="noopener">https://portal.azure.cn/#blade/Microsoft_Azure_Health/AzureHealthBrowseBlade/trackingId/FTNK-R80</a></p>
+<p>===后续建议===</p>
+<p>请检查业务环境中AGW所在VNET是否有对AKS服务主体的授权：</p>
+<p>如果有授权，则不会出现此类报错</p>
+<p>b. 如果没有授权需要手动添加以规避此类问题</p>
+<p>门户授权方法请参考：</p>
+<p>==============</p>
+<p>请重新添加角色分配：</p>
+<p>AZ CLI方式授权方法请参考</p>
+<p>==================</p>
+<p>拿到报错里的Object ID，然后赋权就可以：</p>
+<p>az role assignment create --assignee &lt;object ID&gt; --scope &lt;resource ID of the Vnet&gt; --role “Network Contributor”</p></article>

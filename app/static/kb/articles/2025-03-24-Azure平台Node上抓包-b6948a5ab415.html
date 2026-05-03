@@ -1,0 +1,365 @@
+<article class="kb-article" data-title="Azure平台Node上抓包"><h1>Azure平台Node上抓包</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2025-03-24 17:15:28</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>如果这里测试是False，有可能Jumpbox与该Node路由层面也不通，解决办法未知，如果路由都不通报错现象和信息不应该是：连接后很快就报出“Disconnected from xxxx&quot;，而会是连接时间久一点，然后提示“Disconnected from xxx &quot;和另一行&quot;Unable to establish a connection&quot;。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>如果这里测试是False，有可能Jumpbox与该Node路由层面也不通，解决办法未知，如果路由都不通报错现象和信息不应该是：连接后很快就报出“Disconnected from xxxx&quot;，而会是连接时间久一点，然后提示“Disconnected from xxx &quot;和另一行&quot;Unable to establish a connection&quot;。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>目的：登录Azure VM、Azure VPN Gateway、Azure Firewall、Azure Application Gateway这些虚拟机实例所在的宿主机（物理）节点中，抓取其网络数据包，帮助分析定位一些疑难网络问题。</li>
+</ul>
+<ul>
+<li>收集上述网元所在宿主机的信息即Cluster和NodeId：</li>
+</ul>
+<ul>
+<li>Azure VM</li>
+</ul>
+<ul>
+<li>| where subscriptionId has &quot;2196af93-4b6b-4d5a-a675-ea9c0c8a08ab&quot;</li>
+</ul>
+<ul>
+<li>//|  where (TIMESTAMP &gt;= datetime(2021-09-25T16:00:00Z) and TIMESTAMP &lt; datetime(2021-09-26T16:00:00Z))</li>
+</ul>
+<ul>
+<li>| where (TIMESTAMP ) &gt;= ago(1d)</li>
+</ul>
+<ul>
+<li>| where roleInstanceName has &quot;AZVL-CONSUL-01&quot;</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP+8h, nodeId, containerId, containerType, creationTime, roleInstanceName,Tenant,virtualMachineUniqueId,tenantName,RegionFriendlyName</li>
+</ul>
+<ul>
+<li>Azure VPN Gateway</li>
+</ul>
+<ul>
+<li>| where * has &quot;824ea121ef4a434d99c731aa37f1df5b&quot;</li>
+</ul>
+<ul>
+<li>| where (TIMESTAMP ) &gt;= ago(2h)</li>
+</ul>
+<ul>
+<li>Azure Firewall</li>
+</ul>
+<ul>
+<li>| where subscriptionId has &quot;042de609-0baa-45d1-910a-59635f87e61b&quot;</li>
+</ul>
+<ul>
+<li>| where * has &quot;gsa-3d44000a-25d8&quot;</li>
+</ul>
+<ul>
+<li>App GW V1</li>
+</ul>
+<ul>
+<li>| where * has &quot;68baf43e-38f8-4ed0-af2e-7abc42d8abd2&quot;</li>
+</ul>
+<ul>
+<li>2）App GW V2</li>
+</ul>
+<ul>
+<li>| where * has &quot;a741b825-6f31-48fc-bf31-fc576d615a5f&quot; or * has &quot;d6574eb4-6df3-42fc-be8b-5fa0a26a2934&quot;  //要找几个实例写几个</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP+8h, nodeId, containerId, containerType, creationTime,subscriptionId, roleInstanceName,Tenant,virtualMachineUniqueId,tenantName,RegionFriendlyName</li>
+</ul>
+<ul>
+<li>申请JIT权限：</li>
+</ul>
+<ul>
+<li>如果超过3分钟，未显示为“Granted&quot;，在Jit通知邮件中去找收件人，挨个找个在线的，让他帮忙批复JIT权限：</li>
+</ul>
+<ul>
+<li>关于Jumpbox的说明： 目前中国区的Jumpbox除了North3，有其专用的2个Jumpbox，如上图所示，可以看到JumpBox:ZQZ字样；其它4个Region共用另外2个Jumpbox，它们名为JumpBox:BJB、SHA</li>
+</ul>
+<ul>
+<li>将个人U Key和PAW设备登录Smart Card(白色的）都插入PAW设备，按如下1、2、3顺序，输入Smart Card PIN码登录进PAW Windows系统中：</li>
+</ul>
+<ul>
+<li>当PAW位于北京办公室时，将PAW设备连接上名为“PAW”的WIFI信号；当PAW位于非办公室，连接一个可以访问Internet的WIFI：</li>
+</ul>
+<ul>
+<li>连接上以后，如果显示需要进一步的认证，请根据提示打开其中的链接，在浏览器弹出的认证页面中输入登录bj-oe的域账号和密码，即登录办公电脑输入的用户名和密码，完成认证。</li>
+</ul>
+<ul>
+<li>在JIT文件所在的PC上登录Skype，然后搜索到自已的账号，然后直接发起Skype Call，再接着在PAW Skype上直接选择打开文本聊天窗口；然后将申请的全部jit相关文件传送到PAW设备中：</li>
+</ul>
+<ul>
+<li>在PAW上连接VPN。连接VPN的软件目前 在PAW上叫“lvanti Secure Acccess Client&quot;，其中已添加好了2个VPN连接，分别名为&quot;BJB&quot;和“Sha20&quot;，目前也只有这2个VPN连接；通过它们中的任意一个，正常情况下都可以连接到任意名为BJB或者ZQZ的Jumpbox：</li>
+</ul>
+<ul>
+<li>在PAW设备中连接Jumpbox，连接任意一台，输入CME账号的密码登录：</li>
+</ul>
+<ul>
+<li>登录后，将Node的RDG文件Copy，然后在Jumpbox中Paste:</li>
+</ul>
+<ul>
+<li>在Jumpbox中启动&quot;Remote Desktop Connection Manager&quot;:</li>
+</ul>
+<ul>
+<li>在Remote Desktop Connection Manager中打开相应的rdg文件：</li>
+</ul>
+<ul>
+<li>设置此rdg连接的“Properties&quot;，将&quot;Local Resources&quot;中的&quot;Inherit from parent&quot;选项中的勾去掉：</li>
+</ul>
+<ul>
+<li>设置完成后，鼠标放到上图中的空白处然后回车，或者上图1的位置右击选择&quot;Connect server&quot;，连接成功后，会看到cmd.exe的窗口：</li>
+</ul>
+<ul>
+<li>Firewall VM 的Node上可以使用它：</li>
+</ul>
+<ul>
+<li>c:</li>
+</ul>
+<ul>
+<li>xcopy capture-1.etl \\tsclient\d\users\oe-tiantian</li>
+</ul>
+<ul>
+<li>将.etl文件从PAW设备中传出，便于进一步分析，以下方法之一都可以：</li>
+</ul>
+<ul>
+<li>传到自已的Windows PC中，便于使用如Wireshark类的软件进行分析:</li>
+</ul>
+<ul>
+<li>可以创建一台Azure Windows VM，然后在Jumpbox中使用RDP，连接自已的Windows PC的Public IP，然后在RDP中通过copy和paste将.etl文件复制到自已的Windows PC中。目前来看Jumpbox ZQZ适用于方法2。</li>
+</ul>
+<ul>
+<li>Node RDG会话中：</li>
+</ul>
+<ul>
+<li>dir | findstr capture-1.*</li>
+</ul>
+<ul>
+<li>Jumpbox中：进入自已xcopy文件的目标位置，如d\users\oe-tiantian，找到对应的.etl文件，予以删除。</li>
+</ul>
+<ul>
+<li>断开RDG会话，断开Jumpbox RDP连接。</li>
+</ul>
+<ul>
+<li>关闭PAW设备。</li>
+</ul>
+<ul>
+<li>Node RDG连接不上时的处理：</li>
+</ul>
+<ul>
+<li>Node RDG连接不上会有类似如下信息：</li>
+</ul>
+<ul>
+<li>tnc 10.221.60.5 -p 3389</li>
+</ul>
+<ul>
+<li>如果TCP测试结果显示是Ture，则提交Icm让后线去重启相应的RDP服务（termservice）；</li>
+</ul>
+<ul>
+<li>Owner Team选择： 如果提交Icm时有个叫routeKey的要填 ，可以填“RD_HOST&quot;，这个Icm里找不到这个字段了：</li>
+</ul>
+<ul>
+<li>Sev: 3</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>抓包步骤：(前提这些VM Instance不能处在关机状态）</li>
+</ul>
+<ul>
+<li>可以直接在ASC中获取：ASC | Resource Explorer (chinacloudapi.cn)</li>
+</ul>
+<ul>
+<li>LogContainerSnapshot</li>
+</ul>
+<ul>
+<li>先通过ASC找到VPN Gateway的Deployment Id:</li>
+</ul>
+<ul>
+<li>再使用如下kusto语句找到这个部署相关的VM信息：ASC | Resource Explorer (chinacloudapi.cn)</li>
+</ul>
+<ul>
+<li>再通过Kusto语句找到这这2个VM实例的Node信息：因为FW Instance VM所属的平台订阅ID、VMss名称很明确，所以直接使用它们进行搜索：</li>
+</ul>
+<ul>
+<li>Jarvis:</li>
+</ul>
+<ul>
+<li>图中位置往上一些能够找到该App GW 的部署订阅ID，根据订阅ID来进一步查找Instance所在的Node Id也可以；但显然一个订阅中很可能有多个App GW Instance，不如直接根据上图中的VM Id按如下方式去Kusto中搜索，更直接高效。</li>
+</ul>
+<ul>
+<li>再通过Kusto语句查询出VM的Node信息，将根据VM Id去查它所在的Node Id：</li>
+</ul>
+<ul>
+<li>先通过Jarvis拿到其VM Instance 的VM ID，同样ASC中也可以：</li>
+</ul>
+<ul>
+<li>通过ASC也可以：</li>
+</ul>
+<ul>
+<li>再通过Kusto语句查询App GW Instance所在的Node信息：</li>
+</ul>
+<ul>
+<li>Mooncake - JIT Access Portal-Primary</li>
+</ul>
+<ul>
+<li>Mooncake - JIT Access Portal（Secondary)，一般用Primary那个，Secondary那个Phynet不一定及时看到申请）。</li>
+</ul>
+<ul>
+<li>使用PAW设备登录Jumpbox: 目前前面这些步骤还能通过办公室PC直接完成，后续情况未知；但登录Jumpbox必须使用PAW设备完成。</li>
+</ul>
+<ul>
+<li>开始抓包之前，有一步非常重要：先用打算使用的抓包指令抓个两分钟，看一看文件会有多大，看一看能不能抓到想到的目标或源IP的数据包！！！避免反反复复地抓包！有的Node上不使用过滤条件，几十秒钟就好些个GB的流量。</li>
+</ul>
+<ul>
+<li>开始抓包，可以使用netsh trace start capture=yes maxsize=2000MB tracefile=c:\capture-1.etl</li>
+</ul>
+<ul>
+<li>这里没有指定任何过滤条件，因为Node上流量一般都很大，所以几分钟抓包可能就达到2GB，这里设置最大的抓包文件大小为2GB；到达2GB后，文件会被自动覆盖。</li>
+</ul>
+<ul>
+<li>实际操作中发现还是会有问题；VM与VM Host(Node)间，不同方向的数据流到底是如何走的：VM主动往on-prem的ICMP request包，是由VM到 VM Host，再到on-prem；回包是由on-prem到VM Node，再到VM ？但实际抓包中发现VM Node中一个回包都没有，去程的包ICMP request其seq明显不连续（VM连续ping on-prem)，全丢了？！</li>
+</ul>
+<ul>
+<li>抓包结束： netsh trace stop</li>
+</ul>
+<ul>
+<li>将抓包.etl文件上传到Jumpbox自己名下的文件夹中：</li>
+</ul>
+<ul>
+<li>清理抓包文件，如果没有把握可以不做，避免误删除文件，造成事故</li>
+</ul>
+<ul>
+<li>del xxxx    #xxx为用鼠标复制出来的完整文件名（包括后缀名），一次抓包会生成一个.etl和一个.cab共2个文件。</li>
+</ul>
+<ul>
+<li>确认North 3 Node使用的是ZQZ开头的Jumpbox。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在Jumpbox中打开PowerShell窗口，测试与该Node TCP 3389端口的连通性：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>netsh trace start provider=Microsoft-Windows-Hyper-V-VfpExt provider=Microsoft-Windows-Hyper-V-VmSwitch capture=yes capturetype=both capturemultilayer=yes  maxsize=1000MB IPv4.Address=10.86.5.134 tracefile=c:\azfw-vm1-host.1201.02.etl</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>这一步会用到ASC、Jarvis和Kusto这三个工具；其中对于Kusto工具，根据实际经验来看，除了Azure VM，其它Azure 产品要查询到其Instance所对应的Node信息，在Kusto语句中，推荐直接将获取到的某ID，诸如：产品订阅ID、部署ID、VM ID统统写作这一句| where * has &quot;68baf43e-38f8-4ed0-af2e-7abc42d8abd2&quot;  直接用* 来表示任意字段，因为你不知道平台到底是用什么ID来表示某个ID的，有时候ASC中查看部署ID显示为N/A，最终Kusto中找出来的部署ID居然是产品的订阅ID，tenantName又可能是VM ID，而VM ID又显示是空的，所以直接用*概括所有，简单粗暴高效；因为查询时间范围设置的短，再加上平台本身的高性能，这种查询其实也非常快。  Kusto查询结果中的creationTime是UTC时区。</li>
+</ul>
+<ul>
+<li>可以通过kusto工具连接对应数据库后进行查询：Azure VM这种资源其SubscriptionID和roleInstanceName是已知且可以肯定的，所以可以用下面这种方式查询：</li>
+</ul>
+<ul>
+<li>Azure Application Gateway  （实例数不超过2可以考虑，超过2了，建议放弃，除非明确某个Instance嫌疑重大）</li>
+</ul>
+<ul>
+<li>在PAW上登录Skype，建议用自已的账号登录；目的是为了将jit申请的Jumpbox RDP和Node RDG文件传送到PAW设备中，如果jit申请是在PAW设备上完成的，忽略此步即可：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>先通过Jarvis获取到其实例相关的Subscription信息：<a href="https://portal.microsoftgeneva.com/actions" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/actions</a></li>
+</ul>
+<ul>
+<li>先通过Jarivs Action Get Application Gateway :<a href="https://portal.microsoftgeneva.com/actions" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/actions</a> ，也可以直接在ASC中找到如下信息：</li>
+</ul>
+<ul>
+<li>ASC: <a href="https://azuresupportcenter.chinacloudapi.cn/resourceexplorerv2/resource/%2Fsubscriptions%2Ffbf2ac60-19f8-4f3a-8107-9c89caf51ef6%2FresourceGroups%2Fvpn-loss-packet%2Fproviders%2Fmicrosoft.network%2Fapplicationgateways%2Fappgw-v1?srId=vt_eb5ac2ff-58b1-403b-b976-342dce731df6" target="_blank" rel="noopener">https://azuresupportcenter.chinacloudapi.cn/resourceexplorerv2/resource/%2Fsubscriptions%2Ffbf2ac60-19f8-4f3a-8107-9c89caf51ef6%2FresourceGroups%2Fvpn-loss-packet%2Fproviders%2Fmicrosoft.network%2Fapplicationgateways%2Fappgw-v1?srId=vt_eb5ac2ff-58b1-403b-b976-342dce731df6</a></li>
+</ul>
+<ul>
+<li>2） 在PAW设备中打开Edge浏览器，直接访问<a href="https://portal.azure.cn，（这个站点可以访问，其它站点有限制）；然后登录自已的订阅账户，然后创建一个存储账户和容器，然后将PAW设备中的.etl文件上传到存储账户中。" target="_blank" rel="noopener">https://portal.azure.cn，（这个站点可以访问，其它站点有限制）；然后登录自已的订阅账户，然后创建一个存储账户和容器，然后将PAW设备中的.etl文件上传到存储账户中。</a></li>
+</ul>
+<ul>
+<li>如果Jumpbox与Node TCP 3389间是通的，继续提交如下Icm:  <a href="https://portal.microsofticm.com/imp/v3/incidents/details/439366026/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/439366026/home</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>目的：登录Azure VM、Azure VPN Gateway、Azure Firewall、Azure Application Gateway这些虚拟机实例所在的宿主机（物理）节点中，抓取其网络数据包，帮助分析定位一些疑难网络问题。</p>
+<p>抓包步骤：(前提这些VM Instance不能处在关机状态）</p>
+<p>收集上述网元所在宿主机的信息即Cluster和NodeId：</p>
+<p>这一步会用到ASC、Jarvis和Kusto这三个工具；其中对于Kusto工具，根据实际经验来看，除了Azure VM，其它Azure 产品要查询到其Instance所对应的Node信息，在Kusto语句中，推荐直接将获取到的某ID，诸如：产品订阅ID、部署ID、VM ID统统写作这一句| where * has &quot;68baf43e-38f8-4ed0-af2e-7abc42d8abd2&quot;  直接用* 来表示任意字段，因为你不知道平台到底是用什么ID来表示某个ID的，有时候ASC中查看部署ID显示为N/A，最终Kusto中找出来的部署ID居然是产品的订阅ID，tenantName又可能是VM ID，而VM ID又显示是空的，所以直接用*概括所有，简单粗暴高效；因为查询时间范围设置的短，再加上平台本身的高性能，这种查询其实也非常快。  Kusto查询结果中的creationTime是UTC时区。</p>
+<p>Azure VM</p>
+<p>可以直接在ASC中获取：ASC | Resource Explorer (chinacloudapi.cn)</p>
+<p>可以通过kusto工具连接对应数据库后进行查询：Azure VM这种资源其SubscriptionID和roleInstanceName是已知且可以肯定的，所以可以用下面这种方式查询：</p>
+<p>LogContainerSnapshot</p>
+<p>| where subscriptionId has &quot;2196af93-4b6b-4d5a-a675-ea9c0c8a08ab&quot;</p>
+<p>//|  where (TIMESTAMP &gt;= datetime(2021-09-25T16:00:00Z) and TIMESTAMP &lt; datetime(2021-09-26T16:00:00Z))</p>
+<p>| where (TIMESTAMP ) &gt;= ago(1d)</p>
+<p>| where roleInstanceName has &quot;AZVL-CONSUL-01&quot;</p>
+<p>| project TIMESTAMP+8h, nodeId, containerId, containerType, creationTime, roleInstanceName,Tenant,virtualMachineUniqueId,tenantName,RegionFriendlyName</p>
+<p>Azure VPN Gateway</p>
+<p>先通过ASC找到VPN Gateway的Deployment Id:</p>
+<p>再使用如下kusto语句找到这个部署相关的VM信息：ASC | Resource Explorer (chinacloudapi.cn)</p>
+<p>| where * has &quot;824ea121ef4a434d99c731aa37f1df5b&quot;</p>
+<p>| where (TIMESTAMP ) &gt;= ago(2h)</p>
+<p>Azure Firewall</p>
+<p>先通过Jarvis获取到其实例相关的Subscription信息：<a href="https://portal.microsoftgeneva.com/actions" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/actions</a></p>
+<p>再通过Kusto语句找到这这2个VM实例的Node信息：因为FW Instance VM所属的平台订阅ID、VMss名称很明确，所以直接使用它们进行搜索：</p>
+<p>| where subscriptionId has &quot;042de609-0baa-45d1-910a-59635f87e61b&quot;</p>
+<p>| where * has &quot;gsa-3d44000a-25d8&quot;</p>
+<p>Azure Application Gateway  （实例数不超过2可以考虑，超过2了，建议放弃，除非明确某个Instance嫌疑重大）</p>
+<p>App GW V1</p>
+<p>先通过Jarivs Action Get Application Gateway :<a href="https://portal.microsoftgeneva.com/actions" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/actions</a> ，也可以直接在ASC中找到如下信息：</p>
+<p>ASC: <a href="https://azuresupportcenter.chinacloudapi.cn/resourceexplorerv2/resource/%2Fsubscriptions%2Ffbf2ac60-19f8-4f3a-8107-9c89caf51ef6%2FresourceGroups%2Fvpn-loss-packet%2Fproviders%2Fmicrosoft.network%2Fapplicationgateways%2Fappgw-v1?srId=vt_eb5ac2ff-58b1-403b-b976-342dce731df6" target="_blank" rel="noopener">https://azuresupportcenter.chinacloudapi.cn/resourceexplorerv2/resource/%2Fsubscriptions%2Ffbf2ac60-19f8-4f3a-8107-9c89caf51ef6%2FresourceGroups%2Fvpn-loss-packet%2Fproviders%2Fmicrosoft.network%2Fapplicationgateways%2Fappgw-v1?srId=vt_eb5ac2ff-58b1-403b-b976-342dce731df6</a></p>
+<p>Jarvis:</p>
+<p>图中位置往上一些能够找到该App GW 的部署订阅ID，根据订阅ID来进一步查找Instance所在的Node Id也可以；但显然一个订阅中很可能有多个App GW Instance，不如直接根据上图中的VM Id按如下方式去Kusto中搜索，更直接高效。</p>
+<p>再通过Kusto语句查询出VM的Node信息，将根据VM Id去查它所在的Node Id：</p>
+<p>| where * has &quot;68baf43e-38f8-4ed0-af2e-7abc42d8abd2&quot;</p>
+<p>2）App GW V2</p>
+<p>先通过Jarvis拿到其VM Instance 的VM ID，同样ASC中也可以：</p>
+<p>通过ASC也可以：</p>
+<p>再通过Kusto语句查询App GW Instance所在的Node信息：</p>
+<p>| where * has &quot;a741b825-6f31-48fc-bf31-fc576d615a5f&quot; or * has &quot;d6574eb4-6df3-42fc-be8b-5fa0a26a2934&quot;  //要找几个实例写几个</p>
+<p>| project TIMESTAMP+8h, nodeId, containerId, containerType, creationTime,subscriptionId, roleInstanceName,Tenant,virtualMachineUniqueId,tenantName,RegionFriendlyName</p>
+<p>申请JIT权限：</p>
+<p>Mooncake - JIT Access Portal-Primary</p>
+<p>Mooncake - JIT Access Portal（Secondary)，一般用Primary那个，Secondary那个Phynet不一定及时看到申请）。</p>
+<p>如果超过3分钟，未显示为“Granted&quot;，在Jit通知邮件中去找收件人，挨个找个在线的，让他帮忙批复JIT权限：</p>
+<p>关于Jumpbox的说明： 目前中国区的Jumpbox除了North3，有其专用的2个Jumpbox，如上图所示，可以看到JumpBox:ZQZ字样；其它4个Region共用另外2个Jumpbox，它们名为JumpBox:BJB、SHA</p>
+<p>使用PAW设备登录Jumpbox: 目前前面这些步骤还能通过办公室PC直接完成，后续情况未知；但登录Jumpbox必须使用PAW设备完成。</p>
+<p>将个人U Key和PAW设备登录Smart Card(白色的）都插入PAW设备，按如下1、2、3顺序，输入Smart Card PIN码登录进PAW Windows系统中：</p>
+<p>当PAW位于北京办公室时，将PAW设备连接上名为“PAW”的WIFI信号；当PAW位于非办公室，连接一个可以访问Internet的WIFI：</p>
+<p>连接上以后，如果显示需要进一步的认证，请根据提示打开其中的链接，在浏览器弹出的认证页面中输入登录bj-oe的域账号和密码，即登录办公电脑输入的用户名和密码，完成认证。</p>
+<p>在PAW上登录Skype，建议用自已的账号登录；目的是为了将jit申请的Jumpbox RDP和Node RDG文件传送到PAW设备中，如果jit申请是在PAW设备上完成的，忽略此步即可：</p>
+<p>在JIT文件所在的PC上登录Skype，然后搜索到自已的账号，然后直接发起Skype Call，再接着在PAW Skype上直接选择打开文本聊天窗口；然后将申请的全部jit相关文件传送到PAW设备中：</p>
+<p>在PAW上连接VPN。连接VPN的软件目前 在PAW上叫“lvanti Secure Acccess Client&quot;，其中已添加好了2个VPN连接，分别名为&quot;BJB&quot;和“Sha20&quot;，目前也只有这2个VPN连接；通过它们中的任意一个，正常情况下都可以连接到任意名为BJB或者ZQZ的Jumpbox：</p>
+<p>在PAW设备中连接Jumpbox，连接任意一台，输入CME账号的密码登录：</p>
+<p>登录后，将Node的RDG文件Copy，然后在Jumpbox中Paste:</p>
+<p>在Jumpbox中启动&quot;Remote Desktop Connection Manager&quot;:</p>
+<p>在Remote Desktop Connection Manager中打开相应的rdg文件：</p>
+<p>设置此rdg连接的“Properties&quot;，将&quot;Local Resources&quot;中的&quot;Inherit from parent&quot;选项中的勾去掉：</p>
+<p>设置完成后，鼠标放到上图中的空白处然后回车，或者上图1的位置右击选择&quot;Connect server&quot;，连接成功后，会看到cmd.exe的窗口：</p>
+<p>开始抓包之前，有一步非常重要：先用打算使用的抓包指令抓个两分钟，看一看文件会有多大，看一看能不能抓到想到的目标或源IP的数据包！！！避免反反复复地抓包！有的Node上不使用过滤条件，几十秒钟就好些个GB的流量。</p>
+<p>开始抓包，可以使用netsh trace start capture=yes maxsize=2000MB tracefile=c:\capture-1.etl</p>
+<p>这里没有指定任何过滤条件，因为Node上流量一般都很大，所以几分钟抓包可能就达到2GB，这里设置最大的抓包文件大小为2GB；到达2GB后，文件会被自动覆盖。</p>
+<p>实际操作中发现还是会有问题；VM与VM Host(Node)间，不同方向的数据流到底是如何走的：VM主动往on-prem的ICMP request包，是由VM到 VM Host，再到on-prem；回包是由on-prem到VM Node，再到VM ？但实际抓包中发现VM Node中一个回包都没有，去程的包ICMP request其seq明显不连续（VM连续ping on-prem)，全丢了？！</p>
+<p>Firewall VM 的Node上可以使用它：</p>
+<p>netsh trace start provider=Microsoft-Windows-Hyper-V-VfpExt provider=Microsoft-Windows-Hyper-V-VmSwitch capture=yes capturetype=both capturemultilayer=yes  maxsize=1000MB IPv4.Address=10.86.5.134 tracefile=c:\azfw-vm1-host.1201.02.etl</p>
+<p>抓包结束： netsh trace stop</p>
+<p>将抓包.etl文件上传到Jumpbox自己名下的文件夹中：</p>
+<p>c:</p>
+<p>xcopy capture-1.etl \\tsclient\d\users\oe-tiantian</p>
+<p>将.etl文件从PAW设备中传出，便于进一步分析，以下方法之一都可以：</p>
+<p>传到自已的Windows PC中，便于使用如Wireshark类的软件进行分析:</p>
+<p>可以创建一台Azure Windows VM，然后在Jumpbox中使用RDP，连接自已的Windows PC的Public IP，然后在RDP中通过copy和paste将.etl文件复制到自已的Windows PC中。目前来看Jumpbox ZQZ适用于方法2。</p>
+<p>2） 在PAW设备中打开Edge浏览器，直接访问<a href="https://portal.azure.cn，（这个站点可以访问，其它站点有限制）；然后登录自已的订阅账户，然后创建一个存储账户和容器，然后将PAW设备中的.etl文件上传到存储账户中。" target="_blank" rel="noopener">https://portal.azure.cn，（这个站点可以访问，其它站点有限制）；然后登录自已的订阅账户，然后创建一个存储账户和容器，然后将PAW设备中的.etl文件上传到存储账户中。</a></p>
+<p>清理抓包文件，如果没有把握可以不做，避免误删除文件，造成事故</p>
+<p>Node RDG会话中：</p>
+<p>dir | findstr capture-1.*</p>
+<p>del xxxx    #xxx为用鼠标复制出来的完整文件名（包括后缀名），一次抓包会生成一个.etl和一个.cab共2个文件。</p>
+<p>Jumpbox中：进入自已xcopy文件的目标位置，如d\users\oe-tiantian，找到对应的.etl文件，予以删除。</p>
+<p>断开RDG会话，断开Jumpbox RDP连接。</p>
+<p>关闭PAW设备。</p>
+<p>Node RDG连接不上时的处理：</p>
+<p>Node RDG连接不上会有类似如下信息：</p>
+<p>确认North 3 Node使用的是ZQZ开头的Jumpbox。</p>
+<p>在Jumpbox中打开PowerShell窗口，测试与该Node TCP 3389端口的连通性：</p>
+<p>tnc 10.221.60.5 -p 3389</p>
+<p>如果TCP测试结果显示是Ture，则提交Icm让后线去重启相应的RDP服务（termservice）；</p>
+<p>如果这里测试是False，有可能Jumpbox与该Node路由层面也不通，解决办法未知，如果路由都不通报错现象和信息不应该是：连接后很快就报出“Disconnected from xxxx&quot;，而会是连接时间久一点，然后提示“Disconnected from xxx &quot;和另一行&quot;Unable to establish a connection&quot;。</p>
+<p>如果Jumpbox与Node TCP 3389间是通的，继续提交如下Icm:  <a href="https://portal.microsofticm.com/imp/v3/incidents/details/439366026/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/439366026/home</a></p>
+<p>Owner Team选择： 如果提交Icm时有个叫routeKey的要填 ，可以填“RD_HOST&quot;，这个Icm里找不到这个字段了：</p>
+<p>Sev: 3</p></article>

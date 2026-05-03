@@ -1,0 +1,150 @@
+<article class="kb-article" data-title="应用程序运行状况扩展导致VM unhealthy"><h1>应用程序运行状况扩展导致VM unhealthy</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-08-29 18:21:23</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>最近接到工单，客户反馈虚拟机状态 unhealthy。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>最近接到工单，客户反馈虚拟机状态 unhealthy。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>最近接到工单，客户反馈虚拟机状态 unhealthy。</li>
+</ul>
+<ul>
+<li>后分析客户系统日志发现：</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: [stdout]</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: Terminating existing applicationhealth-extension process</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: Tried terminating existing applicationhealth-extension process</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: applicationhealth-extension process terminated</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: Not writing a placeholder status file, already exists: /var/lib/waagent/Microsoft.ManagedServices.ApplicationHealthLinux-1.0.3/status/0.status</li>
+</ul>
+<ul>
+<li>应用程序扩展unhealthy，可以参考如下文档：</li>
+</ul>
+<ul>
+<li>过一会之后，虚拟机状况也不正常了：</li>
+</ul>
+<ul>
+<li>所以需要保证本地应用可以正常访问。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过后台排查，虚拟机node节点和虚拟机本身运行状况都是正常的，不是平台问题。</li>
+</ul>
+<ul>
+<li>之后查看运行状况监视就不正常了：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Aug 24 01:07:43 pep-prd-wmsrm-app01 python3[3360583]: 2025-08-23T17:07:43.059508Z INFO ExtHandler [Microsoft.ManagedServices.ApplicationHealthLinux-1.0.3] Executing command: /var/lib/waagent/Microsoft.ManagedServices.ApplicationHealthLinux-1.0.3/bin/applicationhealth-shim enable with environment variables: {&quot;AZURE_GUEST_AGENT_UNINSTALL_CMD_EXIT_CODE&quot;: &quot;NOT_RUN&quot;, &quot;AZURE_GUEST_AGENT_EXTENSION_PATH&quot;: &quot;/var/lib/waagent/Microsoft.ManagedServices.ApplicationHealthLinux-1.0.3&quot;, &quot;AZURE_GUEST_AGENT_EXTENSION_VERSION&quot;: &quot;1.0.3&quot;, &quot;AZURE_GUEST_AGENT_WIRE_PROTOCOL_ADDRESS&quot;: &quot;168.63.129.16&quot;, &quot;ConfigSequenceNumber&quot;: &quot;0&quot;, &quot;AZURE_GUEST_AGENT_EXTENSION_SUPPORTED_FEATURES&quot;: &quot;[{\&quot;Key\&quot;: \&quot;ExtensionTelemetryPipeline\&quot;, \&quot;Value\&quot;: \&quot;1.0\&quot;}]&quot;}</li>
+</ul>
+<ul>
+<li>经过测试如果您本地的对应端口服务不通，虚拟机状态就会变为不正常：</li>
+</ul>
+<ul>
+<li>本身我虚拟机有nginx 服务，80端口是通的。</li>
+</ul>
+<ul>
+<li>然后我关闭了nginx服务后，80端口被拒绝。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: 2025-08-23T17:07:46.066915Z INFO ExtHandler [Microsoft.ManagedServices.ApplicationHealthLinux-1.0.3] Command: bin/applicationhealth-shim enable</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: + nohup /var/lib/waagent/Microsoft.ManagedServices.ApplicationHealthLinux-1.0.3/bin/applicationhealth-extension enable</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=start</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;reading configuration&quot;</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;read configuration&quot;</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;validating json schema&quot;</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;json schema valid&quot;</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;parsing configuration json&quot;</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;parsed configuration json&quot;</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;validating configuration logically&quot;</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;validated configuration&quot;</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;state changed to unhealthy&quot;</li>
+</ul>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;Committed health state is unhealthy&quot;</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;creating http probe targeting <a href="http://localhost/&quot;" target="_blank" rel="noopener">http://localhost/&quot;</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-health-extension?tabs=azure-cli" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-health-extension?tabs=azure-cli</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/8/29</p>
+<p>最近接到工单，客户反馈虚拟机状态 unhealthy。</p>
+<p>通过后台排查，虚拟机node节点和虚拟机本身运行状况都是正常的，不是平台问题。</p>
+<p>后分析客户系统日志发现：</p>
+<p>Aug 24 01:07:43 pep-prd-wmsrm-app01 python3[3360583]: 2025-08-23T17:07:43.059508Z INFO ExtHandler [Microsoft.ManagedServices.ApplicationHealthLinux-1.0.3] Executing command: /var/lib/waagent/Microsoft.ManagedServices.ApplicationHealthLinux-1.0.3/bin/applicationhealth-shim enable with environment variables: {&quot;AZURE_GUEST_AGENT_UNINSTALL_CMD_EXIT_CODE&quot;: &quot;NOT_RUN&quot;, &quot;AZURE_GUEST_AGENT_EXTENSION_PATH&quot;: &quot;/var/lib/waagent/Microsoft.ManagedServices.ApplicationHealthLinux-1.0.3&quot;, &quot;AZURE_GUEST_AGENT_EXTENSION_VERSION&quot;: &quot;1.0.3&quot;, &quot;AZURE_GUEST_AGENT_WIRE_PROTOCOL_ADDRESS&quot;: &quot;168.63.129.16&quot;, &quot;ConfigSequenceNumber&quot;: &quot;0&quot;, &quot;AZURE_GUEST_AGENT_EXTENSION_SUPPORTED_FEATURES&quot;: &quot;[{\&quot;Key\&quot;: \&quot;ExtensionTelemetryPipeline\&quot;, \&quot;Value\&quot;: \&quot;1.0\&quot;}]&quot;}</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: 2025-08-23T17:07:46.066915Z INFO ExtHandler [Microsoft.ManagedServices.ApplicationHealthLinux-1.0.3] Command: bin/applicationhealth-shim enable</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: [stdout]</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: Terminating existing applicationhealth-extension process</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: Tried terminating existing applicationhealth-extension process</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: applicationhealth-extension process terminated</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: Not writing a placeholder status file, already exists: /var/lib/waagent/Microsoft.ManagedServices.ApplicationHealthLinux-1.0.3/status/0.status</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: + nohup /var/lib/waagent/Microsoft.ManagedServices.ApplicationHealthLinux-1.0.3/bin/applicationhealth-extension enable</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=start</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;reading configuration&quot;</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;read configuration&quot;</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;validating json schema&quot;</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;json schema valid&quot;</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;parsing configuration json&quot;</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;parsed configuration json&quot;</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;validating configuration logically&quot;</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;validated configuration&quot;</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;creating http probe targeting <a href="http://localhost/&quot;" target="_blank" rel="noopener">http://localhost/&quot;</a></p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;state changed to unhealthy&quot;</p>
+<p>Aug 24 01:07:46 pep-prd-wmsrm-app01 python3[3360583]: time=2025-08-24T01:07:44+08:00 version=v1.0.3/git@4b8e607-dirty operation=enable seq=0 event=&quot;Committed health state is unhealthy&quot;</p>
+<p>应用程序扩展unhealthy，可以参考如下文档：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-health-extension?tabs=azure-cli" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-health-extension?tabs=azure-cli</a></p>
+<p>经过测试如果您本地的对应端口服务不通，虚拟机状态就会变为不正常：</p>
+<p>本身我虚拟机有nginx 服务，80端口是通的。</p>
+<p>然后我关闭了nginx服务后，80端口被拒绝。</p>
+<p>之后查看运行状况监视就不正常了：</p>
+<p>过一会之后，虚拟机状况也不正常了：</p>
+<p>所以需要保证本地应用可以正常访问。</p></article>

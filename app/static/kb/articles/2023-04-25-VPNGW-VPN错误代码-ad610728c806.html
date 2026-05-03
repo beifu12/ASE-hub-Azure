@@ -1,0 +1,62 @@
+<article class="kb-article" data-title="[VPNGW]VPN错误代码"><h1>[VPNGW]VPN错误代码</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-25 19:32:32</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p><a href="https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--12000-15999-" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--12000-15999-</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--12000-15999-" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--12000-15999-</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>只有提示13004，这个代码到底啥意思呢？</li>
+</ul>
+<ul>
+<li>原来是IPSEC 的主模式policy没有找到</li>
+</ul>
+<ul>
+<li>这个错误还是挺罕见的，先让用户尝试重置VPN网关吧。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>非常非常的好用，以后遇到这种jarvis的VPN报错代码，查看这些代码的含义就可以了</li>
+</ul>
+<ul>
+<li>例如，我用jarvis看到有个用户的VPN日志是这样的：</li>
+</ul>
+<ul>
+<li>然后查询该文档知道了：</li>
+</ul>
+<ul>
+<li>补充：其实在线抓包的时候，也能看到代码提示，如下所示：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>这下可以建议用户查看是否自定义了配置，配置是否有主模式配置，有的话建议用户重置VPN网关试试。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--12000-15999-" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--12000-15999-</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p><a href="https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--12000-15999-" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--12000-15999-</a></p>
+<p>非常非常的好用，以后遇到这种jarvis的VPN报错代码，查看这些代码的含义就可以了</p>
+<p>例如，我用jarvis看到有个用户的VPN日志是这样的：</p>
+<p>只有提示13004，这个代码到底啥意思呢？</p>
+<p>然后查询该文档知道了：</p>
+<p>原来是IPSEC 的主模式policy没有找到</p>
+<p>这下可以建议用户查看是否自定义了配置，配置是否有主模式配置，有的话建议用户重置VPN网关试试。</p>
+<p>补充：其实在线抓包的时候，也能看到代码提示，如下所示：</p>
+<p>这个错误还是挺罕见的，先让用户尝试重置VPN网关吧。</p></article>

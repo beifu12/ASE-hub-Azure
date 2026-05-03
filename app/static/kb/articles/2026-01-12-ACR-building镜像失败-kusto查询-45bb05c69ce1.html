@@ -1,0 +1,57 @@
+<article class="kb-article" data-title="ACR building镜像失败 kusto查询"><h1>ACR building镜像失败 kusto查询</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: ACR</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-12 09:26:07</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>ACR building 镜像失败，后台</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>ACR building 镜像失败，后台</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Lv.fengnan</li>
+</ul>
+<ul>
+<li>BuildHostTrace</li>
+</ul>
+<ul>
+<li>| where env_time &gt; ago(3h)</li>
+</ul>
+<ul>
+<li>| where Tag contains &quot;prodce2iotrcpgaacr.azurecr.cn&quot;</li>
+</ul>
+<ul>
+<li>| order by env_time</li>
+</ul>
+<ul>
+<li>| project env_time, Message, Tag, DataJson, SourceNamespace</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://acrmc2.chinaeast2.kusto.chinacloudapi.cn/" target="_blank" rel="noopener">https://acrmc2.chinaeast2.kusto.chinacloudapi.cn/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Lv.fengnan</p>
+<p>ACR building 镜像失败，后台</p>
+<p>BuildHostTrace</p>
+<p>| where env_time &gt; ago(3h)</p>
+<p>| where Tag contains &quot;prodce2iotrcpgaacr.azurecr.cn&quot;</p>
+<p>| order by env_time</p>
+<p>| project env_time, Message, Tag, DataJson, SourceNamespace</p>
+<p><a href="https://acrmc2.chinaeast2.kusto.chinacloudapi.cn/" target="_blank" rel="noopener">https://acrmc2.chinaeast2.kusto.chinacloudapi.cn/</a></p></article>

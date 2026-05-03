@@ -1,0 +1,68 @@
+<article class="kb-article" data-title="如何获取appgwv2/wafv2的containerid&amp;nodeid"><h1>如何获取appgwv2/wafv2的containerid&amp;nodeid</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-02-17 13:31:41</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>对于appgwv1/wafv1的containerid/nodeid可以直接通过kusto获取，但是v2的貌似是获取不了的。可以参考如下方法进行获取。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>对于appgwv1/wafv1的containerid/nodeid可以直接通过kusto获取，但是v2的貌似是获取不了的。可以参考如下方法进行获取。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>这里用创建时间去过滤，我的appgw是10/23号03:08时创建的</li>
+</ul>
+<ul>
+<li>| where (TIMESTAMP &gt;= datetime(2019-10-23T02:00:00Z) and TIMESTAMP &lt; datetime(2019-10-23T03:50:51Z))</li>
+</ul>
+<ul>
+<li>| where subscriptionId == &quot;c6a39d81-a56f-4654-a0d6-43080d8f4ee3&quot;</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP, Tenant, Role, containerType, containerId, nodeId, roleInstanceName, tenantName,creationTime, virtualMachineUniqueId</li>
+</ul>
+<ul>
+<li>找到VM unique ID， 这个是VMSS 实例不变的标识， 然后用uniqueID作为过滤条件，分别找到实例目前的node ID和container ID</li>
+</ul>
+<ul>
+<li>| where (TIMESTAMP &gt;= datetime(2019-11-04T06:00:00Z) and TIMESTAMP &lt; datetime(2019-11-23T14:50:51Z))</li>
+</ul>
+<ul>
+<li>| where virtualMachineUniqueId ==&quot;5d141620-2704-4a1f-a804-5f099b576cc7&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>对于appgwv1/wafv1的containerid/nodeid可以直接通过kusto获取，但是v2的貌似是获取不了的。可以参考如下方法进行获取。</li>
+</ul>
+<ul>
+<li>LogContainerSnapshot</li>
+</ul>
+<ul>
+<li>| sort by TIMESTAMP  asc nulls last</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>对于appgwv1/wafv1的containerid/nodeid可以直接通过kusto获取，但是v2的貌似是获取不了的。可以参考如下方法进行获取。</p>
+<p>这里用创建时间去过滤，我的appgw是10/23号03:08时创建的</p>
+<p>LogContainerSnapshot</p>
+<p>| where (TIMESTAMP &gt;= datetime(2019-10-23T02:00:00Z) and TIMESTAMP &lt; datetime(2019-10-23T03:50:51Z))</p>
+<p>| where subscriptionId == &quot;c6a39d81-a56f-4654-a0d6-43080d8f4ee3&quot;</p>
+<p>| project TIMESTAMP, Tenant, Role, containerType, containerId, nodeId, roleInstanceName, tenantName,creationTime, virtualMachineUniqueId</p>
+<p>| sort by TIMESTAMP  asc nulls last</p>
+<p>找到VM unique ID， 这个是VMSS 实例不变的标识， 然后用uniqueID作为过滤条件，分别找到实例目前的node ID和container ID</p>
+<p>| where (TIMESTAMP &gt;= datetime(2019-11-04T06:00:00Z) and TIMESTAMP &lt; datetime(2019-11-23T14:50:51Z))</p>
+<p>| where virtualMachineUniqueId ==&quot;5d141620-2704-4a1f-a804-5f099b576cc7&quot;</p></article>

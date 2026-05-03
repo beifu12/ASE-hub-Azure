@@ -1,0 +1,190 @@
+<article class="kb-article" data-title="CDN product updates of Mar. and Apr. 2023"><h1>CDN product updates of Mar. and Apr. 2023</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: CDN Operation Guideline</li>
+<li>最近修改: 2023-05-10 07:28:23</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Known issue</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Known issue</li>
+</ul>
+<ul>
+<li>白山不支持Http2。对于一些创建较早的、使用白山的域名，用户在门户网站启用http2会失败，需要联系产品团队线下配置。</li>
+</ul>
+<ul>
+<li>白山实际上支持HTTP2.0，只是Azure CDN在调用对方接口时存在一些问题，目前无法配置。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Mar. 2023</li>
+</ul>
+<ul>
+<li>Type</li>
+</ul>
+<ul>
+<li>Description</li>
+</ul>
+<ul>
+<li>Discussion</li>
+</ul>
+<ul>
+<li>Related case</li>
+</ul>
+<ul>
+<li>Question</li>
+</ul>
+<ul>
+<li>will standard configuration override nonstandard configuration? -- this depends on provider behaviors; PG will consider to restrict nonstandard operation requests</li>
+</ul>
+<ul>
+<li>20230130209377</li>
+</ul>
+<ul>
+<li>PG will work on the fix.</li>
+</ul>
+<ul>
+<li>20230216212898</li>
+</ul>
+<ul>
+<li>20230216212859</li>
+</ul>
+<ul>
+<li>对于图片处理加速，Image在处理中可能会携带错误EXIF- Orientation信息，导致图片旋转90°。（该问题可能偶发产生）</li>
+</ul>
+<ul>
+<li>例如，请求虽然只携带了缩放的参数（basic=60p），但图片却可能被旋转90度。</li>
+</ul>
+<ul>
+<li>20230209211553</li>
+</ul>
+<ul>
+<li>当前通过REST API启用Https时，仅支持手动上传证书，不支持使用KV中现有的证书。此功能正在开发中。通过REST API启用Https的文档只有中文版本，没有英文版本。</li>
+</ul>
+<ul>
+<li>Doc will be updated.</li>
+</ul>
+<ul>
+<li>2302150010001040</li>
+</ul>
+<ul>
+<li>Apr. 2023</li>
+</ul>
+<ul>
+<li>c</li>
+</ul>
+<ul>
+<li>PG will further discuss the improvement  internally</li>
+</ul>
+<ul>
+<li>20230314217803</li>
+</ul>
+<ul>
+<li>Tips</li>
+</ul>
+<ul>
+<li>创建CDN时，provider会校验客户的域名是否有备案，但是并不会对客户提供的ICP信息进行校验。如果目前有客户需要更改ICP备案信息的请求，可以直接上IcM请PG处理。(DO NOT deliver this info. to cx.)</li>
+</ul>
+<ul>
+<li>20230303216047</li>
+</ul>
+<ul>
+<li>在使用泛域名时，预加载提交的URL目前需要在路径中包含完整子域名，例如，*.mycompany.com/static.mycompany.com/file.</li>
+</ul>
+<ul>
+<li>PG会优化界面提示，并进一步看看是否能优化前端提交的URL格式</li>
+</ul>
+<ul>
+<li>20230308216674</li>
+</ul>
+<ul>
+<li>New Feature</li>
+</ul>
+<ul>
+<li>CDN本周或者下周即将上线新功能--证书自动更替</li>
+</ul>
+<ul>
+<li>测试有任何问题，请随时反馈</li>
+</ul>
+<ul>
+<li>20230506227848</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>访问控制功能一年多前从v1升级到了v2版本，会导致有的较早的域名无法加载访问控制界面或者显示旧的v1配置，导致无法更改配置。如果客户需要在portal更新访问控制规则，需要找PG手动升级至v2（v1版本的访问控制规则比v2规则的精细度更高，有的规则v2已经不支持了）。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>对于之前通过非标操作修改过回源目标端口的域名，用户在后续进行操作时（比如更新证书），如何避免业务中断？比如启用了Https，但回源目标端口之前通过非标操作修改为了7002，用户在门户更新Https证书时，是否会覆盖原来配置的特殊端口？</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在Portal上无法修改图片处理加速的源站IP地址，只能修改为域名；但通过REST API可以将源站修改为IP地址。（目前测试已经可以成功修改--2023.5.9）</li>
+</ul>
+<ul>
+<li>This is confirmed to be a CDN bug. Current workaround is to use REST API to modify the origin IP.</li>
+</ul>
+<ul>
+<li>Workaround: 使用basic=exif参数查看EXIF中的Orientation信息，根据客户具体的情况去使用basic={Degree}r进行修正。</li>
+</ul>
+<ul>
+<li>provide workaround, fix priority depends on case volume</li>
+</ul>
+<ul>
+<li>PG will look for on better solution.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/cdn/cdn-https-customer-supplied-cert#%E8%AF%81%E4%B9%A6%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%9B%BF" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-https-customer-supplied-cert#%E8%AF%81%E4%B9%A6%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%9B%BF</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Mar. 2023</p>
+<p>Type</p>
+<p>Description</p>
+<p>Discussion</p>
+<p>Related case</p>
+<p>Question</p>
+<p>对于之前通过非标操作修改过回源目标端口的域名，用户在后续进行操作时（比如更新证书），如何避免业务中断？比如启用了Https，但回源目标端口之前通过非标操作修改为了7002，用户在门户更新Https证书时，是否会覆盖原来配置的特殊端口？</p>
+<p>will standard configuration override nonstandard configuration? -- this depends on provider behaviors; PG will consider to restrict nonstandard operation requests</p>
+<p>20230130209377</p>
+<p>Known issue</p>
+<p>白山不支持Http2。对于一些创建较早的、使用白山的域名，用户在门户网站启用http2会失败，需要联系产品团队线下配置。</p>
+<p>白山实际上支持HTTP2.0，只是Azure CDN在调用对方接口时存在一些问题，目前无法配置。</p>
+<p>PG will work on the fix.</p>
+<p>20230216212898</p>
+<p>在Portal上无法修改图片处理加速的源站IP地址，只能修改为域名；但通过REST API可以将源站修改为IP地址。（目前测试已经可以成功修改--2023.5.9）</p>
+<p>This is confirmed to be a CDN bug. Current workaround is to use REST API to modify the origin IP.</p>
+<p>20230216212859</p>
+<p>对于图片处理加速，Image在处理中可能会携带错误EXIF- Orientation信息，导致图片旋转90°。（该问题可能偶发产生）</p>
+<p>例如，请求虽然只携带了缩放的参数（basic=60p），但图片却可能被旋转90度。</p>
+<p>Workaround: 使用basic=exif参数查看EXIF中的Orientation信息，根据客户具体的情况去使用basic={Degree}r进行修正。</p>
+<p>provide workaround, fix priority depends on case volume</p>
+<p>20230209211553</p>
+<p>当前通过REST API启用Https时，仅支持手动上传证书，不支持使用KV中现有的证书。此功能正在开发中。通过REST API启用Https的文档只有中文版本，没有英文版本。</p>
+<p>Doc will be updated.</p>
+<p>2302150010001040</p>
+<p>Apr. 2023</p>
+<p>c</p>
+<p>访问控制功能一年多前从v1升级到了v2版本，会导致有的较早的域名无法加载访问控制界面或者显示旧的v1配置，导致无法更改配置。如果客户需要在portal更新访问控制规则，需要找PG手动升级至v2（v1版本的访问控制规则比v2规则的精细度更高，有的规则v2已经不支持了）。</p>
+<p>PG will further discuss the improvement  internally</p>
+<p>20230314217803</p>
+<p>Tips</p>
+<p>创建CDN时，provider会校验客户的域名是否有备案，但是并不会对客户提供的ICP信息进行校验。如果目前有客户需要更改ICP备案信息的请求，可以直接上IcM请PG处理。(DO NOT deliver this info. to cx.)</p>
+<p>PG will look for on better solution.</p>
+<p>20230303216047</p>
+<p>在使用泛域名时，预加载提交的URL目前需要在路径中包含完整子域名，例如，*.mycompany.com/static.mycompany.com/file.</p>
+<p>PG会优化界面提示，并进一步看看是否能优化前端提交的URL格式</p>
+<p>20230308216674</p>
+<p>New Feature</p>
+<p>CDN本周或者下周即将上线新功能--证书自动更替</p>
+<p><a href="https://docs.azure.cn/zh-cn/cdn/cdn-https-customer-supplied-cert#%E8%AF%81%E4%B9%A6%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%9B%BF" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-https-customer-supplied-cert#%E8%AF%81%E4%B9%A6%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%9B%BF</a></p>
+<p>测试有任何问题，请随时反馈</p>
+<p>20230506227848</p></article>

@@ -1,0 +1,164 @@
+<article class="kb-article" data-title="关于服务终结点和数据库之间的连接场景"><h1>关于服务终结点和数据库之间的连接场景</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-08-29 19:19:50</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>5月29号之前客户的四台VM一直都无法连接上MySql的原因：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>5月29号之前客户的四台VM一直都无法连接上MySql的原因：</li>
+</ul>
+<ul>
+<li>在今年五月之前， VM 连My SQL 必须通过配置Vnet连接的方式，即便开通了‘’允许访问Azure服务“，在没有配好 Vnet firewall rule 的情况下VM也是无法访问My SQL 的，这是by design的行为。 这就是为何之前4台虚拟机都无法连接My SQL 。</li>
+</ul>
+<ul>
+<li>只要Vnet侧开启服务终结点，如果MySQL侧没有添加VNET，无论MySQL侧是否勾选“允许Azure Service 访问”，默认不通。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhanglihe/Zhoukun</li>
+</ul>
+<ul>
+<li>20190605</li>
+</ul>
+<ul>
+<li>如产品组反馈：</li>
+</ul>
+<ul>
+<li>为何客户在防火墙添加了一条IP之后，其余VM都能连接MySql:</li>
+</ul>
+<ul>
+<li>针对昨天您电话里提到：什么时候要使用“Service Endpoint服务终结点”，什么时候使用“允许Azure Service 访问”，我们整理了从VM访问MySQL的各种场景及配置如下。</li>
+</ul>
+<ul>
+<li>对于平台调整以后创建的MySQL：</li>
+</ul>
+<ul>
+<li>只要勾选了“允许Azure Service 访问”，VM就可以访问MySQL，无论Vnet侧是否开启服务终结点，无论MySQL侧是否添加了VNET。</li>
+</ul>
+<ul>
+<li>MySQL侧</li>
+</ul>
+<ul>
+<li>Vnet侧</li>
+</ul>
+<ul>
+<li>是否可以连通</li>
+</ul>
+<ul>
+<li>1</li>
+</ul>
+<ul>
+<li>允许Azure Service 访问</li>
+</ul>
+<ul>
+<li>不添加Vnet</li>
+</ul>
+<ul>
+<li>无</li>
+</ul>
+<ul>
+<li>可以</li>
+</ul>
+<ul>
+<li>VM通过 公网IP访问MySQL，整个数据流走Azure骨干网络</li>
+</ul>
+<ul>
+<li>2</li>
+</ul>
+<ul>
+<li>不允许Azure Service 访问</li>
+</ul>
+<ul>
+<li>添加开启了服务终结点的Vnet</li>
+</ul>
+<ul>
+<li>开启服务终结点</li>
+</ul>
+<ul>
+<li>VM通过 内网IP访问MySQL，整个数据流走Azure骨干网络</li>
+</ul>
+<ul>
+<li>3</li>
+</ul>
+<ul>
+<li>不可以</li>
+</ul>
+<ul>
+<li>4</li>
+</ul>
+<ul>
+<li>5</li>
+</ul>
+<ul>
+<li>但这种架构没有太大必要，一般根据业务选择Best Practice 中1或者2就可以满足访问需求了</li>
+</ul>
+<ul>
+<li>对于平台调整以前创建的MySQL：</li>
+</ul>
+<ul>
+<li>您需要手动取消勾选、再勾选“允许Azure Service 访问”，或任意添加一条防火墙规则，来刷新一下后台配置，就和“平台调整以后创建的MySQL”一样了。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>119060325001424/NET/Neusoft Cloud Technology Co., Ltd./SR_2019052929268_[MS-LED]虚拟机和数据库之间连不上</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>由于客户需求，产品组在五月改进了firewall规则，使VM可以通过“允许访问Azure服务“的方式访问My SQL . 对于之前未开通“允许Azure访问服务的”实例，只需开通便可，但对于像这个实例中原先就已经开启“允许访问Azure服务”的，必须‘关闭-重开‘。 或者通过更新任何一条防火墙规则来resync新的Firewall policy . 客户在5月29号加了一条IP到防火墙后，触发了Firewall rule的更新，因此所有Vnet都可以连接成功了。</li>
+</ul>
+<ul>
+<li>根据经验我们的Best Practice建议根据业务需要这样配置：</li>
+</ul>
+<ul>
+<li>以下几种配置可能不通、或我们不建议：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhanglihe/Zhoukun</p>
+<p>20190605</p>
+<p>119060325001424/NET/Neusoft Cloud Technology Co., Ltd./SR_2019052929268_[MS-LED]虚拟机和数据库之间连不上</p>
+<p>如产品组反馈：</p>
+<p>5月29号之前客户的四台VM一直都无法连接上MySql的原因：</p>
+<p>在今年五月之前， VM 连My SQL 必须通过配置Vnet连接的方式，即便开通了‘’允许访问Azure服务“，在没有配好 Vnet firewall rule 的情况下VM也是无法访问My SQL 的，这是by design的行为。 这就是为何之前4台虚拟机都无法连接My SQL 。</p>
+<p>为何客户在防火墙添加了一条IP之后，其余VM都能连接MySql:</p>
+<p>由于客户需求，产品组在五月改进了firewall规则，使VM可以通过“允许访问Azure服务“的方式访问My SQL . 对于之前未开通“允许Azure访问服务的”实例，只需开通便可，但对于像这个实例中原先就已经开启“允许访问Azure服务”的，必须‘关闭-重开‘。 或者通过更新任何一条防火墙规则来resync新的Firewall policy . 客户在5月29号加了一条IP到防火墙后，触发了Firewall rule的更新，因此所有Vnet都可以连接成功了。</p>
+<p>针对昨天您电话里提到：什么时候要使用“Service Endpoint服务终结点”，什么时候使用“允许Azure Service 访问”，我们整理了从VM访问MySQL的各种场景及配置如下。</p>
+<p>对于平台调整以后创建的MySQL：</p>
+<p>只要勾选了“允许Azure Service 访问”，VM就可以访问MySQL，无论Vnet侧是否开启服务终结点，无论MySQL侧是否添加了VNET。</p>
+<p>根据经验我们的Best Practice建议根据业务需要这样配置：</p>
+<p>MySQL侧</p>
+<p>Vnet侧</p>
+<p>是否可以连通</p>
+<p>1</p>
+<p>允许Azure Service 访问</p>
+<p>不添加Vnet</p>
+<p>无</p>
+<p>可以</p>
+<p>VM通过 公网IP访问MySQL，整个数据流走Azure骨干网络</p>
+<p>2</p>
+<p>不允许Azure Service 访问</p>
+<p>添加开启了服务终结点的Vnet</p>
+<p>开启服务终结点</p>
+<p>VM通过 内网IP访问MySQL，整个数据流走Azure骨干网络</p>
+<p>以下几种配置可能不通、或我们不建议：</p>
+<p>3</p>
+<p>不可以</p>
+<p>4</p>
+<p>5</p>
+<p>但这种架构没有太大必要，一般根据业务选择Best Practice 中1或者2就可以满足访问需求了</p>
+<p>对于平台调整以前创建的MySQL：</p>
+<p>只要Vnet侧开启服务终结点，如果MySQL侧没有添加VNET，无论MySQL侧是否勾选“允许Azure Service 访问”，默认不通。</p>
+<p>您需要手动取消勾选、再勾选“允许Azure Service 访问”，或任意添加一条防火墙规则，来刷新一下后台配置，就和“平台调整以后创建的MySQL”一样了。</p></article>

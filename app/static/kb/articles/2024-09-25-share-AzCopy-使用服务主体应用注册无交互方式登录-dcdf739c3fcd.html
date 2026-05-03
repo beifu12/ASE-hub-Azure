@@ -1,0 +1,63 @@
+<article class="kb-article" data-title="[share]AzCopy 使用服务主体应用注册无交互方式登录"><h1>[share]AzCopy 使用服务主体应用注册无交互方式登录</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Cli</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-09-25 17:29:48</li>
+<li>JD 相关性: 自动化/命令工具</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>2024.9.25</li>
+</ul>
+<ul>
+<li>liuwei</li>
+</ul>
+<ul>
+<li>$Env:AZCOPY_SPA_CLIENT_SECRET=&quot;xxxxxxxxx&quot;</li>
+</ul>
+<ul>
+<li>对应的CLIENT_SECRET，application-id，tenant-id可以参考下面截图进入entra id 应用注册找到目标服务主体获取：</li>
+</ul>
+<ul>
+<li>测试环境成功登陆截图供参考：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>AzCopy使用服务主体应用注册无交互方式登录，具体可以参考下面命令(需要添加该服务主体到订阅”存储blob数据参加者“角色才可上传blob)</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>azcopy login --service-principal --application-id &quot;xxxxxxxxxxxx&quot; --aad-endpoint <a href="https://login.partner.microsoftonline.cn" target="_blank" rel="noopener">https://login.partner.microsoftonline.cn</a> --tenant-id &quot;xxxxxxxxxxx&quot;</li>
+</ul>
+<ul>
+<li>详细信息可以参考：<a href="https://docs.azure.cn/zh-cn/storage/common/storage-use-azcopy-authorize-azure-active-directory#authorize-a-service-principal-by-using-a-client-secret-azcopy-login-command" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/common/storage-use-azcopy-authorize-azure-active-directory#authorize-a-service-principal-by-using-a-client-secret-azcopy-login-command</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>2024.9.25</p>
+<p>liuwei</p>
+<p>AzCopy使用服务主体应用注册无交互方式登录，具体可以参考下面命令(需要添加该服务主体到订阅”存储blob数据参加者“角色才可上传blob)</p>
+<p>$Env:AZCOPY_SPA_CLIENT_SECRET=&quot;xxxxxxxxx&quot;</p>
+<p>azcopy login --service-principal --application-id &quot;xxxxxxxxxxxx&quot; --aad-endpoint <a href="https://login.partner.microsoftonline.cn" target="_blank" rel="noopener">https://login.partner.microsoftonline.cn</a> --tenant-id &quot;xxxxxxxxxxx&quot;</p>
+<p>对应的CLIENT_SECRET，application-id，tenant-id可以参考下面截图进入entra id 应用注册找到目标服务主体获取：</p>
+<p>测试环境成功登陆截图供参考：</p>
+<p>详细信息可以参考：<a href="https://docs.azure.cn/zh-cn/storage/common/storage-use-azcopy-authorize-azure-active-directory#authorize-a-service-principal-by-using-a-client-secret-azcopy-login-command" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/common/storage-use-azcopy-authorize-azure-active-directory#authorize-a-service-principal-by-using-a-client-secret-azcopy-login-command</a></p></article>

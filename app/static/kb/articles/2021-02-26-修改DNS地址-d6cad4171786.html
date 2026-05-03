@@ -1,0 +1,229 @@
+<article class="kb-article" data-title="修改DNS地址"><h1>修改DNS地址</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LinuxNetIssue</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-02-26 18:37:13</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>echo &#39;change ip failed&#39;</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>echo &#39;change ip failed&#39;</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>```</li>
+</ul>
+<ul>
+<li>/etc/init.d/renewdns.sh</li>
+</ul>
+<ul>
+<li>#!/bin/sh</li>
+</ul>
+<ul>
+<li># Start/stop the &amp;lt;renewdns/testScript&amp;gt; daemon.</li>
+</ul>
+<ul>
+<li>#</li>
+</ul>
+<ul>
+<li>### BEGIN INIT INFO</li>
+</ul>
+<ul>
+<li># Provides:         &amp;lt;renewdns/testScript&amp;gt;</li>
+</ul>
+<ul>
+<li># Required-Start:    $all</li>
+</ul>
+<ul>
+<li># Required-Stop:</li>
+</ul>
+<ul>
+<li># Default-Start:     2 3 4 5</li>
+</ul>
+<ul>
+<li># Default-Stop:</li>
+</ul>
+<ul>
+<li># Short-Description: &amp;lt;Change Azure Auto inject DNS server IP&amp;gt;</li>
+</ul>
+<ul>
+<li>### END INIT INFO</li>
+</ul>
+<ul>
+<li>if [ -e /etc/resolv.conf ];then</li>
+</ul>
+<ul>
+<li>sed -i &#39;s/nameserver.*/nameserver 8.8.8.8/g&#39; /etc/resolv.conf</li>
+</ul>
+<ul>
+<li>else</li>
+</ul>
+<ul>
+<li>fi</li>
+</ul>
+<ul>
+<li>创建启动systemd服务</li>
+</ul>
+<ul>
+<li>/etc/systemd/system/renewdns.service</li>
+</ul>
+<ul>
+<li>[Unit]</li>
+</ul>
+<ul>
+<li>[Service]</li>
+</ul>
+<ul>
+<li>[Install]</li>
+</ul>
+<ul>
+<li>重载服务</li>
+</ul>
+<ul>
+<li>systemd daemo-reload</li>
+</ul>
+<ul>
+<li>添加开机启动</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过reslov.conf可以查看到已经修改了。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>创建修改DNS脚本</li>
+</ul>
+<ul>
+<li>配置的思路是让开机启动加载完平台自动化的一些服务插件以后在启动该脚本服务。类型如果选择一次性服务那么systemd无法保证你的服务在他们启动完成后再启动（猜测systemd并行加载，顺序不是固定的，type为idle为等你们都忙完我在干活）</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Description=renewdnsip service</li>
+</ul>
+<ul>
+<li>After=network.target</li>
+</ul>
+<ul>
+<li>After=NetworkManager-wait-online.service</li>
+</ul>
+<ul>
+<li>After=nis-domainname.service</li>
+</ul>
+<ul>
+<li>After=dbus-org.freedesktop.resolve1.service</li>
+</ul>
+<ul>
+<li>Type=idle</li>
+</ul>
+<ul>
+<li>PIDFile=/opt/renewdns/pid</li>
+</ul>
+<ul>
+<li>ExecStart=/bin/sh /etc/init.d/renewdns.sh</li>
+</ul>
+<ul>
+<li>ExecStop=/bin/kill -s TERM $MAINPID</li>
+</ul>
+<ul>
+<li>PrivateTmp=true</li>
+</ul>
+<ul>
+<li>RemainAfterExit=yes</li>
+</ul>
+<ul>
+<li>WantedBy=multi-user.target</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>systemctl enable renewdns.service</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>创建修改DNS脚本</p>
+<pre><code>
+/etc/init.d/renewdns.sh
+
+#!/bin/sh
+
+# Start/stop the &amp;lt;renewdns/testScript&amp;gt; daemon.
+
+#
+
+### BEGIN INIT INFO
+
+# Provides:         &amp;lt;renewdns/testScript&amp;gt;
+
+# Required-Start:    $all
+
+# Required-Stop:
+
+# Default-Start:     2 3 4 5
+
+# Default-Stop:
+
+# Short-Description: &amp;lt;Change Azure Auto inject DNS server IP&amp;gt;
+
+### END INIT INFO
+
+if [ -e /etc/resolv.conf ];then
+
+sed -i &#39;s/nameserver.*/nameserver 8.8.8.8/g&#39; /etc/resolv.conf
+
+else
+
+echo &#39;change ip failed&#39;
+
+fi
+
+创建启动systemd服务
+
+/etc/systemd/system/renewdns.service
+
+[Unit]
+
+Description=renewdnsip service
+
+After=network.target
+
+After=NetworkManager-wait-online.service
+
+After=nis-domainname.service
+
+After=dbus-org.freedesktop.resolve1.service
+
+[Service]
+
+Type=idle
+
+PIDFile=/opt/renewdns/pid
+
+ExecStart=/bin/sh /etc/init.d/renewdns.sh
+
+ExecStop=/bin/kill -s TERM $MAINPID
+
+PrivateTmp=true
+
+RemainAfterExit=yes
+
+[Install]
+
+WantedBy=multi-user.target
+
+重载服务
+
+systemd daemo-reload
+
+添加开机启动
+
+systemctl enable renewdns.service
+
+通过reslov.conf可以查看到已经修改了。
+
+配置的思路是让开机启动加载完平台自动化的一些服务插件以后在启动该脚本服务。类型如果选择一次性服务那么systemd无法保证你的服务在他们启动完成后再启动（猜测systemd并行加载，顺序不是固定的，type为idle为等你们都忙完我在干活）</code></pre></article>

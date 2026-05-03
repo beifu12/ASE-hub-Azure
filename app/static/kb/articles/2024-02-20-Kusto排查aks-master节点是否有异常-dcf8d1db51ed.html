@@ -1,0 +1,108 @@
+<article class="kb-article" data-title="Kusto排查aks master节点是否有异常"><h1>Kusto排查aks master节点是否有异常</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: TroubleShooting</li>
+<li>最近修改: 2024-02-20 14:10:59</li>
+<li>JD 相关性: 售后排障; AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>zuoteng</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>zuoteng</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zuoteng</li>
+</ul>
+<ul>
+<li>//Black box monitoring for cluster</li>
+</ul>
+<ul>
+<li>cluster(&quot;akscn&quot;).database(&quot;AKSprod&quot;).BlackboxMonitoringActivity</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt; ago(2d)</li>
+</ul>
+<ul>
+<li>| where fqdn contains &quot;smzdm-pre-dns-5198f1dc.hcp.chinanorth2.cx.prod.service.azk8s.cn&quot;  集群FQDN</li>
+</ul>
+<ul>
+<li>| where state != &quot;Healthy&quot;</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, state, provisioningState, reason, agentNodeCount, msg, resourceGroupName, resourceName, underlayName</li>
+</ul>
+<ul>
+<li>| distinct reason</li>
+</ul>
+<ul>
+<li>| render timeline</li>
+</ul>
+<ul>
+<li>//Black box monitoring using fqdn to find where cluster is not healthy</li>
+</ul>
+<ul>
+<li>| where fqdn == &quot;smzdm-pre-dns-5198f1dc.hcp.chinanorth2.cx.prod.service.azk8s.cn&quot;   集群FQDN</li>
+</ul>
+<ul>
+<li>// | where ([&quot;state&quot;] != &quot;Healthy&quot; or podsState != &quot;Healthy&quot; or resourceState != &quot;Healthy&quot; or addonPodsState != &quot;Healthy&quot;)</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt; ago(20d)</li>
+</ul>
+<ul>
+<li>| project fqdn, PreciseTimeStamp, agentNodeName, state, reason, podsState, resourceState, addonPodsState, agentNodeCount, provisioningState, msg, resourceGroupName, resourceName, underlayName</li>
+</ul>
+<ul>
+<li>// | render timepivot by fqdn, reason, agentNodeName, addonPodsState</li>
+</ul>
+<ul>
+<li>| render timepivot by fqdn, agentNodeName, addonPodsState, reason</li>
+</ul>
+<ul>
+<li>// | summarize count() by reason</li>
+</ul>
+<ul>
+<li>// | sort by reason</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>| order by PreciseTimeStamp asc</li>
+</ul>
+<ul>
+<li>// | order by PreciseTimeStamp asc</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zuoteng</p>
+<p>//Black box monitoring for cluster</p>
+<p>cluster(&quot;akscn&quot;).database(&quot;AKSprod&quot;).BlackboxMonitoringActivity</p>
+<p>| where PreciseTimeStamp &gt; ago(2d)</p>
+<p>| where fqdn contains &quot;smzdm-pre-dns-5198f1dc.hcp.chinanorth2.cx.prod.service.azk8s.cn&quot;  集群FQDN</p>
+<p>| where state != &quot;Healthy&quot;</p>
+<p>| project PreciseTimeStamp, state, provisioningState, reason, agentNodeCount, msg, resourceGroupName, resourceName, underlayName</p>
+<p>| order by PreciseTimeStamp asc</p>
+<p>| distinct reason</p>
+<p>| render timeline</p>
+<p>//Black box monitoring using fqdn to find where cluster is not healthy</p>
+<p>| where fqdn == &quot;smzdm-pre-dns-5198f1dc.hcp.chinanorth2.cx.prod.service.azk8s.cn&quot;   集群FQDN</p>
+<p>// | where ([&quot;state&quot;] != &quot;Healthy&quot; or podsState != &quot;Healthy&quot; or resourceState != &quot;Healthy&quot; or addonPodsState != &quot;Healthy&quot;)</p>
+<p>| where PreciseTimeStamp &gt; ago(20d)</p>
+<p>| project fqdn, PreciseTimeStamp, agentNodeName, state, reason, podsState, resourceState, addonPodsState, agentNodeCount, provisioningState, msg, resourceGroupName, resourceName, underlayName</p>
+<p>// | order by PreciseTimeStamp asc</p>
+<p>// | render timepivot by fqdn, reason, agentNodeName, addonPodsState</p>
+<p>| render timepivot by fqdn, agentNodeName, addonPodsState, reason</p>
+<p>// | summarize count() by reason</p>
+<p>// | sort by reason</p></article>

@@ -1,0 +1,507 @@
+<article class="kb-article" data-title="导出指定订阅ARM虚拟机信息"><h1>导出指定订阅ARM虚拟机信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Powershell</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-04-23 17:09:45</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Select-AzureRmSubscription -SubscriptionId $sub.SubscriptionId -ErrorAction Continue</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Select-AzureRmSubscription -SubscriptionId $sub.SubscriptionId -ErrorAction Continue</li>
+</ul>
+<ul>
+<li>Write-Host $error[0]</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li># 登陆Azure Account</li>
+</ul>
+<ul>
+<li>Add-AzureRmAccount -EnvironmentName AzureChinaCloud</li>
+</ul>
+<ul>
+<li># 设置订阅ID</li>
+</ul>
+<ul>
+<li>$sub = &quot;******&quot;</li>
+</ul>
+<ul>
+<li>Select-AzureRmSubscription -Subscription $sub</li>
+</ul>
+<ul>
+<li># 设置Excel格式</li>
+</ul>
+<ul>
+<li>$excel = New-Object -ComObject Excel.Application</li>
+</ul>
+<ul>
+<li>$workbook = $excel.Workbooks.add()</li>
+</ul>
+<ul>
+<li>$sheet = $workbook.worksheets.Item(1)</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,1) = &quot;Test&quot;</li>
+</ul>
+<ul>
+<li>$excel.Visible = $true</li>
+</ul>
+<ul>
+<li>for($b = 1 ; $b -le 14 ; $b++)</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,$b).font.bold = $true</li>
+</ul>
+<ul>
+<li>#$sheet.cells.item(1,$b).borders.LineStyle = $lineStyle::xlDashDot</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,$b).borders.ColorIndex = $colorIndex::xlColorIndexAutomatic</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,$b).borders.weight = $borderWeight::xlMedium</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>$x = 2</li>
+</ul>
+<ul>
+<li>$lineStyle = &quot;microsoft.office.interop.excel.xlLineStyle&quot; -as [type]</li>
+</ul>
+<ul>
+<li>$colorIndex = &quot;microsoft.office.interop.excel.xlColorIndex&quot; -as [type]</li>
+</ul>
+<ul>
+<li>$borderWeight = &quot;microsoft.office.interop.excel.xlBorderWeight&quot; -as [type]</li>
+</ul>
+<ul>
+<li>$chartType = &quot;microsoft.office.interop.excel.xlChartType&quot; -as [type]</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,1) = &quot;名称&quot;</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,2) = &quot;类型&quot;</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,3) = &quot;状态&quot;</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,4) = &quot;资源组&quot;</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,5) = &quot;位置&quot;</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,6) = &quot;订阅ID&quot;</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,7) = &quot;内网IP&quot;</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,8) = &quot;内网IP保留状态&quot;</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,9) = &quot;配置信息&quot;</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,10) = &quot;系统&quot;</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,11) = &quot;DNS域名&quot;</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,12) = &quot;公网IP&quot;</li>
+</ul>
+<ul>
+<li>$sheet.cells.item(1,13) = &quot;公网IP保留状态&quot;</li>
+</ul>
+<ul>
+<li># 定义变量</li>
+</ul>
+<ul>
+<li>$vms = Get-AzureRmVM -Status</li>
+</ul>
+<ul>
+<li>$vmCount = $vms.Count</li>
+</ul>
+<ul>
+<li>$nics = Get-AzureRmNetworkInterface</li>
+</ul>
+<ul>
+<li>$pips = Get-AzureRmPublicIpAddress</li>
+</ul>
+<ul>
+<li>$nsgs = Get-AzureRmNetworkSecurityGroup</li>
+</ul>
+<ul>
+<li>Write-Host &quot;done&quot;</li>
+</ul>
+<ul>
+<li>$currentSub = (Get-AzureRmContext).Subscription.Name</li>
+</ul>
+<ul>
+<li># 定义方法</li>
+</ul>
+<ul>
+<li>Function GetResourceNameFromResourceId($resourceId)</li>
+</ul>
+<ul>
+<li>return $resourceId.Substring($resourceId.LastIndexOf(&#39;/&#39;) + 1);</li>
+</ul>
+<ul>
+<li># 提取变量Value</li>
+</ul>
+<ul>
+<li>for($i=0; $i -lt $vmCount; $i++)</li>
+</ul>
+<ul>
+<li>$vm = $vms[$i];</li>
+</ul>
+<ul>
+<li>$nicResourceId = $vm.NetworkProfile.NetworkInterfaces[0].Id</li>
+</ul>
+<ul>
+<li>$nicInterfaces = GetResourceNameFromResourceId($nicResourceId)</li>
+</ul>
+<ul>
+<li>#$nic = Get-AzureRmNetworkInterface -Name $nicInterfaces -ResourceGroupName $vm.ResourceGroupName</li>
+</ul>
+<ul>
+<li>$nic = $nics | where {$_.Name -eq  $nicInterfaces -and $_.ResourceGroupName -eq $vm.ResourceGroupName}</li>
+</ul>
+<ul>
+<li>$ipResourceId = $nic.IpConfigurations[0].PublicIpAddress.Id</li>
+</ul>
+<ul>
+<li>$ipAddress = GetResourceNameFromResourceId($ipResourceId)</li>
+</ul>
+<ul>
+<li>$pip = $pips | where {$_.Name -eq $ipAddress -and $_.ResourceGroupName -eq $vm.ResourceGroupName}</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,1) = $vm.name</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,2) = &quot;虚拟机(ARM)&quot;</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,3) = $vm.PowerState</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,4) = $vm.ResourceGroupName</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,5) = $vm.Location</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,6) = $currentSub</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,7) = $nic.IpConfigurations[0].PrivateIpAddress</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,8) = $nic.IpConfigurations[0].PrivateIpAllocationMethod</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,9) = $vm.HardwareProfile.VmSize</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,10) = $vm.StorageProfile.OsDisk.OsType.ToString()</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,11) = $pip.DnsSettings.Fqdn</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,12) = $pip.IpAddress</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,13) = $pip.PublicIpAllocationMethod</li>
+</ul>
+<ul>
+<li>$nsgResourceId = $nic.NetworkSecurityGroup[0].Id</li>
+</ul>
+<ul>
+<li>$nsgName = GetResourceNameFromResourceId($nsgResourceId)</li>
+</ul>
+<ul>
+<li>#$nsg = Get-AzureRmNetworkSecurityGroup -Name $nsgName -ResourceGroupName $vm.ResourceGroupName</li>
+</ul>
+<ul>
+<li>$nsg = $nsgs | where {$_.Name -eq  $nsgName -and $_.ResourceGroupName -eq $vm.ResourceGroupName}</li>
+</ul>
+<ul>
+<li>$ports = $nsg.SecurityRules.DestinationPortRange</li>
+</ul>
+<ul>
+<li>$portCount = $ports.Count</li>
+</ul>
+<ul>
+<li>for($j=0; $j -lt $portCount; $j++)</li>
+</ul>
+<ul>
+<li>$port = $ports[$j];</li>
+</ul>
+<ul>
+<li>$sheet.cells.item($x,14) = $port</li>
+</ul>
+<ul>
+<li>$x++</li>
+</ul>
+<ul>
+<li>$range = $sheet.usedRange</li>
+</ul>
+<ul>
+<li>$range.EntireColumn.AutoFit() | out-null</li>
+</ul>
+<ul>
+<li>$uri=$vm.VM.OSVirtualHardDisk.MediaLink.AbsoluteUri</li>
+</ul>
+<ul>
+<li>$location=Get-AzureDisk | Where-Object {$_.MediaLink -eq $uri}| Select-Object Location</li>
+</ul>
+<ul>
+<li>输出项及格式见下：</li>
+</ul>
+<ul>
+<li>备注：</li>
+</ul>
+<ul>
+<li>param(</li>
+</ul>
+<ul>
+<li>[string]$tenantId=&quot;&quot;,</li>
+</ul>
+<ul>
+<li>[string]$file=&quot;Azure-ARM-VMs.csv&quot;</li>
+</ul>
+<ul>
+<li>)</li>
+</ul>
+<ul>
+<li>$vmobjs = @()</li>
+</ul>
+<ul>
+<li>foreach ($sub in $subs)</li>
+</ul>
+<ul>
+<li>Write-Host Processing subscription $sub.SubscriptionName</li>
+</ul>
+<ul>
+<li>try</li>
+</ul>
+<ul>
+<li>$vms = Get-AzureRmVm</li>
+</ul>
+<ul>
+<li>foreach ($vm in $vms)</li>
+</ul>
+<ul>
+<li>$vmInfo = [pscustomobject]@{</li>
+</ul>
+<ul>
+<li>&#39;Subscription&#39;=$sub.SubscriptionName</li>
+</ul>
+<ul>
+<li>&#39;Mode&#39;=&#39;ARM&#39;</li>
+</ul>
+<ul>
+<li>&#39;Name&#39;=$vm.Name</li>
+</ul>
+<ul>
+<li>&#39;ResourceGroupName&#39; = $vm.ResourceGroupName</li>
+</ul>
+<ul>
+<li>&#39;Location&#39; = $vm.Location</li>
+</ul>
+<ul>
+<li>&#39;VMSize&#39; = $vm.HardwareProfile.VMSize</li>
+</ul>
+<ul>
+<li>&#39;Status&#39; = $null</li>
+</ul>
+<ul>
+<li>&#39;AvailabilitySet&#39; = $vm.AvailabilitySetReference.Id }</li>
+</ul>
+<ul>
+<li>$vmStatus = $vm | Get-AzureRmVM -Status</li>
+</ul>
+<ul>
+<li>$vmInfo.Status = $vmStatus.Statuses[1].DisplayStatus</li>
+</ul>
+<ul>
+<li>$vmobjs += $vmInfo</li>
+</ul>
+<ul>
+<li>catch</li>
+</ul>
+<ul>
+<li>$vmobjs | Export-Csv -NoTypeInformation -Path $file</li>
+</ul>
+<ul>
+<li>Write-Host &quot;VM list written to $file&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>详情脚本：</li>
+</ul>
+<ul>
+<li>1.运行脚本期间可能会出现如下报错，忽略即可，不影响最终的结果统计。</li>
+</ul>
+<ul>
+<li>2.该脚本运行前，需要事先定义好订阅</li>
+</ul>
+<ul>
+<li>3.该脚本输出的为一个Excel表格，输出期间不要关闭正在运行的Excel</li>
+</ul>
+<ul>
+<li>4.如果需要对指定Azure账号下的所有订阅进行统计，可参考如下脚本的遍历订阅方法，参考链接：</li>
+</ul>
+<ul>
+<li>Get-AzureRmSubscription</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>$sheet.cells.item(1,14) = &quot;目标端口&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://blogs.msdn.microsoft.com/tomholl/2016/11/22/dumping-details-of-azure-virtual-machines-to-csvexcel/" target="_blank" rel="noopener">https://blogs.msdn.microsoft.com/tomholl/2016/11/22/dumping-details-of-azure-virtual-machines-to-csvexcel/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>详情脚本：</p>
+<h1>登陆Azure Account</h1>
+<p>Add-AzureRmAccount -EnvironmentName AzureChinaCloud</p>
+<h1>设置订阅ID</h1>
+<p>$sub = &quot;******&quot;</p>
+<p>Select-AzureRmSubscription -Subscription $sub</p>
+<h1>设置Excel格式</h1>
+<p>$excel = New-Object -ComObject Excel.Application</p>
+<p>$workbook = $excel.Workbooks.add()</p>
+<p>$sheet = $workbook.worksheets.Item(1)</p>
+<p>$sheet.cells.item(1,1) = &quot;Test&quot;</p>
+<p>$excel.Visible = $true</p>
+<p>for($b = 1 ; $b -le 14 ; $b++)</p>
+<p>{</p>
+<p>$sheet.cells.item(1,$b).font.bold = $true</p>
+<p>#$sheet.cells.item(1,$b).borders.LineStyle = $lineStyle::xlDashDot</p>
+<p>$sheet.cells.item(1,$b).borders.ColorIndex = $colorIndex::xlColorIndexAutomatic</p>
+<p>$sheet.cells.item(1,$b).borders.weight = $borderWeight::xlMedium</p>
+<p>}</p>
+<p>$x = 2</p>
+<p>$lineStyle = &quot;microsoft.office.interop.excel.xlLineStyle&quot; -as [type]</p>
+<p>$colorIndex = &quot;microsoft.office.interop.excel.xlColorIndex&quot; -as [type]</p>
+<p>$borderWeight = &quot;microsoft.office.interop.excel.xlBorderWeight&quot; -as [type]</p>
+<p>$chartType = &quot;microsoft.office.interop.excel.xlChartType&quot; -as [type]</p>
+<p>$sheet.cells.item(1,1) = &quot;名称&quot;</p>
+<p>$sheet.cells.item(1,2) = &quot;类型&quot;</p>
+<p>$sheet.cells.item(1,3) = &quot;状态&quot;</p>
+<p>$sheet.cells.item(1,4) = &quot;资源组&quot;</p>
+<p>$sheet.cells.item(1,5) = &quot;位置&quot;</p>
+<p>$sheet.cells.item(1,6) = &quot;订阅ID&quot;</p>
+<p>$sheet.cells.item(1,7) = &quot;内网IP&quot;</p>
+<p>$sheet.cells.item(1,8) = &quot;内网IP保留状态&quot;</p>
+<p>$sheet.cells.item(1,9) = &quot;配置信息&quot;</p>
+<p>$sheet.cells.item(1,10) = &quot;系统&quot;</p>
+<p>$sheet.cells.item(1,11) = &quot;DNS域名&quot;</p>
+<p>$sheet.cells.item(1,12) = &quot;公网IP&quot;</p>
+<p>$sheet.cells.item(1,13) = &quot;公网IP保留状态&quot;</p>
+<p>$sheet.cells.item(1,14) = &quot;目标端口&quot;</p>
+<h1>定义变量</h1>
+<p>$vms = Get-AzureRmVM -Status</p>
+<p>$vmCount = $vms.Count</p>
+<p>$nics = Get-AzureRmNetworkInterface</p>
+<p>$pips = Get-AzureRmPublicIpAddress</p>
+<p>$nsgs = Get-AzureRmNetworkSecurityGroup</p>
+<p>Write-Host &quot;done&quot;</p>
+<p>$currentSub = (Get-AzureRmContext).Subscription.Name</p>
+<h1>定义方法</h1>
+<p>Function GetResourceNameFromResourceId($resourceId)</p>
+<p>return $resourceId.Substring($resourceId.LastIndexOf(&#39;/&#39;) + 1);</p>
+<h1>提取变量Value</h1>
+<p>for($i=0; $i -lt $vmCount; $i++)</p>
+<p>$vm = $vms[$i];</p>
+<p>$nicResourceId = $vm.NetworkProfile.NetworkInterfaces[0].Id</p>
+<p>$nicInterfaces = GetResourceNameFromResourceId($nicResourceId)</p>
+<p>#$nic = Get-AzureRmNetworkInterface -Name $nicInterfaces -ResourceGroupName $vm.ResourceGroupName</p>
+<p>$nic = $nics | where {$_.Name -eq  $nicInterfaces -and $_.ResourceGroupName -eq $vm.ResourceGroupName}</p>
+<p>$ipResourceId = $nic.IpConfigurations[0].PublicIpAddress.Id</p>
+<p>$ipAddress = GetResourceNameFromResourceId($ipResourceId)</p>
+<p>$pip = $pips | where {$_.Name -eq $ipAddress -and $_.ResourceGroupName -eq $vm.ResourceGroupName}</p>
+<p>$sheet.cells.item($x,1) = $vm.name</p>
+<p>$sheet.cells.item($x,2) = &quot;虚拟机(ARM)&quot;</p>
+<p>$sheet.cells.item($x,3) = $vm.PowerState</p>
+<p>$sheet.cells.item($x,4) = $vm.ResourceGroupName</p>
+<p>$sheet.cells.item($x,5) = $vm.Location</p>
+<p>$sheet.cells.item($x,6) = $currentSub</p>
+<p>$sheet.cells.item($x,7) = $nic.IpConfigurations[0].PrivateIpAddress</p>
+<p>$sheet.cells.item($x,8) = $nic.IpConfigurations[0].PrivateIpAllocationMethod</p>
+<p>$sheet.cells.item($x,9) = $vm.HardwareProfile.VmSize</p>
+<p>$sheet.cells.item($x,10) = $vm.StorageProfile.OsDisk.OsType.ToString()</p>
+<p>$sheet.cells.item($x,11) = $pip.DnsSettings.Fqdn</p>
+<p>$sheet.cells.item($x,12) = $pip.IpAddress</p>
+<p>$sheet.cells.item($x,13) = $pip.PublicIpAllocationMethod</p>
+<p>$nsgResourceId = $nic.NetworkSecurityGroup[0].Id</p>
+<p>$nsgName = GetResourceNameFromResourceId($nsgResourceId)</p>
+<p>#$nsg = Get-AzureRmNetworkSecurityGroup -Name $nsgName -ResourceGroupName $vm.ResourceGroupName</p>
+<p>$nsg = $nsgs | where {$_.Name -eq  $nsgName -and $_.ResourceGroupName -eq $vm.ResourceGroupName}</p>
+<p>$ports = $nsg.SecurityRules.DestinationPortRange</p>
+<p>$portCount = $ports.Count</p>
+<p>for($j=0; $j -lt $portCount; $j++)</p>
+<p>$port = $ports[$j];</p>
+<p>$sheet.cells.item($x,14) = $port</p>
+<p>$x++</p>
+<p>$range = $sheet.usedRange</p>
+<p>$range.EntireColumn.AutoFit() | out-null</p>
+<p>$uri=$vm.VM.OSVirtualHardDisk.MediaLink.AbsoluteUri</p>
+<p>$location=Get-AzureDisk | Where-Object {$_.MediaLink -eq $uri}| Select-Object Location</p>
+<p>输出项及格式见下：</p>
+<p>备注：</p>
+<p>1.运行脚本期间可能会出现如下报错，忽略即可，不影响最终的结果统计。</p>
+<p>2.该脚本运行前，需要事先定义好订阅</p>
+<p>3.该脚本输出的为一个Excel表格，输出期间不要关闭正在运行的Excel</p>
+<p>4.如果需要对指定Azure账号下的所有订阅进行统计，可参考如下脚本的遍历订阅方法，参考链接：</p>
+<p><a href="https://blogs.msdn.microsoft.com/tomholl/2016/11/22/dumping-details-of-azure-virtual-machines-to-csvexcel/" target="_blank" rel="noopener">https://blogs.msdn.microsoft.com/tomholl/2016/11/22/dumping-details-of-azure-virtual-machines-to-csvexcel/</a></p>
+<p>param(</p>
+<p>[string]$tenantId=&quot;&quot;,</p>
+<p>[string]$file=&quot;Azure-ARM-VMs.csv&quot;</p>
+<p>)</p>
+<p>Get-AzureRmSubscription</p>
+<p>$vmobjs = @()</p>
+<p>foreach ($sub in $subs)</p>
+<p>Write-Host Processing subscription $sub.SubscriptionName</p>
+<p>try</p>
+<p>Select-AzureRmSubscription -SubscriptionId $sub.SubscriptionId -ErrorAction Continue</p>
+<p>$vms = Get-AzureRmVm</p>
+<p>foreach ($vm in $vms)</p>
+<p>$vmInfo = [pscustomobject]@{</p>
+<p>&#39;Subscription&#39;=$sub.SubscriptionName</p>
+<p>&#39;Mode&#39;=&#39;ARM&#39;</p>
+<p>&#39;Name&#39;=$vm.Name</p>
+<p>&#39;ResourceGroupName&#39; = $vm.ResourceGroupName</p>
+<p>&#39;Location&#39; = $vm.Location</p>
+<p>&#39;VMSize&#39; = $vm.HardwareProfile.VMSize</p>
+<p>&#39;Status&#39; = $null</p>
+<p>&#39;AvailabilitySet&#39; = $vm.AvailabilitySetReference.Id }</p>
+<p>$vmStatus = $vm | Get-AzureRmVM -Status</p>
+<p>$vmInfo.Status = $vmStatus.Statuses[1].DisplayStatus</p>
+<p>$vmobjs += $vmInfo</p>
+<p>catch</p>
+<p>Write-Host $error[0]</p>
+<p>$vmobjs | Export-Csv -NoTypeInformation -Path $file</p>
+<p>Write-Host &quot;VM list written to $file&quot;</p></article>

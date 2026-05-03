@@ -1,0 +1,132 @@
+<article class="kb-article" data-title="在中国AAD租户中创建自定义角色时无法找到特定权限"><h1>在中国AAD租户中创建自定义角色时无法找到特定权限</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-11-09 20:34:07</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户希望在Azure China的AAD中创建一个自定义角色，并赋予该角色microsoft.directory/servicePrincipals/managePermissionGrantsForAll.microsoft-all-application-permissions权限，但是在Azure China AAD中操作时，在权限列表中却无法找到该项。但是我们可以看到AAD默认的Application administrator 组中包含了该权限。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户希望在Azure China的AAD中创建一个自定义角色，并赋予该角色microsoft.directory/servicePrincipals/managePermissionGrantsForAll.microsoft-all-application-permissions权限，但是在Azure China AAD中操作时，在权限列表中却无法找到该项。但是我们可以看到AAD默认的Application administrator 组中包含了该权限。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>ZhangLihong</li>
+</ul>
+<ul>
+<li>问题：</li>
+</ul>
+<ul>
+<li>microsoft.directory/servicePrincipals/managePermissionGrantsForAll.microsoft-application-admin</li>
+</ul>
+<ul>
+<li>参考文档和截图：</li>
+</ul>
+<ul>
+<li>根据文档的先决条件，需要安装以下模块。</li>
+</ul>
+<ul>
+<li>我这里测试是可以成功创建的。</li>
+</ul>
+<ul>
+<li>Connect-AzureAD -AzureEnvironmentName AzureChinaCloud</li>
+</ul>
+<ul>
+<li># Basic role information</li>
+</ul>
+<ul>
+<li>$displayName = &quot;Application Consent&quot;</li>
+</ul>
+<ul>
+<li>$description = &quot;Application Consent&quot;</li>
+</ul>
+<ul>
+<li>$templateId = (New-Guid).Guid</li>
+</ul>
+<ul>
+<li># Set of permissions to grant</li>
+</ul>
+<ul>
+<li>$allowedResourceAction =</li>
+</ul>
+<ul>
+<li>@(</li>
+</ul>
+<ul>
+<li>&quot;microsoft.directory/servicePrincipals/managePermissionGrantsForAll.microsoft-application-admin&quot;</li>
+</ul>
+<ul>
+<li>)</li>
+</ul>
+<ul>
+<li>$rolePermissions = @{&#39;allowedResourceActions&#39;= $allowedResourceAction}</li>
+</ul>
+<ul>
+<li># Create new custom admin role</li>
+</ul>
+<ul>
+<li>参考截图：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>根据客户提供的信息，以下权限属于应用同意权限，目前，管理门户尚不支持列出并添加到自定义角色中，需要使用Azure AD PowerShell来创建。</li>
+</ul>
+<ul>
+<li>参考脚本：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法：</li>
+</ul>
+<ul>
+<li>$customAdmin = New-AzureADMSRoleDefinition -RolePermissions $rolePermissions -DisplayName $displayName -Description $description -TemplateId $templateId -IsEnabled $true</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/active-directory/roles/custom-consent-permissions#app-consent-permissions" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/roles/custom-consent-permissions#app-consent-permissions</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/active-directory/roles/custom-create#create-a-role-using-powershell" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/roles/custom-create#create-a-role-using-powershell</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/active-directory/roles/prerequisites#azureadpreview-module" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/roles/prerequisites#azureadpreview-module</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>ZhangLihong</p>
+<p>2022/11/09</p>
+<p>问题：</p>
+<p>客户希望在Azure China的AAD中创建一个自定义角色，并赋予该角色microsoft.directory/servicePrincipals/managePermissionGrantsForAll.microsoft-all-application-permissions权限，但是在Azure China AAD中操作时，在权限列表中却无法找到该项。但是我们可以看到AAD默认的Application administrator 组中包含了该权限。</p>
+<p>解决方法：</p>
+<p>根据客户提供的信息，以下权限属于应用同意权限，目前，管理门户尚不支持列出并添加到自定义角色中，需要使用Azure AD PowerShell来创建。</p>
+<p>microsoft.directory/servicePrincipals/managePermissionGrantsForAll.microsoft-application-admin</p>
+<p>参考文档和截图：</p>
+<p><a href="https://docs.azure.cn/zh-cn/active-directory/roles/custom-consent-permissions#app-consent-permissions" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/roles/custom-consent-permissions#app-consent-permissions</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/active-directory/roles/custom-create#create-a-role-using-powershell" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/roles/custom-create#create-a-role-using-powershell</a></p>
+<p>根据文档的先决条件，需要安装以下模块。</p>
+<p><a href="https://docs.azure.cn/zh-cn/active-directory/roles/prerequisites#azureadpreview-module" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/roles/prerequisites#azureadpreview-module</a></p>
+<p>我这里测试是可以成功创建的。</p>
+<p>参考脚本：</p>
+<p>Connect-AzureAD -AzureEnvironmentName AzureChinaCloud</p>
+<h1>Basic role information</h1>
+<p>$displayName = &quot;Application Consent&quot;</p>
+<p>$description = &quot;Application Consent&quot;</p>
+<p>$templateId = (New-Guid).Guid</p>
+<h1>Set of permissions to grant</h1>
+<p>$allowedResourceAction =</p>
+<p>@(</p>
+<p>&quot;microsoft.directory/servicePrincipals/managePermissionGrantsForAll.microsoft-application-admin&quot;</p>
+<p>)</p>
+<p>$rolePermissions = @{&#39;allowedResourceActions&#39;= $allowedResourceAction}</p>
+<h1>Create new custom admin role</h1>
+<p>$customAdmin = New-AzureADMSRoleDefinition -RolePermissions $rolePermissions -DisplayName $displayName -Description $description -TemplateId $templateId -IsEnabled $true</p>
+<p>参考截图：</p></article>

@@ -1,0 +1,51 @@
+<article class="kb-article" data-title="ipad无法登录outlook问题"><h1>ipad无法登录outlook问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-04-10 10:40:41</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>关于无法登录outlook邮箱问题，是由于做了条件访问策略，要求设备合规才能访问outlook。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>关于无法登录outlook邮箱问题，是由于做了条件访问策略，要求设备合规才能访问outlook。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>两项都合规后，outlook就可以登陆了。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>有一台ipad设备在公司门户提示未注册， 但是点进去看，显示设备注册成功，检查更新正常，目前无法登录outlook邮箱。</li>
+</ul>
+<ul>
+<li>在intune portal中查看此设备的两个合规性，如下图，如果Microsoft Entra合规性有问题，在entra id和intune portal中删除设备，如果有重复的设备，也一并删除，然后再通过公司门户重新注册设备，观察设备合规性。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Entra id设备管理页面： <a href="https://portal.azure.cn/#view/Microsoft_AAD_Devices/DevicesMenuBlade/~/Devices/menuId~/null" target="_blank" rel="noopener">https://portal.azure.cn/#view/Microsoft_AAD_Devices/DevicesMenuBlade/~/Devices/menuId~/null</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>问题描述：</p>
+<p>有一台ipad设备在公司门户提示未注册， 但是点进去看，显示设备注册成功，检查更新正常，目前无法登录outlook邮箱。</p>
+<p>解决方案：</p>
+<p>关于无法登录outlook邮箱问题，是由于做了条件访问策略，要求设备合规才能访问outlook。</p>
+<p>在intune portal中查看此设备的两个合规性，如下图，如果Microsoft Entra合规性有问题，在entra id和intune portal中删除设备，如果有重复的设备，也一并删除，然后再通过公司门户重新注册设备，观察设备合规性。</p>
+<p>两项都合规后，outlook就可以登陆了。</p>
+<p>Entra id设备管理页面： <a href="https://portal.azure.cn/#view/Microsoft_AAD_Devices/DevicesMenuBlade/~/Devices/menuId~/null" target="_blank" rel="noopener">https://portal.azure.cn/#view/Microsoft_AAD_Devices/DevicesMenuBlade/~/Devices/menuId~/null</a></p></article>

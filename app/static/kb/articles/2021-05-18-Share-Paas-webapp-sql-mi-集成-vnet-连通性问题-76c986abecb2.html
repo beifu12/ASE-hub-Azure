@@ -1,0 +1,93 @@
+<article class="kb-article" data-title="【Share】Paas webapp,sql mi 集成 vnet 连通性问题"><h1>【Share】Paas webapp,sql mi 集成 vnet 连通性问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2021-05-18 15:11:30</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户 paas webapp 服务通过公网访问 paas sql 数据库实例，客户遇到的问题是：希望使用Azure内部网络传输，而非使用公网 Ip的方式</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户 paas webapp 服务通过公网访问 paas sql 数据库实例，客户遇到的问题是：希望使用Azure内部网络传输，而非使用公网 Ip的方式</li>
+</ul>
+<ul>
+<li>Webapp  （vnet 1）-------------------------------------------------vnet peering --------------------------------------------（vnet 2）SQL MI        无法ping通</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>工单编号：2020100955872</li>
+</ul>
+<ul>
+<li>客户问题：</li>
+</ul>
+<ul>
+<li>Webapp -------------------------------------------------Internet------------------------------------------------  SQL MI</li>
+</ul>
+<ul>
+<li>通过Paas服务集成IaaS Vnet的配置方式，使用专用ip实现网络连接</li>
+</ul>
+<ul>
+<li>Webapp  （vnet 1）-------------------------------------------------vnet peering --------------------------------------------（vnet 2）SQL MI</li>
+</ul>
+<ul>
+<li>东2                                                                                                                                                           北2</li>
+</ul>
+<ul>
+<li>遇到的问题：</li>
+</ul>
+<ul>
+<li>为了测试Paas服务集成IaaS Vnet是否可以正常通信</li>
+</ul>
+<ul>
+<li>在SQL Mi 北2相同的Vnet 2下建立虚拟机，使用Ping的方式测试连通性</li>
+</ul>
+<ul>
+<li>Webapp  （vnet 1）-------------------------------------------------vnet peering --------------------------------------------（vnet 2）Test vm       可以ping通</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>PAAS to other PAAS will only work when the source PAAS is VNET injected with Gateways。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>需要webapp集成到具有VPN网关的vnet01中， 与SQL MI的vnet 做了peering， 验证从webapp 侧可以ping通Sql mi</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>初步提供的解决方案：</li>
+</ul>
+<ul>
+<li>发现测试webapp可以通过vnet peering访问到vnet2中的VM， 但是无法访问到集成在vnet2中的SQL MI</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020/11/18</p>
+<p>工单编号：2020100955872</p>
+<p>客户问题：</p>
+<p>Webapp -------------------------------------------------Internet------------------------------------------------  SQL MI</p>
+<p>客户 paas webapp 服务通过公网访问 paas sql 数据库实例，客户遇到的问题是：希望使用Azure内部网络传输，而非使用公网 Ip的方式</p>
+<p>初步提供的解决方案：</p>
+<p>通过Paas服务集成IaaS Vnet的配置方式，使用专用ip实现网络连接</p>
+<p>Webapp  （vnet 1）-------------------------------------------------vnet peering --------------------------------------------（vnet 2）SQL MI</p>
+<p>东2                                                                                                                                                           北2</p>
+<p>遇到的问题：</p>
+<p>为了测试Paas服务集成IaaS Vnet是否可以正常通信</p>
+<p>在SQL Mi 北2相同的Vnet 2下建立虚拟机，使用Ping的方式测试连通性</p>
+<p>发现测试webapp可以通过vnet peering访问到vnet2中的VM， 但是无法访问到集成在vnet2中的SQL MI</p>
+<p>Webapp  （vnet 1）-------------------------------------------------vnet peering --------------------------------------------（vnet 2）SQL MI        无法ping通</p>
+<p>Webapp  （vnet 1）-------------------------------------------------vnet peering --------------------------------------------（vnet 2）Test vm       可以ping通</p>
+<p>问题原因：</p>
+<p>需要webapp集成到具有VPN网关的vnet01中， 与SQL MI的vnet 做了peering， 验证从webapp 侧可以ping通Sql mi</p>
+<p>PAAS to other PAAS will only work when the source PAAS is VNET injected with Gateways。</p></article>

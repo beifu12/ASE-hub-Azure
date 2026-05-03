@@ -1,0 +1,374 @@
+<article class="kb-article" data-title="Azure   Support TSG update 2020/05/08"><h1>Azure   Support TSG update 2020/05/08</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: CDN Operation Guideline</li>
+<li>最近修改: 2021-02-09 11:27:55</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Error message</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Error message</li>
+</ul>
+<ul>
+<li>Known issue</li>
+</ul>
+<ul>
+<li>By default, the service version of Azure Storage Account is 2009-09-19 which does not support Range: bytes=startByte-, if this kind of Storage Account is source, it’ll encounter the specified Range-Gets issue.</li>
+</ul>
+<ul>
+<li>Customer can update the service version of Azure Storage to 2011-08-18 or newer to avoid this issue.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Dear All,</li>
+</ul>
+<ul>
+<li>Please find Azure CDN China updates as below:</li>
+</ul>
+<ul>
+<li>Product update</li>
+</ul>
+<ul>
+<li>Release date: 2020/04</li>
+</ul>
+<ul>
+<li>Detail:</li>
+</ul>
+<ul>
+<li>Feature/ Statistical analysis - Top URLs and Top Referrers</li>
+</ul>
+<ul>
+<li>Release date: 2020/01</li>
+</ul>
+<ul>
+<li>Feature availability</li>
+</ul>
+<ul>
+<li>As of 2020/05/08</li>
+</ul>
+<ul>
+<li>NO.</li>
+</ul>
+<ul>
+<li>Feature</li>
+</ul>
+<ul>
+<li>Status</li>
+</ul>
+<ul>
+<li>1</li>
+</ul>
+<ul>
+<li>HTTPS for Image processing acceleration</li>
+</ul>
+<ul>
+<li>Available</li>
+</ul>
+<ul>
+<li>2</li>
+</ul>
+<ul>
+<li>Global/Oversea acceleration</li>
+</ul>
+<ul>
+<li>3</li>
+</ul>
+<ul>
+<li>4</li>
+</ul>
+<ul>
+<li>5</li>
+</ul>
+<ul>
+<li>HTTPS for Global/Oversea acceleration</li>
+</ul>
+<ul>
+<li>6</li>
+</ul>
+<ul>
+<li>Billing option for EA user</li>
+</ul>
+<ul>
+<li>7</li>
+</ul>
+<ul>
+<li>HTTP header (e.g. CORS)</li>
+</ul>
+<ul>
+<li>8</li>
+</ul>
+<ul>
+<li>Statistical analysis - Top URLs and Top Referrers</li>
+</ul>
+<ul>
+<li>9</li>
+</ul>
+<ul>
+<li>10</li>
+</ul>
+<ul>
+<li>Partial</li>
+</ul>
+<ul>
+<li>11</li>
+</ul>
+<ul>
+<li>Deprecated</li>
+</ul>
+<ul>
+<li>12</li>
+</ul>
+<ul>
+<li>HTTPS with Azure supplied certificate</li>
+</ul>
+<ul>
+<li>13</li>
+</ul>
+<ul>
+<li>Offline configuration update</li>
+</ul>
+<ul>
+<li>Configuration &amp; Requirement</li>
+</ul>
+<ul>
+<li>Description</li>
+</ul>
+<ul>
+<li>Redirection (HTTPS to HTTP)</li>
+</ul>
+<ul>
+<li>HTTP-HTTPS(Status code 301), this is for CDN side.</li>
+</ul>
+<ul>
+<li>HTTP/2</li>
+</ul>
+<ul>
+<li>HTTPS certificate needs to be deployed in advance.</li>
+</ul>
+<ul>
+<li>Gzip</li>
+</ul>
+<ul>
+<li>Specified Cache rule/ back-to-source method</li>
+</ul>
+<ul>
+<li>URI encryption(Anti hijacking)</li>
+</ul>
+<ul>
+<li>Specified back-to-source port</li>
+</ul>
+<ul>
+<li>Supported ports: 8001, 8080, 8081, 8088, 8089, other ports need to be evaluated by PG.</li>
+</ul>
+<ul>
+<li>Query &amp; Confirm CDN IP</li>
+</ul>
+<ul>
+<li>IPv6</li>
+</ul>
+<ul>
+<li>Part of CDN providers support IPv6.</li>
+</ul>
+<ul>
+<li>Range Gets</li>
+</ul>
+<ul>
+<li>Follow 301、302</li>
+</ul>
+<ul>
+<li>This is for Back-to-Source.</li>
+</ul>
+<ul>
+<li>Original Image Protection</li>
+</ul>
+<ul>
+<li>Move(Migration)</li>
+</ul>
+<ul>
+<li>Migration will affect CDN billing, this feature has been classified as offline configuration.</li>
+</ul>
+<ul>
+<li>14</li>
+</ul>
+<ul>
+<li>15</li>
+</ul>
+<ul>
+<li>Origin path</li>
+</ul>
+<ul>
+<li>Azure CDN Global supports this feature, but only CDN engineering team can configure it on Azure CDN China.</li>
+</ul>
+<ul>
+<li>16</li>
+</ul>
+<ul>
+<li>RBAC for CDN Management Porta</li>
+</ul>
+<ul>
+<li>Case: 2020041519872</li>
+</ul>
+<ul>
+<li>Background:</li>
+</ul>
+<ul>
+<li>Update-AzStorageBlobServiceProperty -ResourceGroupName &quot;&lt;Resource Group Name&gt;&quot; -AccountName &quot;&lt;Storage Account Name&gt;&quot;  -DefaultServiceVersion 2011-08-18</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Offline configuration/Read-only and Read-write roles for CDN Management Portal/Unified Portal</li>
+</ul>
+<ul>
+<li>CDN engineering team can provide Read-only and Read-write roles for CDN Management Portal/Unified Portal for customer, these roles are independent of Azure Account.</li>
+</ul>
+<ul>
+<li>Customers can query top URLs and Referrers on CDN management Portal.</li>
+</ul>
+<ul>
+<li>Download CDN access log</li>
+</ul>
+<ul>
+<li>Service check</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Azure SDK/Powershell/Cli for Azure CDN China</li>
+</ul>
+<ul>
+<li>IP address for Host header</li>
+</ul>
+<ul>
+<li>New-AzStorageContext -StorageAccountName &quot;&lt;Storage Account Name&gt;&quot; -StorageAccountKey &quot;&lt;Storage Access Key&gt;&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Back origin protocol &amp; Auto HTTPS redirection</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Support for specified suffixes, please also collect the target content type to enable this feature.</li>
+</ul>
+<ul>
+<li>To enable this feature, source need to support Range Gets. (Baidu and Tencent enable this feature by default)</li>
+</ul>
+<ul>
+<li>Disable HTTPS</li>
+</ul>
+<ul>
+<li>Re-enable profile</li>
+</ul>
+<ul>
+<li>Only CDN engineering team can re-enable the CDN profile for now.</li>
+</ul>
+<ul>
+<li>Solution:</li>
+</ul>
+<ul>
+<li>If customer doesn’t want the Range-Get, please engage CDN engineering team to disable Range-Gets on Azure CDN China side and mitigate this issue.</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Dear All,</p>
+<p>Please find Azure CDN China updates as below:</p>
+<p>Product update</p>
+<p>Offline configuration/Read-only and Read-write roles for CDN Management Portal/Unified Portal</p>
+<p>Release date: 2020/04</p>
+<p>Detail:</p>
+<p>CDN engineering team can provide Read-only and Read-write roles for CDN Management Portal/Unified Portal for customer, these roles are independent of Azure Account.</p>
+<p>Feature/ Statistical analysis - Top URLs and Top Referrers</p>
+<p>Release date: 2020/01</p>
+<p>Customers can query top URLs and Referrers on CDN management Portal.</p>
+<p>Feature availability</p>
+<p>As of 2020/05/08</p>
+<p>NO.</p>
+<p>Feature</p>
+<p>Status</p>
+<p>1</p>
+<p>HTTPS for Image processing acceleration</p>
+<p>Available</p>
+<p>2019/03/15</p>
+<p>2</p>
+<p>Global/Oversea acceleration</p>
+<p>2019/04/01</p>
+<p>3</p>
+<p>Back origin protocol &amp; Auto HTTPS redirection</p>
+<p>2019/05/12</p>
+<p>4</p>
+<p>Download CDN access log</p>
+<p>2019/06/01</p>
+<p>5</p>
+<p>HTTPS for Global/Oversea acceleration</p>
+<p>2019/08/27</p>
+<p>6</p>
+<p>Billing option for EA user</p>
+<p>2019/12/12</p>
+<p>7</p>
+<p>HTTP header (e.g. CORS)</p>
+<p>8</p>
+<p>Statistical analysis - Top URLs and Top Referrers</p>
+<p>2020/01</p>
+<p>9</p>
+<p>Error message</p>
+<p>2020/03/05</p>
+<p>10</p>
+<p>Azure SDK/Powershell/Cli for Azure CDN China</p>
+<p>Partial</p>
+<p>2020/03/27</p>
+<p>11</p>
+<p>IP address for Host header</p>
+<p>Deprecated</p>
+<p>2019/03/01</p>
+<p>12</p>
+<p>HTTPS with Azure supplied certificate</p>
+<p>2019/07/01</p>
+<p>13</p>
+<p>Service check</p>
+<p>2019/10/10</p>
+<p>Offline configuration update</p>
+<p>Configuration &amp; Requirement</p>
+<p>Description</p>
+<p>Redirection (HTTPS to HTTP)</p>
+<p>HTTP-HTTPS(Status code 301), this is for CDN side.</p>
+<p>HTTP/2</p>
+<p>HTTPS certificate needs to be deployed in advance.</p>
+<p>Gzip</p>
+<p>Support for specified suffixes, please also collect the target content type to enable this feature.</p>
+<p>Specified Cache rule/ back-to-source method</p>
+<p>URI encryption(Anti hijacking)</p>
+<p>Specified back-to-source port</p>
+<p>Supported ports: 8001, 8080, 8081, 8088, 8089, other ports need to be evaluated by PG.</p>
+<p>Query &amp; Confirm CDN IP</p>
+<p>IPv6</p>
+<p>Part of CDN providers support IPv6.</p>
+<p>Range Gets</p>
+<p>To enable this feature, source need to support Range Gets. (Baidu and Tencent enable this feature by default)</p>
+<p>Follow 301、302</p>
+<p>This is for Back-to-Source.</p>
+<p>Original Image Protection</p>
+<p>Move(Migration)</p>
+<p>Migration will affect CDN billing, this feature has been classified as offline configuration.</p>
+<p>Disable HTTPS</p>
+<p>14</p>
+<p>Re-enable profile</p>
+<p>Only CDN engineering team can re-enable the CDN profile for now.</p>
+<p>15</p>
+<p>Origin path</p>
+<p>Azure CDN Global supports this feature, but only CDN engineering team can configure it on Azure CDN China.</p>
+<p>16</p>
+<p>RBAC for CDN Management Porta</p>
+<p>Known issue</p>
+<p>Case: 2020041519872</p>
+<p>Background:</p>
+<p>By default, the service version of Azure Storage Account is 2009-09-19 which does not support Range: bytes=startByte-, if this kind of Storage Account is source, it’ll encounter the specified Range-Gets issue.</p>
+<p>Solution:</p>
+<p>If customer doesn’t want the Range-Get, please engage CDN engineering team to disable Range-Gets on Azure CDN China side and mitigate this issue.</p>
+<p>Customer can update the service version of Azure Storage to 2011-08-18 or newer to avoid this issue.</p>
+<p>New-AzStorageContext -StorageAccountName &quot;&lt;Storage Account Name&gt;&quot; -StorageAccountKey &quot;&lt;Storage Access Key&gt;&quot;</p>
+<p>Update-AzStorageBlobServiceProperty -ResourceGroupName &quot;&lt;Resource Group Name&gt;&quot; -AccountName &quot;&lt;Storage Account Name&gt;&quot;  -DefaultServiceVersion 2011-08-18</p></article>

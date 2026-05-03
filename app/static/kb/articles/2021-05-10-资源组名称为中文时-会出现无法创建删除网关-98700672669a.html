@@ -1,0 +1,110 @@
+<article class="kb-article" data-title="资源组名称为中文时，会出现无法创建删除网关"><h1>资源组名称为中文时，会出现无法创建删除网关</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Bug</li>
+<li>最近修改: 2021-05-10 10:23:28</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>资源组名称为中文时，会出现无法创建删除网关的情况，请PG在后台进行相应操作后，才能正常删除网关</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>资源组名称为中文时，会出现无法创建删除网关的情况，请PG在后台进行相应操作后，才能正常删除网关</li>
+</ul>
+<ul>
+<li>问题现象/Symptom：</li>
+</ul>
+<ul>
+<li>客户这个gateway不能删除的原因主要是因为gateway一直处于provisioning的状态，所以后台在删除的时候报错 ”The current provisioning status of the gateway prevents this operation”。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>=====================</li>
+</ul>
+<ul>
+<li>GatewayId: 44b5b7de-e318-49eb-b3bd-1c553c95d662</li>
+</ul>
+<ul>
+<li>---------------------------------------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>GatewayName: azure</li>
+</ul>
+<ul>
+<li>State: Provisioning</li>
+</ul>
+<ul>
+<li>VnetId: e45d8e9e-028e-4321-a196-d6e533f306e2</li>
+</ul>
+<ul>
+<li>GatewayType: DynamicRouting</li>
+</ul>
+<ul>
+<li>GatewaySize: Default</li>
+</ul>
+<ul>
+<li>LastEvent.Id: 23001</li>
+</ul>
+<ul>
+<li>LastEvent.Message: Gateway creation started for the following virtual network: huasu</li>
+</ul>
+<ul>
+<li>LastEvent.Timestamp: 2/14/2017 8:11:23 AM</li>
+</ul>
+<ul>
+<li>之后我们联系产品组在后台进行了一些操作解决了这个问题。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Jarvis查到的报错如下：</li>
+</ul>
+<ul>
+<li>{&quot;PreciseTimeStamp&quot;:&quot;2017-02-17T06:33:57.3222857Z&quot;,&quot;EventId&quot;:&quot;3000&quot;,&quot;EventName&quot;:&quot;QosEvent&quot;,&quot;SynchronousDurationInMilliseconds&quot;:&quot;31&quot;,&quot;AsynchronousDurationInMilliseconds&quot;:&quot;156&quot;,&quot;DurationInMilliseconds&quot;:&quot;187&quot;,&quot;EventCode&quot;:&quot;&quot;,&quot;OrigTS&quot;:&quot;2017/02/17 06:33:55.724&quot;,&quot;Success&quot;:&quot;False&quot;,&quot;ErrorDetails&quot;:&quot;System.InvalidOperationException: Delete gateway failed for gateway /subscriptions/2779c1d5-c8aa-4f9b-a7f6-3da5d16f58a4/resourceGroups/苏州华苏塑料有限公司/providers/Microsoft.Network/virtualNetworkGateways/azure subscription ID 2779c1d5-c8aa-4f9b-a7f6-3da5d16f58a4.\n ErrorMessage:  The current provisioning status of the gateway prevents this operation.\nCode:  ConflictError\nInnerError: \n \n   at Microsoft.WindowsAzure.Networking.Nrp.Common.GwmFacade.GatewayManagerFacade.&lt;DeleteVirtualNetworkGatewayAsync&gt;d__18.MoveNext()\n--- End of stack trace from previous location where exception was thrown ---\n   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)\n   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)\n   at Microsoft.WindowsAzure.Networking.Nrp.Frontend.Operations.Csm.DeleteVirtualNetworkGatewayOperation.&lt;RunBackgroundTaskAsync&gt;d__6.MoveNext() in E:\\bt\\783460\\repo\\src\\sources\\Frontend\\FrontEndOperations\\Csm\\DeleteVirtualNetworkGatewayOperation.cs:line 72\n--- End of stack trace from previous location where exception was thrown ---\n   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)\n   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)\n   at Microsoft.WindowsAzure.Networking.Nrp.Frontend.Operations.Operation`1.&lt;StartRunBackgroundTaskAsync&gt;d__107.MoveNext() in E:\\bt\\783460\\repo\\src\\sources\\Frontend\\FrontEndOperations\\Operation.cs:line 251&quot;,&quot;BackgroundTaskQos&quot;:&quot;True&quot;,&quot;Tid&quot;:&quot;12932&quot;}</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>问题原因/ Root Cause：</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>客户在arm模式下创建的VPNgateway持续大约2个小时并提示失败，之后后续无法再次创建VPNGateway，也无法删除之前创建失败的VPNGateway，经过跟客户lync meeting会议发现：由于客户的资源组名称由中文字符造成的，建议客户新建资源组并再次创建VPNgateway。后来升级到产品组并在后台操作。用户那边可以成功删除VPNGateway</li>
+</ul>
+<ul>
+<li>经过跟客户lync meeting会议发现：由于客户的资源组名称由中文字符造成的，建议客户新建资源组并再次创建VPNgateway。</li>
+</ul>
+<ul>
+<li>解决方案/Solution or Workaround：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/959F8051" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/959F8051</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>资源组名称为中文时，会出现无法创建删除网关的情况，请PG在后台进行相应操作后，才能正常删除网关</p>
+<p>问题现象/Symptom：</p>
+<p>=====================</p>
+<p>客户在arm模式下创建的VPNgateway持续大约2个小时并提示失败，之后后续无法再次创建VPNGateway，也无法删除之前创建失败的VPNGateway，经过跟客户lync meeting会议发现：由于客户的资源组名称由中文字符造成的，建议客户新建资源组并再次创建VPNgateway。后来升级到产品组并在后台操作。用户那边可以成功删除VPNGateway</p>
+<p>问题原因/ Root Cause：</p>
+<p>经过跟客户lync meeting会议发现：由于客户的资源组名称由中文字符造成的，建议客户新建资源组并再次创建VPNgateway。</p>
+<p>客户这个gateway不能删除的原因主要是因为gateway一直处于provisioning的状态，所以后台在删除的时候报错 ”The current provisioning status of the gateway prevents this operation”。</p>
+<p>GatewayId: 44b5b7de-e318-49eb-b3bd-1c553c95d662</p>
+<p>---------------------------------------------------------------------------------------------</p>
+<p>GatewayName: azure</p>
+<p>State: Provisioning</p>
+<p>VnetId: e45d8e9e-028e-4321-a196-d6e533f306e2</p>
+<p>GatewayType: DynamicRouting</p>
+<p>GatewaySize: Default</p>
+<p>LastEvent.Id: 23001</p>
+<p>LastEvent.Message: Gateway creation started for the following virtual network: huasu</p>
+<p>LastEvent.Timestamp: 2/14/2017 8:11:23 AM</p>
+<p>Jarvis查到的报错如下：</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/959F8051" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/959F8051</a></p>
+<p>{&quot;PreciseTimeStamp&quot;:&quot;2017-02-17T06:33:57.3222857Z&quot;,&quot;EventId&quot;:&quot;3000&quot;,&quot;EventName&quot;:&quot;QosEvent&quot;,&quot;SynchronousDurationInMilliseconds&quot;:&quot;31&quot;,&quot;AsynchronousDurationInMilliseconds&quot;:&quot;156&quot;,&quot;DurationInMilliseconds&quot;:&quot;187&quot;,&quot;EventCode&quot;:&quot;&quot;,&quot;OrigTS&quot;:&quot;2017/02/17 06:33:55.724&quot;,&quot;Success&quot;:&quot;False&quot;,&quot;ErrorDetails&quot;:&quot;System.InvalidOperationException: Delete gateway failed for gateway /subscriptions/2779c1d5-c8aa-4f9b-a7f6-3da5d16f58a4/resourceGroups/苏州华苏塑料有限公司/providers/Microsoft.Network/virtualNetworkGateways/azure subscription ID 2779c1d5-c8aa-4f9b-a7f6-3da5d16f58a4.\n ErrorMessage:  The current provisioning status of the gateway prevents this operation.\nCode:  ConflictError\nInnerError: \n \n   at Microsoft.WindowsAzure.Networking.Nrp.Common.GwmFacade.GatewayManagerFacade.&lt;DeleteVirtualNetworkGatewayAsync&gt;d__18.MoveNext()\n--- End of stack trace from previous location where exception was thrown ---\n   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)\n   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)\n   at Microsoft.WindowsAzure.Networking.Nrp.Frontend.Operations.Csm.DeleteVirtualNetworkGatewayOperation.&lt;RunBackgroundTaskAsync&gt;d__6.MoveNext() in E:\\bt\\783460\\repo\\src\\sources\\Frontend\\FrontEndOperations\\Csm\\DeleteVirtualNetworkGatewayOperation.cs:line 72\n--- End of stack trace from previous location where exception was thrown ---\n   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)\n   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)\n   at Microsoft.WindowsAzure.Networking.Nrp.Frontend.Operations.Operation`1.&lt;StartRunBackgroundTaskAsync&gt;d__107.MoveNext() in E:\\bt\\783460\\repo\\src\\sources\\Frontend\\FrontEndOperations\\Operation.cs:line 251&quot;,&quot;BackgroundTaskQos&quot;:&quot;True&quot;,&quot;Tid&quot;:&quot;12932&quot;}</p>
+<p>解决方案/Solution or Workaround：</p>
+<p>之后我们联系产品组在后台进行了一些操作解决了这个问题。</p></article>

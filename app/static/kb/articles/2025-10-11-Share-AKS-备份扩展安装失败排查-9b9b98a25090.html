@@ -1,0 +1,175 @@
+<article class="kb-article" data-title="[Share] AKS 备份扩展安装失败排查"><h1>[Share] AKS 备份扩展安装失败排查</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-11 11:23:21</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错信息：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错信息：</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;DeploymentFailed&quot;,</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;ResourceDeploymentFailure&quot;,</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;The resource write operation failed to complete successfully, because it reached terminal provisioning state &#39;Failed&#39;.&quot;</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;ExtensionOperationFailed&quot;,</li>
+</ul>
+<ul>
+<li>以上文档中都没有找到匹配的报错信息：</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;The extension operation failed with the following error:  Error: [ InnerError: [Helm installation failed :  : InnerError [release azure-aks-backup failed, and has been uninstalled due to atomic being set: context deadline exceeded]</li>
+</ul>
+<ul>
+<li>尝试重新安装扩展，依然安装失败，</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考案例：SR_20250727365158</li>
+</ul>
+<ul>
+<li>Correlation ID:</li>
+</ul>
+<ul>
+<li>e6d7e4d4-9a2d-434b-99c5-a9a197d29540</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;target&quot;: &quot;/subscriptions/1aeea84f-17f9-4d43-9c32-d31fd0bbbd25/resourceGroups/azcn-mgmt-n3-elk-rg/providers/Microsoft.Resources/deployments/Install_Backup_Extension_on_managed_cluster-2180&quot;,</li>
+</ul>
+<ul>
+<li>&quot;details&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;target&quot;: &quot;/subscriptions/1aeea84f-17f9-4d43-9c32-d31fd0bbbd25/resourceGroups/azcn-mgmt-n3-elk-rg/providers/Microsoft.ContainerService/managedClusters/azcn-mgmt-n3-elk-cluster1/providers/Microsoft.KubernetesConfiguration/extensions/azure-aks-backup&quot;,</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>&quot;additionalInfo&quot;: []</li>
+</ul>
+<ul>
+<li>使用 Azure 备份的 Azure Kubernetes 服务 (AKS) 备份先决条件 - Azure Backup | Azure Docs</li>
+</ul>
+<ul>
+<li>重新安装CSI drivers 和 snapshots，</li>
+</ul>
+<ul>
+<li>在 Azure Kubernetes 服务 (AKS) 中启用容器存储接口 (CSI) 驱动程序 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>驱动安装成功以后我们重新安装扩展，安装成功，</li>
+</ul>
+<ul>
+<li>Register the Microsoft.KubernetesConfiguration resource provider at the subscription level. Learn how to register the resource provider.</li>
+</ul>
+<ul>
+<li>In case you have the cluster within a Private Virtual Network and Firewall, please apply following FQDN/application rules: *.microsoft.com, *.azure.com, *.core.windows.net, *.azmk8s.io, *.digicert.com, *.digicert.cn ,*.geotrust.com, *.msocsp.com</li>
+</ul>
+<ul>
+<li>扩展安装参考： 【share] AKS backup</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>根据以上报错信息查询文档</li>
+</ul>
+<ul>
+<li>排查在 AKS 群集中部署扩展时出现的错误 - Azure | Microsoft Learn</li>
+</ul>
+<ul>
+<li>排查 Azure Kubernetes 服务备份问题 - Azure Backup | Microsoft Learn</li>
+</ul>
+<ul>
+<li>经过与客户沟通，用户AKS没有安装CSI驱动，经过文档查询，AKS备份需要先启动CSI驱动：</li>
+</ul>
+<ul>
+<li>扩展安装成功以后，按照操作步骤执行，备份成功，</li>
+</ul>
+<ul>
+<li>参考步骤：</li>
+</ul>
+<ul>
+<li>Please check if the region, in which cluster is created, is supported by Azure Backup for AKS. Check Support Matrix</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az aks update --name myAKSCluster --resource-group myResourceGroup --enable-disk-driver --enable-file-driver --enable-blob-driver --enable-snapshot-controller</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Ensure that the CSI drivers and snapshots are enabled for your cluster. If they&#39;re disabled, enable these settings.</li>
+</ul>
+<ul>
+<li>In case you have aad pod identity enabled on the AKS cluster, create a pod-identity exception in AKS cluster (that works only for dataprotection-microsoft namespace) by following these steps.</li>
+</ul>
+<ul>
+<li>Backup Extension requires a storage account and a blob container in input. In case the AKS cluster is inside a Private Virtual Network, please enable Private Endpoint between the storage account and the AKS Cluster by following these steps.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>&quot;message&quot;: &quot;At least one resource deployment operation failed. Please list deployment operations for details. Please see <a href="https://aka.ms/arm-deployment-operations" target="_blank" rel="noopener">https://aka.ms/arm-deployment-operations</a> for usage details.&quot;,</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;The extension operation failed with the following error:  Error: [ InnerError: [Helm installation failed :  : InnerError [release azure-aks-backup failed, and has been uninstalled due to atomic being set: context deadline exceeded]]] occurred while doing the operation : [Create] on the config, For general troubleshooting visit: <a href="https://aka.ms/k8s-extensions-TSG," target="_blank" rel="noopener">https://aka.ms/k8s-extensions-TSG,</a> For more application specific troubleshooting visit: Facing trouble? Common errors and potential fixes are detailed in the Kubernetes Backup Troubleshooting Guide, available at <a href="https://www.aka.ms/aksclusterbackup.&quot;," target="_blank" rel="noopener">https://www.aka.ms/aksclusterbackup.&quot;,</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/10/11</p>
+<p>参考案例：SR_20250727365158</p>
+<p>报错信息：</p>
+<p>Correlation ID:</p>
+<p>e6d7e4d4-9a2d-434b-99c5-a9a197d29540</p>
+<p>{</p>
+<p>&quot;code&quot;: &quot;DeploymentFailed&quot;,</p>
+<p>&quot;target&quot;: &quot;/subscriptions/1aeea84f-17f9-4d43-9c32-d31fd0bbbd25/resourceGroups/azcn-mgmt-n3-elk-rg/providers/Microsoft.Resources/deployments/Install_Backup_Extension_on_managed_cluster-2180&quot;,</p>
+<p>&quot;message&quot;: &quot;At least one resource deployment operation failed. Please list deployment operations for details. Please see <a href="https://aka.ms/arm-deployment-operations" target="_blank" rel="noopener">https://aka.ms/arm-deployment-operations</a> for usage details.&quot;,</p>
+<p>&quot;details&quot;: [</p>
+<p>&quot;code&quot;: &quot;ResourceDeploymentFailure&quot;,</p>
+<p>&quot;target&quot;: &quot;/subscriptions/1aeea84f-17f9-4d43-9c32-d31fd0bbbd25/resourceGroups/azcn-mgmt-n3-elk-rg/providers/Microsoft.ContainerService/managedClusters/azcn-mgmt-n3-elk-cluster1/providers/Microsoft.KubernetesConfiguration/extensions/azure-aks-backup&quot;,</p>
+<p>&quot;message&quot;: &quot;The resource write operation failed to complete successfully, because it reached terminal provisioning state &#39;Failed&#39;.&quot;</p>
+<p>}</p>
+<p>]</p>
+<p>&quot;code&quot;: &quot;ExtensionOperationFailed&quot;,</p>
+<p>&quot;message&quot;: &quot;The extension operation failed with the following error:  Error: [ InnerError: [Helm installation failed :  : InnerError [release azure-aks-backup failed, and has been uninstalled due to atomic being set: context deadline exceeded]]] occurred while doing the operation : [Create] on the config, For general troubleshooting visit: <a href="https://aka.ms/k8s-extensions-TSG," target="_blank" rel="noopener">https://aka.ms/k8s-extensions-TSG,</a> For more application specific troubleshooting visit: Facing trouble? Common errors and potential fixes are detailed in the Kubernetes Backup Troubleshooting Guide, available at <a href="https://www.aka.ms/aksclusterbackup.&quot;," target="_blank" rel="noopener">https://www.aka.ms/aksclusterbackup.&quot;,</a></p>
+<p>&quot;additionalInfo&quot;: []</p>
+<p>根据以上报错信息查询文档</p>
+<p>排查在 AKS 群集中部署扩展时出现的错误 - Azure | Microsoft Learn</p>
+<p>排查 Azure Kubernetes 服务备份问题 - Azure Backup | Microsoft Learn</p>
+<p>以上文档中都没有找到匹配的报错信息：</p>
+<p>&quot;message&quot;: &quot;The extension operation failed with the following error:  Error: [ InnerError: [Helm installation failed :  : InnerError [release azure-aks-backup failed, and has been uninstalled due to atomic being set: context deadline exceeded]</p>
+<p>尝试重新安装扩展，依然安装失败，</p>
+<p>经过与客户沟通，用户AKS没有安装CSI驱动，经过文档查询，AKS备份需要先启动CSI驱动：</p>
+<p>使用 Azure 备份的 Azure Kubernetes 服务 (AKS) 备份先决条件 - Azure Backup | Azure Docs</p>
+<p>重新安装CSI drivers 和 snapshots，</p>
+<p>az aks update --name myAKSCluster --resource-group myResourceGroup --enable-disk-driver --enable-file-driver --enable-blob-driver --enable-snapshot-controller</p>
+<p>在 Azure Kubernetes 服务 (AKS) 中启用容器存储接口 (CSI) 驱动程序 - Azure Kubernetes Service | Azure Docs</p>
+<p>驱动安装成功以后我们重新安装扩展，安装成功，</p>
+<p>扩展安装成功以后，按照操作步骤执行，备份成功，</p>
+<p>参考步骤：</p>
+<p>Register the Microsoft.KubernetesConfiguration resource provider at the subscription level. Learn how to register the resource provider.</p>
+<p>Ensure that the CSI drivers and snapshots are enabled for your cluster. If they&#39;re disabled, enable these settings.</p>
+<p>In case you have aad pod identity enabled on the AKS cluster, create a pod-identity exception in AKS cluster (that works only for dataprotection-microsoft namespace) by following these steps.</p>
+<p>Backup Extension requires a storage account and a blob container in input. In case the AKS cluster is inside a Private Virtual Network, please enable Private Endpoint between the storage account and the AKS Cluster by following these steps.</p>
+<p>In case you have the cluster within a Private Virtual Network and Firewall, please apply following FQDN/application rules: *.microsoft.com, *.azure.com, *.core.windows.net, *.azmk8s.io, *.digicert.com, *.digicert.cn ,*.geotrust.com, *.msocsp.com</p>
+<p>Please check if the region, in which cluster is created, is supported by Azure Backup for AKS. Check Support Matrix</p>
+<p>扩展安装参考： 【share] AKS backup</p></article>

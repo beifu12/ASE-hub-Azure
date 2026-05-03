@@ -1,0 +1,124 @@
+<article class="kb-article" data-title="Unable to Register ASR RCM Appliance with Private Endpoint Enabled RSV failing with error “Private zone &#39;privatelink.vaultcore.azure.net&#39; is already linked”"><h1>Unable to Register ASR RCM Appliance with Private Endpoint Enabled RSV failing with error “Private zone &#39;privatelink.vaultcore.azure.net&#39; is already linked”</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-20 16:28:46</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Unable to create resource Of type &#39;Microsoft,Resources/depIoyments&#39; required to Start discovery due to an internal error:StatusCOde &#39;Conflict&#39; Details: &#39;Deployment</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Unable to create resource Of type &#39;Microsoft,Resources/depIoyments&#39; required to Start discovery due to an internal error:StatusCOde &#39;Conflict&#39; Details: &#39;Deployment</li>
+</ul>
+<ul>
+<li>ErrorCode: DeploymentFailed Error Message: At least one resource deployment operation failed.</li>
+</ul>
+<ul>
+<li>Detailed Error Message: Private zone already linked to the virtual network &quot;&#39;subscriptions/XXXX/resourceGroups/rg-network-XXXX/providers/Microsoft.Networkt/virtualNetworks/xxxxx</li>
+</ul>
+<ul>
+<li>Section 3: Error</li>
+</ul>
+<ul>
+<li>Symptoms:</li>
+</ul>
+<ul>
+<li>Section 4: Reason for failure and Remediation steps</li>
+</ul>
+<ul>
+<li>We can also fall into this issue if you create discovery endpoint DNS Zone and link it to RSV PE VNET prior to RCM Appliance Registration, so it is better you don’t create the discovery endpoint prior ahead and instead when you do RCM Appliance registration, it will automatically create and link it accordingly.</li>
+</ul>
+<ul>
+<li>Synopsis of issue:</li>
+</ul>
+<ul>
+<li>Since I have this endpoint already linked, this will end up in conflict and then lead to failure as shown below.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>---</li>
+</ul>
+<ul>
+<li>Private zone &#39;privatelink.vaultcore.azure.net &#39; is already linked. or Private zone ‘privatelink.prod.migration.windowsazure.com &#39; is already linked.</li>
+</ul>
+<ul>
+<li>Private DNS Zone for Azure Key Vault is already linked to the Virtual Network on which Recovery Services Vault Private Endpoints are configured to.</li>
+</ul>
+<ul>
+<li>&#39;privatelink.vaultcore.azure.net &#39; &gt;&gt; For Key Vault</li>
+</ul>
+<ul>
+<li>Private zone ‘privatelink.prod.migration.windowsazure.com  for Discovery Endpoint The moment you initiate RCM Appliance Registration from App configuration page, it will invoke a deployment which you can monitor from RSV Residing Resource Group as shown below and first deployment should be the Azure Key Vault creation as part of ASR Appliance requirement and it will then create Private Endpoints, followed by Private DNS Zone, followed by DNS Zone Link job.</li>
+</ul>
+<ul>
+<li>In this case, I have set up the lab with Private DNS Zone for the Key Vault and linked to the Virtual Network where my Recovery services PE is residing.</li>
+</ul>
+<ul>
+<li>Once I deleted and invoked the Registration again, it completed within less than 10 minutes to link DNS Zone back which can be monitor from deployments section as suggested earlier.</li>
+</ul>
+<ul>
+<li>Please collect entire &quot;C:\ProgramData\Microsoft Azure&quot; folder.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Please read synopsis of issue below on how to validate and assess the impact which can help customers to plan this step accordingly.</li>
+</ul>
+<ul>
+<li>To unlink, you need to go to the Private DNS Zone in question -&gt; Virtual Network Links -&gt; Validate if it’s linked with Vnet residing RSV PE -&gt; Delete it(it takes couple of minutes) and then Initiate the Registration which will link the Private DNS Zone back with RSV PE Vnet, which should barely take less than 10 minutes, though this impact is for small window, it is better to inform customer so that they can plan accordingly.</li>
+</ul>
+<ul>
+<li>You need to Un-link the DNS Zone via Azure Portal -&gt; Private DNS Zones -&gt; DNS Zone in question should be privatelink.vaultcore.azure.net  or ‘privatelink.prod.migration.windowsazure.com &#39; based on error message -&gt; Virtual Network Links -&gt; Delete the link associated with Vnet in question associated with Recovery services vault.</li>
+</ul>
+<ul>
+<li>Section 5: Logs to be collected:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Unable to Register ASR RCM Appliance with Private Endpoint Enabled RSV failing with error “ Private zone &#39;privatelink.vaultcore.azure.net &#39; is already linked”</li>
+</ul>
+<ul>
+<li>When you create the RSV with PE for ASR, it will create endpoints for Site Recovery related Microservices and link required DNS Zone which is in our/user control. Then you try to add and register an RCM Appliance to the vault, and it requires 2 additional Endpoints which are created for Key Vault and Discovery which are not under our control. These 2 Endpoint will have its own IP Address reserved from PE Subnet, and then it needs Private DNS Zone to resolve those IPs to do that it will try linking to the Vnet.</li>
+</ul>
+<ul>
+<li>To fix the issue, I need to break the link and to do that first validate from Private DNS Zone Overview page to see how many IP’s and Key vaults are associated with this DNS Zone which are likely to be impacted as DNS will not resolve the listed IP’s the moment we unlink, inform customers, and proceed with unlinking as per their convenience. In the below snippet, you don’t find any IP or Key Vault associated with DNS Zone because I don’t have any already, so there will be no impact, but in customer case it may or may not have entries possibly based on their environment.</li>
+</ul>
+<ul>
+<li>Resolution:</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Unable to create resource Of type &#39;Microsoft,Resources/depIoyments&#39; required to Start discovery due to an internal error:StatusCOde &#39;Conflict&#39; Details: &#39;Deployment</p>
+<p>ErrorCode: DeploymentFailed Error Message: At least one resource deployment operation failed.</p>
+<p>Detailed Error Message: Private zone already linked to the virtual network &quot;&#39;subscriptions/XXXX/resourceGroups/rg-network-XXXX/providers/Microsoft.Networkt/virtualNetworks/xxxxx</p>
+<p>---</p>
+<p>Section 3: Error</p>
+<p>Unable to Register ASR RCM Appliance with Private Endpoint Enabled RSV failing with error “ Private zone &#39;privatelink.vaultcore.azure.net &#39; is already linked”</p>
+<p>Symptoms:</p>
+<p>Private zone &#39;privatelink.vaultcore.azure.net &#39; is already linked. or Private zone ‘privatelink.prod.migration.windowsazure.com &#39; is already linked.</p>
+<p>Section 4: Reason for failure and Remediation steps</p>
+<p>Private DNS Zone for Azure Key Vault is already linked to the Virtual Network on which Recovery Services Vault Private Endpoints are configured to.</p>
+<p>We can also fall into this issue if you create discovery endpoint DNS Zone and link it to RSV PE VNET prior to RCM Appliance Registration, so it is better you don’t create the discovery endpoint prior ahead and instead when you do RCM Appliance registration, it will automatically create and link it accordingly.</p>
+<p>Synopsis of issue:</p>
+<p>Please read synopsis of issue below on how to validate and assess the impact which can help customers to plan this step accordingly.</p>
+<p>When you create the RSV with PE for ASR, it will create endpoints for Site Recovery related Microservices and link required DNS Zone which is in our/user control. Then you try to add and register an RCM Appliance to the vault, and it requires 2 additional Endpoints which are created for Key Vault and Discovery which are not under our control. These 2 Endpoint will have its own IP Address reserved from PE Subnet, and then it needs Private DNS Zone to resolve those IPs to do that it will try linking to the Vnet.</p>
+<p>&#39;privatelink.vaultcore.azure.net &#39; &gt;&gt; For Key Vault</p>
+<p>Private zone ‘privatelink.prod.migration.windowsazure.com  for Discovery Endpoint The moment you initiate RCM Appliance Registration from App configuration page, it will invoke a deployment which you can monitor from RSV Residing Resource Group as shown below and first deployment should be the Azure Key Vault creation as part of ASR Appliance requirement and it will then create Private Endpoints, followed by Private DNS Zone, followed by DNS Zone Link job.</p>
+<p>In this case, I have set up the lab with Private DNS Zone for the Key Vault and linked to the Virtual Network where my Recovery services PE is residing.</p>
+<p>Since I have this endpoint already linked, this will end up in conflict and then lead to failure as shown below.</p>
+<p>To fix the issue, I need to break the link and to do that first validate from Private DNS Zone Overview page to see how many IP’s and Key vaults are associated with this DNS Zone which are likely to be impacted as DNS will not resolve the listed IP’s the moment we unlink, inform customers, and proceed with unlinking as per their convenience. In the below snippet, you don’t find any IP or Key Vault associated with DNS Zone because I don’t have any already, so there will be no impact, but in customer case it may or may not have entries possibly based on their environment.</p>
+<p>To unlink, you need to go to the Private DNS Zone in question -&gt; Virtual Network Links -&gt; Validate if it’s linked with Vnet residing RSV PE -&gt; Delete it(it takes couple of minutes) and then Initiate the Registration which will link the Private DNS Zone back with RSV PE Vnet, which should barely take less than 10 minutes, though this impact is for small window, it is better to inform customer so that they can plan accordingly.</p>
+<p>Once I deleted and invoked the Registration again, it completed within less than 10 minutes to link DNS Zone back which can be monitor from deployments section as suggested earlier.</p>
+<p>Resolution:</p>
+<p>You need to Un-link the DNS Zone via Azure Portal -&gt; Private DNS Zones -&gt; DNS Zone in question should be privatelink.vaultcore.azure.net  or ‘privatelink.prod.migration.windowsazure.com &#39; based on error message -&gt; Virtual Network Links -&gt; Delete the link associated with Vnet in question associated with Recovery services vault.</p>
+<p>Section 5: Logs to be collected:</p>
+<p>Please collect entire &quot;C:\ProgramData\Microsoft Azure&quot; folder.</p></article>

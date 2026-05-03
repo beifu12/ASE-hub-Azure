@@ -1,0 +1,47 @@
+<article class="kb-article" data-title="Connection&gt;&gt;&gt;&gt;&gt;&gt;"><h1>Connection&gt;&gt;&gt;&gt;&gt;&gt;</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Metrics-Net</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-04-27 14:50:56</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20210427</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20210427</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20210427</li>
+</ul>
+<ul>
+<li>Connection下面的BitsOutPerSecond这个指标仅适用于ER网关的Connection，不适用于VPN网关的Connection。</li>
+</ul>
+<ul>
+<li>因此，如需要监控VPN的流量，请使用VPN网关下的Tunnel Egress Byte和Tunnel Ingress Bytes来监控VPN网关的流量，不要使用Connection下的这两个指标。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>虽然可以在portal上看到VPN网关的Connection下有这个指标，但它显示的结果是错误的。在Tunnel运行一段时间之后，它显示的结果越来越大，偏离实际使用的量。在网关实例切换之后会恢复正常，但运行一段时间之后，依然会出现类似的问题。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>研发已经在内部跟进、修复这个问题。目前有两个方案，一是直接从portal中将该指标删除，使用户无法在VPN网关的Connection上看到它们。二是修复代码，使它的值显示正常。目前还没有任何ETA或者正式的结论。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20210427</p>
+<p>Connection下面的BitsOutPerSecond这个指标仅适用于ER网关的Connection，不适用于VPN网关的Connection。</p>
+<p>虽然可以在portal上看到VPN网关的Connection下有这个指标，但它显示的结果是错误的。在Tunnel运行一段时间之后，它显示的结果越来越大，偏离实际使用的量。在网关实例切换之后会恢复正常，但运行一段时间之后，依然会出现类似的问题。</p>
+<p>研发已经在内部跟进、修复这个问题。目前有两个方案，一是直接从portal中将该指标删除，使用户无法在VPN网关的Connection上看到它们。二是修复代码，使它的值显示正常。目前还没有任何ETA或者正式的结论。</p>
+<p>因此，如需要监控VPN的流量，请使用VPN网关下的Tunnel Egress Byte和Tunnel Ingress Bytes来监控VPN网关的流量，不要使用Connection下的这两个指标。</p></article>

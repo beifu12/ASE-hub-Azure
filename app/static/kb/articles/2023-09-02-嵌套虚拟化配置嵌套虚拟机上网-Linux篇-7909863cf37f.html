@@ -1,0 +1,490 @@
+<article class="kb-article" data-title="嵌套虚拟化配置嵌套虚拟机上网_Linux篇"><h1>嵌套虚拟化配置嵌套虚拟机上网_Linux篇</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-09-02 23:19:28</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>IcmpQueryTimeout : 30</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>IcmpQueryTimeout                 : 30</li>
+</ul>
+<ul>
+<li>TcpEstablishedConnectionTimeout  : 1800</li>
+</ul>
+<ul>
+<li>TcpTransientConnectionTimeout    : 120</li>
+</ul>
+<ul>
+<li>UdpIdleSessionTimeout            : 120</li>
+</ul>
+<ul>
+<li>DHCPv6 IAID . . . . . . . . . . . : 50337786</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>以CentOS 7.5为例说明：</li>
+</ul>
+<ul>
+<li>前提说明：</li>
+</ul>
+<ul>
+<li>使用嵌套虚拟化创建嵌套虚拟机，请参考</li>
+</ul>
+<ul>
+<li>如何在 Azure VM 中启用嵌套虚拟化</li>
+</ul>
+<ul>
+<li>1.console进入创建的嵌套虚拟机，默认是上不了网的</li>
+</ul>
+<ul>
+<li>2.在V3的机器上创建交换器</li>
+</ul>
+<ul>
+<li>PS C:\Users\stone&gt; New-VMSwitch -Name &quot;InternalNATSwith&quot; -SwitchType Internal</li>
+</ul>
+<ul>
+<li>Name             SwitchType NetAdapterInterfaceDescription</li>
+</ul>
+<ul>
+<li>----             ---------- ------------------------------</li>
+</ul>
+<ul>
+<li>InternalNATSwith Internal</li>
+</ul>
+<ul>
+<li>PS C:\Users\stone&gt; Get-NetAdapter</li>
+</ul>
+<ul>
+<li>Name                      InterfaceDescription                    ifIndex Status       MacAddress             LinkSpeed</li>
+</ul>
+<ul>
+<li>----                      --------------------                    ------- ------       ----------             ---------</li>
+</ul>
+<ul>
+<li>vEthernet (InternalNAT... Hyper-V Virtual Ethernet Adapter             15 Up           00-15-5D-01-05-01        10 Gbps</li>
+</ul>
+<ul>
+<li>Ethernet 5                Mellanox ConnectX-3 Virtual Functi...#4      12 Up           00-17-FA-03-76-B0        40 Gbps</li>
+</ul>
+<ul>
+<li>Ethernet                  Microsoft Hyper-V Network Adapter             8 Up           00-17-FA-03-76-B0        40 Gbps</li>
+</ul>
+<ul>
+<li>3.为 NAT 网关创建 IP 地址</li>
+</ul>
+<ul>
+<li>PS C:\Users\stone&gt; New-NetIPAddress -IPAddress 192.168.0.1 -PrefixLength 24 -InterfaceIndex 15</li>
+</ul>
+<ul>
+<li>IPAddress         : 192.168.0.1</li>
+</ul>
+<ul>
+<li>InterfaceIndex    : 15</li>
+</ul>
+<ul>
+<li>InterfaceAlias    : vEthernet (InternalNATSwith)</li>
+</ul>
+<ul>
+<li>AddressFamily     : IPv4</li>
+</ul>
+<ul>
+<li>Type              : Unicast</li>
+</ul>
+<ul>
+<li>PrefixLength      : 24</li>
+</ul>
+<ul>
+<li>PrefixOrigin      : Manual</li>
+</ul>
+<ul>
+<li>SuffixOrigin      : Manual</li>
+</ul>
+<ul>
+<li>AddressState      : Tentative</li>
+</ul>
+<ul>
+<li>ValidLifetime     : Infinite ([TimeSpan]::MaxValue)</li>
+</ul>
+<ul>
+<li>PreferredLifetime : Infinite ([TimeSpan]::MaxValue)</li>
+</ul>
+<ul>
+<li>SkipAsSource      : False</li>
+</ul>
+<ul>
+<li>PolicyStore       : ActiveStore</li>
+</ul>
+<ul>
+<li>AddressState      : Invalid</li>
+</ul>
+<ul>
+<li>PolicyStore       : PersistentStore</li>
+</ul>
+<ul>
+<li>4.创建 NAT 网络</li>
+</ul>
+<ul>
+<li>PS C:\Users\stone&gt; New-NetNat -Name “InternalNat” -InternalIPInterfaceAddressPrefix 192.168.0.0/24</li>
+</ul>
+<ul>
+<li>Name                             : InternalNat</li>
+</ul>
+<ul>
+<li>ExternalIPInterfaceAddressPrefix :</li>
+</ul>
+<ul>
+<li>InternalIPInterfaceAddressPrefix : 192.168.0.0/24</li>
+</ul>
+<ul>
+<li>TcpFilteringBehavior             : AddressDependentFiltering</li>
+</ul>
+<ul>
+<li>UdpFilteringBehavior             : AddressDependentFiltering</li>
+</ul>
+<ul>
+<li>UdpInboundRefresh                : False</li>
+</ul>
+<ul>
+<li>Store                            : Local</li>
+</ul>
+<ul>
+<li>Active                           : True</li>
+</ul>
+<ul>
+<li>·</li>
+</ul>
+<ul>
+<li>PS C:\Users\stone&gt; ipconfig /all</li>
+</ul>
+<ul>
+<li>Windows IP Configuration</li>
+</ul>
+<ul>
+<li>Host Name . . . . . . . . . . . . : hlmwin16n2t1</li>
+</ul>
+<ul>
+<li>Primary Dns Suffix  . . . . . . . :</li>
+</ul>
+<ul>
+<li>Node Type . . . . . . . . . . . . : Hybrid</li>
+</ul>
+<ul>
+<li>DNS Suffix Search List. . . . . . : gwinsm2ew5cexfribvudpafcsd.cx.internal.chinacloudapp.cn</li>
+</ul>
+<ul>
+<li>Ethernet adapter Ethernet:</li>
+</ul>
+<ul>
+<li>Connection-specific DNS Suffix  . : gwinsm2ew5cexfribvudpafcsd.cx.internal.chinacloudapp.cn</li>
+</ul>
+<ul>
+<li>Description . . . . . . . . . . . : Microsoft Hyper-V Network Adapter</li>
+</ul>
+<ul>
+<li>Physical Address. . . . . . . . . : 00-17-FA-03-76-B0</li>
+</ul>
+<ul>
+<li>Link-local IPv6 Address . . . . . : fe80::55b1:ee57:dce6:778d%8(Preferred)</li>
+</ul>
+<ul>
+<li>IPv4 Address. . . . . . . . . . . : 10.0.1.5(Preferred)</li>
+</ul>
+<ul>
+<li>Subnet Mask . . . . . . . . . . . : 255.255.255.0</li>
+</ul>
+<ul>
+<li>Lease Obtained. . . . . . . . . . : Tuesday, March 5, 2019 6:49:11 AM</li>
+</ul>
+<ul>
+<li>Lease Expires . . . . . . . . . . : Friday, April 11, 2155 2:28:26 PM</li>
+</ul>
+<ul>
+<li>Default Gateway . . . . . . . . . : 10.0.1.1</li>
+</ul>
+<ul>
+<li>DHCP Server . . . . . . . . . . . : 168.63.129.16</li>
+</ul>
+<ul>
+<li>DHCPv6 Client DUID. . . . . . . . : 00-01-00-01-23-FE-34-A5-00-17-FA-03-76-B0</li>
+</ul>
+<ul>
+<li>DNS Servers . . . . . . . . . . . : 168.63.129.16</li>
+</ul>
+<ul>
+<li>Ethernet adapter vEthernet (InternalNATSwith):</li>
+</ul>
+<ul>
+<li>Connection-specific DNS Suffix  . :</li>
+</ul>
+<ul>
+<li>Description . . . . . . . . . . . : Hyper-V Virtual Ethernet Adapter</li>
+</ul>
+<ul>
+<li>Physical Address. . . . . . . . . : 00-15-5D-01-05-01</li>
+</ul>
+<ul>
+<li>Link-local IPv6 Address . . . . . : fe80::9de4:80b4:4b2d:eb51%15(Preferred)</li>
+</ul>
+<ul>
+<li>IPv4 Address. . . . . . . . . . . : 192.168.0.1(Preferred)</li>
+</ul>
+<ul>
+<li>Default Gateway . . . . . . . . . :</li>
+</ul>
+<ul>
+<li>DHCPv6 IAID . . . . . . . . . . . : 251663709</li>
+</ul>
+<ul>
+<li>DNS Servers . . . . . . . . . . . : fec0:0:0:ffff::1%1</li>
+</ul>
+<ul>
+<li>fec0:0:0:ffff::2%1</li>
+</ul>
+<ul>
+<li>fec0:0:0:ffff::3%1</li>
+</ul>
+<ul>
+<li>Tunnel adapter isatap.gwinsm2ew5cexfribvudpafcsd.cx.internal.chinacloudapp.cn:</li>
+</ul>
+<ul>
+<li>Media State . . . . . . . . . . . : Media disconnected</li>
+</ul>
+<ul>
+<li>Description . . . . . . . . . . . : Microsoft ISATAP Adapter</li>
+</ul>
+<ul>
+<li>Physical Address. . . . . . . . . : 00-00-00-00-00-00-00-E0</li>
+</ul>
+<ul>
+<li>Tunnel adapter Teredo Tunneling Pseudo-Interface:</li>
+</ul>
+<ul>
+<li>Description . . . . . . . . . . . : Teredo Tunneling Pseudo-Interface</li>
+</ul>
+<ul>
+<li>Tunnel adapter isatap.{E45D1917-E219-4D20-87CD-E41FE8B016E9}:</li>
+</ul>
+<ul>
+<li>Description . . . . . . . . . . . : Microsoft ISATAP Adapter #2</li>
+</ul>
+<ul>
+<li>6.在guestOS机器上设置虚拟机交换机</li>
+</ul>
+<ul>
+<li>7.备份网卡配置文件</li>
+</ul>
+<ul>
+<li>备份resolv.conf文件</li>
+</ul>
+<ul>
+<li>8.编辑网卡配置文件，vim ifcfg-eth0</li>
+</ul>
+<ul>
+<li>源文件：</li>
+</ul>
+<ul>
+<li>修改后：</li>
+</ul>
+<ul>
+<li>[root@hlmcent75n2t1 network-scripts]# cat ifcfg-eth0</li>
+</ul>
+<ul>
+<li>9.重启network.service服务</li>
+</ul>
+<ul>
+<li>10.可以看到已经可以访问公网了</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>5.查看配置信息</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>IP Routing Enabled. . . . . . . . : No</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>DEVICE=eth0</li>
+</ul>
+<ul>
+<li>ONBOOT=yes</li>
+</ul>
+<ul>
+<li>BOOTPROTO=static</li>
+</ul>
+<ul>
+<li>TYPE=Ethernet</li>
+</ul>
+<ul>
+<li>USERCTL=no</li>
+</ul>
+<ul>
+<li>IPV6INIT=no</li>
+</ul>
+<ul>
+<li>NM_CONTROLLED=no</li>
+</ul>
+<ul>
+<li>DHCP_HOSTNAME=hlmcent75n2t1</li>
+</ul>
+<ul>
+<li>DNS1=114.114.114.114</li>
+</ul>
+<ul>
+<li>IPADDR=192.168.0.6</li>
+</ul>
+<ul>
+<li>NETMASK=255.255.255.0</li>
+</ul>
+<ul>
+<li>GATEWAY=192.168.0.1</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>WINS Proxy Enabled. . . . . . . . : No</li>
+</ul>
+<ul>
+<li>DHCP Enabled. . . . . . . . . . . : Yes</li>
+</ul>
+<ul>
+<li>Autoconfiguration Enabled . . . . : Yes</li>
+</ul>
+<ul>
+<li>NetBIOS over Tcpip. . . . . . . . : Enabled</li>
+</ul>
+<ul>
+<li>DHCP Enabled. . . . . . . . . . . : No</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-howto-fix-ssh-or-rdp-issues-via-hyper-v-console" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-howto-fix-ssh-or-rdp-issues-via-hyper-v-console</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/nested-virtualization" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/nested-virtualization</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2019/3/7</p>
+<p>以CentOS 7.5为例说明：</p>
+<p>前提说明：</p>
+<p>使用嵌套虚拟化创建嵌套虚拟机，请参考</p>
+<p><a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-howto-fix-ssh-or-rdp-issues-via-hyper-v-console" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-howto-fix-ssh-or-rdp-issues-via-hyper-v-console</a></p>
+<p>如何在 Azure VM 中启用嵌套虚拟化</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/nested-virtualization" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/nested-virtualization</a></p>
+<p>1.console进入创建的嵌套虚拟机，默认是上不了网的</p>
+<p>2.在V3的机器上创建交换器</p>
+<p>PS C:\Users\stone&gt; New-VMSwitch -Name &quot;InternalNATSwith&quot; -SwitchType Internal</p>
+<p>Name             SwitchType NetAdapterInterfaceDescription</p>
+<p>----             ---------- ------------------------------</p>
+<p>InternalNATSwith Internal</p>
+<p>PS C:\Users\stone&gt; Get-NetAdapter</p>
+<p>Name                      InterfaceDescription                    ifIndex Status       MacAddress             LinkSpeed</p>
+<p>----                      --------------------                    ------- ------       ----------             ---------</p>
+<p>vEthernet (InternalNAT... Hyper-V Virtual Ethernet Adapter             15 Up           00-15-5D-01-05-01        10 Gbps</p>
+<p>Ethernet 5                Mellanox ConnectX-3 Virtual Functi...#4      12 Up           00-17-FA-03-76-B0        40 Gbps</p>
+<p>Ethernet                  Microsoft Hyper-V Network Adapter             8 Up           00-17-FA-03-76-B0        40 Gbps</p>
+<p>3.为 NAT 网关创建 IP 地址</p>
+<p>PS C:\Users\stone&gt; New-NetIPAddress -IPAddress 192.168.0.1 -PrefixLength 24 -InterfaceIndex 15</p>
+<p>IPAddress         : 192.168.0.1</p>
+<p>InterfaceIndex    : 15</p>
+<p>InterfaceAlias    : vEthernet (InternalNATSwith)</p>
+<p>AddressFamily     : IPv4</p>
+<p>Type              : Unicast</p>
+<p>PrefixLength      : 24</p>
+<p>PrefixOrigin      : Manual</p>
+<p>SuffixOrigin      : Manual</p>
+<p>AddressState      : Tentative</p>
+<p>ValidLifetime     : Infinite ([TimeSpan]::MaxValue)</p>
+<p>PreferredLifetime : Infinite ([TimeSpan]::MaxValue)</p>
+<p>SkipAsSource      : False</p>
+<p>PolicyStore       : ActiveStore</p>
+<p>AddressState      : Invalid</p>
+<p>PolicyStore       : PersistentStore</p>
+<p>4.创建 NAT 网络</p>
+<p>PS C:\Users\stone&gt; New-NetNat -Name “InternalNat” -InternalIPInterfaceAddressPrefix 192.168.0.0/24</p>
+<p>Name                             : InternalNat</p>
+<p>ExternalIPInterfaceAddressPrefix :</p>
+<p>InternalIPInterfaceAddressPrefix : 192.168.0.0/24</p>
+<p>IcmpQueryTimeout                 : 30</p>
+<p>TcpEstablishedConnectionTimeout  : 1800</p>
+<p>TcpTransientConnectionTimeout    : 120</p>
+<p>TcpFilteringBehavior             : AddressDependentFiltering</p>
+<p>UdpFilteringBehavior             : AddressDependentFiltering</p>
+<p>UdpIdleSessionTimeout            : 120</p>
+<p>UdpInboundRefresh                : False</p>
+<p>Store                            : Local</p>
+<p>Active                           : True</p>
+<p>5.查看配置信息</p>
+<p>·</p>
+<p>PS C:\Users\stone&gt; ipconfig /all</p>
+<p>Windows IP Configuration</p>
+<p>Host Name . . . . . . . . . . . . : hlmwin16n2t1</p>
+<p>Primary Dns Suffix  . . . . . . . :</p>
+<p>Node Type . . . . . . . . . . . . : Hybrid</p>
+<p>IP Routing Enabled. . . . . . . . : No</p>
+<p>WINS Proxy Enabled. . . . . . . . : No</p>
+<p>DNS Suffix Search List. . . . . . : gwinsm2ew5cexfribvudpafcsd.cx.internal.chinacloudapp.cn</p>
+<p>Ethernet adapter Ethernet:</p>
+<p>Connection-specific DNS Suffix  . : gwinsm2ew5cexfribvudpafcsd.cx.internal.chinacloudapp.cn</p>
+<p>Description . . . . . . . . . . . : Microsoft Hyper-V Network Adapter</p>
+<p>Physical Address. . . . . . . . . : 00-17-FA-03-76-B0</p>
+<p>DHCP Enabled. . . . . . . . . . . : Yes</p>
+<p>Autoconfiguration Enabled . . . . : Yes</p>
+<p>Link-local IPv6 Address . . . . . : fe80::55b1:ee57:dce6:778d%8(Preferred)</p>
+<p>IPv4 Address. . . . . . . . . . . : 10.0.1.5(Preferred)</p>
+<p>Subnet Mask . . . . . . . . . . . : 255.255.255.0</p>
+<p>Lease Obtained. . . . . . . . . . : Tuesday, March 5, 2019 6:49:11 AM</p>
+<p>Lease Expires . . . . . . . . . . : Friday, April 11, 2155 2:28:26 PM</p>
+<p>Default Gateway . . . . . . . . . : 10.0.1.1</p>
+<p>DHCP Server . . . . . . . . . . . : 168.63.129.16</p>
+<p>DHCPv6 IAID . . . . . . . . . . . : 50337786</p>
+<p>DHCPv6 Client DUID. . . . . . . . : 00-01-00-01-23-FE-34-A5-00-17-FA-03-76-B0</p>
+<p>DNS Servers . . . . . . . . . . . : 168.63.129.16</p>
+<p>NetBIOS over Tcpip. . . . . . . . : Enabled</p>
+<p>Ethernet adapter vEthernet (InternalNATSwith):</p>
+<p>Connection-specific DNS Suffix  . :</p>
+<p>Description . . . . . . . . . . . : Hyper-V Virtual Ethernet Adapter</p>
+<p>Physical Address. . . . . . . . . : 00-15-5D-01-05-01</p>
+<p>DHCP Enabled. . . . . . . . . . . : No</p>
+<p>Link-local IPv6 Address . . . . . : fe80::9de4:80b4:4b2d:eb51%15(Preferred)</p>
+<p>IPv4 Address. . . . . . . . . . . : 192.168.0.1(Preferred)</p>
+<p>Default Gateway . . . . . . . . . :</p>
+<p>DHCPv6 IAID . . . . . . . . . . . : 251663709</p>
+<p>DNS Servers . . . . . . . . . . . : fec0:0:0:ffff::1%1</p>
+<p>fec0:0:0:ffff::2%1</p>
+<p>fec0:0:0:ffff::3%1</p>
+<p>Tunnel adapter isatap.gwinsm2ew5cexfribvudpafcsd.cx.internal.chinacloudapp.cn:</p>
+<p>Media State . . . . . . . . . . . : Media disconnected</p>
+<p>Description . . . . . . . . . . . : Microsoft ISATAP Adapter</p>
+<p>Physical Address. . . . . . . . . : 00-00-00-00-00-00-00-E0</p>
+<p>Tunnel adapter Teredo Tunneling Pseudo-Interface:</p>
+<p>Description . . . . . . . . . . . : Teredo Tunneling Pseudo-Interface</p>
+<p>Tunnel adapter isatap.{E45D1917-E219-4D20-87CD-E41FE8B016E9}:</p>
+<p>Description . . . . . . . . . . . : Microsoft ISATAP Adapter #2</p>
+<p>6.在guestOS机器上设置虚拟机交换机</p>
+<p>7.备份网卡配置文件</p>
+<p>备份resolv.conf文件</p>
+<p>8.编辑网卡配置文件，vim ifcfg-eth0</p>
+<p>源文件：</p>
+<p>修改后：</p>
+<p>[root@hlmcent75n2t1 network-scripts]# cat ifcfg-eth0</p>
+<p>DEVICE=eth0</p>
+<p>ONBOOT=yes</p>
+<p>BOOTPROTO=static</p>
+<p>TYPE=Ethernet</p>
+<p>USERCTL=no</p>
+<p>IPV6INIT=no</p>
+<p>NM_CONTROLLED=no</p>
+<p>DHCP_HOSTNAME=hlmcent75n2t1</p>
+<p>DNS1=114.114.114.114</p>
+<p>IPADDR=192.168.0.6</p>
+<p>NETMASK=255.255.255.0</p>
+<p>GATEWAY=192.168.0.1</p>
+<p>9.重启network.service服务</p>
+<p>10.可以看到已经可以访问公网了</p></article>

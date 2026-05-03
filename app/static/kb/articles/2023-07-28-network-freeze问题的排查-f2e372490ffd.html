@@ -1,0 +1,473 @@
+<article class="kb-article" data-title="network freeze问题的排查"><h1>network freeze问题的排查</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-07-28 16:17:45</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>工单信息：[PODNET]SR_20230710240156[MS-LED][Premier]/Qing... - TrackingID#2307140030002189</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>工单信息：[PODNET]SR_20230710240156[MS-LED][Premier]/Qing... - TrackingID#2307140030002189</li>
+</ul>
+<ul>
+<li>For issue mentioned in case 2307140030002189, please refer to below TSG:</li>
+</ul>
+<ul>
+<li>#Symptom</li>
+</ul>
+<ul>
+<li>VM network is disconnected aligned with correctable memory errors on node. For clustered VMs, they may be restarted due to heartbeat loss over timeout period.</li>
+</ul>
+<ul>
+<li>When correctable memory errors are detected, host OS mark faulty pages offline and discontinue to use them. During page offline work, Host OS trigger event once for each page. During this event, Accelnet is released and reattached.</li>
+</ul>
+<ul>
+<li>#Predictive Failure Analysis</li>
+</ul>
+<ul>
+<li>If there is a single bit event that is truly a single bit event the correction will occur and be invisible to the user. If it is a persistent single bit error than a single memory page will be offlined. If multiple single bits occur and the physical row address encompasses these events, then the probability of an uncorrected error to occur in the future is more likely. To avoid access to the row, a row-offline event is triggered. This could be 192 pages in worst case scenario.</li>
+</ul>
+<ul>
+<li>In recent customer&#39;s issue, VM networking was impacted due to row-offline event, causing VF flaps. HostOS team is working on fix to reduce the event to once for offlining multiple pages.</li>
+</ul>
+<ul>
+<li>Since the error pages were offlined, VM will not experience issue again on same memory area.</li>
+</ul>
+<ul>
+<li>If node is flagged to be degraded, this means our hardware team predicted there is a risk of another failure on memory and redeploy is recommended. In this case you will see nodeAvailabilityState status either in Unallocatable or Suspected. Once all of the containers are evacuated from the node, it will be marked OFR and hardware repair is scheduled.</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:36 HOSTNAME kernel: mlx5_core 7d5d:00:02.0: mlx5_pci_init:786:(pid 4109027): error requesting BARs, aborting</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:36 HOSTNAME kernel: mlx5_core 7d5d:00:02.0: init_one:1380:(pid 4109027): mlx5_pci_init failed with error code -19</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:38 HOSTNAME kernel: pci 7d5d:00:02.0: 0.000 Gb/s available PCIe bandwidth, limited by Unknown x0 link at 7d5d:00:02.0 (capable of 63.008 Gb/s with 8.0 GT/s PCIe x8 link)</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:38 HOSTNAME kernel: hv_pci 168985fb-7d5d-4268-b30f-666c1c5ae9e9: hv_irq_unmask() failed: 0x5</li>
+</ul>
+<ul>
+<li>A corrected hardware error has occurred.</li>
+</ul>
+<ul>
+<li>&quot;Details&quot;:&quot;Bad hardware health: 75 - {\&quot;HmsCode\&quot;:32600,\&quot;HmsComponent\&quot;:\&quot;Memory\&quot;,\&quot;SourceOfFault\&quot;:\&quot;IssuedByCSI-SparkleWithRuleId-1041\&quot;}\r\n{\&quot;$type\&quot;:\&quot;CSIDiagnostic/1.1\&quot;,\&quot;Action\&quot;:\&quot;Replace DIMM(s)\&quot;,\</li>
+</ul>
+<ul>
+<li>\&quot;PartFailures\&quot;:[{\&quot;CpuChnlDimmList\&quot;:\&quot;1_2_1\&quot;}]}&quot;,&quot;NodeFaultType&quot;:4,&quot;FabricOperationString&quot;:&quot;Unknown&quot;,&quot;FabricOperationStringV2&quot;:&quot;Unknown&quot;,&quot;NodeState&quot;:10,&quot;FaultScope&quot;:3,&quot;RetriesAsString&quot;:&quot;&lt;…&gt;</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP, ProviderName, NodeId, ErrorRecordSeverity,PhysicalAddress,Status,RetryReadData, BankNumber</li>
+</ul>
+<ul>
+<li>TIMESTAMP                        ProviderName                        ErrorRecordSeverity        PhysicalAddress     Status</li>
+</ul>
+<ul>
+<li>The Azure monitoring and diagnostics systems identified that the VM Virtual Machine was impacted at StartTime. During this time RDP or SSH connections to the VM, or other such requests could have failed.</li>
+</ul>
+<ul>
+<li>The physical host node where the VM was running encountered a hardware memory error. This may have impacted the VMs running on the node.</li>
+</ul>
+<ul>
+<li>Azure automatically attempts to correct minor errors and restore services on the node. In the event the node’s health degrades further, the VM will be service healed to healthy nodes.</li>
+</ul>
+<ul>
+<li>The Hardware Engineering team is working on the following long-term fixes to reduce the impact of these errors:</li>
+</ul>
+<ul>
+<li>Improvements to failure prediction telemetry and models.</li>
+</ul>
+<ul>
+<li>Improvements to memory failure handling to reduce or avoid impact to customers.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>#Cause</li>
+</ul>
+<ul>
+<li>Azure platform performs page offlining of bad memory during runtime, which is called PFA.</li>
+</ul>
+<ul>
+<li>If node availability state is ok, VM will not be automatically redeployed. Customer can manually redeploy their virtual machine to another healthy physical node.</li>
+</ul>
+<ul>
+<li>#Diagnostics</li>
+</ul>
+<ul>
+<li>Guest OS level impact:</li>
+</ul>
+<ul>
+<li>Dec 26 16:56:43 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: Data path switched from VF: enP32093s1</li>
+</ul>
+<ul>
+<li>Dec 26 16:56:43 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: VF unregistering: enP32093s1</li>
+</ul>
+<ul>
+<li>Dec 26 16:56:44 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: VF slot 1 removed</li>
+</ul>
+<ul>
+<li>Dec 26 16:56:46 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: VF slot 1 added</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:34 HOSTNAME kernel: pci_bus 7d5d:00: root bus resource [mem 0xfe0000000-0xfe00fffff window]</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:34 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: VF slot 1 removed</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:35 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: VF slot 1 added</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:35 HOSTNAME kernel: hv_pci 168985fb-7d5d-4268-b30f-666c1c5ae9e9: PCI VMBus probing: Using version 0x10003</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:36 HOSTNAME kernel: hv_pci 168985fb-7d5d-4268-b30f-666c1c5ae9e9: PCI host bridge to bus 7d5d:00</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:36 HOSTNAME kernel: pci_bus 7d5d:00: root bus resource [mem 0xfe0000000-0xfe00fffff window]</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:36 HOSTNAME kernel: pci 7d5d:00:02.0: [15b3:1016] type 00 class 0x000000</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:36 HOSTNAME kernel: mlx5_core 7d5d:00:02.0: Missing registers BAR, aborting</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:36 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: VF slot 1 removed</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:37 HOSTNAME kernel: hv_pci 168985fb-7d5d-4268-b30f-666c1c5ae9e9: PCI host bridge to bus 7d5d:00</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:37 HOSTNAME kernel: pci_bus 7d5d:00: root bus resource [mem 0xfe0000000-0xfe00fffff window]</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:37 HOSTNAME kernel: pci 7d5d:00:02.0: [15b3:1016] type 00 class 0x020000</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:37 HOSTNAME kernel: pci 7d5d:00:02.0: reg 0x10: [mem 0xfe0000000-0xfe00fffff 64bit pref]</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:38 HOSTNAME kernel: pci 7d5d:00:02.0: enabling Extended Tags</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:38 HOSTNAME kernel: pci 7d5d:00:02.0: BAR 0: assigned [mem 0xfe0000000-0xfe00fffff 64bit pref]</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:38 HOSTNAME kernel: mlx5_core 7d5d:00:02.0: firmware version: 14.30.1224</li>
+</ul>
+<ul>
+<li>Dec 26 17:00:38 HOSTNAME kernel: hv_pci 168985fb-7d5d-4268-b30f-666c1c5ae9e9: the device is being ejected</li>
+</ul>
+<ul>
+<li>WindowsEventTable</li>
+</ul>
+<ul>
+<li>| where NodeId in (&quot;379185b1-c6d6-4a66-8e2b-642d4e21fa70&quot;)</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt;= datetime(2023-07-07 02:00:00) and PreciseTimeStamp &lt;= datetime(2023-07-07 02:20:00)</li>
+</ul>
+<ul>
+<li>| where EventId !in (&quot;3095&quot;)</li>
+</ul>
+<ul>
+<li>| where Description !contains &quot;GetBoardModel&quot; and Description !contains &quot;IO latency summary&quot; and Description !contains &quot;summary for Storport&quot; and Description !contains &quot;Summary of disk space usage&quot;</li>
+</ul>
+<ul>
+<li>| project TimeCreated, Cluster,EventId, ProviderName, Description,Level</li>
+</ul>
+<ul>
+<li>2023/7/7 2:03:53</li>
+</ul>
+<ul>
+<li>BJS20PrdApp08</li>
+</ul>
+<ul>
+<li>47</li>
+</ul>
+<ul>
+<li>Component: Memory</li>
+</ul>
+<ul>
+<li>The details view of this entry contains further information.</li>
+</ul>
+<ul>
+<li>| where nodeId in(&quot;&lt;nodeid&gt;&quot;)</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp between( datetime(2022-12-26 06:00) .. datetime(2022-12-28 09:00))</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, Tenant,nodeId,nodeState,diskConfiguration,nodeAvailabilityState,faultInfo,healthSignals</li>
+</ul>
+<ul>
+<li>Unallocatable</li>
+</ul>
+<ul>
+<li>{&quot;Reason&quot;:&quot;Hynix SWD C-Die Memory and RuleType: Fatal HW repair. ContainerCount: 1. FaultedByExternalEntity: koreacentral-prod-b.azcp.fc.core.windows.net-anvilclient&quot;,&quot;Time&quot;:&quot;2022-12-27T12:33:34.76Z&quot;,&quot;FaultCode&quot;:10038,</li>
+</ul>
+<ul>
+<li>&quot;Reason\&quot;:\&quot;Hynix SWD C-Die Memory\&quot;,\&quot;ComponentType\&quot;:\&quot;Memory\&quot;,\&quot;FaultCode\&quot;:\&quot;32600\&quot;,\&quot;SourceOfFault\&quot;:\&quot;Sparkle:Sparkle\&quot;,</li>
+</ul>
+<ul>
+<li>//| where nodeId in(&quot;&lt;nodeid&gt;&quot;)</li>
+</ul>
+<ul>
+<li>//| where PreciseTimeStamp between( datetime(2022-12-26 06:00) .. datetime(2022-12-28 09:00))</li>
+</ul>
+<ul>
+<li>//| project PreciseTimeStamp, Tenant,nodeId,nodeState,diskConfiguration,nodeAvailabilityState,faultInfo,healthSignals</li>
+</ul>
+<ul>
+<li>| where nodeId == &quot;379185b1-c6d6-4a66-8e2b-642d4e21fa70&quot;</li>
+</ul>
+<ul>
+<li>cluster(&quot;sparkle.eastus&quot;).database(&quot;defaultdb&quot;).WheaXPFMCAFull</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt; datetime(2022-12-26 06:00) and PreciseTimeStamp &lt; datetime(2022-12-27 23:00)</li>
+</ul>
+<ul>
+<li>VM Availability</li>
+</ul>
+<ul>
+<li>Additional Information</li>
+</ul>
+<ul>
+<li>Azure is continually working to make improvements to pre-production hardware screening.</li>
+</ul>
+<ul>
+<li>We are continuously working to improve the platform to reduce incidences of virtual machine unavailability.</li>
+</ul>
+<ul>
+<li>Recommended Documents</li>
+</ul>
+<ul>
+<li>Learn more about:</li>
+</ul>
+<ul>
+<li>Auto-recovery of Virtual Machines</li>
+</ul>
+<ul>
+<li>Configure availability of virtual machines</li>
+</ul>
+<ul>
+<li>Maintenance and updates for virtual machines in Azure</li>
+</ul>
+<ul>
+<li>Resource Health VM Annotation</li>
+</ul>
+<ul>
+<li>Microsoft Azure Team</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查TSG：</li>
+</ul>
+<ul>
+<li>Several &#39;VF slot 1 removed/added&#39; logs aligned with service impact.</li>
+</ul>
+<ul>
+<li>Host Windows event log:</li>
+</ul>
+<ul>
+<li>| order by TimeCreated asc</li>
+</ul>
+<ul>
+<li>Microsoft-Windows-WHEA-Logger</li>
+</ul>
+<ul>
+<li>Error Source: Corrected Machine Check</li>
+</ul>
+<ul>
+<li>You can also find this error in Host Analyzer – Windows system logs:</li>
+</ul>
+<ul>
+<li>Node snapshot log:</li>
+</ul>
+<ul>
+<li>cluster(&quot;Azcsupfollower&quot;).database(&quot;AzureCM&quot;).LogNodeSnapshot</li>
+</ul>
+<ul>
+<li>注：经沟通第三点可以通通过如如下语句查看，第四个目前可以不考虑，CSS也没有权限查看。</li>
+</ul>
+<ul>
+<li>//Node snapshot log</li>
+</ul>
+<ul>
+<li>//cluster(&quot;Azcsupfollower&quot;).database(&quot;AzureCM&quot;).LogNodeSnapshot</li>
+</ul>
+<ul>
+<li>cluster(&quot;azurecm.chinanorth2.kusto.chinacloudapi.cn&quot;).database(&quot;azurecm&quot;).LogNodeSnapshot</li>
+</ul>
+<ul>
+<li>WHEA log:</li>
+</ul>
+<ul>
+<li>Understand and use Resource Health Center to troubleshoot this scenario in the future</li>
+</ul>
+<ul>
+<li>We apologize for any inconvenience this may have caused you.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>where NodeId == &quot;&lt;nodeid&gt;&quot;</li>
+</ul>
+<ul>
+<li>2022-12-26 07:56:42.7600000        Microsoft-Windows-Kernel-WHEA        Corrected                1ECC5E73080            {&quot;OtherInfo&quot;: 0, &quot;FirmwareUpdateError&quot;: false, &quot;CorrectedErrorCount&quot;: 2, &quot;ThresholdErrorStatus&quot;: 0, &quot;ActionRequired&quot;: false, &quot;Signalling&quot;: false, &quot;McaErrorCode&quot;: &quot;92&quot;, &quot;ModelErrorCode&quot;: &quot;101&quot;, &quot;ContextCorrupt&quot;: false, &quot;AddressValid&quot;: true, &quot;MiscValid&quot;: true, &quot;ErrorEnabled&quot;: false, &quot;UncorrectedError&quot;: false, &quot;StatusOverFlow&quot;: true, &quot;Valid&quot;: true}</li>
+</ul>
+<ul>
+<li>2022-12-26 08:01:47.8720000        Microsoft-Windows-Kernel-WHEA        Corrected                1ECC5EA5A00            {&quot;OtherInfo&quot;: 0, &quot;FirmwareUpdateError&quot;: false, &quot;CorrectedErrorCount&quot;: 1, &quot;ThresholdErrorStatus&quot;: 0, &quot;ActionRequired&quot;: false, &quot;Signalling&quot;: false, &quot;McaErrorCode&quot;: &quot;92&quot;, &quot;ModelErrorCode&quot;: &quot;101&quot;, &quot;ContextCorrupt&quot;: false, &quot;AddressValid&quot;: true, &quot;MiscValid&quot;: true, &quot;ErrorEnabled&quot;: false, &quot;UncorrectedError&quot;: false, &quot;StatusOverFlow&quot;: false, &quot;Valid&quot;: true}</li>
+</ul>
+<ul>
+<li>2022-12-26 08:01:47.8720000        Microsoft-Windows-Kernel-WHEA        Corrected                1ECC5E73080            {&quot;OtherInfo&quot;: 0, &quot;FirmwareUpdateError&quot;: false, &quot;CorrectedErrorCount&quot;: 3, &quot;ThresholdErrorStatus&quot;: 0, &quot;ActionRequired&quot;: false, &quot;Signalling&quot;: false, &quot;McaErrorCode&quot;: &quot;92&quot;, &quot;ModelErrorCode&quot;: &quot;101&quot;, &quot;ContextCorrupt&quot;: false, &quot;AddressValid&quot;: true, &quot;MiscValid&quot;: true, &quot;ErrorEnabled&quot;: false, &quot;UncorrectedError&quot;: false, &quot;StatusOverFlow&quot;: true, &quot;Valid&quot;: true}</li>
+</ul>
+<ul>
+<li>2022-12-26 08:01:47.8720000        Microsoft-Windows-Kernel-WHEA        Corrected                1ECC5E73080            {&quot;OtherInfo&quot;: 0, &quot;FirmwareUpdateError&quot;: false, &quot;CorrectedErrorCount&quot;: 1, &quot;ThresholdErrorStatus&quot;: 0, &quot;ActionRequired&quot;: false, &quot;Signalling&quot;: false, &quot;McaErrorCode&quot;: &quot;92&quot;, &quot;ModelErrorCode&quot;: &quot;101&quot;, &quot;ContextCorrupt&quot;: false, &quot;AddressValid&quot;: true, &quot;MiscValid&quot;: true, &quot;ErrorEnabled&quot;: false, &quot;UncorrectedError&quot;: false, &quot;StatusOverFlow&quot;: false, &quot;Valid&quot;: true}</li>
+</ul>
+<ul>
+<li>2022-12-26 08:01:47.8720000        Microsoft-Windows-Kernel-WHEA        Corrected                1ECC5E74E80            {&quot;OtherInfo&quot;: 0, &quot;FirmwareUpdateError&quot;: false, &quot;CorrectedErrorCount&quot;: 2, &quot;ThresholdErrorStatus&quot;: 0, &quot;ActionRequired&quot;: false, &quot;Signalling&quot;: false, &quot;McaErrorCode&quot;: &quot;92&quot;, &quot;ModelErrorCode&quot;: &quot;101&quot;, &quot;ContextCorrupt&quot;: false, &quot;AddressValid&quot;: true, &quot;MiscValid&quot;: true, &quot;ErrorEnabled&quot;: false, &quot;UncorrectedError&quot;: false, &quot;StatusOverFlow&quot;: true, &quot;Valid&quot;: true}</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>#RCA message</li>
+</ul>
+<ul>
+<li>Note: Please make sure to replace all italicized values (i.e. VM Name, Start Date &amp; Time, and End Date &amp; Time, etc.) with the appropriate values before providing RCA to the customer.</li>
+</ul>
+<ul>
+<li>Root Cause</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>#Resolution</li>
+</ul>
+<ul>
+<li>Resolution</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://rdosmc.kusto.chinacloudapi.cn/rdos" target="_blank" rel="noopener">https://rdosmc.kusto.chinacloudapi.cn/rdos</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>工单信息：[PODNET]SR_20230710240156[MS-LED][Premier]/Qing... - TrackingID#2307140030002189</p>
+<p>排查TSG：</p>
+<p>For issue mentioned in case 2307140030002189, please refer to below TSG:</p>
+<p>#Symptom</p>
+<p>VM network is disconnected aligned with correctable memory errors on node. For clustered VMs, they may be restarted due to heartbeat loss over timeout period.</p>
+<p>#Cause</p>
+<p>When correctable memory errors are detected, host OS mark faulty pages offline and discontinue to use them. During page offline work, Host OS trigger event once for each page. During this event, Accelnet is released and reattached.</p>
+<p>#Predictive Failure Analysis</p>
+<p>Azure platform performs page offlining of bad memory during runtime, which is called PFA.</p>
+<p>If there is a single bit event that is truly a single bit event the correction will occur and be invisible to the user. If it is a persistent single bit error than a single memory page will be offlined. If multiple single bits occur and the physical row address encompasses these events, then the probability of an uncorrected error to occur in the future is more likely. To avoid access to the row, a row-offline event is triggered. This could be 192 pages in worst case scenario.</p>
+<p>In recent customer&#39;s issue, VM networking was impacted due to row-offline event, causing VF flaps. HostOS team is working on fix to reduce the event to once for offlining multiple pages.</p>
+<p>#Resolution</p>
+<p>Since the error pages were offlined, VM will not experience issue again on same memory area.</p>
+<p>If node is flagged to be degraded, this means our hardware team predicted there is a risk of another failure on memory and redeploy is recommended. In this case you will see nodeAvailabilityState status either in Unallocatable or Suspected. Once all of the containers are evacuated from the node, it will be marked OFR and hardware repair is scheduled.</p>
+<p>If node availability state is ok, VM will not be automatically redeployed. Customer can manually redeploy their virtual machine to another healthy physical node.</p>
+<p>#Diagnostics</p>
+<p>Guest OS level impact:</p>
+<p>Several &#39;VF slot 1 removed/added&#39; logs aligned with service impact.</p>
+<p>Dec 26 16:56:43 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: Data path switched from VF: enP32093s1</p>
+<p>Dec 26 16:56:43 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: VF unregistering: enP32093s1</p>
+<p>Dec 26 16:56:44 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: VF slot 1 removed</p>
+<p>Dec 26 16:56:46 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: VF slot 1 added</p>
+<p>Dec 26 17:00:34 HOSTNAME kernel: pci_bus 7d5d:00: root bus resource [mem 0xfe0000000-0xfe00fffff window]</p>
+<p>Dec 26 17:00:34 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: VF slot 1 removed</p>
+<p>Dec 26 17:00:35 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: VF slot 1 added</p>
+<p>Dec 26 17:00:35 HOSTNAME kernel: hv_pci 168985fb-7d5d-4268-b30f-666c1c5ae9e9: PCI VMBus probing: Using version 0x10003</p>
+<p>Dec 26 17:00:36 HOSTNAME kernel: hv_pci 168985fb-7d5d-4268-b30f-666c1c5ae9e9: PCI host bridge to bus 7d5d:00</p>
+<p>Dec 26 17:00:36 HOSTNAME kernel: pci_bus 7d5d:00: root bus resource [mem 0xfe0000000-0xfe00fffff window]</p>
+<p>Dec 26 17:00:36 HOSTNAME kernel: pci 7d5d:00:02.0: [15b3:1016] type 00 class 0x000000</p>
+<p>Dec 26 17:00:36 HOSTNAME kernel: mlx5_core 7d5d:00:02.0: Missing registers BAR, aborting</p>
+<p>Dec 26 17:00:36 HOSTNAME kernel: mlx5_core 7d5d:00:02.0: mlx5_pci_init:786:(pid 4109027): error requesting BARs, aborting</p>
+<p>Dec 26 17:00:36 HOSTNAME kernel: mlx5_core 7d5d:00:02.0: init_one:1380:(pid 4109027): mlx5_pci_init failed with error code -19</p>
+<p>Dec 26 17:00:36 HOSTNAME kernel: hv_netvsc 0022480e-d05e-0022-480e-d05e0022480e eth0: VF slot 1 removed</p>
+<p>Dec 26 17:00:37 HOSTNAME kernel: hv_pci 168985fb-7d5d-4268-b30f-666c1c5ae9e9: PCI host bridge to bus 7d5d:00</p>
+<p>Dec 26 17:00:37 HOSTNAME kernel: pci_bus 7d5d:00: root bus resource [mem 0xfe0000000-0xfe00fffff window]</p>
+<p>Dec 26 17:00:37 HOSTNAME kernel: pci 7d5d:00:02.0: [15b3:1016] type 00 class 0x020000</p>
+<p>Dec 26 17:00:37 HOSTNAME kernel: pci 7d5d:00:02.0: reg 0x10: [mem 0xfe0000000-0xfe00fffff 64bit pref]</p>
+<p>Dec 26 17:00:38 HOSTNAME kernel: pci 7d5d:00:02.0: enabling Extended Tags</p>
+<p>Dec 26 17:00:38 HOSTNAME kernel: pci 7d5d:00:02.0: 0.000 Gb/s available PCIe bandwidth, limited by Unknown x0 link at 7d5d:00:02.0 (capable of 63.008 Gb/s with 8.0 GT/s PCIe x8 link)</p>
+<p>Dec 26 17:00:38 HOSTNAME kernel: pci 7d5d:00:02.0: BAR 0: assigned [mem 0xfe0000000-0xfe00fffff 64bit pref]</p>
+<p>Dec 26 17:00:38 HOSTNAME kernel: mlx5_core 7d5d:00:02.0: firmware version: 14.30.1224</p>
+<p>Dec 26 17:00:38 HOSTNAME kernel: hv_pci 168985fb-7d5d-4268-b30f-666c1c5ae9e9: the device is being ejected</p>
+<p>Dec 26 17:00:38 HOSTNAME kernel: hv_pci 168985fb-7d5d-4268-b30f-666c1c5ae9e9: hv_irq_unmask() failed: 0x5</p>
+<p>Host Windows event log:</p>
+<p>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://rdosmc.kusto.chinacloudapi.cn/rdos" target="_blank" rel="noopener">https://rdosmc.kusto.chinacloudapi.cn/rdos</a></p>
+<p>WindowsEventTable</p>
+<p>| where NodeId in (&quot;379185b1-c6d6-4a66-8e2b-642d4e21fa70&quot;)</p>
+<p>| where PreciseTimeStamp &gt;= datetime(2023-07-07 02:00:00) and PreciseTimeStamp &lt;= datetime(2023-07-07 02:20:00)</p>
+<p>| where EventId !in (&quot;3095&quot;)</p>
+<p>| where Description !contains &quot;GetBoardModel&quot; and Description !contains &quot;IO latency summary&quot; and Description !contains &quot;summary for Storport&quot; and Description !contains &quot;Summary of disk space usage&quot;</p>
+<p>| project TimeCreated, Cluster,EventId, ProviderName, Description,Level</p>
+<p>| order by TimeCreated asc</p>
+<p>2023/7/7 2:03:53</p>
+<p>BJS20PrdApp08</p>
+<p>47</p>
+<p>Microsoft-Windows-WHEA-Logger</p>
+<p>A corrected hardware error has occurred.</p>
+<p>Component: Memory</p>
+<p>Error Source: Corrected Machine Check</p>
+<p>The details view of this entry contains further information.</p>
+<p>You can also find this error in Host Analyzer – Windows system logs:</p>
+<p>Node snapshot log:</p>
+<p>cluster(&quot;Azcsupfollower&quot;).database(&quot;AzureCM&quot;).LogNodeSnapshot</p>
+<p>| where nodeId in(&quot;&lt;nodeid&gt;&quot;)</p>
+<p>| where PreciseTimeStamp between( datetime(2022-12-26 06:00) .. datetime(2022-12-28 09:00))</p>
+<p>| project PreciseTimeStamp, Tenant,nodeId,nodeState,diskConfiguration,nodeAvailabilityState,faultInfo,healthSignals</p>
+<p>Unallocatable</p>
+<p>{&quot;Reason&quot;:&quot;Hynix SWD C-Die Memory and RuleType: Fatal HW repair. ContainerCount: 1. FaultedByExternalEntity: koreacentral-prod-b.azcp.fc.core.windows.net-anvilclient&quot;,&quot;Time&quot;:&quot;2022-12-27T12:33:34.76Z&quot;,&quot;FaultCode&quot;:10038,</p>
+<p>&quot;Details&quot;:&quot;Bad hardware health: 75 - {\&quot;HmsCode\&quot;:32600,\&quot;HmsComponent\&quot;:\&quot;Memory\&quot;,\&quot;SourceOfFault\&quot;:\&quot;IssuedByCSI-SparkleWithRuleId-1041\&quot;}\r\n{\&quot;$type\&quot;:\&quot;CSIDiagnostic/1.1\&quot;,\&quot;Action\&quot;:\&quot;Replace DIMM(s)\&quot;,\</p>
+<p>&quot;Reason\&quot;:\&quot;Hynix SWD C-Die Memory\&quot;,\&quot;ComponentType\&quot;:\&quot;Memory\&quot;,\&quot;FaultCode\&quot;:\&quot;32600\&quot;,\&quot;SourceOfFault\&quot;:\&quot;Sparkle:Sparkle\&quot;,</p>
+<p>\&quot;PartFailures\&quot;:[{\&quot;CpuChnlDimmList\&quot;:\&quot;1_2_1\&quot;}]}&quot;,&quot;NodeFaultType&quot;:4,&quot;FabricOperationString&quot;:&quot;Unknown&quot;,&quot;FabricOperationStringV2&quot;:&quot;Unknown&quot;,&quot;NodeState&quot;:10,&quot;FaultScope&quot;:3,&quot;RetriesAsString&quot;:&quot;&lt;…&gt;</p>
+<p>注：经沟通第三点可以通通过如如下语句查看，第四个目前可以不考虑，CSS也没有权限查看。</p>
+<p>//Node snapshot log</p>
+<p>//cluster(&quot;Azcsupfollower&quot;).database(&quot;AzureCM&quot;).LogNodeSnapshot</p>
+<p>cluster(&quot;azurecm.chinanorth2.kusto.chinacloudapi.cn&quot;).database(&quot;azurecm&quot;).LogNodeSnapshot</p>
+<p>//| where nodeId in(&quot;&lt;nodeid&gt;&quot;)</p>
+<p>//| where PreciseTimeStamp between( datetime(2022-12-26 06:00) .. datetime(2022-12-28 09:00))</p>
+<p>//| project PreciseTimeStamp, Tenant,nodeId,nodeState,diskConfiguration,nodeAvailabilityState,faultInfo,healthSignals</p>
+<p>| where nodeId == &quot;379185b1-c6d6-4a66-8e2b-642d4e21fa70&quot;</p>
+<p>WHEA log:</p>
+<p>cluster(&quot;sparkle.eastus&quot;).database(&quot;defaultdb&quot;).WheaXPFMCAFull</p>
+<p>where NodeId == &quot;&lt;nodeid&gt;&quot;</p>
+<p>| where PreciseTimeStamp &gt; datetime(2022-12-26 06:00) and PreciseTimeStamp &lt; datetime(2022-12-27 23:00)</p>
+<p>| project TIMESTAMP, ProviderName, NodeId, ErrorRecordSeverity,PhysicalAddress,Status,RetryReadData, BankNumber</p>
+<p>TIMESTAMP                        ProviderName                        ErrorRecordSeverity        PhysicalAddress     Status</p>
+<p>2022-12-26 07:56:42.7600000        Microsoft-Windows-Kernel-WHEA        Corrected                1ECC5E73080            {&quot;OtherInfo&quot;: 0, &quot;FirmwareUpdateError&quot;: false, &quot;CorrectedErrorCount&quot;: 2, &quot;ThresholdErrorStatus&quot;: 0, &quot;ActionRequired&quot;: false, &quot;Signalling&quot;: false, &quot;McaErrorCode&quot;: &quot;92&quot;, &quot;ModelErrorCode&quot;: &quot;101&quot;, &quot;ContextCorrupt&quot;: false, &quot;AddressValid&quot;: true, &quot;MiscValid&quot;: true, &quot;ErrorEnabled&quot;: false, &quot;UncorrectedError&quot;: false, &quot;StatusOverFlow&quot;: true, &quot;Valid&quot;: true}</p>
+<p>2022-12-26 08:01:47.8720000        Microsoft-Windows-Kernel-WHEA        Corrected                1ECC5EA5A00            {&quot;OtherInfo&quot;: 0, &quot;FirmwareUpdateError&quot;: false, &quot;CorrectedErrorCount&quot;: 1, &quot;ThresholdErrorStatus&quot;: 0, &quot;ActionRequired&quot;: false, &quot;Signalling&quot;: false, &quot;McaErrorCode&quot;: &quot;92&quot;, &quot;ModelErrorCode&quot;: &quot;101&quot;, &quot;ContextCorrupt&quot;: false, &quot;AddressValid&quot;: true, &quot;MiscValid&quot;: true, &quot;ErrorEnabled&quot;: false, &quot;UncorrectedError&quot;: false, &quot;StatusOverFlow&quot;: false, &quot;Valid&quot;: true}</p>
+<p>2022-12-26 08:01:47.8720000        Microsoft-Windows-Kernel-WHEA        Corrected                1ECC5E73080            {&quot;OtherInfo&quot;: 0, &quot;FirmwareUpdateError&quot;: false, &quot;CorrectedErrorCount&quot;: 3, &quot;ThresholdErrorStatus&quot;: 0, &quot;ActionRequired&quot;: false, &quot;Signalling&quot;: false, &quot;McaErrorCode&quot;: &quot;92&quot;, &quot;ModelErrorCode&quot;: &quot;101&quot;, &quot;ContextCorrupt&quot;: false, &quot;AddressValid&quot;: true, &quot;MiscValid&quot;: true, &quot;ErrorEnabled&quot;: false, &quot;UncorrectedError&quot;: false, &quot;StatusOverFlow&quot;: true, &quot;Valid&quot;: true}</p>
+<p>2022-12-26 08:01:47.8720000        Microsoft-Windows-Kernel-WHEA        Corrected                1ECC5E73080            {&quot;OtherInfo&quot;: 0, &quot;FirmwareUpdateError&quot;: false, &quot;CorrectedErrorCount&quot;: 1, &quot;ThresholdErrorStatus&quot;: 0, &quot;ActionRequired&quot;: false, &quot;Signalling&quot;: false, &quot;McaErrorCode&quot;: &quot;92&quot;, &quot;ModelErrorCode&quot;: &quot;101&quot;, &quot;ContextCorrupt&quot;: false, &quot;AddressValid&quot;: true, &quot;MiscValid&quot;: true, &quot;ErrorEnabled&quot;: false, &quot;UncorrectedError&quot;: false, &quot;StatusOverFlow&quot;: false, &quot;Valid&quot;: true}</p>
+<p>2022-12-26 08:01:47.8720000        Microsoft-Windows-Kernel-WHEA        Corrected                1ECC5E74E80            {&quot;OtherInfo&quot;: 0, &quot;FirmwareUpdateError&quot;: false, &quot;CorrectedErrorCount&quot;: 2, &quot;ThresholdErrorStatus&quot;: 0, &quot;ActionRequired&quot;: false, &quot;Signalling&quot;: false, &quot;McaErrorCode&quot;: &quot;92&quot;, &quot;ModelErrorCode&quot;: &quot;101&quot;, &quot;ContextCorrupt&quot;: false, &quot;AddressValid&quot;: true, &quot;MiscValid&quot;: true, &quot;ErrorEnabled&quot;: false, &quot;UncorrectedError&quot;: false, &quot;StatusOverFlow&quot;: true, &quot;Valid&quot;: true}</p>
+<p>#RCA message</p>
+<p>Note: Please make sure to replace all italicized values (i.e. VM Name, Start Date &amp; Time, and End Date &amp; Time, etc.) with the appropriate values before providing RCA to the customer.</p>
+<p>VM Availability</p>
+<p>The Azure monitoring and diagnostics systems identified that the VM Virtual Machine was impacted at StartTime. During this time RDP or SSH connections to the VM, or other such requests could have failed.</p>
+<p>Root Cause</p>
+<p>The physical host node where the VM was running encountered a hardware memory error. This may have impacted the VMs running on the node.</p>
+<p>Resolution</p>
+<p>Azure automatically attempts to correct minor errors and restore services on the node. In the event the node’s health degrades further, the VM will be service healed to healthy nodes.</p>
+<p>Additional Information</p>
+<p>The Hardware Engineering team is working on the following long-term fixes to reduce the impact of these errors:</p>
+<p>Azure is continually working to make improvements to pre-production hardware screening.</p>
+<p>Improvements to failure prediction telemetry and models.</p>
+<p>Improvements to memory failure handling to reduce or avoid impact to customers.</p>
+<p>We are continuously working to improve the platform to reduce incidences of virtual machine unavailability.</p>
+<p>Recommended Documents</p>
+<p>Learn more about:</p>
+<p>Auto-recovery of Virtual Machines</p>
+<p>Configure availability of virtual machines</p>
+<p>Maintenance and updates for virtual machines in Azure</p>
+<p>Resource Health VM Annotation</p>
+<p>Understand and use Resource Health Center to troubleshoot this scenario in the future</p>
+<p>We apologize for any inconvenience this may have caused you.</p>
+<p>Microsoft Azure Team</p></article>

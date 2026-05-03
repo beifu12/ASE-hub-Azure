@@ -1,0 +1,65 @@
+<article class="kb-article" data-title="Azure k8s How to access the dashboard"><h1>Azure k8s How to access the dashboard</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: EMS E3 and AIP P1</li>
+<li>Section: English KB</li>
+<li>最近修改: 2023-06-26 16:22:33</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Note that since the entire virtual machine network has NSG defaults, this client cannot RDP, so you need to add port 3389:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Note that since the entire virtual machine network has NSG defaults, this client cannot RDP, so you need to add port 3389:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>I hope it helps you:</li>
+</ul>
+<ul>
+<li>First I created a Windows virtual machine as a client in the virtual network where k8s is located:</li>
+</ul>
+<ul>
+<li>Note that the NSG of the subnet is modified:</li>
+</ul>
+<ul>
+<li>After the addition is complete, access the test client via RDP.</li>
+</ul>
+<ul>
+<li>The intranet address is as follows：</li>
+</ul>
+<ul>
+<li>访问效果：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>By querying some third-party documents, I accessed the dashboard normally.</li>
+</ul>
+<ul>
+<li>Access the dashboard via the intranet address plus port 8080:</li>
+</ul>
+<ul>
+<li>Since Kubernetes technology is an open source product, azure does not have official help documentation. These are just my tests. If you have internal configuration issues, please consult the open source community or seek support in Github.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>By querying some third-party documents, I accessed the dashboard normally.</p>
+<p>I hope it helps you:</p>
+<p>First I created a Windows virtual machine as a client in the virtual network where k8s is located:</p>
+<p>Note that since the entire virtual machine network has NSG defaults, this client cannot RDP, so you need to add port 3389:</p>
+<p>Note that the NSG of the subnet is modified:</p>
+<p>After the addition is complete, access the test client via RDP.</p>
+<p>Access the dashboard via the intranet address plus port 8080:</p>
+<p>The intranet address is as follows：</p>
+<p>访问效果：</p>
+<p>Since Kubernetes technology is an open source product, azure does not have official help documentation. These are just my tests. If you have internal configuration issues, please consult the open source community or seek support in Github.</p></article>

@@ -1,0 +1,65 @@
+<article class="kb-article" data-title="查询因平台故障导致的VM不可用情况"><h1>查询因平台故障导致的VM不可用情况</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Log Analiytics</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-23 15:01:51</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>由于我们的测试环境中目前没有因平台故障导致虚拟机不可用的日志，所以将where Cause != &quot;UserInitiated&quot;改为where Cause == &quot;UserInitiated&quot;以便展示效果。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>由于我们的测试环境中目前没有因平台故障导致虚拟机不可用的日志，所以将where Cause != &quot;UserInitiated&quot;改为where Cause == &quot;UserInitiated&quot;以便展示效果。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考截图：</li>
+</ul>
+<ul>
+<li>以下语句供您参考：</li>
+</ul>
+<ul>
+<li>AzureActivity</li>
+</ul>
+<ul>
+<li>| where CategoryValue contains &quot;ResourceHealth&quot;</li>
+</ul>
+<ul>
+<li>| extend Cause=parse_json(tostring(parse_json(Properties).eventProperties)).cause</li>
+</ul>
+<ul>
+<li>| where Cause != &quot;UserInitiated&quot;</li>
+</ul>
+<ul>
+<li>| project TimeGenerated, OperationNameValue,Properties,Cause,ResourceGroup, ResourceName=parse_json(Properties).resource,ActivityStatusValue</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>之后，使用KQL语句进行相关查询。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>对于资源运行的健康状况，您可以通过诊断设置导出活动日志到工作区，一定要勾选ResourceHealth类别。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025-7-23</p>
+<p>对于资源运行的健康状况，您可以通过诊断设置导出活动日志到工作区，一定要勾选ResourceHealth类别。</p>
+<p>参考截图：</p>
+<p>之后，使用KQL语句进行相关查询。</p>
+<p>以下语句供您参考：</p>
+<p>AzureActivity</p>
+<p>| where CategoryValue contains &quot;ResourceHealth&quot;</p>
+<p>| extend Cause=parse_json(tostring(parse_json(Properties).eventProperties)).cause</p>
+<p>| where Cause != &quot;UserInitiated&quot;</p>
+<p>| project TimeGenerated, OperationNameValue,Properties,Cause,ResourceGroup, ResourceName=parse_json(Properties).resource,ActivityStatusValue</p>
+<p>由于我们的测试环境中目前没有因平台故障导致虚拟机不可用的日志，所以将where Cause != &quot;UserInitiated&quot;改为where Cause == &quot;UserInitiated&quot;以便展示效果。</p></article>

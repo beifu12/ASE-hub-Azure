@@ -1,0 +1,77 @@
+<article class="kb-article" data-title="SxSStackListenerCheck 失败处理 一例"><h1>SxSStackListenerCheck 失败处理 一例</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-01-12 17:53:45</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>继而会显示不可用</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>继而会显示不可用</li>
+</ul>
+<ul>
+<li>&quot;additionalFailureDetails&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;errorCode&quot;: -2147467259,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>如下为Json视图。</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;SessionHost unhealthy: SxsStack listener is not ready&quot;,</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>创建主机池后，主机状态显示可用，但进而查看发现SxSStackListenerCheck 失败</li>
+</ul>
+<ul>
+<li>&quot;healthCheckName&quot;: &quot;SxSStackListenerCheck&quot;,</li>
+</ul>
+<ul>
+<li>&quot;healthCheckResult&quot;: &quot;HealthCheckFailed&quot;,</li>
+</ul>
+<ul>
+<li>&quot;lastHealthCheckDateTime&quot;: &quot;2023-01-12T09:26:01.9163415Z&quot;</li>
+</ul>
+<ul>
+<li>经过确认，如遇到该问题，可以先确认是否时支持的操作系统。如果在创建时使用了windows 10 pro版会引发上面的错误。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>关于支持的操作系统参考文档<a href="https://docs.azure.cn/zh-cn/virtual-desktop/prerequisites#operating-systems-and-licenses" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/prerequisites#operating-systems-and-licenses</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023-01-12</p>
+<p>创建主机池后，主机状态显示可用，但进而查看发现SxSStackListenerCheck 失败</p>
+<p>继而会显示不可用</p>
+<p>如下为Json视图。</p>
+<p>{</p>
+<p>&quot;healthCheckName&quot;: &quot;SxSStackListenerCheck&quot;,</p>
+<p>&quot;healthCheckResult&quot;: &quot;HealthCheckFailed&quot;,</p>
+<p>&quot;additionalFailureDetails&quot;: {</p>
+<p>&quot;message&quot;: &quot;SessionHost unhealthy: SxsStack listener is not ready&quot;,</p>
+<p>&quot;errorCode&quot;: -2147467259,</p>
+<p>&quot;lastHealthCheckDateTime&quot;: &quot;2023-01-12T09:26:01.9163415Z&quot;</p>
+<p>}</p>
+<p>经过确认，如遇到该问题，可以先确认是否时支持的操作系统。如果在创建时使用了windows 10 pro版会引发上面的错误。</p>
+<p>关于支持的操作系统参考文档<a href="https://docs.azure.cn/zh-cn/virtual-desktop/prerequisites#operating-systems-and-licenses" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/prerequisites#operating-systems-and-licenses</a></p></article>

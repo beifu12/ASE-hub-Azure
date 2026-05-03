@@ -1,0 +1,106 @@
+<article class="kb-article" data-title="AGIC 没有同步证书到APPGW"><h1>AGIC 没有同步证书到APPGW</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-05-31 14:54:10</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_20220509164088_App Gateway在AKS/AGIC模式下无法启用https</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_20220509164088_App Gateway在AKS/AGIC模式下无法启用https</li>
+</ul>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>3、此时怀疑是客户的secret应该有问题，进一步测试客户提供的yaml文件部署ingress，也是无法加载该secret。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Fuzhangliang/xingxiangjia</li>
+</ul>
+<ul>
+<li>参考工单：</li>
+</ul>
+<ul>
+<li>从我们后台日志看，HTTPS的配置没有推送到网关，推送的是80 HTTP的配置</li>
+</ul>
+<ul>
+<li>这时候对比客户的yaml文件和证书文件，发现客户的yaml文件没有对证书内容进行编码，而是直接copy写在yaml 文件的 data/key 字段中，这是有问题的，根据要求，tls secret需要对证书内容进行base64编码：</li>
+</ul>
+<ul>
+<li>--cert=path/to/cert/file \</li>
+</ul>
+<ul>
+<li>--key=path/to/key/file</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查步骤：</li>
+</ul>
+<ul>
+<li>2、这个时候就要看下AKS群集中推给平台的配置是什么样的， 查询AGICPod日志， 从AKS集群内部的日志看，AKS集群向外也确实没有推送HTTPS的配置，推送的也是HTTP 80的配置。</li>
+</ul>
+<ul>
+<li>同时查看日志，有load key的报错。怀疑是ingress无法加载secret</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>后续客户提供证书文件， 我们使用命令行创建secret, 可以正常加载。</li>
+</ul>
+<ul>
+<li>kubectl create secret tls  --cert=tls.crt --key=tls.key -n [NameSpace]</li>
+</ul>
+<ul>
+<li>也是推荐使用kubect命令创建tls secret  自动对证书编码</li>
+</ul>
+<ul>
+<li>kubectl create secret tls my-tls-secret \</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>客户在AGIC中创建了https的ingress rule,但是证书没有同步到appgw，appgw上只有80端口的侦听器，没有443 的</li>
+</ul>
+<ul>
+<li>1、首先检查appgw 控制层面同步过来的配置，只有80端口的侦听器，没有443的侦听器和证书。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>查表：<a href="https://portal-east.microsoftgeneva.com/s/29168150" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/29168150</a></li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.io/docs/concepts/configuration/secret/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/configuration/secret/</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://kubernetes.io/docs/concepts/configuration/secret/&gt;" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/configuration/secret/&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Fuzhangliang/xingxiangjia</p>
+<p>参考工单：</p>
+<p>SR_20220509164088_App Gateway在AKS/AGIC模式下无法启用https</p>
+<p>问题现象：</p>
+<p>客户在AGIC中创建了https的ingress rule,但是证书没有同步到appgw，appgw上只有80端口的侦听器，没有443 的</p>
+<p>排查步骤：</p>
+<p>1、首先检查appgw 控制层面同步过来的配置，只有80端口的侦听器，没有443的侦听器和证书。</p>
+<p>从我们后台日志看，HTTPS的配置没有推送到网关，推送的是80 HTTP的配置</p>
+<p>查表：<a href="https://portal-east.microsoftgeneva.com/s/29168150" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/29168150</a></p>
+<p>2、这个时候就要看下AKS群集中推给平台的配置是什么样的， 查询AGICPod日志， 从AKS集群内部的日志看，AKS集群向外也确实没有推送HTTPS的配置，推送的也是HTTP 80的配置。</p>
+<p>同时查看日志，有load key的报错。怀疑是ingress无法加载secret</p>
+<p>3、此时怀疑是客户的secret应该有问题，进一步测试客户提供的yaml文件部署ingress，也是无法加载该secret。</p>
+<p>后续客户提供证书文件， 我们使用命令行创建secret, 可以正常加载。</p>
+<p>kubectl create secret tls  --cert=tls.crt --key=tls.key -n [NameSpace]</p>
+<p>这时候对比客户的yaml文件和证书文件，发现客户的yaml文件没有对证书内容进行编码，而是直接copy写在yaml 文件的 data/key 字段中，这是有问题的，根据要求，tls secret需要对证书内容进行base64编码：</p>
+<p><a href="https://kubernetes.io/docs/concepts/configuration/secret/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/configuration/secret/</a></p>
+<p>也是推荐使用kubect命令创建tls secret  自动对证书编码</p>
+<p>kubectl create secret tls my-tls-secret \</p>
+<p>--cert=path/to/cert/file \</p>
+<p>--key=path/to/key/file</p>
+<p>From &lt;<a href="https://kubernetes.io/docs/concepts/configuration/secret/&gt;" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/configuration/secret/&gt;</a></p></article>

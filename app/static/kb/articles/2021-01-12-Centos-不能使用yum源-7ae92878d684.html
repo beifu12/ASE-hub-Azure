@@ -1,0 +1,66 @@
+<article class="kb-article" data-title="Centos 不能使用yum源"><h1>Centos 不能使用yum源</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-01-12 11:25:18</li>
+<li>JD 相关性: 售后排障; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错现象：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Yum repolist时显式都是不能访问对应的yum源的网站和文件：</li>
+</ul>
+<ul>
+<li>但是直接通过curl访问这些网站都是可以访问的</li>
+</ul>
+<ul>
+<li>通过多次尝试，和查找第三方文档，发现yum 源是可以配置代理服务器的。</li>
+</ul>
+<ul>
+<li>由于客户是从东区复制到东二区，然后用磁盘创建的虚拟机，所以yum源之前有设置过代理服务器。</li>
+</ul>
+<ul>
+<li>配置方法如下：</li>
+</ul>
+<ul>
+<li>通过删除了yum的代理服务器后对应的条目后，可以正常使用yum源。</li>
+</ul>
+<ul>
+<li>所以如果之后有遇到类似问题，可以去找一下yum的配置文件，看看是否有对应的配置。</li>
+</ul>
+<ul>
+<li>谢谢！</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>echo &quot;proxy=<a href="http://[proxy_url]:8080&quot;" target="_blank" rel="noopener">http://[proxy_url]:8080&quot;</a> &gt;&gt; /etc/yum.conf</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-01-12</p>
+<p>报错现象：</p>
+<p>Yum repolist时显式都是不能访问对应的yum源的网站和文件：</p>
+<p>但是直接通过curl访问这些网站都是可以访问的</p>
+<p>通过多次尝试，和查找第三方文档，发现yum 源是可以配置代理服务器的。</p>
+<p>由于客户是从东区复制到东二区，然后用磁盘创建的虚拟机，所以yum源之前有设置过代理服务器。</p>
+<p>配置方法如下：</p>
+<p>echo &quot;proxy=<a href="http://[proxy_url]:8080&quot;" target="_blank" rel="noopener">http://[proxy_url]:8080&quot;</a> &gt;&gt; /etc/yum.conf</p>
+<p>通过删除了yum的代理服务器后对应的条目后，可以正常使用yum源。</p>
+<p>所以如果之后有遇到类似问题，可以去找一下yum的配置文件，看看是否有对应的配置。</p>
+<p>谢谢！</p></article>

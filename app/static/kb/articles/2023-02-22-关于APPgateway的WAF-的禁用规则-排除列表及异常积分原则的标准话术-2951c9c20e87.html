@@ -1,0 +1,106 @@
+<article class="kb-article" data-title="关于APPgateway的WAF 的禁用规则，排除列表及异常积分原则的标准话术"><h1>关于APPgateway的WAF 的禁用规则，排除列表及异常积分原则的标准话术</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: 标准话术</li>
+<li>最近修改: 2023-02-22 15:05:33</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>异常积分原则</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>异常积分原则</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>WAF工作的基本原理</li>
+</ul>
+<ul>
+<li>在定位出具体规则之后，可以采用添加排除列表，或者直接禁用该规则的方式来解决误挡的问题。但这样做会增加后端应用的风险，因为WAF失去了检测该规则所对应的攻击的能力。</li>
+</ul>
+<ul>
+<li>当WAF配置为保护模式时，WAF日志是否会对已经禁用的规则进行记录？</li>
+</ul>
+<ul>
+<li>WAF的排除列表功能</li>
+</ul>
+<ul>
+<li>&quot;requestUri&quot;: &quot;/s?ev=type:stv&amp;on=sid:CCS81005&amp;user=openid:%7Bopenid%7D&amp;env=sr:360-640;cke:1;flver:0&amp;ecc=0&amp;acid=abbott&amp;fvid=1574642390520&amp;jsv=1_5_2&amp;seq=1&amp;ptid=ckbi2q430g0xfaccm0z3pc52fu&amp;cb=3507347608&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ruleId&quot;: &quot;942450&quot;,</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;SQL Hex Encoding Identified&quot;,</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;Warning. Pattern match \&quot;(?i:(?:\\\\A|[^\\\\d])0x[a-f\\\\d]{3,}[a-f\\\\d]*)+\&quot; at ARGS:ptid ....&quot;,</li>
+</ul>
+<ul>
+<li>&quot;data&quot;: &quot;Matched Data: g0xfacc found within ARGS:ptid: ckbi2q430g0xfaccm0z3pc52fu&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>WAF分为检测模式和保护模式。在检测模式下，WAF会使用定义的规则对每一条请求进行检查，如果有规则被匹配，则会记录到日志中，不会采取其他任何行动；在保护模式下，WAF在对请求检查完成之后，采用积分制的原则来判断是否该将此请求阻挡。具体来说，每一条OWASP规则都定义了严重等级，不同等级对应于不同的积分（2分到5分）。如果某一条请求触发了多个规则并且这些规则的总分大于等于5分，则该请求会被阻挡。</li>
+</ul>
+<ul>
+<li>在使用WAF的过程中，如果最终用户观察到正常的请求被误挡，通常可以借助WAF日志来作进一步分析。如上所说，某个请求可能会触发多个规则，WAF日志中使用transactionId这个字段来唯一标识某个请求。因此，可以在日志中使用该字段将某个请求所触发的所有规则筛选出来，再具体分析是哪个/哪些规则误挡了该请求。</li>
+</ul>
+<ul>
+<li>WAF在收到请求之后，会根据所定义的规则对此进行检查。如果某规则被禁用，那么WAF就不会再使用该规则中定义的表达式去检查收到的请求，因此也不会有任何日志生成。因此，如果想要知道某个规则是否会被触发，必须将该规则启用，然后根据WAF日志来进行分析。</li>
+</ul>
+<ul>
+<li>WAF的排查列表功能是用来解决误挡问题的。使用该功能的前提是必须从WAF日志中精确地定位出是请求中的哪个属性值中触发了该规则。如下是一个WAF日志的示例：</li>
+</ul>
+<ul>
+<li>点击进入该规则集，搜索942450，即可查看详细定义：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>从该日志中可以看出该规则被触发的原因是Query中包含了g0xfacc这个字符串，而该字符串是在ptid这个的属性值下面。因此，如果想要使用排除列表解决该问题，那么就需要在将ptid加入到排除列表中，如下所示：</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>为了避免对生产环境的影响，我们通常会建议最终用户使用检测模式并启用这些规则运行一段时间，随后搜集相应的日志来做分析。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>最终用户可以参考如下官方文档详细了解WAF日志，以及如何修复WAF的误挡问题：<a href="https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/web-application-firewall-troubleshoot。" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/web-application-firewall-troubleshoot。</a></li>
+</ul>
+<ul>
+<li>最终用户可以参考如下官方文档详细了解排查列表：<a href="https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/application-gateway-waf-configuration。另外，在Github中对于排查列表也有一些比较有用的讨论，供最终用户参考：https://github.com/MicrosoftDocs/azure-docs/issues/19424。" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/application-gateway-waf-configuration。另外，在Github中对于排查列表也有一些比较有用的讨论，供最终用户参考：https://github.com/MicrosoftDocs/azure-docs/issues/19424。</a></li>
+</ul>
+<ul>
+<li>OWSAP的每条规则都定义了严重等级，每个严重等级对应不同的积分，请参考：<a href="https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/ag-overview#anomaly-scoring-mode。在保护模式下工作的WAF会根据请求所触发的所有规则的严重等级，计算出总分。如果总分大于等于5分，则会阻挡该请求。" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/ag-overview#anomaly-scoring-mode。在保护模式下工作的WAF会根据请求所触发的所有规则的严重等级，计算出总分。如果总分大于等于5分，则会阻挡该请求。</a></li>
+</ul>
+<ul>
+<li>最终用户可以访问Github的官方网站，详细了解每条规则的严重等级和详细定义：<a href="https://github.com/SpiderLabs/owasp-modsecurity-crs/tree/v3.0/master/rules。例如对于942450这个规则，最终用户可以在该网站上找到如下942规则集：" target="_blank" rel="noopener">https://github.com/SpiderLabs/owasp-modsecurity-crs/tree/v3.0/master/rules。例如对于942450这个规则，最终用户可以在该网站上找到如下942规则集：</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>WAF工作的基本原理</p>
+<p>WAF分为检测模式和保护模式。在检测模式下，WAF会使用定义的规则对每一条请求进行检查，如果有规则被匹配，则会记录到日志中，不会采取其他任何行动；在保护模式下，WAF在对请求检查完成之后，采用积分制的原则来判断是否该将此请求阻挡。具体来说，每一条OWASP规则都定义了严重等级，不同等级对应于不同的积分（2分到5分）。如果某一条请求触发了多个规则并且这些规则的总分大于等于5分，则该请求会被阻挡。</p>
+<p>在使用WAF的过程中，如果最终用户观察到正常的请求被误挡，通常可以借助WAF日志来作进一步分析。如上所说，某个请求可能会触发多个规则，WAF日志中使用transactionId这个字段来唯一标识某个请求。因此，可以在日志中使用该字段将某个请求所触发的所有规则筛选出来，再具体分析是哪个/哪些规则误挡了该请求。</p>
+<p>在定位出具体规则之后，可以采用添加排除列表，或者直接禁用该规则的方式来解决误挡的问题。但这样做会增加后端应用的风险，因为WAF失去了检测该规则所对应的攻击的能力。</p>
+<p>最终用户可以参考如下官方文档详细了解WAF日志，以及如何修复WAF的误挡问题：<a href="https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/web-application-firewall-troubleshoot。" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/web-application-firewall-troubleshoot。</a></p>
+<p>当WAF配置为保护模式时，WAF日志是否会对已经禁用的规则进行记录？</p>
+<p>WAF在收到请求之后，会根据所定义的规则对此进行检查。如果某规则被禁用，那么WAF就不会再使用该规则中定义的表达式去检查收到的请求，因此也不会有任何日志生成。因此，如果想要知道某个规则是否会被触发，必须将该规则启用，然后根据WAF日志来进行分析。</p>
+<p>为了避免对生产环境的影响，我们通常会建议最终用户使用检测模式并启用这些规则运行一段时间，随后搜集相应的日志来做分析。</p>
+<p>WAF的排除列表功能</p>
+<p>WAF的排查列表功能是用来解决误挡问题的。使用该功能的前提是必须从WAF日志中精确地定位出是请求中的哪个属性值中触发了该规则。如下是一个WAF日志的示例：</p>
+<p>&quot;requestUri&quot;: &quot;/s?ev=type:stv&amp;on=sid:CCS81005&amp;user=openid:%7Bopenid%7D&amp;env=sr:360-640;cke:1;flver:0&amp;ecc=0&amp;acid=abbott&amp;fvid=1574642390520&amp;jsv=1_5_2&amp;seq=1&amp;ptid=ckbi2q430g0xfaccm0z3pc52fu&amp;cb=3507347608&quot;,</p>
+<p>&quot;ruleId&quot;: &quot;942450&quot;,</p>
+<p>&quot;message&quot;: &quot;SQL Hex Encoding Identified&quot;,</p>
+<p>&quot;message&quot;: &quot;Warning. Pattern match \&quot;(?i:(?:\\\\A|[^\\\\d])0x[a-f\\\\d]{3,}[a-f\\\\d]*)+\&quot; at ARGS:ptid ....&quot;,</p>
+<p>&quot;data&quot;: &quot;Matched Data: g0xfacc found within ARGS:ptid: ckbi2q430g0xfaccm0z3pc52fu&quot;</p>
+<p>从该日志中可以看出该规则被触发的原因是Query中包含了g0xfacc这个字符串，而该字符串是在ptid这个的属性值下面。因此，如果想要使用排除列表解决该问题，那么就需要在将ptid加入到排除列表中，如下所示：</p>
+<p>最终用户可以参考如下官方文档详细了解排查列表：<a href="https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/application-gateway-waf-configuration。另外，在Github中对于排查列表也有一些比较有用的讨论，供最终用户参考：https://github.com/MicrosoftDocs/azure-docs/issues/19424。" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/application-gateway-waf-configuration。另外，在Github中对于排查列表也有一些比较有用的讨论，供最终用户参考：https://github.com/MicrosoftDocs/azure-docs/issues/19424。</a></p>
+<p>异常积分原则</p>
+<p>OWSAP的每条规则都定义了严重等级，每个严重等级对应不同的积分，请参考：<a href="https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/ag-overview#anomaly-scoring-mode。在保护模式下工作的WAF会根据请求所触发的所有规则的严重等级，计算出总分。如果总分大于等于5分，则会阻挡该请求。" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/web-application-firewall/ag/ag-overview#anomaly-scoring-mode。在保护模式下工作的WAF会根据请求所触发的所有规则的严重等级，计算出总分。如果总分大于等于5分，则会阻挡该请求。</a></p>
+<p>最终用户可以访问Github的官方网站，详细了解每条规则的严重等级和详细定义：<a href="https://github.com/SpiderLabs/owasp-modsecurity-crs/tree/v3.0/master/rules。例如对于942450这个规则，最终用户可以在该网站上找到如下942规则集：" target="_blank" rel="noopener">https://github.com/SpiderLabs/owasp-modsecurity-crs/tree/v3.0/master/rules。例如对于942450这个规则，最终用户可以在该网站上找到如下942规则集：</a></p>
+<p>点击进入该规则集，搜索942450，即可查看详细定义：</p></article>

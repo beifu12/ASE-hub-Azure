@@ -1,0 +1,162 @@
+<article class="kb-article" data-title="Ubuntu 20.04 GUI configuration"><h1>Ubuntu 20.04 GUI configuration</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-10-18 09:24:35</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>测试环境参考下面互联网文章可以成功配置Azure虚拟机Ubuntu 20.04(使用平台提供映像) GUI功能，具体命令步骤如下仅供您参考，建议您操作前对OS磁盘创建快照或对虚拟机执行完整备份防止出现意外可以回退：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>测试环境参考下面互联网文章可以成功配置Azure虚拟机Ubuntu 20.04(使用平台提供映像) GUI功能，具体命令步骤如下仅供您参考，建议您操作前对OS磁盘创建快照或对虚拟机执行完整备份防止出现意外可以回退：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>#下面操作是切换到root账号下执行</li>
+</ul>
+<ul>
+<li>#安装ubuntu-desktop</li>
+</ul>
+<ul>
+<li>apt update</li>
+</ul>
+<ul>
+<li>apt install ubuntu-desktop</li>
+</ul>
+<ul>
+<li>#安装xubuntu-desktop</li>
+</ul>
+<ul>
+<li>apt install xubuntu-desktop</li>
+</ul>
+<ul>
+<li>#在弹出的窗口选择“lightdm”ok</li>
+</ul>
+<ul>
+<li>#继续安装 xrdp</li>
+</ul>
+<ul>
+<li>apt install xrdp</li>
+</ul>
+<ul>
+<li>systemctl status xrdp</li>
+</ul>
+<ul>
+<li>#添加用户xrdp和虚拟机创建时输入的用户</li>
+</ul>
+<ul>
+<li>adduser xrdp ssl-cert</li>
+</ul>
+<ul>
+<li>adduser paul ssl-cert</li>
+</ul>
+<ul>
+<li>#重启xrdp</li>
+</ul>
+<ul>
+<li>systemctl restart xrdp</li>
+</ul>
+<ul>
+<li>#参考下面网站链接创建两个文件并添加对应内容</li>
+</ul>
+<ul>
+<li>vim /etc/polkit-1/localauthority/50-local.d/45-allow-colord.pkla</li>
+</ul>
+<ul>
+<li>[Allow Colord all Users]</li>
+</ul>
+<ul>
+<li>vim /etc/polkit-1/localauthority/50-local.d/46-allow-packagekit.pkla</li>
+</ul>
+<ul>
+<li>[Allow Refresh Repository all Users]</li>
+</ul>
+<ul>
+<li>#重启机器</li>
+</ul>
+<ul>
+<li>reboot</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>测试环境参考下面互联网文章可以成功配置Azure虚拟机Ubuntu 20.04(使用平台提供映像) GUI功能，具体命令步骤如下仅供您参考，建议您操作前对OS磁盘创建快照或对虚拟机执行完整备份防止出现意外可以回退：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>#门户入站添加3389端口</li>
+</ul>
+<ul>
+<li>Identity=unix-user:*</li>
+</ul>
+<ul>
+<li>Action=org.freedesktop.color-manager.create-device;org.freedesktop.color-manager.create-profile;org.freedesktop.color-manager.delete-device;org.freedesktop.color-manager.delete-profile;org.freedesktop.color-manager.modify-device;org.freedesktop.color-manager.modify-profile</li>
+</ul>
+<ul>
+<li>ResultAny=no</li>
+</ul>
+<ul>
+<li>ResultInactive=no</li>
+</ul>
+<ul>
+<li>ResultActive=yes</li>
+</ul>
+<ul>
+<li>Action=org.freedesktop.packagekit.system-sources-refresh</li>
+</ul>
+<ul>
+<li>#使用远程桌面工具rdp连接虚拟机公网IP的3389端口 用户为您创建虚拟机时输入用户：</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>由于该操作来源互联网，建议您充分测试再应用于生产环境。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://developer.aliyun.com/article/762186" target="_blank" rel="noopener">https://developer.aliyun.com/article/762186</a></li>
+</ul>
+<ul>
+<li><a href="https://blog.csdn.net/qq_37556330/article/details/116168449" target="_blank" rel="noopener">https://blog.csdn.net/qq_37556330/article/details/116168449</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022/10/18</p>
+<p>测试环境参考下面互联网文章可以成功配置Azure虚拟机Ubuntu 20.04(使用平台提供映像) GUI功能，具体命令步骤如下仅供您参考，建议您操作前对OS磁盘创建快照或对虚拟机执行完整备份防止出现意外可以回退：</p>
+<p><a href="https://developer.aliyun.com/article/762186" target="_blank" rel="noopener">https://developer.aliyun.com/article/762186</a></p>
+<p>#下面操作是切换到root账号下执行</p>
+<p>#安装ubuntu-desktop</p>
+<p>apt update</p>
+<p>apt install ubuntu-desktop</p>
+<p>#安装xubuntu-desktop</p>
+<p>apt install xubuntu-desktop</p>
+<p>#在弹出的窗口选择“lightdm”ok</p>
+<p>#继续安装 xrdp</p>
+<p>apt install xrdp</p>
+<p>systemctl status xrdp</p>
+<p>#添加用户xrdp和虚拟机创建时输入的用户</p>
+<p>adduser xrdp ssl-cert</p>
+<p>adduser paul ssl-cert</p>
+<p>#重启xrdp</p>
+<p>systemctl restart xrdp</p>
+<p>#门户入站添加3389端口</p>
+<p>#参考下面网站链接创建两个文件并添加对应内容</p>
+<p><a href="https://blog.csdn.net/qq_37556330/article/details/116168449" target="_blank" rel="noopener">https://blog.csdn.net/qq_37556330/article/details/116168449</a></p>
+<p>vim /etc/polkit-1/localauthority/50-local.d/45-allow-colord.pkla</p>
+<p>[Allow Colord all Users]</p>
+<p>Identity=unix-user:*</p>
+<p>Action=org.freedesktop.color-manager.create-device;org.freedesktop.color-manager.create-profile;org.freedesktop.color-manager.delete-device;org.freedesktop.color-manager.delete-profile;org.freedesktop.color-manager.modify-device;org.freedesktop.color-manager.modify-profile</p>
+<p>ResultAny=no</p>
+<p>ResultInactive=no</p>
+<p>ResultActive=yes</p>
+<p>vim /etc/polkit-1/localauthority/50-local.d/46-allow-packagekit.pkla</p>
+<p>[Allow Refresh Repository all Users]</p>
+<p>Action=org.freedesktop.packagekit.system-sources-refresh</p>
+<p>#重启机器</p>
+<p>reboot</p>
+<p>#使用远程桌面工具rdp连接虚拟机公网IP的3389端口 用户为您创建虚拟机时输入用户：</p>
+<p>由于该操作来源互联网，建议您充分测试再应用于生产环境。</p></article>

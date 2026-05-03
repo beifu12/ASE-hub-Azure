@@ -1,0 +1,121 @@
+<article class="kb-article" data-title="[Share] DCR采集自定义JSON日志，举例将apache日志采集到LogA自定义表"><h1>[Share] DCR采集自定义JSON日志，举例将apache日志采集到LogA自定义表</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-08 10:52:45</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Case：20250317343722</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Case：20250317343722</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题背景：</li>
+</ul>
+<ul>
+<li>测试后发现手动创建的快捷方式，特此分享。</li>
+</ul>
+<ul>
+<li>可以随意找一个日志文件作为原始文件进行转换，转换文件条数不需要很多。以下为一个apache日志。</li>
+</ul>
+<ul>
+<li>执行后即可将日志转换为JSON格式。</li>
+</ul>
+<ul>
+<li>之后正常创建DCR和选择DCE，然后下一步即可看到创建自定义日志页面，选择浏览文件上传之前转换的JSON模板文件</li>
+</ul>
+<ul>
+<li>上传后会看到提示说缺少一个时间字段，可以点击转换编辑器按钮将该字段加上。</li>
+</ul>
+<ul>
+<li>source</li>
+</ul>
+<ul>
+<li>| extend TimeGenerated = todatetime(Time)</li>
+</ul>
+<ul>
+<li>创建后即可生成DCR，和自定义表。采集自定义JSON日志需要使用DCE，在推送数据时需要AD的应用程序具备DCR的至少时“监视指标发布者”权限，为了方便操作我分配的是参与者权限。</li>
+</ul>
+<ul>
+<li>这个DCR的权限传播速度非常慢，大约在30分钟左右。</li>
+</ul>
+<ul>
+<li>下图送执行结果可以看出当权限没传播完时会提示token没权限问题，等待即可。</li>
+</ul>
+<ul>
+<li>推送成功后的效果</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>需要注意在创建DCR时会涉及到使用portal创建Log A中的表的步骤，所以账户至少具备Log A的参与者权限。</li>
+</ul>
+<ul>
+<li>然后即可在Log Analytics中创建新表。</li>
+</ul>
+<ul>
+<li>添加语句，点击运行后可以查看到正常数据，然后点击应用即可。</li>
+</ul>
+<ul>
+<li>DcrImmutableId 是DCR的不可变ID，portal上可见。</li>
+</ul>
+<ul>
+<li>DceUri是DEC的日志引入URL，portal上可见</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>通常使用DCR采集自定义的JSON格式日志时会遇到需要提前在Log Analytics中创建表的问题，但是需要手动编写JSON表结构，以及需要使用命令来创建比较麻烦。</li>
+</ul>
+<ul>
+<li>根据官方文档编写转换脚本，此脚本可以将日志转换成JSON格式，</li>
+</ul>
+<ul>
+<li>需要提前修改脚本中的信息，使用应用ID和应用密码的方式登录</li>
+</ul>
+<ul>
+<li>执行命令：.\LogGenerator.ps1 -Log &quot;apachelog&quot; -Type &quot;file&quot; -Output &quot;apachelog.json&quot;</li>
+</ul>
+<ul>
+<li>测试数据推送可以使用之前的PS脚本，将示例的apache文件作为数据文件手动推送即可。</li>
+</ul>
+<ul>
+<li>推送命令：.\LogGenerator.ps1 -Log &quot;1.log&quot; -Type &quot;API&quot; -Table &quot;testapi_CL&quot; -DcrImmutableId &lt;immutable ID&gt; -DceUri &lt;data collection endpoint URL&gt;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/03/28</p>
+<p>Case：20250317343722</p>
+<p>问题背景：</p>
+<p>通常使用DCR采集自定义的JSON格式日志时会遇到需要提前在Log Analytics中创建表的问题，但是需要手动编写JSON表结构，以及需要使用命令来创建比较麻烦。</p>
+<p>测试后发现手动创建的快捷方式，特此分享。</p>
+<p>根据官方文档编写转换脚本，此脚本可以将日志转换成JSON格式，</p>
+<p>需要提前修改脚本中的信息，使用应用ID和应用密码的方式登录</p>
+<p>需要注意在创建DCR时会涉及到使用portal创建Log A中的表的步骤，所以账户至少具备Log A的参与者权限。</p>
+<p>可以随意找一个日志文件作为原始文件进行转换，转换文件条数不需要很多。以下为一个apache日志。</p>
+<p>执行命令：.\LogGenerator.ps1 -Log &quot;apachelog&quot; -Type &quot;file&quot; -Output &quot;apachelog.json&quot;</p>
+<p>执行后即可将日志转换为JSON格式。</p>
+<p>然后即可在Log Analytics中创建新表。</p>
+<p>之后正常创建DCR和选择DCE，然后下一步即可看到创建自定义日志页面，选择浏览文件上传之前转换的JSON模板文件</p>
+<p>上传后会看到提示说缺少一个时间字段，可以点击转换编辑器按钮将该字段加上。</p>
+<p>添加语句，点击运行后可以查看到正常数据，然后点击应用即可。</p>
+<p>source</p>
+<p>| extend TimeGenerated = todatetime(Time)</p>
+<p>创建后即可生成DCR，和自定义表。采集自定义JSON日志需要使用DCE，在推送数据时需要AD的应用程序具备DCR的至少时“监视指标发布者”权限，为了方便操作我分配的是参与者权限。</p>
+<p>这个DCR的权限传播速度非常慢，大约在30分钟左右。</p>
+<p>测试数据推送可以使用之前的PS脚本，将示例的apache文件作为数据文件手动推送即可。</p>
+<p>推送命令：.\LogGenerator.ps1 -Log &quot;1.log&quot; -Type &quot;API&quot; -Table &quot;testapi_CL&quot; -DcrImmutableId &lt;immutable ID&gt; -DceUri &lt;data collection endpoint URL&gt;</p>
+<p>DcrImmutableId 是DCR的不可变ID，portal上可见。</p>
+<p>DceUri是DEC的日志引入URL，portal上可见</p>
+<p>下图送执行结果可以看出当权限没传播完时会提示token没权限问题，等待即可。</p>
+<p>推送成功后的效果</p></article>

@@ -1,0 +1,137 @@
+<article class="kb-article" data-title="如何在 Windows Server 虚拟机上配置SFTP 服务器"><h1>如何在 Windows Server 虚拟机上配置SFTP 服务器</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Third Party App</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-07-10 14:19:33</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Azure上创建VM步骤略</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Azure上创建VM步骤略</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>点击下一步：</li>
+</ul>
+<ul>
+<li>登录虚拟机，搭建FTP服务器：</li>
+</ul>
+<ul>
+<li>选中“Web服务器（IIS）”选项</li>
+</ul>
+<ul>
+<li>点选FTP服务器及其两个子项，如下图：</li>
+</ul>
+<ul>
+<li>等待安装完成</li>
+</ul>
+<ul>
+<li>添加FTP站点：</li>
+</ul>
+<ul>
+<li>（请注意：D盘为临时磁盘，不要把数据放在D盘，设置物理路径时，可以把路径设为C盘或添加新的E盘存储数据。）点击下一步，选择允许或需要，如下图：</li>
+</ul>
+<ul>
+<li>点击下一步，选择基本、所有用户、读取、写入各选项：</li>
+</ul>
+<ul>
+<li>配置FTP额外的SSL设置</li>
+</ul>
+<ul>
+<li>创建一个自签名的SSL证书，</li>
+</ul>
+<ul>
+<li>双击服务器证书，点右侧自签名证书</li>
+</ul>
+<ul>
+<li>配置SSL选项,双击FTP SSL设置图标打开SSL设置功能页面。</li>
+</ul>
+<ul>
+<li>FTP SSL设置页面显示时,选择自定义选项,然后单击“高级”按钮。</li>
+</ul>
+<ul>
+<li>高级SSL策略对话框显示:</li>
+</ul>
+<ul>
+<li>=========================</li>
+</ul>
+<ul>
+<li>$instance1 = get-azurevm  -ServiceName  wrfcloud  -Name  FTP</li>
+</ul>
+<ul>
+<li>$instance1.PublicIPAddress</li>
+</ul>
+<ul>
+<li>使用客户端软件首次连接时，出现“证书”对话框</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Azure上创建VM步骤略</li>
+</ul>
+<ul>
+<li>为Azure VM配置PIP并查看</li>
+</ul>
+<ul>
+<li>更改FTP防火墙IP地址，上面步骤配置的PIP地址</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Get-AzureVM get-azurevm  -ServiceName  wrfcloud  -Name  FTP | Set-AzurePublicIP -PublicIPName &quot;Web-1-PIP&quot; | Update-AzureVM</li>
+</ul>
+<ul>
+<li>测试访问，CMD命令无法访问</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>点击添加端点，添加FTP端口：</li>
+</ul>
+<ul>
+<li>添加FTP数据传输端口：</li>
+</ul>
+<ul>
+<li>按照上面的步骤添加两个数据端口，我们可以指定任何大于1024的端口号，在此我们添加3000和3001两个端口。</li>
+</ul>
+<ul>
+<li>双击FTP防火墙，设置端口范围和IP地址，端口范围为我们在创建虚机后添加的数据端口3000-3001，IP地址设置为我们所创建的虚机的VIP地址，在“1. 创建虚拟机”中我们已经查好了，设置完毕后点击“应用”并在弹出的对话框中点击“确定”，因为操作系统防火墙是默认开启FTP端口的。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="http://dlsw.baidu.com/sw-search-sp/soft/ff/13432/FileZilla_win64_3.14.1.0.1454131478.exe" target="_blank" rel="noopener">http://dlsw.baidu.com/sw-search-sp/soft/ff/13432/FileZilla_win64_3.14.1.0.1454131478.exe</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Azure上创建VM步骤略</p>
+<p>点击添加端点，添加FTP端口：</p>
+<p>点击下一步：</p>
+<p>添加FTP数据传输端口：</p>
+<p>按照上面的步骤添加两个数据端口，我们可以指定任何大于1024的端口号，在此我们添加3000和3001两个端口。</p>
+<p>登录虚拟机，搭建FTP服务器：</p>
+<p>选中“Web服务器（IIS）”选项</p>
+<p>点选FTP服务器及其两个子项，如下图：</p>
+<p>等待安装完成</p>
+<p>双击FTP防火墙，设置端口范围和IP地址，端口范围为我们在创建虚机后添加的数据端口3000-3001，IP地址设置为我们所创建的虚机的VIP地址，在“1. 创建虚拟机”中我们已经查好了，设置完毕后点击“应用”并在弹出的对话框中点击“确定”，因为操作系统防火墙是默认开启FTP端口的。</p>
+<p>添加FTP站点：</p>
+<p>（请注意：D盘为临时磁盘，不要把数据放在D盘，设置物理路径时，可以把路径设为C盘或添加新的E盘存储数据。）点击下一步，选择允许或需要，如下图：</p>
+<p>点击下一步，选择基本、所有用户、读取、写入各选项：</p>
+<p>配置FTP额外的SSL设置</p>
+<p>创建一个自签名的SSL证书，</p>
+<p>双击服务器证书，点右侧自签名证书</p>
+<p>配置SSL选项,双击FTP SSL设置图标打开SSL设置功能页面。</p>
+<p>FTP SSL设置页面显示时,选择自定义选项,然后单击“高级”按钮。</p>
+<p>高级SSL策略对话框显示:</p>
+<p>为Azure VM配置PIP并查看</p>
+<p>Get-AzureVM get-azurevm  -ServiceName  wrfcloud  -Name  FTP | Set-AzurePublicIP -PublicIPName &quot;Web-1-PIP&quot; | Update-AzureVM</p>
+<p>=========================</p>
+<p>$instance1 = get-azurevm  -ServiceName  wrfcloud  -Name  FTP</p>
+<p>$instance1.PublicIPAddress</p>
+<p>更改FTP防火墙IP地址，上面步骤配置的PIP地址</p>
+<p>使用客户端软件首次连接时，出现“证书”对话框</p>
+<p><a href="http://dlsw.baidu.com/sw-search-sp/soft/ff/13432/FileZilla_win64_3.14.1.0.1454131478.exe" target="_blank" rel="noopener">http://dlsw.baidu.com/sw-search-sp/soft/ff/13432/FileZilla_win64_3.14.1.0.1454131478.exe</a></p>
+<p>测试访问，CMD命令无法访问</p></article>

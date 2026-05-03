@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="CentOS-CI镜像使用cloud-init替代waagent"><h1>CentOS-CI镜像使用cloud-init替代waagent</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-02-22 10:04:00</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Translated by:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Translated by:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Translated by:</li>
+</ul>
+<ul>
+<li>这里说明一下 CI代表的就是使用了cloud-init</li>
+</ul>
+<ul>
+<li>我测试使用的镜像如下：</li>
+</ul>
+<ul>
+<li>/dev/sdb 的文件系统显示也比较特殊：</li>
+</ul>
+<ul>
+<li>但是我创建系统后是可以正常挂载sdb到/mnt 目录的。</li>
+</ul>
+<ul>
+<li>之前我测试过如何修改cloud init下如何修改临时磁盘的挂载点，见附件文档。</li>
+</ul>
+<ul>
+<li>Centos中的路径稍有不同，我给您截图如下：</li>
+</ul>
+<ul>
+<li>路径/usr/lib/python2.7/site-packages/cloudinit/config下的cc_mount.py</li>
+</ul>
+<ul>
+<li>具体修改临时分区挂载点可以参考我之前写的Ubuntu的方法，见右侧附件。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>--image OpenLogic:CentOS-CI:7-CI:7.4.20180718</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>目前这样的版本市场里直接查看没有，需要使用powershell命令创建：</li>
+</ul>
+<ul>
+<li>这个版本的虚拟机是使用了cloud-init的镜像，所以临时分区是由cloud-init 脚本创建并挂载的：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>$version = Get-AzVMImage -Skus 7-ci -Location &#39;China North 2&#39; -PublisherName openlogic -Offer centos-ci -Version 7.4.20180718</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Translated by:</p>
+<p>2020/05/23</p>
+<p>--image OpenLogic:CentOS-CI:7-CI:7.4.20180718</p>
+<p>这里说明一下 CI代表的就是使用了cloud-init</p>
+<p>目前这样的版本市场里直接查看没有，需要使用powershell命令创建：</p>
+<p>我测试使用的镜像如下：</p>
+<p>$version = Get-AzVMImage -Skus 7-ci -Location &#39;China North 2&#39; -PublisherName openlogic -Offer centos-ci -Version 7.4.20180718</p>
+<p>这个版本的虚拟机是使用了cloud-init的镜像，所以临时分区是由cloud-init 脚本创建并挂载的：</p>
+<p>/dev/sdb 的文件系统显示也比较特殊：</p>
+<p>但是我创建系统后是可以正常挂载sdb到/mnt 目录的。</p>
+<p>之前我测试过如何修改cloud init下如何修改临时磁盘的挂载点，见附件文档。</p>
+<p>Centos中的路径稍有不同，我给您截图如下：</p>
+<p>路径/usr/lib/python2.7/site-packages/cloudinit/config下的cc_mount.py</p>
+<p>具体修改临时分区挂载点可以参考我之前写的Ubuntu的方法，见右侧附件。</p></article>

@@ -1,0 +1,83 @@
+<article class="kb-article" data-title="vHub与NVA间的路由问题"><h1>vHub与NVA间的路由问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Virtual Wan</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-11 17:02:26</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2024.6.8</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2024.6.8</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2024.6.8</li>
+</ul>
+<ul>
+<li>涉及工单：SR_20240525295514_VM NiC  收不到 Vhub route table 里的bgp route</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>问题原因：用户NVA在配置BGP peer时，只与vHub的一个BGP peer IP建立了Peer关系；按照Azure官网文档，必须（must)与vHub的两个BGP peer IP都建立Peer关系，否则会有路由问题。</li>
+</ul>
+<ul>
+<li>问题解决：用户在其NVA中添加另一个vHub BGP peer IP的BGP配置。</li>
+</ul>
+<ul>
+<li>198.16.0.68 这个BGP peer并没有用户NVA 10.0.1.5的peer关系。</li>
+</ul>
+<ul>
+<li>文档中明确写着NVA必须（must)与vHub的两个BGP peer IP都（both)建立BGP peer关系，否则会有路由问题，但并没有明细到底会有哪些路由问题。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>用户多个VNet都通过vHub中的VNet Connection建立了VNet peering关系，同时在其中一个VNet中通过三方软件部署了NVA，充当BGP Router，并发布了特定的BGP路由；随后vHub default route table中可以看到该NVA宣告的BGP路由，但是VNet中的VM NIC查询有效路由却没有NVA发布的BGP路由。</li>
+</ul>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>确认用户是否开启了branch to  branch路由，用户反馈开启了。</li>
+</ul>
+<ul>
+<li>从ASC中获取vHub的路由，vHub route service BGP peer显示只有一个vHub Bgp peer IP与用户的NVA建立了BGP peer关系，并收到了相应的BGP路由。</li>
+</ul>
+<ul>
+<li>排查文档这种应用场景下NVA的配置要求：</li>
+</ul>
+<ul>
+<li>确认用户调整NVA中的BGP peer配置后vHub中的Route Service学习到的BGP路由情况：VNet 地址空间198.16.0.0/246</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/virtual-wan/scenario-bgp-peering-hub" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/virtual-wan/scenario-bgp-peering-hub</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024.6.8</p>
+<p>涉及工单：SR_20240525295514_VM NiC  收不到 Vhub route table 里的bgp route</p>
+<p>问题描述：</p>
+<p>用户多个VNet都通过vHub中的VNet Connection建立了VNet peering关系，同时在其中一个VNet中通过三方软件部署了NVA，充当BGP Router，并发布了特定的BGP路由；随后vHub default route table中可以看到该NVA宣告的BGP路由，但是VNet中的VM NIC查询有效路由却没有NVA发布的BGP路由。</p>
+<p>问题原因：用户NVA在配置BGP peer时，只与vHub的一个BGP peer IP建立了Peer关系；按照Azure官网文档，必须（must)与vHub的两个BGP peer IP都建立Peer关系，否则会有路由问题。</p>
+<p>问题解决：用户在其NVA中添加另一个vHub BGP peer IP的BGP配置。</p>
+<p>排查过程：</p>
+<p>确认用户是否开启了branch to  branch路由，用户反馈开启了。</p>
+<p>从ASC中获取vHub的路由，vHub route service BGP peer显示只有一个vHub Bgp peer IP与用户的NVA建立了BGP peer关系，并收到了相应的BGP路由。</p>
+<p>198.16.0.68 这个BGP peer并没有用户NVA 10.0.1.5的peer关系。</p>
+<p>排查文档这种应用场景下NVA的配置要求：</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/virtual-wan/scenario-bgp-peering-hub" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/virtual-wan/scenario-bgp-peering-hub</a></p>
+<p>文档中明确写着NVA必须（must)与vHub的两个BGP peer IP都（both)建立BGP peer关系，否则会有路由问题，但并没有明细到底会有哪些路由问题。</p>
+<p>确认用户调整NVA中的BGP peer配置后vHub中的Route Service学习到的BGP路由情况：VNet 地址空间198.16.0.0/246</p></article>

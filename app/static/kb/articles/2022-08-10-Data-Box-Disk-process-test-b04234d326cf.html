@@ -1,0 +1,397 @@
+<article class="kb-article" data-title="Data Box Disk process test"><h1>Data Box Disk process test</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Data Box Disk</li>
+<li>最近修改: 2022-08-10 16:39:00</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>The disk was delivered through a local services EMS instead of FedEx. (Qi: this should be due to Covid-19 issue. Different carriers has different limitation about the delivery area. In this situation, Fedex will consider to pass the package to a carrier that h...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>The disk was delivered through a local services EMS  instead of FedEx. (Qi: this should be due to Covid-19 issue. Different carriers has different limitation about the delivery area. In this situation, Fedex will consider to pass the package to a carrier that has the channel to deliver to reduce the blocking time. )</li>
+</ul>
+<ul>
+<li>Pending user action for pick-up (Processed)</li>
+</ul>
+<ul>
+<li>Depending on DC mount rack availability</li>
+</ul>
+<ul>
+<li>CompletedWithErrors</li>
+</ul>
+<ul>
+<li>Once data copy done, no matter error or not, the disk will go into erasure stage. If Cx needs to keep the disk for TS, Cx can send mail to Ops team directly or contact support as soon as possible.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Microsoft managed shipping:</li>
+</ul>
+<ul>
+<li>/subscriptions/51b14e0c-505b-4ad8-b62c-62e3f8c27dcc/resourceGroups/zhangwx/providers/Microsoft.DataBox/jobs/mytest1fordatabox</li>
+</ul>
+<ul>
+<li>Time(CST)</li>
+</ul>
+<ul>
+<li>Action</li>
+</ul>
+<ul>
+<li>Duration to Next phase</li>
+</ul>
+<ul>
+<li>Comments</li>
+</ul>
+<ul>
+<li>Wed 6/8/2022 9:38 AM</li>
+</ul>
+<ul>
+<li>Create Job (Cx)</li>
+</ul>
+<ul>
+<li>ordered</li>
+</ul>
+<ul>
+<li>DeviceOrdered</li>
+</ul>
+<ul>
+<li>1 business day</li>
+</ul>
+<ul>
+<li>When Cx fill in the address, the department/Co line will not be printed out in the shipping label.</li>
+</ul>
+<ul>
+<li>Thu 6/9/2022 9:18 AM</li>
+</ul>
+<ul>
+<li>Prepare Disk (Ops)</li>
+</ul>
+<ul>
+<li>Processed</li>
+</ul>
+<ul>
+<li>DevicePrepared</li>
+</ul>
+<ul>
+<li>1- business day</li>
+</ul>
+<ul>
+<li>Offcial docs ETA for DevicePrepared  is up to 5 business day.</li>
+</ul>
+<ul>
+<li>The default mailbox in mooncake is not able to receive email. Cx needs to provide an valid mailbox to receive notification emails.</li>
+</ul>
+<ul>
+<li>Thu 6/9/2022 8:32 PM</li>
+</ul>
+<ul>
+<li>Dispatch disks to Fedex (Ops)</li>
+</ul>
+<ul>
+<li>Dispatched</li>
+</ul>
+<ul>
+<li>Sat 6/11/2022 12:55 PM</li>
+</ul>
+<ul>
+<li>Deliver disk to Cx (Fedex)</li>
+</ul>
+<ul>
+<li>Delivered</li>
+</ul>
+<ul>
+<li>1+ business day</li>
+</ul>
+<ul>
+<li>1- weekend day</li>
+</ul>
+<ul>
+<li>Prepare Data (Cx)</li>
+</ul>
+<ul>
+<li>Tue 6/28/2022 00:00 AM</li>
+</ul>
+<ul>
+<li>Send back Disk to DC (Cx)</li>
+</ul>
+<ul>
+<li>Picked up</li>
+</ul>
+<ul>
+<li>PickedUp</li>
+</ul>
+<ul>
+<li>2+ business day</li>
+</ul>
+<ul>
+<li>Thu 6/30/2022 1:56 PM</li>
+</ul>
+<ul>
+<li>Receive Disk (Ops)</li>
+</ul>
+<ul>
+<li>Received</li>
+</ul>
+<ul>
+<li>AtAzureDC</li>
+</ul>
+<ul>
+<li>Thu 6/30/2022 6:39 PM</li>
+</ul>
+<ul>
+<li>Copy Data (Ops)</li>
+</ul>
+<ul>
+<li>Data Copy in Progress</li>
+</ul>
+<ul>
+<li>DataCopy</li>
+</ul>
+<ul>
+<li>Thu 6/30/2022 6:41 PM</li>
+</ul>
+<ul>
+<li>Finish Copy Data (Ops)</li>
+</ul>
+<ul>
+<li>Completed</li>
+</ul>
+<ul>
+<li>Self-Managed shipping</li>
+</ul>
+<ul>
+<li>Job id: /subscriptions/41da7001-8fe8-4845-baff-9fae512f10fd/resourceGroups/qi-databox/providers/Microsoft.DataBox/jobs/cssmooncatestjob</li>
+</ul>
+<ul>
+<li>Tue 6/7/2022 4:32 PM</li>
+</ul>
+<ul>
+<li>3 business days</li>
+</ul>
+<ul>
+<li>For self-managed ship, I think it is not necessary to provide address.</li>
+</ul>
+<ul>
+<li>Fri 6/10/2022 2:01 PM</li>
+</ul>
+<ul>
+<li>DevicePrepared -&gt;</li>
+</ul>
+<ul>
+<li>ReadyToDispatchFromAzureDC</li>
+</ul>
+<ul>
+<li>Need cx email ops team to provide pickup details: person, date as so on.</li>
+</ul>
+<ul>
+<li>Please tell ops it is not required to apply for security records. Carrier/People can pick up the disk at Gate.</li>
+</ul>
+<ul>
+<li>Fri 6/10/2022 2:23 PM</li>
+</ul>
+<ul>
+<li>Schedule Pickup (Cx)</li>
+</ul>
+<ul>
+<li>Ready for Pickup at Azure datacenter (Processed)</li>
+</ul>
+<ul>
+<li>2 weekend days</li>
+</ul>
+<ul>
+<li>Once get email confirmation as well as get authorization code, Cx/carrier can bring materials to get the disks from DC local team during the scheduled time.</li>
+</ul>
+<ul>
+<li>Local DC operator working time is 9:00 - 17:00 workday. Need to double confirm.</li>
+</ul>
+<ul>
+<li>Tue 6/14/2022 10:05 AM</li>
+</ul>
+<ul>
+<li>Pick up (Cx)</li>
+</ul>
+<ul>
+<li>Picked Up</li>
+</ul>
+<ul>
+<li>2+ business days</li>
+</ul>
+<ul>
+<li>Time depends on carrier.</li>
+</ul>
+<ul>
+<li>Thu 6/16/2022 7:45 PM</li>
+</ul>
+<ul>
+<li>Mon 6/20/2022 1:27 PM</li>
+</ul>
+<ul>
+<li>ReadyToReceiveAtAzureDC</li>
+</ul>
+<ul>
+<li>Cx can manage the order feasibly according to difference situation.</li>
+</ul>
+<ul>
+<li>Mon 6/20/2022 2:38 PM</li>
+</ul>
+<ul>
+<li>Ready to receive at Azure datacenter</li>
+</ul>
+<ul>
+<li>Mon 6/20/2022 3:18 PM</li>
+</ul>
+<ul>
+<li>Receive disk (Ops)</li>
+</ul>
+<ul>
+<li>To ensure next stage will begin in short time, Cx may follow up an email with Ops.</li>
+</ul>
+<ul>
+<li>Mon 6/20/2022 5:01 PM</li>
+</ul>
+<ul>
+<li>Mon 6/20/2022 6:28 PM</li>
+</ul>
+<ul>
+<li>Erase Disk(Ops)</li>
+</ul>
+<ul>
+<li>It is said that Cx will receive email about the disk erasure, not yet until 6/27/2022.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Status on Portal</li>
+</ul>
+<ul>
+<li>ASC Status</li>
+</ul>
+<ul>
+<li>I received a call from datacenter to check my address because of the first order. (18910844227) . The phone is a better way to let Cx calm down when the Cx is not sure about this, but I don’t know if this was all the same.</li>
+</ul>
+<ul>
+<li>I picked up the disk after 2 days that EMS dropped the disk to community.</li>
+</ul>
+<ul>
+<li>Portal Status</li>
+</ul>
+<ul>
+<li>Follow docs to copy data and validate data(optional).</li>
+</ul>
+<ul>
+<li>Schedule drop-off (Cx)</li>
+</ul>
+<ul>
+<li>Pending user action for drop-off</li>
+</ul>
+<ul>
+<li>Drop-off (Cx)</li>
+</ul>
+<ul>
+<li>The actual drop happened on Sat 6/18/2022 2:06 PM</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Microsoft managed shipping:</p>
+<p>/subscriptions/51b14e0c-505b-4ad8-b62c-62e3f8c27dcc/resourceGroups/zhangwx/providers/Microsoft.DataBox/jobs/mytest1fordatabox</p>
+<p>Time(CST)</p>
+<p>Action</p>
+<p>Status on Portal</p>
+<p>ASC Status</p>
+<p>Duration to Next phase</p>
+<p>Comments</p>
+<p>Wed 6/8/2022 9:38 AM</p>
+<p>Create Job (Cx)</p>
+<p>ordered</p>
+<p>DeviceOrdered</p>
+<p>1 business day</p>
+<p>When Cx fill in the address, the department/Co line will not be printed out in the shipping label.</p>
+<p>Thu 6/9/2022 9:18 AM</p>
+<p>Prepare Disk (Ops)</p>
+<p>Processed</p>
+<p>DevicePrepared</p>
+<p>1- business day</p>
+<p>Offcial docs ETA for DevicePrepared  is up to 5 business day.</p>
+<p>I received a call from datacenter to check my address because of the first order. (18910844227) . The phone is a better way to let Cx calm down when the Cx is not sure about this, but I don’t know if this was all the same.</p>
+<p>The default mailbox in mooncake is not able to receive email. Cx needs to provide an valid mailbox to receive notification emails.</p>
+<p>Thu 6/9/2022 8:32 PM</p>
+<p>Dispatch disks to Fedex (Ops)</p>
+<p>Dispatched</p>
+<p>The disk was delivered through a local services EMS  instead of FedEx. (Qi: this should be due to Covid-19 issue. Different carriers has different limitation about the delivery area. In this situation, Fedex will consider to pass the package to a carrier that has the channel to deliver to reduce the blocking time. )</p>
+<p>Sat 6/11/2022 12:55 PM</p>
+<p>Deliver disk to Cx (Fedex)</p>
+<p>Delivered</p>
+<p>1+ business day</p>
+<p>1- weekend day</p>
+<p>I picked up the disk after 2 days that EMS dropped the disk to community.</p>
+<p>Prepare Data (Cx)</p>
+<p>Tue 6/28/2022 00:00 AM</p>
+<p>Send back Disk to DC (Cx)</p>
+<p>Picked up</p>
+<p>PickedUp</p>
+<p>2+ business day</p>
+<p>Thu 6/30/2022 1:56 PM</p>
+<p>Receive Disk (Ops)</p>
+<p>Received</p>
+<p>AtAzureDC</p>
+<p>Thu 6/30/2022 6:39 PM</p>
+<p>Copy Data (Ops)</p>
+<p>Data Copy in Progress</p>
+<p>DataCopy</p>
+<p>Thu 6/30/2022 6:41 PM</p>
+<p>Finish Copy Data (Ops)</p>
+<p>Completed</p>
+<p>Self-Managed shipping</p>
+<p>Job id: /subscriptions/41da7001-8fe8-4845-baff-9fae512f10fd/resourceGroups/qi-databox/providers/Microsoft.DataBox/jobs/cssmooncatestjob</p>
+<p>Portal Status</p>
+<p>Tue 6/7/2022 4:32 PM</p>
+<p>3 business days</p>
+<p>For self-managed ship, I think it is not necessary to provide address.</p>
+<p>Fri 6/10/2022 2:01 PM</p>
+<p>Pending user action for pick-up (Processed)</p>
+<p>DevicePrepared -&gt;</p>
+<p>ReadyToDispatchFromAzureDC</p>
+<p>Need cx email ops team to provide pickup details: person, date as so on.</p>
+<p>Please tell ops it is not required to apply for security records. Carrier/People can pick up the disk at Gate.</p>
+<p>Fri 6/10/2022 2:23 PM</p>
+<p>Schedule Pickup (Cx)</p>
+<p>Ready for Pickup at Azure datacenter (Processed)</p>
+<p>2 weekend days</p>
+<p>Once get email confirmation as well as get authorization code, Cx/carrier can bring materials to get the disks from DC local team during the scheduled time.</p>
+<p>Local DC operator working time is 9:00 - 17:00 workday. Need to double confirm.</p>
+<p>Tue 6/14/2022 10:05 AM</p>
+<p>Pick up (Cx)</p>
+<p>Picked Up</p>
+<p>2+ business days</p>
+<p>Time depends on carrier.</p>
+<p>Thu 6/16/2022 7:45 PM</p>
+<p>Follow docs to copy data and validate data(optional).</p>
+<p>Mon 6/20/2022 1:27 PM</p>
+<p>Schedule drop-off (Cx)</p>
+<p>Pending user action for drop-off</p>
+<p>ReadyToReceiveAtAzureDC</p>
+<p>Cx can manage the order feasibly according to difference situation.</p>
+<p>Mon 6/20/2022 2:38 PM</p>
+<p>Drop-off (Cx)</p>
+<p>Ready to receive at Azure datacenter</p>
+<p>The actual drop happened on Sat 6/18/2022 2:06 PM</p>
+<p>Mon 6/20/2022 3:18 PM</p>
+<p>Receive disk (Ops)</p>
+<p>To ensure next stage will begin in short time, Cx may follow up an email with Ops.</p>
+<p>Mon 6/20/2022 5:01 PM</p>
+<p>Depending on DC mount rack availability</p>
+<p>Mon 6/20/2022 6:28 PM</p>
+<p>CompletedWithErrors</p>
+<p>Once data copy done, no matter error or not, the disk will go into erasure stage. If Cx needs to keep the disk for TS, Cx can send mail to Ops team directly or contact support as soon as possible.</p>
+<p>Erase Disk(Ops)</p>
+<p>It is said that Cx will receive email about the disk erasure, not yet until 6/27/2022.</p></article>

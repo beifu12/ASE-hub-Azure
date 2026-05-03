@@ -1,0 +1,87 @@
+<article class="kb-article" data-title="Windows、Linux 安装指定版本Azure CLI"><h1>Windows、Linux 安装指定版本Azure CLI</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Cli</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-05-22 16:32:20</li>
+<li>JD 相关性: 自动化/命令工具</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>WangTianshu</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>WangTianshu</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>WangTianshu</li>
+</ul>
+<ul>
+<li>针对 CentOS：</li>
+</ul>
+<ul>
+<li>注意：CentOS下需要提前安装python2-virtualenv</li>
+</ul>
+<ul>
+<li>针对Ubuntu：</li>
+</ul>
+<ul>
+<li>之后使用 dpkg -i xxxx.deb 进行安装</li>
+</ul>
+<ul>
+<li>针对Windows：</li>
+</ul>
+<ul>
+<li>相关参考连接：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>默认情况下我们通过yum \ apt \ msi 从官网获得的都是最新版本Azure CLI，但是由于某些原因（如API版本过高，中国区无法使用潜在问题等），我们可能需要旧版本的Azure CLI 本文主要介绍如何安装指定版本Azure CLI</li>
+</ul>
+<ul>
+<li>安装命令 rpm -ivh xxxxx.rpm</li>
+</ul>
+<ul>
+<li>我没有找到Deb 安装列表，不过基于CentOS 和 Ubuntu的通用性，可以使用 alien 命令将 RPM包转换成 Deb 包</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Azure cli github：<a href="https://github.com/Azure/azure-cli/releases" target="_blank" rel="noopener">https://github.com/Azure/azure-cli/releases</a></li>
+</ul>
+<ul>
+<li>所有历史版本RPM包都可以在此下载：<a href="https://packages.microsoft.com/yumrepos/azure-cli/" target="_blank" rel="noopener">https://packages.microsoft.com/yumrepos/azure-cli/</a></li>
+</ul>
+<ul>
+<li>Windows版本下载URL格式如下：<a href="https://azurecliprod.blob.core.windows.net/msi/azure-cli-2.1.0.msi" target="_blank" rel="noopener">https://azurecliprod.blob.core.windows.net/msi/azure-cli-2.1.0.msi</a></li>
+</ul>
+<ul>
+<li>我们只需更改版本编号即可。<a href="https://azurecliprod.blob.core.windows.net/msi/azure-cli-2.0.71.msi" target="_blank" rel="noopener">https://azurecliprod.blob.core.windows.net/msi/azure-cli-2.0.71.msi</a></li>
+</ul>
+<ul>
+<li><a href="https://stackoverflow.com/questions/48200579/how-to-install-specific-version-of-azure-cli-in-linux-rhel" target="_blank" rel="noopener">https://stackoverflow.com/questions/48200579/how-to-install-specific-version-of-azure-cli-in-linux-rhel</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>WangTianshu</p>
+<p>默认情况下我们通过yum \ apt \ msi 从官网获得的都是最新版本Azure CLI，但是由于某些原因（如API版本过高，中国区无法使用潜在问题等），我们可能需要旧版本的Azure CLI 本文主要介绍如何安装指定版本Azure CLI</p>
+<p>Azure cli github：<a href="https://github.com/Azure/azure-cli/releases" target="_blank" rel="noopener">https://github.com/Azure/azure-cli/releases</a></p>
+<p>针对 CentOS：</p>
+<p>所有历史版本RPM包都可以在此下载：<a href="https://packages.microsoft.com/yumrepos/azure-cli/" target="_blank" rel="noopener">https://packages.microsoft.com/yumrepos/azure-cli/</a></p>
+<p>安装命令 rpm -ivh xxxxx.rpm</p>
+<p>注意：CentOS下需要提前安装python2-virtualenv</p>
+<p>针对Ubuntu：</p>
+<p>我没有找到Deb 安装列表，不过基于CentOS 和 Ubuntu的通用性，可以使用 alien 命令将 RPM包转换成 Deb 包</p>
+<p>之后使用 dpkg -i xxxx.deb 进行安装</p>
+<p>针对Windows：</p>
+<p>Windows版本下载URL格式如下：<a href="https://azurecliprod.blob.core.windows.net/msi/azure-cli-2.1.0.msi" target="_blank" rel="noopener">https://azurecliprod.blob.core.windows.net/msi/azure-cli-2.1.0.msi</a></p>
+<p>我们只需更改版本编号即可。<a href="https://azurecliprod.blob.core.windows.net/msi/azure-cli-2.0.71.msi" target="_blank" rel="noopener">https://azurecliprod.blob.core.windows.net/msi/azure-cli-2.0.71.msi</a></p>
+<p>相关参考连接：</p>
+<p><a href="https://stackoverflow.com/questions/48200579/how-to-install-specific-version-of-azure-cli-in-linux-rhel" target="_blank" rel="noopener">https://stackoverflow.com/questions/48200579/how-to-install-specific-version-of-azure-cli-in-linux-rhel</a></p></article>

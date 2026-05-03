@@ -1,0 +1,84 @@
+<article class="kb-article" data-title="关于Azure AD audit/sign-in log的kusto语句"><h1>关于Azure AD audit/sign-in log的kusto语句</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: Kusto Jarvis常用命令</li>
+<li>最近修改: 2026-01-22 11:15:38</li>
+<li>JD 相关性: 自动化/命令工具; Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>rorCode,ErrorNo,PUID,ClientIp, AccountType, AlpStatus, ApplicationId, AuthType, AuthenticationType,AuthenticatedClient, Client,DomainName,TenantId,ClientInfo,ApplicationDisplayName,ResourceDisplayName</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>rorCode,ErrorNo,PUID,ClientIp, AccountType, AlpStatus, ApplicationId, AuthType, AuthenticationType,AuthenticatedClient, Client,DomainName,TenantId,ClientInfo,ApplicationDisplayName,ResourceDisplayName</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zuoteng</li>
+</ul>
+<ul>
+<li>| where env_time &gt;=datetime(2022-02-28 10:13) and env_time &lt;datetime(2022-08-29 10:14)</li>
+</ul>
+<ul>
+<li>| where TenantId ==&quot;fdadf686-453e-460d-8202-21e14d35c061&quot;</li>
+</ul>
+<ul>
+<li>//| where RequestId in (&quot;875675a9-7c5a-46e5-99ff-1ca62cc82600&quot;,&quot;9d606fe9-1b8e-49b4-81fc-eb647b4f2600&quot;)</li>
+</ul>
+<ul>
+<li>| project env_time,RequestId, Result,</li>
+</ul>
+<ul>
+<li>| where (env_time &gt;= datetime(2022-07-01T22:00:11.0000000Z) and env_time &lt;= datetime(2022-07-22T22:15:11.0000000Z))</li>
+</ul>
+<ul>
+<li>| where * has @&#39;fdadf686-453e-460d-8202-21e14d35c061&#39; // 这个是 tenanted</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>要查询Azure AD一段时间内的audit、sign-in 日志信息。可以使用如下kusto语句进行查看：</li>
+</ul>
+<ul>
+<li>PerRequestTableIfx  //查询sign-in log    查询的时间更长</li>
+</ul>
+<ul>
+<li>| where PUID == &quot;10033230C632E859&quot;   //这个是相应用户的PUID  可以在ASC中查到 net id</li>
+</ul>
+<ul>
+<li>IfxAuditLoggingCommon   查询audit log</li>
+</ul>
+<ul>
+<li>| facet by env_ver, env_name, env_epoch, env_iKey, env_os, env_osVer, env_appId, env_appVer, env_cloud_ver, env_cloud_name, env_cloud_role, env_cloud_roleVer, env_cloud_roleInstance, env_cloud_environment, env_cloud_location, env_cloud_deploymentUnit, operationName, operationType, resultType, resultSignature, resultDescription, callerIpAddress, targetEndpointAddress, operationVersion, resourceType, deploymentId, loggingLevel, internalOperationType, contextId, tenantName, domainName, tagId, processName, unmappedTraceElements, scaleUnit, faultDomain, scaleUnitName, azureRegion, targetObjectName, actorContextId, actorObjectId, auditLibrary, actorIdentityType, SourceNamespace, SourceMoniker, SourceVersion with limit 10000</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>使用的kusto 库：<a href="https://msodsmooncake.chinanorth2.kusto.chinacloudapi.cn" target="_blank" rel="noopener">https://msodsmooncake.chinanorth2.kusto.chinacloudapi.cn</a></li>
+</ul>
+<ul>
+<li><a href="https://estscnn2.chinanorth2.kusto.chinacloudapi.cn" target="_blank" rel="noopener">https://estscnn2.chinanorth2.kusto.chinacloudapi.cn</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zuoteng</p>
+<p>要查询Azure AD一段时间内的audit、sign-in 日志信息。可以使用如下kusto语句进行查看：</p>
+<p>使用的kusto 库：<a href="https://msodsmooncake.chinanorth2.kusto.chinacloudapi.cn" target="_blank" rel="noopener">https://msodsmooncake.chinanorth2.kusto.chinacloudapi.cn</a></p>
+<p><a href="https://estscnn2.chinanorth2.kusto.chinacloudapi.cn" target="_blank" rel="noopener">https://estscnn2.chinanorth2.kusto.chinacloudapi.cn</a></p>
+<p>PerRequestTableIfx  //查询sign-in log    查询的时间更长</p>
+<p>| where env_time &gt;=datetime(2022-02-28 10:13) and env_time &lt;datetime(2022-08-29 10:14)</p>
+<p>| where PUID == &quot;10033230C632E859&quot;   //这个是相应用户的PUID  可以在ASC中查到 net id</p>
+<p>| where TenantId ==&quot;fdadf686-453e-460d-8202-21e14d35c061&quot;</p>
+<p>//| where RequestId in (&quot;875675a9-7c5a-46e5-99ff-1ca62cc82600&quot;,&quot;9d606fe9-1b8e-49b4-81fc-eb647b4f2600&quot;)</p>
+<p>| project env_time,RequestId, Result,</p>
+<p>rorCode,ErrorNo,PUID,ClientIp, AccountType, AlpStatus, ApplicationId, AuthType, AuthenticationType,AuthenticatedClient, Client,DomainName,TenantId,ClientInfo,ApplicationDisplayName,ResourceDisplayName</p>
+<p>IfxAuditLoggingCommon   查询audit log</p>
+<p>| where (env_time &gt;= datetime(2022-07-01T22:00:11.0000000Z) and env_time &lt;= datetime(2022-07-22T22:15:11.0000000Z))</p>
+<p>| where * has @&#39;fdadf686-453e-460d-8202-21e14d35c061&#39; // 这个是 tenanted</p>
+<p>| facet by env_ver, env_name, env_epoch, env_iKey, env_os, env_osVer, env_appId, env_appVer, env_cloud_ver, env_cloud_name, env_cloud_role, env_cloud_roleVer, env_cloud_roleInstance, env_cloud_environment, env_cloud_location, env_cloud_deploymentUnit, operationName, operationType, resultType, resultSignature, resultDescription, callerIpAddress, targetEndpointAddress, operationVersion, resourceType, deploymentId, loggingLevel, internalOperationType, contextId, tenantName, domainName, tagId, processName, unmappedTraceElements, scaleUnit, faultDomain, scaleUnitName, azureRegion, targetObjectName, actorContextId, actorObjectId, auditLibrary, actorIdentityType, SourceNamespace, SourceMoniker, SourceVersion with limit 10000</p></article>

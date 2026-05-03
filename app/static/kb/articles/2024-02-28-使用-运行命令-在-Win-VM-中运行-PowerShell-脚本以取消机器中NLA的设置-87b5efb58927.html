@@ -1,0 +1,87 @@
+<article class="kb-article" data-title="使用&quot;运行命令&quot;在 Win VM 中运行 PowerShell 脚本以取消机器中NLA的设置"><h1>使用&quot;运行命令&quot;在 Win VM 中运行 PowerShell 脚本以取消机器中NLA的设置</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-02-28 13:38:52</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20200830</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20200830</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20200830</li>
+</ul>
+<ul>
+<li>HeLiming</li>
+</ul>
+<ul>
+<li>1.假设当前机器的NLA设置是开启状态，如下示例：</li>
+</ul>
+<ul>
+<li>$server = &quot;hlmwin10n1-t1&quot;</li>
+</ul>
+<ul>
+<li>(Get-WmiObject -class &quot;Win32_TSGeneralSetting&quot; -Namespace root\cimv2\terminalservices -ComputerName $server -Filter &quot;TerminalName=&#39;RDP-tcp&#39;&quot;).SetUserAuthenticationRequired(0)</li>
+</ul>
+<ul>
+<li>$resourceGroup = &quot;hlmrgn1&quot;</li>
+</ul>
+<ul>
+<li>$vmName = &quot;hlmwin10n1-t1&quot;</li>
+</ul>
+<ul>
+<li>备注：标黄信息需要根据实际情况进行填写</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用&quot;运行命令&quot;在 Win VM 中运行 PowerShell 脚本以取消机器中NLA的设置：</li>
+</ul>
+<ul>
+<li>2.将附件中的脚本文件disabledNLA.ps1保存到运行CLI命令的本地机器下，如D:\disabledNLA.ps1，下一步需要用到该路径：</li>
+</ul>
+<ul>
+<li>备注：需要根据您的实际情况修改脚本中server参数的名称，该名称代表需要修改的虚拟机的hostname</li>
+</ul>
+<ul>
+<li>3.在Powershell窗口中运行如下CLI命令：</li>
+</ul>
+<ul>
+<li>az vm run-command invoke --command-id RunPowerShellScript --name $vmName -g $resourceGroup --scripts @D:\disabledNLA.ps1</li>
+</ul>
+<ul>
+<li>4.上述命令执行完成后，会发现NLA设置已经被取消了</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：<a href="https://learn.microsoft.com/zh-cn/archive/blogs/mckittrick/disable-nla-via-custom-script-extension" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/archive/blogs/mckittrick/disable-nla-via-custom-script-extension</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20200830</p>
+<p>HeLiming</p>
+<p>参考文档：<a href="https://learn.microsoft.com/zh-cn/archive/blogs/mckittrick/disable-nla-via-custom-script-extension" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/archive/blogs/mckittrick/disable-nla-via-custom-script-extension</a></p>
+<p>使用&quot;运行命令&quot;在 Win VM 中运行 PowerShell 脚本以取消机器中NLA的设置：</p>
+<p>1.假设当前机器的NLA设置是开启状态，如下示例：</p>
+<p>2.将附件中的脚本文件disabledNLA.ps1保存到运行CLI命令的本地机器下，如D:\disabledNLA.ps1，下一步需要用到该路径：</p>
+<p>$server = &quot;hlmwin10n1-t1&quot;</p>
+<p>(Get-WmiObject -class &quot;Win32_TSGeneralSetting&quot; -Namespace root\cimv2\terminalservices -ComputerName $server -Filter &quot;TerminalName=&#39;RDP-tcp&#39;&quot;).SetUserAuthenticationRequired(0)</p>
+<p>备注：需要根据您的实际情况修改脚本中server参数的名称，该名称代表需要修改的虚拟机的hostname</p>
+<p>3.在Powershell窗口中运行如下CLI命令：</p>
+<p>$resourceGroup = &quot;hlmrgn1&quot;</p>
+<p>$vmName = &quot;hlmwin10n1-t1&quot;</p>
+<p>az vm run-command invoke --command-id RunPowerShellScript --name $vmName -g $resourceGroup --scripts @D:\disabledNLA.ps1</p>
+<p>备注：标黄信息需要根据实际情况进行填写</p>
+<p>4.上述命令执行完成后，会发现NLA设置已经被取消了</p></article>

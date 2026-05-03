@@ -1,0 +1,195 @@
+<article class="kb-article" data-title="【Share】使用设备ID批量禁用设备的powershell脚本"><h1>【Share】使用设备ID批量禁用设备的powershell脚本</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-15 11:44:04</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</li>
+</ul>
+<ul>
+<li>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</li>
+</ul>
+<ul>
+<li>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</li>
+</ul>
+<ul>
+<li>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</li>
+</ul>
+<ul>
+<li>需要安装MgGraph模块：</li>
+</ul>
+<ul>
+<li>Install-Module -Name Microsoft.Graph  -Force -Scope CurrentUser</li>
+</ul>
+<ul>
+<li>更新：</li>
+</ul>
+<ul>
+<li>Update-Module Microsoft.Graph -Force</li>
+</ul>
+<ul>
+<li>在中国区使用MgGraph模块需要结合服务主体使用，如有需要我们可协助您操作。</li>
+</ul>
+<ul>
+<li>在CSV表格中将DeviceId输入：</li>
+</ul>
+<ul>
+<li># 参数</li>
+</ul>
+<ul>
+<li>$InputCsvPath = &quot;E:\deviceid.csv&quot;       #输入表格位置</li>
+</ul>
+<ul>
+<li>$DeviceIdColumn = &quot;DeviceId&quot;  # 设备ID列名</li>
+</ul>
+<ul>
+<li># 从CSV读取设备ID</li>
+</ul>
+<ul>
+<li>$csvDeviceIds = Import-Csv -Path $InputCsvPath | Select-Object -ExpandProperty $DeviceIdColumn</li>
+</ul>
+<ul>
+<li># 获取所有Entra ID设备</li>
+</ul>
+<ul>
+<li>$allDevices = Get-MgDevice -All</li>
+</ul>
+<ul>
+<li># 找出不在CSV中且未禁用的设备</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>##############################</li>
+</ul>
+<ul>
+<li># 禁用设备并记录</li>
+</ul>
+<ul>
+<li>Write-Host &quot;已禁用: $($device.DisplayName) ($($device.DeviceId))&quot;</li>
+</ul>
+<ul>
+<li># 导出禁用设备列表</li>
+</ul>
+<ul>
+<li>执行过程参考：</li>
+</ul>
+<ul>
+<li>已禁用设备：</li>
+</ul>
+<ul>
+<li>在输出文件中可以看到禁用设备的记录：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>#下面是批量禁用命令，请谨慎执行#</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>DeviceId = $device.DeviceId</li>
+</ul>
+<ul>
+<li>DisplayName = $device.DisplayName</li>
+</ul>
+<ul>
+<li>OperatingSystem = $device.OperatingSystem</li>
+</ul>
+<ul>
+<li>DisabledDate = Get-Date -Format &quot;yyyy-MM-dd HH:mm:ss&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>$OutputCsvPath = &quot;E:\disabledeviceid.csv&quot;    # 输出表格位置</li>
+</ul>
+<ul>
+<li>$devicesToDisable = $allDevices | Where-Object {</li>
+</ul>
+<ul>
+<li>$_.DeviceId -notin $csvDeviceIds -and $_.AccountEnabled -ne $false</li>
+</ul>
+<ul>
+<li>$devicesToDisable</li>
+</ul>
+<ul>
+<li>Write-Host &quot;找到 $($devicesToDisable.Count) 个需要禁用的设备&quot;</li>
+</ul>
+<ul>
+<li>$disabledDevices = @()</li>
+</ul>
+<ul>
+<li>foreach ($device in $devicesToDisable) {</li>
+</ul>
+<ul>
+<li>Update-MgDevice -DeviceId $device.Id -BodyParameter @{accountEnabled = $false}</li>
+</ul>
+<ul>
+<li>$disabledDevices += [PSCustomObject]@{</li>
+</ul>
+<ul>
+<li>$disabledDevices | Export-Csv -Path $OutputCsvPath -NoTypeInformation</li>
+</ul>
+<ul>
+<li>Write-Host &quot;已导出 $($disabledDevices.Count) 个禁用设备到 $OutputCsvPath&quot;</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/10</p>
+<p>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</p>
+<p>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</p>
+<p>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</p>
+<p>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</p>
+<p>需要安装MgGraph模块：</p>
+<p>Install-Module -Name Microsoft.Graph  -Force -Scope CurrentUser</p>
+<p>更新：</p>
+<p>Update-Module Microsoft.Graph -Force</p>
+<p>在中国区使用MgGraph模块需要结合服务主体使用，如有需要我们可协助您操作。</p>
+<p>在CSV表格中将DeviceId输入：</p>
+<h1>参数</h1>
+<p>$InputCsvPath = &quot;E:\deviceid.csv&quot;       #输入表格位置</p>
+<p>$OutputCsvPath = &quot;E:\disabledeviceid.csv&quot;    # 输出表格位置</p>
+<p>$DeviceIdColumn = &quot;DeviceId&quot;  # 设备ID列名</p>
+<h1>从CSV读取设备ID</h1>
+<p>$csvDeviceIds = Import-Csv -Path $InputCsvPath | Select-Object -ExpandProperty $DeviceIdColumn</p>
+<h1>获取所有Entra ID设备</h1>
+<p>$allDevices = Get-MgDevice -All</p>
+<h1>找出不在CSV中且未禁用的设备</h1>
+<p>$devicesToDisable = $allDevices | Where-Object {</p>
+<p>$_.DeviceId -notin $csvDeviceIds -and $_.AccountEnabled -ne $false</p>
+<p>}</p>
+<p>$devicesToDisable</p>
+<p>Write-Host &quot;找到 $($devicesToDisable.Count) 个需要禁用的设备&quot;</p>
+<p>##############################</p>
+<p>#下面是批量禁用命令，请谨慎执行#</p>
+<h1>禁用设备并记录</h1>
+<p>$disabledDevices = @()</p>
+<p>foreach ($device in $devicesToDisable) {</p>
+<p>Update-MgDevice -DeviceId $device.Id -BodyParameter @{accountEnabled = $false}</p>
+<p>$disabledDevices += [PSCustomObject]@{</p>
+<p>DeviceId = $device.DeviceId</p>
+<p>DisplayName = $device.DisplayName</p>
+<p>OperatingSystem = $device.OperatingSystem</p>
+<p>DisabledDate = Get-Date -Format &quot;yyyy-MM-dd HH:mm:ss&quot;</p>
+<p>Write-Host &quot;已禁用: $($device.DisplayName) ($($device.DeviceId))&quot;</p>
+<h1>导出禁用设备列表</h1>
+<p>$disabledDevices | Export-Csv -Path $OutputCsvPath -NoTypeInformation</p>
+<p>Write-Host &quot;已导出 $($disabledDevices.Count) 个禁用设备到 $OutputCsvPath&quot;</p>
+<p>执行过程参考：</p>
+<p>已禁用设备：</p>
+<p>在输出文件中可以看到禁用设备的记录：</p></article>

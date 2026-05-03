@@ -1,0 +1,183 @@
+<article class="kb-article" data-title="【Share】AAD下载用户列表会受CA阻拦O365app影响"><h1>【Share】AAD下载用户列表会受CA阻拦O365app影响</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-28 19:10:58</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>点击“开始下载”后，不到2s就报错，操作记录里也为空。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>点击“开始下载”后，不到2s就报错，操作记录里也为空。</li>
+</ul>
+<ul>
+<li>&quot;errorCode&quot;: &quot;msalautherror_invalid_grant&quot;,</li>
+</ul>
+<ul>
+<li>&quot;localizedErrorDetails&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;errorDetail&quot;: &quot;AADSTS53003: Access has been blocked by Conditional Access policies. The access policy does not allow token issuance. Trace ID: f0889042-5fbd-45ee-8f77-0abea19b7500 Correlation ID: 36ea0301-6058-4547-af6f-9ef27e96ea80 Timestamp: 2024-06-28 06:57:55Z&quot;</li>
+</ul>
+<ul>
+<li>故若阻止用户访问Office 365 SharePoint 或 Office 365 ， 那么下载用户列表会被阻止，估计文件就绪是会生成在租户的默认SharePoint之类的位置，而用户不允许去访问O365 SharePoint（被阻止令牌发行）就无法将文件准备就绪，肯定也无法下载。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_20240617299247_AAD问题</li>
+</ul>
+<ul>
+<li>客户反馈AAD User中，下载用户列表有问题，使用的是非管理员账号操作。</li>
+</ul>
+<ul>
+<li>下载用户列表的官方文档：</li>
+</ul>
+<ul>
+<li>在body中可以看到具体返回信息：</li>
+</ul>
+<ul>
+<li>AADSTS53003：Access has been blocked by Conditional Access policies. The access policy does not allow token issuance.</li>
+</ul>
+<ul>
+<li>由于租户里没有使用Office 365 SharePoint这个App对象主体，于是我选择了整个Office 365代替，授动作为阻止访问</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;Message&quot;: &quot;AADSTS53003: Access has been blocked by Conditional Access policies. The access policy does not allow token issuance. Trace ID: f0889042-5fbd-45ee-8f77-0abea19b7500 Correlation ID: 36ea0301-6058-4547-af6f-9ef27e96ea80 Timestamp: 2024-06-28 06:57:55Z&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Data&quot;: {},</li>
+</ul>
+<ul>
+<li>&quot;HResult&quot;: -2146233088,</li>
+</ul>
+<ul>
+<li>&quot;XMsServerRequestId&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;Source&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;HttpStatusCode&quot;: 400,</li>
+</ul>
+<ul>
+<li>&quot;ClientData&quot;: {</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;operationResults&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;objectId&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;displayName&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;status&quot;: 0,</li>
+</ul>
+<ul>
+<li>&quot;details&quot;: &quot;AADSTS53003: Access has been blocked by Conditional Access policies. The access policy does not allow token issuance. Trace ID: f0889042-5fbd-45ee-8f77-0abea19b7500 Correlation ID: 36ea0301-6058-4547-af6f-9ef27e96ea80 Timestamp: 2024-06-28 06:57:55Z&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;timeStampUtc&quot;: &quot;2024-06-28T06:57:55.9296141Z&quot;,</li>
+</ul>
+<ul>
+<li>&quot;clientRequestId&quot;: &quot;21f10d94-94a7-4cce-b964-e2dc2565f006&quot;,</li>
+</ul>
+<ul>
+<li>&quot;internalTransactionId&quot;: &quot;04a12cdc-ecf0-4dbe-839a-eea4fa756774&quot;,</li>
+</ul>
+<ul>
+<li>&quot;tenantId&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;userObjectId&quot;: &quot;5f6c894c-2962-4a7f-b5e4-41b9f9884198&quot;,</li>
+</ul>
+<ul>
+<li>&quot;exceptionType&quot;: &quot;MsalUiRequiredException&quot;</li>
+</ul>
+<ul>
+<li>之后，将CA中的第一个app：Office 365 删除，测试能够正常下载用户列表：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>进而检查用户CA设置，只有如下两条：</li>
+</ul>
+<ul>
+<li>同步测试第一条，添加了三个Office 的app后，然后下载复现客户问题，查看网络包同样为400，</li>
+</ul>
+<ul>
+<li>&quot;ClassName&quot;: &quot;Microsoft.Portal.Framework.Exceptions.ClientException&quot;,</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>后续建议用户使用隐私模式、其他浏览器、进行交叉设置，客户反馈仍然失败。</li>
+</ul>
+<ul>
+<li>进而建议客户抓包，分析客户的fiddler包看到有失败的400记录：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/entra/identity/users/users-bulk-download" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/users/users-bulk-download</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_20240617299247_AAD问题</p>
+<p>客户反馈AAD User中，下载用户列表有问题，使用的是非管理员账号操作。</p>
+<p>下载用户列表的官方文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/entra/identity/users/users-bulk-download" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/users/users-bulk-download</a></p>
+<p>点击“开始下载”后，不到2s就报错，操作记录里也为空。</p>
+<p>后续建议用户使用隐私模式、其他浏览器、进行交叉设置，客户反馈仍然失败。</p>
+<p>进而建议客户抓包，分析客户的fiddler包看到有失败的400记录：</p>
+<p>在body中可以看到具体返回信息：</p>
+<p>AADSTS53003：Access has been blocked by Conditional Access policies. The access policy does not allow token issuance.</p>
+<p>进而检查用户CA设置，只有如下两条：</p>
+<p>同步测试第一条，添加了三个Office 的app后，然后下载复现客户问题，查看网络包同样为400，</p>
+<p>由于租户里没有使用Office 365 SharePoint这个App对象主体，于是我选择了整个Office 365代替，授动作为阻止访问</p>
+<p>{</p>
+<p>&quot;ClassName&quot;: &quot;Microsoft.Portal.Framework.Exceptions.ClientException&quot;,</p>
+<p>&quot;Message&quot;: &quot;AADSTS53003: Access has been blocked by Conditional Access policies. The access policy does not allow token issuance. Trace ID: f0889042-5fbd-45ee-8f77-0abea19b7500 Correlation ID: 36ea0301-6058-4547-af6f-9ef27e96ea80 Timestamp: 2024-06-28 06:57:55Z&quot;,</p>
+<p>&quot;Data&quot;: {},</p>
+<p>&quot;HResult&quot;: -2146233088,</p>
+<p>&quot;XMsServerRequestId&quot;: null,</p>
+<p>&quot;Source&quot;: null,</p>
+<p>&quot;HttpStatusCode&quot;: 400,</p>
+<p>&quot;ClientData&quot;: {</p>
+<p>&quot;errorCode&quot;: &quot;msalautherror_invalid_grant&quot;,</p>
+<p>&quot;localizedErrorDetails&quot;: {</p>
+<p>&quot;errorDetail&quot;: &quot;AADSTS53003: Access has been blocked by Conditional Access policies. The access policy does not allow token issuance. Trace ID: f0889042-5fbd-45ee-8f77-0abea19b7500 Correlation ID: 36ea0301-6058-4547-af6f-9ef27e96ea80 Timestamp: 2024-06-28 06:57:55Z&quot;</p>
+<p>},</p>
+<p>&quot;operationResults&quot;: [</p>
+<p>&quot;objectId&quot;: null,</p>
+<p>&quot;displayName&quot;: null,</p>
+<p>&quot;status&quot;: 0,</p>
+<p>&quot;details&quot;: &quot;AADSTS53003: Access has been blocked by Conditional Access policies. The access policy does not allow token issuance. Trace ID: f0889042-5fbd-45ee-8f77-0abea19b7500 Correlation ID: 36ea0301-6058-4547-af6f-9ef27e96ea80 Timestamp: 2024-06-28 06:57:55Z&quot;</p>
+<p>}</p>
+<p>],</p>
+<p>&quot;timeStampUtc&quot;: &quot;2024-06-28T06:57:55.9296141Z&quot;,</p>
+<p>&quot;clientRequestId&quot;: &quot;21f10d94-94a7-4cce-b964-e2dc2565f006&quot;,</p>
+<p>&quot;internalTransactionId&quot;: &quot;04a12cdc-ecf0-4dbe-839a-eea4fa756774&quot;,</p>
+<p>&quot;tenantId&quot;: null,</p>
+<p>&quot;userObjectId&quot;: &quot;5f6c894c-2962-4a7f-b5e4-41b9f9884198&quot;,</p>
+<p>&quot;exceptionType&quot;: &quot;MsalUiRequiredException&quot;</p>
+<p>之后，将CA中的第一个app：Office 365 删除，测试能够正常下载用户列表：</p>
+<p>故若阻止用户访问Office 365 SharePoint 或 Office 365 ， 那么下载用户列表会被阻止，估计文件就绪是会生成在租户的默认SharePoint之类的位置，而用户不允许去访问O365 SharePoint（被阻止令牌发行）就无法将文件准备就绪，肯定也无法下载。</p></article>

@@ -1,0 +1,120 @@
+<article class="kb-article" data-title="CDN product updates of Jun. 2023/09"><h1>CDN product updates of Jun. 2023/09</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: CDN Operation Guideline</li>
+<li>最近修改: 2024-12-12 11:45:48</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Tencent的目录刷新方式有两种，我们平台默认集成的是“刷新变更资源”。如果客户使用Tencent遇到类似Last-modified时间为01/01 1970这个固定的值导致无法刷新资源的情况，可以联系PG进行配置。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Tencent的目录刷新方式有两种，我们平台默认集成的是“刷新变更资源”。如果客户使用Tencent遇到类似Last-modified时间为01/01 1970这个固定的值导致无法刷新资源的情况，可以联系PG进行配置。</li>
+</ul>
+<ul>
+<li>Known issue</li>
+</ul>
+<ul>
+<li>Since providers have already provided IP blocks, we cannot merge them further.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Below are the updated information about CDN service of Jul. and Aug.</li>
+</ul>
+<ul>
+<li>Product updates</li>
+</ul>
+<ul>
+<li>Last updated on</li>
+</ul>
+<ul>
+<li>Description</li>
+</ul>
+<ul>
+<li>Discussion</li>
+</ul>
+<ul>
+<li>Related case</li>
+</ul>
+<ul>
+<li>Tips</li>
+</ul>
+<ul>
+<li>20230714241070</li>
+</ul>
+<ul>
+<li>there is a bug in Baishan that will not upload the certificate when there is a certificate associated with the domain with the same thumbprint</li>
+</ul>
+<ul>
+<li>20230811246459</li>
+</ul>
+<ul>
+<li>Enabling cert auto rotate should be supported when certs are uploaded as PEM (To be verified)</li>
+</ul>
+<ul>
+<li>对于上个月updates中提到的下述tips，鉴于相关风险，相应的request（“Back-to-origin IP list merge/simplify request”  ）与PM沟通后加入Non-standard operation process/非标操作流程。</li>
+</ul>
+<ul>
+<li>We return all the back-to-origin IP lists from all providers, including backups.</li>
+</ul>
+<ul>
+<li>A rough summary of the number of back-to-origin IP lists per provider is as follows:</li>
+</ul>
+<ul>
+<li>Baidu: 120+</li>
+</ul>
+<ul>
+<li>BaiShan: 100+</li>
+</ul>
+<ul>
+<li>KingSoft: 300+</li>
+</ul>
+<ul>
+<li>Tecent: 500+</li>
+</ul>
+<ul>
+<li>If customer is concerned about the length, we suggest engaging PG team. We can switch the customer’s provider to Baidu or BaiShan and exclude all backups for them.</li>
+</ul>
+<ul>
+<li>Though the IP list contains backups, we suggested customers to periodically refresh the list since there stands a chance that providers change their back-to-origin list.</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Below are the updated information about CDN service of Jul. and Aug.</p>
+<p>Product updates</p>
+<p>Last updated on</p>
+<p>Description</p>
+<p>Discussion</p>
+<p>Related case</p>
+<p>2023/9/1</p>
+<p>Tips</p>
+<p>Tencent的目录刷新方式有两种，我们平台默认集成的是“刷新变更资源”。如果客户使用Tencent遇到类似Last-modified时间为01/01 1970这个固定的值导致无法刷新资源的情况，可以联系PG进行配置。</p>
+<p>20230714241070</p>
+<p>2023/9/14</p>
+<p>Known issue</p>
+<p>there is a bug in Baishan that will not upload the certificate when there is a certificate associated with the domain with the same thumbprint</p>
+<p>20230811246459</p>
+<p>Enabling cert auto rotate should be supported when certs are uploaded as PEM (To be verified)</p>
+<p>对于上个月updates中提到的下述tips，鉴于相关风险，相应的request（“Back-to-origin IP list merge/simplify request”  ）与PM沟通后加入Non-standard operation process/非标操作流程。</p>
+<p>We return all the back-to-origin IP lists from all providers, including backups.</p>
+<p>A rough summary of the number of back-to-origin IP lists per provider is as follows:</p>
+<p>Baidu: 120+</p>
+<p>BaiShan: 100+</p>
+<p>KingSoft: 300+</p>
+<p>Tecent: 500+</p>
+<p>Since providers have already provided IP blocks, we cannot merge them further.</p>
+<p>If customer is concerned about the length, we suggest engaging PG team. We can switch the customer’s provider to Baidu or BaiShan and exclude all backups for them.</p>
+<p>Though the IP list contains backups, we suggested customers to periodically refresh the list since there stands a chance that providers change their back-to-origin list.</p></article>

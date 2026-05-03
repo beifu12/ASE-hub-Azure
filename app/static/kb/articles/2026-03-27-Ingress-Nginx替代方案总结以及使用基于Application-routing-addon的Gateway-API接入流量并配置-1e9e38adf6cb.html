@@ -1,0 +1,382 @@
+<article class="kb-article" data-title="Ingress Nginx替代方案总结以及使用基于Application routing addon的Gateway API接入流量并配置HTTP-&gt;HTTPS"><h1>Ingress Nginx替代方案总结以及使用基于Application routing addon的Gateway API接入流量并配置HTTP-&gt;HTTPS</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-03-27 17:29:01</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>首先总结Azure端对Ingress Nginx的替代方案：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>首先总结Azure端对Ingress Nginx的替代方案：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>首先总结Azure端对Ingress Nginx的替代方案：</li>
+</ul>
+<ul>
+<li>随着社区对Ingress Nginx项目在2026三月份停止支持，Azure端对Ingress Nginx的替代方案总结有如下几种:</li>
+</ul>
+<ul>
+<li>1、AGIC（Application Gateway Ingress Controller）</li>
+</ul>
+<ul>
+<li>2、Application Gateway for Containers</li>
+</ul>
+<ul>
+<li>Application Gateway for Containers支持Ingress API and Gateway API，是主要的推荐产品。但是Application Gateway for Containers在中国区还不支持，在Global 目前是preview状态.  可以持续保持关注：What is Application Gateway for Containers? | Microsoft Learn</li>
+</ul>
+<ul>
+<li>3、Application routing addon with Gateway API</li>
+</ul>
+<ul>
+<li>Application routing add-on 支持gateway API，目前是预览状态 ：Azure Kubernetes Service (AKS) application routing add-on with the Kubernetes Gateway API (preview) - Azure Kubernetes Service | Microsoft Learn . 目前中国区还没有文档，但是测试可以使用，可以参考下面的配置说明，后续可以关注什么时候正式发布。</li>
+</ul>
+<ul>
+<li>4、Istio addon for AKS</li>
+</ul>
+<ul>
+<li>Istio service mesh add-on 支持 Gateway API和istio ingress API 。</li>
+</ul>
+<ul>
+<li>如果使用 Gateway API， 在China和Global均是Preview ，可以参考之前的Onenote：使用基于istio addon 的K8S gateway API 接入流量，Azure文档:Kubernetes Gateway API Ingress for Istio Service Mesh Add-on for Azure Kubernetes Service (AKS) (preview) - Azure Kubernetes Service | Microsoft Learn 后续可以关注什么时候正式发布。</li>
+</ul>
+<ul>
+<li>如果使用istio ingress API, 已经正式发布 ,可以参考之前的Onenote: 使用基于Istio addon 的istio APIs 接入流量,  Azure文档：Azure Kubernetes Service (AKS) external or internal ingresses for Istio service mesh add-on - Azure Kubernetes Service | Microsoft Learn</li>
+</ul>
+<ul>
+<li>5、Application routing add-on with NGINX</li>
+</ul>
+<ul>
+<li>使用Ingress API，但是官方表示，随着Ingress Nginx的推移，Application routing add-on with NGINX将会继续支持到2026/11月:</li>
+</ul>
+<ul>
+<li>Azure Kubernetes Service (AKS) managed NGINX ingress with the application routing add-on - Azure Kubernetes Service | Microsoft Learn</li>
+</ul>
+<ul>
+<li>1、安装Gateway API CRDs</li>
+</ul>
+<ul>
+<li>2、安装Application routing addon with gateway API</li>
+</ul>
+<ul>
+<li># application routing  addon底层也是依赖的istio，因此可以在aks-istio-system namespace看到istiod的pod</li>
+</ul>
+<ul>
+<li>以上基础架构环境就部署完成了，可以使用gateway API 发布应用</li>
+</ul>
+<ul>
+<li>3、使用gateway API 发布应用，实现HTTP跳转到Https</li>
+</ul>
+<ul>
+<li>(1) 使用证书创建secret</li>
+</ul>
+<ul>
+<li>(2) 定义gateway资源，因为这里使用的是基于Application routing addon的gateway ,因此gatewayClassName需要填写为approuting-istio</li>
+</ul>
+<ul>
+<li>因为这里实现tls卸载，因此tls mode为terminate</li>
+</ul>
+<ul>
+<li>apiVersion: gateway.networking.k8s.io/v1</li>
+</ul>
+<ul>
+<li>kind: Gateway</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: httpbin-gateway</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>gatewayClassName: approuting-istio</li>
+</ul>
+<ul>
+<li>listeners:</li>
+</ul>
+<ul>
+<li>- name: http</li>
+</ul>
+<ul>
+<li>port: 80</li>
+</ul>
+<ul>
+<li>- name: https</li>
+</ul>
+<ul>
+<li>port: 443</li>
+</ul>
+<ul>
+<li>tls:</li>
+</ul>
+<ul>
+<li>mode: Terminate</li>
+</ul>
+<ul>
+<li>certificateRefs:</li>
+</ul>
+<ul>
+<li>- kind: Secret</li>
+</ul>
+<ul>
+<li>name: tls-secret-0325</li>
+</ul>
+<ul>
+<li>allowedRoutes:</li>
+</ul>
+<ul>
+<li>namespaces:</li>
+</ul>
+<ul>
+<li>from: Same</li>
+</ul>
+<ul>
+<li>(3) 定义HTTProute资源，实现应用发布，并将http跳转为Https</li>
+</ul>
+<ul>
+<li>A . 部署应用：</li>
+</ul>
+<ul>
+<li>该部署会创建httpbin的后端应用pod以及httpbin的cluster service</li>
+</ul>
+<ul>
+<li>B. 部署HTTProute,并配置跳转，这部分主要是HTTPRoute的配置</li>
+</ul>
+<ul>
+<li>#跳转rule</li>
+</ul>
+<ul>
+<li>kind: HTTPRoute</li>
+</ul>
+<ul>
+<li>name: httpbin-requestredirect</li>
+</ul>
+<ul>
+<li>parentRefs:</li>
+</ul>
+<ul>
+<li>- name: httpbin-gateway</li>
+</ul>
+<ul>
+<li>sectionName: http</li>
+</ul>
+<ul>
+<li>hostnames: [&quot;fuzl0325.azurecn.cn&quot;]</li>
+</ul>
+<ul>
+<li>rules:</li>
+</ul>
+<ul>
+<li>- matches:</li>
+</ul>
+<ul>
+<li>- path:</li>
+</ul>
+<ul>
+<li>type: PathPrefix</li>
+</ul>
+<ul>
+<li>value: /</li>
+</ul>
+<ul>
+<li>filters:</li>
+</ul>
+<ul>
+<li>- type: RequestRedirect</li>
+</ul>
+<ul>
+<li>requestRedirect:</li>
+</ul>
+<ul>
+<li>path:</li>
+</ul>
+<ul>
+<li>type: ReplaceFullPath</li>
+</ul>
+<ul>
+<li>replaceFullPath: /get</li>
+</ul>
+<ul>
+<li>scheme: https</li>
+</ul>
+<ul>
+<li>statusCode: 301</li>
+</ul>
+<ul>
+<li>---</li>
+</ul>
+<ul>
+<li>#https rule</li>
+</ul>
+<ul>
+<li>name: httpbin-https</li>
+</ul>
+<ul>
+<li>value: /get</li>
+</ul>
+<ul>
+<li>backendRefs:</li>
+</ul>
+<ul>
+<li>- name: httpbin</li>
+</ul>
+<ul>
+<li>port: 8000</li>
+</ul>
+<ul>
+<li>则可以实现访问并跳转：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>支持Ingress API，但是中国区的AGIC 不支持AKS CNI Overlay 网络：什么是应用程序网关入口控制器？ | Azure Docs ，使用之前需要确认当前的AKS网络模型是什么。</li>
+</ul>
+<ul>
+<li>下面说明如何使用Application routing addon的Gateway API接入流量（测试验证3的实现）：</li>
+</ul>
+<ul>
+<li>#确认gateway crds资源正常安装</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az feature register --namespace &quot;Microsoft.ContainerService&quot; --name &quot;ManagedGatewayAPIPreview&quot;</li>
+</ul>
+<ul>
+<li>az aks update -g aks-20251117  -n aks20251117-2   --enable-gateway-api</li>
+</ul>
+<ul>
+<li>kubectl get crds | grep &quot;gateway.networking.k8s.io&quot;</li>
+</ul>
+<ul>
+<li>az aks update --resource-group aks20260325 --name aks0325   --enable-app-routing-istio</li>
+</ul>
+<ul>
+<li>kubectl create secret tls tls-secret-0325  --cert=./fullchain.pem  --key=./privkey.pem</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>protocol: HTTP</li>
+</ul>
+<ul>
+<li>protocol: HTTPS</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Kubectl apply -f <a href="https://raw.githubusercontent.com/Abbott-fu/k8shttpbin/refs/heads/main/httpbin.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Abbott-fu/k8shttpbin/refs/heads/main/httpbin.yaml</a></li>
+</ul>
+<ul>
+<li><a href="http://fuzl0325.azurecn.cn" target="_blank" rel="noopener">http://fuzl0325.azurecn.cn</a>  -&gt; <a href="https://fuzl0325.azurecn.cn/get" target="_blank" rel="noopener">https://fuzl0325.azurecn.cn/get</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026/03/27</p>
+<p>首先总结Azure端对Ingress Nginx的替代方案：</p>
+<p>随着社区对Ingress Nginx项目在2026三月份停止支持，Azure端对Ingress Nginx的替代方案总结有如下几种:</p>
+<p>1、AGIC（Application Gateway Ingress Controller）</p>
+<p>支持Ingress API，但是中国区的AGIC 不支持AKS CNI Overlay 网络：什么是应用程序网关入口控制器？ | Azure Docs ，使用之前需要确认当前的AKS网络模型是什么。</p>
+<p>2、Application Gateway for Containers</p>
+<p>Application Gateway for Containers支持Ingress API and Gateway API，是主要的推荐产品。但是Application Gateway for Containers在中国区还不支持，在Global 目前是preview状态.  可以持续保持关注：What is Application Gateway for Containers? | Microsoft Learn</p>
+<p>3、Application routing addon with Gateway API</p>
+<p>Application routing add-on 支持gateway API，目前是预览状态 ：Azure Kubernetes Service (AKS) application routing add-on with the Kubernetes Gateway API (preview) - Azure Kubernetes Service | Microsoft Learn . 目前中国区还没有文档，但是测试可以使用，可以参考下面的配置说明，后续可以关注什么时候正式发布。</p>
+<p>4、Istio addon for AKS</p>
+<p>Istio service mesh add-on 支持 Gateway API和istio ingress API 。</p>
+<p>如果使用 Gateway API， 在China和Global均是Preview ，可以参考之前的Onenote：使用基于istio addon 的K8S gateway API 接入流量，Azure文档:Kubernetes Gateway API Ingress for Istio Service Mesh Add-on for Azure Kubernetes Service (AKS) (preview) - Azure Kubernetes Service | Microsoft Learn 后续可以关注什么时候正式发布。</p>
+<p>如果使用istio ingress API, 已经正式发布 ,可以参考之前的Onenote: 使用基于Istio addon 的istio APIs 接入流量,  Azure文档：Azure Kubernetes Service (AKS) external or internal ingresses for Istio service mesh add-on - Azure Kubernetes Service | Microsoft Learn</p>
+<p>5、Application routing add-on with NGINX</p>
+<p>使用Ingress API，但是官方表示，随着Ingress Nginx的推移，Application routing add-on with NGINX将会继续支持到2026/11月:</p>
+<p>Azure Kubernetes Service (AKS) managed NGINX ingress with the application routing add-on - Azure Kubernetes Service | Microsoft Learn</p>
+<p>下面说明如何使用Application routing addon的Gateway API接入流量（测试验证3的实现）：</p>
+<p>1、安装Gateway API CRDs</p>
+<p>az feature register --namespace &quot;Microsoft.ContainerService&quot; --name &quot;ManagedGatewayAPIPreview&quot;</p>
+<p>az aks update -g aks-20251117  -n aks20251117-2   --enable-gateway-api</p>
+<p>#确认gateway crds资源正常安装</p>
+<p>kubectl get crds | grep &quot;gateway.networking.k8s.io&quot;</p>
+<p>2、安装Application routing addon with gateway API</p>
+<p>az aks update --resource-group aks20260325 --name aks0325   --enable-app-routing-istio</p>
+<h1>application routing  addon底层也是依赖的istio，因此可以在aks-istio-system namespace看到istiod的pod</h1>
+<p>以上基础架构环境就部署完成了，可以使用gateway API 发布应用</p>
+<p>3、使用gateway API 发布应用，实现HTTP跳转到Https</p>
+<p>(1) 使用证书创建secret</p>
+<p>kubectl create secret tls tls-secret-0325  --cert=./fullchain.pem  --key=./privkey.pem</p>
+<p>(2) 定义gateway资源，因为这里使用的是基于Application routing addon的gateway ,因此gatewayClassName需要填写为approuting-istio</p>
+<p>因为这里实现tls卸载，因此tls mode为terminate</p>
+<p>apiVersion: gateway.networking.k8s.io/v1</p>
+<p>kind: Gateway</p>
+<p>metadata:</p>
+<p>name: httpbin-gateway</p>
+<p>spec:</p>
+<p>gatewayClassName: approuting-istio</p>
+<p>listeners:</p>
+<ul>
+<li>name: http</li>
+</ul>
+<p>protocol: HTTP</p>
+<p>port: 80</p>
+<ul>
+<li>name: https</li>
+</ul>
+<p>protocol: HTTPS</p>
+<p>port: 443</p>
+<p>tls:</p>
+<p>mode: Terminate</p>
+<p>certificateRefs:</p>
+<ul>
+<li>kind: Secret</li>
+</ul>
+<p>name: tls-secret-0325</p>
+<p>allowedRoutes:</p>
+<p>namespaces:</p>
+<p>from: Same</p>
+<p>(3) 定义HTTProute资源，实现应用发布，并将http跳转为Https</p>
+<p>A . 部署应用：</p>
+<p>Kubectl apply -f <a href="https://raw.githubusercontent.com/Abbott-fu/k8shttpbin/refs/heads/main/httpbin.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Abbott-fu/k8shttpbin/refs/heads/main/httpbin.yaml</a></p>
+<p>该部署会创建httpbin的后端应用pod以及httpbin的cluster service</p>
+<p>B. 部署HTTProute,并配置跳转，这部分主要是HTTPRoute的配置</p>
+<p>#跳转rule</p>
+<p>kind: HTTPRoute</p>
+<p>name: httpbin-requestredirect</p>
+<p>parentRefs:</p>
+<ul>
+<li>name: httpbin-gateway</li>
+</ul>
+<p>sectionName: http</p>
+<p>hostnames: [&quot;fuzl0325.azurecn.cn&quot;]</p>
+<p>rules:</p>
+<ul>
+<li>matches:</li>
+</ul>
+<ul>
+<li>path:</li>
+</ul>
+<p>type: PathPrefix</p>
+<p>value: /</p>
+<p>filters:</p>
+<ul>
+<li>type: RequestRedirect</li>
+</ul>
+<p>requestRedirect:</p>
+<p>path:</p>
+<p>type: ReplaceFullPath</p>
+<p>replaceFullPath: /get</p>
+<p>scheme: https</p>
+<p>statusCode: 301</p>
+<p>---</p>
+<p>#https rule</p>
+<p>name: httpbin-https</p>
+<p>value: /get</p>
+<p>backendRefs:</p>
+<ul>
+<li>name: httpbin</li>
+</ul>
+<p>port: 8000</p>
+<p>则可以实现访问并跳转：</p>
+<p><a href="http://fuzl0325.azurecn.cn" target="_blank" rel="noopener">http://fuzl0325.azurecn.cn</a>  -&gt; <a href="https://fuzl0325.azurecn.cn/get" target="_blank" rel="noopener">https://fuzl0325.azurecn.cn/get</a></p></article>

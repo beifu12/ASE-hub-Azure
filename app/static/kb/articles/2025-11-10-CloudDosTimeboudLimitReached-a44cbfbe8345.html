@@ -1,0 +1,737 @@
+<article class="kb-article" data-title="CloudDosTimeboudLimitReached"><h1>CloudDosTimeboudLimitReached</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-11-10 08:22:44</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>AzureBackup-IaaSVM-Miscellaneous-failures</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>AzureBackup-IaaSVM-Miscellaneous-failures</li>
+</ul>
+<ul>
+<li>Tags: Pages with syntax highlighting errors</li>
+</ul>
+<ul>
+<li>•        DiffCopyFailedToTransferData</li>
+</ul>
+<ul>
+<li>•        RestoreOperationFailedV2</li>
+</ul>
+<ul>
+<li>•        ManagedRPCreationFailedInCrpButExtensionSucceeded</li>
+</ul>
+<ul>
+<li>o        Cause 1 : Azure VM Guest Agent is unable to download VMSnapshot extension new version</li>
+</ul>
+<ul>
+<li>§        Symptom</li>
+</ul>
+<ul>
+<li>o        What is the customer facing symptom for this failure?</li>
+</ul>
+<ul>
+<li>•        AuthenticationFailedError in Host in the DoSnapshot Call</li>
+</ul>
+<ul>
+<li>•        UserErrorMigrationFromTrustedLaunchVmToNonTrustedTrustedVmNotAllowed</li>
+</ul>
+<ul>
+<li>DiffCopyFailedToTransferData</li>
+</ul>
+<ul>
+<li>Title: Diff Copy Failed to Transfer Data</li>
+</ul>
+<ul>
+<li>Description: Backup failed to copy data to vault.</li>
+</ul>
+<ul>
+<li>Error Code: SystemBackupOperationInProgress</li>
+</ul>
+<ul>
+<li>Error Message: Unable to initiate backup as another backup operation is currently in progress.</li>
+</ul>
+<ul>
+<li>PreciseTimeStamp            StartTime                 VMName  SubscriptionId                ErrorCode                 TaskId</li>
+</ul>
+<ul>
+<li>2019-03-04 19:02:07.5289111       2019-03-04 19:02:04.6469549       atedc06 bbbbbbbb-cccc-bbbb-cccc-bbbbbbbbbbbb  UserErrorBackupOperationInProgress    9b898417-5ba5-4e0a-b0c3-3e4284792e50</li>
+</ul>
+<ul>
+<li>As we can see, the backup is triggered while the other backup was in progress. this is why the backup is failed.</li>
+</ul>
+<ul>
+<li>Note: If you are unable to identify the long running backup job then</li>
+</ul>
+<ul>
+<li>•            BCMBackupStats | where SubscriptionId == &quot;&lt;Subscription ID&gt;&quot; and TIMESTAMP &gt;= ago(5d) and VMName == &quot;&lt;Backed up VM name&gt;&quot; | project PreciseTimeStamp , VMName , ErrorCode , OSVersion , GuestAgentVersion , DataSourceId , ResourceId</li>
+</ul>
+<ul>
+<li>PreciseTimeStamp        VMName        ErrorCode        OSVersion        GuestAgentVersion        DataSourceId        ResourceId</li>
+</ul>
+<ul>
+<li>20:11.5        azrwewatrdshc01        UserErrorBackupOperationInProgress        null        null        158331193177325        8197825751282730000</li>
+</ul>
+<ul>
+<li>07:20.3        azrwewatrdshc01        UserErrorBackupOperationInProgress        null        null        158331193177325        8197825751282730000</li>
+</ul>
+<ul>
+<li>Title: SFC tool return code failures</li>
+</ul>
+<ul>
+<li>Description: Backup failed because of system file errors. This could be due to one or more actions (such as a reboot) pending on this server.&lt;/Message&gt;</li>
+</ul>
+<ul>
+<li>Description: &lt;Describe the underlying issue(s) in simple sentences&gt;</li>
+</ul>
+<ul>
+<li>Error Code: Container Not Found</li>
+</ul>
+<ul>
+<li>RestoreOperationFailedV2</li>
+</ul>
+<ul>
+<li>Error Code: RestoreOperationFailedV2</li>
+</ul>
+<ul>
+<li>Error Message: Restore failed with an internal error.</li>
+</ul>
+<ul>
+<li>If the output contains Exception in SwapDisksTask message then this failure is because replace disks operation is not supported for encrypted VMs.</li>
+</ul>
+<ul>
+<li>Restore operation failed because the replace disks operation is not supported for encrypted VMs, so we recommend you to try a different restore operation like restore the full virtual machine to the alternate location  or restore backed-up disks .</li>
+</ul>
+<ul>
+<li>ManagedRPCreationFailedInCrpButExtensionSucceeded</li>
+</ul>
+<ul>
+<li>Error code: ManagedRPCreationFailedInCrpButExtensionSucceeded</li>
+</ul>
+<ul>
+<li>Error message: Backup operation failed for managed disk VM.</li>
+</ul>
+<ul>
+<li>Cause 1 : Azure VM Guest Agent is unable to download VMSnapshot extension new version</li>
+</ul>
+<ul>
+<li>Symptom</li>
+</ul>
+<ul>
+<li>If customer is facing symptom of this failure ManagedRPCreationFailedInCrpButExtensionSucceeded</li>
+</ul>
+<ul>
+<li>What is the customer facing symptom for this failure?</li>
+</ul>
+<ul>
+<li>Issue is not with backup but with the CRP. Please contact CRP team.</li>
+</ul>
+<ul>
+<li>Error code: CloudDosTimeboudLimitReached</li>
+</ul>
+<ul>
+<li>Error message: Operation is blocked for some time as it has been attempted beyond a limit.</li>
+</ul>
+<ul>
+<li>One of the cause for this error DOS limit hit due to requesting 3 IC4 validation to service.</li>
+</ul>
+<ul>
+<li>Few customer may face this issue. We are currently working with the service team to see if we can increase this limit while we are doing block blob roll out.</li>
+</ul>
+<ul>
+<li>Ref - Incident-212030502 Details - IcM (microsofticm.com)</li>
+</ul>
+<ul>
+<li>AuthenticationFailedError in Host in the DoSnapshot Call</li>
+</ul>
+<ul>
+<li>Symptom : If you see that the Host plugin So snapshot call is failing with an Auth error.</li>
+</ul>
+<ul>
+<li>•        It is a known issue and we are taking a hotfix for this.</li>
+</ul>
+<ul>
+<li>UserErrorMigrationFromTrustedLaunchVmToNonTrustedTrustedVmNotAllowed</li>
+</ul>
+<ul>
+<li>What is the symptom (error message, behavior) that customer see?</li>
+</ul>
+<ul>
+<li>he VM Backup fails with &quot;UserErrorMigrationFromTrustedLaunchVmToNonTrustedTrustedVmNotAllowed&quot; for a non-Trusted VM.</li>
+</ul>
+<ul>
+<li>If a backup operation fails with &quot;UserErrorMigrationFromTrustedLaunchVmToNonTrustedTrustedVmNotAllowed&quot; and the following are true:</li>
+</ul>
+<ul>
+<li>Due to a bug (linked below), a non-Trusted VM with the same name as an earlier TVM (now deleted) fails with &quot;UserErrorMigrationFromTrustedLaunchVmToNonTrustedTrustedVmNotAllowed&quot;.</li>
+</ul>
+<ul>
+<li>2.        The customer could create a VM with the same name, but in a different Resource Group to avoid this issue.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Contents</li>
+</ul>
+<ul>
+<li>o        Recommended Steps for CSS:</li>
+</ul>
+<ul>
+<li>•        SystemBackupOperationInProgress</li>
+</ul>
+<ul>
+<li>§        Mitigation Steps:</li>
+</ul>
+<ul>
+<li>•        ContainerNotFound</li>
+</ul>
+<ul>
+<li>o        Customer Ready Content</li>
+</ul>
+<ul>
+<li>o        Customer Ready Content:</li>
+</ul>
+<ul>
+<li>§        Windows VM :</li>
+</ul>
+<ul>
+<li>§        Linux VM :</li>
+</ul>
+<ul>
+<li>•        Reboot/Restart of VM when a backup is triggered</li>
+</ul>
+<ul>
+<li>•        VCRedist 2013 x86 Uninstalled during Extension version update</li>
+</ul>
+<ul>
+<li>•        CloudDosTimeboudLimitReached</li>
+</ul>
+<ul>
+<li>•        Different Possible Restore Flows</li>
+</ul>
+<ul>
+<li>•        Backups not getting triggered</li>
+</ul>
+<ul>
+<li>Recommended Steps for CSS:</li>
+</ul>
+<ul>
+<li>SystemBackupOperationInProgress</li>
+</ul>
+<ul>
+<li>| order by PreciseTimeStamp desc</li>
+</ul>
+<ul>
+<li>Sample Output</li>
+</ul>
+<ul>
+<li>2019-03-04 19:13:04.9100213       2019-03-04 14:37:33.2245189       atedc06 bbbbbbbb-cccc-bbbb-cccc-bbbbbbbbbbbb  Success               6e56f94c-802a-4ef7-8387-1c9a69a8172e</li>
+</ul>
+<ul>
+<li>2019-03-04 01:47:51.5663819       2019-03-04 01:02:27.6041436       atedc06 bbbbbbbb-cccc-bbbb-cccc-bbbbbbbbbbbb  Success               07775dbc-d3bd-4741-a4a5-665313cd2cf4</li>
+</ul>
+<ul>
+<li>Mitigation Steps:</li>
+</ul>
+<ul>
+<li>If previous backup job is running, ask the customer to wait for the previous backup to complete and then trigger a new backup.</li>
+</ul>
+<ul>
+<li>Note: To understand why the previous job might be taking more time than intended, see article.</li>
+</ul>
+<ul>
+<li>•        If the backup job is taking longer time to complete then</li>
+</ul>
+<ul>
+<li>16:51.1        azrwewatrdshc01        Success        Windows Server 2012 R2 Datacenter        2.7.41491.875        140739290815849        5639862902753080000</li>
+</ul>
+<ul>
+<li>19:40.4        azrwewatrdshc01        Success        Windows Server 2012 R2 Datacenter        2.7.41491.875        140739290815849        5639862902753080000</li>
+</ul>
+<ul>
+<li>Refer to TSG Authoring Guidelines and replace the below section with your content:</li>
+</ul>
+<ul>
+<li>Links: &lt;for additional references, provide links to public documentation&gt;</li>
+</ul>
+<ul>
+<li>ContainerNotFound</li>
+</ul>
+<ul>
+<li>The Restore operation fails because the replace disks operation is not supported for encrypted VMs.</li>
+</ul>
+<ul>
+<li>|where TaskId = &quot;&lt;Task ID&gt;&quot;</li>
+</ul>
+<ul>
+<li>|where TIMESTAMP &gt; ago(1d)</li>
+</ul>
+<ul>
+<li>Ask customer to try a different restore operation like ALR  (Alternate location recovery) or restore backed-up disks .</li>
+</ul>
+<ul>
+<li>Customer Ready Content</li>
+</ul>
+<ul>
+<li>Please allow access to all ports of 168.63.129.16, for more information refer this article</li>
+</ul>
+<ul>
+<li>Windows VM:</li>
+</ul>
+<ul>
+<li>•        Restart the Windows Guest Agent service and initiate the backup operation.</li>
+</ul>
+<ul>
+<li>•        Update Guest Agent to latest version, by following this article .</li>
+</ul>
+<ul>
+<li>Linux VM:</li>
+</ul>
+<ul>
+<li>•        Restart the Guest Agent service using the following commands:</li>
+</ul>
+<ul>
+<li>o        For Ubuntu: service walinuxagent start</li>
+</ul>
+<ul>
+<li>o        For other distributions: service waagent start</li>
+</ul>
+<ul>
+<li>o        For CoreOS: systemctl start waagent</li>
+</ul>
+<ul>
+<li>Customer Ready Content:</li>
+</ul>
+<ul>
+<li>Recommended Steps:</li>
+</ul>
+<ul>
+<li>Windows VM :</li>
+</ul>
+<ul>
+<li>•        Update Guest Agent to latest version by following this article .</li>
+</ul>
+<ul>
+<li>Linux VM :</li>
+</ul>
+<ul>
+<li>Reboot/Restart of VM when a backup is triggered</li>
+</ul>
+<ul>
+<li>Reboot/Restart of VM is happening when a backup is triggered</li>
+</ul>
+<ul>
+<li>Reboot/Restart of VM is happening when a backups is triggered</li>
+</ul>
+<ul>
+<li>VCRedist 2013 x86 Uninstalled during Extension version update</li>
+</ul>
+<ul>
+<li>VCRedist 2013 x86 (already installed in the VM) got uninstalled during Extension version update.</li>
+</ul>
+<ul>
+<li>There was a bug in VCRedist 2013 x64 version installed by IaaS VM Backup Extension, which uninstalls the existing VCRedist 2013 x86 version in the VM.</li>
+</ul>
+<ul>
+<li>We are releasing a new version of IaaS VM Backup Extension which will include latest version of VCRedist 2013 x64. ETA for this release is Jan-31-2019.</li>
+</ul>
+<ul>
+<li>However in the meantime, re-install VCRedist 2013 x86 version in the VM.</li>
+</ul>
+<ul>
+<li>Recommended Action: We recommend not having more than 3 backups a day. Retry the operation tomorrow.</li>
+</ul>
+<ul>
+<li>Different Possible Restore Flows</li>
+</ul>
+<ul>
+<li>We have different flows possible in Restore and backup. Internally ,we call it DiffTL flow</li>
+</ul>
+<ul>
+<li>1.        any disk containing more than 4TB (at any point of the time)</li>
+</ul>
+<ul>
+<li>2.        total number of disks is greater than 16</li>
+</ul>
+<ul>
+<li>3.        Restored is triggered from unmanaged disk to managed</li>
+</ul>
+<ul>
+<li>Flow of change observed by customer is as below</li>
+</ul>
+<ul>
+<li>NonDiffTL route : Data transfer from vault &gt; blob container created in staging storage account&gt; VHD created in container &gt; managed disk created in resource group</li>
+</ul>
+<ul>
+<li>DiffTLRoute : Data transfer from vault &gt; managed disk created in resource group (no blob container in staging storage account)</li>
+</ul>
+<ul>
+<li>•        Till then , cx can use the below command to set a regKey to enforce Guest based snapshot.</li>
+</ul>
+<ul>
+<li>REG ADD &quot;HKLM\SOFTWARE\Microsoft\BcdrAgentPersistentKeys&quot; /v SnapshotMethod /t REG_SZ /d firstGuestThenHost /f</li>
+</ul>
+<ul>
+<li>Backups not getting triggered</li>
+</ul>
+<ul>
+<li>1.        In customer&#39;s subscription, navigate to &quot;Azure active directory&quot; and click on &quot;Enterprise Application&quot; and search for application id &quot;262044b1-e2ce-469f-a196-69ab7ada62d3&quot;</li>
+</ul>
+<ul>
+<li>CSI incident for which this TSG is created - Incident-299662868 Details - IcM (microsofticm.com)</li>
+</ul>
+<ul>
+<li>1.        The VM is a non-Trusted VM</li>
+</ul>
+<ul>
+<li>2.        The VM name is the same as an earlier VM that was TVM (now deleted). The Resource Group must also be the same for both these VMs.</li>
+</ul>
+<ul>
+<li>Recommended Steps for CSS</li>
+</ul>
+<ul>
+<li>The bug item for tracking is: Bug 14090127: SecurityType in Container Info not updating - Boards (visualstudio.com)</li>
+</ul>
+<ul>
+<li>1.        Ask the customer to create a VM with a different name than that of the deleted TVM.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>•        SFCCheckFailed</li>
+</ul>
+<ul>
+<li>•        Ensure the previous backup operation is completed. To check the previous backup job status use the below Kusto query:</li>
+</ul>
+<ul>
+<li>union cluster(&#39;mabprod1&#39;).database(&#39;MABKustoProd1&#39;).BCMBackupStats,</li>
+</ul>
+<ul>
+<li>cluster(&#39;mabprodweu&#39;).database(&#39;MABKustoProd&#39;).BCMBackupStats,cluster(&#39;mabprodwus&#39;).database(&#39;MABKustoProd&#39;).BCMBackupStats</li>
+</ul>
+<ul>
+<li>•        Check if customer has changed the backup vault, using the below Kusto query</li>
+</ul>
+<ul>
+<li>•        Sample output of above Kusto query:</li>
+</ul>
+<ul>
+<li>•        From the output check the DataSourceId and ResourceId if it is changed then the backup is reconfigured with another vault and the backup job could be running in the old vault.</li>
+</ul>
+<ul>
+<li>•        If the old vault is deleted by customer, then contact PG/developer to check and cancel the backup job.</li>
+</ul>
+<ul>
+<li>SFCCheckFailed</li>
+</ul>
+<ul>
+<li>Run the below Kusto query on the BCMBackupStats table and check if the TelemetryLogMessage contains &quot;Exception in SwapDisksTask&quot;</li>
+</ul>
+<ul>
+<li>union cluster(&#39;mabprod1&#39;).database(&#39;MABKustoProd1&#39;).BCMRecoveryStats,</li>
+</ul>
+<ul>
+<li>cluster(&#39;mabprodweu&#39;).database(&#39;MABKustoProd&#39;).BCMRecoveryStats,</li>
+</ul>
+<ul>
+<li>cluster(&#39;mabprodwus&#39;).database(&#39;MABKustoProd&#39;).BCMRecoveryStats</li>
+</ul>
+<ul>
+<li>|where TelemetryLogMessage contains &quot;Exception in SwapDisksTask&quot;</li>
+</ul>
+<ul>
+<li>•        Check the agent version using the command mentioned here , if the agent version is older than the version mentioned here , update to the latest version by following the steps</li>
+</ul>
+<ul>
+<li>Note: On both Windows and Linux servers check if there are other applications that is keeping the server busy. Check resource utilization.</li>
+</ul>
+<ul>
+<li>•        Follow the link to check the resource utilization using Jarvis</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>•        If InstantRP feature is not enabled for the backed up VM, try cancelling the backup job using Azure portal or powershell . (we recommend customer to enable InstantRP feature, for a faster backup operation.)</li>
+</ul>
+<ul>
+<li>•        Check if the old vault exist, try cancelling the backup job using Azure portal or powershell  and retry backup in the current vault.</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>§        Root Cause:</li>
+</ul>
+<ul>
+<li>o        How to verify if the failure is caused by this specific root cause?</li>
+</ul>
+<ul>
+<li>Recommended Actions: &lt;Provide CSS with steps to verify/root cause the problem and steps to resolve the issue&gt;</li>
+</ul>
+<ul>
+<li>How to verify if the failure is caused by this specific root cause?</li>
+</ul>
+<ul>
+<li>Root Cause:</li>
+</ul>
+<ul>
+<li>verify if the failure is caused by this specific ErrorCode ManagedRPCreationFailedInCrpButExtensionSucceeded</li>
+</ul>
+<ul>
+<li>How to verify the root cause of failure?</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>§        Workaround:</li>
+</ul>
+<ul>
+<li>o        What is the workaround?</li>
+</ul>
+<ul>
+<li>§        Workaround</li>
+</ul>
+<ul>
+<li>This issue is already fixed and backups are succeeding. If you see this DiffCopyFailedToTransferData issue then raise an ICM for the troubleshooting.</li>
+</ul>
+<ul>
+<li>| where SubscriptionId == &quot;&lt;SubscriptionId&gt;&quot; and VMName startswith &quot;&lt;VMName&gt;&quot; | where TIMESTAMP &gt; ago(15d) | project PreciseTimeStamp,StartTime,VMName,TaskId,OperationName, JobStatus, ErrorCode, ExtensionErrorCode, IsInstantRPEnabled, NumberOfDisks, IsScheduledBackup, queuetimeInMins = BackupQueueTimeInMilliSec/1000/60, copytimeInMins = DiffCopyTimeInMilliSec/1000/60, ChurnInGB = Total4MBBlocksChanged/256</li>
+</ul>
+<ul>
+<li>o        Ensure the InstantRP feature is enabled for the backed up VM vault. To check the InstantRP status, follow the below steps:</li>
+</ul>
+<ul>
+<li>o        Go to ASC &gt; Resource Explorer &gt; Backup items and check IsInstantRPEnabled value.</li>
+</ul>
+<ul>
+<li>§        If the value is 0, InstantRP is not enabled</li>
+</ul>
+<ul>
+<li>§        If the value is 1, InstantRP is enabled</li>
+</ul>
+<ul>
+<li>Workaround</li>
+</ul>
+<ul>
+<li>Workaround:</li>
+</ul>
+<ul>
+<li>The backup operation failed for the managed disk VM, for Windows and Linux machines complete the below troubleshooting steps to resolve this issue.</li>
+</ul>
+<ul>
+<li>We have identified that the backup operation failed for the managed disk VM. Complete the below troubleshooting steps to resolve this issue.</li>
+</ul>
+<ul>
+<li>What is the workaround?</li>
+</ul>
+<ul>
+<li>In normal flow we don’t do IC4 but for block blob roll out we enable the IC4 for few data sources for approx 2 weeks.</li>
+</ul>
+<ul>
+<li>In Restore, DiffTL is enabled in one of these true</li>
+</ul>
+<ul>
+<li>Note: If for a VM, If DiffTL is enabled, then even if above conditions doesnt match(for ex , Customer deattaching large disk), flows go through DiffTL route. And also there is no customer actionable way to alter the flows</li>
+</ul>
+<ul>
+<li>P.S : If for a VM, If DiffTL is enabled, then even if above conditions doesnt match(for ex , Customer deattaching large disk), flows go through DiffTL route.</li>
+</ul>
+<ul>
+<li>Symptom : One of the reasons for backup not getting triggered is Backup App being in disabled state. To verify this is the issue, check the backup traces and if it contains the following string then it means Backup App is disabled. &quot;Application &#39;262044b1-e2ce-469f-a196-69ab7ada62d3&#39;(Backup Management Service) is disabled.&quot;</li>
+</ul>
+<ul>
+<li>Fix : If you see the above mentioned logs in the backup logs, then follow the steps below to re-enable the Backup app.</li>
+</ul>
+<ul>
+<li>2.        In &quot;Backup Management Service&quot; app, set the &quot;Enabled for users to sign-in&quot; to Yes. Once done, trigger the backup, it should now not experience the above mentioned error.</li>
+</ul>
+<ul>
+<li>Meanwhile, the following workaround solution can be discussed with the customer:</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>•        Most Diff Copy Failed to Transfer Data errors are due to transient storage issues which are likely to get resolved in rerun. See <a href="https://azure.microsoft.com/en-us/status/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/status/</a>  if there is an on-going issue with storage or network service and retry backup after issue is mitigated.</li>
+</ul>
+<ul>
+<li>Recommended Action: Run System File Checker to repair system file errors, reboot as required and try the operation again. For more info refer to: <a href="https://support.microsoft.com/help/929833" target="_blank" rel="noopener">https://support.microsoft.com/help/929833</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>AzureBackup-IaaSVM-Miscellaneous-failures</p>
+<p>Tags: Pages with syntax highlighting errors</p>
+<p>Contents</p>
+<p>•        DiffCopyFailedToTransferData</p>
+<p>o        Recommended Steps for CSS:</p>
+<p>•        SystemBackupOperationInProgress</p>
+<p>§        Mitigation Steps:</p>
+<p>•        SFCCheckFailed</p>
+<p>•        ContainerNotFound</p>
+<p>•        RestoreOperationFailedV2</p>
+<p>o        Customer Ready Content</p>
+<p>•        ManagedRPCreationFailedInCrpButExtensionSucceeded</p>
+<p>o        Cause 1 : Azure VM Guest Agent is unable to download VMSnapshot extension new version</p>
+<p>§        Symptom</p>
+<p>§        Root Cause:</p>
+<p>§        Workaround:</p>
+<p>o        Customer Ready Content:</p>
+<p>§        Windows VM :</p>
+<p>§        Linux VM :</p>
+<p>•        Reboot/Restart of VM when a backup is triggered</p>
+<p>o        What is the customer facing symptom for this failure?</p>
+<p>o        How to verify if the failure is caused by this specific root cause?</p>
+<p>o        What is the workaround?</p>
+<p>•        VCRedist 2013 x86 Uninstalled during Extension version update</p>
+<p>•        CloudDosTimeboudLimitReached</p>
+<p>§        Workaround</p>
+<p>•        Different Possible Restore Flows</p>
+<p>•        AuthenticationFailedError in Host in the DoSnapshot Call</p>
+<p>•        Backups not getting triggered</p>
+<p>•        UserErrorMigrationFromTrustedLaunchVmToNonTrustedTrustedVmNotAllowed</p>
+<p>DiffCopyFailedToTransferData</p>
+<p>Title: Diff Copy Failed to Transfer Data</p>
+<p>Description: Backup failed to copy data to vault.</p>
+<p>Recommended Steps for CSS:</p>
+<p>•        Most Diff Copy Failed to Transfer Data errors are due to transient storage issues which are likely to get resolved in rerun. See <a href="https://azure.microsoft.com/en-us/status/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/status/</a>  if there is an on-going issue with storage or network service and retry backup after issue is mitigated.</p>
+<p>This issue is already fixed and backups are succeeding. If you see this DiffCopyFailedToTransferData issue then raise an ICM for the troubleshooting.</p>
+<p>SystemBackupOperationInProgress</p>
+<p>Error Code: SystemBackupOperationInProgress</p>
+<p>Error Message: Unable to initiate backup as another backup operation is currently in progress.</p>
+<p>•        Ensure the previous backup operation is completed. To check the previous backup job status use the below Kusto query:</p>
+<p>union cluster(&#39;mabprod1&#39;).database(&#39;MABKustoProd1&#39;).BCMBackupStats,</p>
+<p>cluster(&#39;mabprodweu&#39;).database(&#39;MABKustoProd&#39;).BCMBackupStats,cluster(&#39;mabprodwus&#39;).database(&#39;MABKustoProd&#39;).BCMBackupStats</p>
+<p>| where SubscriptionId == &quot;&lt;SubscriptionId&gt;&quot; and VMName startswith &quot;&lt;VMName&gt;&quot; | where TIMESTAMP &gt; ago(15d) | project PreciseTimeStamp,StartTime,VMName,TaskId,OperationName, JobStatus, ErrorCode, ExtensionErrorCode, IsInstantRPEnabled, NumberOfDisks, IsScheduledBackup, queuetimeInMins = BackupQueueTimeInMilliSec/1000/60, copytimeInMins = DiffCopyTimeInMilliSec/1000/60, ChurnInGB = Total4MBBlocksChanged/256</p>
+<p>| order by PreciseTimeStamp desc</p>
+<p>Sample Output</p>
+<p>PreciseTimeStamp            StartTime                 VMName  SubscriptionId                ErrorCode                 TaskId</p>
+<p>2019-03-04 19:13:04.9100213       2019-03-04 14:37:33.2245189       atedc06 bbbbbbbb-cccc-bbbb-cccc-bbbbbbbbbbbb  Success               6e56f94c-802a-4ef7-8387-1c9a69a8172e</p>
+<p>2019-03-04 19:02:07.5289111       2019-03-04 19:02:04.6469549       atedc06 bbbbbbbb-cccc-bbbb-cccc-bbbbbbbbbbbb  UserErrorBackupOperationInProgress    9b898417-5ba5-4e0a-b0c3-3e4284792e50</p>
+<p>2019-03-04 01:47:51.5663819       2019-03-04 01:02:27.6041436       atedc06 bbbbbbbb-cccc-bbbb-cccc-bbbbbbbbbbbb  Success               07775dbc-d3bd-4741-a4a5-665313cd2cf4</p>
+<p>As we can see, the backup is triggered while the other backup was in progress. this is why the backup is failed.</p>
+<p>Mitigation Steps:</p>
+<p>If previous backup job is running, ask the customer to wait for the previous backup to complete and then trigger a new backup.</p>
+<p>Note: To understand why the previous job might be taking more time than intended, see article.</p>
+<p>•        If the backup job is taking longer time to complete then</p>
+<p>o        Ensure the InstantRP feature is enabled for the backed up VM vault. To check the InstantRP status, follow the below steps:</p>
+<p>o        Go to ASC &gt; Resource Explorer &gt; Backup items and check IsInstantRPEnabled value.</p>
+<p>§        If the value is 0, InstantRP is not enabled</p>
+<p>§        If the value is 1, InstantRP is enabled</p>
+<p>•        If InstantRP feature is not enabled for the backed up VM, try cancelling the backup job using Azure portal or powershell . (we recommend customer to enable InstantRP feature, for a faster backup operation.)</p>
+<p>Note: If you are unable to identify the long running backup job then</p>
+<p>•        Check if customer has changed the backup vault, using the below Kusto query</p>
+<p>•            BCMBackupStats | where SubscriptionId == &quot;&lt;Subscription ID&gt;&quot; and TIMESTAMP &gt;= ago(5d) and VMName == &quot;&lt;Backed up VM name&gt;&quot; | project PreciseTimeStamp , VMName , ErrorCode , OSVersion , GuestAgentVersion , DataSourceId , ResourceId</p>
+<p>•        Sample output of above Kusto query:</p>
+<p>PreciseTimeStamp        VMName        ErrorCode        OSVersion        GuestAgentVersion        DataSourceId        ResourceId</p>
+<p>20:11.5        azrwewatrdshc01        UserErrorBackupOperationInProgress        null        null        158331193177325        8197825751282730000</p>
+<p>07:20.3        azrwewatrdshc01        UserErrorBackupOperationInProgress        null        null        158331193177325        8197825751282730000</p>
+<p>16:51.1        azrwewatrdshc01        Success        Windows Server 2012 R2 Datacenter        2.7.41491.875        140739290815849        5639862902753080000</p>
+<p>19:40.4        azrwewatrdshc01        Success        Windows Server 2012 R2 Datacenter        2.7.41491.875        140739290815849        5639862902753080000</p>
+<p>•        From the output check the DataSourceId and ResourceId if it is changed then the backup is reconfigured with another vault and the backup job could be running in the old vault.</p>
+<p>•        Check if the old vault exist, try cancelling the backup job using Azure portal or powershell  and retry backup in the current vault.</p>
+<p>•        If the old vault is deleted by customer, then contact PG/developer to check and cancel the backup job.</p>
+<p>SFCCheckFailed</p>
+<p>Title: SFC tool return code failures</p>
+<p>Description: Backup failed because of system file errors. This could be due to one or more actions (such as a reboot) pending on this server.&lt;/Message&gt;</p>
+<p>Recommended Action: Run System File Checker to repair system file errors, reboot as required and try the operation again. For more info refer to: <a href="https://support.microsoft.com/help/929833" target="_blank" rel="noopener">https://support.microsoft.com/help/929833</a></p>
+<p>Refer to TSG Authoring Guidelines and replace the below section with your content:</p>
+<p>Description: &lt;Describe the underlying issue(s) in simple sentences&gt;</p>
+<p>Recommended Actions: &lt;Provide CSS with steps to verify/root cause the problem and steps to resolve the issue&gt;</p>
+<p>Links: &lt;for additional references, provide links to public documentation&gt;</p>
+<p>ContainerNotFound</p>
+<p>Error Code: Container Not Found</p>
+<p>RestoreOperationFailedV2</p>
+<p>Error Code: RestoreOperationFailedV2</p>
+<p>Error Message: Restore failed with an internal error.</p>
+<p>The Restore operation fails because the replace disks operation is not supported for encrypted VMs.</p>
+<p>How to verify if the failure is caused by this specific root cause?</p>
+<p>Run the below Kusto query on the BCMBackupStats table and check if the TelemetryLogMessage contains &quot;Exception in SwapDisksTask&quot;</p>
+<p>union cluster(&#39;mabprod1&#39;).database(&#39;MABKustoProd1&#39;).BCMRecoveryStats,</p>
+<p>cluster(&#39;mabprodweu&#39;).database(&#39;MABKustoProd&#39;).BCMRecoveryStats,</p>
+<p>cluster(&#39;mabprodwus&#39;).database(&#39;MABKustoProd&#39;).BCMRecoveryStats</p>
+<p>|where TaskId = &quot;&lt;Task ID&gt;&quot;</p>
+<p>|where TIMESTAMP &gt; ago(1d)</p>
+<p>|where TelemetryLogMessage contains &quot;Exception in SwapDisksTask&quot;</p>
+<p>If the output contains Exception in SwapDisksTask message then this failure is because replace disks operation is not supported for encrypted VMs.</p>
+<p>Workaround</p>
+<p>Ask customer to try a different restore operation like ALR  (Alternate location recovery) or restore backed-up disks .</p>
+<p>Customer Ready Content</p>
+<p>Restore operation failed because the replace disks operation is not supported for encrypted VMs, so we recommend you to try a different restore operation like restore the full virtual machine to the alternate location  or restore backed-up disks .</p>
+<p>ManagedRPCreationFailedInCrpButExtensionSucceeded</p>
+<p>Error code: ManagedRPCreationFailedInCrpButExtensionSucceeded</p>
+<p>Error message: Backup operation failed for managed disk VM.</p>
+<p>Cause 1 : Azure VM Guest Agent is unable to download VMSnapshot extension new version</p>
+<p>Symptom</p>
+<p>If customer is facing symptom of this failure ManagedRPCreationFailedInCrpButExtensionSucceeded</p>
+<p>Root Cause:</p>
+<p>verify if the failure is caused by this specific ErrorCode ManagedRPCreationFailedInCrpButExtensionSucceeded</p>
+<p>Workaround:</p>
+<p>Please allow access to all ports of 168.63.129.16, for more information refer this article</p>
+<p>The backup operation failed for the managed disk VM, for Windows and Linux machines complete the below troubleshooting steps to resolve this issue.</p>
+<p>Windows VM:</p>
+<p>•        Restart the Windows Guest Agent service and initiate the backup operation.</p>
+<p>•        Update Guest Agent to latest version, by following this article .</p>
+<p>Linux VM:</p>
+<p>•        Restart the Guest Agent service using the following commands:</p>
+<p>o        For Ubuntu: service walinuxagent start</p>
+<p>o        For other distributions: service waagent start</p>
+<p>o        For CoreOS: systemctl start waagent</p>
+<p>•        Check the agent version using the command mentioned here , if the agent version is older than the version mentioned here , update to the latest version by following the steps</p>
+<p>Note: On both Windows and Linux servers check if there are other applications that is keeping the server busy. Check resource utilization.</p>
+<p>•        Follow the link to check the resource utilization using Jarvis</p>
+<p>Customer Ready Content:</p>
+<p>We have identified that the backup operation failed for the managed disk VM. Complete the below troubleshooting steps to resolve this issue.</p>
+<p>Recommended Steps:</p>
+<p>Windows VM :</p>
+<p>•        Update Guest Agent to latest version by following this article .</p>
+<p>Linux VM :</p>
+<p>Reboot/Restart of VM when a backup is triggered</p>
+<p>What is the customer facing symptom for this failure?</p>
+<p>Reboot/Restart of VM is happening when a backup is triggered</p>
+<p>Reboot/Restart of VM is happening when a backups is triggered</p>
+<p>What is the workaround?</p>
+<p>Issue is not with backup but with the CRP. Please contact CRP team.</p>
+<p>VCRedist 2013 x86 Uninstalled during Extension version update</p>
+<p>VCRedist 2013 x86 (already installed in the VM) got uninstalled during Extension version update.</p>
+<p>There was a bug in VCRedist 2013 x64 version installed by IaaS VM Backup Extension, which uninstalls the existing VCRedist 2013 x86 version in the VM.</p>
+<p>We are releasing a new version of IaaS VM Backup Extension which will include latest version of VCRedist 2013 x64. ETA for this release is Jan-31-2019.</p>
+<p>However in the meantime, re-install VCRedist 2013 x86 version in the VM.</p>
+<p>Error code: CloudDosTimeboudLimitReached</p>
+<p>Error message: Operation is blocked for some time as it has been attempted beyond a limit.</p>
+<p>Recommended Action: We recommend not having more than 3 backups a day. Retry the operation tomorrow.</p>
+<p>One of the cause for this error DOS limit hit due to requesting 3 IC4 validation to service.</p>
+<p>In normal flow we don’t do IC4 but for block blob roll out we enable the IC4 for few data sources for approx 2 weeks.</p>
+<p>Few customer may face this issue. We are currently working with the service team to see if we can increase this limit while we are doing block blob roll out.</p>
+<p>Different Possible Restore Flows</p>
+<p>We have different flows possible in Restore and backup. Internally ,we call it DiffTL flow</p>
+<p>In Restore, DiffTL is enabled in one of these true</p>
+<p>1.        any disk containing more than 4TB (at any point of the time)</p>
+<p>2.        total number of disks is greater than 16</p>
+<p>3.        Restored is triggered from unmanaged disk to managed</p>
+<p>Flow of change observed by customer is as below</p>
+<p>NonDiffTL route : Data transfer from vault &gt; blob container created in staging storage account&gt; VHD created in container &gt; managed disk created in resource group</p>
+<p>DiffTLRoute : Data transfer from vault &gt; managed disk created in resource group (no blob container in staging storage account)</p>
+<p>Note: If for a VM, If DiffTL is enabled, then even if above conditions doesnt match(for ex , Customer deattaching large disk), flows go through DiffTL route. And also there is no customer actionable way to alter the flows</p>
+<p>P.S : If for a VM, If DiffTL is enabled, then even if above conditions doesnt match(for ex , Customer deattaching large disk), flows go through DiffTL route.</p>
+<p>Ref - Incident-212030502 Details - IcM (microsofticm.com)</p>
+<p>AuthenticationFailedError in Host in the DoSnapshot Call</p>
+<p>Symptom : If you see that the Host plugin So snapshot call is failing with an Auth error.</p>
+<p>•        It is a known issue and we are taking a hotfix for this.</p>
+<p>•        Till then , cx can use the below command to set a regKey to enforce Guest based snapshot.</p>
+<p>REG ADD &quot;HKLM\SOFTWARE\Microsoft\BcdrAgentPersistentKeys&quot; /v SnapshotMethod /t REG_SZ /d firstGuestThenHost /f</p>
+<p>Backups not getting triggered</p>
+<p>Symptom : One of the reasons for backup not getting triggered is Backup App being in disabled state. To verify this is the issue, check the backup traces and if it contains the following string then it means Backup App is disabled. &quot;Application &#39;262044b1-e2ce-469f-a196-69ab7ada62d3&#39;(Backup Management Service) is disabled.&quot;</p>
+<p>Fix : If you see the above mentioned logs in the backup logs, then follow the steps below to re-enable the Backup app.</p>
+<p>1.        In customer&#39;s subscription, navigate to &quot;Azure active directory&quot; and click on &quot;Enterprise Application&quot; and search for application id &quot;262044b1-e2ce-469f-a196-69ab7ada62d3&quot;</p>
+<p>2.        In &quot;Backup Management Service&quot; app, set the &quot;Enabled for users to sign-in&quot; to Yes. Once done, trigger the backup, it should now not experience the above mentioned error.</p>
+<p>UserErrorMigrationFromTrustedLaunchVmToNonTrustedTrustedVmNotAllowed</p>
+<p>CSI incident for which this TSG is created - Incident-299662868 Details - IcM (microsofticm.com)</p>
+<p>What is the symptom (error message, behavior) that customer see?</p>
+<p>he VM Backup fails with &quot;UserErrorMigrationFromTrustedLaunchVmToNonTrustedTrustedVmNotAllowed&quot; for a non-Trusted VM.</p>
+<p>How to verify the root cause of failure?</p>
+<p>If a backup operation fails with &quot;UserErrorMigrationFromTrustedLaunchVmToNonTrustedTrustedVmNotAllowed&quot; and the following are true:</p>
+<p>1.        The VM is a non-Trusted VM</p>
+<p>2.        The VM name is the same as an earlier VM that was TVM (now deleted). The Resource Group must also be the same for both these VMs.</p>
+<p>Recommended Steps for CSS</p>
+<p>Due to a bug (linked below), a non-Trusted VM with the same name as an earlier TVM (now deleted) fails with &quot;UserErrorMigrationFromTrustedLaunchVmToNonTrustedTrustedVmNotAllowed&quot;.</p>
+<p>The bug item for tracking is: Bug 14090127: SecurityType in Container Info not updating - Boards (visualstudio.com)</p>
+<p>Meanwhile, the following workaround solution can be discussed with the customer:</p>
+<p>1.        Ask the customer to create a VM with a different name than that of the deleted TVM.</p>
+<p>2.        The customer could create a VM with the same name, but in a different Resource Group to avoid this issue.</p></article>

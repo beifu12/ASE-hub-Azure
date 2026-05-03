@@ -1,0 +1,377 @@
+<article class="kb-article" data-title="KMS安装部署文档"><h1>KMS安装部署文档</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Third Party App</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-09-12 13:45:38</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>5). 由于主机未联网，提示无法联机激活，因此选中显示其他激活方法</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>5). 由于主机未联网，提示无法联机激活，因此选中显示其他激活方法</li>
+</ul>
+<ul>
+<li>Status Unknown – 显示VAMT没有收集或无法收集到的产品授权状态.</li>
+</ul>
+<ul>
+<li>D. 对于有些客户端无法注册DNS，可以创建一个批处理文件，并在组策略管理器里的计算机配置里添加到启动里。当计算机启动的时候，会运行这个批处理文件。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\  NT\CurrentVersion\SoftwareProtectionPlatform</li>
+</ul>
+<ul>
+<li>看是否存在一个键值叫做“KeyManagementServiceName”, 设置该键值来指定KMS host</li>
+</ul>
+<ul>
+<li>slmgr.vbs /skms &lt;kms server address&gt;:port</li>
+</ul>
+<ul>
+<li>例如slmgr.vbs /skms kms.rackspace.com:1688</li>
+</ul>
+<ul>
+<li>如何启用自动搜索</li>
+</ul>
+<ul>
+<li>slmgr.vbs /ckms</li>
+</ul>
+<ul>
+<li>相信信息这篇博客上有介绍</li>
+</ul>
+<ul>
+<li>目录</li>
+</ul>
+<ul>
+<li>1.    激活KMS服务器</li>
+</ul>
+<ul>
+<li>2.    在DNS里添加SRV记录</li>
+</ul>
+<ul>
+<li>3.    安装并使用Volume Activation Management Tool软件来激活KMS客户端</li>
+</ul>
+<ul>
+<li>4.    注意事项</li>
+</ul>
+<ul>
+<li>激活KMS服务器</li>
+</ul>
+<ul>
+<li>1). 在计算机上右键--属性</li>
+</ul>
+<ul>
+<li>2). 选择立即激活，在激活对话框中选中输入其他产品密钥</li>
+</ul>
+<ul>
+<li>3). 输入产品密钥</li>
+</ul>
+<ul>
+<li>6). 选中使用自动电话系统</li>
+</ul>
+<ul>
+<li>7. 选中地区为中国</li>
+</ul>
+<ul>
+<li>8). 提示信息拨打激活电话，获得产品激活信息并输入</li>
+</ul>
+<ul>
+<li>9). 显示激活成功，关闭对话框</li>
+</ul>
+<ul>
+<li>在DNS里添加SRV记录</li>
+</ul>
+<ul>
+<li>1). 点击开始，选择管理工具——&gt;DNS，打开DNS管理器，如下图：</li>
+</ul>
+<ul>
+<li>如果DNS下不存在_VLMCS记录，可手动添加，方法如下：</li>
+</ul>
+<ul>
+<li>打开 DNS 管理器</li>
+</ul>
+<ul>
+<li>单击需要在其上创建 SRV 资源记录的 DNS 服务器</li>
+</ul>
+<ul>
+<li>在控制台树中，展开正向查找区域，右键单击该域，然后单击“其他新记录”</li>
+</ul>
+<ul>
+<li>D）在资源记录类型窗口中，选择服务位置 (SRV)，然后单击创建记录</li>
+</ul>
+<ul>
+<li>E）键入以下信息：</li>
+</ul>
+<ul>
+<li>a.    服务：_VLMCS</li>
+</ul>
+<ul>
+<li>b.    协议：_TCP</li>
+</ul>
+<ul>
+<li>d.    提供KMS激活服务的主机：&lt;FQDN_of_KMS_Host&gt;</li>
+</ul>
+<ul>
+<li>完成后，单击确定，然后单击完成</li>
+</ul>
+<ul>
+<li>安装并使用Volume Activation Management Tool软件来激活KMS客户端</li>
+</ul>
+<ul>
+<li>1). 安装VAMT并在开始菜单中找到并运行。</li>
+</ul>
+<ul>
+<li>2). 在VAMT里选择所需要添加的计算机的范围，然后点击”Add Computer”来添加计算机</li>
+</ul>
+<ul>
+<li>3). 添加计算机之后，需要对其刷新激活状态。</li>
+</ul>
+<ul>
+<li>4). 如果系统安装的时候没有输入密钥，请选择”Install Product Key”，来为系统添加密钥。</li>
+</ul>
+<ul>
+<li>5). 对系统进行激活。</li>
+</ul>
+<ul>
+<li>注意事项</li>
+</ul>
+<ul>
+<li>使用注册表编辑器，您可以修改 RPC 的下列参数。下面讨论的 RPC Port 注册表项值位于注册表的以下项中：</li>
+</ul>
+<ul>
+<li>HKEY_LOCAL_MACHINE\Software\Microsoft\Rpc\Internet\ Key Data Type</li>
+</ul>
+<ul>
+<li>Ports REG_MULTI_SZ</li>
+</ul>
+<ul>
+<li>PortsInternetAvailable REG_SZ Y 或 N（不区分大小写）</li>
+</ul>
+<ul>
+<li>UseInternetPorts REG_SZ Y 或 N（不区分大小写）</li>
+</ul>
+<ul>
+<li>指定系统默认策略。</li>
+</ul>
+<ul>
+<li>示例：</li>
+</ul>
+<ul>
+<li>在以下注册表项下添加 Internet 项：</li>
+</ul>
+<ul>
+<li>HKEY_LOCAL_MACHINE\Software\Microsoft\Rpc</li>
+</ul>
+<ul>
+<li>在 Internet 项下，添加值“Ports”(MULTI_SZ)、“PortsInternetAvailable”(REG_SZ) 和“UseInternetPorts”(REG_SZ)。</li>
+</ul>
+<ul>
+<li>Ports:REG_MULTI_SZ: 5000-5100</li>
+</ul>
+<ul>
+<li>PortsInternetAvailable:REG_SZ:Y</li>
+</ul>
+<ul>
+<li>UseInternetPorts:REG_SZ:Y</li>
+</ul>
+<ul>
+<li>2). VAMT里的授权状态。</li>
+</ul>
+<ul>
+<li>Licensed – 显示所有已通过有效的产品密钥激活的产品.</li>
+</ul>
+<ul>
+<li>Not Licensed – 这是所有产品的需要状态为没有需要的父节点:</li>
+</ul>
+<ul>
+<li>Out-of-Box (OOB) Grace – 显示所有的产品仍在最初的宽限期.</li>
+</ul>
+<ul>
+<li>Out of Tolerance (OOT) Grace – 显示所有产品的硬件或BIOS的变化，从而需要重新激活，并且所有的KMS客户端在180天内没有重新激活.</li>
+</ul>
+<ul>
+<li>Unlicensed – 激活状态不确定. 这可能是篡改了与激活相关的二进制文件和配置。仅适用于Windows Vista的RTM版及零售版的Office 2010.</li>
+</ul>
+<ul>
+<li>Unmanaged Products – 显示所有已发现的产品不被VAMT支持及管理。这只包括Windows XP SP2及更高版本，或Windows Server 2003 SP1及更高版本。</li>
+</ul>
+<ul>
+<li>A. 手动激活，可以使用slmgr –ato来自动连接到KMS服务器做激活。</li>
+</ul>
+<ul>
+<li>C. 手动刷新DNS信息，可以使用ipconfig /flushdns来刷新DNS纪录，使用ipconfig /registerdns来重新注册DNS纪录。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>4). 联机验证。</li>
+</ul>
+<ul>
+<li>10). 在系统属性中查看激活状态</li>
+</ul>
+<ul>
+<li>2). 在DNS管理器中，选择域中DNS服务器（例如下图NODE01），在左窗口中，选择“正向查找区域”——&gt;域名（例如下图test.shdc.clic）——&gt;“_tcp”，在由窗口中，确认“_VLMCS”记录是否存在，如下图：</li>
+</ul>
+<ul>
+<li>Non-Genuine Grace – 仅适用与Vista. 表示系统已在30天的宽限期内在线验证失败.</li>
+</ul>
+<ul>
+<li>Notification – 显示左右产品要么是过去的激活宽限期或验证失败。这些产品降接收到通知，但继续以全部功能来运行。</li>
+</ul>
+<ul>
+<li>3). KMS客户端手动激活并查看激活状态</li>
+</ul>
+<ul>
+<li>B. 在本机上查看激活状态，可以使用 slmgr –dlv来查看详细的信息。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>一般手动在客户端指定kms主机地址进行激活是用命令完成</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>c.    端口号： 1688</li>
+</ul>
+<ul>
+<li>1). 防火墙及端口</li>
+</ul>
+<ul>
+<li>A．如果使用的是Windows防火墙，请确保开启相关的协议或端口，如下图：</li>
+</ul>
+<ul>
+<li>B. 对于第三方防火墙，请确保对没有禁止49152-65535这段端口、135端口及1688端口。因为这段端口是Windows Server 2008 R2的动态端口范围，VAMT需要使用该端口范围用来刷新服务器激活状态。如图：</li>
+</ul>
+<ul>
+<li>C. 对于Windows Server 2003的端口范围的修改，需要修改注册表。</li>
+</ul>
+<ul>
+<li>指定一组 IP 端口范围，其中包含的端口或者都可以在 Internet 中使用，或者都不可以在 Internet 中使用。每个字符串都代表一个或一组端口。例如，5984 代表一个端口，5000-5100 代表一组端口。如果任何条目位于 0 到 65535 这个范围以外，或者如果任一字符串无法解释，则 RPC 运行库都会将整个配置视为无效。</li>
+</ul>
+<ul>
+<li>如果为 Y，则 Ports 项中列出的端口都是该计算机上可以在 Internet 中使用的端口。如果为 N，则 Ports 项中列出的端口都不能在 Internet 中使用。</li>
+</ul>
+<ul>
+<li>如果为 Y，则从可在 Internet 中使用的端口集（根据先前的定义）中为使用默认值的进程分配端口。</li>
+</ul>
+<ul>
+<li>如果为 N，则从仅用于内部网的端口集中为使用默认值的进程分配端口。</li>
+</ul>
+<ul>
+<li>在本示例中，使用了端口 5000 到 5100（含 5000 和 5100），因此该新注册表项将显示为以下形式：</li>
+</ul>
+<ul>
+<li>重新启动服务器。所有使用 RPC 动态端口分配的应用程序都使用端口 5000 到 5100（含 5000 和 5100）。在大多数环境中，至少应该打开 100 个端口，因为多个系统服务都依赖于这些 RPC 端口来互相通信。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>注：手动指定kms主机，将关闭kms客户端的自动搜索kms服务器的功能。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://social.technet.microsoft.com/Forums/zh-CN/5f71e021-6383-40cd-9f9a-f2038be59383/kms2860827963?forum=WinServerPreviewZHCN" target="_blank" rel="noopener">https://social.technet.microsoft.com/Forums/zh-CN/5f71e021-6383-40cd-9f9a-f2038be59383/kms2860827963?forum=WinServerPreviewZHCN</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/dn502532(v%3Dws.11)" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/dn502532(v%3Dws.11)</a></li>
+</ul>
+<ul>
+<li><a href="https://blog.51cto.com/timethin/308260" target="_blank" rel="noopener">https://blog.51cto.com/timethin/308260</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://social.technet.microsoft.com/Forums/zh-CN/5f71e021-6383-40cd-9f9a-f2038be59383/kms2860827963?forum=WinServerPreviewZHCN&gt;" target="_blank" rel="noopener">https://social.technet.microsoft.com/Forums/zh-CN/5f71e021-6383-40cd-9f9a-f2038be59383/kms2860827963?forum=WinServerPreviewZHCN&gt;</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/windows-server/get-started/kms-client-activation-keys" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows-server/get-started/kms-client-activation-keys</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p><a href="https://social.technet.microsoft.com/Forums/zh-CN/5f71e021-6383-40cd-9f9a-f2038be59383/kms2860827963?forum=WinServerPreviewZHCN" target="_blank" rel="noopener">https://social.technet.microsoft.com/Forums/zh-CN/5f71e021-6383-40cd-9f9a-f2038be59383/kms2860827963?forum=WinServerPreviewZHCN</a></p>
+<p>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\  NT\CurrentVersion\SoftwareProtectionPlatform</p>
+<p>看是否存在一个键值叫做“KeyManagementServiceName”, 设置该键值来指定KMS host</p>
+<p><a href="https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/dn502532(v%3Dws.11)" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/dn502532(v%3Dws.11)</a></p>
+<p>一般手动在客户端指定kms主机地址进行激活是用命令完成</p>
+<p>slmgr.vbs /skms &lt;kms server address&gt;:port</p>
+<p>例如slmgr.vbs /skms kms.rackspace.com:1688</p>
+<p>注：手动指定kms主机，将关闭kms客户端的自动搜索kms服务器的功能。</p>
+<p>如何启用自动搜索</p>
+<p>slmgr.vbs /ckms</p>
+<p>相信信息这篇博客上有介绍</p>
+<p><a href="https://blog.51cto.com/timethin/308260" target="_blank" rel="noopener">https://blog.51cto.com/timethin/308260</a></p>
+<p>From &lt;<a href="https://social.technet.microsoft.com/Forums/zh-CN/5f71e021-6383-40cd-9f9a-f2038be59383/kms2860827963?forum=WinServerPreviewZHCN&gt;" target="_blank" rel="noopener">https://social.technet.microsoft.com/Forums/zh-CN/5f71e021-6383-40cd-9f9a-f2038be59383/kms2860827963?forum=WinServerPreviewZHCN&gt;</a></p>
+<p>目录</p>
+<p>1.    激活KMS服务器</p>
+<p>2.    在DNS里添加SRV记录</p>
+<p>3.    安装并使用Volume Activation Management Tool软件来激活KMS客户端</p>
+<p>4.    注意事项</p>
+<p><a href="https://docs.microsoft.com/zh-cn/windows-server/get-started/kms-client-activation-keys" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows-server/get-started/kms-client-activation-keys</a></p>
+<p>激活KMS服务器</p>
+<p>1). 在计算机上右键--属性</p>
+<p>2). 选择立即激活，在激活对话框中选中输入其他产品密钥</p>
+<p>3). 输入产品密钥</p>
+<p>4). 联机验证。</p>
+<p>5). 由于主机未联网，提示无法联机激活，因此选中显示其他激活方法</p>
+<p>6). 选中使用自动电话系统</p>
+<p>7. 选中地区为中国</p>
+<p>8). 提示信息拨打激活电话，获得产品激活信息并输入</p>
+<p>9). 显示激活成功，关闭对话框</p>
+<p>10). 在系统属性中查看激活状态</p>
+<p>在DNS里添加SRV记录</p>
+<p>1). 点击开始，选择管理工具——&gt;DNS，打开DNS管理器，如下图：</p>
+<p>2). 在DNS管理器中，选择域中DNS服务器（例如下图NODE01），在左窗口中，选择“正向查找区域”——&gt;域名（例如下图test.shdc.clic）——&gt;“_tcp”，在由窗口中，确认“_VLMCS”记录是否存在，如下图：</p>
+<p>如果DNS下不存在_VLMCS记录，可手动添加，方法如下：</p>
+<p>打开 DNS 管理器</p>
+<p>单击需要在其上创建 SRV 资源记录的 DNS 服务器</p>
+<p>在控制台树中，展开正向查找区域，右键单击该域，然后单击“其他新记录”</p>
+<p>D）在资源记录类型窗口中，选择服务位置 (SRV)，然后单击创建记录</p>
+<p>E）键入以下信息：</p>
+<p>a.    服务：_VLMCS</p>
+<p>b.    协议：_TCP</p>
+<p>c.    端口号： 1688</p>
+<p>d.    提供KMS激活服务的主机：&lt;FQDN_of_KMS_Host&gt;</p>
+<p>完成后，单击确定，然后单击完成</p>
+<p>安装并使用Volume Activation Management Tool软件来激活KMS客户端</p>
+<p>1). 安装VAMT并在开始菜单中找到并运行。</p>
+<p>2). 在VAMT里选择所需要添加的计算机的范围，然后点击”Add Computer”来添加计算机</p>
+<p>3). 添加计算机之后，需要对其刷新激活状态。</p>
+<p>4). 如果系统安装的时候没有输入密钥，请选择”Install Product Key”，来为系统添加密钥。</p>
+<p>5). 对系统进行激活。</p>
+<p>注意事项</p>
+<p>1). 防火墙及端口</p>
+<p>A．如果使用的是Windows防火墙，请确保开启相关的协议或端口，如下图：</p>
+<p>B. 对于第三方防火墙，请确保对没有禁止49152-65535这段端口、135端口及1688端口。因为这段端口是Windows Server 2008 R2的动态端口范围，VAMT需要使用该端口范围用来刷新服务器激活状态。如图：</p>
+<p>C. 对于Windows Server 2003的端口范围的修改，需要修改注册表。</p>
+<p>使用注册表编辑器，您可以修改 RPC 的下列参数。下面讨论的 RPC Port 注册表项值位于注册表的以下项中：</p>
+<p>HKEY_LOCAL_MACHINE\Software\Microsoft\Rpc\Internet\ Key Data Type</p>
+<p>Ports REG_MULTI_SZ</p>
+<p>指定一组 IP 端口范围，其中包含的端口或者都可以在 Internet 中使用，或者都不可以在 Internet 中使用。每个字符串都代表一个或一组端口。例如，5984 代表一个端口，5000-5100 代表一组端口。如果任何条目位于 0 到 65535 这个范围以外，或者如果任一字符串无法解释，则 RPC 运行库都会将整个配置视为无效。</p>
+<p>PortsInternetAvailable REG_SZ Y 或 N（不区分大小写）</p>
+<p>如果为 Y，则 Ports 项中列出的端口都是该计算机上可以在 Internet 中使用的端口。如果为 N，则 Ports 项中列出的端口都不能在 Internet 中使用。</p>
+<p>UseInternetPorts REG_SZ Y 或 N（不区分大小写）</p>
+<p>指定系统默认策略。</p>
+<p>如果为 Y，则从可在 Internet 中使用的端口集（根据先前的定义）中为使用默认值的进程分配端口。</p>
+<p>如果为 N，则从仅用于内部网的端口集中为使用默认值的进程分配端口。</p>
+<p>示例：</p>
+<p>在以下注册表项下添加 Internet 项：</p>
+<p>HKEY_LOCAL_MACHINE\Software\Microsoft\Rpc</p>
+<p>在 Internet 项下，添加值“Ports”(MULTI_SZ)、“PortsInternetAvailable”(REG_SZ) 和“UseInternetPorts”(REG_SZ)。</p>
+<p>在本示例中，使用了端口 5000 到 5100（含 5000 和 5100），因此该新注册表项将显示为以下形式：</p>
+<p>Ports:REG_MULTI_SZ: 5000-5100</p>
+<p>PortsInternetAvailable:REG_SZ:Y</p>
+<p>UseInternetPorts:REG_SZ:Y</p>
+<p>重新启动服务器。所有使用 RPC 动态端口分配的应用程序都使用端口 5000 到 5100（含 5000 和 5100）。在大多数环境中，至少应该打开 100 个端口，因为多个系统服务都依赖于这些 RPC 端口来互相通信。</p>
+<p>2). VAMT里的授权状态。</p>
+<p>Status Unknown – 显示VAMT没有收集或无法收集到的产品授权状态.</p>
+<p>Licensed – 显示所有已通过有效的产品密钥激活的产品.</p>
+<p>Not Licensed – 这是所有产品的需要状态为没有需要的父节点:</p>
+<p>Out-of-Box (OOB) Grace – 显示所有的产品仍在最初的宽限期.</p>
+<p>Non-Genuine Grace – 仅适用与Vista. 表示系统已在30天的宽限期内在线验证失败.</p>
+<p>Out of Tolerance (OOT) Grace – 显示所有产品的硬件或BIOS的变化，从而需要重新激活，并且所有的KMS客户端在180天内没有重新激活.</p>
+<p>Unlicensed – 激活状态不确定. 这可能是篡改了与激活相关的二进制文件和配置。仅适用于Windows Vista的RTM版及零售版的Office 2010.</p>
+<p>Notification – 显示左右产品要么是过去的激活宽限期或验证失败。这些产品降接收到通知，但继续以全部功能来运行。</p>
+<p>Unmanaged Products – 显示所有已发现的产品不被VAMT支持及管理。这只包括Windows XP SP2及更高版本，或Windows Server 2003 SP1及更高版本。</p>
+<p>3). KMS客户端手动激活并查看激活状态</p>
+<p>A. 手动激活，可以使用slmgr –ato来自动连接到KMS服务器做激活。</p>
+<p>B. 在本机上查看激活状态，可以使用 slmgr –dlv来查看详细的信息。</p>
+<p>C. 手动刷新DNS信息，可以使用ipconfig /flushdns来刷新DNS纪录，使用ipconfig /registerdns来重新注册DNS纪录。</p>
+<p>D. 对于有些客户端无法注册DNS，可以创建一个批处理文件，并在组策略管理器里的计算机配置里添加到启动里。当计算机启动的时候，会运行这个批处理文件。</p></article>

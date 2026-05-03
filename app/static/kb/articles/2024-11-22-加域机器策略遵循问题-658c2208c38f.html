@@ -1,0 +1,122 @@
+<article class="kb-article" data-title="加域机器策略遵循问题"><h1>加域机器策略遵循问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-22 19:17:53</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>HeLiming</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>HeLiming</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>HeLiming</li>
+</ul>
+<ul>
+<li>问题：一台加域的成员机器，域策略未配置Windows Update选项的设置，通过本地组策略设置的Windows Update选项是否会生效</li>
+</ul>
+<ul>
+<li>说法1：机器一旦加域后，会遵循域策略，若域策略未配置，则会遵循域策略的默认选项，本地策略不生效</li>
+</ul>
+<ul>
+<li>说法2：机器加域后，会遵循域策略，若域策略未配置，则会遵循本地组策略</li>
+</ul>
+<ul>
+<li>COMPUTER SETTINGS</li>
+</ul>
+<ul>
+<li>------------------</li>
+</ul>
+<ul>
+<li>Last time Group Policy was applied: 11/20/2018 at 1:09:11 PM</li>
+</ul>
+<ul>
+<li>Group Policy was applied from:      hlmwin12DC.hlm.com</li>
+</ul>
+<ul>
+<li>Domain Name:                        HLM</li>
+</ul>
+<ul>
+<li>Domain Type:                        Windows 2008 or later</li>
+</ul>
+<ul>
+<li>Applied Group Policy Objects</li>
+</ul>
+<ul>
+<li>-----------------------------</li>
+</ul>
+<ul>
+<li>Default Domain Policy</li>
+</ul>
+<ul>
+<li>Local Group Policy</li>
+</ul>
+<ul>
+<li>备注：</li>
+</ul>
+<ul>
+<li>显示当前机器应用的策略（Summary）：gpresult.exe /R</li>
+</ul>
+<ul>
+<li>显示当前机器应用的策略（Detail）：gpresult.exe /H gpreport.html (该html存放于默认的执行路径)</li>
+</ul>
+<ul>
+<li>for %1 in (%windir%\system32\*.dll) do regsvr32.exe /s %1</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>相关Ticket: SR_2018111973793_[Hipo]查询虚拟机重启原因</li>
+</ul>
+<ul>
+<li>经Lab测试验证，说法2是成立的</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>强制刷新组策略命令：gpupdate.exe /force</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>CN=hlmwin12dm2,CN=Computers,DC=hlm,DC=com</li>
+</ul>
+<ul>
+<li>Group Policy slow link threshold:   500 kbps</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>From &lt;<a href="https://social.technet.microsoft.com/Forums/windowsserver/en-US/0ea20c5d-c0ae-457d-89d4-a1686a359e72/gpresult-h-gpreporthtml-gterror-invalid-pointer&gt;" target="_blank" rel="noopener">https://social.technet.microsoft.com/Forums/windowsserver/en-US/0ea20c5d-c0ae-457d-89d4-a1686a359e72/gpresult-h-gpreporthtml-gterror-invalid-pointer&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>HeLiming</p>
+<p>2018/11/20</p>
+<p>相关Ticket: SR_2018111973793_[Hipo]查询虚拟机重启原因</p>
+<p>问题：一台加域的成员机器，域策略未配置Windows Update选项的设置，通过本地组策略设置的Windows Update选项是否会生效</p>
+<p>说法1：机器一旦加域后，会遵循域策略，若域策略未配置，则会遵循域策略的默认选项，本地策略不生效</p>
+<p>说法2：机器加域后，会遵循域策略，若域策略未配置，则会遵循本地组策略</p>
+<p>经Lab测试验证，说法2是成立的</p>
+<p>COMPUTER SETTINGS</p>
+<p>------------------</p>
+<p>CN=hlmwin12dm2,CN=Computers,DC=hlm,DC=com</p>
+<p>Last time Group Policy was applied: 11/20/2018 at 1:09:11 PM</p>
+<p>Group Policy was applied from:      hlmwin12DC.hlm.com</p>
+<p>Group Policy slow link threshold:   500 kbps</p>
+<p>Domain Name:                        HLM</p>
+<p>Domain Type:                        Windows 2008 or later</p>
+<p>Applied Group Policy Objects</p>
+<p>-----------------------------</p>
+<p>Default Domain Policy</p>
+<p>Local Group Policy</p>
+<p>备注：</p>
+<p>强制刷新组策略命令：gpupdate.exe /force</p>
+<p>显示当前机器应用的策略（Summary）：gpresult.exe /R</p>
+<p>显示当前机器应用的策略（Detail）：gpresult.exe /H gpreport.html (该html存放于默认的执行路径)</p>
+<p>for %1 in (%windir%\system32\*.dll) do regsvr32.exe /s %1</p>
+<p>From &lt;<a href="https://social.technet.microsoft.com/Forums/windowsserver/en-US/0ea20c5d-c0ae-457d-89d4-a1686a359e72/gpresult-h-gpreporthtml-gterror-invalid-pointer&gt;" target="_blank" rel="noopener">https://social.technet.microsoft.com/Forums/windowsserver/en-US/0ea20c5d-c0ae-457d-89d4-a1686a359e72/gpresult-h-gpreporthtml-gterror-invalid-pointer&gt;</a></p></article>

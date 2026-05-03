@@ -1,0 +1,248 @@
+<article class="kb-article" data-title="Azcopy  V10 断点续传的测试"><h1>Azcopy  V10 断点续传的测试</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-02-22 15:05:12</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>32.8 %, 11231 Done, 0 Failed, 34530 Pending, 0 Skipped, 45761 Total, 2-sec Throughput (Mb/s): 74.6775</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>32.8 %, 11231 Done, 0 Failed, 34530 Pending, 0 Skipped, 45761 Total, 2-sec Throughput (Mb/s): 74.6775</li>
+</ul>
+<ul>
+<li>99.7 %, 45457 Done, 0 Failed, 304 Pending, 0 Skipped, 45761 Total, 2-sec Throughput (Mb/s): 85.1815</li>
+</ul>
+<ul>
+<li>Number of Transfers Failed: 0</li>
+</ul>
+<ul>
+<li>这里需要注意的是，对于将本地文件上传的操作，恢复时必须提供--destination-sas，否则会报出如下报错信息：</li>
+</ul>
+<ul>
+<li>cannot resume job with JobId 5847d1b8-e2ab-454d-5c51-f5f7be7d9097. The destination-sas switch must be provided to resume the job</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1，安装下载Azcopy V10</li>
+</ul>
+<ul>
+<li>2，因为习惯用Linux，所以我这里选择下载的版本为Linux版本</li>
+</ul>
+<ul>
+<li>tar -zxvf azcopy_linux_amd64_10.3.4.tar.gz   ##对安装包解压缩</li>
+</ul>
+<ul>
+<li>sudo ln -s /home/leo/azcopydir/azcopy_linux_amd64_10.3.4/azcopy /usr/bin/azcopy</li>
+</ul>
+<ul>
+<li>INFO: Scanning...</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/az/bin/2to3 because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/az/bin/idle3 because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/az/bin/pydoc3 because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/az/bin/python3 because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/az/bin/python3-config because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/az/bin/python3.6-config because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/az/bin/pyvenv because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/az/lib/pkgconfig/python-3.6m.pc because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/az/lib/pkgconfig/python3.pc because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>Job 5847d1b8-e2ab-454d-5c51-f5f7be7d9097 has started</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/az/share/man/man1/python3.1 because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/microsoft/omsagent/bin/omsagent because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/microsoft/omsagent/bin/omsagent-94db9cea-f9a9-4a74-b497-03cfffde6c54 because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/microsoft/omsagent/bin/omsagent-LAD because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/microsoft/omsagent/bin/omsagent-e485d6e2-2530-463a-92d5-75ce46b9dc5f because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/omi/bin/OMSConsistencyInvoker because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/omi/lib/libSCXCoreProviderModule.so because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/omi/lib/libcrypto.so.1.0.0 because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/omi/lib/libcurl.so.3 because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/omi/lib/libcurl.so.4 because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/omi/lib/libomsconfig.so because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>INFO: Skipping over symlink at /opt/omi/lib/libssl.so.1.0.0 because --follow-symlinks is false</li>
+</ul>
+<ul>
+<li>##在另一个Putty窗口中，对虚拟机执行了reboot操作</li>
+</ul>
+<ul>
+<li>leo@leoubuntu1604:~$ sudo su -</li>
+</ul>
+<ul>
+<li>root@leoubuntu1604:~# azcopy jobs list</li>
+</ul>
+<ul>
+<li>Existing Jobs</li>
+</ul>
+<ul>
+<li>JobId: 5847d1b8-e2ab-454d-5c51-f5f7be7d9097</li>
+</ul>
+<ul>
+<li>Start Time: Thursday, 05-Mar-20 18:02:11 UTC</li>
+</ul>
+<ul>
+<li>Status: InProgress</li>
+</ul>
+<ul>
+<li>root@leoubuntu1604:~#</li>
+</ul>
+<ul>
+<li>root@leoubuntu1604:~# azcopy jobs resume 5847d1b8-e2ab-454d-5c51-f5f7be7d9097 --destination-sas=&quot;?sv=2019-02-02&amp;ss=bfqt&amp;srt=sco&amp;sp=rwdlacup&amp;se=2020-03-06T01:56:26Z&amp;st=2020-03-05T17:56:26Z&amp;spr=https&amp;sig=TV7Dx6zOwQi7%2FVoPF6wMbrDjybYA2XzodT9%2FQiWsaG8%3D&quot;</li>
+</ul>
+<ul>
+<li>Job 5847d1b8-e2ab-454d-5c51-f5f7be7d9097 summary</li>
+</ul>
+<ul>
+<li>Elapsed Time (Minutes): 1.0687</li>
+</ul>
+<ul>
+<li>Total Number Of Transfers: 45761</li>
+</ul>
+<ul>
+<li>Number of Transfers Completed: 45761</li>
+</ul>
+<ul>
+<li>Number of Transfers Skipped: 0</li>
+</ul>
+<ul>
+<li>TotalBytesTransferred: 575773793</li>
+</ul>
+<ul>
+<li>Final Job Status: Completed</li>
+</ul>
+<ul>
+<li>root@leoubuntu1604:~# azcopy jobs resume 5847d1b8-e2ab-454d-5c51-f5f7be7d9097</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Log file is located at: /root/.azcopy/5847d1b8-e2ab-454d-5c51-f5f7be7d9097.log</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>##做个软链接到/usr/bin/azcopy，方便命令使用</li>
+</ul>
+<ul>
+<li>3,  选择上传一个较大的文件，我这里选择的是/opt整个目录，具体命令如下：</li>
+</ul>
+<ul>
+<li>等待虚拟机重启后，使用Putty重新连接登陆，切换到之前执行命令操作的用户(我之前用的是root用户)下，查找之前的azcopy job:</li>
+</ul>
+<ul>
+<li>对之前的命令进行恢复，验证断点续传，最后验证命令执行成功。详细命令输出如下：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>root@leoubuntu1604:~# azcopy cp &quot;/opt&quot; &quot;<a href="https://leovaultnorth2.blob.core.chinacloudapi.cn/files/?sv=2019-02-02&amp;ss=bfqt&amp;srt=sco&amp;sp=rwdlacup&amp;se=2020-03-06T01:49:20Z&amp;st=2020-03-05T17:49:20Z&amp;spr=https&amp;sig=l2GRpiC8wenRqjkGbIBaNKxUr06fyX4R8dpw8NT9J0M%3D&quot;" target="_blank" rel="noopener">https://leovaultnorth2.blob.core.chinacloudapi.cn/files/?sv=2019-02-02&amp;ss=bfqt&amp;srt=sco&amp;sp=rwdlacup&amp;se=2020-03-06T01:49:20Z&amp;st=2020-03-05T17:49:20Z&amp;spr=https&amp;sig=l2GRpiC8wenRqjkGbIBaNKxUr06fyX4R8dpw8NT9J0M%3D&quot;</a> --recursive</li>
+</ul>
+<ul>
+<li>Command: cp /opt <a href="https://leovaultnorth2.blob.core.chinacloudapi.cn/files/?se=2020-03-06t01%3A49%3A20z&amp;sig=REDACTED&amp;sp=rwdlacup&amp;spr=https&amp;srt=sco&amp;ss=bfqt&amp;st=2020-03-05t17%3A49%3A20z&amp;sv=2019-02-02" target="_blank" rel="noopener">https://leovaultnorth2.blob.core.chinacloudapi.cn/files/?se=2020-03-06t01%3A49%3A20z&amp;sig=REDACTED&amp;sp=rwdlacup&amp;spr=https&amp;srt=sco&amp;ss=bfqt&amp;st=2020-03-05t17%3A49%3A20z&amp;sv=2019-02-02</a> --recursive</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020-03-06</p>
+<p>1，安装下载Azcopy V10</p>
+<p>2，因为习惯用Linux，所以我这里选择下载的版本为Linux版本</p>
+<p>tar -zxvf azcopy_linux_amd64_10.3.4.tar.gz   ##对安装包解压缩</p>
+<p>##做个软链接到/usr/bin/azcopy，方便命令使用</p>
+<p>sudo ln -s /home/leo/azcopydir/azcopy_linux_amd64_10.3.4/azcopy /usr/bin/azcopy</p>
+<p>3,  选择上传一个较大的文件，我这里选择的是/opt整个目录，具体命令如下：</p>
+<p>root@leoubuntu1604:~# azcopy cp &quot;/opt&quot; &quot;<a href="https://leovaultnorth2.blob.core.chinacloudapi.cn/files/?sv=2019-02-02&amp;ss=bfqt&amp;srt=sco&amp;sp=rwdlacup&amp;se=2020-03-06T01:49:20Z&amp;st=2020-03-05T17:49:20Z&amp;spr=https&amp;sig=l2GRpiC8wenRqjkGbIBaNKxUr06fyX4R8dpw8NT9J0M%3D&quot;" target="_blank" rel="noopener">https://leovaultnorth2.blob.core.chinacloudapi.cn/files/?sv=2019-02-02&amp;ss=bfqt&amp;srt=sco&amp;sp=rwdlacup&amp;se=2020-03-06T01:49:20Z&amp;st=2020-03-05T17:49:20Z&amp;spr=https&amp;sig=l2GRpiC8wenRqjkGbIBaNKxUr06fyX4R8dpw8NT9J0M%3D&quot;</a> --recursive</p>
+<p>INFO: Scanning...</p>
+<p>INFO: Skipping over symlink at /opt/az/bin/2to3 because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/az/bin/idle3 because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/az/bin/pydoc3 because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/az/bin/python3 because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/az/bin/python3-config because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/az/bin/python3.6-config because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/az/bin/pyvenv because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/az/lib/pkgconfig/python-3.6m.pc because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/az/lib/pkgconfig/python3.pc because --follow-symlinks is false</p>
+<p>Job 5847d1b8-e2ab-454d-5c51-f5f7be7d9097 has started</p>
+<p>Log file is located at: /root/.azcopy/5847d1b8-e2ab-454d-5c51-f5f7be7d9097.log</p>
+<p>INFO: Skipping over symlink at /opt/az/share/man/man1/python3.1 because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/microsoft/omsagent/bin/omsagent because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/microsoft/omsagent/bin/omsagent-94db9cea-f9a9-4a74-b497-03cfffde6c54 because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/microsoft/omsagent/bin/omsagent-LAD because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/microsoft/omsagent/bin/omsagent-e485d6e2-2530-463a-92d5-75ce46b9dc5f because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/omi/bin/OMSConsistencyInvoker because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/omi/lib/libSCXCoreProviderModule.so because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/omi/lib/libcrypto.so.1.0.0 because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/omi/lib/libcurl.so.3 because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/omi/lib/libcurl.so.4 because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/omi/lib/libomsconfig.so because --follow-symlinks is false</p>
+<p>INFO: Skipping over symlink at /opt/omi/lib/libssl.so.1.0.0 because --follow-symlinks is false</p>
+<p>32.8 %, 11231 Done, 0 Failed, 34530 Pending, 0 Skipped, 45761 Total, 2-sec Throughput (Mb/s): 74.6775</p>
+<p>##在另一个Putty窗口中，对虚拟机执行了reboot操作</p>
+<p>等待虚拟机重启后，使用Putty重新连接登陆，切换到之前执行命令操作的用户(我之前用的是root用户)下，查找之前的azcopy job:</p>
+<p>leo@leoubuntu1604:~$ sudo su -</p>
+<p>root@leoubuntu1604:~# azcopy jobs list</p>
+<p>Existing Jobs</p>
+<p>JobId: 5847d1b8-e2ab-454d-5c51-f5f7be7d9097</p>
+<p>Start Time: Thursday, 05-Mar-20 18:02:11 UTC</p>
+<p>Status: InProgress</p>
+<p>Command: cp /opt <a href="https://leovaultnorth2.blob.core.chinacloudapi.cn/files/?se=2020-03-06t01%3A49%3A20z&amp;sig=REDACTED&amp;sp=rwdlacup&amp;spr=https&amp;srt=sco&amp;ss=bfqt&amp;st=2020-03-05t17%3A49%3A20z&amp;sv=2019-02-02" target="_blank" rel="noopener">https://leovaultnorth2.blob.core.chinacloudapi.cn/files/?se=2020-03-06t01%3A49%3A20z&amp;sig=REDACTED&amp;sp=rwdlacup&amp;spr=https&amp;srt=sco&amp;ss=bfqt&amp;st=2020-03-05t17%3A49%3A20z&amp;sv=2019-02-02</a> --recursive</p>
+<p>root@leoubuntu1604:~#</p>
+<p>对之前的命令进行恢复，验证断点续传，最后验证命令执行成功。详细命令输出如下：</p>
+<p>root@leoubuntu1604:~# azcopy jobs resume 5847d1b8-e2ab-454d-5c51-f5f7be7d9097 --destination-sas=&quot;?sv=2019-02-02&amp;ss=bfqt&amp;srt=sco&amp;sp=rwdlacup&amp;se=2020-03-06T01:56:26Z&amp;st=2020-03-05T17:56:26Z&amp;spr=https&amp;sig=TV7Dx6zOwQi7%2FVoPF6wMbrDjybYA2XzodT9%2FQiWsaG8%3D&quot;</p>
+<p>99.7 %, 45457 Done, 0 Failed, 304 Pending, 0 Skipped, 45761 Total, 2-sec Throughput (Mb/s): 85.1815</p>
+<p>Job 5847d1b8-e2ab-454d-5c51-f5f7be7d9097 summary</p>
+<p>Elapsed Time (Minutes): 1.0687</p>
+<p>Total Number Of Transfers: 45761</p>
+<p>Number of Transfers Completed: 45761</p>
+<p>Number of Transfers Failed: 0</p>
+<p>Number of Transfers Skipped: 0</p>
+<p>TotalBytesTransferred: 575773793</p>
+<p>Final Job Status: Completed</p>
+<p>这里需要注意的是，对于将本地文件上传的操作，恢复时必须提供--destination-sas，否则会报出如下报错信息：</p>
+<p>root@leoubuntu1604:~# azcopy jobs resume 5847d1b8-e2ab-454d-5c51-f5f7be7d9097</p>
+<p>cannot resume job with JobId 5847d1b8-e2ab-454d-5c51-f5f7be7d9097. The destination-sas switch must be provided to resume the job</p></article>

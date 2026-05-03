@@ -1,0 +1,2781 @@
+<article class="kb-article" data-title="Azure linux镜像"><h1>Azure linux镜像</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: K8S</li>
+<li>最近修改: 2024-04-18 15:21:34</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>overlay overlay 126G 24G 97G 20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/e652502eb3e7e6b19a5eded6dfbe0cfbd32f9a23e39c27880bc3f1987de8acbb/rootfs</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/e652502eb3e7e6b19a5eded6dfbe0cfbd32f9a23e39c27880bc3f1987de8acbb/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/31073a667c94578564bb655502fe338ebcfe77afefa7fcab91fc78efe265f394/rootfs</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     500M   12K  500M   1% /var/lib/kubelet/pods/3c46be4b-503a-4b23-986b-b8e5973830aa/volumes/kubernetes.io~projected/kube-api-access-r78qc</li>
+</ul>
+<ul>
+<li>libgpg-error.x86_64                                                1.46-1.cm2                                @System</li>
+</ul>
+<ul>
+<li>libnetfilter_cttimeout.x86_64                                      1.0.0-6.cm2                               @System</li>
+</ul>
+<ul>
+<li>node-problem-detector.x86_64                                       0.8.17-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>node-problem-detector-aks-config.x86_64                            1.0-1                                     @System</li>
+</ul>
+<ul>
+<li>perl-Term-Complete.noarch                                          1.403-488.cm2                             @System</li>
+</ul>
+<ul>
+<li>perl-Time-Piece.x86_64                                             1.3401-488.cm2                            @System</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Azure linux 源于 Common Base Linux ：</li>
+</ul>
+<ul>
+<li>历史渊源</li>
+</ul>
+<ul>
+<li>Azure Linux 发行版源于CBL-Mariner 项目，CBL代表Common Base Linux。微软启动 CBL-Mariner 是因为它需要一个内部Linux发行版和一个一致的平台来支持工程师在Azure上运行的大量的工作负载。</li>
+</ul>
+<ul>
+<li>微软定制的开源发行版“让我们有一个非常明确、非常有主见的Azure焦点，并调整发行版的组件，使其完全符合我们支持容器主机所需的内容，并尝试保持依赖性、外来包</li>
+</ul>
+<ul>
+<li>微软2023 Build大会上宣布了Azure Linux的普遍可用性，并且其主要角色是作为AKS的容器主机。Azure Linux针对微软的Windows Hyper-V管理程序进行了优化，并在虚拟机(VM) 中运行，同时支持x86 和Arm。</li>
+</ul>
+<ul>
+<li>Azure Linux容器主机在AKS、AKS-HCI和Arc产品中提供了从云端到边缘的可靠性和一致性，用户可以在新集群中部署Azure Linux节点池，将Azure Linux 节点池添加到现有的Ubuntu集群，或者现有的Ubuntu节点迁移到Azure Linux 节点。</li>
+</ul>
+<ul>
+<li>特点</li>
+</ul>
+<ul>
+<li>Azure Linux追求轻量性，它包括一个400MB的核心镜像和300个程序包，立足于最求性能和安全性。</li>
+</ul>
+<ul>
+<li>最近测试一下AKS 使用 azure linux 镜像并且启用了虚拟节点：</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# kubectl get node</li>
+</ul>
+<ul>
+<li>NAME                                STATUS   ROLES    AGE    VERSION</li>
+</ul>
+<ul>
+<li>aks-agentpool-10665355-vmss000001   Ready    &lt;none&gt;   5h8m   v1.29.2</li>
+</ul>
+<ul>
+<li>virtual-node-aci-linux              Ready    agent    5h8m   v1.25.0-vk-azure-aci-1.6.1</li>
+</ul>
+<ul>
+<li>登录进入node</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# kubectl debug node/aks-agentpool-10665355-vmss000001 -it --image=mcr.microsoft.com/aks/fundamental/base-ubuntu:v0.0.11</li>
+</ul>
+<ul>
+<li>Creating debugging pod node-debugger-aks-agentpool-10665355-vmss000001-r7p6l with container debugger on node aks-agentpool-10665355-vmss000001.</li>
+</ul>
+<ul>
+<li>If you don&#39;t see a command prompt, try pressing enter.</li>
+</ul>
+<ul>
+<li>root@aks-agentpool-10665355-vmss000001:/# lsblk</li>
+</ul>
+<ul>
+<li>NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT</li>
+</ul>
+<ul>
+<li>sda      8:0    0    50G  0 disk</li>
+</ul>
+<ul>
+<li>`-sda1   8:1    0    50G  0 part /host/mnt</li>
+</ul>
+<ul>
+<li>sdb      8:16   0   128G  0 disk</li>
+</ul>
+<ul>
+<li>|-sdb1   8:17   0    64M  0 part /host/boot/efi</li>
+</ul>
+<ul>
+<li>|-sdb2   8:18   0   500M  0 part /host/boot</li>
+</ul>
+<ul>
+<li>`-sdb3   8:19   0 127.5G  0 part /host</li>
+</ul>
+<ul>
+<li>sr0     11:0    1   746K  0 rom</li>
+</ul>
+<ul>
+<li>root@aks-agentpool-10665355-vmss000001:/# chroot /host</li>
+</ul>
+<ul>
+<li>分区情况：</li>
+</ul>
+<ul>
+<li>sh-5.1# lsblk</li>
+</ul>
+<ul>
+<li>NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS</li>
+</ul>
+<ul>
+<li>`-sda1   8:1    0    50G  0 part /mnt</li>
+</ul>
+<ul>
+<li>|-sdb1   8:17   0    64M  0 part /boot/efi</li>
+</ul>
+<ul>
+<li>|-sdb2   8:18   0   500M  0 part /boot</li>
+</ul>
+<ul>
+<li>`-sdb3   8:19   0 127.4G  0 part /var/lib/kubelet</li>
+</ul>
+<ul>
+<li>/</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>sh-5.1# df -Th</li>
+</ul>
+<ul>
+<li>Filesystem     Type      Size  Used Avail Use% Mounted on</li>
+</ul>
+<ul>
+<li>/dev/sdb3      ext4      126G   24G   97G  20% /</li>
+</ul>
+<ul>
+<li>devtmpfs       devtmpfs  4.0M     0  4.0M   0% /dev</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     3.8G     0  3.8G   0% /dev/shm</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     1.6G   14M  1.5G   1% /run</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/f20a2665ea2c9011b06af899bd091c1a744831dbbb9f31115db162240d1192ba/shm</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/ea7ef17697dbea7494a34b03681ffdbff5be6f1f0b705fc290dd6763f529a621/shm</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/9f9b42a2008049e56e6e1a763510e06a5f689719f97e5495b3d8be3ee89ec663/shm</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/4263554f6a16720de228a1882d707ba1734c4666aff378371e58992422356b01/shm</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/abb452b76c2156bf441eacf3f465ce5b244939d2e425ffbf2548da8ed4a92367/shm</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/cf3872854fd9d377673c26ed72bdcfd6ffba433280a603bf84ccad61188f87de/shm</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/9f9b42a2008049e56e6e1a763510e06a5f689719f97e5495b3d8be3ee89ec663/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/cf3872854fd9d377673c26ed72bdcfd6ffba433280a603bf84ccad61188f87de/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/f20a2665ea2c9011b06af899bd091c1a744831dbbb9f31115db162240d1192ba/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/ea7ef17697dbea7494a34b03681ffdbff5be6f1f0b705fc290dd6763f529a621/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/abb452b76c2156bf441eacf3f465ce5b244939d2e425ffbf2548da8ed4a92367/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/14de6a17760d6b8b5fb3824987d350d9a0bcc250c657b7f2dcf44748fb8ce621/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/94c1905fc0a22e31f7672da057781ad7d75b003a1d16bf3cf1201fe2e32c898c/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/d1a22807a3b6b1fb64ddc634ae4b1e27066219f0879bd39f2160e78e4e291b13/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/f9f1beb4ba5fd1b413f315ca7e0a78afe396c1236905813e89f1ae8e0e9f34e9/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/faf56b1574ce13901b6fe2d1cd5aca4d3093a4b9338f6e4e9720ef7d79b29003/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/319b27623a01982a3aa56a6d858072f453c4472f774aed2e0aa721f80d97e69b/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/539dbbce53a17711aef377bfe62e2a9fdfc9581e640fb8bca95f6c48aed16157/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/79fc038f5e40ccb70f4a8a1a06a5ce6919d2ad93d9628eb2095a089dd59bf777/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/4263554f6a16720de228a1882d707ba1734c4666aff378371e58992422356b01/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/3ee44d3e46510b897a13a4e36879d0e737260f9c80a03bd99e84064981209a11/rootfs</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/daf84d6e6c80c6c07633e6ea5b5b66657a72fde11086cc61b607f2e37939b1c5/shm</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/daf84d6e6c80c6c07633e6ea5b5b66657a72fde11086cc61b607f2e37939b1c5/rootfs</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/93b93d51aeea5c9f36ec46efc7256e46e13eba651ef85a66aa8e5d1c3a6d5ef6/shm</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/93b93d51aeea5c9f36ec46efc7256e46e13eba651ef85a66aa8e5d1c3a6d5ef6/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/b5a42fb0c4224d627d5bc155684bfc2d950a9cc8dc3968408e7208ab91751a41/rootfs</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/c209b91fd906fe5a0469cd5d25c0beca7d514a7efa33012a243e2b310222a36b/shm</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/62924e9c15e263be99be0a74dcd4498d62b39078dca7701f8f26b24eab91f311/shm</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/2fa463154459dd018bb2e7a0742d94319ee22d87c876a704a32d7b186da410ec/shm</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/c209b91fd906fe5a0469cd5d25c0beca7d514a7efa33012a243e2b310222a36b/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/62924e9c15e263be99be0a74dcd4498d62b39078dca7701f8f26b24eab91f311/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/92c7f513c9cd05cb77fbc3c1481ce691aa63a47aebc64af13687557ddb260065/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/2fa463154459dd018bb2e7a0742d94319ee22d87c876a704a32d7b186da410ec/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/1b15c40d330e50a62d5e032721270a82dea37949697e6af97191d9ad85bd3fb2/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/58351c4f29ce723db36d35f0071ebdd5b25e773b4dab70b47fe8a015c75e4991/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/e24776dba809449ce4ba7fde663cae274e01b9e2e8db837a86f52d15f2a1df62/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/76ccc0a335b989a6d1ac85448acc87333e3f0748477e49c418cdd5e5e5819a7b/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/08285994153386f861f4b03728bb0ac0759ecf5f3cb79ebbfae1f11f72c49dec/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/027eccb7ebaef6fd4acc92c5f233a9cee8f9fdb11a725d672e95aa4b62e2e91f/rootfs</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/dfaf9ee9b57a5de4d6880abb8b0b0dea2b3c3c790958c7a5b4d613b226ab9555/shm</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/c2343b297e730d88fa19786a6d7edcd7f00ad84442a88577c81783d18328e706/shm</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/345fa218d1ecbacd9c96321fae994653a70cc1f836d96b0b930dea2d500b7cfb/shm</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/dfaf9ee9b57a5de4d6880abb8b0b0dea2b3c3c790958c7a5b4d613b226ab9555/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/345fa218d1ecbacd9c96321fae994653a70cc1f836d96b0b930dea2d500b7cfb/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/c2343b297e730d88fa19786a6d7edcd7f00ad84442a88577c81783d18328e706/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/7a36d3cce542130df28cced104772102a700a1ce56e93111ecfe278a434546a4/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/37e59bca72e00c31013af43ca769d22c2f5563f37c9a24554189ae3c3cb3b9a3/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/2004292aa39a50ef7f384fadcfc42413a32be8f866b8cabfafb03b576d44b0a3/rootfs</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/68cef1b2bb6f05e2ee88512bb0acfb7d5eacd8c962238d4d82f1a07b3587aa2f/shm</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/fc9475f5e77fcfccb5be6c2a26a9bc67ff9844d7909a4e1592d11957a6553246/shm</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/68cef1b2bb6f05e2ee88512bb0acfb7d5eacd8c962238d4d82f1a07b3587aa2f/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/fc9475f5e77fcfccb5be6c2a26a9bc67ff9844d7909a4e1592d11957a6553246/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/c33df4660879566c629c8fa36162f120ff4812c47fc164902bbcbed355532ebe/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/95f545735ffba3db7b1e8f9f44af33871bde17f2ee34aa9fc172e18ee9df884b/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/0792ab9e146feab3135fa3ed983f86046676d3ba54acfbbf571d330db3ca7fa7/rootfs</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/4ac6e0d093d85e6ea3543fa2c7f0841cf27b8ed54a8ae5d3c5ccbae15f2cd20d/shm</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/4ac6e0d093d85e6ea3543fa2c7f0841cf27b8ed54a8ae5d3c5ccbae15f2cd20d/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/744680eabeef72aff68b0cda67f386c48c5bfaa6a577e2ef4140620120b043d7/rootfs</li>
+</ul>
+<ul>
+<li>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/3efda0bd05ab6000a72c9411c4ba26538cd67bb5fb3150d4043fa7f0d8bb9553/shm</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/3efda0bd05ab6000a72c9411c4ba26538cd67bb5fb3150d4043fa7f0d8bb9553/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/5f5ae71d9fdde1e67c79e70bbc0fa26a28c8cb1b98e290d64a74f65734e670d3/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/d6e5fea98ee0fd6a37f6c96c760cac8cac17f3bd6b5eb80c4b570736b33fba8b/rootfs</li>
+</ul>
+<ul>
+<li>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/2deba7303d97471f2e1cf315ccdc2805815e5a2b9a52f75894d00c881c4878a6/rootfs</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs      64M     0   64M   0% /run/containerd/io.containerd.runtime.v2.task/k8s.io/2deba7303d97471f2e1cf315ccdc2805815e5a2b9a52f75894d00c881c4878a6/rootfs/dev</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     3.8G     0  3.8G   0% /tmp</li>
+</ul>
+<ul>
+<li>/dev/sdb2      ext4      452M   32M  386M   8% /boot</li>
+</ul>
+<ul>
+<li>/dev/sdb1      vfat       64M  2.3M   62M   4% /boot/efi</li>
+</ul>
+<ul>
+<li>/dev/sda1      ext4       49G   36K   47G   1% /mnt</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     250M  4.0K  250M   1% /var/lib/kubelet/pods/8d296e05-2a03-4666-9f58-f20d022d83ff/volumes/kubernetes.io~projected/azure-ip-masq-agent-config-volume</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     512M   12K  512M   1% /var/lib/kubelet/pods/d71b485a-d6c3-4d3a-ae2a-9f1e8c899275/volumes/kubernetes.io~projected/kube-api-access-5zvjc</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     6.8G   12K  6.8G   1% /var/lib/kubelet/pods/feeeec32-758d-43f0-8ccc-77c8c8e8a40b/volumes/kubernetes.io~projected/kube-api-access-59rpd</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     400M   12K  400M   1% /var/lib/kubelet/pods/994718f5-436a-43a6-af70-4008d1c92741/volumes/kubernetes.io~projected/kube-api-access-4fkgm</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     600M   12K  600M   1% /var/lib/kubelet/pods/e169bc62-1fdc-4abd-b9ec-df0fa3154943/volumes/kubernetes.io~projected/kube-api-access-lnqbc</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     1.9G   12K  1.9G   1% /var/lib/kubelet/pods/c207da6b-69e7-4bf7-9738-10733bc4a496/volumes/kubernetes.io~projected/kube-api-access-rgkk5</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     6.8G  8.0K  6.8G   1% /var/lib/kubelet/pods/b6cbfd1b-8b9f-4dd0-9afe-d70eeb027d9a/volumes/kubernetes.io~secret/credentials</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     6.8G   12K  6.8G   1% /var/lib/kubelet/pods/b6cbfd1b-8b9f-4dd0-9afe-d70eeb027d9a/volumes/kubernetes.io~projected/kube-api-access-vgw5m</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     2.0G   12K  2.0G   1% /var/lib/kubelet/pods/7b98b92b-e8bc-4370-a619-afc634fe60f2/volumes/kubernetes.io~projected/kube-api-access-wvml6</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     500M   12K  500M   1% /var/lib/kubelet/pods/353f45e7-4d59-4582-b4cb-5a8a647bcc91/volumes/kubernetes.io~projected/kube-api-access-zjchz</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     500M   12K  500M   1% /var/lib/kubelet/pods/391f076d-a22d-4abb-b82c-9ed68ad64884/volumes/kubernetes.io~projected/kube-api-access-vjw7s</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     500M   12K  500M   1% /var/lib/kubelet/pods/7d764b9e-5b7f-40c1-8ab7-44d65421d0f0/volumes/kubernetes.io~projected/kube-api-access-6hq4d</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     500M   12K  500M   1% /var/lib/kubelet/pods/cf5f755b-b3b3-48b2-b041-055708f7c2e1/volumes/kubernetes.io~projected/kube-api-access-69cs9</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     500M   12K  500M   1% /var/lib/kubelet/pods/ed53d4d6-a03b-48e3-bea4-fd1204f3825e/volumes/kubernetes.io~projected/kube-api-access-wg77h</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     359M   12K  359M   1% /var/lib/kubelet/pods/34881221-4f74-4e31-b571-d0f01b4eb993/volumes/kubernetes.io~projected/kube-api-access-h25qk</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     359M   12K  359M   1% /var/lib/kubelet/pods/f50f199b-6320-45a6-82a7-d426b63d2b89/volumes/kubernetes.io~projected/kube-api-access-fhxfm</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     1.0G   12K  1.0G   1% /var/lib/kubelet/pods/18d7ccce-2ae1-478a-aed0-83a754185abb/volumes/kubernetes.io~secret/certs</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     1.0G   12K  1.0G   1% /var/lib/kubelet/pods/9910eaa4-3da1-4b91-81cc-427911110cbd/volumes/kubernetes.io~secret/certs</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     6.8G   12K  6.8G   1% /var/lib/kubelet/pods/b317c4a2-a8e4-4159-a273-f2f2f0ee1d91/volumes/kubernetes.io~projected/kube-api-access-mhknl</li>
+</ul>
+<ul>
+<li>内核版本：</li>
+</ul>
+<ul>
+<li>sh-5.1# uname -a</li>
+</ul>
+<ul>
+<li>Linux aks-agentpool-10665355-vmss000001 5.15.148.2-2.cm2 #1 SMP Fri Feb 23 23:44:30 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux</li>
+</ul>
+<ul>
+<li>没有使用apt包管理器用的是yum 和 dnf</li>
+</ul>
+<ul>
+<li>sh-5.1# yum list installed</li>
+</ul>
+<ul>
+<li>PyYAML.x86_64                                                      5.4.1-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>WALinuxAgent.noarch                                                2.3.1.1-3.cm2                             @System</li>
+</ul>
+<ul>
+<li>acr-mirror.x86_64                                                  0.2.8-1                                   @System</li>
+</ul>
+<ul>
+<li>apparmor-parser.x86_64                                             3.0.4-3.cm2                               @System</li>
+</ul>
+<ul>
+<li>apr.x86_64                                                         1.7.2-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>apr-util.x86_64                                                    1.6.3-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>audit-libs.x86_64                                                  3.0.6-8.cm2                               @System</li>
+</ul>
+<ul>
+<li>autogen-libopts.x86_64                                             5.18.16-8.cm2                             @System</li>
+</ul>
+<ul>
+<li>bash.x86_64                                                        5.1.8-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>bc.x86_64                                                          1.07.1-4.cm2                              @System</li>
+</ul>
+<ul>
+<li>bcc.x86_64                                                         0.27.0-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>bcc-examples.x86_64                                                0.27.0-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>bcc-tools.x86_64                                                   0.27.0-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>bind-libs.x86_64                                                   9.16.48-1.cm2                             @System</li>
+</ul>
+<ul>
+<li>bind-license.noarch                                                9.16.48-1.cm2                             @System</li>
+</ul>
+<ul>
+<li>bind-utils.x86_64                                                  9.16.48-1.cm2                             @System</li>
+</ul>
+<ul>
+<li>binutils.x86_64                                                    2.37-8.cm2                                @System</li>
+</ul>
+<ul>
+<li>binutils-devel.x86_64                                              2.37-8.cm2                                @System</li>
+</ul>
+<ul>
+<li>blobfuse.x86_64                                                    1.4.5-14.cm2                              @System</li>
+</ul>
+<ul>
+<li>blobfuse2.x86_64                                                   2.1.2-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>boost.x86_64                                                       1.76.0-4.cm2                              @System</li>
+</ul>
+<ul>
+<li>bpftrace.x86_64                                                    0.16.0-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>bridge-utils.x86_64                                                1.7.1-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>bzip2.x86_64                                                       1.0.8-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>bzip2-libs.x86_64                                                  1.0.8-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>ca-certificates.noarch                                             2.0.0-15.cm2                              @System</li>
+</ul>
+<ul>
+<li>ca-certificates-base.noarch                                        2.0.0-15.cm2                              @System</li>
+</ul>
+<ul>
+<li>ca-certificates-shared.noarch                                      2.0.0-15.cm2                              @System</li>
+</ul>
+<ul>
+<li>ca-certificates-tools.noarch                                       2.0.0-15.cm2                              @System</li>
+</ul>
+<ul>
+<li>chkconfig.x86_64                                                   1.20-4.cm2                                @System</li>
+</ul>
+<ul>
+<li>chrony.x86_64                                                      4.1-3.cm2                                 @System</li>
+</ul>
+<ul>
+<li>cifs-utils.x86_64                                                  6.14-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>clang.x86_64                                                       12.0.1-4.cm2                              @System</li>
+</ul>
+<ul>
+<li>clang-libs.x86_64                                                  12.0.1-4.cm2                              @System</li>
+</ul>
+<ul>
+<li>cloud-init.noarch                                                  23.4.1-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>cloud-init-azure-kvp.noarch                                        23.4.1-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>cloud-utils-growpart.noarch                                        0.32-3.cm2                                @System</li>
+</ul>
+<ul>
+<li>compiler-rt.x86_64                                                 12.0.1-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>conntrack-tools.x86_64                                             1.4.5-8.cm2                               @System</li>
+</ul>
+<ul>
+<li>core-packages-base-image.x86_64                                    2.0-8.cm2                                 @System</li>
+</ul>
+<ul>
+<li>core-packages-container.x86_64                                     2.0-8.cm2                                 @System</li>
+</ul>
+<ul>
+<li>coreutils.x86_64                                                   8.32-7.cm2                                @System</li>
+</ul>
+<ul>
+<li>cpio.x86_64                                                        2.13-5.cm2                                @System</li>
+</ul>
+<ul>
+<li>cracklib.x86_64                                                    2.9.7-5.cm2                               @System</li>
+</ul>
+<ul>
+<li>cracklib-dicts.x86_64                                              2.9.7-5.cm2                               @System</li>
+</ul>
+<ul>
+<li>cronie.x86_64                                                      1.5.7-3.cm2                               @System</li>
+</ul>
+<ul>
+<li>cronie-anacron.x86_64                                              1.5.7-3.cm2                               @System</li>
+</ul>
+<ul>
+<li>cryptsetup.x86_64                                                  2.4.3-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>cryptsetup-libs.x86_64                                             2.4.3-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>curl.x86_64                                                        8.5.0-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>curl-libs.x86_64                                                   8.5.0-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>cyrus-sasl.x86_64                                                  2.1.28-4.cm2                              @System</li>
+</ul>
+<ul>
+<li>cyrus-sasl-lib.x86_64                                              2.1.28-4.cm2                              @System</li>
+</ul>
+<ul>
+<li>dbus.x86_64                                                        1.15.6-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>device-mapper.x86_64                                               2.03.15-3.cm2                             @System</li>
+</ul>
+<ul>
+<li>device-mapper-event.x86_64                                         2.03.15-3.cm2                             @System</li>
+</ul>
+<ul>
+<li>device-mapper-event-libs.x86_64                                    2.03.15-3.cm2                             @System</li>
+</ul>
+<ul>
+<li>device-mapper-libs.x86_64                                          2.03.15-3.cm2                             @System</li>
+</ul>
+<ul>
+<li>dhcp-client.x86_64                                                 4.4.2-6.cm2                               @System</li>
+</ul>
+<ul>
+<li>dhcp-libs.x86_64                                                   4.4.2-6.cm2                               @System</li>
+</ul>
+<ul>
+<li>dnf.noarch                                                         4.8.0-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>dnf-automatic.noarch                                               4.8.0-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>dnf-data.noarch                                                    4.8.0-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>dnf-plugins-core.noarch                                            4.0.24-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>dnf-utils.noarch                                                   4.0.24-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>dracut.x86_64                                                      055-7.cm2                                 @System</li>
+</ul>
+<ul>
+<li>e2fsprogs.x86_64                                                   1.46.5-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>e2fsprogs-libs.x86_64                                              1.46.5-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>ebtables-legacy.x86_64                                             2.0.11-6.cm2                              @System</li>
+</ul>
+<ul>
+<li>elfutils.x86_64                                                    0.186-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>elfutils-default-yama-scope.noarch                                 0.186-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>elfutils-devel.x86_64                                              0.186-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>elfutils-libelf.x86_64                                             0.186-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>elfutils-libelf-devel.x86_64                                       0.186-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>ethtool.x86_64                                                     5.16-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>expat.x86_64                                                       2.5.0-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>expat-libs.x86_64                                                  2.5.0-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>file.x86_64                                                        5.40-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>file-libs.x86_64                                                   5.40-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>filesystem.x86_64                                                  1.1-20.cm2                                @System</li>
+</ul>
+<ul>
+<li>findutils.x86_64                                                   4.8.0-5.cm2                               @System</li>
+</ul>
+<ul>
+<li>fuse.x86_64                                                        2.9.7-10.cm2                              @System</li>
+</ul>
+<ul>
+<li>fuse-common.x86_64                                                 3.10.5-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>fuse3.x86_64                                                       3.10.5-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>fuse3-libs.x86_64                                                  3.10.5-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>gawk.x86_64                                                        5.1.1-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>gc.x86_64                                                          8.0.0-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>gcc.x86_64                                                         11.2.0-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>gcc-c++.x86_64                                                     11.2.0-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>gdbm.x86_64                                                        1.21-1.cm2                                @System</li>
+</ul>
+<ul>
+<li>git.x86_64                                                         2.33.8-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>glib.x86_64                                                        2.71.0-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>glibc.x86_64                                                       2.35-6.cm2                                @System</li>
+</ul>
+<ul>
+<li>glibc-iconv.x86_64                                                 2.35-6.cm2                                @System</li>
+</ul>
+<ul>
+<li>gmp.x86_64                                                         6.2.1-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>gnupg2.x86_64                                                      2.4.0-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>gnutls.x86_64                                                      3.7.7-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>gpgme.x86_64                                                       1.16.0-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>gptfdisk.x86_64                                                    1.0.8-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>grep.x86_64                                                        3.7-2.cm2                                 @System</li>
+</ul>
+<ul>
+<li>grub2.x86_64                                                       2.06-13.cm2                               @System</li>
+</ul>
+<ul>
+<li>grub2-efi-binary.x86_64                                            2.06-13.cm2                               @System</li>
+</ul>
+<ul>
+<li>grubby.x86_64                                                      8.40-46.cm2                               @System</li>
+</ul>
+<ul>
+<li>guile.x86_64                                                       2.0.14-5.cm2                              @System</li>
+</ul>
+<ul>
+<li>gzip.x86_64                                                        1.12-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>hyperv-daemons.x86_64                                              5.15.148.2-1.cm2                          @System</li>
+</ul>
+<ul>
+<li>hyperv-daemons-license.noarch                                      5.15.148.2-1.cm2                          @System</li>
+</ul>
+<ul>
+<li>hypervfcopyd.x86_64                                                5.15.148.2-1.cm2                          @System</li>
+</ul>
+<ul>
+<li>hypervkvpd.x86_64                                                  5.15.148.2-1.cm2                          @System</li>
+</ul>
+<ul>
+<li>hypervvssd.x86_64                                                  5.15.148.2-1.cm2                          @System</li>
+</ul>
+<ul>
+<li>iana-etc.noarch                                                    20211115-2.cm2                            @System</li>
+</ul>
+<ul>
+<li>ig.x86_64                                                          0.22.0-1                                  @System</li>
+</ul>
+<ul>
+<li>initramfs.x86_64                                                   2.0-14.cm2                                @System</li>
+</ul>
+<ul>
+<li>inotify-tools.x86_64                                               3.22.1.0-1.cm2                            @System</li>
+</ul>
+<ul>
+<li>installkernel.noarch                                               1.0.0-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>iotop.noarch                                                       0.6-10.cm2                                @System</li>
+</ul>
+<ul>
+<li>iproute.x86_64                                                     5.15.0-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>ipset.x86_64                                                       7.15-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>iptables.x86_64                                                    1.8.7-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>iputils.x86_64                                                     20211215-2.cm2                            @System</li>
+</ul>
+<ul>
+<li>irqbalance.x86_64                                                  1.8.0-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>iscsi-initiator-utils.x86_64                                       6.2.1.4+20210729.2a8f9d8-3.cm2             @System</li>
+</ul>
+<ul>
+<li>iscsi-initiator-utils-iscsiuio.x86_64                              6.2.1.4+20210729.2a8f9d8-3.cm2             @System</li>
+</ul>
+<ul>
+<li>isns-utils.x86_64                                                  0.101-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>isns-utils-libs.x86_64                                             0.101-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>iw.x86_64                                                          5.9-1.cm2                                 @System</li>
+</ul>
+<ul>
+<li>jansson.x86_64                                                     2.14-1.cm2                                @System</li>
+</ul>
+<ul>
+<li>jq.x86_64                                                          1.6-2.cm2                                 @System</li>
+</ul>
+<ul>
+<li>json-c.x86_64                                                      0.15-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>kernel.x86_64                                                      5.15.148.2-2.cm2                          @System</li>
+</ul>
+<ul>
+<li>kernel-devel.x86_64                                                5.15.148.2-2.cm2                          @System</li>
+</ul>
+<ul>
+<li>kexec-tools.x86_64                                                 2.0.23-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>keyutils.x86_64                                                    1.6.3-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>kmod.x86_64                                                        29-2.cm2                                  @System</li>
+</ul>
+<ul>
+<li>krb5.x86_64                                                        1.19.4-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>less.x86_64                                                        590-3.cm2                                 @System</li>
+</ul>
+<ul>
+<li>libaio.x86_64                                                      0.3.112-4.cm2                             @System</li>
+</ul>
+<ul>
+<li>libapparmor.x86_64                                                 3.0.4-3.cm2                               @System</li>
+</ul>
+<ul>
+<li>libarchive.x86_64                                                  3.6.1-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>libassuan.x86_64                                                   2.5.5-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>libbpf.x86_64                                                      1.0.1-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>libcap.x86_64                                                      2.60-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>libcap-ng.x86_64                                                   0.8.2-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>libcomps.x86_64                                                    0.1.18-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>libdb.x86_64                                                       5.3.28-7.cm2                              @System</li>
+</ul>
+<ul>
+<li>libdnf.x86_64                                                      0.63.1-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>libedit.x86_64                                                     3.1.20210910-1.cm2                        @System</li>
+</ul>
+<ul>
+<li>libestr.x86_64                                                     0.1.11-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>libevent.x86_64                                                    2.1.12-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>libfastjson.x86_64                                                 0.99.9-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>libffi.x86_64                                                      3.4.2-3.cm2                               @System</li>
+</ul>
+<ul>
+<li>libgcc.x86_64                                                      11.2.0-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>libgcc-atomic.x86_64                                               11.2.0-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>libgcc-devel.x86_64                                                11.2.0-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>libgcrypt.x86_64                                                   1.10.3-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>libgomp.x86_64                                                     11.2.0-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>libgomp-devel.x86_64                                               11.2.0-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>libksba.x86_64                                                     1.6.3-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>libltdl.x86_64                                                     2.4.6-8.cm2                               @System</li>
+</ul>
+<ul>
+<li>libmnl.x86_64                                                      1.0.4-6.cm2                               @System</li>
+</ul>
+<ul>
+<li>libmodulemd.x86_64                                                 2.13.0-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>libmpc.x86_64                                                      1.2.1-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>libnetfilter_conntrack.x86_64                                      1.0.8-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>libnetfilter_cthelper.x86_64                                       1.0.0-5.cm2                               @System</li>
+</ul>
+<ul>
+<li>libnetfilter_queue.x86_64                                          1.0.5-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>libnfnetlink.x86_64                                                1.0.1-6.cm2                               @System</li>
+</ul>
+<ul>
+<li>libnfsidmap.x86_64                                                 2.5.4-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>libnftnl.x86_64                                                    1.2.1-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>libnl3.x86_64                                                      3.5.0-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>libpcap.x86_64                                                     1.10.1-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>libpkgconf.x86_64                                                  1.8.0-3.cm2                               @System</li>
+</ul>
+<ul>
+<li>libpwquality.x86_64                                                1.4.4-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>librdkafka1.x86_64                                                 1.8.2-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>librelp.x86_64                                                     1.10.0-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>librepo.x86_64                                                     1.15.1-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>libseccomp.x86_64                                                  2.5.3-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>libselinux.x86_64                                                  3.2-1.cm2                                 @System</li>
+</ul>
+<ul>
+<li>libsemanage.x86_64                                                 3.2-2.cm2                                 @System</li>
+</ul>
+<ul>
+<li>libsepol.x86_64                                                    3.2-2.cm2                                 @System</li>
+</ul>
+<ul>
+<li>libserf.x86_64                                                     1.3.9-8.cm2                               @System</li>
+</ul>
+<ul>
+<li>libsolv.x86_64                                                     0.7.24-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>libssh2.x86_64                                                     1.9.0-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>libstdc++.x86_64                                                   11.2.0-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>libstdc++-devel.x86_64                                             11.2.0-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>libtasn1.x86_64                                                    4.19.0-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>libtirpc.x86_64                                                    1.3.3-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>libtool.x86_64                                                     2.4.6-8.cm2                               @System</li>
+</ul>
+<ul>
+<li>libunistring.x86_64                                                0.9.10-6.cm2                              @System</li>
+</ul>
+<ul>
+<li>libuv.x86_64                                                       1.43.0-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>libxml2.x86_64                                                     2.10.4-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>libyaml.x86_64                                                     0.2.5-3.cm2                               @System</li>
+</ul>
+<ul>
+<li>llvm.x86_64                                                        12.0.1-7.cm2                              @System</li>
+</ul>
+<ul>
+<li>lmdb-libs.x86_64                                                   0.9.29-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>lsof.x86_64                                                        4.94.0-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>lua-libs.x86_64                                                    5.4.4-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>lvm2.x86_64                                                        2.03.15-3.cm2                             @System</li>
+</ul>
+<ul>
+<li>lz4.x86_64                                                         1.9.4-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>lzo.x86_64                                                         2.10-4.cm2                                @System</li>
+</ul>
+<ul>
+<li>make.x86_64                                                        4.3-3.cm2                                 @System</li>
+</ul>
+<ul>
+<li>mariner-release.noarch                                             2.0-60.cm2                                @System</li>
+</ul>
+<ul>
+<li>mariner-repos.noarch                                               2.0-9.cm2                                 @System</li>
+</ul>
+<ul>
+<li>mariner-repos-extras.noarch                                        2.0-9.cm2                                 @System</li>
+</ul>
+<ul>
+<li>mariner-repos-microsoft.noarch                                     2.0-9.cm2                                 @System</li>
+</ul>
+<ul>
+<li>mariner-repos-shared.noarch                                        2.0-9.cm2                                 @System</li>
+</ul>
+<ul>
+<li>mariner-rpm-macros.noarch                                          2.0-24.cm2                                @System</li>
+</ul>
+<ul>
+<li>moby-containerd.x86_64                                             1.6.26-4.cm2                              @System</li>
+</ul>
+<ul>
+<li>moby-runc.x86_64                                                   1.1.9-5.cm2                               @System</li>
+</ul>
+<ul>
+<li>mpfr.x86_64                                                        4.1.0-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>ncurses.x86_64                                                     6.4-2.cm2                                 @System</li>
+</ul>
+<ul>
+<li>ncurses-libs.x86_64                                                6.4-2.cm2                                 @System</li>
+</ul>
+<ul>
+<li>ncurses-term.x86_64                                                6.4-2.cm2                                 @System</li>
+</ul>
+<ul>
+<li>net-snmp-libs.x86_64                                               5.9.1-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>net-tools.x86_64                                                   2.10-3.cm2                                @System</li>
+</ul>
+<ul>
+<li>netplan.x86_64                                                     0.95-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>nettle.x86_64                                                      3.7.3-3.cm2                               @System</li>
+</ul>
+<ul>
+<li>newt.x86_64                                                        0.52.21-5.cm2                             @System</li>
+</ul>
+<ul>
+<li>nfs-utils.x86_64                                                   2.5.4-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>nftables.x86_64                                                    1.0.1-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>nghttp2.x86_64                                                     1.57.0-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>nmap-ncat.x86_64                                                   7.93-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>node-exporter.x86_64                                               1.7.0-1                                   @System</li>
+</ul>
+<ul>
+<li>npth.x86_64                                                        1.6-4.cm2                                 @System</li>
+</ul>
+<ul>
+<li>oniguruma.x86_64                                                   6.9.7.1-2.cm2                             @System</li>
+</ul>
+<ul>
+<li>openldap.x86_64                                                    2.4.57-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>openssh.x86_64                                                     8.9p1-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>openssh-clients.x86_64                                             8.9p1-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>openssh-server.x86_64                                              8.9p1-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>openssl.x86_64                                                     1.1.1k-29.cm2                             @System</li>
+</ul>
+<ul>
+<li>openssl-libs.x86_64                                                1.1.1k-29.cm2                             @System</li>
+</ul>
+<ul>
+<li>p11-kit.x86_64                                                     0.24.1-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>p11-kit-trust.x86_64                                               0.24.1-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>pam.x86_64                                                         1.5.1-5.cm2                               @System</li>
+</ul>
+<ul>
+<li>pcre.x86_64                                                        8.45-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>pcre-libs.x86_64                                                   8.45-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>perl.x86_64                                                        5.34.1-488.cm2                            @System</li>
+</ul>
+<ul>
+<li>perl-Archive-Tar.noarch                                            2.38-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Attribute-Handlers.noarch                                     1.01-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-AutoLoader.noarch                                             5.74-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-AutoSplit.noarch                                              5.74-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-B.x86_64                                                      1.82-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Benchmark.noarch                                              1.23-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-CGI.noarch                                                    4.54-3.cm2                                @System</li>
+</ul>
+<ul>
+<li>perl-CPAN.noarch                                                   2.28-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-CPAN-Meta.noarch                                              2.150010-488.cm2                          @System</li>
+</ul>
+<ul>
+<li>perl-CPAN-Meta-Requirements.noarch                                 2.140-488.cm2                             @System</li>
+</ul>
+<ul>
+<li>perl-CPAN-Meta-YAML.noarch                                         0.018-488.cm2                             @System</li>
+</ul>
+<ul>
+<li>perl-Carp.noarch                                                   1.52-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Class-Struct.noarch                                           0.66-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Compress-Raw-Bzip2.x86_64                                     2.101-488.cm2                             @System</li>
+</ul>
+<ul>
+<li>perl-Compress-Raw-Zlib.x86_64                                      2.101-488.cm2                             @System</li>
+</ul>
+<ul>
+<li>perl-Config-Extensions.noarch                                      0.03-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Config-Perl-V.noarch                                          0.33-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-DBI.x86_64                                                    1.643-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>perl-DBM_Filter.noarch                                             0.06-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Data-Dumper.x86_64                                            2.179-488.cm2                             @System</li>
+</ul>
+<ul>
+<li>perl-Devel-PPPort.x86_64                                           3.62-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Devel-Peek.x86_64                                             1.30-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Devel-SelfStubber.noarch                                      1.06-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Digest.noarch                                                 1.19-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Digest-MD5.x86_64                                             2.58-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Digest-SHA.x86_64                                             6.02-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-DirHandle.noarch                                              1.05-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Dumpvalue.noarch                                              2.27-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-DynaLoader.x86_64                                             1.50-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Encode.x86_64                                                 3.08-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Encode-devel.noarch                                           3.08-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-English.noarch                                                1.11-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Env.noarch                                                    1.05-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Errno.x86_64                                                  1.33-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Exporter.noarch                                               5.76-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-ExtUtils-CBuilder.noarch                                      0.280236-488.cm2                          @System</li>
+</ul>
+<ul>
+<li>perl-ExtUtils-Command.noarch                                       7.62-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-ExtUtils-Constant.noarch                                      0.25-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-ExtUtils-Embed.noarch                                         1.35-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-ExtUtils-Install.noarch                                       2.20-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-ExtUtils-MM-Utils.noarch                                      7.44-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-ExtUtils-MakeMaker.noarch                                     7.62-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-ExtUtils-Manifest.noarch                                      1.73-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-ExtUtils-Miniperl.noarch                                      1.10-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-ExtUtils-ParseXS.noarch                                       3.43-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Fcntl.x86_64                                                  1.14-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-File-Basename.noarch                                          2.85-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-File-Compare.noarch                                           1.100.600-488.cm2                         @System</li>
+</ul>
+<ul>
+<li>perl-File-Copy.noarch                                              2.35-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-File-DosGlob.x86_64                                           1.12-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-File-Fetch.noarch                                             1.00-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-File-Find.noarch                                              1.39-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-File-Path.noarch                                              2.18-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-File-Temp.noarch                                              0.231.100-488.cm2                         @System</li>
+</ul>
+<ul>
+<li>perl-File-stat.noarch                                              1.09-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-FileCache.noarch                                              1.10-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-FileHandle.noarch                                             2.03-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Filter.x86_64                                                 1.59-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Filter-Simple.noarch                                          0.96-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-FindBin.noarch                                                1.52-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-GDBM_File.x86_64                                              1.19-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Getopt-Long.noarch                                            2.52-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Getopt-Std.noarch                                             1.13-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-HTTP-Tiny.noarch                                              0.076-488.cm2                             @System</li>
+</ul>
+<ul>
+<li>perl-Hash-Util.x86_64                                              0.25-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Hash-Util-FieldHash.x86_64                                    1.21-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-I18N-Collate.noarch                                           1.02-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-I18N-LangTags.noarch                                          0.45-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-I18N-Langinfo.x86_64                                          0.19-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-IO.x86_64                                                     1.46-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-IO-Compress.noarch                                            2.102-488.cm2                             @System</li>
+</ul>
+<ul>
+<li>perl-IO-Socket-IP.noarch                                           0.41-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-IO-Zlib.noarch                                                1.11-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-IPC-Cmd.noarch                                                1.04-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-IPC-Open3.noarch                                              1.21-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-IPC-SysV.x86_64                                               2.09-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-JSON-PP.noarch                                                4.06-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Locale-Maketext.noarch                                        1.29-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Locale-Maketext-Simple.noarch                                 0.21-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-MIME-Base64.x86_64                                            3.16-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Math-BigInt.noarch                                            1.9998.18-488.cm2                         @System</li>
+</ul>
+<ul>
+<li>perl-Math-BigInt-FastCalc.x86_64                                   0.500.900-488.cm2                         @System</li>
+</ul>
+<ul>
+<li>perl-Math-BigRat.noarch                                            0.2614-488.cm2                            @System</li>
+</ul>
+<ul>
+<li>perl-Math-Complex.noarch                                           1.59-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Memoize.noarch                                                1.03-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Module-CoreList.noarch                                        5.20220313-488.cm2                        @System</li>
+</ul>
+<ul>
+<li>perl-Module-CoreList-tools.noarch                                  5.20220313-488.cm2                        @System</li>
+</ul>
+<ul>
+<li>perl-Module-Load.noarch                                            0.36-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Module-Load-Conditional.noarch                                0.74-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Module-Loaded.noarch                                          0.08-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Module-Metadata.noarch                                        1.000037-488.cm2                          @System</li>
+</ul>
+<ul>
+<li>perl-NDBM_File.x86_64                                              1.15-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-NEXT.noarch                                                   0.68-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Net.noarch                                                    1.02-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Net-Ping.noarch                                               2.74-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-ODBM_File.x86_64                                              1.17-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Opcode.x86_64                                                 1.50-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-POSIX.x86_64                                                  1.97-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-PathTools.x86_64                                              3.80-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Perl-OSType.noarch                                            1.010-488.cm2                             @System</li>
+</ul>
+<ul>
+<li>perl-PerlIO-via-QuotedPrint.noarch                                 0.09-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Pod-Escapes.noarch                                            1.07-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Pod-Functions.noarch                                          1.13-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Pod-Html.noarch                                               1.27-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Pod-Perldoc.noarch                                            3.28.01-488.cm2                           @System</li>
+</ul>
+<ul>
+<li>perl-Pod-Simple.noarch                                             3.42-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Pod-Usage.noarch                                              2.01-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Safe.noarch                                                   2.43-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Scalar-List-Utils.x86_64                                      1.55-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Search-Dict.noarch                                            1.07-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-SelectSaver.noarch                                            1.02-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-SelfLoader.noarch                                             1.26-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Socket.x86_64                                                 2.031-488.cm2                             @System</li>
+</ul>
+<ul>
+<li>perl-Storable.x86_64                                               3.23-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Symbol.noarch                                                 1.09-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Sys-Hostname.x86_64                                           1.23-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Term-ANSIColor.noarch                                         5.01-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Term-Cap.noarch                                               1.17-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Term-ReadLine.noarch                                          1.17-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Test.noarch                                                   1.31-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Test-Harness.noarch                                           3.43-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Test-Simple.noarch                                            1.302183-488.cm2                          @System</li>
+</ul>
+<ul>
+<li>perl-Text-Abbrev.noarch                                            1.02-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Text-Balanced.noarch                                          2.04-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Text-ParseWords.noarch                                        3.30-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Text-Tabs+Wrap.noarch                                         2013.0523-488.cm2                         @System</li>
+</ul>
+<ul>
+<li>perl-Thread.noarch                                                 3.05-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Thread-Queue.noarch                                           3.14-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Thread-Semaphore.noarch                                       2.13-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Tie.noarch                                                    4.6-488.cm2                               @System</li>
+</ul>
+<ul>
+<li>perl-Tie-File.noarch                                               1.06-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Tie-Memoize.noarch                                            1.1-488.cm2                               @System</li>
+</ul>
+<ul>
+<li>perl-Tie-RefHash.noarch                                            1.40-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Time.noarch                                                   1.03-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Time-HiRes.x86_64                                             1.9767-488.cm2                            @System</li>
+</ul>
+<ul>
+<li>perl-Time-Local.noarch                                             1.300-488.cm2                             @System</li>
+</ul>
+<ul>
+<li>perl-Unicode-Collate.x86_64                                        1.29-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Unicode-Normalize.x86_64                                      1.28-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Unicode-UCD.noarch                                            0.75-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-User-pwent.noarch                                             1.03-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-YAML.noarch                                                   1.30-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>perl-autodie.noarch                                                2.34-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-autouse.noarch                                                1.11-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-base.noarch                                                   2.27-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-bignum.noarch                                                 0.51-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-blib.noarch                                                   1.07-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-constant.noarch                                               1.33-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-debugger.noarch                                               1.60-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-deprecate.noarch                                              0.04-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-devel.x86_64                                                  5.34.1-488.cm2                            @System</li>
+</ul>
+<ul>
+<li>perl-diagnostics.noarch                                            1.37-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-doc.noarch                                                    5.34.1-488.cm2                            @System</li>
+</ul>
+<ul>
+<li>perl-encoding.x86_64                                               3.00-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-encoding-warnings.noarch                                      0.13-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-experimental.noarch                                           0.024-488.cm2                             @System</li>
+</ul>
+<ul>
+<li>perl-fields.noarch                                                 2.27-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-filetest.noarch                                               1.03-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-if.noarch                                                     0.60.900-488.cm2                          @System</li>
+</ul>
+<ul>
+<li>perl-interpreter.x86_64                                            5.34.1-488.cm2                            @System</li>
+</ul>
+<ul>
+<li>perl-less.noarch                                                   0.03-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-lib.x86_64                                                    0.65-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-libnet.noarch                                                 3.13-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-libnetcfg.noarch                                              5.34.1-488.cm2                            @System</li>
+</ul>
+<ul>
+<li>perl-libs.x86_64                                                   5.34.1-488.cm2                            @System</li>
+</ul>
+<ul>
+<li>perl-locale.noarch                                                 1.10-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-macros.noarch                                                 5.34.1-488.cm2                            @System</li>
+</ul>
+<ul>
+<li>perl-meta-notation.noarch                                          5.34.1-488.cm2                            @System</li>
+</ul>
+<ul>
+<li>perl-mro.x86_64                                                    1.25-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-open.noarch                                                   1.12-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-overload.noarch                                               1.33-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-overloading.noarch                                            0.02-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-parent.noarch                                                 0.238-488.cm2                             @System</li>
+</ul>
+<ul>
+<li>perl-perlfaq.noarch                                                5.20210411-488.cm2                        @System</li>
+</ul>
+<ul>
+<li>perl-ph.x86_64                                                     5.34.1-488.cm2                            @System</li>
+</ul>
+<ul>
+<li>perl-podlators.noarch                                              4.14-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-sigtrap.noarch                                                1.09-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-sort.noarch                                                   2.04-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-subs.noarch                                                   1.04-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-threads.x86_64                                                2.26-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-threads-shared.x86_64                                         1.62-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-utils.noarch                                                  5.34.1-488.cm2                            @System</li>
+</ul>
+<ul>
+<li>perl-vars.noarch                                                   1.05-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-version.noarch                                                0.99.28-488.cm2                           @System</li>
+</ul>
+<ul>
+<li>perl-vmsish.noarch                                                 1.04-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>pigz.x86_64                                                        2.6-2.cm2                                 @System</li>
+</ul>
+<ul>
+<li>pinentry.x86_64                                                    1.2.0-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>pkgconf.x86_64                                                     1.8.0-3.cm2                               @System</li>
+</ul>
+<ul>
+<li>pkgconf-m4.noarch                                                  1.8.0-3.cm2                               @System</li>
+</ul>
+<ul>
+<li>pkgconf-pkg-config.x86_64                                          1.8.0-3.cm2                               @System</li>
+</ul>
+<ul>
+<li>popt.x86_64                                                        1.18-1.cm2                                @System</li>
+</ul>
+<ul>
+<li>popt-devel.x86_64                                                  1.18-1.cm2                                @System</li>
+</ul>
+<ul>
+<li>postgresql-libs.x86_64                                             14.11-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>procps-ng.x86_64                                                   3.3.17-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>psmisc.x86_64                                                      23.4-1.cm2                                @System</li>
+</ul>
+<ul>
+<li>python3.x86_64                                                     3.9.14-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-asn1crypto.noarch                                          1.5.1-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>python3-bcc.x86_64                                                 0.27.0-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-certifi.noarch                                             2023.05.07-1.cm2                          @System</li>
+</ul>
+<ul>
+<li>python3-cffi.x86_64                                                1.15.0-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-charset-normalizer.noarch                                  2.0.11-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-configobj.noarch                                           5.0.6-7.cm2                               @System</li>
+</ul>
+<ul>
+<li>python3-cryptography.x86_64                                        3.3.2-6.cm2                               @System</li>
+</ul>
+<ul>
+<li>python3-curses.x86_64                                              3.9.14-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-dateutil.noarch                                            2.7.3-5.cm2                               @System</li>
+</ul>
+<ul>
+<li>python3-dbus.x86_64                                                1.2.16-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-distro.noarch                                              1.6.0-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>python3-dnf.noarch                                                 4.8.0-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>python3-dnf-plugins-core.noarch                                    4.0.24-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-gpg.x86_64                                                 1.16.0-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-hawkey.x86_64                                              0.63.1-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-idna.noarch                                                3.3-1.cm2                                 @System</li>
+</ul>
+<ul>
+<li>python3-jinja2.noarch                                              3.0.3-3.cm2                               @System</li>
+</ul>
+<ul>
+<li>python3-jsonpatch.noarch                                           1.32-1.cm2                                @System</li>
+</ul>
+<ul>
+<li>python3-jsonpointer.noarch                                         2.2-1.cm2                                 @System</li>
+</ul>
+<ul>
+<li>python3-jsonschema.noarch                                          2.6.0-6.cm2                               @System</li>
+</ul>
+<ul>
+<li>python3-libcomps.x86_64                                            0.1.18-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-libdnf.x86_64                                              0.63.1-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-libs.x86_64                                                3.9.14-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-markupsafe.x86_64                                          2.1.0-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>python3-netifaces.x86_64                                           0.11.0-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-oauthlib.noarch                                            2.1.0-7.cm2                               @System</li>
+</ul>
+<ul>
+<li>python3-packaging.noarch                                           21.3-1.cm2                                @System</li>
+</ul>
+<ul>
+<li>python3-prettytable.noarch                                         3.2.0-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>python3-pyOpenSSL.noarch                                           18.0.0-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-pyasn1.noarch                                              0.4.8-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>python3-pycparser.noarch                                           2.21-1.cm2                                @System</li>
+</ul>
+<ul>
+<li>python3-pyparsing.noarch                                           3.0.7-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>python3-requests.noarch                                            2.27.1-6.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-rpm.x86_64                                                 4.18.0-4.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-setuptools.noarch                                          3.9.14-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-six.noarch                                                 1.16.0-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>python3-urllib3.noarch                                             1.26.18-2.cm2                             @System</li>
+</ul>
+<ul>
+<li>python3-wcwidth.noarch                                             0.2.5-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>readline.x86_64                                                    8.1-1.cm2                                 @System</li>
+</ul>
+<ul>
+<li>rpcbind.x86_64                                                     1.2.5-6.cm2                               @System</li>
+</ul>
+<ul>
+<li>rpm.x86_64                                                         4.18.0-4.cm2                              @System</li>
+</ul>
+<ul>
+<li>rpm-build-libs.x86_64                                              4.18.0-4.cm2                              @System</li>
+</ul>
+<ul>
+<li>rpm-devel.x86_64                                                   4.18.0-4.cm2                              @System</li>
+</ul>
+<ul>
+<li>rpm-libs.x86_64                                                    4.18.0-4.cm2                              @System</li>
+</ul>
+<ul>
+<li>sed.x86_64                                                         4.8-3.cm2                                 @System</li>
+</ul>
+<ul>
+<li>sgx-backwards-compatability.x86_64                                 1.0.0-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>shadow-utils.x86_64                                                4.9-13.cm2                                @System</li>
+</ul>
+<ul>
+<li>shim.x86_64                                                        15.4-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>slang.x86_64                                                       2.3.2-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>snappy.x86_64                                                      1.1.9-3.cm2                               @System</li>
+</ul>
+<ul>
+<li>socat.x86_64                                                       1.7.4.3-1.cm2                             @System</li>
+</ul>
+<ul>
+<li>sqlite-libs.x86_64                                                 3.39.2-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>squashfs-tools.x86_64                                              4.5.1-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>subversion.x86_64                                                  1.14.2-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>subversion-perl.x86_64                                             1.14.2-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>sudo.x86_64                                                        1.9.15p5-1.cm2                            @System</li>
+</ul>
+<ul>
+<li>sysstat.x86_64                                                     12.7.1-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>systemd.x86_64                                                     250.3-19.cm2                              @System</li>
+</ul>
+<ul>
+<li>systemd-rpm-macros.noarch                                          250.3-19.cm2                              @System</li>
+</ul>
+<ul>
+<li>tar.x86_64                                                         1.34-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>tdnf.x86_64                                                        3.5.2-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>tdnf-cli-libs.x86_64                                               3.5.2-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>traceroute.x86_64                                                  2.1.3-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>tzdata.noarch                                                      2024a-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>utf8proc.x86_64                                                    2.6.1-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>util-linux.x86_64                                                  2.37.4-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>util-linux-libs.x86_64                                             2.37.4-8.cm2                              @System</li>
+</ul>
+<ul>
+<li>wget.x86_64                                                        1.21.2-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>which.x86_64                                                       2.21-8.cm2                                @System</li>
+</ul>
+<ul>
+<li>wireless-regdb.noarch                                              2022.08.12-1.cm2                          @System</li>
+</ul>
+<ul>
+<li>wpa_supplicant.x86_64                                              2.10-2.cm2                                @System</li>
+</ul>
+<ul>
+<li>xz.x86_64                                                          5.2.5-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>xz-devel.x86_64                                                    5.2.5-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>xz-libs.x86_64                                                     5.2.5-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>zchunk.x86_64                                                      1.1.16-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>zchunk-libs.x86_64                                                 1.1.16-3.cm2                              @System</li>
+</ul>
+<ul>
+<li>zip.x86_64                                                         3.0-5.cm2                                 @System</li>
+</ul>
+<ul>
+<li>zlib.x86_64                                                        1.2.13-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>zlib-devel.x86_64                                                  1.2.13-2.cm2                              @System</li>
+</ul>
+<ul>
+<li>zstd.x86_64                                                        1.5.4-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>zstd-devel.x86_64                                                  1.5.4-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>zstd-libs.x86_64                                                   1.5.4-1.cm2                               @System</li>
+</ul>
+<ul>
+<li>sh-5.1#</li>
+</ul>
+<ul>
+<li>sh-5.1# ls</li>
+</ul>
+<ul>
+<li>NOTICE.txt  bin  boot  dev  etc  home  lib  lib64  lost+found  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var</li>
+</ul>
+<ul>
+<li>是微软开发的开源系统，遵循GNU和GPL，大部分软件源于 debian或者redhat以及BSD:</li>
+</ul>
+<ul>
+<li>NOTICES AND INFORMATION</li>
+</ul>
+<ul>
+<li>Do Not Translate or Localize</li>
+</ul>
+<ul>
+<li>This software incorporates material from third parties. Microsoft makes certain</li>
+</ul>
+<ul>
+<li>source component name, platform, and version number, to:</li>
+</ul>
+<ul>
+<li>Source Code Compliance Team</li>
+</ul>
+<ul>
+<li>Microsoft Corporation</li>
+</ul>
+<ul>
+<li>One Microsoft Way</li>
+</ul>
+<ul>
+<li>Redmond, WA 98052</li>
+</ul>
+<ul>
+<li>USA</li>
+</ul>
+<ul>
+<li>Notwithstanding any other terms, you may reverse engineer this software to the</li>
+</ul>
+<ul>
+<li>extent required to debug changes to any libraries licensed under the GNU Lesser</li>
+</ul>
+<ul>
+<li>General Public License.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>tmpfs          tmpfs     1.9G     0  1.9G   0% /var/lib/kubelet/pods/c207da6b-69e7-4bf7-9738-10733bc4a496/volumes/kubernetes.io~secret/ama-logs-adx-secret</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     1.9G  8.0K  1.9G   1% /var/lib/kubelet/pods/c207da6b-69e7-4bf7-9738-10733bc4a496/volumes/kubernetes.io~secret/ama-logs-secret</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     2.0G  8.0K  2.0G   1% /var/lib/kubelet/pods/7b98b92b-e8bc-4370-a619-afc634fe60f2/volumes/kubernetes.io~secret/ama-logs-secret</li>
+</ul>
+<ul>
+<li>tmpfs          tmpfs     2.0G     0  2.0G   0% /var/lib/kubelet/pods/7b98b92b-e8bc-4370-a619-afc634fe60f2/volumes/kubernetes.io~secret/ama-logs-adx-secret</li>
+</ul>
+<ul>
+<li>使用yum 查看了默认安装的包：</li>
+</ul>
+<ul>
+<li>Loaded plugin: tdnfrepogpgcheck</li>
+</ul>
+<ul>
+<li>check-restart.x86_64                                               1.0.0-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>liblognorm.x86_64                                                  2.0.6-2.cm2                               @System</li>
+</ul>
+<ul>
+<li>logrotate.x86_64                                                   3.20.1-1.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Params-Check.noarch                                           0.38-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Pod-Checker.noarch                                            1.74-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>perl-Sys-Syslog.x86_64                                             0.36-488.cm2                              @System</li>
+</ul>
+<ul>
+<li>rsyslog.x86_64                                                     8.2204.1-3.cm2                            @System</li>
+</ul>
+<ul>
+<li>tdnf-plugin-repogpgcheck.x86_64                                    3.5.2-4.cm2                               @System</li>
+</ul>
+<ul>
+<li>查看notice 文件：</li>
+</ul>
+<ul>
+<li>send a check or money order for US $5.00, including the product name, the open</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>来自 &lt;<a href="https://baijiahao.baidu.com/s?id=1767236330880915010&amp;wfr=spider&amp;for=pc&gt;" target="_blank" rel="noopener">https://baijiahao.baidu.com/s?id=1767236330880915010&amp;wfr=spider&amp;for=pc&gt;</a></li>
+</ul>
+<ul>
+<li>open source code available at <a href="https://3rdpartysource.microsoft.com," target="_blank" rel="noopener">https://3rdpartysource.microsoft.com,</a> or you may</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/4/18</p>
+<p>Azure linux 源于 Common Base Linux ：</p>
+<p>历史渊源</p>
+<p>Azure Linux 发行版源于CBL-Mariner 项目，CBL代表Common Base Linux。微软启动 CBL-Mariner 是因为它需要一个内部Linux发行版和一个一致的平台来支持工程师在Azure上运行的大量的工作负载。</p>
+<p>微软定制的开源发行版“让我们有一个非常明确、非常有主见的Azure焦点，并调整发行版的组件，使其完全符合我们支持容器主机所需的内容，并尝试保持依赖性、外来包</p>
+<p>微软2023 Build大会上宣布了Azure Linux的普遍可用性，并且其主要角色是作为AKS的容器主机。Azure Linux针对微软的Windows Hyper-V管理程序进行了优化，并在虚拟机(VM) 中运行，同时支持x86 和Arm。</p>
+<p>Azure Linux容器主机在AKS、AKS-HCI和Arc产品中提供了从云端到边缘的可靠性和一致性，用户可以在新集群中部署Azure Linux节点池，将Azure Linux 节点池添加到现有的Ubuntu集群，或者现有的Ubuntu节点迁移到Azure Linux 节点。</p>
+<p>特点</p>
+<p>Azure Linux追求轻量性，它包括一个400MB的核心镜像和300个程序包，立足于最求性能和安全性。</p>
+<p>来自 &lt;<a href="https://baijiahao.baidu.com/s?id=1767236330880915010&amp;wfr=spider&amp;for=pc&gt;" target="_blank" rel="noopener">https://baijiahao.baidu.com/s?id=1767236330880915010&amp;wfr=spider&amp;for=pc&gt;</a></p>
+<p>最近测试一下AKS 使用 azure linux 镜像并且启用了虚拟节点：</p>
+<p>root@Ubuntu20:~# kubectl get node</p>
+<p>NAME                                STATUS   ROLES    AGE    VERSION</p>
+<p>aks-agentpool-10665355-vmss000001   Ready    &lt;none&gt;   5h8m   v1.29.2</p>
+<p>virtual-node-aci-linux              Ready    agent    5h8m   v1.25.0-vk-azure-aci-1.6.1</p>
+<p>登录进入node</p>
+<p>root@Ubuntu20:~# kubectl debug node/aks-agentpool-10665355-vmss000001 -it --image=mcr.microsoft.com/aks/fundamental/base-ubuntu:v0.0.11</p>
+<p>Creating debugging pod node-debugger-aks-agentpool-10665355-vmss000001-r7p6l with container debugger on node aks-agentpool-10665355-vmss000001.</p>
+<p>If you don&#39;t see a command prompt, try pressing enter.</p>
+<p>root@aks-agentpool-10665355-vmss000001:/# lsblk</p>
+<p>NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT</p>
+<p>sda      8:0    0    50G  0 disk</p>
+<p>`-sda1   8:1    0    50G  0 part /host/mnt</p>
+<p>sdb      8:16   0   128G  0 disk</p>
+<p>|-sdb1   8:17   0    64M  0 part /host/boot/efi</p>
+<p>|-sdb2   8:18   0   500M  0 part /host/boot</p>
+<p>`-sdb3   8:19   0 127.5G  0 part /host</p>
+<p>sr0     11:0    1   746K  0 rom</p>
+<p>root@aks-agentpool-10665355-vmss000001:/# chroot /host</p>
+<p>分区情况：</p>
+<p>sh-5.1# lsblk</p>
+<p>NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS</p>
+<p>`-sda1   8:1    0    50G  0 part /mnt</p>
+<p>|-sdb1   8:17   0    64M  0 part /boot/efi</p>
+<p>|-sdb2   8:18   0   500M  0 part /boot</p>
+<p>`-sdb3   8:19   0 127.4G  0 part /var/lib/kubelet</p>
+<p>/</p>
+<p>==============</p>
+<p>sh-5.1# df -Th</p>
+<p>Filesystem     Type      Size  Used Avail Use% Mounted on</p>
+<p>/dev/sdb3      ext4      126G   24G   97G  20% /</p>
+<p>devtmpfs       devtmpfs  4.0M     0  4.0M   0% /dev</p>
+<p>tmpfs          tmpfs     3.8G     0  3.8G   0% /dev/shm</p>
+<p>tmpfs          tmpfs     1.6G   14M  1.5G   1% /run</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/f20a2665ea2c9011b06af899bd091c1a744831dbbb9f31115db162240d1192ba/shm</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/ea7ef17697dbea7494a34b03681ffdbff5be6f1f0b705fc290dd6763f529a621/shm</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/9f9b42a2008049e56e6e1a763510e06a5f689719f97e5495b3d8be3ee89ec663/shm</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/4263554f6a16720de228a1882d707ba1734c4666aff378371e58992422356b01/shm</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/abb452b76c2156bf441eacf3f465ce5b244939d2e425ffbf2548da8ed4a92367/shm</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/cf3872854fd9d377673c26ed72bdcfd6ffba433280a603bf84ccad61188f87de/shm</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/9f9b42a2008049e56e6e1a763510e06a5f689719f97e5495b3d8be3ee89ec663/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/cf3872854fd9d377673c26ed72bdcfd6ffba433280a603bf84ccad61188f87de/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/f20a2665ea2c9011b06af899bd091c1a744831dbbb9f31115db162240d1192ba/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/ea7ef17697dbea7494a34b03681ffdbff5be6f1f0b705fc290dd6763f529a621/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/abb452b76c2156bf441eacf3f465ce5b244939d2e425ffbf2548da8ed4a92367/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/14de6a17760d6b8b5fb3824987d350d9a0bcc250c657b7f2dcf44748fb8ce621/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/94c1905fc0a22e31f7672da057781ad7d75b003a1d16bf3cf1201fe2e32c898c/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/e652502eb3e7e6b19a5eded6dfbe0cfbd32f9a23e39c27880bc3f1987de8acbb/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/d1a22807a3b6b1fb64ddc634ae4b1e27066219f0879bd39f2160e78e4e291b13/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/f9f1beb4ba5fd1b413f315ca7e0a78afe396c1236905813e89f1ae8e0e9f34e9/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/faf56b1574ce13901b6fe2d1cd5aca4d3093a4b9338f6e4e9720ef7d79b29003/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/319b27623a01982a3aa56a6d858072f453c4472f774aed2e0aa721f80d97e69b/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/539dbbce53a17711aef377bfe62e2a9fdfc9581e640fb8bca95f6c48aed16157/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/79fc038f5e40ccb70f4a8a1a06a5ce6919d2ad93d9628eb2095a089dd59bf777/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/4263554f6a16720de228a1882d707ba1734c4666aff378371e58992422356b01/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/3ee44d3e46510b897a13a4e36879d0e737260f9c80a03bd99e84064981209a11/rootfs</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/daf84d6e6c80c6c07633e6ea5b5b66657a72fde11086cc61b607f2e37939b1c5/shm</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/daf84d6e6c80c6c07633e6ea5b5b66657a72fde11086cc61b607f2e37939b1c5/rootfs</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/93b93d51aeea5c9f36ec46efc7256e46e13eba651ef85a66aa8e5d1c3a6d5ef6/shm</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/93b93d51aeea5c9f36ec46efc7256e46e13eba651ef85a66aa8e5d1c3a6d5ef6/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/b5a42fb0c4224d627d5bc155684bfc2d950a9cc8dc3968408e7208ab91751a41/rootfs</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/c209b91fd906fe5a0469cd5d25c0beca7d514a7efa33012a243e2b310222a36b/shm</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/62924e9c15e263be99be0a74dcd4498d62b39078dca7701f8f26b24eab91f311/shm</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/2fa463154459dd018bb2e7a0742d94319ee22d87c876a704a32d7b186da410ec/shm</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/c209b91fd906fe5a0469cd5d25c0beca7d514a7efa33012a243e2b310222a36b/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/62924e9c15e263be99be0a74dcd4498d62b39078dca7701f8f26b24eab91f311/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/92c7f513c9cd05cb77fbc3c1481ce691aa63a47aebc64af13687557ddb260065/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/2fa463154459dd018bb2e7a0742d94319ee22d87c876a704a32d7b186da410ec/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/1b15c40d330e50a62d5e032721270a82dea37949697e6af97191d9ad85bd3fb2/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/58351c4f29ce723db36d35f0071ebdd5b25e773b4dab70b47fe8a015c75e4991/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/e24776dba809449ce4ba7fde663cae274e01b9e2e8db837a86f52d15f2a1df62/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/76ccc0a335b989a6d1ac85448acc87333e3f0748477e49c418cdd5e5e5819a7b/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/08285994153386f861f4b03728bb0ac0759ecf5f3cb79ebbfae1f11f72c49dec/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/027eccb7ebaef6fd4acc92c5f233a9cee8f9fdb11a725d672e95aa4b62e2e91f/rootfs</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/dfaf9ee9b57a5de4d6880abb8b0b0dea2b3c3c790958c7a5b4d613b226ab9555/shm</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/c2343b297e730d88fa19786a6d7edcd7f00ad84442a88577c81783d18328e706/shm</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/345fa218d1ecbacd9c96321fae994653a70cc1f836d96b0b930dea2d500b7cfb/shm</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/dfaf9ee9b57a5de4d6880abb8b0b0dea2b3c3c790958c7a5b4d613b226ab9555/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/345fa218d1ecbacd9c96321fae994653a70cc1f836d96b0b930dea2d500b7cfb/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/c2343b297e730d88fa19786a6d7edcd7f00ad84442a88577c81783d18328e706/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/7a36d3cce542130df28cced104772102a700a1ce56e93111ecfe278a434546a4/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/37e59bca72e00c31013af43ca769d22c2f5563f37c9a24554189ae3c3cb3b9a3/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/2004292aa39a50ef7f384fadcfc42413a32be8f866b8cabfafb03b576d44b0a3/rootfs</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/68cef1b2bb6f05e2ee88512bb0acfb7d5eacd8c962238d4d82f1a07b3587aa2f/shm</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/fc9475f5e77fcfccb5be6c2a26a9bc67ff9844d7909a4e1592d11957a6553246/shm</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/68cef1b2bb6f05e2ee88512bb0acfb7d5eacd8c962238d4d82f1a07b3587aa2f/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/fc9475f5e77fcfccb5be6c2a26a9bc67ff9844d7909a4e1592d11957a6553246/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/31073a667c94578564bb655502fe338ebcfe77afefa7fcab91fc78efe265f394/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/c33df4660879566c629c8fa36162f120ff4812c47fc164902bbcbed355532ebe/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/95f545735ffba3db7b1e8f9f44af33871bde17f2ee34aa9fc172e18ee9df884b/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/0792ab9e146feab3135fa3ed983f86046676d3ba54acfbbf571d330db3ca7fa7/rootfs</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/4ac6e0d093d85e6ea3543fa2c7f0841cf27b8ed54a8ae5d3c5ccbae15f2cd20d/shm</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/4ac6e0d093d85e6ea3543fa2c7f0841cf27b8ed54a8ae5d3c5ccbae15f2cd20d/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/744680eabeef72aff68b0cda67f386c48c5bfaa6a577e2ef4140620120b043d7/rootfs</p>
+<p>shm            tmpfs      64M     0   64M   0% /run/containerd/io.containerd.grpc.v1.cri/sandboxes/3efda0bd05ab6000a72c9411c4ba26538cd67bb5fb3150d4043fa7f0d8bb9553/shm</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/3efda0bd05ab6000a72c9411c4ba26538cd67bb5fb3150d4043fa7f0d8bb9553/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/5f5ae71d9fdde1e67c79e70bbc0fa26a28c8cb1b98e290d64a74f65734e670d3/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/d6e5fea98ee0fd6a37f6c96c760cac8cac17f3bd6b5eb80c4b570736b33fba8b/rootfs</p>
+<p>overlay        overlay   126G   24G   97G  20% /run/containerd/io.containerd.runtime.v2.task/k8s.io/2deba7303d97471f2e1cf315ccdc2805815e5a2b9a52f75894d00c881c4878a6/rootfs</p>
+<p>tmpfs          tmpfs      64M     0   64M   0% /run/containerd/io.containerd.runtime.v2.task/k8s.io/2deba7303d97471f2e1cf315ccdc2805815e5a2b9a52f75894d00c881c4878a6/rootfs/dev</p>
+<p>tmpfs          tmpfs     3.8G     0  3.8G   0% /tmp</p>
+<p>/dev/sdb2      ext4      452M   32M  386M   8% /boot</p>
+<p>/dev/sdb1      vfat       64M  2.3M   62M   4% /boot/efi</p>
+<p>/dev/sda1      ext4       49G   36K   47G   1% /mnt</p>
+<p>tmpfs          tmpfs     250M  4.0K  250M   1% /var/lib/kubelet/pods/8d296e05-2a03-4666-9f58-f20d022d83ff/volumes/kubernetes.io~projected/azure-ip-masq-agent-config-volume</p>
+<p>tmpfs          tmpfs     1.9G     0  1.9G   0% /var/lib/kubelet/pods/c207da6b-69e7-4bf7-9738-10733bc4a496/volumes/kubernetes.io~secret/ama-logs-adx-secret</p>
+<p>tmpfs          tmpfs     1.9G  8.0K  1.9G   1% /var/lib/kubelet/pods/c207da6b-69e7-4bf7-9738-10733bc4a496/volumes/kubernetes.io~secret/ama-logs-secret</p>
+<p>tmpfs          tmpfs     512M   12K  512M   1% /var/lib/kubelet/pods/d71b485a-d6c3-4d3a-ae2a-9f1e8c899275/volumes/kubernetes.io~projected/kube-api-access-5zvjc</p>
+<p>tmpfs          tmpfs     6.8G   12K  6.8G   1% /var/lib/kubelet/pods/feeeec32-758d-43f0-8ccc-77c8c8e8a40b/volumes/kubernetes.io~projected/kube-api-access-59rpd</p>
+<p>tmpfs          tmpfs     400M   12K  400M   1% /var/lib/kubelet/pods/994718f5-436a-43a6-af70-4008d1c92741/volumes/kubernetes.io~projected/kube-api-access-4fkgm</p>
+<p>tmpfs          tmpfs     600M   12K  600M   1% /var/lib/kubelet/pods/e169bc62-1fdc-4abd-b9ec-df0fa3154943/volumes/kubernetes.io~projected/kube-api-access-lnqbc</p>
+<p>tmpfs          tmpfs     1.9G   12K  1.9G   1% /var/lib/kubelet/pods/c207da6b-69e7-4bf7-9738-10733bc4a496/volumes/kubernetes.io~projected/kube-api-access-rgkk5</p>
+<p>tmpfs          tmpfs     6.8G  8.0K  6.8G   1% /var/lib/kubelet/pods/b6cbfd1b-8b9f-4dd0-9afe-d70eeb027d9a/volumes/kubernetes.io~secret/credentials</p>
+<p>tmpfs          tmpfs     6.8G   12K  6.8G   1% /var/lib/kubelet/pods/b6cbfd1b-8b9f-4dd0-9afe-d70eeb027d9a/volumes/kubernetes.io~projected/kube-api-access-vgw5m</p>
+<p>tmpfs          tmpfs     2.0G  8.0K  2.0G   1% /var/lib/kubelet/pods/7b98b92b-e8bc-4370-a619-afc634fe60f2/volumes/kubernetes.io~secret/ama-logs-secret</p>
+<p>tmpfs          tmpfs     2.0G     0  2.0G   0% /var/lib/kubelet/pods/7b98b92b-e8bc-4370-a619-afc634fe60f2/volumes/kubernetes.io~secret/ama-logs-adx-secret</p>
+<p>tmpfs          tmpfs     2.0G   12K  2.0G   1% /var/lib/kubelet/pods/7b98b92b-e8bc-4370-a619-afc634fe60f2/volumes/kubernetes.io~projected/kube-api-access-wvml6</p>
+<p>tmpfs          tmpfs     500M   12K  500M   1% /var/lib/kubelet/pods/353f45e7-4d59-4582-b4cb-5a8a647bcc91/volumes/kubernetes.io~projected/kube-api-access-zjchz</p>
+<p>tmpfs          tmpfs     500M   12K  500M   1% /var/lib/kubelet/pods/391f076d-a22d-4abb-b82c-9ed68ad64884/volumes/kubernetes.io~projected/kube-api-access-vjw7s</p>
+<p>tmpfs          tmpfs     500M   12K  500M   1% /var/lib/kubelet/pods/3c46be4b-503a-4b23-986b-b8e5973830aa/volumes/kubernetes.io~projected/kube-api-access-r78qc</p>
+<p>tmpfs          tmpfs     500M   12K  500M   1% /var/lib/kubelet/pods/7d764b9e-5b7f-40c1-8ab7-44d65421d0f0/volumes/kubernetes.io~projected/kube-api-access-6hq4d</p>
+<p>tmpfs          tmpfs     500M   12K  500M   1% /var/lib/kubelet/pods/cf5f755b-b3b3-48b2-b041-055708f7c2e1/volumes/kubernetes.io~projected/kube-api-access-69cs9</p>
+<p>tmpfs          tmpfs     500M   12K  500M   1% /var/lib/kubelet/pods/ed53d4d6-a03b-48e3-bea4-fd1204f3825e/volumes/kubernetes.io~projected/kube-api-access-wg77h</p>
+<p>tmpfs          tmpfs     359M   12K  359M   1% /var/lib/kubelet/pods/34881221-4f74-4e31-b571-d0f01b4eb993/volumes/kubernetes.io~projected/kube-api-access-h25qk</p>
+<p>tmpfs          tmpfs     359M   12K  359M   1% /var/lib/kubelet/pods/f50f199b-6320-45a6-82a7-d426b63d2b89/volumes/kubernetes.io~projected/kube-api-access-fhxfm</p>
+<p>tmpfs          tmpfs     1.0G   12K  1.0G   1% /var/lib/kubelet/pods/18d7ccce-2ae1-478a-aed0-83a754185abb/volumes/kubernetes.io~secret/certs</p>
+<p>tmpfs          tmpfs     1.0G   12K  1.0G   1% /var/lib/kubelet/pods/9910eaa4-3da1-4b91-81cc-427911110cbd/volumes/kubernetes.io~secret/certs</p>
+<p>tmpfs          tmpfs     6.8G   12K  6.8G   1% /var/lib/kubelet/pods/b317c4a2-a8e4-4159-a273-f2f2f0ee1d91/volumes/kubernetes.io~projected/kube-api-access-mhknl</p>
+<p>内核版本：</p>
+<p>sh-5.1# uname -a</p>
+<p>Linux aks-agentpool-10665355-vmss000001 5.15.148.2-2.cm2 #1 SMP Fri Feb 23 23:44:30 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux</p>
+<p>没有使用apt包管理器用的是yum 和 dnf</p>
+<p>使用yum 查看了默认安装的包：</p>
+<p>sh-5.1# yum list installed</p>
+<p>Loaded plugin: tdnfrepogpgcheck</p>
+<p>PyYAML.x86_64                                                      5.4.1-1.cm2                               @System</p>
+<p>WALinuxAgent.noarch                                                2.3.1.1-3.cm2                             @System</p>
+<p>acr-mirror.x86_64                                                  0.2.8-1                                   @System</p>
+<p>apparmor-parser.x86_64                                             3.0.4-3.cm2                               @System</p>
+<p>apr.x86_64                                                         1.7.2-2.cm2                               @System</p>
+<p>apr-util.x86_64                                                    1.6.3-1.cm2                               @System</p>
+<p>audit-libs.x86_64                                                  3.0.6-8.cm2                               @System</p>
+<p>autogen-libopts.x86_64                                             5.18.16-8.cm2                             @System</p>
+<p>bash.x86_64                                                        5.1.8-4.cm2                               @System</p>
+<p>bc.x86_64                                                          1.07.1-4.cm2                              @System</p>
+<p>bcc.x86_64                                                         0.27.0-2.cm2                              @System</p>
+<p>bcc-examples.x86_64                                                0.27.0-2.cm2                              @System</p>
+<p>bcc-tools.x86_64                                                   0.27.0-2.cm2                              @System</p>
+<p>bind-libs.x86_64                                                   9.16.48-1.cm2                             @System</p>
+<p>bind-license.noarch                                                9.16.48-1.cm2                             @System</p>
+<p>bind-utils.x86_64                                                  9.16.48-1.cm2                             @System</p>
+<p>binutils.x86_64                                                    2.37-8.cm2                                @System</p>
+<p>binutils-devel.x86_64                                              2.37-8.cm2                                @System</p>
+<p>blobfuse.x86_64                                                    1.4.5-14.cm2                              @System</p>
+<p>blobfuse2.x86_64                                                   2.1.2-2.cm2                               @System</p>
+<p>boost.x86_64                                                       1.76.0-4.cm2                              @System</p>
+<p>bpftrace.x86_64                                                    0.16.0-2.cm2                              @System</p>
+<p>bridge-utils.x86_64                                                1.7.1-2.cm2                               @System</p>
+<p>bzip2.x86_64                                                       1.0.8-1.cm2                               @System</p>
+<p>bzip2-libs.x86_64                                                  1.0.8-1.cm2                               @System</p>
+<p>ca-certificates.noarch                                             2.0.0-15.cm2                              @System</p>
+<p>ca-certificates-base.noarch                                        2.0.0-15.cm2                              @System</p>
+<p>ca-certificates-shared.noarch                                      2.0.0-15.cm2                              @System</p>
+<p>ca-certificates-tools.noarch                                       2.0.0-15.cm2                              @System</p>
+<p>check-restart.x86_64                                               1.0.0-2.cm2                               @System</p>
+<p>chkconfig.x86_64                                                   1.20-4.cm2                                @System</p>
+<p>chrony.x86_64                                                      4.1-3.cm2                                 @System</p>
+<p>cifs-utils.x86_64                                                  6.14-2.cm2                                @System</p>
+<p>clang.x86_64                                                       12.0.1-4.cm2                              @System</p>
+<p>clang-libs.x86_64                                                  12.0.1-4.cm2                              @System</p>
+<p>cloud-init.noarch                                                  23.4.1-3.cm2                              @System</p>
+<p>cloud-init-azure-kvp.noarch                                        23.4.1-3.cm2                              @System</p>
+<p>cloud-utils-growpart.noarch                                        0.32-3.cm2                                @System</p>
+<p>compiler-rt.x86_64                                                 12.0.1-1.cm2                              @System</p>
+<p>conntrack-tools.x86_64                                             1.4.5-8.cm2                               @System</p>
+<p>core-packages-base-image.x86_64                                    2.0-8.cm2                                 @System</p>
+<p>core-packages-container.x86_64                                     2.0-8.cm2                                 @System</p>
+<p>coreutils.x86_64                                                   8.32-7.cm2                                @System</p>
+<p>cpio.x86_64                                                        2.13-5.cm2                                @System</p>
+<p>cracklib.x86_64                                                    2.9.7-5.cm2                               @System</p>
+<p>cracklib-dicts.x86_64                                              2.9.7-5.cm2                               @System</p>
+<p>cronie.x86_64                                                      1.5.7-3.cm2                               @System</p>
+<p>cronie-anacron.x86_64                                              1.5.7-3.cm2                               @System</p>
+<p>cryptsetup.x86_64                                                  2.4.3-4.cm2                               @System</p>
+<p>cryptsetup-libs.x86_64                                             2.4.3-4.cm2                               @System</p>
+<p>curl.x86_64                                                        8.5.0-2.cm2                               @System</p>
+<p>curl-libs.x86_64                                                   8.5.0-2.cm2                               @System</p>
+<p>cyrus-sasl.x86_64                                                  2.1.28-4.cm2                              @System</p>
+<p>cyrus-sasl-lib.x86_64                                              2.1.28-4.cm2                              @System</p>
+<p>dbus.x86_64                                                        1.15.6-1.cm2                              @System</p>
+<p>device-mapper.x86_64                                               2.03.15-3.cm2                             @System</p>
+<p>device-mapper-event.x86_64                                         2.03.15-3.cm2                             @System</p>
+<p>device-mapper-event-libs.x86_64                                    2.03.15-3.cm2                             @System</p>
+<p>device-mapper-libs.x86_64                                          2.03.15-3.cm2                             @System</p>
+<p>dhcp-client.x86_64                                                 4.4.2-6.cm2                               @System</p>
+<p>dhcp-libs.x86_64                                                   4.4.2-6.cm2                               @System</p>
+<p>dnf.noarch                                                         4.8.0-2.cm2                               @System</p>
+<p>dnf-automatic.noarch                                               4.8.0-2.cm2                               @System</p>
+<p>dnf-data.noarch                                                    4.8.0-2.cm2                               @System</p>
+<p>dnf-plugins-core.noarch                                            4.0.24-3.cm2                              @System</p>
+<p>dnf-utils.noarch                                                   4.0.24-3.cm2                              @System</p>
+<p>dracut.x86_64                                                      055-7.cm2                                 @System</p>
+<p>e2fsprogs.x86_64                                                   1.46.5-3.cm2                              @System</p>
+<p>e2fsprogs-libs.x86_64                                              1.46.5-3.cm2                              @System</p>
+<p>ebtables-legacy.x86_64                                             2.0.11-6.cm2                              @System</p>
+<p>elfutils.x86_64                                                    0.186-2.cm2                               @System</p>
+<p>elfutils-default-yama-scope.noarch                                 0.186-2.cm2                               @System</p>
+<p>elfutils-devel.x86_64                                              0.186-2.cm2                               @System</p>
+<p>elfutils-libelf.x86_64                                             0.186-2.cm2                               @System</p>
+<p>elfutils-libelf-devel.x86_64                                       0.186-2.cm2                               @System</p>
+<p>ethtool.x86_64                                                     5.16-2.cm2                                @System</p>
+<p>expat.x86_64                                                       2.5.0-1.cm2                               @System</p>
+<p>expat-libs.x86_64                                                  2.5.0-1.cm2                               @System</p>
+<p>file.x86_64                                                        5.40-2.cm2                                @System</p>
+<p>file-libs.x86_64                                                   5.40-2.cm2                                @System</p>
+<p>filesystem.x86_64                                                  1.1-20.cm2                                @System</p>
+<p>findutils.x86_64                                                   4.8.0-5.cm2                               @System</p>
+<p>fuse.x86_64                                                        2.9.7-10.cm2                              @System</p>
+<p>fuse-common.x86_64                                                 3.10.5-2.cm2                              @System</p>
+<p>fuse3.x86_64                                                       3.10.5-2.cm2                              @System</p>
+<p>fuse3-libs.x86_64                                                  3.10.5-2.cm2                              @System</p>
+<p>gawk.x86_64                                                        5.1.1-1.cm2                               @System</p>
+<p>gc.x86_64                                                          8.0.0-4.cm2                               @System</p>
+<p>gcc.x86_64                                                         11.2.0-8.cm2                              @System</p>
+<p>gcc-c++.x86_64                                                     11.2.0-8.cm2                              @System</p>
+<p>gdbm.x86_64                                                        1.21-1.cm2                                @System</p>
+<p>git.x86_64                                                         2.33.8-2.cm2                              @System</p>
+<p>glib.x86_64                                                        2.71.0-2.cm2                              @System</p>
+<p>glibc.x86_64                                                       2.35-6.cm2                                @System</p>
+<p>glibc-iconv.x86_64                                                 2.35-6.cm2                                @System</p>
+<p>gmp.x86_64                                                         6.2.1-4.cm2                               @System</p>
+<p>gnupg2.x86_64                                                      2.4.0-2.cm2                               @System</p>
+<p>gnutls.x86_64                                                      3.7.7-4.cm2                               @System</p>
+<p>gpgme.x86_64                                                       1.16.0-2.cm2                              @System</p>
+<p>gptfdisk.x86_64                                                    1.0.8-1.cm2                               @System</p>
+<p>grep.x86_64                                                        3.7-2.cm2                                 @System</p>
+<p>grub2.x86_64                                                       2.06-13.cm2                               @System</p>
+<p>grub2-efi-binary.x86_64                                            2.06-13.cm2                               @System</p>
+<p>grubby.x86_64                                                      8.40-46.cm2                               @System</p>
+<p>guile.x86_64                                                       2.0.14-5.cm2                              @System</p>
+<p>gzip.x86_64                                                        1.12-2.cm2                                @System</p>
+<p>hyperv-daemons.x86_64                                              5.15.148.2-1.cm2                          @System</p>
+<p>hyperv-daemons-license.noarch                                      5.15.148.2-1.cm2                          @System</p>
+<p>hypervfcopyd.x86_64                                                5.15.148.2-1.cm2                          @System</p>
+<p>hypervkvpd.x86_64                                                  5.15.148.2-1.cm2                          @System</p>
+<p>hypervvssd.x86_64                                                  5.15.148.2-1.cm2                          @System</p>
+<p>iana-etc.noarch                                                    20211115-2.cm2                            @System</p>
+<p>ig.x86_64                                                          0.22.0-1                                  @System</p>
+<p>initramfs.x86_64                                                   2.0-14.cm2                                @System</p>
+<p>inotify-tools.x86_64                                               3.22.1.0-1.cm2                            @System</p>
+<p>installkernel.noarch                                               1.0.0-2.cm2                               @System</p>
+<p>iotop.noarch                                                       0.6-10.cm2                                @System</p>
+<p>iproute.x86_64                                                     5.15.0-3.cm2                              @System</p>
+<p>ipset.x86_64                                                       7.15-2.cm2                                @System</p>
+<p>iptables.x86_64                                                    1.8.7-4.cm2                               @System</p>
+<p>iputils.x86_64                                                     20211215-2.cm2                            @System</p>
+<p>irqbalance.x86_64                                                  1.8.0-4.cm2                               @System</p>
+<p>iscsi-initiator-utils.x86_64                                       6.2.1.4+20210729.2a8f9d8-3.cm2             @System</p>
+<p>iscsi-initiator-utils-iscsiuio.x86_64                              6.2.1.4+20210729.2a8f9d8-3.cm2             @System</p>
+<p>isns-utils.x86_64                                                  0.101-2.cm2                               @System</p>
+<p>isns-utils-libs.x86_64                                             0.101-2.cm2                               @System</p>
+<p>iw.x86_64                                                          5.9-1.cm2                                 @System</p>
+<p>jansson.x86_64                                                     2.14-1.cm2                                @System</p>
+<p>jq.x86_64                                                          1.6-2.cm2                                 @System</p>
+<p>json-c.x86_64                                                      0.15-2.cm2                                @System</p>
+<p>kernel.x86_64                                                      5.15.148.2-2.cm2                          @System</p>
+<p>kernel-devel.x86_64                                                5.15.148.2-2.cm2                          @System</p>
+<p>kexec-tools.x86_64                                                 2.0.23-3.cm2                              @System</p>
+<p>keyutils.x86_64                                                    1.6.3-1.cm2                               @System</p>
+<p>kmod.x86_64                                                        29-2.cm2                                  @System</p>
+<p>krb5.x86_64                                                        1.19.4-2.cm2                              @System</p>
+<p>less.x86_64                                                        590-3.cm2                                 @System</p>
+<p>libaio.x86_64                                                      0.3.112-4.cm2                             @System</p>
+<p>libapparmor.x86_64                                                 3.0.4-3.cm2                               @System</p>
+<p>libarchive.x86_64                                                  3.6.1-2.cm2                               @System</p>
+<p>libassuan.x86_64                                                   2.5.5-2.cm2                               @System</p>
+<p>libbpf.x86_64                                                      1.0.1-1.cm2                               @System</p>
+<p>libcap.x86_64                                                      2.60-2.cm2                                @System</p>
+<p>libcap-ng.x86_64                                                   0.8.2-2.cm2                               @System</p>
+<p>libcomps.x86_64                                                    0.1.18-2.cm2                              @System</p>
+<p>libdb.x86_64                                                       5.3.28-7.cm2                              @System</p>
+<p>libdnf.x86_64                                                      0.63.1-2.cm2                              @System</p>
+<p>libedit.x86_64                                                     3.1.20210910-1.cm2                        @System</p>
+<p>libestr.x86_64                                                     0.1.11-1.cm2                              @System</p>
+<p>libevent.x86_64                                                    2.1.12-1.cm2                              @System</p>
+<p>libfastjson.x86_64                                                 0.99.9-1.cm2                              @System</p>
+<p>libffi.x86_64                                                      3.4.2-3.cm2                               @System</p>
+<p>libgcc.x86_64                                                      11.2.0-8.cm2                              @System</p>
+<p>libgcc-atomic.x86_64                                               11.2.0-8.cm2                              @System</p>
+<p>libgcc-devel.x86_64                                                11.2.0-8.cm2                              @System</p>
+<p>libgcrypt.x86_64                                                   1.10.3-1.cm2                              @System</p>
+<p>libgomp.x86_64                                                     11.2.0-8.cm2                              @System</p>
+<p>libgomp-devel.x86_64                                               11.2.0-8.cm2                              @System</p>
+<p>libgpg-error.x86_64                                                1.46-1.cm2                                @System</p>
+<p>libksba.x86_64                                                     1.6.3-1.cm2                               @System</p>
+<p>liblognorm.x86_64                                                  2.0.6-2.cm2                               @System</p>
+<p>libltdl.x86_64                                                     2.4.6-8.cm2                               @System</p>
+<p>libmnl.x86_64                                                      1.0.4-6.cm2                               @System</p>
+<p>libmodulemd.x86_64                                                 2.13.0-2.cm2                              @System</p>
+<p>libmpc.x86_64                                                      1.2.1-1.cm2                               @System</p>
+<p>libnetfilter_conntrack.x86_64                                      1.0.8-1.cm2                               @System</p>
+<p>libnetfilter_cthelper.x86_64                                       1.0.0-5.cm2                               @System</p>
+<p>libnetfilter_cttimeout.x86_64                                      1.0.0-6.cm2                               @System</p>
+<p>libnetfilter_queue.x86_64                                          1.0.5-1.cm2                               @System</p>
+<p>libnfnetlink.x86_64                                                1.0.1-6.cm2                               @System</p>
+<p>libnfsidmap.x86_64                                                 2.5.4-4.cm2                               @System</p>
+<p>libnftnl.x86_64                                                    1.2.1-2.cm2                               @System</p>
+<p>libnl3.x86_64                                                      3.5.0-4.cm2                               @System</p>
+<p>libpcap.x86_64                                                     1.10.1-2.cm2                              @System</p>
+<p>libpkgconf.x86_64                                                  1.8.0-3.cm2                               @System</p>
+<p>libpwquality.x86_64                                                1.4.4-1.cm2                               @System</p>
+<p>librdkafka1.x86_64                                                 1.8.2-2.cm2                               @System</p>
+<p>librelp.x86_64                                                     1.10.0-2.cm2                              @System</p>
+<p>librepo.x86_64                                                     1.15.1-1.cm2                              @System</p>
+<p>libseccomp.x86_64                                                  2.5.3-1.cm2                               @System</p>
+<p>libselinux.x86_64                                                  3.2-1.cm2                                 @System</p>
+<p>libsemanage.x86_64                                                 3.2-2.cm2                                 @System</p>
+<p>libsepol.x86_64                                                    3.2-2.cm2                                 @System</p>
+<p>libserf.x86_64                                                     1.3.9-8.cm2                               @System</p>
+<p>libsolv.x86_64                                                     0.7.24-1.cm2                              @System</p>
+<p>libssh2.x86_64                                                     1.9.0-4.cm2                               @System</p>
+<p>libstdc++.x86_64                                                   11.2.0-8.cm2                              @System</p>
+<p>libstdc++-devel.x86_64                                             11.2.0-8.cm2                              @System</p>
+<p>libtasn1.x86_64                                                    4.19.0-1.cm2                              @System</p>
+<p>libtirpc.x86_64                                                    1.3.3-1.cm2                               @System</p>
+<p>libtool.x86_64                                                     2.4.6-8.cm2                               @System</p>
+<p>libunistring.x86_64                                                0.9.10-6.cm2                              @System</p>
+<p>libuv.x86_64                                                       1.43.0-2.cm2                              @System</p>
+<p>libxml2.x86_64                                                     2.10.4-2.cm2                              @System</p>
+<p>libyaml.x86_64                                                     0.2.5-3.cm2                               @System</p>
+<p>llvm.x86_64                                                        12.0.1-7.cm2                              @System</p>
+<p>lmdb-libs.x86_64                                                   0.9.29-1.cm2                              @System</p>
+<p>logrotate.x86_64                                                   3.20.1-1.cm2                              @System</p>
+<p>lsof.x86_64                                                        4.94.0-1.cm2                              @System</p>
+<p>lua-libs.x86_64                                                    5.4.4-1.cm2                               @System</p>
+<p>lvm2.x86_64                                                        2.03.15-3.cm2                             @System</p>
+<p>lz4.x86_64                                                         1.9.4-1.cm2                               @System</p>
+<p>lzo.x86_64                                                         2.10-4.cm2                                @System</p>
+<p>make.x86_64                                                        4.3-3.cm2                                 @System</p>
+<p>mariner-release.noarch                                             2.0-60.cm2                                @System</p>
+<p>mariner-repos.noarch                                               2.0-9.cm2                                 @System</p>
+<p>mariner-repos-extras.noarch                                        2.0-9.cm2                                 @System</p>
+<p>mariner-repos-microsoft.noarch                                     2.0-9.cm2                                 @System</p>
+<p>mariner-repos-shared.noarch                                        2.0-9.cm2                                 @System</p>
+<p>mariner-rpm-macros.noarch                                          2.0-24.cm2                                @System</p>
+<p>moby-containerd.x86_64                                             1.6.26-4.cm2                              @System</p>
+<p>moby-runc.x86_64                                                   1.1.9-5.cm2                               @System</p>
+<p>mpfr.x86_64                                                        4.1.0-2.cm2                               @System</p>
+<p>ncurses.x86_64                                                     6.4-2.cm2                                 @System</p>
+<p>ncurses-libs.x86_64                                                6.4-2.cm2                                 @System</p>
+<p>ncurses-term.x86_64                                                6.4-2.cm2                                 @System</p>
+<p>net-snmp-libs.x86_64                                               5.9.1-2.cm2                               @System</p>
+<p>net-tools.x86_64                                                   2.10-3.cm2                                @System</p>
+<p>netplan.x86_64                                                     0.95-2.cm2                                @System</p>
+<p>nettle.x86_64                                                      3.7.3-3.cm2                               @System</p>
+<p>newt.x86_64                                                        0.52.21-5.cm2                             @System</p>
+<p>nfs-utils.x86_64                                                   2.5.4-4.cm2                               @System</p>
+<p>nftables.x86_64                                                    1.0.1-2.cm2                               @System</p>
+<p>nghttp2.x86_64                                                     1.57.0-1.cm2                              @System</p>
+<p>nmap-ncat.x86_64                                                   7.93-2.cm2                                @System</p>
+<p>node-exporter.x86_64                                               1.7.0-1                                   @System</p>
+<p>node-problem-detector.x86_64                                       0.8.17-1.cm2                              @System</p>
+<p>node-problem-detector-aks-config.x86_64                            1.0-1                                     @System</p>
+<p>npth.x86_64                                                        1.6-4.cm2                                 @System</p>
+<p>oniguruma.x86_64                                                   6.9.7.1-2.cm2                             @System</p>
+<p>openldap.x86_64                                                    2.4.57-8.cm2                              @System</p>
+<p>openssh.x86_64                                                     8.9p1-4.cm2                               @System</p>
+<p>openssh-clients.x86_64                                             8.9p1-4.cm2                               @System</p>
+<p>openssh-server.x86_64                                              8.9p1-4.cm2                               @System</p>
+<p>openssl.x86_64                                                     1.1.1k-29.cm2                             @System</p>
+<p>openssl-libs.x86_64                                                1.1.1k-29.cm2                             @System</p>
+<p>p11-kit.x86_64                                                     0.24.1-1.cm2                              @System</p>
+<p>p11-kit-trust.x86_64                                               0.24.1-1.cm2                              @System</p>
+<p>pam.x86_64                                                         1.5.1-5.cm2                               @System</p>
+<p>pcre.x86_64                                                        8.45-2.cm2                                @System</p>
+<p>pcre-libs.x86_64                                                   8.45-2.cm2                                @System</p>
+<p>perl.x86_64                                                        5.34.1-488.cm2                            @System</p>
+<p>perl-Archive-Tar.noarch                                            2.38-488.cm2                              @System</p>
+<p>perl-Attribute-Handlers.noarch                                     1.01-488.cm2                              @System</p>
+<p>perl-AutoLoader.noarch                                             5.74-488.cm2                              @System</p>
+<p>perl-AutoSplit.noarch                                              5.74-488.cm2                              @System</p>
+<p>perl-B.x86_64                                                      1.82-488.cm2                              @System</p>
+<p>perl-Benchmark.noarch                                              1.23-488.cm2                              @System</p>
+<p>perl-CGI.noarch                                                    4.54-3.cm2                                @System</p>
+<p>perl-CPAN.noarch                                                   2.28-488.cm2                              @System</p>
+<p>perl-CPAN-Meta.noarch                                              2.150010-488.cm2                          @System</p>
+<p>perl-CPAN-Meta-Requirements.noarch                                 2.140-488.cm2                             @System</p>
+<p>perl-CPAN-Meta-YAML.noarch                                         0.018-488.cm2                             @System</p>
+<p>perl-Carp.noarch                                                   1.52-488.cm2                              @System</p>
+<p>perl-Class-Struct.noarch                                           0.66-488.cm2                              @System</p>
+<p>perl-Compress-Raw-Bzip2.x86_64                                     2.101-488.cm2                             @System</p>
+<p>perl-Compress-Raw-Zlib.x86_64                                      2.101-488.cm2                             @System</p>
+<p>perl-Config-Extensions.noarch                                      0.03-488.cm2                              @System</p>
+<p>perl-Config-Perl-V.noarch                                          0.33-488.cm2                              @System</p>
+<p>perl-DBI.x86_64                                                    1.643-2.cm2                               @System</p>
+<p>perl-DBM_Filter.noarch                                             0.06-488.cm2                              @System</p>
+<p>perl-Data-Dumper.x86_64                                            2.179-488.cm2                             @System</p>
+<p>perl-Devel-PPPort.x86_64                                           3.62-488.cm2                              @System</p>
+<p>perl-Devel-Peek.x86_64                                             1.30-488.cm2                              @System</p>
+<p>perl-Devel-SelfStubber.noarch                                      1.06-488.cm2                              @System</p>
+<p>perl-Digest.noarch                                                 1.19-488.cm2                              @System</p>
+<p>perl-Digest-MD5.x86_64                                             2.58-488.cm2                              @System</p>
+<p>perl-Digest-SHA.x86_64                                             6.02-488.cm2                              @System</p>
+<p>perl-DirHandle.noarch                                              1.05-488.cm2                              @System</p>
+<p>perl-Dumpvalue.noarch                                              2.27-488.cm2                              @System</p>
+<p>perl-DynaLoader.x86_64                                             1.50-488.cm2                              @System</p>
+<p>perl-Encode.x86_64                                                 3.08-488.cm2                              @System</p>
+<p>perl-Encode-devel.noarch                                           3.08-488.cm2                              @System</p>
+<p>perl-English.noarch                                                1.11-488.cm2                              @System</p>
+<p>perl-Env.noarch                                                    1.05-488.cm2                              @System</p>
+<p>perl-Errno.x86_64                                                  1.33-488.cm2                              @System</p>
+<p>perl-Exporter.noarch                                               5.76-488.cm2                              @System</p>
+<p>perl-ExtUtils-CBuilder.noarch                                      0.280236-488.cm2                          @System</p>
+<p>perl-ExtUtils-Command.noarch                                       7.62-488.cm2                              @System</p>
+<p>perl-ExtUtils-Constant.noarch                                      0.25-488.cm2                              @System</p>
+<p>perl-ExtUtils-Embed.noarch                                         1.35-488.cm2                              @System</p>
+<p>perl-ExtUtils-Install.noarch                                       2.20-488.cm2                              @System</p>
+<p>perl-ExtUtils-MM-Utils.noarch                                      7.44-488.cm2                              @System</p>
+<p>perl-ExtUtils-MakeMaker.noarch                                     7.62-488.cm2                              @System</p>
+<p>perl-ExtUtils-Manifest.noarch                                      1.73-488.cm2                              @System</p>
+<p>perl-ExtUtils-Miniperl.noarch                                      1.10-488.cm2                              @System</p>
+<p>perl-ExtUtils-ParseXS.noarch                                       3.43-488.cm2                              @System</p>
+<p>perl-Fcntl.x86_64                                                  1.14-488.cm2                              @System</p>
+<p>perl-File-Basename.noarch                                          2.85-488.cm2                              @System</p>
+<p>perl-File-Compare.noarch                                           1.100.600-488.cm2                         @System</p>
+<p>perl-File-Copy.noarch                                              2.35-488.cm2                              @System</p>
+<p>perl-File-DosGlob.x86_64                                           1.12-488.cm2                              @System</p>
+<p>perl-File-Fetch.noarch                                             1.00-488.cm2                              @System</p>
+<p>perl-File-Find.noarch                                              1.39-488.cm2                              @System</p>
+<p>perl-File-Path.noarch                                              2.18-488.cm2                              @System</p>
+<p>perl-File-Temp.noarch                                              0.231.100-488.cm2                         @System</p>
+<p>perl-File-stat.noarch                                              1.09-488.cm2                              @System</p>
+<p>perl-FileCache.noarch                                              1.10-488.cm2                              @System</p>
+<p>perl-FileHandle.noarch                                             2.03-488.cm2                              @System</p>
+<p>perl-Filter.x86_64                                                 1.59-488.cm2                              @System</p>
+<p>perl-Filter-Simple.noarch                                          0.96-488.cm2                              @System</p>
+<p>perl-FindBin.noarch                                                1.52-488.cm2                              @System</p>
+<p>perl-GDBM_File.x86_64                                              1.19-488.cm2                              @System</p>
+<p>perl-Getopt-Long.noarch                                            2.52-488.cm2                              @System</p>
+<p>perl-Getopt-Std.noarch                                             1.13-488.cm2                              @System</p>
+<p>perl-HTTP-Tiny.noarch                                              0.076-488.cm2                             @System</p>
+<p>perl-Hash-Util.x86_64                                              0.25-488.cm2                              @System</p>
+<p>perl-Hash-Util-FieldHash.x86_64                                    1.21-488.cm2                              @System</p>
+<p>perl-I18N-Collate.noarch                                           1.02-488.cm2                              @System</p>
+<p>perl-I18N-LangTags.noarch                                          0.45-488.cm2                              @System</p>
+<p>perl-I18N-Langinfo.x86_64                                          0.19-488.cm2                              @System</p>
+<p>perl-IO.x86_64                                                     1.46-488.cm2                              @System</p>
+<p>perl-IO-Compress.noarch                                            2.102-488.cm2                             @System</p>
+<p>perl-IO-Socket-IP.noarch                                           0.41-488.cm2                              @System</p>
+<p>perl-IO-Zlib.noarch                                                1.11-488.cm2                              @System</p>
+<p>perl-IPC-Cmd.noarch                                                1.04-488.cm2                              @System</p>
+<p>perl-IPC-Open3.noarch                                              1.21-488.cm2                              @System</p>
+<p>perl-IPC-SysV.x86_64                                               2.09-488.cm2                              @System</p>
+<p>perl-JSON-PP.noarch                                                4.06-488.cm2                              @System</p>
+<p>perl-Locale-Maketext.noarch                                        1.29-488.cm2                              @System</p>
+<p>perl-Locale-Maketext-Simple.noarch                                 0.21-488.cm2                              @System</p>
+<p>perl-MIME-Base64.x86_64                                            3.16-488.cm2                              @System</p>
+<p>perl-Math-BigInt.noarch                                            1.9998.18-488.cm2                         @System</p>
+<p>perl-Math-BigInt-FastCalc.x86_64                                   0.500.900-488.cm2                         @System</p>
+<p>perl-Math-BigRat.noarch                                            0.2614-488.cm2                            @System</p>
+<p>perl-Math-Complex.noarch                                           1.59-488.cm2                              @System</p>
+<p>perl-Memoize.noarch                                                1.03-488.cm2                              @System</p>
+<p>perl-Module-CoreList.noarch                                        5.20220313-488.cm2                        @System</p>
+<p>perl-Module-CoreList-tools.noarch                                  5.20220313-488.cm2                        @System</p>
+<p>perl-Module-Load.noarch                                            0.36-488.cm2                              @System</p>
+<p>perl-Module-Load-Conditional.noarch                                0.74-488.cm2                              @System</p>
+<p>perl-Module-Loaded.noarch                                          0.08-488.cm2                              @System</p>
+<p>perl-Module-Metadata.noarch                                        1.000037-488.cm2                          @System</p>
+<p>perl-NDBM_File.x86_64                                              1.15-488.cm2                              @System</p>
+<p>perl-NEXT.noarch                                                   0.68-488.cm2                              @System</p>
+<p>perl-Net.noarch                                                    1.02-488.cm2                              @System</p>
+<p>perl-Net-Ping.noarch                                               2.74-488.cm2                              @System</p>
+<p>perl-ODBM_File.x86_64                                              1.17-488.cm2                              @System</p>
+<p>perl-Opcode.x86_64                                                 1.50-488.cm2                              @System</p>
+<p>perl-POSIX.x86_64                                                  1.97-488.cm2                              @System</p>
+<p>perl-Params-Check.noarch                                           0.38-488.cm2                              @System</p>
+<p>perl-PathTools.x86_64                                              3.80-488.cm2                              @System</p>
+<p>perl-Perl-OSType.noarch                                            1.010-488.cm2                             @System</p>
+<p>perl-PerlIO-via-QuotedPrint.noarch                                 0.09-488.cm2                              @System</p>
+<p>perl-Pod-Checker.noarch                                            1.74-488.cm2                              @System</p>
+<p>perl-Pod-Escapes.noarch                                            1.07-488.cm2                              @System</p>
+<p>perl-Pod-Functions.noarch                                          1.13-488.cm2                              @System</p>
+<p>perl-Pod-Html.noarch                                               1.27-488.cm2                              @System</p>
+<p>perl-Pod-Perldoc.noarch                                            3.28.01-488.cm2                           @System</p>
+<p>perl-Pod-Simple.noarch                                             3.42-488.cm2                              @System</p>
+<p>perl-Pod-Usage.noarch                                              2.01-488.cm2                              @System</p>
+<p>perl-Safe.noarch                                                   2.43-488.cm2                              @System</p>
+<p>perl-Scalar-List-Utils.x86_64                                      1.55-488.cm2                              @System</p>
+<p>perl-Search-Dict.noarch                                            1.07-488.cm2                              @System</p>
+<p>perl-SelectSaver.noarch                                            1.02-488.cm2                              @System</p>
+<p>perl-SelfLoader.noarch                                             1.26-488.cm2                              @System</p>
+<p>perl-Socket.x86_64                                                 2.031-488.cm2                             @System</p>
+<p>perl-Storable.x86_64                                               3.23-488.cm2                              @System</p>
+<p>perl-Symbol.noarch                                                 1.09-488.cm2                              @System</p>
+<p>perl-Sys-Hostname.x86_64                                           1.23-488.cm2                              @System</p>
+<p>perl-Sys-Syslog.x86_64                                             0.36-488.cm2                              @System</p>
+<p>perl-Term-ANSIColor.noarch                                         5.01-488.cm2                              @System</p>
+<p>perl-Term-Cap.noarch                                               1.17-488.cm2                              @System</p>
+<p>perl-Term-Complete.noarch                                          1.403-488.cm2                             @System</p>
+<p>perl-Term-ReadLine.noarch                                          1.17-488.cm2                              @System</p>
+<p>perl-Test.noarch                                                   1.31-488.cm2                              @System</p>
+<p>perl-Test-Harness.noarch                                           3.43-488.cm2                              @System</p>
+<p>perl-Test-Simple.noarch                                            1.302183-488.cm2                          @System</p>
+<p>perl-Text-Abbrev.noarch                                            1.02-488.cm2                              @System</p>
+<p>perl-Text-Balanced.noarch                                          2.04-488.cm2                              @System</p>
+<p>perl-Text-ParseWords.noarch                                        3.30-488.cm2                              @System</p>
+<p>perl-Text-Tabs+Wrap.noarch                                         2013.0523-488.cm2                         @System</p>
+<p>perl-Thread.noarch                                                 3.05-488.cm2                              @System</p>
+<p>perl-Thread-Queue.noarch                                           3.14-488.cm2                              @System</p>
+<p>perl-Thread-Semaphore.noarch                                       2.13-488.cm2                              @System</p>
+<p>perl-Tie.noarch                                                    4.6-488.cm2                               @System</p>
+<p>perl-Tie-File.noarch                                               1.06-488.cm2                              @System</p>
+<p>perl-Tie-Memoize.noarch                                            1.1-488.cm2                               @System</p>
+<p>perl-Tie-RefHash.noarch                                            1.40-488.cm2                              @System</p>
+<p>perl-Time.noarch                                                   1.03-488.cm2                              @System</p>
+<p>perl-Time-HiRes.x86_64                                             1.9767-488.cm2                            @System</p>
+<p>perl-Time-Local.noarch                                             1.300-488.cm2                             @System</p>
+<p>perl-Time-Piece.x86_64                                             1.3401-488.cm2                            @System</p>
+<p>perl-Unicode-Collate.x86_64                                        1.29-488.cm2                              @System</p>
+<p>perl-Unicode-Normalize.x86_64                                      1.28-488.cm2                              @System</p>
+<p>perl-Unicode-UCD.noarch                                            0.75-488.cm2                              @System</p>
+<p>perl-User-pwent.noarch                                             1.03-488.cm2                              @System</p>
+<p>perl-YAML.noarch                                                   1.30-2.cm2                                @System</p>
+<p>perl-autodie.noarch                                                2.34-488.cm2                              @System</p>
+<p>perl-autouse.noarch                                                1.11-488.cm2                              @System</p>
+<p>perl-base.noarch                                                   2.27-488.cm2                              @System</p>
+<p>perl-bignum.noarch                                                 0.51-488.cm2                              @System</p>
+<p>perl-blib.noarch                                                   1.07-488.cm2                              @System</p>
+<p>perl-constant.noarch                                               1.33-488.cm2                              @System</p>
+<p>perl-debugger.noarch                                               1.60-488.cm2                              @System</p>
+<p>perl-deprecate.noarch                                              0.04-488.cm2                              @System</p>
+<p>perl-devel.x86_64                                                  5.34.1-488.cm2                            @System</p>
+<p>perl-diagnostics.noarch                                            1.37-488.cm2                              @System</p>
+<p>perl-doc.noarch                                                    5.34.1-488.cm2                            @System</p>
+<p>perl-encoding.x86_64                                               3.00-488.cm2                              @System</p>
+<p>perl-encoding-warnings.noarch                                      0.13-488.cm2                              @System</p>
+<p>perl-experimental.noarch                                           0.024-488.cm2                             @System</p>
+<p>perl-fields.noarch                                                 2.27-488.cm2                              @System</p>
+<p>perl-filetest.noarch                                               1.03-488.cm2                              @System</p>
+<p>perl-if.noarch                                                     0.60.900-488.cm2                          @System</p>
+<p>perl-interpreter.x86_64                                            5.34.1-488.cm2                            @System</p>
+<p>perl-less.noarch                                                   0.03-488.cm2                              @System</p>
+<p>perl-lib.x86_64                                                    0.65-488.cm2                              @System</p>
+<p>perl-libnet.noarch                                                 3.13-488.cm2                              @System</p>
+<p>perl-libnetcfg.noarch                                              5.34.1-488.cm2                            @System</p>
+<p>perl-libs.x86_64                                                   5.34.1-488.cm2                            @System</p>
+<p>perl-locale.noarch                                                 1.10-488.cm2                              @System</p>
+<p>perl-macros.noarch                                                 5.34.1-488.cm2                            @System</p>
+<p>perl-meta-notation.noarch                                          5.34.1-488.cm2                            @System</p>
+<p>perl-mro.x86_64                                                    1.25-488.cm2                              @System</p>
+<p>perl-open.noarch                                                   1.12-488.cm2                              @System</p>
+<p>perl-overload.noarch                                               1.33-488.cm2                              @System</p>
+<p>perl-overloading.noarch                                            0.02-488.cm2                              @System</p>
+<p>perl-parent.noarch                                                 0.238-488.cm2                             @System</p>
+<p>perl-perlfaq.noarch                                                5.20210411-488.cm2                        @System</p>
+<p>perl-ph.x86_64                                                     5.34.1-488.cm2                            @System</p>
+<p>perl-podlators.noarch                                              4.14-488.cm2                              @System</p>
+<p>perl-sigtrap.noarch                                                1.09-488.cm2                              @System</p>
+<p>perl-sort.noarch                                                   2.04-488.cm2                              @System</p>
+<p>perl-subs.noarch                                                   1.04-488.cm2                              @System</p>
+<p>perl-threads.x86_64                                                2.26-488.cm2                              @System</p>
+<p>perl-threads-shared.x86_64                                         1.62-488.cm2                              @System</p>
+<p>perl-utils.noarch                                                  5.34.1-488.cm2                            @System</p>
+<p>perl-vars.noarch                                                   1.05-488.cm2                              @System</p>
+<p>perl-version.noarch                                                0.99.28-488.cm2                           @System</p>
+<p>perl-vmsish.noarch                                                 1.04-488.cm2                              @System</p>
+<p>pigz.x86_64                                                        2.6-2.cm2                                 @System</p>
+<p>pinentry.x86_64                                                    1.2.0-1.cm2                               @System</p>
+<p>pkgconf.x86_64                                                     1.8.0-3.cm2                               @System</p>
+<p>pkgconf-m4.noarch                                                  1.8.0-3.cm2                               @System</p>
+<p>pkgconf-pkg-config.x86_64                                          1.8.0-3.cm2                               @System</p>
+<p>popt.x86_64                                                        1.18-1.cm2                                @System</p>
+<p>popt-devel.x86_64                                                  1.18-1.cm2                                @System</p>
+<p>postgresql-libs.x86_64                                             14.11-1.cm2                               @System</p>
+<p>procps-ng.x86_64                                                   3.3.17-2.cm2                              @System</p>
+<p>psmisc.x86_64                                                      23.4-1.cm2                                @System</p>
+<p>python3.x86_64                                                     3.9.14-8.cm2                              @System</p>
+<p>python3-asn1crypto.noarch                                          1.5.1-1.cm2                               @System</p>
+<p>python3-bcc.x86_64                                                 0.27.0-2.cm2                              @System</p>
+<p>python3-certifi.noarch                                             2023.05.07-1.cm2                          @System</p>
+<p>python3-cffi.x86_64                                                1.15.0-3.cm2                              @System</p>
+<p>python3-charset-normalizer.noarch                                  2.0.11-2.cm2                              @System</p>
+<p>python3-configobj.noarch                                           5.0.6-7.cm2                               @System</p>
+<p>python3-cryptography.x86_64                                        3.3.2-6.cm2                               @System</p>
+<p>python3-curses.x86_64                                              3.9.14-8.cm2                              @System</p>
+<p>python3-dateutil.noarch                                            2.7.3-5.cm2                               @System</p>
+<p>python3-dbus.x86_64                                                1.2.16-3.cm2                              @System</p>
+<p>python3-distro.noarch                                              1.6.0-2.cm2                               @System</p>
+<p>python3-dnf.noarch                                                 4.8.0-2.cm2                               @System</p>
+<p>python3-dnf-plugins-core.noarch                                    4.0.24-3.cm2                              @System</p>
+<p>python3-gpg.x86_64                                                 1.16.0-2.cm2                              @System</p>
+<p>python3-hawkey.x86_64                                              0.63.1-2.cm2                              @System</p>
+<p>python3-idna.noarch                                                3.3-1.cm2                                 @System</p>
+<p>python3-jinja2.noarch                                              3.0.3-3.cm2                               @System</p>
+<p>python3-jsonpatch.noarch                                           1.32-1.cm2                                @System</p>
+<p>python3-jsonpointer.noarch                                         2.2-1.cm2                                 @System</p>
+<p>python3-jsonschema.noarch                                          2.6.0-6.cm2                               @System</p>
+<p>python3-libcomps.x86_64                                            0.1.18-2.cm2                              @System</p>
+<p>python3-libdnf.x86_64                                              0.63.1-2.cm2                              @System</p>
+<p>python3-libs.x86_64                                                3.9.14-8.cm2                              @System</p>
+<p>python3-markupsafe.x86_64                                          2.1.0-1.cm2                               @System</p>
+<p>python3-netifaces.x86_64                                           0.11.0-1.cm2                              @System</p>
+<p>python3-oauthlib.noarch                                            2.1.0-7.cm2                               @System</p>
+<p>python3-packaging.noarch                                           21.3-1.cm2                                @System</p>
+<p>python3-prettytable.noarch                                         3.2.0-2.cm2                               @System</p>
+<p>python3-pyOpenSSL.noarch                                           18.0.0-8.cm2                              @System</p>
+<p>python3-pyasn1.noarch                                              0.4.8-1.cm2                               @System</p>
+<p>python3-pycparser.noarch                                           2.21-1.cm2                                @System</p>
+<p>python3-pyparsing.noarch                                           3.0.7-1.cm2                               @System</p>
+<p>python3-requests.noarch                                            2.27.1-6.cm2                              @System</p>
+<p>python3-rpm.x86_64                                                 4.18.0-4.cm2                              @System</p>
+<p>python3-setuptools.noarch                                          3.9.14-8.cm2                              @System</p>
+<p>python3-six.noarch                                                 1.16.0-2.cm2                              @System</p>
+<p>python3-urllib3.noarch                                             1.26.18-2.cm2                             @System</p>
+<p>python3-wcwidth.noarch                                             0.2.5-1.cm2                               @System</p>
+<p>readline.x86_64                                                    8.1-1.cm2                                 @System</p>
+<p>rpcbind.x86_64                                                     1.2.5-6.cm2                               @System</p>
+<p>rpm.x86_64                                                         4.18.0-4.cm2                              @System</p>
+<p>rpm-build-libs.x86_64                                              4.18.0-4.cm2                              @System</p>
+<p>rpm-devel.x86_64                                                   4.18.0-4.cm2                              @System</p>
+<p>rpm-libs.x86_64                                                    4.18.0-4.cm2                              @System</p>
+<p>rsyslog.x86_64                                                     8.2204.1-3.cm2                            @System</p>
+<p>sed.x86_64                                                         4.8-3.cm2                                 @System</p>
+<p>sgx-backwards-compatability.x86_64                                 1.0.0-1.cm2                               @System</p>
+<p>shadow-utils.x86_64                                                4.9-13.cm2                                @System</p>
+<p>shim.x86_64                                                        15.4-2.cm2                                @System</p>
+<p>slang.x86_64                                                       2.3.2-4.cm2                               @System</p>
+<p>snappy.x86_64                                                      1.1.9-3.cm2                               @System</p>
+<p>socat.x86_64                                                       1.7.4.3-1.cm2                             @System</p>
+<p>sqlite-libs.x86_64                                                 3.39.2-3.cm2                              @System</p>
+<p>squashfs-tools.x86_64                                              4.5.1-2.cm2                               @System</p>
+<p>subversion.x86_64                                                  1.14.2-1.cm2                              @System</p>
+<p>subversion-perl.x86_64                                             1.14.2-1.cm2                              @System</p>
+<p>sudo.x86_64                                                        1.9.15p5-1.cm2                            @System</p>
+<p>sysstat.x86_64                                                     12.7.1-3.cm2                              @System</p>
+<p>systemd.x86_64                                                     250.3-19.cm2                              @System</p>
+<p>systemd-rpm-macros.noarch                                          250.3-19.cm2                              @System</p>
+<p>tar.x86_64                                                         1.34-2.cm2                                @System</p>
+<p>tdnf.x86_64                                                        3.5.2-4.cm2                               @System</p>
+<p>tdnf-cli-libs.x86_64                                               3.5.2-4.cm2                               @System</p>
+<p>tdnf-plugin-repogpgcheck.x86_64                                    3.5.2-4.cm2                               @System</p>
+<p>traceroute.x86_64                                                  2.1.3-1.cm2                               @System</p>
+<p>tzdata.noarch                                                      2024a-1.cm2                               @System</p>
+<p>utf8proc.x86_64                                                    2.6.1-2.cm2                               @System</p>
+<p>util-linux.x86_64                                                  2.37.4-8.cm2                              @System</p>
+<p>util-linux-libs.x86_64                                             2.37.4-8.cm2                              @System</p>
+<p>wget.x86_64                                                        1.21.2-2.cm2                              @System</p>
+<p>which.x86_64                                                       2.21-8.cm2                                @System</p>
+<p>wireless-regdb.noarch                                              2022.08.12-1.cm2                          @System</p>
+<p>wpa_supplicant.x86_64                                              2.10-2.cm2                                @System</p>
+<p>xz.x86_64                                                          5.2.5-1.cm2                               @System</p>
+<p>xz-devel.x86_64                                                    5.2.5-1.cm2                               @System</p>
+<p>xz-libs.x86_64                                                     5.2.5-1.cm2                               @System</p>
+<p>zchunk.x86_64                                                      1.1.16-3.cm2                              @System</p>
+<p>zchunk-libs.x86_64                                                 1.1.16-3.cm2                              @System</p>
+<p>zip.x86_64                                                         3.0-5.cm2                                 @System</p>
+<p>zlib.x86_64                                                        1.2.13-2.cm2                              @System</p>
+<p>zlib-devel.x86_64                                                  1.2.13-2.cm2                              @System</p>
+<p>zstd.x86_64                                                        1.5.4-1.cm2                               @System</p>
+<p>zstd-devel.x86_64                                                  1.5.4-1.cm2                               @System</p>
+<p>zstd-libs.x86_64                                                   1.5.4-1.cm2                               @System</p>
+<p>sh-5.1#</p>
+<p>查看notice 文件：</p>
+<p>sh-5.1# ls</p>
+<p>NOTICE.txt  bin  boot  dev  etc  home  lib  lib64  lost+found  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var</p>
+<p>是微软开发的开源系统，遵循GNU和GPL，大部分软件源于 debian或者redhat以及BSD:</p>
+<p>NOTICES AND INFORMATION</p>
+<p>Do Not Translate or Localize</p>
+<p>This software incorporates material from third parties. Microsoft makes certain</p>
+<p>open source code available at <a href="https://3rdpartysource.microsoft.com," target="_blank" rel="noopener">https://3rdpartysource.microsoft.com,</a> or you may</p>
+<p>send a check or money order for US $5.00, including the product name, the open</p>
+<p>source component name, platform, and version number, to:</p>
+<p>Source Code Compliance Team</p>
+<p>Microsoft Corporation</p>
+<p>One Microsoft Way</p>
+<p>Redmond, WA 98052</p>
+<p>USA</p>
+<p>Notwithstanding any other terms, you may reverse engineer this software to the</p>
+<p>extent required to debug changes to any libraries licensed under the GNU Lesser</p>
+<p>General Public License.</p></article>

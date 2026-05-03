@@ -1,0 +1,186 @@
+<article class="kb-article" data-title="未携带SNI请求返回不匹配的证书"><h1>未携带SNI请求返回不匹配的证书</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-06-25 13:26:15</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Case 2021051296059</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Case 2021051296059</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Case 2021051296059</li>
+</ul>
+<ul>
+<li>SNI 的作用</li>
+</ul>
+<ul>
+<li>server {</li>
+</ul>
+<ul>
+<li>listen          443;</li>
+</ul>
+<ul>
+<li>ssl             on;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>1.问题描述</li>
+</ul>
+<ul>
+<li>客户应用程序网关配置多个mutisite listener， 且所有HTTPS listener都启用Require Server Name Indication，按照官方文档，当客户端请求未指定 SNI 标头，并且所有多站点标头都启用了需要 SNI时，应用程序网关应该返回配置的第一个 HTTPS 侦听器的证书（按顺序），但测试发现最终用户的AppGW没有返回第一个listener上的证书</li>
+</ul>
+<ul>
+<li>没有SNI的情况下，并且所有Listener都启用了SNI True（您的两个网关所有HTTPS listener都启用了SNI True设置），所以返回配置的第一个 HTTPS 侦听器的证书（按顺序）</li>
+</ul>
+<ul>
+<li>openssl s_client -showcerts -connect 40.73.122.83:443</li>
+</ul>
+<ul>
+<li>AppGW的listener配置，第一个listener及其cert的配置为：</li>
+</ul>
+<ul>
+<li>&quot;HttpListeners&quot;: [</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;FrontendIP&quot;: &quot;WAF-Pr-feip&quot;,</li>
+</ul>
+<ul>
+<li>&quot;FrontendPort&quot;: &quot;WAF-Pr-feport-HTTPS&quot;,</li>
+</ul>
+<ul>
+<li>&quot;RequireServerNameIndication&quot;: &quot;True&quot;,</li>
+</ul>
+<ul>
+<li>&quot;SslCert&quot;: &quot;wildcard.3m.com.cn.2021.pfx&quot;</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>2. 带SNI获取该listener的证书，可以看到该listener的证书对应CN =*.3m.com.cn</li>
+</ul>
+<ul>
+<li>3. 测试不带SNI访问该AppGW, 可以看到返回的是另一个listener的证书 CN = *.3mdigital.cn</li>
+</ul>
+<ul>
+<li>*40.73.122.83 is the VIP of application gateway</li>
+</ul>
+<ul>
+<li>后台看到的rule的顺序为：</li>
+</ul>
+<ul>
+<li>(3mdigital_Listener_Secure)上的证书：3mdigital.cn.pfx</li>
+</ul>
+<ul>
+<li>也就是说请求未指定 SNI 标头，AppGW返回的是第一个HTTPS协议 Rule的对应listener上绑定的证书。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>&quot;HostName&quot;: &quot;ftdvhealthcheck.3m.com.cn&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Name&quot;: &quot;ftdvhealthcheck_Listener_Secure&quot;,</li>
+</ul>
+<ul>
+<li>CMD: openssl s_client -connect ftdvhealthcheck.3m.com.cn:443 -servername ftdvhealthcheck.3m.com.cn</li>
+</ul>
+<ul>
+<li>CMD: openssl s_client -connect ftdvhealthcheck.3m.com.cn:443</li>
+</ul>
+<ul>
+<li>后台查看第一个HTTPS对应的Rule为：3mdigital_Rule_Secure， 因此请求未带SNI时返回了该Rule对应Listener</li>
+</ul>
+<ul>
+<li>原因分析：经后线产品组确认，当客户端请求未指定 SNI 标头，并且所有多站点标头都启用了需要 SNI时，应用程序网关应该返回配置的第一个 HTTPS 侦听器的证书（按顺序），这里的顺序是按照AppGW上配置的Rule的顺序来确定的。也就是说请求未指定 SNI 标头，AppGW返回的是第一个HTTPS协议 Rule的对应listener上绑定的证书。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>&quot;Protocol&quot;: &quot;Https&quot;,</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>也可以通过linux 检测</li>
+</ul>
+<ul>
+<li>解决方案：提供上述产品组的对AppGW行为的描述，建议最终用户根据产品设计的行为来规划AppGW rule的顺序。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>使用下面的配置，不论浏览器请求哪个主机，都只会收到默认主机www.example.com的证书。这是由SSL协议本身的行为引起的——先建立SSL连接，再发送HTTP请求，所以nginx建立SSL连接时不知道所请求主机的名字，因此，它只会返回默认主机的证书。</li>
+</ul>
+<ul>
+<li>server_name     www.example.com;</li>
+</ul>
+<ul>
+<li>ssl_certificate www.example.com.crt;</li>
+</ul>
+<ul>
+<li>server_name     www.example.cn;</li>
+</ul>
+<ul>
+<li>ssl_certificate www.example.cn.crt;</li>
+</ul>
+<ul>
+<li>根据网关对是否携带SNI的访问说明：<a href="https://docs.azure.cn/zh-cn/application-gateway/ssl-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/ssl-overview</a></li>
+</ul>
+<ul>
+<li>通过第三方工具检测<a href="https://www.ssllabs.com/ssltest/" target="_blank" rel="noopener">https://www.ssllabs.com/ssltest/</a>   multimediaows.3m.com.cn</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-06-25</p>
+<p>Case 2021051296059</p>
+<p>SNI 的作用</p>
+<p>使用下面的配置，不论浏览器请求哪个主机，都只会收到默认主机www.example.com的证书。这是由SSL协议本身的行为引起的——先建立SSL连接，再发送HTTP请求，所以nginx建立SSL连接时不知道所请求主机的名字，因此，它只会返回默认主机的证书。</p>
+<p>server {</p>
+<p>listen          443;</p>
+<p>server_name     www.example.com;</p>
+<p>ssl             on;</p>
+<p>ssl_certificate www.example.com.crt;</p>
+<p>}</p>
+<p>server_name     www.example.cn;</p>
+<p>ssl_certificate www.example.cn.crt;</p>
+<p>1.问题描述</p>
+<p>客户应用程序网关配置多个mutisite listener， 且所有HTTPS listener都启用Require Server Name Indication，按照官方文档，当客户端请求未指定 SNI 标头，并且所有多站点标头都启用了需要 SNI时，应用程序网关应该返回配置的第一个 HTTPS 侦听器的证书（按顺序），但测试发现最终用户的AppGW没有返回第一个listener上的证书</p>
+<p>根据网关对是否携带SNI的访问说明：<a href="https://docs.azure.cn/zh-cn/application-gateway/ssl-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/ssl-overview</a></p>
+<p>没有SNI的情况下，并且所有Listener都启用了SNI True（您的两个网关所有HTTPS listener都启用了SNI True设置），所以返回配置的第一个 HTTPS 侦听器的证书（按顺序）</p>
+<p>通过第三方工具检测<a href="https://www.ssllabs.com/ssltest/" target="_blank" rel="noopener">https://www.ssllabs.com/ssltest/</a>   multimediaows.3m.com.cn</p>
+<p>也可以通过linux 检测</p>
+<p>openssl s_client -showcerts -connect 40.73.122.83:443</p>
+<p>AppGW的listener配置，第一个listener及其cert的配置为：</p>
+<p>&quot;HttpListeners&quot;: [</p>
+<p>{</p>
+<p>&quot;FrontendIP&quot;: &quot;WAF-Pr-feip&quot;,</p>
+<p>&quot;FrontendPort&quot;: &quot;WAF-Pr-feport-HTTPS&quot;,</p>
+<p>&quot;HostName&quot;: &quot;ftdvhealthcheck.3m.com.cn&quot;,</p>
+<p>&quot;Name&quot;: &quot;ftdvhealthcheck_Listener_Secure&quot;,</p>
+<p>&quot;Protocol&quot;: &quot;Https&quot;,</p>
+<p>&quot;RequireServerNameIndication&quot;: &quot;True&quot;,</p>
+<p>&quot;SslCert&quot;: &quot;wildcard.3m.com.cn.2021.pfx&quot;</p>
+<p>},</p>
+<p>2. 带SNI获取该listener的证书，可以看到该listener的证书对应CN =*.3m.com.cn</p>
+<p>CMD: openssl s_client -connect ftdvhealthcheck.3m.com.cn:443 -servername ftdvhealthcheck.3m.com.cn</p>
+<p>3. 测试不带SNI访问该AppGW, 可以看到返回的是另一个listener的证书 CN = *.3mdigital.cn</p>
+<p>CMD: openssl s_client -connect ftdvhealthcheck.3m.com.cn:443</p>
+<p>*40.73.122.83 is the VIP of application gateway</p>
+<p>后台查看第一个HTTPS对应的Rule为：3mdigital_Rule_Secure， 因此请求未带SNI时返回了该Rule对应Listener</p>
+<p>后台看到的rule的顺序为：</p>
+<p>(3mdigital_Listener_Secure)上的证书：3mdigital.cn.pfx</p>
+<p>也就是说请求未指定 SNI 标头，AppGW返回的是第一个HTTPS协议 Rule的对应listener上绑定的证书。</p>
+<p>原因分析：经后线产品组确认，当客户端请求未指定 SNI 标头，并且所有多站点标头都启用了需要 SNI时，应用程序网关应该返回配置的第一个 HTTPS 侦听器的证书（按顺序），这里的顺序是按照AppGW上配置的Rule的顺序来确定的。也就是说请求未指定 SNI 标头，AppGW返回的是第一个HTTPS协议 Rule的对应listener上绑定的证书。</p>
+<p>解决方案：提供上述产品组的对AppGW行为的描述，建议最终用户根据产品设计的行为来规划AppGW rule的顺序。</p></article>

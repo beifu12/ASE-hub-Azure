@@ -1,0 +1,233 @@
+<article class="kb-article" data-title="Azure Ubuntu通过配置cloud-init实现改变临时磁盘挂载点"><h1>Azure Ubuntu通过配置cloud-init实现改变临时磁盘挂载点</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-09-27 11:02:07</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Azure Ubuntu通过配置cloud-init实现改变临时磁盘挂载点 --Johnny Lee</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Azure Ubuntu通过配置cloud-init实现改变临时磁盘挂载点                                                   --Johnny Lee</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Azure Ubuntu通过配置cloud-init实现改变临时磁盘挂载点                                                   --Johnny Lee</li>
+</ul>
+<ul>
+<li>默认情况下ubuntu虚拟机把/mnt作为了临时磁盘的挂载点</li>
+</ul>
+<ul>
+<li>如果遇到必须将数据盘挂载到/mnt下目录的情况就会出现冲突。</li>
+</ul>
+<ul>
+<li>以下是waagent不能生效的参数：</li>
+</ul>
+<ul>
+<li>•以下配置参数对使用 cloud-init 来管理资源磁盘并交换空间的 Ubuntu 云映像没有影响：</li>
+</ul>
+<ul>
+<li>•ResourceDisk.Format</li>
+</ul>
+<ul>
+<li>•ResourceDisk.Filesystem</li>
+</ul>
+<ul>
+<li>•ResourceDisk.MountPoint</li>
+</ul>
+<ul>
+<li>•ResourceDisk.SwapSizeMB</li>
+</ul>
+<ul>
+<li>所以我们只能通过修改Cloud-init对应的配置文件来实现相关功能。</li>
+</ul>
+<ul>
+<li>本篇我们就着重来介绍一下修改临时磁盘的挂载点/mnt，然后将数据磁盘挂载到/mnt下。</li>
+</ul>
+<ul>
+<li>首先给大家介绍一下cloud-init在Azure Ubuntu虚拟机中所有配置文件所在的位置：</li>
+</ul>
+<ul>
+<li>目前azure有以下版本的ubuntu镜像：（ARM）</li>
+</ul>
+<ul>
+<li>Ubuntu Server 12.04.5 LTS</li>
+</ul>
+<ul>
+<li>Ubuntu Server 14.04 LTS</li>
+</ul>
+<ul>
+<li>Ubuntu Server 16.10</li>
+</ul>
+<ul>
+<li>Ubuntu Server 16.04 LTS</li>
+</ul>
+<ul>
+<li>小编测试了除Ubuntu Server 16.04 LTS以外的各个版本：</li>
+</ul>
+<ul>
+<li>路径略有区别：</li>
+</ul>
+<ul>
+<li>Ubuntu Server 12.04.5 LTS和Ubuntu Server 14.04 LTS目录相同</li>
+</ul>
+<ul>
+<li>/usr/lib/python2.7/dist-packages/cloudinit/CloudConfig</li>
+</ul>
+<ul>
+<li>/usr/lib/python3/dist-packages/cloudinit/config</li>
+</ul>
+<ul>
+<li>截图配置文件如下：</li>
+</ul>
+<ul>
+<li>每一个python文件对应一个相关模块，我们要改动的挂载点对应的是cc_mounts.py</li>
+</ul>
+<ul>
+<li>修改vim cc_mounts.py将默认的/mnt 改为/abc(以Ubuntu Server 16.10为例)</li>
+</ul>
+<ul>
+<li>修改/etc/fstab:</li>
+</ul>
+<ul>
+<li>创建目录，</li>
+</ul>
+<ul>
+<li>mkdir  /abc</li>
+</ul>
+<ul>
+<li>到此步您会发现临时磁盘的挂载点已经修改好了：</li>
+</ul>
+<ul>
+<li>附加数据盘，分区格式化</li>
+</ul>
+<ul>
+<li>mkfs.ext4 /dev/sdc1</li>
+</ul>
+<ul>
+<li>创建挂载点</li>
+</ul>
+<ul>
+<li>mkdir /mnt/abc</li>
+</ul>
+<ul>
+<li>修改/etc/fstab</li>
+</ul>
+<ul>
+<li>添加数据盘的自动挂载</li>
+</ul>
+<ul>
+<li>最好使用uuid，这样可以避免盘符改变时不能正常启动：</li>
+</ul>
+<ul>
+<li>blkid：</li>
+</ul>
+<ul>
+<li>图中/mnt对应的是数据盘，/abc对应的是临时盘</li>
+</ul>
+<ul>
+<li>自动挂载成功：</li>
+</ul>
+<ul>
+<li>有关Cloud-init如有兴趣可以参考如下资料：</li>
+</ul>
+<ul>
+<li>Cloud-init社区：</li>
+</ul>
+<ul>
+<li>Ubuntu wiki：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>从portal上停止在开启虚拟机（如果内部重启不能测试出真正效果）</li>
+</ul>
+<ul>
+<li>fdisk /dev/sdc （分区步骤略）</li>
+</ul>
+<ul>
+<li>验证：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>删除/mnt所对应行，python脚本在下次开机前会自动添加</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案如下:</li>
+</ul>
+<ul>
+<li>由于ubuntu的云虚拟机使用cloud-init管理，所以默认使用修改Azure Linux 代理 (waagent)的方法一旦在portal上停止虚拟机就会失效。（Centos以及Free BSD可以通过修改waagent来实现相关配置）</li>
+</ul>
+<ul>
+<li>•Provisioning.Enabled 在使用 cloud-init 执行预配任务的 Ubuntu 云映像上默认为“n”。</li>
+</ul>
+<ul>
+<li>•ResourceDisk.EnableSwap</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="http://cloudinit.readthedocs.io/en/latest/topics/format.html" target="_blank" rel="noopener">http://cloudinit.readthedocs.io/en/latest/topics/format.html</a></li>
+</ul>
+<ul>
+<li><a href="https://wiki.ubuntu.com/Home" target="_blank" rel="noopener">https://wiki.ubuntu.com/Home</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Azure Ubuntu通过配置cloud-init实现改变临时磁盘挂载点                                                   --Johnny Lee</p>
+<p>默认情况下ubuntu虚拟机把/mnt作为了临时磁盘的挂载点</p>
+<p>如果遇到必须将数据盘挂载到/mnt下目录的情况就会出现冲突。</p>
+<p>解决方案如下:</p>
+<p>由于ubuntu的云虚拟机使用cloud-init管理，所以默认使用修改Azure Linux 代理 (waagent)的方法一旦在portal上停止虚拟机就会失效。（Centos以及Free BSD可以通过修改waagent来实现相关配置）</p>
+<p>以下是waagent不能生效的参数：</p>
+<p>•Provisioning.Enabled 在使用 cloud-init 执行预配任务的 Ubuntu 云映像上默认为“n”。</p>
+<p>•以下配置参数对使用 cloud-init 来管理资源磁盘并交换空间的 Ubuntu 云映像没有影响：</p>
+<p>•ResourceDisk.Format</p>
+<p>•ResourceDisk.Filesystem</p>
+<p>•ResourceDisk.MountPoint</p>
+<p>•ResourceDisk.EnableSwap</p>
+<p>•ResourceDisk.SwapSizeMB</p>
+<p>所以我们只能通过修改Cloud-init对应的配置文件来实现相关功能。</p>
+<p>本篇我们就着重来介绍一下修改临时磁盘的挂载点/mnt，然后将数据磁盘挂载到/mnt下。</p>
+<p>首先给大家介绍一下cloud-init在Azure Ubuntu虚拟机中所有配置文件所在的位置：</p>
+<p>目前azure有以下版本的ubuntu镜像：（ARM）</p>
+<p>Ubuntu Server 12.04.5 LTS</p>
+<p>Ubuntu Server 14.04 LTS</p>
+<p>Ubuntu Server 16.10</p>
+<p>Ubuntu Server 16.04 LTS</p>
+<p>小编测试了除Ubuntu Server 16.04 LTS以外的各个版本：</p>
+<p>路径略有区别：</p>
+<p>Ubuntu Server 12.04.5 LTS和Ubuntu Server 14.04 LTS目录相同</p>
+<p>/usr/lib/python2.7/dist-packages/cloudinit/CloudConfig</p>
+<p>/usr/lib/python3/dist-packages/cloudinit/config</p>
+<p>截图配置文件如下：</p>
+<p>每一个python文件对应一个相关模块，我们要改动的挂载点对应的是cc_mounts.py</p>
+<p>修改vim cc_mounts.py将默认的/mnt 改为/abc(以Ubuntu Server 16.10为例)</p>
+<p>修改/etc/fstab:</p>
+<p>删除/mnt所对应行，python脚本在下次开机前会自动添加</p>
+<p>创建目录，</p>
+<p>mkdir  /abc</p>
+<p>从portal上停止在开启虚拟机（如果内部重启不能测试出真正效果）</p>
+<p>到此步您会发现临时磁盘的挂载点已经修改好了：</p>
+<p>附加数据盘，分区格式化</p>
+<p>fdisk /dev/sdc （分区步骤略）</p>
+<p>mkfs.ext4 /dev/sdc1</p>
+<p>创建挂载点</p>
+<p>mkdir /mnt/abc</p>
+<p>修改/etc/fstab</p>
+<p>添加数据盘的自动挂载</p>
+<p>最好使用uuid，这样可以避免盘符改变时不能正常启动：</p>
+<p>blkid：</p>
+<p>图中/mnt对应的是数据盘，/abc对应的是临时盘</p>
+<p>验证：</p>
+<p>自动挂载成功：</p>
+<p>有关Cloud-init如有兴趣可以参考如下资料：</p>
+<p>Cloud-init社区：</p>
+<p><a href="http://cloudinit.readthedocs.io/en/latest/topics/format.html" target="_blank" rel="noopener">http://cloudinit.readthedocs.io/en/latest/topics/format.html</a></p>
+<p>Ubuntu wiki：</p>
+<p><a href="https://wiki.ubuntu.com/Home" target="_blank" rel="noopener">https://wiki.ubuntu.com/Home</a></p></article>

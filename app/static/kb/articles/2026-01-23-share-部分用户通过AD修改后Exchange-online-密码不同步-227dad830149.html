@@ -1,0 +1,97 @@
+<article class="kb-article" data-title="【share】部分用户通过AD修改后Exchange online 密码不同步"><h1>【share】部分用户通过AD修改后Exchange online 密码不同步</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-23 14:17:50</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错如下：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>Lv.lei</li>
+</ul>
+<ul>
+<li>历史工单:20251216387379</li>
+</ul>
+<ul>
+<li>1、背景</li>
+</ul>
+<ul>
+<li>对于本地同步到云端的用户，部分用户(香港区域)在AD修改密码后Exchange online 密码不同步</li>
+</ul>
+<ul>
+<li>同步状态正常；</li>
+</ul>
+<ul>
+<li>Entra ID Connect已开启哈希密码同步</li>
+</ul>
+<ul>
+<li>输入1检测是否开启哈希密码同步，已开启(无问题)：</li>
+</ul>
+<ul>
+<li>且下述界面无Password sync:</li>
+</ul>
+<ul>
+<li>根据官方文档所述，iNetOrgPerson 对象类型不支持密码同步：</li>
+</ul>
+<ul>
+<li>使用 Microsoft Entra Connect Sync 实现密码哈希同步 - Microsoft Entra ID | Microsoft Learn</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2、排查过程</li>
+</ul>
+<ul>
+<li>查看事件查看器，无611事件ID（服务无问题）</li>
+</ul>
+<ul>
+<li>通过诊断工具，输2找到有问题的用户：</li>
+</ul>
+<ul>
+<li>查看正常用户：</li>
+</ul>
+<ul>
+<li>输入3，查看；提示inetOrgPerson类型不支持哈希同步：</li>
+</ul>
+<ul>
+<li>进一步查看问题用户类型：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Reviewer</p>
+<p>Lv.lei</p>
+<p>历史工单:20251216387379</p>
+<p>1、背景</p>
+<p>对于本地同步到云端的用户，部分用户(香港区域)在AD修改密码后Exchange online 密码不同步</p>
+<p>2、排查过程</p>
+<p>同步状态正常；</p>
+<p>Entra ID Connect已开启哈希密码同步</p>
+<p>查看事件查看器，无611事件ID（服务无问题）</p>
+<p>通过诊断工具，输2找到有问题的用户：</p>
+<p>报错如下：</p>
+<p>查看正常用户：</p>
+<p>输入1检测是否开启哈希密码同步，已开启(无问题)：</p>
+<p>输入3，查看；提示inetOrgPerson类型不支持哈希同步：</p>
+<p>进一步查看问题用户类型：</p>
+<p>且下述界面无Password sync:</p>
+<p>根据官方文档所述，iNetOrgPerson 对象类型不支持密码同步：</p>
+<p>使用 Microsoft Entra Connect Sync 实现密码哈希同步 - Microsoft Entra ID | Microsoft Learn</p></article>

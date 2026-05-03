@@ -31,26 +31,31 @@ function renderRecentNav() {
     if (!nav) return;
     const recent = JSON.parse(localStorage.getItem('recent-sections') || '[]');
     const sectionMeta = {
-        dashboard:  { icon: '📊', i18n: 'dashboard' },
-        pricing:    { icon: '💰', i18n: 'pricing' },
-        docs:       { icon: '📚', i18n: 'docs' },
-        updates:    { icon: '📡', i18n: 'updates' },
-        reports:    { icon: '📝', i18n: 'reports' },
-        meetings:   { icon: '🤝', i18n: 'meetings' },
-        glossary:   { icon: '📖', i18n: 'glossary' },
-        snippets:   { icon: '⚡', i18n: 'snippets' },
-        migration:  { icon: '🔄', i18n: 'migration' },
+        dashboard:  { icon: 'layout-dashboard', i18n: 'dashboard', lucide: true },
+        pricing:    { icon: 'banknote', i18n: 'pricing', lucide: true },
+        docs:       { icon: 'library', i18n: 'docs', lucide: true },
+        updates:    { icon: 'rss', i18n: 'updates', lucide: true },
+        reports:    { icon: 'clipboard-list', i18n: 'reports', lucide: true },
+        meetings:   { icon: 'handshake', i18n: 'meetings', lucide: true },
+        glossary:   { icon: 'book-open', i18n: 'glossary', lucide: true },
+        snippets:   { icon: 'terminal', i18n: 'snippets', lucide: true },
+        migration:  { icon: 'refresh-cw', i18n: 'migration', lucide: true },
+        kb:         { icon: 'brain', i18n: 'kb', lucide: true },
     };
     if (!recent.length) {
         nav.innerHTML = '<div class="nav-item" style="cursor:default;opacity:0.4"><span class="icon">—</span> <span>No recent</span></div>';
         return;
     }
     nav.innerHTML = recent.map(s => {
-        const meta = sectionMeta[s] || { icon: '•', i18n: s };
+        const meta = sectionMeta[s] || { icon: 'circle', i18n: s, lucide: true };
+        const iconHtml = meta.lucide
+            ? '<i data-lucide="' + meta.icon + '" class="icon"></i>'
+            : '<span class="icon">' + meta.icon + '</span>';
         return '<a class="nav-item" data-section="' + s + '" onclick="navigateTo(\'' + s + '\')">' +
-            '<span class="icon">' + meta.icon + '</span> <span data-i18n="' + meta.i18n + '">' + s + '</span>' +
+            iconHtml + ' <span data-i18n="' + meta.i18n + '">' + s + '</span>' +
             '</a>';
     }).join('');
+    setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 50);
 }
 
 const BREADCRUMB_MAP = {
@@ -63,6 +68,7 @@ const BREADCRUMB_MAP = {
     glossary:   ['group_knowledge', 'glossary'],
     snippets:   ['group_admin', 'snippets'],
     migration:  ['group_admin', 'migration'],
+    kb:         ['group_knowledge', 'kb'],
 };
 
 function updateBreadcrumb(section) {
@@ -99,6 +105,7 @@ function navigateTo(section) {
         if (section === 'meetings') { loadMeetings(); }
         if (section === 'migration') { loadMigrationStats(); }
         if (section === 'translate') { /* translate widget handles itself */ }
+        if (section === 'kb') { /* KB loads via API */ }
     }
     updateBreadcrumb(section);
     trackRecent(section);

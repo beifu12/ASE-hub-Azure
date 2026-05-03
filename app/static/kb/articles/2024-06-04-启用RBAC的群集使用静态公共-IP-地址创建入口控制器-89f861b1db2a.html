@@ -1,0 +1,43 @@
+<article class="kb-article" data-title="启用RBAC的群集使用静态公共 IP 地址创建入口控制器"><h1>启用RBAC的群集使用静态公共 IP 地址创建入口控制器</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-04 16:36:38</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>HuSong</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>HuSong</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>HuSong</li>
+</ul>
+<ul>
+<li>CASE ID: 2019061231918</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>客户在 Azure Kubernetes 服务 (AKS) 中使用静态公共 IP 地址创建入口控制器，创建了两个群集，其中一个没有开启RBAC，是正常的；另一个群集开启了RBAC，在启动pod时报错。根据客户参考的官方文档，如果AKS群集未启用RBAC，需要添加一个参数“--set rbac.create=false”到Helm命令中，与客户确认了一下，开启RBAC的这个群集没有加这个参数，因为他理解启用了RBAC默认就不需要添加了，建议客户加了条参数“--set rbac.create=true”，再尝试开启pod成功，因此看起来这是个开关，无论是否开启RBAC都需要参数指定，从文档中看确实有些歧义，供大家参考。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考链接： <a href="https://docs.microsoft.com/zh-cn/azure/aks/ingress-static-ip" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/ingress-static-ip</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>HuSong</p>
+<p>客户在 Azure Kubernetes 服务 (AKS) 中使用静态公共 IP 地址创建入口控制器，创建了两个群集，其中一个没有开启RBAC，是正常的；另一个群集开启了RBAC，在启动pod时报错。根据客户参考的官方文档，如果AKS群集未启用RBAC，需要添加一个参数“--set rbac.create=false”到Helm命令中，与客户确认了一下，开启RBAC的这个群集没有加这个参数，因为他理解启用了RBAC默认就不需要添加了，建议客户加了条参数“--set rbac.create=true”，再尝试开启pod成功，因此看起来这是个开关，无论是否开启RBAC都需要参数指定，从文档中看确实有些歧义，供大家参考。</p>
+<p>CASE ID: 2019061231918</p>
+<p>参考链接： <a href="https://docs.microsoft.com/zh-cn/azure/aks/ingress-static-ip" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/ingress-static-ip</a></p></article>

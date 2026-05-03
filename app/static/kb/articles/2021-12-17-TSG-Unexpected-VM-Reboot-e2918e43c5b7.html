@@ -1,0 +1,757 @@
+<article class="kb-article" data-title="[TSG] Unexpected VM Reboot"><h1>[TSG] Unexpected VM Reboot</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-12-17 16:26:34</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Node itself is rebooted unexpectedly due to hardware or Power issue.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Node itself is rebooted unexpectedly due to hardware or Power issue.</li>
+</ul>
+<ul>
+<li>First get the deployment ID and issue date/time from customer and run a query on availability explorer.</li>
+</ul>
+<ul>
+<li>0519a344-a1c9-404c-ab9b-139c65e504c0</li>
+</ul>
+<ul>
+<li>Next look at the following MDS tables to see if the reboot was due to Agent fault or node fault due to any workflow timeout.</li>
+</ul>
+<ul>
+<li>FcFaultHandlingRecoveryEventEtwTable* --&gt; This is to find if the node was faulted due to any workflow timeout</li>
+</ul>
+<ul>
+<li>21531014030</li>
+</ul>
+<ul>
+<li>[TMMgmtNodeFault] FaultCode=10005 Reason=Retries failed for State: Ready, Status: 0x80070020, Extended Info: DestroyContainer 810214a2-0883-40ff-a20d-3f9c727aeac7 failed with error: 0x80070020 Time=2015-02-16T11:33:06.347 Details= CorrelationGuid=caa1adc0-c0cf-4022-9c8d-6e0adcc8ac51 BladeID=9fe7513e-a06c-4fd4-af9d-f58ecd0d33ef InstrumentationScopeID=00000000-0000-0000-0000-000000000000  SequenceId=342339468 Instance=Fabricator_IN_0 Replica=100.75.21.90</li>
+</ul>
+<ul>
+<li>[TMMgmtNodeTrace] Context=ManagementFaultHandlerInvoked Message=Management Handler Invoked for Fault Corelation Guid: caa1adc0-c0cf-4022-9c8d-6e0adcc8ac51 BladeID= InstrumentationScopeID= SecondaryLevel=  SequenceId=342339482 Instance=Fabricator_IN_0 Replica=100.75.21.90 Fault Reason: Retries failed for State: Ready, Status: 0x80070020, Extended Info: DestroyContainer 810214a2-0883-40ff-a20d-3f9c727aeac7 failed with error: 0x80070020 Diagnosis Fault Code String: RetriesFailed Fault Code: 10005 Fault Type: Software Fault Time: 2/16/2015 11:33:06 AM Fault Details: Fabric Operation on the Node when the Fault Happened: DestroyContainer Node State when the Fault Happened: Ready Operation Return Code from Agent (when applicable): 2147942432 Retries: 0 Fault Scope: Unknown .9fe7513e-a06c-4fd4-af9d-f58ecd0d33ef00000000-0000-0000-0000-000000000000Information</li>
+</ul>
+<ul>
+<li>Next look for if  StopContainer was timed out with an error code &quot;0x800705B4&quot; before the above exception. If yes, it means DestroyContainer was tried when the Stop is not completed which failed with ERROR_SHARING_VIOLATION causing the node HI. This is a known bug 3178467</li>
+</ul>
+<ul>
+<li>[TMMgmtNodeTrace] Context=Information Message=StoppingRogueContainers, : StopContainer failed for container: 810214a2-0883-40ff-a20d-3f9c727aeac7, status:2147943860 BladeID=9fe7513e-a06c-4fd4-af9d-f58ecd0d33ef InstrumentationScopeID=00000000-0000-0000-0000-000000000000 SecondaryLevel=Information  SequenceId=342268319 Instance=Fabricator_IN_0 Replica=100.75.21.90</li>
+</ul>
+<ul>
+<li>If you see any other error code or Fault Signature, please engage EEE.</li>
+</ul>
+<ul>
+<li>First get the deployment ID and issue date/time from customer and run a query  on AvailabilityExplorer</li>
+</ul>
+<ul>
+<li>Unknown</li>
+</ul>
+<ul>
+<li>The node state &quot;Unhealthy&quot; and &quot;PoweringOn&quot;  means the Fabric marked the node as Unhealthy as it failed to get Heartbeat from the node agent and tried recovery by Powercycling the node.</li>
+</ul>
+<ul>
+<li>If you find Node State goes to &quot;Unhealthy&quot; followed by &quot;Ready&quot;, it means Fabric failed to receive Heartbeat from node for a while and marked the Node as Ready when it receives the HB again. Once the fabric marks the node as Unhealthy, it will wait for 10 minutes (Unhealthy Timeout) before it tries to recover the node by PowerCylce/Reboot.</li>
+</ul>
+<ul>
+<li>The node goes to Unhealthy followed by Ready within the timeout period (10 minutes) may happen for the following reason.</li>
+</ul>
+<ul>
+<li>Error        1/23/2015 4:07:06 AM        mlx4_bus        48        None</li>
+</ul>
+<ul>
+<li>If you find Container State going &quot;ContainerStateUnhealthy&quot; but no change in node state similar to the one below, then it may not be an issue with network connectivity on the node.</li>
+</ul>
+<ul>
+<li>Xstore side issue</li>
+</ul>
+<ul>
+<li>Node issue</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Modified date &amp; Time</li>
+</ul>
+<ul>
+<li>Azure Component</li>
+</ul>
+<ul>
+<li>VKB Ready</li>
+</ul>
+<ul>
+<li>Internal</li>
+</ul>
+<ul>
+<li>External</li>
+</ul>
+<ul>
+<li>Published to VKB</li>
+</ul>
+<ul>
+<li>Archive</li>
+</ul>
+<ul>
+<li>SUMMARY</li>
+</ul>
+<ul>
+<li>Most of the time we see the VM gets rebooted unexpectedly due to node reboot or Xdisk Connectivity due to Event 17.</li>
+</ul>
+<ul>
+<li>The node may get rebooted for the following reason.</li>
+</ul>
+<ul>
+<li>Fabric reboots the nodes</li>
+</ul>
+<ul>
+<li>When fabric reboots the node you see the node state as &quot;Booting&quot; in the node state change table.</li>
+</ul>
+<ul>
+<li>Sometimes you may even see State &quot;PoweringOn&quot; in the node state change table that means fabric tried to recover the node by Powercycling as it may have not got any response from the node for a period of time.</li>
+</ul>
+<ul>
+<li>NODE REBOOT SCENARIO 1</li>
+</ul>
+<ul>
+<li>If you find the node State  as Faulted and &quot;Booting&quot;  that means fabric initiated the node reboot.</li>
+</ul>
+<ul>
+<li>Available</li>
+</ul>
+<ul>
+<li>2015-01-20 00:00:00</li>
+</ul>
+<ul>
+<li>2015-01-20 00:25:05</li>
+</ul>
+<ul>
+<li>NotApplicable</li>
+</ul>
+<ul>
+<li>3ee0eb5e-f3d6-445e-beae-abfc93daa245</li>
+</ul>
+<ul>
+<li>Faulted</li>
+</ul>
+<ul>
+<li>2015-01-20 00:25:17</li>
+</ul>
+<ul>
+<li>InPlace</li>
+</ul>
+<ul>
+<li>Fabric may reboot the node for the following reason as a part of recovery or due to RootHE update.</li>
+</ul>
+<ul>
+<li>Node Faulted</li>
+</ul>
+<ul>
+<li>Node Agent faulted</li>
+</ul>
+<ul>
+<li>FcTMMgmtNodeAgentFaultedEtwTable*  --&gt; This is to find if the node agent was faulted</li>
+</ul>
+<ul>
+<li>Choose MDS table FcFaultHandlingRecoveryEventEtwTable* as per the cluster and use the server query as NodeID == &quot;3ee0eb5e-f3d6-445e-beae-abfc93daa245&quot;</li>
+</ul>
+<ul>
+<li>If the above query returns any results, look at the FaultSignature column and see the fault details.</li>
+</ul>
+<ul>
+<li>If you find any fault signature other than the above ones , please engage EEE via task.</li>
+</ul>
+<ul>
+<li>If the MDS table FcFaultHandlingRecoveryEventEtwTable doesn’t show any results, then query FcTMMgmtNodeAgentFaultedEtwTable.</li>
+</ul>
+<ul>
+<li>When querying FcTMMgmtNodeAgentFaultedEtwTable, use server query BladeID == &quot;3ee0eb5e-f3d6-445e-beae-abfc93daa245&quot;</li>
+</ul>
+<ul>
+<li>If the query returns any results, then look at the FaultDetails Column.</li>
+</ul>
+<ul>
+<li>If you find the FaultDetails similar to the one below ,it means RDAgent(Host/Node Agent) Crashed</li>
+</ul>
+<ul>
+<li>FaultType:Crash FaultCode:0 ExtendedFaultDetails:Detected inconsistent startup state.</li>
+</ul>
+<ul>
+<li>Fabric rebooting the node due to Agent Crash is by design but what we need to find  out is &quot;why the Agent Crashed?&quot;</li>
+</ul>
+<ul>
+<li>To find why the Agent Crashed, we need to pull the AgentCrashdump.</li>
+</ul>
+<ul>
+<li>Run the following Fcshell command to pull the Agent Crash dump.</li>
+</ul>
+<ul>
+<li>PS E:\sarnshare\RD\RD\rd_cmt_stable.991231-0001\Fabric&gt; Get-Fabric BY3PrdApp17</li>
+</ul>
+<ul>
+<li>PS E:\sarnshare\RD\RD\rd_cmt_stable.991231-0001\Fabric&gt; $n = Get-Node 3ee0eb5e-f3d6-445e-beae-abfc93daa245</li>
+</ul>
+<ul>
+<li>PS E:\sarnshare\RD\RD\rd_cmt_stable.991231-0001\Fabric&gt; Get-NodeAgentDiagnostics AgentCrashDump -Node $n</li>
+</ul>
+<ul>
+<li>You can also run the below script from your FCShell that analyzes the dump file automatically for you, and would show any known bug number associated.</li>
+</ul>
+<ul>
+<li>\\fsu\shares\wats\scripts\AnalyzeAgentDump.ps1 &lt;Cluster&gt; &lt;NodeId&gt;</li>
+</ul>
+<ul>
+<li>If the dump is available, you will get a successful result with a link.</li>
+</ul>
+<ul>
+<li>Please copy the dump and file a EEE task for analysis</li>
+</ul>
+<ul>
+<li>If the dump is not available on the node then you would see a message similar to the one below.</li>
+</ul>
+<ul>
+<li>At line:1 char:1</li>
+</ul>
+<ul>
+<li>+ Get-NodeAgentDiagnostics AgentCrashDump -Node $n</li>
+</ul>
+<ul>
+<li>+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</li>
+</ul>
+<ul>
+<li>+ CategoryInfo          : NotSpecified: (:) [Get-NodeAgentDiagnostics], WebException</li>
+</ul>
+<ul>
+<li>Since the dump is not available, we need to find out what else could have caused RDAgent Crash.</li>
+</ul>
+<ul>
+<li>Please run the MDS table with server query as Node Identity == &quot;Node IP&quot; and Client query as select timestamp, nodeidentity, CounterName, Countervalue where CounterName.contains(&quot;RdAgent&quot;) and CounterName.contains(&quot;Working Set&quot;). Example query here FaHostAgentLocalCounterNodeTableDB4AVer*.</li>
+</ul>
+<ul>
+<li>You can find the Node IP by running the following fcshell command.</li>
+</ul>
+<ul>
+<li>PS E:\sarnshare\RD\RD\rd_cmt_stable.991231-0001\Fabric&gt; $n.IPAddress</li>
+</ul>
+<ul>
+<li>From the query results, look for the memory usage by RDAgent.exe. Similar to the one below and see the memory usage before Crash.</li>
+</ul>
+<ul>
+<li>2015-01-26T04:10:00.0000000+00:00</li>
+</ul>
+<ul>
+<li>100.72.116.200</li>
+</ul>
+<ul>
+<li>\Process(RdAgent)\Working Set</li>
+</ul>
+<ul>
+<li>21531699200</li>
+</ul>
+<ul>
+<li>2015-01-26T04:15:00.0000000+00:00</li>
+</ul>
+<ul>
+<li>2015-01-26T04:25:00.0000000+00:00</li>
+</ul>
+<ul>
+<li>37431978.67</li>
+</ul>
+<ul>
+<li>2015-01-26T04:30:00.0000000+00:00</li>
+</ul>
+<ul>
+<li>39840972.8</li>
+</ul>
+<ul>
+<li>Note: This table shows the memory in bytes and please convert it to GBs</li>
+</ul>
+<ul>
+<li>If the memory usage is more than 1GB, then we can say it’s the same Rdbug 2984414</li>
+</ul>
+<ul>
+<li>If both MDS table FcFaultHandlingRecoveryEventEtwTable  and FcTMMgmtNodeAgentFaultedEtwTable doesn’t shows any results, then we need to find what else  caused the node reboot.</li>
+</ul>
+<ul>
+<li>Next look at the MDS FcRootHEUpdateAddingNodeToUpdateSet to see if RootHE caused the node reboot. You can follow EEE Task# 314080911689475001003</li>
+</ul>
+<ul>
+<li>2015-2-16 11:33:06.347</li>
+</ul>
+<ul>
+<li>42394151</li>
+</ul>
+<ul>
+<li>187</li>
+</ul>
+<ul>
+<li>2015-2-16 11:33:06.362</li>
+</ul>
+<ul>
+<li>FabricatorTraces__ x:\btsdx\356304\services\fc\fabric\Controller\Services\Management\CM\NodeManagement\NodeStateDriver_cs</li>
+</ul>
+<ul>
+<li>[TMMgmtNodeStateChanged] OldState=Ready NewState=Dead BladeID=9fe7513e-a06c-4fd4-af9d-f58ecd0d33ef InstrumentationScopeID=00000000-0000-0000-0000-000000000000  SequenceId=342339470 Instance=Fabricator_IN_0 Replica=100.75.21.90</li>
+</ul>
+<ul>
+<li>2015-2-16 11:31:46.255</li>
+</ul>
+<ul>
+<li>FabricatorTraces__ x:\btsdx\356304\services\fc\fabric\Controller\Services\Management\CM\NodeManagement\StateMachines\Container_StopContainer_cs</li>
+</ul>
+<ul>
+<li>19011497</li>
+</ul>
+<ul>
+<li>189</li>
+</ul>
+<ul>
+<li>FabricatorTraces__ x:\btsdx\356304\services\fc\fabric\Controller\Services\Management\CM\NodeManagement\StateMachines\ContainerWorkflow_cs</li>
+</ul>
+<ul>
+<li>NODE REBOOT SCENARIO 2</li>
+</ul>
+<ul>
+<li>Look for the result similar to one below for the affected VM.</li>
+</ul>
+<ul>
+<li>2015-01-02 00:00:00</li>
+</ul>
+<ul>
+<li>2015-01-02 16:17:05</li>
+</ul>
+<ul>
+<li>28362141-a97c-446a-84d6-e810254b5467</li>
+</ul>
+<ul>
+<li>05684488-0000-0000-0000-008cfa53a06e</li>
+</ul>
+<ul>
+<li>2015-01-02 16:17:17</li>
+</ul>
+<ul>
+<li>2015-01-02 16:18:50</li>
+</ul>
+<ul>
+<li>2015-01-02 16:29:48</li>
+</ul>
+<ul>
+<li>2015-01-02 17:30:21</li>
+</ul>
+<ul>
+<li>2015-01-03 00:00:00</li>
+</ul>
+<ul>
+<li>Fabric may fail to receive Heartbeat from the node agent for the following reason.</li>
+</ul>
+<ul>
+<li>Node Agent hung</li>
+</ul>
+<ul>
+<li>Node is hung and unresponsive</li>
+</ul>
+<ul>
+<li>Node lost network connectivity</li>
+</ul>
+<ul>
+<li>Node rebooted/Power down unexpectedly</li>
+</ul>
+<ul>
+<li>You can always looked at the node state table to find what happened to the node state after it was marked Unhealthy.</li>
+</ul>
+<ul>
+<li>Node was powered down unexpectedly</li>
+</ul>
+<ul>
+<li>The node OS was hung and Unresponsive</li>
+</ul>
+<ul>
+<li>The node lost network connectivity for few mins</li>
+</ul>
+<ul>
+<li>The node rebooted unexpectedly and came back</li>
+</ul>
+<ul>
+<li>At times we may also see the Node State going &quot;Unhealthy&quot; followed by &quot;ContainerStateUnhealthy&quot; similar to the one below.</li>
+</ul>
+<ul>
+<li>2015-01-23 04:16:34</li>
+</ul>
+<ul>
+<li>2015-01-23 04:18:30</li>
+</ul>
+<ul>
+<li>73f15932-848c-4169-8879-00bd1d52796f</li>
+</ul>
+<ul>
+<li>04734491-0000-0000-0000-24be059722d0</li>
+</ul>
+<ul>
+<li>2015-01-23 04:28:19</li>
+</ul>
+<ul>
+<li>2015-01-23 04:29:08</li>
+</ul>
+<ul>
+<li>Container State going Unhealthy all of sudden may happen due to Xdisk connectivity (Event 17). You can confirm it by running the MDS table FaFabricAgentEvent* using the server query as context == &quot;ContainerID&quot;. Example:FaFabricAgentEventTableSG</li>
+</ul>
+<ul>
+<li>But if the Node State goes Unhealthy followed by ContainerStateUnhealthy, that generally happen when the node is lost connectivity to the network.</li>
+</ul>
+<ul>
+<li>Or you can look for the following events because not all nodes are running the same network card.</li>
+</ul>
+<ul>
+<li>Warning        1/30/2015 3:58:19 AM        ixgbn        27        None</li>
+</ul>
+<ul>
+<li>Information        1/30/2015 3:58:19 AM        Hyper-V-VmSwitch        24</li>
+</ul>
+<ul>
+<li>Warning        1/30/2015 3:58:19 AM        Hyper-V-VmSwitch        22</li>
+</ul>
+<ul>
+<li>2014-12-02 00:00:00</li>
+</ul>
+<ul>
+<li>2014-12-02 10:05:54</li>
+</ul>
+<ul>
+<li>4f6964e2-d24f-4eeb-9b0f-a0effd5cec36</li>
+</ul>
+<ul>
+<li>05564599-0000-0000-0000-008cfa53f476</li>
+</ul>
+<ul>
+<li>2014-12-02 10:14:12</li>
+</ul>
+<ul>
+<li>The container state going Unhealthy due to Event 17 all of sudden and no change in node state may happen for the following reason.</li>
+</ul>
+<ul>
+<li>Xstore account throttling.</li>
+</ul>
+<ul>
+<li>To identify the Xstore throttling, you can run the MDS table example  FaOsRdssdCounterTableBY2* to see if the Storage account  was throttled.</li>
+</ul>
+<ul>
+<li>Azure Storage Scalability and Performance Targets.</li>
+</ul>
+<ul>
+<li>If you don’t see any throttling events or more than 40 disk in the Xstore account, please file a CRI with EEE (for SEV 3, 4) or Xstore (for SEV 1, 2) team until we come up with a TSG for Event 17.</li>
+</ul>
+<ul>
+<li>MORE INFO</li>
+</ul>
+<ul>
+<li>KEYWORDS</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Node crashed/bugchecked</li>
+</ul>
+<ul>
+<li>Node Marked as Dead/Human Investigate.</li>
+</ul>
+<ul>
+<li>When the node is crashed/bugchecked or rebooted unexpectedly you would see the node state as &quot;Unhealthy&quot;</li>
+</ul>
+<ul>
+<li>How to Troubleshoot VM Reboot Due to Node Reboot (Faulted, NodeState=Booting) Issue?</li>
+</ul>
+<ul>
+<li>Next pull the node agent logs by running the following commands.</li>
+</ul>
+<ul>
+<li>Open the Agent logs and search for error code &quot;0x800705aa&quot;  just before the Agent Crash.</li>
+</ul>
+<ul>
+<li>If you don’t find the above error code in the Agent logs, then run the MDS table FaHostAgentLocalCounterNodeTable</li>
+</ul>
+<ul>
+<li>If the table doesn’t show any results and you if you can&#39;t find the error code &quot;0x800705aa&quot; in the agent logs, please engage EEE by a task.</li>
+</ul>
+<ul>
+<li>If you see the node was marked as Human Investigate I, please pull the Fabricator logs and  look for error code &quot;0x80070020&quot;. If you find the error code then follow the next step.</li>
+</ul>
+<ul>
+<li>FabricatorTraces__ x:\btsdx\356304\services\fc\fabric\Controller\Services\Management\LogicalModel\LogicalNode_cs</li>
+</ul>
+<ul>
+<li>[TMMgmtContainerTrace] Context=Information Message=StoppingContainer, : Container 810214a2-0883-40ff-a20d-3f9c727aeac7 on node encountered a failure during StopContainerComplete status:0x800705B4. Checking to see if we can attempt a retry. ContainerID=810214a2-0883-40ff-a20d-3f9c727aeac7 BladeID=9fe7513e-a06c-4fd4-af9d-f58ecd0d33ef InstrumentationScopeID=00000000-0000-0000-0000-000000000000 SecondaryLevel=Information  SequenceId=342268320 Instance=Fabricator_IN_0 Replica=100.75.21.90</li>
+</ul>
+<ul>
+<li>How to Troubleshoot VM Reboot Due to Node Unhealthy (Unknown, NodeState=Unhealthy) Issue?</li>
+</ul>
+<ul>
+<li>Node Crashed/bugchecked</li>
+</ul>
+<ul>
+<li>Most the time when the nodes goes to Unhealthy followed by PoweringOn we may lose the node event logs.</li>
+</ul>
+<ul>
+<li>If the node goes to &quot;Unhealthy&quot; followed by &quot;PoweringOn&quot;, it means the node was not reachable for more than 10 minutes since marking Unhealthy and fabric tried Powercycling the node to recover it and this may happen for the following reasons. Most of the time after the PowerCycle , the node event logs may be lost and in that case please file a EEE task.</li>
+</ul>
+<ul>
+<li>The node rebooted due to bugcheck and came back</li>
+</ul>
+<ul>
+<li>You can pull the node event logs by running the following fcshell commands and look at the node system event logs.</li>
+</ul>
+<ul>
+<li>PS E:\sarnshare\RD\RD\rd_cmt_stable.991231-0001\Fabric&gt; Get-NodeAgentDiagnostics WindowsEventLogs -Node $n</li>
+</ul>
+<ul>
+<li>In the system event logs you can look for &quot;Bugcheck&quot; events. You can also run MDS table FaOsCrashEventTable* with server query as NodeIdentity == &quot;Node IP&quot; to look for node bugcheck.  If you find any bugcheck events , please file a EEE Task.</li>
+</ul>
+<ul>
+<li>You can pull the node system event logs and look for following event errors. You can follow EEE TASK#315012912334809001003</li>
+</ul>
+<ul>
+<li>If you find above events on the node system event logs, it means the node lost network connectivity because of which fabric failed to receive heartbeat and marked the node as Unhealthy and the same cause connectivity to Xstore causing Event 17 and Container was marked Unhealthy. Please file a CRI with Cloudnet team</li>
+</ul>
+<ul>
+<li>If you find a throttling event, check if the storage account has more than 40 disk then you need to share the following articles with customer</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Get-NodeAgentDiagnostics : The remote server returned an error: (404) Not Found.</li>
+</ul>
+<ul>
+<li>+ FullyQualifiedErrorId : RD.Fabric.Controller.PowerShell.ObjectModel.NodeWorkerException,RD.Fabric.Controller.PowerShell.GetNodeAgentDiagnostics</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>NodeState=Booting</li>
+</ul>
+<ul>
+<li>AvailabilityState=Available,FaultType=WorkflowTimeout,FaultCode=WorkflowTimeout,Operation=GeneralWorkflowTimeout,ReturnCode=0x0,Retries=0,RecoveryAttemptCount=0,NodeState=Ready,WorkflowStep=StopContainer,CompletionContextType=RD.Fabric.Controller.StopContainerCompletionContext,DurationInCurrentWorkflowInMinutes=30,IsXBoot=False,IsIaaS=False,DurationNotInGoalStateInMinutes=5,UseDefaultPolicy=True,NodeRepeatFaultCount=0,ContainerCountAllocated=16,ContainerCountRunning=17,IsRepeatOffender=False,</li>
+</ul>
+<ul>
+<li>AvailabilityState=Available,FaultType=WorkflowTimeout,FaultCode=WorkflowTimeout,Operation=GeneralWorkflowTimeout,ReturnCode=0x0,Retries=0,RecoveryAttemptCount=0,NodeState=Ready,WorkflowStep=DestroyContainer,CompletionContextType=RD.Fabric.Controller.DestroyContainerCompletionContext,DurationInCurrentWorkflowInMinutes=30,IsXBoot=False,IsIaaS=False,DurationNotInGoalStateInMinutes=5,UseDefaultPolicy=True,NodeRepeatFaultCount=0,ContainerCountAllocated=16,ContainerCountRunning=17,IsRepeatOffender=False,</li>
+</ul>
+<ul>
+<li>AvailabilityState=Available,FaultType=WorkflowTimeout,FaultCode=WorkflowTimeout,Operation=GeneralWorkflowTimeout,ReturnCode=0x0,Retries=0,RecoveryAttemptCount=0,NodeState=Ready,WorkflowStep=CreateOrUpdateContainer,CompletionContextType=RD.Fabric.Controller.CreateOrUpdateContainerCompletionContext,DurationInCurrentWorkflowInMinutes=30,IsXBoot=False,IsIaaS=False,DurationNotInGoalStateInMinutes=30,UseDefaultPolicy=True,NodeRepeatFaultCount=0,ContainerCountAllocated=16,ContainerCountRunning=17,IsRepeatOffender=False</li>
+</ul>
+<ul>
+<li>NodeState=Unhealthy</li>
+</ul>
+<ul>
+<li>NodeState=PoweringOn</li>
+</ul>
+<ul>
+<li>ContainerState=ContainerStateUnhealthy</li>
+</ul>
+<ul>
+<li>CounterSubCategory == 150 - host throttled the  lost due to 500 IOPS limit</li>
+</ul>
+<ul>
+<li>CounterSubCategory == 149 - XStore throttled the storage account due to 20,000 transactions/sec. limit</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>If the you find the FaultSignature  similar to the one below, then its due to Rdbug 2986742 , please engage EEE to get the RCA message.</li>
+</ul>
+<ul>
+<li>If you find the FaultSignature  similar to the one below , then its due to RDBug 2457429, please engage EEE to get the RCA message</li>
+</ul>
+<ul>
+<li>If you find the FaultSignature  similar to the one below , then its due RDBug 3063158, please engage EEE to get the RCA message</li>
+</ul>
+<ul>
+<li>If you find the above error code , then it due to Rdbug 2984414, please engage EEE to get the RCA message</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>From &lt;<a href="http://haridcloud/Bugs/&gt;" target="_blank" rel="noopener">http://haridcloud/Bugs/&gt;</a></li>
+</ul>
+<ul>
+<li><a href="http://azure.microsoft.com/en-us/documentation/articles/azure-subscription-service-limits" target="_blank" rel="noopener">http://azure.microsoft.com/en-us/documentation/articles/azure-subscription-service-limits</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Modified date &amp; Time</p>
+<p>Azure Component</p>
+<p>VKB Ready</p>
+<p>Internal</p>
+<p>External</p>
+<p>Published to VKB</p>
+<p>Archive</p>
+<p>SUMMARY</p>
+<p>Most of the time we see the VM gets rebooted unexpectedly due to node reboot or Xdisk Connectivity due to Event 17.</p>
+<p>The node may get rebooted for the following reason.</p>
+<p>Fabric reboots the nodes</p>
+<p>Node crashed/bugchecked</p>
+<p>Node itself is rebooted unexpectedly due to hardware or Power issue.</p>
+<p>Node Marked as Dead/Human Investigate.</p>
+<p>When fabric reboots the node you see the node state as &quot;Booting&quot; in the node state change table.</p>
+<p>When the node is crashed/bugchecked or rebooted unexpectedly you would see the node state as &quot;Unhealthy&quot;</p>
+<p>Sometimes you may even see State &quot;PoweringOn&quot; in the node state change table that means fabric tried to recover the node by Powercycling as it may have not got any response from the node for a period of time.</p>
+<p>NODE REBOOT SCENARIO 1</p>
+<p>How to Troubleshoot VM Reboot Due to Node Reboot (Faulted, NodeState=Booting) Issue?</p>
+<p>First get the deployment ID and issue date/time from customer and run a query on availability explorer.</p>
+<p>If you find the node State  as Faulted and &quot;Booting&quot;  that means fabric initiated the node reboot.</p>
+<p>Available</p>
+<p>2015-01-20 00:00:00</p>
+<p>2015-01-20 00:25:05</p>
+<p>NotApplicable</p>
+<p>0519a344-a1c9-404c-ab9b-139c65e504c0</p>
+<p>3ee0eb5e-f3d6-445e-beae-abfc93daa245</p>
+<p>Faulted</p>
+<p>2015-01-20 00:25:17</p>
+<p>InPlace</p>
+<p>NodeState=Booting</p>
+<p>Fabric may reboot the node for the following reason as a part of recovery or due to RootHE update.</p>
+<p>Node Faulted</p>
+<p>Node Agent faulted</p>
+<p>Next look at the following MDS tables to see if the reboot was due to Agent fault or node fault due to any workflow timeout.</p>
+<p>FcFaultHandlingRecoveryEventEtwTable* --&gt; This is to find if the node was faulted due to any workflow timeout</p>
+<p>FcTMMgmtNodeAgentFaultedEtwTable*  --&gt; This is to find if the node agent was faulted</p>
+<p>Choose MDS table FcFaultHandlingRecoveryEventEtwTable* as per the cluster and use the server query as NodeID == &quot;3ee0eb5e-f3d6-445e-beae-abfc93daa245&quot;</p>
+<p>If the above query returns any results, look at the FaultSignature column and see the fault details.</p>
+<p>If the you find the FaultSignature  similar to the one below, then its due to Rdbug 2986742 , please engage EEE to get the RCA message.</p>
+<p>AvailabilityState=Available,FaultType=WorkflowTimeout,FaultCode=WorkflowTimeout,Operation=GeneralWorkflowTimeout,ReturnCode=0x0,Retries=0,RecoveryAttemptCount=0,NodeState=Ready,WorkflowStep=StopContainer,CompletionContextType=RD.Fabric.Controller.StopContainerCompletionContext,DurationInCurrentWorkflowInMinutes=30,IsXBoot=False,IsIaaS=False,DurationNotInGoalStateInMinutes=5,UseDefaultPolicy=True,NodeRepeatFaultCount=0,ContainerCountAllocated=16,ContainerCountRunning=17,IsRepeatOffender=False,</p>
+<p>If you find the FaultSignature  similar to the one below , then its due to RDBug 2457429, please engage EEE to get the RCA message</p>
+<p>AvailabilityState=Available,FaultType=WorkflowTimeout,FaultCode=WorkflowTimeout,Operation=GeneralWorkflowTimeout,ReturnCode=0x0,Retries=0,RecoveryAttemptCount=0,NodeState=Ready,WorkflowStep=DestroyContainer,CompletionContextType=RD.Fabric.Controller.DestroyContainerCompletionContext,DurationInCurrentWorkflowInMinutes=30,IsXBoot=False,IsIaaS=False,DurationNotInGoalStateInMinutes=5,UseDefaultPolicy=True,NodeRepeatFaultCount=0,ContainerCountAllocated=16,ContainerCountRunning=17,IsRepeatOffender=False,</p>
+<p>If you find the FaultSignature  similar to the one below , then its due RDBug 3063158, please engage EEE to get the RCA message</p>
+<p>AvailabilityState=Available,FaultType=WorkflowTimeout,FaultCode=WorkflowTimeout,Operation=GeneralWorkflowTimeout,ReturnCode=0x0,Retries=0,RecoveryAttemptCount=0,NodeState=Ready,WorkflowStep=CreateOrUpdateContainer,CompletionContextType=RD.Fabric.Controller.CreateOrUpdateContainerCompletionContext,DurationInCurrentWorkflowInMinutes=30,IsXBoot=False,IsIaaS=False,DurationNotInGoalStateInMinutes=30,UseDefaultPolicy=True,NodeRepeatFaultCount=0,ContainerCountAllocated=16,ContainerCountRunning=17,IsRepeatOffender=False</p>
+<p>If you find any fault signature other than the above ones , please engage EEE via task.</p>
+<p>If the MDS table FcFaultHandlingRecoveryEventEtwTable doesn’t show any results, then query FcTMMgmtNodeAgentFaultedEtwTable.</p>
+<p>When querying FcTMMgmtNodeAgentFaultedEtwTable, use server query BladeID == &quot;3ee0eb5e-f3d6-445e-beae-abfc93daa245&quot;</p>
+<p>If the query returns any results, then look at the FaultDetails Column.</p>
+<p>If you find the FaultDetails similar to the one below ,it means RDAgent(Host/Node Agent) Crashed</p>
+<p>FaultType:Crash FaultCode:0 ExtendedFaultDetails:Detected inconsistent startup state.</p>
+<p>Fabric rebooting the node due to Agent Crash is by design but what we need to find  out is &quot;why the Agent Crashed?&quot;</p>
+<p>To find why the Agent Crashed, we need to pull the AgentCrashdump.</p>
+<p>Run the following Fcshell command to pull the Agent Crash dump.</p>
+<p>PS E:\sarnshare\RD\RD\rd_cmt_stable.991231-0001\Fabric&gt; Get-Fabric BY3PrdApp17</p>
+<p>PS E:\sarnshare\RD\RD\rd_cmt_stable.991231-0001\Fabric&gt; $n = Get-Node 3ee0eb5e-f3d6-445e-beae-abfc93daa245</p>
+<p>PS E:\sarnshare\RD\RD\rd_cmt_stable.991231-0001\Fabric&gt; Get-NodeAgentDiagnostics AgentCrashDump -Node $n</p>
+<p>You can also run the below script from your FCShell that analyzes the dump file automatically for you, and would show any known bug number associated.</p>
+<p>\\fsu\shares\wats\scripts\AnalyzeAgentDump.ps1 &lt;Cluster&gt; &lt;NodeId&gt;</p>
+<p>If the dump is available, you will get a successful result with a link.</p>
+<p>Please copy the dump and file a EEE task for analysis</p>
+<p>If the dump is not available on the node then you would see a message similar to the one below.</p>
+<p>Get-NodeAgentDiagnostics : The remote server returned an error: (404) Not Found.</p>
+<p>At line:1 char:1</p>
+<p>+ Get-NodeAgentDiagnostics AgentCrashDump -Node $n</p>
+<p>+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</p>
+<p>+ CategoryInfo          : NotSpecified: (:) [Get-NodeAgentDiagnostics], WebException</p>
+<p>+ FullyQualifiedErrorId : RD.Fabric.Controller.PowerShell.ObjectModel.NodeWorkerException,RD.Fabric.Controller.PowerShell.GetNodeAgentDiagnostics</p>
+<p>Since the dump is not available, we need to find out what else could have caused RDAgent Crash.</p>
+<p>Next pull the node agent logs by running the following commands.</p>
+<p>Open the Agent logs and search for error code &quot;0x800705aa&quot;  just before the Agent Crash.</p>
+<p>If you find the above error code , then it due to Rdbug 2984414, please engage EEE to get the RCA message</p>
+<p>If you don’t find the above error code in the Agent logs, then run the MDS table FaHostAgentLocalCounterNodeTable</p>
+<p>Please run the MDS table with server query as Node Identity == &quot;Node IP&quot; and Client query as select timestamp, nodeidentity, CounterName, Countervalue where CounterName.contains(&quot;RdAgent&quot;) and CounterName.contains(&quot;Working Set&quot;). Example query here FaHostAgentLocalCounterNodeTableDB4AVer*.</p>
+<p>You can find the Node IP by running the following fcshell command.</p>
+<p>PS E:\sarnshare\RD\RD\rd_cmt_stable.991231-0001\Fabric&gt; $n.IPAddress</p>
+<p>From the query results, look for the memory usage by RDAgent.exe. Similar to the one below and see the memory usage before Crash.</p>
+<p>2015-01-26T04:10:00.0000000+00:00</p>
+<p>100.72.116.200</p>
+<p>\Process(RdAgent)\Working Set</p>
+<p>21531699200</p>
+<p>2015-01-26T04:15:00.0000000+00:00</p>
+<p>21531014030</p>
+<p>2015-01-26T04:25:00.0000000+00:00</p>
+<p>37431978.67</p>
+<p>2015-01-26T04:30:00.0000000+00:00</p>
+<p>39840972.8</p>
+<p>Note: This table shows the memory in bytes and please convert it to GBs</p>
+<p>If the memory usage is more than 1GB, then we can say it’s the same Rdbug 2984414</p>
+<p>If the table doesn’t show any results and you if you can&#39;t find the error code &quot;0x800705aa&quot; in the agent logs, please engage EEE by a task.</p>
+<p>If both MDS table FcFaultHandlingRecoveryEventEtwTable  and FcTMMgmtNodeAgentFaultedEtwTable doesn’t shows any results, then we need to find what else  caused the node reboot.</p>
+<p>Next look at the MDS FcRootHEUpdateAddingNodeToUpdateSet to see if RootHE caused the node reboot. You can follow EEE Task# 314080911689475001003</p>
+<p>If you see the node was marked as Human Investigate I, please pull the Fabricator logs and  look for error code &quot;0x80070020&quot;. If you find the error code then follow the next step.</p>
+<p>2015-2-16 11:33:06.347</p>
+<p>FabricatorTraces__ x:\btsdx\356304\services\fc\fabric\Controller\Services\Management\LogicalModel\LogicalNode_cs</p>
+<p>42394151</p>
+<p>187</p>
+<p>[TMMgmtNodeFault] FaultCode=10005 Reason=Retries failed for State: Ready, Status: 0x80070020, Extended Info: DestroyContainer 810214a2-0883-40ff-a20d-3f9c727aeac7 failed with error: 0x80070020 Time=2015-02-16T11:33:06.347 Details= CorrelationGuid=caa1adc0-c0cf-4022-9c8d-6e0adcc8ac51 BladeID=9fe7513e-a06c-4fd4-af9d-f58ecd0d33ef InstrumentationScopeID=00000000-0000-0000-0000-000000000000  SequenceId=342339468 Instance=Fabricator_IN_0 Replica=100.75.21.90</p>
+<p>2015-2-16 11:33:06.362</p>
+<p>FabricatorTraces__ x:\btsdx\356304\services\fc\fabric\Controller\Services\Management\CM\NodeManagement\NodeStateDriver_cs</p>
+<p>[TMMgmtNodeStateChanged] OldState=Ready NewState=Dead BladeID=9fe7513e-a06c-4fd4-af9d-f58ecd0d33ef InstrumentationScopeID=00000000-0000-0000-0000-000000000000  SequenceId=342339470 Instance=Fabricator_IN_0 Replica=100.75.21.90</p>
+<p>[TMMgmtNodeTrace] Context=ManagementFaultHandlerInvoked Message=Management Handler Invoked for Fault Corelation Guid: caa1adc0-c0cf-4022-9c8d-6e0adcc8ac51 BladeID= InstrumentationScopeID= SecondaryLevel=  SequenceId=342339482 Instance=Fabricator_IN_0 Replica=100.75.21.90 Fault Reason: Retries failed for State: Ready, Status: 0x80070020, Extended Info: DestroyContainer 810214a2-0883-40ff-a20d-3f9c727aeac7 failed with error: 0x80070020 Diagnosis Fault Code String: RetriesFailed Fault Code: 10005 Fault Type: Software Fault Time: 2/16/2015 11:33:06 AM Fault Details: Fabric Operation on the Node when the Fault Happened: DestroyContainer Node State when the Fault Happened: Ready Operation Return Code from Agent (when applicable): 2147942432 Retries: 0 Fault Scope: Unknown .9fe7513e-a06c-4fd4-af9d-f58ecd0d33ef00000000-0000-0000-0000-000000000000Information</p>
+<p>Next look for if  StopContainer was timed out with an error code &quot;0x800705B4&quot; before the above exception. If yes, it means DestroyContainer was tried when the Stop is not completed which failed with ERROR_SHARING_VIOLATION causing the node HI. This is a known bug 3178467</p>
+<p>From &lt;<a href="http://haridcloud/Bugs/&gt;" target="_blank" rel="noopener">http://haridcloud/Bugs/&gt;</a></p>
+<p>2015-2-16 11:31:46.255</p>
+<p>FabricatorTraces__ x:\btsdx\356304\services\fc\fabric\Controller\Services\Management\CM\NodeManagement\StateMachines\Container_StopContainer_cs</p>
+<p>19011497</p>
+<p>189</p>
+<p>[TMMgmtNodeTrace] Context=Information Message=StoppingRogueContainers, : StopContainer failed for container: 810214a2-0883-40ff-a20d-3f9c727aeac7, status:2147943860 BladeID=9fe7513e-a06c-4fd4-af9d-f58ecd0d33ef InstrumentationScopeID=00000000-0000-0000-0000-000000000000 SecondaryLevel=Information  SequenceId=342268319 Instance=Fabricator_IN_0 Replica=100.75.21.90</p>
+<p>FabricatorTraces__ x:\btsdx\356304\services\fc\fabric\Controller\Services\Management\CM\NodeManagement\StateMachines\ContainerWorkflow_cs</p>
+<p>[TMMgmtContainerTrace] Context=Information Message=StoppingContainer, : Container 810214a2-0883-40ff-a20d-3f9c727aeac7 on node encountered a failure during StopContainerComplete status:0x800705B4. Checking to see if we can attempt a retry. ContainerID=810214a2-0883-40ff-a20d-3f9c727aeac7 BladeID=9fe7513e-a06c-4fd4-af9d-f58ecd0d33ef InstrumentationScopeID=00000000-0000-0000-0000-000000000000 SecondaryLevel=Information  SequenceId=342268320 Instance=Fabricator_IN_0 Replica=100.75.21.90</p>
+<p>If you see any other error code or Fault Signature, please engage EEE.</p>
+<p>NODE REBOOT SCENARIO 2</p>
+<p>How to Troubleshoot VM Reboot Due to Node Unhealthy (Unknown, NodeState=Unhealthy) Issue?</p>
+<p>First get the deployment ID and issue date/time from customer and run a query  on AvailabilityExplorer</p>
+<p>Look for the result similar to one below for the affected VM.</p>
+<p>2015-01-02 00:00:00</p>
+<p>2015-01-02 16:17:05</p>
+<p>28362141-a97c-446a-84d6-e810254b5467</p>
+<p>05684488-0000-0000-0000-008cfa53a06e</p>
+<p>Unknown</p>
+<p>2015-01-02 16:17:17</p>
+<p>NodeState=Unhealthy</p>
+<p>2015-01-02 16:18:50</p>
+<p>2015-01-02 16:29:48</p>
+<p>2015-01-02 17:30:21</p>
+<p>NodeState=PoweringOn</p>
+<p>2015-01-03 00:00:00</p>
+<p>The node state &quot;Unhealthy&quot; and &quot;PoweringOn&quot;  means the Fabric marked the node as Unhealthy as it failed to get Heartbeat from the node agent and tried recovery by Powercycling the node.</p>
+<p>Fabric may fail to receive Heartbeat from the node agent for the following reason.</p>
+<p>Node Agent hung</p>
+<p>Node is hung and unresponsive</p>
+<p>Node lost network connectivity</p>
+<p>Node rebooted/Power down unexpectedly</p>
+<p>Node Crashed/bugchecked</p>
+<p>Most the time when the nodes goes to Unhealthy followed by PoweringOn we may lose the node event logs.</p>
+<p>You can always looked at the node state table to find what happened to the node state after it was marked Unhealthy.</p>
+<p>If the node goes to &quot;Unhealthy&quot; followed by &quot;PoweringOn&quot;, it means the node was not reachable for more than 10 minutes since marking Unhealthy and fabric tried Powercycling the node to recover it and this may happen for the following reasons. Most of the time after the PowerCycle , the node event logs may be lost and in that case please file a EEE task.</p>
+<p>Node was powered down unexpectedly</p>
+<p>The node OS was hung and Unresponsive</p>
+<p>If you find Node State goes to &quot;Unhealthy&quot; followed by &quot;Ready&quot;, it means Fabric failed to receive Heartbeat from node for a while and marked the Node as Ready when it receives the HB again. Once the fabric marks the node as Unhealthy, it will wait for 10 minutes (Unhealthy Timeout) before it tries to recover the node by PowerCylce/Reboot.</p>
+<p>The node goes to Unhealthy followed by Ready within the timeout period (10 minutes) may happen for the following reason.</p>
+<p>The node lost network connectivity for few mins</p>
+<p>The node rebooted unexpectedly and came back</p>
+<p>The node rebooted due to bugcheck and came back</p>
+<p>You can pull the node event logs by running the following fcshell commands and look at the node system event logs.</p>
+<p>PS E:\sarnshare\RD\RD\rd_cmt_stable.991231-0001\Fabric&gt; Get-NodeAgentDiagnostics WindowsEventLogs -Node $n</p>
+<p>In the system event logs you can look for &quot;Bugcheck&quot; events. You can also run MDS table FaOsCrashEventTable* with server query as NodeIdentity == &quot;Node IP&quot; to look for node bugcheck.  If you find any bugcheck events , please file a EEE Task.</p>
+<p>At times we may also see the Node State going &quot;Unhealthy&quot; followed by &quot;ContainerStateUnhealthy&quot; similar to the one below.</p>
+<p>2015-01-23 04:16:34</p>
+<p>2015-01-23 04:18:30</p>
+<p>73f15932-848c-4169-8879-00bd1d52796f</p>
+<p>04734491-0000-0000-0000-24be059722d0</p>
+<p>2015-01-23 04:28:19</p>
+<p>2015-01-23 04:29:08</p>
+<p>ContainerState=ContainerStateUnhealthy</p>
+<p>Container State going Unhealthy all of sudden may happen due to Xdisk connectivity (Event 17). You can confirm it by running the MDS table FaFabricAgentEvent* using the server query as context == &quot;ContainerID&quot;. Example:FaFabricAgentEventTableSG</p>
+<p>But if the Node State goes Unhealthy followed by ContainerStateUnhealthy, that generally happen when the node is lost connectivity to the network.</p>
+<p>You can pull the node system event logs and look for following event errors. You can follow EEE TASK#315012912334809001003</p>
+<p>Error        1/23/2015 4:07:06 AM        mlx4_bus        48        None</p>
+<p>Or you can look for the following events because not all nodes are running the same network card.</p>
+<p>Warning        1/30/2015 3:58:19 AM        ixgbn        27        None</p>
+<p>Information        1/30/2015 3:58:19 AM        Hyper-V-VmSwitch        24</p>
+<p>Warning        1/30/2015 3:58:19 AM        Hyper-V-VmSwitch        22</p>
+<p>If you find above events on the node system event logs, it means the node lost network connectivity because of which fabric failed to receive heartbeat and marked the node as Unhealthy and the same cause connectivity to Xstore causing Event 17 and Container was marked Unhealthy. Please file a CRI with Cloudnet team</p>
+<p>If you find Container State going &quot;ContainerStateUnhealthy&quot; but no change in node state similar to the one below, then it may not be an issue with network connectivity on the node.</p>
+<p>2014-12-02 00:00:00</p>
+<p>2014-12-02 10:05:54</p>
+<p>4f6964e2-d24f-4eeb-9b0f-a0effd5cec36</p>
+<p>05564599-0000-0000-0000-008cfa53f476</p>
+<p>2014-12-02 10:14:12</p>
+<p>The container state going Unhealthy due to Event 17 all of sudden and no change in node state may happen for the following reason.</p>
+<p>Xstore side issue</p>
+<p>Node issue</p>
+<p>Xstore account throttling.</p>
+<p>To identify the Xstore throttling, you can run the MDS table example  FaOsRdssdCounterTableBY2* to see if the Storage account  was throttled.</p>
+<p>CounterSubCategory == 150 - host throttled the  lost due to 500 IOPS limit</p>
+<p>CounterSubCategory == 149 - XStore throttled the storage account due to 20,000 transactions/sec. limit</p>
+<p>If you find a throttling event, check if the storage account has more than 40 disk then you need to share the following articles with customer</p>
+<p>Azure Storage Scalability and Performance Targets.</p>
+<p><a href="http://azure.microsoft.com/en-us/documentation/articles/azure-subscription-service-limits" target="_blank" rel="noopener">http://azure.microsoft.com/en-us/documentation/articles/azure-subscription-service-limits</a></p>
+<p>If you don’t see any throttling events or more than 40 disk in the Xstore account, please file a CRI with EEE (for SEV 3, 4) or Xstore (for SEV 1, 2) team until we come up with a TSG for Event 17.</p>
+<p>MORE INFO</p>
+<p>KEYWORDS</p></article>

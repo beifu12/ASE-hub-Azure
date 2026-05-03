@@ -1,0 +1,259 @@
+<article class="kb-article" data-title="AKS中使用指定的静态公网IP创建Service Load Balancer"><h1>AKS中使用指定的静态公网IP创建Service Load Balancer</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-12-05 12:09:52</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>#创建相应的资源组以存放新的公共IP，如公共IP已准备好，可以忽略此步：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>#创建相应的资源组以存放新的公共IP，如公共IP已准备好，可以忽略此步：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>#创建相应的资源组以存放新的公共IP，如公共IP已准备好，可以忽略此步：</li>
+</ul>
+<ul>
+<li>#获取系统给AKS集群指定的managed identity，默认在创建AKS Cluster时就会自动生成一个类型为system #assign的managed identity</li>
+</ul>
+<ul>
+<li>#如果以下指令输出是msi，则说明AKS集群使用的是managed identity作为身份标识来访问AKS集群外部的资源。</li>
+</ul>
+<ul>
+<li>#则继续使用如下指令找到控制层面系统指定的object ID，由Service Principal id来表示Client ID。</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;principalId&quot;: &quot;971c5de1-88aa-4635-b297-103d7056f13b&quot;,   #这一项即为object-id</li>
+</ul>
+<ul>
+<li>&quot;tenantId&quot;: &quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;SystemAssigned&quot;,</li>
+</ul>
+<ul>
+<li>&quot;userAssignedIdentities&quot;: null</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>#如果将公共ip资源创建在MC_&lt;aks-resource-group-region&gt;这个资源组中，则上述的授权操作可以不在进行。</li>
+</ul>
+<ul>
+<li>#</li>
+</ul>
+<ul>
+<li>#使用如下YAML文件部署Service</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: Service</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>annotations:</li>
+</ul>
+<ul>
+<li>service.beta.kubernetes.io/azure-load-balancer-resource-group: tianPublicIPs  #此处的资源组为公共ip所在的资源组名称</li>
+</ul>
+<ul>
+<li>name: tian-lb</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>loadBalancerIP: 52.130.146.0</li>
+</ul>
+<ul>
+<li>type: LoadBalancer</li>
+</ul>
+<ul>
+<li>ports:</li>
+</ul>
+<ul>
+<li>- port: 80</li>
+</ul>
+<ul>
+<li>selector:</li>
+</ul>
+<ul>
+<li>app: tian-lb</li>
+</ul>
+<ul>
+<li>官网上关于AKS集群managed identity的使用介绍：</li>
+</ul>
+<ul>
+<li>Obtain and use the system-assigned managed identity for your AKS cluster</li>
+</ul>
+<ul>
+<li>Confirm your AKS cluster is using managed identity with the following CLI command:</li>
+</ul>
+<ul>
+<li>Try It</li>
+</ul>
+<ul>
+<li>If the cluster is using managed identities, you will see a clientId value of &quot;msi&quot;. A cluster using a Service Principal instead will instead show the object ID. For example:</li>
+</ul>
+<ul>
+<li>OutputCopy</li>
+</ul>
+<ul>
+<li>&quot;clientId&quot;: &quot;msi&quot;</li>
+</ul>
+<ul>
+<li>&quot;principalId&quot;: &quot;&lt;object-id&gt;&quot;,</li>
+</ul>
+<ul>
+<li>&quot;tenantId&quot;: &quot;&lt;tenant-id&gt;&quot;,</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>Note</li>
+</ul>
+<ul>
+<li>For creating and using your own VNet, static IP address, or attached Azure disk where the resources are outside of the worker node resource group, use the PrincipalID of the cluster System Assigned Managed Identity to perform a role assignment. For more information on role assignment, see Delegate access to other Azure resources.</li>
+</ul>
+<ul>
+<li>Permission grants to cluster Managed Identity used by Azure Cloud provider may take up 60 minutes to populate.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#为AKS集群授权其可以操作公共ip所在的资源组，通过指令或者Portal都可以完成这一步。</li>
+</ul>
+<ul>
+<li>#授权成功之后，通过Portal可以查看Public IP所在的资源组中相应的AKS Cluster已经有了network contributor的权限：</li>
+</ul>
+<ul>
+<li>After verifying the cluster is using managed identities, you can find the control plane system-assigned identity&#39;s object ID with the following command:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az group create --name tianPublicIPs --location chinanorth2</li>
+</ul>
+<ul>
+<li>az network public-ip create --resource-group tianPublicIPs --name aksLBPIP01 --sku standard --allocation-method static</li>
+</ul>
+<ul>
+<li>az network public-ip show --resource-group tianPublicIPs --name aksLBPIP01 --query ipAddress --output tsv</li>
+</ul>
+<ul>
+<li>az aks show --resource-group $AKS_RESOURCE_GROUP --name $AKS_CLUSTER_NAME --query &quot;servicePrincipalProfile.clientId&quot; --output tsv</li>
+</ul>
+<ul>
+<li>az aks show --resource-group $AKS_RESOURCE_GROUP --name $AKS_CLUSTER_NAME --query &quot;identity&quot;</li>
+</ul>
+<ul>
+<li>az role assignment create  --role &quot;Network Contributor&quot;  --assignee $CLIENT_ID    --scope  /subscriptions/$SUB_ID/resourceGroups/$PIP_RESOURCE_GROUP</li>
+</ul>
+<ul>
+<li>Kubectl get services</li>
+</ul>
+<ul>
+<li>Azure CLICopy</li>
+</ul>
+<ul>
+<li>az aks show -g&lt;RGName&gt;-n&lt;ClusterName&gt;--query&quot;servicePrincipalProfile&quot;</li>
+</ul>
+<ul>
+<li>az aks show -g&lt;RGName&gt;-n&lt;ClusterName&gt;--query&quot;identity&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>PIP_RESOURCE_GROUP=tianPublicIPs</li>
+</ul>
+<ul>
+<li>AKS_RESOURCE_GROUP=aks-test-rg</li>
+</ul>
+<ul>
+<li>AKS_CLUSTER_NAME=tian-aks01</li>
+</ul>
+<ul>
+<li>CLIENT_ID=$(az aks show --resource-group $AKS_RESOURCE_GROUP --name $AKS_CLUSTER_NAME --query &quot;identity.principalId&quot; --output tsv)</li>
+</ul>
+<ul>
+<li>SUB_ID=$(az account show --query &quot;id&quot; --output tsv)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/aks/use-managed-identity#obtain-and-use-the-system-assigned-managed-identity-for-your-aks-cluster" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/use-managed-identity#obtain-and-use-the-system-assigned-managed-identity-for-your-aks-cluster</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>#创建相应的资源组以存放新的公共IP，如公共IP已准备好，可以忽略此步：</p>
+<p>az group create --name tianPublicIPs --location chinanorth2</p>
+<p>az network public-ip create --resource-group tianPublicIPs --name aksLBPIP01 --sku standard --allocation-method static</p>
+<p>az network public-ip show --resource-group tianPublicIPs --name aksLBPIP01 --query ipAddress --output tsv</p>
+<p>PIP_RESOURCE_GROUP=tianPublicIPs</p>
+<p>AKS_RESOURCE_GROUP=aks-test-rg</p>
+<p>AKS_CLUSTER_NAME=tian-aks01</p>
+<p>#获取系统给AKS集群指定的managed identity，默认在创建AKS Cluster时就会自动生成一个类型为system #assign的managed identity</p>
+<p>#如果以下指令输出是msi，则说明AKS集群使用的是managed identity作为身份标识来访问AKS集群外部的资源。</p>
+<p>az aks show --resource-group $AKS_RESOURCE_GROUP --name $AKS_CLUSTER_NAME --query &quot;servicePrincipalProfile.clientId&quot; --output tsv</p>
+<p>#则继续使用如下指令找到控制层面系统指定的object ID，由Service Principal id来表示Client ID。</p>
+<p>az aks show --resource-group $AKS_RESOURCE_GROUP --name $AKS_CLUSTER_NAME --query &quot;identity&quot;</p>
+<p>{</p>
+<p>&quot;principalId&quot;: &quot;971c5de1-88aa-4635-b297-103d7056f13b&quot;,   #这一项即为object-id</p>
+<p>&quot;tenantId&quot;: &quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;,</p>
+<p>&quot;type&quot;: &quot;SystemAssigned&quot;,</p>
+<p>&quot;userAssignedIdentities&quot;: null</p>
+<p>}</p>
+<p>CLIENT_ID=$(az aks show --resource-group $AKS_RESOURCE_GROUP --name $AKS_CLUSTER_NAME --query &quot;identity.principalId&quot; --output tsv)</p>
+<p>SUB_ID=$(az account show --query &quot;id&quot; --output tsv)</p>
+<p>#为AKS集群授权其可以操作公共ip所在的资源组，通过指令或者Portal都可以完成这一步。</p>
+<p>az role assignment create  --role &quot;Network Contributor&quot;  --assignee $CLIENT_ID    --scope  /subscriptions/$SUB_ID/resourceGroups/$PIP_RESOURCE_GROUP</p>
+<p>#授权成功之后，通过Portal可以查看Public IP所在的资源组中相应的AKS Cluster已经有了network contributor的权限：</p>
+<p>#如果将公共ip资源创建在MC_&lt;aks-resource-group-region&gt;这个资源组中，则上述的授权操作可以不在进行。</p>
+<p>#</p>
+<p>#使用如下YAML文件部署Service</p>
+<p>apiVersion: v1</p>
+<p>kind: Service</p>
+<p>metadata:</p>
+<p>annotations:</p>
+<p>service.beta.kubernetes.io/azure-load-balancer-resource-group: tianPublicIPs  #此处的资源组为公共ip所在的资源组名称</p>
+<p>name: tian-lb</p>
+<p>spec:</p>
+<p>loadBalancerIP: 52.130.146.0</p>
+<p>type: LoadBalancer</p>
+<p>ports:</p>
+<ul>
+<li>port: 80</li>
+</ul>
+<p>selector:</p>
+<p>app: tian-lb</p>
+<p>Kubectl get services</p>
+<p>官网上关于AKS集群managed identity的使用介绍：</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/aks/use-managed-identity#obtain-and-use-the-system-assigned-managed-identity-for-your-aks-cluster" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/use-managed-identity#obtain-and-use-the-system-assigned-managed-identity-for-your-aks-cluster</a></p>
+<p>Obtain and use the system-assigned managed identity for your AKS cluster</p>
+<p>Confirm your AKS cluster is using managed identity with the following CLI command:</p>
+<p>Azure CLICopy</p>
+<p>Try It</p>
+<p>az aks show -g&lt;RGName&gt;-n&lt;ClusterName&gt;--query&quot;servicePrincipalProfile&quot;</p>
+<p>If the cluster is using managed identities, you will see a clientId value of &quot;msi&quot;. A cluster using a Service Principal instead will instead show the object ID. For example:</p>
+<p>OutputCopy</p>
+<p>&quot;clientId&quot;: &quot;msi&quot;</p>
+<p>After verifying the cluster is using managed identities, you can find the control plane system-assigned identity&#39;s object ID with the following command:</p>
+<p>az aks show -g&lt;RGName&gt;-n&lt;ClusterName&gt;--query&quot;identity&quot;</p>
+<p>&quot;principalId&quot;: &quot;&lt;object-id&gt;&quot;,</p>
+<p>&quot;tenantId&quot;: &quot;&lt;tenant-id&gt;&quot;,</p>
+<p>},</p>
+<p>Note</p>
+<p>For creating and using your own VNet, static IP address, or attached Azure disk where the resources are outside of the worker node resource group, use the PrincipalID of the cluster System Assigned Managed Identity to perform a role assignment. For more information on role assignment, see Delegate access to other Azure resources.</p>
+<p>Permission grants to cluster Managed Identity used by Azure Cloud provider may take up 60 minutes to populate.</p></article>

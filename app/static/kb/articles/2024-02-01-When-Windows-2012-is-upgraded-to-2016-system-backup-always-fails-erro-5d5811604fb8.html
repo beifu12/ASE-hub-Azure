@@ -1,0 +1,124 @@
+<article class="kb-article" data-title="When Windows 2012 is upgraded to 2016 system, backup always fails，error GuestAgentPluginProcessingError"><h1>When Windows 2012 is upgraded to 2016 system, backup always fails，error GuestAgentPluginProcessingError</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-02-01 10:03:32</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>ErrorCode</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>ErrorCode</li>
+</ul>
+<ul>
+<li>ExtensionErrorCode</li>
+</ul>
+<ul>
+<li>GuestAgentPluginProcessingError</li>
+</ul>
+<ul>
+<li>ExtensionFailedBackupComponentInit</li>
+</ul>
+<ul>
+<li>相关工单：[PODNET]SR_20240119274462[S500_Child]/Electrolux (China) Home Appliance Co., Ltd./Windows 2016 system backup failed - TrackingID#2401290030000779</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>工单描述：</li>
+</ul>
+<ul>
+<li>When Windows 2012 is upgraded to 2016 system, backup always fails.</li>
+</ul>
+<ul>
+<li>2、根据后台日志看到，Backup VSS component IAAS VM Provider在创建Snapshot期间未能成功初始化</li>
+</ul>
+<ul>
+<li>StartTime</li>
+</ul>
+<ul>
+<li>VMName</li>
+</ul>
+<ul>
+<li>2024-01-28 17:06:10.3760161</li>
+</ul>
+<ul>
+<li>False</li>
+</ul>
+<ul>
+<li>AAWS0039</li>
+</ul>
+<ul>
+<li>Re-install the backup extension and have the latest version:</li>
+</ul>
+<ul>
+<li>Open services, stop the service named ‘Windows Azure Guest Agent&#39;</li>
+</ul>
+<ul>
+<li>Rename the folder C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot as Microsoft.Azure.RecoveryServices.VMSnapshot.old</li>
+</ul>
+<ul>
+<li>Export VMSnapshot registry key at HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Azure\HandlerState\Microsoft.Azure.RecoveryServices.VMSnapshot_1.0.72.0</li>
+</ul>
+<ul>
+<li>Delete HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Azure\HandlerState\Microsoft.Azure.RecoveryServices.VMSnapshot_1.0.72.0</li>
+</ul>
+<ul>
+<li>Start the Service &quot;WindowsAzureGuestAgent&quot;</li>
+</ul>
+<ul>
+<li>The above change DOES NOT require a server reboot</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>1、日志获取路径 C:\Users\li.xiaoyong\Downloads\Logs\Logs\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\1.0.82.0\ IaaSBcdrExtension1.log</li>
+</ul>
+<ul>
+<li>ExtensionErrorLogs</li>
+</ul>
+<ul>
+<li>Trigger an ad-hoc backup on Azure portal</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：出现该原因的报错可能会是由于Windows Server大版本变更导致的backup component file损坏，请建议客户通过下列方式手动重装一下最新版本的Backup extension：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>工单描述：</p>
+<p>When Windows 2012 is upgraded to 2016 system, backup always fails.</p>
+<p>排查过程：</p>
+<p>1、日志获取路径 C:\Users\li.xiaoyong\Downloads\Logs\Logs\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\1.0.82.0\ IaaSBcdrExtension1.log</p>
+<p>2、根据后台日志看到，Backup VSS component IAAS VM Provider在创建Snapshot期间未能成功初始化</p>
+<p>StartTime</p>
+<p>ErrorCode</p>
+<p>ExtensionErrorCode</p>
+<p>ExtensionErrorLogs</p>
+<p>VMName</p>
+<p>2024-01-28 17:06:10.3760161</p>
+<p>GuestAgentPluginProcessingError</p>
+<p>ExtensionFailedBackupComponentInit</p>
+<p>False</p>
+<p>AAWS0039</p>
+<p>解决方案：出现该原因的报错可能会是由于Windows Server大版本变更导致的backup component file损坏，请建议客户通过下列方式手动重装一下最新版本的Backup extension：</p>
+<p>Re-install the backup extension and have the latest version:</p>
+<p>Open services, stop the service named ‘Windows Azure Guest Agent&#39;</p>
+<p>Rename the folder C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot as Microsoft.Azure.RecoveryServices.VMSnapshot.old</p>
+<p>Export VMSnapshot registry key at HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Azure\HandlerState\Microsoft.Azure.RecoveryServices.VMSnapshot_1.0.72.0</p>
+<p>Delete HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Azure\HandlerState\Microsoft.Azure.RecoveryServices.VMSnapshot_1.0.72.0</p>
+<p>Start the Service &quot;WindowsAzureGuestAgent&quot;</p>
+<p>The above change DOES NOT require a server reboot</p>
+<p>Trigger an ad-hoc backup on Azure portal</p>
+<p>相关工单：[PODNET]SR_20240119274462[S500_Child]/Electrolux (China) Home Appliance Co., Ltd./Windows 2016 system backup failed - TrackingID#2401290030000779</p></article>

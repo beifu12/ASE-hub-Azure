@@ -1,0 +1,75 @@
+<article class="kb-article" data-title="Share | 新版本的NPS 扩展脚本使用MgGraph模块遇到的问题"><h1>Share | 新版本的NPS 扩展脚本使用MgGraph模块遇到的问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-01-24 16:11:51</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<ul>
+<li>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</li>
+</ul>
+<ul>
+<li>0, Create a certificate from your Windows client, you can custom define the below variable in yellow:</li>
+</ul>
+<ul>
+<li>$certname = &quot;leograph&quot;</li>
+</ul>
+<ul>
+<li>$cert = New-SelfSignedCertificate -Subject &quot;CN=$certname&quot; -CertStoreLocation &quot;Cert:\CurrentUser\My&quot; -KeyExportPolicy Exportable -KeySpec Signature -KeyLength 2048 -KeyAlgorithm RSA -HashAlgorithm SHA256</li>
+</ul>
+<ul>
+<li>Export-Certificate -Cert $cert -FilePath &quot;C:\Users\leo\Desktop\cert\$certname.cer&quot;</li>
+</ul>
+<ul>
+<li>$mypwd = ConvertTo-SecureString -String &quot;qwexxxxx&quot; -Force -AsPlainText</li>
+</ul>
+<ul>
+<li>Export-PfxCertificate -Cert $cert -FilePath &quot;C:\Users\leo\Desktop\cert\$certname.pfx&quot; -Password $mypwd</li>
+</ul>
+<ul>
+<li>2, Assign permission to the application:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1, Login Azure portal and register a  new Microsoft Entra ID application, such as Test_microsoft_graph, and then upload the above xxx.cer certificate to the application.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>新版本NPS扩展安装后，里面的脚本使用的模块已经更新为MgGraph，由于大家所知的原因，当前MgGraph模块当前在Azure China不能直接使用用户名密码认证登录，因此需要做些更改。大家遇到相同问题，可参考此工单步骤：SR_20241224331594_NPS Server - User unable to get Azure AD access token</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Jia.Xiaolei</p>
+<p>新版本NPS扩展安装后，里面的脚本使用的模块已经更新为MgGraph，由于大家所知的原因，当前MgGraph模块当前在Azure China不能直接使用用户名密码认证登录，因此需要做些更改。大家遇到相同问题，可参考此工单步骤：SR_20241224331594_NPS Server - User unable to get Azure AD access token</p>
+<p>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</p>
+<p>0, Create a certificate from your Windows client, you can custom define the below variable in yellow:</p>
+<p>$certname = &quot;leograph&quot;</p>
+<p>$cert = New-SelfSignedCertificate -Subject &quot;CN=$certname&quot; -CertStoreLocation &quot;Cert:\CurrentUser\My&quot; -KeyExportPolicy Exportable -KeySpec Signature -KeyLength 2048 -KeyAlgorithm RSA -HashAlgorithm SHA256</p>
+<p>Export-Certificate -Cert $cert -FilePath &quot;C:\Users\leo\Desktop\cert\$certname.cer&quot;</p>
+<p>$mypwd = ConvertTo-SecureString -String &quot;qwexxxxx&quot; -Force -AsPlainText</p>
+<p>Export-PfxCertificate -Cert $cert -FilePath &quot;C:\Users\leo\Desktop\cert\$certname.pfx&quot; -Password $mypwd</p>
+<p>1, Login Azure portal and register a  new Microsoft Entra ID application, such as Test_microsoft_graph, and then upload the above xxx.cer certificate to the application.</p>
+<p>2, Assign permission to the application:</p></article>

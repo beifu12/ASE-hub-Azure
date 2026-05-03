@@ -1,0 +1,72 @@
+<article class="kb-article" data-title="【Share】NVadsA10_v5虚拟机安装550版本的NVIDIA GPU driver失败"><h1>【Share】NVadsA10_v5虚拟机安装550版本的NVIDIA GPU driver失败</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-15 11:13:10</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错信息：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错信息：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>环境说明：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>OS： ubuntu 24.04</li>
+</ul>
+<ul>
+<li>VM： Standard NV72ads A10 v5</li>
+</ul>
+<ul>
+<li>适用于 Linux 的 Azure N 系列 GPU 驱动程序安装 - Azure Virtual Machines | Azure Docs</li>
+</ul>
+<ul>
+<li>Ubuntu22.04的内核当前版本是6.8，可以正常安装550.144.06版本驱动</li>
+</ul>
+<ul>
+<li>客户后续改用Ubuntu22.04版本后完成驱动安装。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>经查看，此问题与GRID驱动要求在Azure内核版本是6.8有关：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Ubuntu24.04的内核版本当前是6.14。Linux内核版本降级操作已经超出了Azure技术支持范围，且存在较高风险，建议您根据及时场景谨慎评估操作。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>GPU driver： <a href="https://download.microsoft.com/download/c5319e92-672e-4067-8d85-ab66a7a64db3/NVIDIA-Linux-x86_64-550.144.06-grid-azure.run" target="_blank" rel="noopener">https://download.microsoft.com/download/c5319e92-672e-4067-8d85-ab66a7a64db3/NVIDIA-Linux-x86_64-550.144.06-grid-azure.run</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/10</p>
+<p>环境说明：</p>
+<p>========</p>
+<p>OS： ubuntu 24.04</p>
+<p>VM： Standard NV72ads A10 v5</p>
+<p>GPU driver： <a href="https://download.microsoft.com/download/c5319e92-672e-4067-8d85-ab66a7a64db3/NVIDIA-Linux-x86_64-550.144.06-grid-azure.run" target="_blank" rel="noopener">https://download.microsoft.com/download/c5319e92-672e-4067-8d85-ab66a7a64db3/NVIDIA-Linux-x86_64-550.144.06-grid-azure.run</a></p>
+<p>报错信息：</p>
+<p>排查过程：</p>
+<p>经查看，此问题与GRID驱动要求在Azure内核版本是6.8有关：</p>
+<p>适用于 Linux 的 Azure N 系列 GPU 驱动程序安装 - Azure Virtual Machines | Azure Docs</p>
+<p>Ubuntu24.04的内核版本当前是6.14。Linux内核版本降级操作已经超出了Azure技术支持范围，且存在较高风险，建议您根据及时场景谨慎评估操作。</p>
+<p>Ubuntu22.04的内核当前版本是6.8，可以正常安装550.144.06版本驱动</p>
+<p>客户后续改用Ubuntu22.04版本后完成驱动安装。</p></article>

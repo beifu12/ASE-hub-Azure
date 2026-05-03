@@ -1,0 +1,69 @@
+<article class="kb-article" data-title="pod中容器镜像获取策略"><h1>pod中容器镜像获取策略</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: K8S</li>
+<li>最近修改: 2024-03-18 10:09:11</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Never：如果本地存在镜像，就会用其启动容器，如果不存在，那么启动容器就会失败。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Never：如果本地存在镜像，就会用其启动容器，如果不存在，那么启动容器就会失败。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2022.10.31</li>
+</ul>
+<ul>
+<li>Nancy</li>
+</ul>
+<ul>
+<li>问题：上周有同事提到关于pod从ACR拉取镜像，用户会不定时对ACR中的镜像内容进行更新，但标签保持不变，重新部署pod发现还是使用旧的镜像部署的问题。</li>
+</ul>
+<ul>
+<li>找了一篇文档，这涉及到ImagePullPolicy这个字段的设置，简单来说，就是：</li>
+</ul>
+<ul>
+<li>Always：在进行部署时，kubelet每次都会从镜像库进行寻找镜像，如果发现找到的镜像和本地先前存储的镜像的摘要值相同，那么就使用本地镜像部署，这样部署速度更快；如果摘要值不同，也就意味着这个镜像发生了变化，会从镜像库重新拉取新的镜像启动容器。</li>
+</ul>
+<ul>
+<li>IfNotPresent：优先从本地镜像启动容器，如果本地不存在，才去镜像库拉取。</li>
+</ul>
+<ul>
+<li>或者可以在指定镜像的时候，使用指定&lt;image-name&gt;@&lt;digest&gt;，而不是&lt;image-name&gt;:&lt;tag&gt;。因为&lt;image-name&gt;@&lt;digest&gt;是指定唯一镜像的标识。</li>
+</ul>
+<ul>
+<li>Image pull policy</li>
+</ul>
+<ul>
+<li>Default image pull policy</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>所以上述问题解决方法，就是需要将ImagePullPolicy修改为Always。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022.10.31</p>
+<p>Nancy</p>
+<p>问题：上周有同事提到关于pod从ACR拉取镜像，用户会不定时对ACR中的镜像内容进行更新，但标签保持不变，重新部署pod发现还是使用旧的镜像部署的问题。</p>
+<p>找了一篇文档，这涉及到ImagePullPolicy这个字段的设置，简单来说，就是：</p>
+<p>Always：在进行部署时，kubelet每次都会从镜像库进行寻找镜像，如果发现找到的镜像和本地先前存储的镜像的摘要值相同，那么就使用本地镜像部署，这样部署速度更快；如果摘要值不同，也就意味着这个镜像发生了变化，会从镜像库重新拉取新的镜像启动容器。</p>
+<p>IfNotPresent：优先从本地镜像启动容器，如果本地不存在，才去镜像库拉取。</p>
+<p>Never：如果本地存在镜像，就会用其启动容器，如果不存在，那么启动容器就会失败。</p>
+<p>所以上述问题解决方法，就是需要将ImagePullPolicy修改为Always。</p>
+<p>或者可以在指定镜像的时候，使用指定&lt;image-name&gt;@&lt;digest&gt;，而不是&lt;image-name&gt;:&lt;tag&gt;。因为&lt;image-name&gt;@&lt;digest&gt;是指定唯一镜像的标识。</p>
+<p>Image pull policy</p>
+<p>Default image pull policy</p></article>

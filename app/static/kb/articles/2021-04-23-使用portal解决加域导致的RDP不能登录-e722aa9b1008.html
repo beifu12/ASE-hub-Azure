@@ -1,0 +1,52 @@
+<article class="kb-article" data-title="使用portal解决加域导致的RDP不能登录"><h1>使用portal解决加域导致的RDP不能登录</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-04-23 16:53:09</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>1.确认虚拟机的代理状态正常</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>1.确认虚拟机的代理状态正常</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>禁用后如用户域控允许非域用户登录，可以使用重置密码功能新建一个非域用户。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1.确认虚拟机的代理状态正常</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>2.平台已经内置好了脚本可以进行NLA的禁用。</li>
+</ul>
+<ul>
+<li>3.可以使用运行命令的方式尝试退操作系统进行退域操作</li>
+</ul>
+<ul>
+<li>退域命令：</li>
+</ul>
+<ul>
+<li>remove-computer -credential &quot;域名\授权用户&quot; -passthru -verbose; restart-computer</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-4-23</p>
+<p>1.确认虚拟机的代理状态正常</p>
+<p>2.平台已经内置好了脚本可以进行NLA的禁用。</p>
+<p>禁用后如用户域控允许非域用户登录，可以使用重置密码功能新建一个非域用户。</p>
+<p>3.可以使用运行命令的方式尝试退操作系统进行退域操作</p>
+<p>退域命令：</p>
+<p>remove-computer -credential &quot;域名\授权用户&quot; -passthru -verbose; restart-computer</p></article>

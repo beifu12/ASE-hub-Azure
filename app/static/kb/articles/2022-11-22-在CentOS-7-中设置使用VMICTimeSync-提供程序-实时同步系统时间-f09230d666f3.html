@@ -1,0 +1,182 @@
+<article class="kb-article" data-title="在CentOS 7 中设置使用VMICTimeSync 提供程序 实时同步系统时间"><h1>在CentOS 7 中设置使用VMICTimeSync 提供程序 实时同步系统时间</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-11-22 16:07:04</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Johnny</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Johnny</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny</li>
+</ul>
+<ul>
+<li>2022-03-07 update</li>
+</ul>
+<ul>
+<li>Update :</li>
+</ul>
+<ul>
+<li>===========</li>
+</ul>
+<ul>
+<li>Centos 7.x 如果一直更新版本，那么也可以不用安装LIS 直接配置 chrony配置文件即可：</li>
+</ul>
+<ul>
+<li>我当前linux 内核如下：</li>
+</ul>
+<ul>
+<li>确实安装不了，显示kernel不支持：</li>
+</ul>
+<ul>
+<li>[root@centos751 LISISO]# ./install.sh</li>
+</ul>
+<ul>
+<li>Unsupported kernel version</li>
+</ul>
+<ul>
+<li>说明您的系统已经是应该是比较新版本的了。</li>
+</ul>
+<ul>
+<li>可以直接安装新版本的操作方式，我测试如下：</li>
+</ul>
+<ul>
+<li>[root@centos751 LISISO]# lsmod |grep hv_utils</li>
+</ul>
+<ul>
+<li>hv_utils               25894  1</li>
+</ul>
+<ul>
+<li>ptp                    23551  1 hv_utils</li>
+</ul>
+<ul>
+<li>hv_vmbus               97049  7 hv_balloon,hyperv_keyboard,hv_netvsc,hid_hyperv,hv_utils,hyperv_fb,hv_storvsc</li>
+</ul>
+<ul>
+<li>[root@centos751 LISISO]# ls /sys/class/ptp/ptp0/</li>
+</ul>
+<ul>
+<li>clock_name  dev  max_adjustment  n_alarms  n_external_timestamps  n_periodic_outputs  n_programmable_pins  power  pps_available  subsystem  uevent</li>
+</ul>
+<ul>
+<li>[root@centos751 LISISO]# ls /sys/class/ptp</li>
+</ul>
+<ul>
+<li>ptp0</li>
+</ul>
+<ul>
+<li>[root@centos751 LISISO]# cat /sys/class/ptp/ptp0/clock_name</li>
+</ul>
+<ul>
+<li>hyperv</li>
+</ul>
+<ul>
+<li>再chrony配置文件中添加对应信息：</li>
+</ul>
+<ul>
+<li>请您参考。</li>
+</ul>
+<ul>
+<li>谢谢！</li>
+</ul>
+<ul>
+<li>==================</li>
+</ul>
+<ul>
+<li>Linux虚拟机OS 仅在启动时读取主机硬件时钟数据。 然后，时钟会通过 Linux 内核中的中断计时器来维护。而维护期间，VM 可能会暂停最多 30 秒的时间，这样就造成 偏差。若要处理因维护而暂停 VM 所导致的问题，最好是将外部时间服务器与 VMICTimeSync 组合使用。</li>
+</ul>
+<ul>
+<li>在较旧版的 CentOS 7.x 上，Linux Integration Services 可以在下载后用于安装更新的驱动程序。</li>
+</ul>
+<ul>
+<li>添加如下语句：</li>
+</ul>
+<ul>
+<li>refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0</li>
+</ul>
+<ul>
+<li>修改配置后需要重启chronyd服务才可以生效，生效后为立即同步hwclock和系统时钟。</li>
+</ul>
+<ul>
+<li>PTP时钟调整方法主要取决于主从时钟的时间差：如果时间差Offset过大，例如1s以上，则应用绝对时间调整，从时钟设备需要加上时间差以调整绝对时间，使其时间在此刻与主时钟时间完全一致；如果时间差Offset较小，则使从时钟的频率改变某一百分比，从时钟设备需要调整各自的时钟频率，与主时钟的频率保持一致。——摘自应怀樵编《现代振动与噪声技术》  第10卷,航空工业出版社,2012.08,第389页</li>
+</ul>
+<ul>
+<li>更多信息可以参考：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>都可以和文档中查看的选项对应上：</li>
+</ul>
+<ul>
+<li>在 Azure 上的较新的 Linux 发行版中，VM 可以使用 Linux Integration Services (LIS) 中随附的 VMICTimeSync 提供程序，从主机更频繁地查询时钟更新。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>下载 LIS 4.3.5版本，install脚本中确实有您反馈的信息：</li>
+</ul>
+<ul>
+<li>可以通过如下命令确认，同步源的信息（PHC0）为硬件设备源：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在 CentOS 7.x 上如需要使用VMICTimeSync 提供程序进行徒步，可将chrony 配置为使用 PTP 源时钟VMICTimeSync硬件，请更新 chrony.conf：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/time-sync" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/time-sync</a></li>
+</ul>
+<ul>
+<li>Ubuntu:<a href="https://ubuntu.com/blog/ubuntu-bionic-using-chrony-to-configure-ntp" target="_blank" rel="noopener">https://ubuntu.com/blog/ubuntu-bionic-using-chrony-to-configure-ntp</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020-01-15</p>
+<p>Johnny</p>
+<p>2022-03-07 update</p>
+<p>Update :</p>
+<p>===========</p>
+<p>Centos 7.x 如果一直更新版本，那么也可以不用安装LIS 直接配置 chrony配置文件即可：</p>
+<p>下载 LIS 4.3.5版本，install脚本中确实有您反馈的信息：</p>
+<p>我当前linux 内核如下：</p>
+<p>确实安装不了，显示kernel不支持：</p>
+<p>[root@centos751 LISISO]# ./install.sh</p>
+<p>Unsupported kernel version</p>
+<p>说明您的系统已经是应该是比较新版本的了。</p>
+<p>可以直接安装新版本的操作方式，我测试如下：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/time-sync" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/time-sync</a></p>
+<p>都可以和文档中查看的选项对应上：</p>
+<p>[root@centos751 LISISO]# lsmod |grep hv_utils</p>
+<p>hv_utils               25894  1</p>
+<p>ptp                    23551  1 hv_utils</p>
+<p>hv_vmbus               97049  7 hv_balloon,hyperv_keyboard,hv_netvsc,hid_hyperv,hv_utils,hyperv_fb,hv_storvsc</p>
+<p>[root@centos751 LISISO]# ls /sys/class/ptp/ptp0/</p>
+<p>clock_name  dev  max_adjustment  n_alarms  n_external_timestamps  n_periodic_outputs  n_programmable_pins  power  pps_available  subsystem  uevent</p>
+<p>[root@centos751 LISISO]# ls /sys/class/ptp</p>
+<p>ptp0</p>
+<p>[root@centos751 LISISO]# cat /sys/class/ptp/ptp0/clock_name</p>
+<p>hyperv</p>
+<p>再chrony配置文件中添加对应信息：</p>
+<p>请您参考。</p>
+<p>谢谢！</p>
+<p>==================</p>
+<p>Linux虚拟机OS 仅在启动时读取主机硬件时钟数据。 然后，时钟会通过 Linux 内核中的中断计时器来维护。而维护期间，VM 可能会暂停最多 30 秒的时间，这样就造成 偏差。若要处理因维护而暂停 VM 所导致的问题，最好是将外部时间服务器与 VMICTimeSync 组合使用。</p>
+<p>在 Azure 上的较新的 Linux 发行版中，VM 可以使用 Linux Integration Services (LIS) 中随附的 VMICTimeSync 提供程序，从主机更频繁地查询时钟更新。</p>
+<p>在较旧版的 CentOS 7.x 上，Linux Integration Services 可以在下载后用于安装更新的驱动程序。</p>
+<p>在 CentOS 7.x 上如需要使用VMICTimeSync 提供程序进行徒步，可将chrony 配置为使用 PTP 源时钟VMICTimeSync硬件，请更新 chrony.conf：</p>
+<p>添加如下语句：</p>
+<p>refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0</p>
+<p>修改配置后需要重启chronyd服务才可以生效，生效后为立即同步hwclock和系统时钟。</p>
+<p>可以通过如下命令确认，同步源的信息（PHC0）为硬件设备源：</p>
+<p>PTP时钟调整方法主要取决于主从时钟的时间差：如果时间差Offset过大，例如1s以上，则应用绝对时间调整，从时钟设备需要加上时间差以调整绝对时间，使其时间在此刻与主时钟时间完全一致；如果时间差Offset较小，则使从时钟的频率改变某一百分比，从时钟设备需要调整各自的时钟频率，与主时钟的频率保持一致。——摘自应怀樵编《现代振动与噪声技术》  第10卷,航空工业出版社,2012.08,第389页</p>
+<p>更多信息可以参考：</p>
+<p>Ubuntu:<a href="https://ubuntu.com/blog/ubuntu-bionic-using-chrony-to-configure-ntp" target="_blank" rel="noopener">https://ubuntu.com/blog/ubuntu-bionic-using-chrony-to-configure-ntp</a></p></article>

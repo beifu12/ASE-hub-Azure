@@ -1,0 +1,98 @@
+<article class="kb-article" data-title="[Shared]删除AAD用户邮箱代理地址"><h1>[Shared]删除AAD用户邮箱代理地址</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-12-20 11:13:03</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Create</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Create</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Create</li>
+</ul>
+<ul>
+<li>Connect-AzureAD -TenantId b388b808-0ec9-4a09-a414-a7cbbd8b7e9b -AzureEnvironmentName AzureChinaCloud</li>
+</ul>
+<ul>
+<li>$User = Get-AzureADUser -ObjectId dcf9d9b6-a1d9-43f9-9701-dbeb0343edc2</li>
+</ul>
+<ul>
+<li>$User.ProxyAddresses #//Displays all proxyaddresses(smtpEntries)</li>
+</ul>
+<ul>
+<li>$User.ProxyAddresses.Remove(&quot;SMTP:123@test.com&quot;)</li>
+</ul>
+<ul>
+<li>Connect-MsolService -AzureEnvironment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>$User =Get-MsolUser -ObjectId dcf9d9b6-a1d9-43f9-9701-dbeb0343edc2</li>
+</ul>
+<ul>
+<li>$User.ProxyAddresses</li>
+</ul>
+<ul>
+<li>后续与O365同事沟通，可以尝试通过以下方式删除代理地址</li>
+</ul>
+<ul>
+<li>d.然后点击下方位置进行修改：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>a.打开O365 admin portal</li>
+</ul>
+<ul>
+<li>c.需要确认是否对此用户分配exchange 许可</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>尝试使用以下脚本进行操作，并未能实现</li>
+</ul>
+<ul>
+<li>Set-AzureADUser -ObjectId &quot;dcf9d9b6-a1d9-43f9-9701-dbeb0343edc2&quot;   //But then there is no parameter for ProxyAddresses to update</li>
+</ul>
+<ul>
+<li>Set-MsolUser -ObjectId dcf9d9b6-a1d9-43f9-9701-dbeb0343edc2</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>b.找到需要修改的用户：</li>
+</ul>
+<ul>
+<li>e.可以通过删除下方截图的别名记录来删除代理地址</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal.partner.microsoftonline.cn/AdminPortal/Home#/users/:/UserDetails/0f27a1ae-c57f-48d9-b185-742b21015357" target="_blank" rel="noopener">https://portal.partner.microsoftonline.cn/AdminPortal/Home#/users/:/UserDetails/0f27a1ae-c57f-48d9-b185-742b21015357</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Create</p>
+<p>2024-01-12</p>
+<p>尝试使用以下脚本进行操作，并未能实现</p>
+<p>Connect-AzureAD -TenantId b388b808-0ec9-4a09-a414-a7cbbd8b7e9b -AzureEnvironmentName AzureChinaCloud</p>
+<p>$User = Get-AzureADUser -ObjectId dcf9d9b6-a1d9-43f9-9701-dbeb0343edc2</p>
+<p>$User.ProxyAddresses #//Displays all proxyaddresses(smtpEntries)</p>
+<p>$User.ProxyAddresses.Remove(&quot;SMTP:123@test.com&quot;)</p>
+<p>Set-AzureADUser -ObjectId &quot;dcf9d9b6-a1d9-43f9-9701-dbeb0343edc2&quot;   //But then there is no parameter for ProxyAddresses to update</p>
+<p>Connect-MsolService -AzureEnvironment AzureChinaCloud</p>
+<p>$User =Get-MsolUser -ObjectId dcf9d9b6-a1d9-43f9-9701-dbeb0343edc2</p>
+<p>$User.ProxyAddresses</p>
+<p>Set-MsolUser -ObjectId dcf9d9b6-a1d9-43f9-9701-dbeb0343edc2</p>
+<p>后续与O365同事沟通，可以尝试通过以下方式删除代理地址</p>
+<p>a.打开O365 admin portal</p>
+<p><a href="https://portal.partner.microsoftonline.cn/AdminPortal/Home#/users/:/UserDetails/0f27a1ae-c57f-48d9-b185-742b21015357" target="_blank" rel="noopener">https://portal.partner.microsoftonline.cn/AdminPortal/Home#/users/:/UserDetails/0f27a1ae-c57f-48d9-b185-742b21015357</a></p>
+<p>b.找到需要修改的用户：</p>
+<p>c.需要确认是否对此用户分配exchange 许可</p>
+<p>d.然后点击下方位置进行修改：</p>
+<p>e.可以通过删除下方截图的别名记录来删除代理地址</p></article>

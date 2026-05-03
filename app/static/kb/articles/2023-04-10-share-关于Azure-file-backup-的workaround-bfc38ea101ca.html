@@ -1,0 +1,123 @@
+<article class="kb-article" data-title="【share】 关于Azure file backup 的workaround"><h1>【share】 关于Azure file backup 的workaround</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2023-04-10 17:22:37</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>$storageAccount = Get-AzStorageAccount -ResourceGroupName &quot;AZ-100-C2&quot; -Name &quot;afsync01&quot; -ErrorAction Stop</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>$storageAccount = Get-AzStorageAccount -ResourceGroupName &quot;AZ-100-C2&quot; -Name &quot;afsync01&quot; -ErrorAction Stop</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Cao Mengruiqing</li>
+</ul>
+<ul>
+<li>Case：20230317218554</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>$Cred = Get-AutomationPSCredential -Name &quot;cmtest&quot;;</li>
+</ul>
+<ul>
+<li>Add-AzAccount -Credential $Cred -EnvironmentName AzureChinaCloud;</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -SubscriptionName &quot;VM-Caomengruiqing (21v)&quot;;</li>
+</ul>
+<ul>
+<li># 创建新快照</li>
+</ul>
+<ul>
+<li># 清除4天前的快照</li>
+</ul>
+<ul>
+<li>$snapshotList = Get-AzStorageShare -Context $storageAccount.Context</li>
+</ul>
+<ul>
+<li># $snapshotList = $StorageAccount | Get-AzStorageShare</li>
+</ul>
+<ul>
+<li>$snapshotRetentionDays = 4</li>
+</ul>
+<ul>
+<li>foreach ($snapshot in $snapshotList) {</li>
+</ul>
+<ul>
+<li>if ($snapshot.SnapshotTime -lt (Get-Date).AddDays(-$snapshotRetentionDays) -and $snapshot.IsSnapshot -eq $true) {</li>
+</ul>
+<ul>
+<li>#    $snapshot.CloudFileShare</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>可以通过Azure PowerShell + Azure automation 执行定时快照或者azcopy 复制file share中的文件到其他Azure file中以起到备份的作用。</li>
+</ul>
+<ul>
+<li>以下是通过Azure PowerShell + Azure automation 定时获取快照，并删除4天以前的快照。</li>
+</ul>
+<ul>
+<li>具体脚本如下：</li>
+</ul>
+<ul>
+<li>New-AzRmStorageShare -ResourceGroupName &quot;AZ-100-C2&quot; -StorageAccountName &quot;afsync01&quot; -Name &quot;a01&quot; -Snapshot</li>
+</ul>
+<ul>
+<li>Remove-AzStorageShare -Share $snapshot.CloudFileShare -Confirm:$false -Force</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>分享一个关于Azure file backup 的workaround.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://robjanssen.it/2021/09/14/azure-files-snapshots-dilemma/" target="_blank" rel="noopener">https://robjanssen.it/2021/09/14/azure-files-snapshots-dilemma/</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/powershell/module/az.storage/remove-azstorageshare?view=azps-9.5.0&amp;viewFallbackFrom=azps-9.2.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.storage/remove-azstorageshare?view=azps-9.5.0&amp;viewFallbackFrom=azps-9.2.0</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Cao Mengruiqing</p>
+<p>分享一个关于Azure file backup 的workaround.</p>
+<p>Case：20230317218554</p>
+<p>参考文档：</p>
+<p><a href="https://robjanssen.it/2021/09/14/azure-files-snapshots-dilemma/" target="_blank" rel="noopener">https://robjanssen.it/2021/09/14/azure-files-snapshots-dilemma/</a></p>
+<p><a href="https://learn.microsoft.com/en-us/powershell/module/az.storage/remove-azstorageshare?view=azps-9.5.0&amp;viewFallbackFrom=azps-9.2.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.storage/remove-azstorageshare?view=azps-9.5.0&amp;viewFallbackFrom=azps-9.2.0</a></p>
+<p>可以通过Azure PowerShell + Azure automation 执行定时快照或者azcopy 复制file share中的文件到其他Azure file中以起到备份的作用。</p>
+<p>以下是通过Azure PowerShell + Azure automation 定时获取快照，并删除4天以前的快照。</p>
+<p>具体脚本如下：</p>
+<p>$Cred = Get-AutomationPSCredential -Name &quot;cmtest&quot;;</p>
+<p>Add-AzAccount -Credential $Cred -EnvironmentName AzureChinaCloud;</p>
+<p>Select-AzSubscription -SubscriptionName &quot;VM-Caomengruiqing (21v)&quot;;</p>
+<h1>创建新快照</h1>
+<p>New-AzRmStorageShare -ResourceGroupName &quot;AZ-100-C2&quot; -StorageAccountName &quot;afsync01&quot; -Name &quot;a01&quot; -Snapshot</p>
+<h1>清除4天前的快照</h1>
+<p>$storageAccount = Get-AzStorageAccount -ResourceGroupName &quot;AZ-100-C2&quot; -Name &quot;afsync01&quot; -ErrorAction Stop</p>
+<p>$snapshotList = Get-AzStorageShare -Context $storageAccount.Context</p>
+<h1>$snapshotList = $StorageAccount | Get-AzStorageShare</h1>
+<p>$snapshotRetentionDays = 4</p>
+<p>foreach ($snapshot in $snapshotList) {</p>
+<p>if ($snapshot.SnapshotTime -lt (Get-Date).AddDays(-$snapshotRetentionDays) -and $snapshot.IsSnapshot -eq $true) {</p>
+<h1>$snapshot.CloudFileShare</h1>
+<p>Remove-AzStorageShare -Share $snapshot.CloudFileShare -Confirm:$false -Force</p>
+<p>}</p></article>

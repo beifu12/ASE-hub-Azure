@@ -1,0 +1,163 @@
+<article class="kb-article" data-title="【Share】 Windows Server 激活失败、激活消失问题解决方法参考"><h1>【Share】 Windows Server 激活失败、激活消失问题解决方法参考</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-12 15:30:59</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<h1>First, get the virtual network that hosts the VMs that have activation problems. In this case, we get virtual network ArmVNet-DM in Resource Group ArmVNet-DM:</h1>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li># First, get the virtual network that hosts the VMs that have activation problems. In this case, we get virtual network ArmVNet-DM in Resource Group ArmVNet-DM:</li>
+</ul>
+<ul>
+<li>不通就查DNS，是否有自己的DNS，然后自行建host文件解析，并确保系统防火墙放行。</li>
+</ul>
+<ul>
+<li>系统日志报错：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>前言：</li>
+</ul>
+<ul>
+<li>Custom Routes for KMS Activation.</li>
+</ul>
+<ul>
+<li>Windows activation watermark continues to be displayed - Virtual Machines | Microsoft Learn</li>
+</ul>
+<ul>
+<li>一、问题相关Case：20241211329780、20250122335966</li>
+</ul>
+<ul>
+<li>1、Windows Server 提示被取消激活，未使用Azure 版本或权益的系统等信息。</li>
+</ul>
+<ul>
+<li>$vnet = Get-AzVirtualNetwork -ResourceGroupName &quot;ArmVNet-DM&quot; -Name &quot;ArmVNet-DM&quot;</li>
+</ul>
+<ul>
+<li># Next, create a route table:</li>
+</ul>
+<ul>
+<li>$RouteTable = New-AzRouteTable -Name &quot;ArmVNet-DM-KmsDirectRoute&quot; -ResourceGroupName &quot;ArmVNet-DM&quot; -Location &quot;chinanorth3&quot;</li>
+</ul>
+<ul>
+<li># Next, configure the route table:</li>
+</ul>
+<ul>
+<li>Add-AzRouteConfig -Name &quot;DirectRouteToKMS&quot; -AddressPrefix 159.27.28.100/32 -NextHopType Internet -RouteTable $RouteTable</li>
+</ul>
+<ul>
+<li>Add-AzRouteConfig -Name &quot;DirectRouteToAZKMS01&quot; -AddressPrefix 163.228.64.161/32 -NextHopType Internet -RouteTable $RouteTable</li>
+</ul>
+<ul>
+<li>Add-AzRouteConfig -Name &quot;DirectRouteToAZKMS02&quot; -AddressPrefix 42.159.7.249/32 -NextHopType Internet -RouteTable $RouteTable</li>
+</ul>
+<ul>
+<li># Next, attach the route table to the subnet that hosts the VMs:</li>
+</ul>
+<ul>
+<li>此时确保两个域名：azkms.core.chinacloudapi.cn、kms.core.chinacloudapi.cn（两个中的一个），DNS解析能对应上</li>
+</ul>
+<ul>
+<li>Test-NetConnection kms.core.chinacloudapi.cn -port 1688</li>
+</ul>
+<ul>
+<li>Test-NetConnection azkms.core.chinacloudapi.cn -port 1688</li>
+</ul>
+<ul>
+<li>至此问题基本可以解决，文档提到的证书问题一般不会出现。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>本Share主要针对Case 遇到的复杂网络情况下的问题，不讨论没出现的情况（证书等），所有其他激活问题可按步骤参考以下两个文档：</li>
+</ul>
+<ul>
+<li>2、此时激活问题一般可以解决，部分用户的网络环境和限制更多，上述步骤无用，需要也放行IMDS服务器</li>
+</ul>
+<ul>
+<li>Despite these steps, we encountered an issue where the IMDS (Instance Metadata Service) was reported as failed. Recognizing the critical role of IMDS, as detailed in Azure Instance Metadata Service Documentation, we proceeded with additional troubleshooting</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>二、问题现象：该问题分两种情况，一种是纯粹的未激活（完整参考解决方案），一种是命令返回信息显示倒计时，但是水印仍在（参考解决方法的方法2）：</li>
+</ul>
+<ul>
+<li>2、slmgr.vbs /dli 命令显示激活成功，显示100多天倒计时，但Windows设置显示未激活、桌面水印仍在</li>
+</ul>
+<ul>
+<li>使用Azure Powershell  在ISE 下运行如下脚本：</li>
+</ul>
+<ul>
+<li>Set-AzRouteTable -RouteTable $RouteTable</li>
+</ul>
+<ul>
+<li>Set-AzVirtualNetworkSubnetConfig -Name &quot;Subnet01&quot; -VirtualNetwork $vnet -AddressPrefix &quot;10.0.0.0/24&quot; -RouteTable $RouteTable</li>
+</ul>
+<ul>
+<li>Set-AzVirtualNetwork -VirtualNetwork $vnet</li>
+</ul>
+<ul>
+<li>Powershell 敲如下命令，若无响应，放行169.254.169.254的80、443端口</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>三、解决方案：</li>
+</ul>
+<ul>
+<li>1、首先确保激活路由从Azure侧出站：Use Azure custom routes to enable KMS activation with forced tunneling - Virtual Machines | Microsoft Learn</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>PS C:\Windows\system32&gt; (Invoke-WebRequest -Uri &quot;<a href="http://ifconfig.me/ip&quot;).content" target="_blank" rel="noopener">http://ifconfig.me/ip&quot;).content</a>    查出口是否是Azure</li>
+</ul>
+<ul>
+<li><a href="https://aka.ms/IMDSAttest" target="_blank" rel="noopener">https://aka.ms/IMDSAttest</a></li>
+</ul>
+<ul>
+<li>Invoke-RestMethod -Headers @{&quot;Metadata&quot;=&quot;true&quot;} -Method GET -Uri &quot;<a href="http://169.254.169.254/metadata/instance/compute/azEnvironment?api-version=2018-10-01&amp;format=text&quot;" target="_blank" rel="noopener">http://169.254.169.254/metadata/instance/compute/azEnvironment?api-version=2018-10-01&amp;format=text&quot;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025-01-23</p>
+<p>前言：</p>
+<p>本Share主要针对Case 遇到的复杂网络情况下的问题，不讨论没出现的情况（证书等），所有其他激活问题可按步骤参考以下两个文档：</p>
+<p>Custom Routes for KMS Activation.</p>
+<p>Windows activation watermark continues to be displayed - Virtual Machines | Microsoft Learn</p>
+<p>一、问题相关Case：20241211329780、20250122335966</p>
+<p>二、问题现象：该问题分两种情况，一种是纯粹的未激活（完整参考解决方案），一种是命令返回信息显示倒计时，但是水印仍在（参考解决方法的方法2）：</p>
+<p>1、Windows Server 提示被取消激活，未使用Azure 版本或权益的系统等信息。</p>
+<p>2、slmgr.vbs /dli 命令显示激活成功，显示100多天倒计时，但Windows设置显示未激活、桌面水印仍在</p>
+<p>三、解决方案：</p>
+<p>1、首先确保激活路由从Azure侧出站：Use Azure custom routes to enable KMS activation with forced tunneling - Virtual Machines | Microsoft Learn</p>
+<p>PS C:\Windows\system32&gt; (Invoke-WebRequest -Uri &quot;<a href="http://ifconfig.me/ip&quot;).content" target="_blank" rel="noopener">http://ifconfig.me/ip&quot;).content</a>    查出口是否是Azure</p>
+<p>使用Azure Powershell  在ISE 下运行如下脚本：</p>
+<h1>First, get the virtual network that hosts the VMs that have activation problems. In this case, we get virtual network ArmVNet-DM in Resource Group ArmVNet-DM:</h1>
+<p>$vnet = Get-AzVirtualNetwork -ResourceGroupName &quot;ArmVNet-DM&quot; -Name &quot;ArmVNet-DM&quot;</p>
+<h1>Next, create a route table:</h1>
+<p>$RouteTable = New-AzRouteTable -Name &quot;ArmVNet-DM-KmsDirectRoute&quot; -ResourceGroupName &quot;ArmVNet-DM&quot; -Location &quot;chinanorth3&quot;</p>
+<h1>Next, configure the route table:</h1>
+<p>Add-AzRouteConfig -Name &quot;DirectRouteToKMS&quot; -AddressPrefix 159.27.28.100/32 -NextHopType Internet -RouteTable $RouteTable</p>
+<p>Add-AzRouteConfig -Name &quot;DirectRouteToAZKMS01&quot; -AddressPrefix 163.228.64.161/32 -NextHopType Internet -RouteTable $RouteTable</p>
+<p>Add-AzRouteConfig -Name &quot;DirectRouteToAZKMS02&quot; -AddressPrefix 42.159.7.249/32 -NextHopType Internet -RouteTable $RouteTable</p>
+<p>Set-AzRouteTable -RouteTable $RouteTable</p>
+<h1>Next, attach the route table to the subnet that hosts the VMs:</h1>
+<p>Set-AzVirtualNetworkSubnetConfig -Name &quot;Subnet01&quot; -VirtualNetwork $vnet -AddressPrefix &quot;10.0.0.0/24&quot; -RouteTable $RouteTable</p>
+<p>Set-AzVirtualNetwork -VirtualNetwork $vnet</p>
+<p>此时确保两个域名：azkms.core.chinacloudapi.cn、kms.core.chinacloudapi.cn（两个中的一个），DNS解析能对应上</p>
+<p>Test-NetConnection kms.core.chinacloudapi.cn -port 1688</p>
+<p>Test-NetConnection azkms.core.chinacloudapi.cn -port 1688</p>
+<p>不通就查DNS，是否有自己的DNS，然后自行建host文件解析，并确保系统防火墙放行。</p>
+<p>2、此时激活问题一般可以解决，部分用户的网络环境和限制更多，上述步骤无用，需要也放行IMDS服务器</p>
+<p>系统日志报错：</p>
+<p>Despite these steps, we encountered an issue where the IMDS (Instance Metadata Service) was reported as failed. Recognizing the critical role of IMDS, as detailed in Azure Instance Metadata Service Documentation, we proceeded with additional troubleshooting</p>
+<p><a href="https://aka.ms/IMDSAttest" target="_blank" rel="noopener">https://aka.ms/IMDSAttest</a></p>
+<p>Powershell 敲如下命令，若无响应，放行169.254.169.254的80、443端口</p>
+<p>Invoke-RestMethod -Headers @{&quot;Metadata&quot;=&quot;true&quot;} -Method GET -Uri &quot;<a href="http://169.254.169.254/metadata/instance/compute/azEnvironment?api-version=2018-10-01&amp;format=text&quot;" target="_blank" rel="noopener">http://169.254.169.254/metadata/instance/compute/azEnvironment?api-version=2018-10-01&amp;format=text&quot;</a></p>
+<p>至此问题基本可以解决，文档提到的证书问题一般不会出现。</p></article>

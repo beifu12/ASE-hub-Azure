@@ -1,0 +1,101 @@
+<article class="kb-article" data-title="跨存储账户复制VHD磁盘"><h1>跨存储账户复制VHD磁盘</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-06-28 11:53:40</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>以下为跨存储账户复制 VHD 磁盘的详细操作步骤：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>以下为跨存储账户复制 VHD 磁盘的详细操作步骤：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>我们以将VHD从存储账户A复制到B为例来说明整个操作过程。</li>
+</ul>
+<ul>
+<li>执行完成后，会跳转到浏览器中，需要完成登陆操作后才能下载对应的publishsettingsfile文件。</li>
+</ul>
+<ul>
+<li>下载完成后使用Import-AzurePublishSettingsFile -PublishSettingsFile &lt;PublishSettingsFile文件路径&gt;来导入订阅的信息。</li>
+</ul>
+<ul>
+<li>执行Set-AzureSubscription -SubscriptionName &lt;订阅名称&gt; -CurrentStorageAccountName &lt;存储账号B的名称&gt;，将存储B作为订阅的关联存储。</li>
+</ul>
+<ul>
+<li>执行Select-AzureSubscription -SubscriptionName &lt;订阅名称&gt;，设置默认的订阅名称。</li>
+</ul>
+<ul>
+<li>在弹出界面中选择容器类型为公共容器：</li>
+</ul>
+<ul>
+<li>执行$context = New-AzureStorageContext -StorageAccountName &lt;存储账号B的名称&gt; -StorageAccountKey &lt;存储账号B的管理访问密钥&gt; -Endpoint &quot;core.chinacloudapi.cn&quot;，生成一个存储的上下文。</li>
+</ul>
+<ul>
+<li>接着，执行Start-AzureStorageBlobCopy –SrcUri &lt;要复制的VHD的URL&gt; -DestContainer &lt;存储账号B的容器名&gt; -DestBlob &lt;复制到B中的文件的新名称（自定义）&gt; -DestContext $context进行复制操作，执行效果如下：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>以下为跨存储账户复制 VHD 磁盘的详细操作步骤：</li>
+</ul>
+<ul>
+<li>完成了上面的一些准备工作后，执行下面的步骤来复制VHD：</li>
+</ul>
+<ul>
+<li>管理访问密钥查看方式：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Windows Azure Powershell的下载安装：</li>
+</ul>
+<ul>
+<li>首先需要下载Azure PublishSettingsFile，在Windows Azure Powershell中执行下面的命令：</li>
+</ul>
+<ul>
+<li>Get-AzurePublishSettingsFile –Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>上面命令中要复制的VHD的URL可以在存储的容器中找到：</li>
+</ul>
+<ul>
+<li>命令成功后，需要等待一段时间VHD才能拷贝到存储账号B下。</li>
+</ul>
+<ul>
+<li>在这期间，可以使用命令Get-AzureStorageBlobCopyState -Blob &lt;复制到B中的文件的新名称&gt; -Container &lt;存储账号B的容器名&gt; -Context $context来查看复制的状态：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在开始复制之前，首先请确保将存储A和存储B的容器类型设置为公共容器：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="http://azure.microsoft.com/enus/documentation/articles/install-configure-powershell/?fb=zh-cn" target="_blank" rel="noopener">http://azure.microsoft.com/enus/documentation/articles/install-configure-powershell/?fb=zh-cn</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>以下为跨存储账户复制 VHD 磁盘的详细操作步骤：</p>
+<p>Windows Azure Powershell的下载安装：</p>
+<p><a href="http://azure.microsoft.com/enus/documentation/articles/install-configure-powershell/?fb=zh-cn" target="_blank" rel="noopener">http://azure.microsoft.com/enus/documentation/articles/install-configure-powershell/?fb=zh-cn</a></p>
+<p>我们以将VHD从存储账户A复制到B为例来说明整个操作过程。</p>
+<p>首先需要下载Azure PublishSettingsFile，在Windows Azure Powershell中执行下面的命令：</p>
+<p>Get-AzurePublishSettingsFile –Environment AzureChinaCloud</p>
+<p>执行完成后，会跳转到浏览器中，需要完成登陆操作后才能下载对应的publishsettingsfile文件。</p>
+<p>下载完成后使用Import-AzurePublishSettingsFile -PublishSettingsFile &lt;PublishSettingsFile文件路径&gt;来导入订阅的信息。</p>
+<p>执行Set-AzureSubscription -SubscriptionName &lt;订阅名称&gt; -CurrentStorageAccountName &lt;存储账号B的名称&gt;，将存储B作为订阅的关联存储。</p>
+<p>执行Select-AzureSubscription -SubscriptionName &lt;订阅名称&gt;，设置默认的订阅名称。</p>
+<p>在开始复制之前，首先请确保将存储A和存储B的容器类型设置为公共容器：</p>
+<p>在弹出界面中选择容器类型为公共容器：</p>
+<p>完成了上面的一些准备工作后，执行下面的步骤来复制VHD：</p>
+<p>执行$context = New-AzureStorageContext -StorageAccountName &lt;存储账号B的名称&gt; -StorageAccountKey &lt;存储账号B的管理访问密钥&gt; -Endpoint &quot;core.chinacloudapi.cn&quot;，生成一个存储的上下文。</p>
+<p>管理访问密钥查看方式：</p>
+<p>接着，执行Start-AzureStorageBlobCopy –SrcUri &lt;要复制的VHD的URL&gt; -DestContainer &lt;存储账号B的容器名&gt; -DestBlob &lt;复制到B中的文件的新名称（自定义）&gt; -DestContext $context进行复制操作，执行效果如下：</p>
+<p>上面命令中要复制的VHD的URL可以在存储的容器中找到：</p>
+<p>命令成功后，需要等待一段时间VHD才能拷贝到存储账号B下。</p>
+<p>在这期间，可以使用命令Get-AzureStorageBlobCopyState -Blob &lt;复制到B中的文件的新名称&gt; -Container &lt;存储账号B的容器名&gt; -Context $context来查看复制的状态：</p></article>

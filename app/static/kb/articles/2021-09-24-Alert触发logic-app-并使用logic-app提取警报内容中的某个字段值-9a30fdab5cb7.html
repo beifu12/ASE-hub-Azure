@@ -1,0 +1,393 @@
+<article class="kb-article" data-title="Alert触发logic app，并使用logic app提取警报内容中的某个字段值"><h1>Alert触发logic app，并使用logic app提取警报内容中的某个字段值</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: logic app</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-09-24 18:16:06</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>需求：设置活动日志警报，关联一个logic app，并利用logic app提取警报body中的severity字段值。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>需求：设置活动日志警报，关联一个logic app，并利用logic app提取警报body中的severity字段值。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>告警规则自动触发后：</li>
+</ul>
+<ul>
+<li>获取http请求的输出正文内容:</li>
+</ul>
+<ul>
+<li>接下来把正文拷贝出来，我们可以看到Severity是在data的下一级。</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;data&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;SubscriptionId&quot;: &quot;57e04838-4957-440a-a88d-41d73c5154c0&quot;,</li>
+</ul>
+<ul>
+<li>&quot;SearchQuery&quot;: &quot;AzureActivity&quot;,</li>
+</ul>
+<ul>
+<li>&quot;SearchIntervalStartTimeUtc&quot;: &quot;2021-09-24T08:29:42Z&quot;,</li>
+</ul>
+<ul>
+<li>&quot;SearchIntervalEndtimeUtc&quot;: &quot;2021-09-24T08:34:42Z&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ResultCount&quot;: 0,</li>
+</ul>
+<ul>
+<li>&quot;SearchIntervalInSeconds&quot;: 300,</li>
+</ul>
+<ul>
+<li>&quot;Description&quot;: &quot;&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Severity&quot;: &quot;3&quot;,</li>
+</ul>
+<ul>
+<li>&quot;SearchResult&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;tables&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;PrimaryResult&quot;,</li>
+</ul>
+<ul>
+<li>&quot;columns&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;OperationName&quot;,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;string&quot;</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Level&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;ActivityStatus&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;ActivitySubstatus&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;ResourceGroup&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;SubscriptionId&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;CorrelationId&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Caller&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;CallerIpAddress&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Category&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;HTTPRequest&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Properties&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;EventSubmissionTimestamp&quot;,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;datetime&quot;</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Authorization&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;ResourceId&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;OperationId&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;ResourceProvider&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Resource&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;EventDataId&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;TenantId&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;TimeGenerated&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;SourceSystem&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;CategoryValue&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Authorization_d&quot;,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;dynamic&quot;</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Claims&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Claims_d&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;OperationNameValue&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Properties_d&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;ResourceProviderValue&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;ActivityStatusValue&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;ActivitySubstatusValue&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Type&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;_ResourceId&quot;,</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;rows&quot;: []</li>
+</ul>
+<ul>
+<li>&quot;dataSources&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;resourceId&quot;: &quot;/subscriptions/57e04838-4957-440a-a88d-41d73c5154c0/resourcegroups/defaultresourcegroup-cne2/providers/microsoft.operationalinsights/workspaces/defaultworkspace-57e04838-4957-440a-a88d-41d73c5154c0-cne2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;region&quot;: &quot;chinaeast2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;AzureActivity&quot;</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>&quot;WorkspaceId&quot;: &quot;9f152cb2-8c7b-4aa3-9acf-8033077787af&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ResourceId&quot;: &quot;/subscriptions/57e04838-4957-440a-a88d-41d73c5154c0/resourcegroups/defaultresourcegroup-cne2/providers/microsoft.operationalinsights/workspaces/defaultworkspace-57e04838-4957-440a-a88d-41d73c5154c0-cne2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;AlertType&quot;: &quot;Number of results&quot;</li>
+</ul>
+<ul>
+<li>将上面拷贝出来的正文内容粘贴到HTTP请求的示例Json有效负载中。</li>
+</ul>
+<ul>
+<li>这样就能生成请求正文的JSON架构，然后保存。</li>
+</ul>
+<ul>
+<li>2）接下来初始化一个变量用来提取Severity值，先暂时设置一个随意值，然后进入“Code view”。</li>
+</ul>
+<ul>
+<li>或者通过如下操作获取：表达式选择concat，然后选择Severity，将那串字符拷贝出来。</li>
+</ul>
+<ul>
+<li>或者手动添加Severity：</li>
+</ul>
+<ul>
+<li>保存后，就会出现如下内容。</li>
+</ul>
+<ul>
+<li>3）手动触发告警测试：</li>
+</ul>
+<ul>
+<li>将上面正文内容拷贝到postman中：</li>
+</ul>
+<ul>
+<li>&quot;Severity&quot;: &quot;1&quot;,</li>
+</ul>
+<ul>
+<li>………………..</li>
+</ul>
+<ul>
+<li>手动使用postman触发：</li>
+</ul>
+<ul>
+<li>可以看到4:59PM触发的一次记录，获取到了body中Severity值为1。</li>
+</ul>
+<ul>
+<li>4）5:00PM活动日志告警自动触发:</li>
+</ul>
+<ul>
+<li>可以看获取到Severity为3。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>需求：设置活动日志警报，关联一个logic app，并利用logic app提取警报body中的severity字段值。</li>
+</ul>
+<ul>
+<li>1）配置完告警规则以及操作组关联的Logic app后，(我这里设置的请求json内容为空)等待告警规则的触发，为准备后面生成json模板。</li>
+</ul>
+<ul>
+<li>&quot;schemaId&quot;: &quot;Microsoft.Insights/LogAlert&quot;,</li>
+</ul>
+<ul>
+<li>&quot;AlertRuleName&quot;: &quot;znlogicapp2&quot;,</li>
+</ul>
+<ul>
+<li>关于triggerBody介绍：表达式中函数的参考指南 - Azure Logic Apps | Azure Docs</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>&quot;AlertThresholdOperator&quot;: &quot;Greater Than Or Equal To&quot;,</li>
+</ul>
+<ul>
+<li>&quot;AlertThresholdValue&quot;: 0,</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>将“value”这里修改。</li>
+</ul>
+<ul>
+<li>将“value”设置为body下data下的severity，然后保存。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>&quot;LinkToSearchResults&quot;: &quot;<a href="https://portal.azure.cn#@b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/source/Alerts.EmailLinks/scope/%7B%22resources%22%3A%5B%7B%22resourceId%22%3A%22%2Fsubscriptions%2F57e04838-4957-440a-a88d-41d73c5154c0%2Fresourcegroups%2Fdefaultresourcegroup-cne2%2Fproviders%2Fmicrosoft.operationalinsights%2Fworkspaces%2Fdefaultworkspace-57e04838-4957-440a-a88d-41d73c5154c0-cne2%22%7D%5D%7D/q/eJxzrCotSnVMLsksyyypBAA%3D/prettify/1/timespan/2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;," target="_blank" rel="noopener">https://portal.azure.cn#@b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/source/Alerts.EmailLinks/scope/%7B%22resources%22%3A%5B%7B%22resourceId%22%3A%22%2Fsubscriptions%2F57e04838-4957-440a-a88d-41d73c5154c0%2Fresourcegroups%2Fdefaultresourcegroup-cne2%2Fproviders%2Fmicrosoft.operationalinsights%2Fworkspaces%2Fdefaultworkspace-57e04838-4957-440a-a88d-41d73c5154c0-cne2%22%7D%5D%7D/q/eJxzrCotSnVMLsksyyypBAA%3D/prettify/1/timespan/2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;,</a></li>
+</ul>
+<ul>
+<li>&quot;LinkToFilteredSearchResultsUI&quot;: &quot;<a href="https://portal.azure.cn#@b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/source/Alerts.EmailLinks/scope/%7B%22resources%22%3A%5B%7B%22resourceId%22%3A%22%2Fsubscriptions%2F57e04838-4957-440a-a88d-41d73c5154c0%2Fresourcegroups%2Fdefaultresourcegroup-cne2%2Fproviders%2Fmicrosoft.operationalinsights%2Fworkspaces%2Fdefaultworkspace-57e04838-4957-440a-a88d-41d73c5154c0-cne2%22%7D%5D%7D/q/eJxzrCotSnVMLsksyyypBAA%3D/prettify/1/timespan/2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;," target="_blank" rel="noopener">https://portal.azure.cn#@b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/source/Alerts.EmailLinks/scope/%7B%22resources%22%3A%5B%7B%22resourceId%22%3A%22%2Fsubscriptions%2F57e04838-4957-440a-a88d-41d73c5154c0%2Fresourcegroups%2Fdefaultresourcegroup-cne2%2Fproviders%2Fmicrosoft.operationalinsights%2Fworkspaces%2Fdefaultworkspace-57e04838-4957-440a-a88d-41d73c5154c0-cne2%22%7D%5D%7D/q/eJxzrCotSnVMLsksyyypBAA%3D/prettify/1/timespan/2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;,</a></li>
+</ul>
+<ul>
+<li>&quot;LinkToSearchResultsAPI&quot;: &quot;<a href="https://api.loganalytics.azure.cn/v1/workspaces/9f152cb2-8c7b-4aa3-9acf-8033077787af/query?query=AzureActivity&amp;timespan=2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;," target="_blank" rel="noopener">https://api.loganalytics.azure.cn/v1/workspaces/9f152cb2-8c7b-4aa3-9acf-8033077787af/query?query=AzureActivity&amp;timespan=2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;,</a></li>
+</ul>
+<ul>
+<li>&quot;LinkToFilteredSearchResultsAPI&quot;: &quot;<a href="https://api.loganalytics.azure.cn/v1/workspaces/9f152cb2-8c7b-4aa3-9acf-8033077787af/query?query=AzureActivity&amp;timespan=2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;," target="_blank" rel="noopener">https://api.loganalytics.azure.cn/v1/workspaces/9f152cb2-8c7b-4aa3-9acf-8033077787af/query?query=AzureActivity&amp;timespan=2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;,</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>需求：设置活动日志警报，关联一个logic app，并利用logic app提取警报body中的severity字段值。</p>
+<p>1）配置完告警规则以及操作组关联的Logic app后，(我这里设置的请求json内容为空)等待告警规则的触发，为准备后面生成json模板。</p>
+<p>告警规则自动触发后：</p>
+<p>获取http请求的输出正文内容:</p>
+<p>接下来把正文拷贝出来，我们可以看到Severity是在data的下一级。</p>
+<p>{</p>
+<p>&quot;schemaId&quot;: &quot;Microsoft.Insights/LogAlert&quot;,</p>
+<p>&quot;data&quot;: {</p>
+<p>&quot;SubscriptionId&quot;: &quot;57e04838-4957-440a-a88d-41d73c5154c0&quot;,</p>
+<p>&quot;AlertRuleName&quot;: &quot;znlogicapp2&quot;,</p>
+<p>&quot;SearchQuery&quot;: &quot;AzureActivity&quot;,</p>
+<p>&quot;SearchIntervalStartTimeUtc&quot;: &quot;2021-09-24T08:29:42Z&quot;,</p>
+<p>&quot;SearchIntervalEndtimeUtc&quot;: &quot;2021-09-24T08:34:42Z&quot;,</p>
+<p>&quot;AlertThresholdOperator&quot;: &quot;Greater Than Or Equal To&quot;,</p>
+<p>&quot;AlertThresholdValue&quot;: 0,</p>
+<p>&quot;ResultCount&quot;: 0,</p>
+<p>&quot;SearchIntervalInSeconds&quot;: 300,</p>
+<p>&quot;LinkToSearchResults&quot;: &quot;<a href="https://portal.azure.cn#@b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/source/Alerts.EmailLinks/scope/%7B%22resources%22%3A%5B%7B%22resourceId%22%3A%22%2Fsubscriptions%2F57e04838-4957-440a-a88d-41d73c5154c0%2Fresourcegroups%2Fdefaultresourcegroup-cne2%2Fproviders%2Fmicrosoft.operationalinsights%2Fworkspaces%2Fdefaultworkspace-57e04838-4957-440a-a88d-41d73c5154c0-cne2%22%7D%5D%7D/q/eJxzrCotSnVMLsksyyypBAA%3D/prettify/1/timespan/2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;," target="_blank" rel="noopener">https://portal.azure.cn#@b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/source/Alerts.EmailLinks/scope/%7B%22resources%22%3A%5B%7B%22resourceId%22%3A%22%2Fsubscriptions%2F57e04838-4957-440a-a88d-41d73c5154c0%2Fresourcegroups%2Fdefaultresourcegroup-cne2%2Fproviders%2Fmicrosoft.operationalinsights%2Fworkspaces%2Fdefaultworkspace-57e04838-4957-440a-a88d-41d73c5154c0-cne2%22%7D%5D%7D/q/eJxzrCotSnVMLsksyyypBAA%3D/prettify/1/timespan/2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;,</a></p>
+<p>&quot;LinkToFilteredSearchResultsUI&quot;: &quot;<a href="https://portal.azure.cn#@b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/source/Alerts.EmailLinks/scope/%7B%22resources%22%3A%5B%7B%22resourceId%22%3A%22%2Fsubscriptions%2F57e04838-4957-440a-a88d-41d73c5154c0%2Fresourcegroups%2Fdefaultresourcegroup-cne2%2Fproviders%2Fmicrosoft.operationalinsights%2Fworkspaces%2Fdefaultworkspace-57e04838-4957-440a-a88d-41d73c5154c0-cne2%22%7D%5D%7D/q/eJxzrCotSnVMLsksyyypBAA%3D/prettify/1/timespan/2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;," target="_blank" rel="noopener">https://portal.azure.cn#@b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/blade/Microsoft_Azure_Monitoring_Logs/LogsBlade/source/Alerts.EmailLinks/scope/%7B%22resources%22%3A%5B%7B%22resourceId%22%3A%22%2Fsubscriptions%2F57e04838-4957-440a-a88d-41d73c5154c0%2Fresourcegroups%2Fdefaultresourcegroup-cne2%2Fproviders%2Fmicrosoft.operationalinsights%2Fworkspaces%2Fdefaultworkspace-57e04838-4957-440a-a88d-41d73c5154c0-cne2%22%7D%5D%7D/q/eJxzrCotSnVMLsksyyypBAA%3D/prettify/1/timespan/2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;,</a></p>
+<p>&quot;LinkToSearchResultsAPI&quot;: &quot;<a href="https://api.loganalytics.azure.cn/v1/workspaces/9f152cb2-8c7b-4aa3-9acf-8033077787af/query?query=AzureActivity&amp;timespan=2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;," target="_blank" rel="noopener">https://api.loganalytics.azure.cn/v1/workspaces/9f152cb2-8c7b-4aa3-9acf-8033077787af/query?query=AzureActivity&amp;timespan=2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;,</a></p>
+<p>&quot;LinkToFilteredSearchResultsAPI&quot;: &quot;<a href="https://api.loganalytics.azure.cn/v1/workspaces/9f152cb2-8c7b-4aa3-9acf-8033077787af/query?query=AzureActivity&amp;timespan=2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;," target="_blank" rel="noopener">https://api.loganalytics.azure.cn/v1/workspaces/9f152cb2-8c7b-4aa3-9acf-8033077787af/query?query=AzureActivity&amp;timespan=2021-09-24T08%3a29%3a42.0000000Z%2f2021-09-24T08%3a34%3a42.0000000Z&quot;,</a></p>
+<p>&quot;Description&quot;: &quot;&quot;,</p>
+<p>&quot;Severity&quot;: &quot;3&quot;,</p>
+<p>&quot;SearchResult&quot;: {</p>
+<p>&quot;tables&quot;: [</p>
+<p>&quot;name&quot;: &quot;PrimaryResult&quot;,</p>
+<p>&quot;columns&quot;: [</p>
+<p>&quot;name&quot;: &quot;OperationName&quot;,</p>
+<p>&quot;type&quot;: &quot;string&quot;</p>
+<p>},</p>
+<p>&quot;name&quot;: &quot;Level&quot;,</p>
+<p>&quot;name&quot;: &quot;ActivityStatus&quot;,</p>
+<p>&quot;name&quot;: &quot;ActivitySubstatus&quot;,</p>
+<p>&quot;name&quot;: &quot;ResourceGroup&quot;,</p>
+<p>&quot;name&quot;: &quot;SubscriptionId&quot;,</p>
+<p>&quot;name&quot;: &quot;CorrelationId&quot;,</p>
+<p>&quot;name&quot;: &quot;Caller&quot;,</p>
+<p>&quot;name&quot;: &quot;CallerIpAddress&quot;,</p>
+<p>&quot;name&quot;: &quot;Category&quot;,</p>
+<p>&quot;name&quot;: &quot;HTTPRequest&quot;,</p>
+<p>&quot;name&quot;: &quot;Properties&quot;,</p>
+<p>&quot;name&quot;: &quot;EventSubmissionTimestamp&quot;,</p>
+<p>&quot;type&quot;: &quot;datetime&quot;</p>
+<p>&quot;name&quot;: &quot;Authorization&quot;,</p>
+<p>&quot;name&quot;: &quot;ResourceId&quot;,</p>
+<p>&quot;name&quot;: &quot;OperationId&quot;,</p>
+<p>&quot;name&quot;: &quot;ResourceProvider&quot;,</p>
+<p>&quot;name&quot;: &quot;Resource&quot;,</p>
+<p>&quot;name&quot;: &quot;EventDataId&quot;,</p>
+<p>&quot;name&quot;: &quot;TenantId&quot;,</p>
+<p>&quot;name&quot;: &quot;TimeGenerated&quot;,</p>
+<p>&quot;name&quot;: &quot;SourceSystem&quot;,</p>
+<p>&quot;name&quot;: &quot;CategoryValue&quot;,</p>
+<p>&quot;name&quot;: &quot;Authorization_d&quot;,</p>
+<p>&quot;type&quot;: &quot;dynamic&quot;</p>
+<p>&quot;name&quot;: &quot;Claims&quot;,</p>
+<p>&quot;name&quot;: &quot;Claims_d&quot;,</p>
+<p>&quot;name&quot;: &quot;OperationNameValue&quot;,</p>
+<p>&quot;name&quot;: &quot;Properties_d&quot;,</p>
+<p>&quot;name&quot;: &quot;ResourceProviderValue&quot;,</p>
+<p>&quot;name&quot;: &quot;ActivityStatusValue&quot;,</p>
+<p>&quot;name&quot;: &quot;ActivitySubstatusValue&quot;,</p>
+<p>&quot;name&quot;: &quot;Type&quot;,</p>
+<p>&quot;name&quot;: &quot;_ResourceId&quot;,</p>
+<p>}</p>
+<p>],</p>
+<p>&quot;rows&quot;: []</p>
+<p>&quot;dataSources&quot;: [</p>
+<p>&quot;resourceId&quot;: &quot;/subscriptions/57e04838-4957-440a-a88d-41d73c5154c0/resourcegroups/defaultresourcegroup-cne2/providers/microsoft.operationalinsights/workspaces/defaultworkspace-57e04838-4957-440a-a88d-41d73c5154c0-cne2&quot;,</p>
+<p>&quot;region&quot;: &quot;chinaeast2&quot;,</p>
+<p>&quot;AzureActivity&quot;</p>
+<p>]</p>
+<p>&quot;WorkspaceId&quot;: &quot;9f152cb2-8c7b-4aa3-9acf-8033077787af&quot;,</p>
+<p>&quot;ResourceId&quot;: &quot;/subscriptions/57e04838-4957-440a-a88d-41d73c5154c0/resourcegroups/defaultresourcegroup-cne2/providers/microsoft.operationalinsights/workspaces/defaultworkspace-57e04838-4957-440a-a88d-41d73c5154c0-cne2&quot;,</p>
+<p>&quot;AlertType&quot;: &quot;Number of results&quot;</p>
+<p>将上面拷贝出来的正文内容粘贴到HTTP请求的示例Json有效负载中。</p>
+<p>这样就能生成请求正文的JSON架构，然后保存。</p>
+<p>2）接下来初始化一个变量用来提取Severity值，先暂时设置一个随意值，然后进入“Code view”。</p>
+<p>将“value”这里修改。</p>
+<p>将“value”设置为body下data下的severity，然后保存。</p>
+<p>关于triggerBody介绍：表达式中函数的参考指南 - Azure Logic Apps | Azure Docs</p>
+<p>或者通过如下操作获取：表达式选择concat，然后选择Severity，将那串字符拷贝出来。</p>
+<p>或者手动添加Severity：</p>
+<p>保存后，就会出现如下内容。</p>
+<p>3）手动触发告警测试：</p>
+<p>将上面正文内容拷贝到postman中：</p>
+<p>&quot;Severity&quot;: &quot;1&quot;,</p>
+<p>………………..</p>
+<p>手动使用postman触发：</p>
+<p>可以看到4:59PM触发的一次记录，获取到了body中Severity值为1。</p>
+<p>4）5:00PM活动日志告警自动触发:</p>
+<p>可以看获取到Severity为3。</p></article>

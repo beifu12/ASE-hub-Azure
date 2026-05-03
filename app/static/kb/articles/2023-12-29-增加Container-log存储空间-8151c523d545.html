@@ -1,0 +1,113 @@
+<article class="kb-article" data-title="增加Container log存储空间"><h1>增加Container log存储空间</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-12-29 11:26:05</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Nancy</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Nancy</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Nancy</li>
+</ul>
+<ul>
+<li>2：关于docker和containerd容器日志的对比：</li>
+</ul>
+<ul>
+<li>3：在k8s官网找到可以自定义kubelet配置参数实现，默认超过10M就会归档：</li>
+</ul>
+<ul>
+<li>4：进一步查找文档和以及测试，AKS也确实可以实现，当然也可以配置很多其他参数。</li>
+</ul>
+<ul>
+<li>限制：只有在新建集群或者新增节点池时推送kubelet配置。</li>
+</ul>
+<ul>
+<li>1003  az cloud set -n AzureChinaCloud</li>
+</ul>
+<ul>
+<li>1005  az account set --subscription 57e04838-4957-xxx-41d73c5154c0</li>
+</ul>
+<ul>
+<li>1006  az feature register --namespace &quot;Microsoft.ContainerService&quot; --name &quot;CustomNodeConfigPreview&quot;</li>
+</ul>
+<ul>
+<li>1007  az feature list -o table --query &quot;[?contains(name, &#39;Microsoft.ContainerService/CustomNodeConfigPreview&#39;)].{Name:name,State:properties.state}&quot;</li>
+</ul>
+<ul>
+<li>1012  az extension add --name aks-preview</li>
+</ul>
+<ul>
+<li>1013  az extension update --name aks-preview</li>
+</ul>
+<ul>
+<li>例如新增一个节点池：</li>
+</ul>
+<ul>
+<li>新增的节点池：</li>
+</ul>
+<ul>
+<li>旧节点池，采用默认配置：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>接到一个客户需求：默认 收集的Container log太小，咨询如何设置kubelet将存储增大，不考虑使用第三方或者log analytics进行存储。</li>
+</ul>
+<ul>
+<li>1004  az login</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用命令查看当前节点池kubeletconfig的配置。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>1：如果容器运行时使用的是docker，可以通过修改/etc/docker/daemon.json配置文件。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考：<a href="https://blog.csdn.net/qingliang4321/article/details/110522674" target="_blank" rel="noopener">https://blog.csdn.net/qingliang4321/article/details/110522674</a></li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.io/zh/docs/reference/command-line-tools-reference/kubelet/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/reference/command-line-tools-reference/kubelet/</a></li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/" target="_blank" rel="noopener">https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/</a></li>
+</ul>
+<ul>
+<li>Global文档(中国区文档还没上)：<a href="https://docs.microsoft.com/en-us/azure/aks/custom-node-configuration#use-custom-node-configuration" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/custom-node-configuration#use-custom-node-configuration</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Nancy</p>
+<p>接到一个客户需求：默认 收集的Container log太小，咨询如何设置kubelet将存储增大，不考虑使用第三方或者log analytics进行存储。</p>
+<p>1：如果容器运行时使用的是docker，可以通过修改/etc/docker/daemon.json配置文件。</p>
+<p>参考：<a href="https://blog.csdn.net/qingliang4321/article/details/110522674" target="_blank" rel="noopener">https://blog.csdn.net/qingliang4321/article/details/110522674</a></p>
+<p>2：关于docker和containerd容器日志的对比：</p>
+<p>3：在k8s官网找到可以自定义kubelet配置参数实现，默认超过10M就会归档：</p>
+<p><a href="https://kubernetes.io/zh/docs/reference/command-line-tools-reference/kubelet/" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/reference/command-line-tools-reference/kubelet/</a></p>
+<p><a href="https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/" target="_blank" rel="noopener">https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/</a></p>
+<p>4：进一步查找文档和以及测试，AKS也确实可以实现，当然也可以配置很多其他参数。</p>
+<p>Global文档(中国区文档还没上)：<a href="https://docs.microsoft.com/en-us/azure/aks/custom-node-configuration#use-custom-node-configuration" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/custom-node-configuration#use-custom-node-configuration</a></p>
+<p>限制：只有在新建集群或者新增节点池时推送kubelet配置。</p>
+<p>1003  az cloud set -n AzureChinaCloud</p>
+<p>1004  az login</p>
+<p>1005  az account set --subscription 57e04838-4957-xxx-41d73c5154c0</p>
+<p>1006  az feature register --namespace &quot;Microsoft.ContainerService&quot; --name &quot;CustomNodeConfigPreview&quot;</p>
+<p>1007  az feature list -o table --query &quot;[?contains(name, &#39;Microsoft.ContainerService/CustomNodeConfigPreview&#39;)].{Name:name,State:properties.state}&quot;</p>
+<p>1012  az extension add --name aks-preview</p>
+<p>1013  az extension update --name aks-preview</p>
+<p>例如新增一个节点池：</p>
+<p>使用命令查看当前节点池kubeletconfig的配置。</p>
+<p>新增的节点池：</p>
+<p>旧节点池，采用默认配置：</p></article>

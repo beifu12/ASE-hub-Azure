@@ -1,0 +1,47 @@
+<article class="kb-article" data-title="Fileshare挂载出问题时导致的VM卡顿的解决办法"><h1>Fileshare挂载出问题时导致的VM卡顿的解决办法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-13 16:51:51</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>关注到有工单关于Azure Fileshare挂载出问题时导致的VM卡顿问题，根据之前的研究现解决方法如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>关注到有工单关于Azure Fileshare挂载出问题时导致的VM卡顿问题，根据之前的研究现解决方法如下：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1、缓解方式：修改文件夹打开为此电脑，非快速访问页面，以减少对有问题SMB目录的枚举和重新链接。（不要尝试在资源管理器右键有问题的网络共享位置。）</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>备注：存储账户删除，网络VPN链接问题导致的SMB重连VM卡顿，可使用CMD命令临时取消挂载：net use z: /del     （不要尝试在资源管理器右键有问题的网络共享位置。）</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>关注到有工单关于Azure Fileshare挂载出问题时导致的VM卡顿问题，根据之前的研究现解决方法如下：</li>
+</ul>
+<ul>
+<li>2、（不挂载的办法）在空白处右键，新建快捷方式，定位写为网络位置，可作为另外的解决方案，解决异常链接卡顿的问题，记得填写凭据并保存。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>3、（客户端办法）使用替代的Azure 存储资源浏览器 <a href="https://go.microsoft.com/fwlink/?linkid=2216182&amp;clcid=0x804" target="_blank" rel="noopener">https://go.microsoft.com/fwlink/?linkid=2216182&amp;clcid=0x804</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-06-13</p>
+<p>关注到有工单关于Azure Fileshare挂载出问题时导致的VM卡顿问题，根据之前的研究现解决方法如下：</p>
+<p>备注：存储账户删除，网络VPN链接问题导致的SMB重连VM卡顿，可使用CMD命令临时取消挂载：net use z: /del     （不要尝试在资源管理器右键有问题的网络共享位置。）</p>
+<p>1、缓解方式：修改文件夹打开为此电脑，非快速访问页面，以减少对有问题SMB目录的枚举和重新链接。（不要尝试在资源管理器右键有问题的网络共享位置。）</p>
+<p>2、（不挂载的办法）在空白处右键，新建快捷方式，定位写为网络位置，可作为另外的解决方案，解决异常链接卡顿的问题，记得填写凭据并保存。</p>
+<p>3、（客户端办法）使用替代的Azure 存储资源浏览器 <a href="https://go.microsoft.com/fwlink/?linkid=2216182&amp;clcid=0x804" target="_blank" rel="noopener">https://go.microsoft.com/fwlink/?linkid=2216182&amp;clcid=0x804</a></p></article>

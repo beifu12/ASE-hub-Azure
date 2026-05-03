@@ -1,0 +1,72 @@
+<article class="kb-article" data-title="Linux 虚拟机建立时使用Azure中存放的现有密钥 （sshPublicKeys） SSH Key"><h1>Linux 虚拟机建立时使用Azure中存放的现有密钥 （sshPublicKeys） SSH Key</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-06-09 15:17:04</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Zhang wenxin</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Zhang wenxin</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang wenxin</li>
+</ul>
+<ul>
+<li>经过测试创建虚拟机时，可以选择“使用Azure中存储的现有密钥”</li>
+</ul>
+<ul>
+<li>该密钥为Azure 中的资源，只用来存放公钥，并不保存用户私钥。当您创建虚拟机并选择“生成新密对”时创建。az</li>
+</ul>
+<ul>
+<li>如下可以在资源组中筛选相关的SSHkey资源</li>
+</ul>
+<ul>
+<li>创建后可以在创建虚拟机中选择创建的Key</li>
+</ul>
+<ul>
+<li>使用模板部署，将附件代码粘</li>
+</ul>
+<ul>
+<li>贴到模板编辑器中保存</li>
+</ul>
+<ul>
+<li>填写相应的信息创建即可：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如需要建立该资源请使用最新版的Azure CLI命令行创建（当前版本2.21.0）</li>
+</ul>
+<ul>
+<li>az sshkey create --location &quot;Chinanorth2&quot; --public-key &quot;@C:\Users\zhang.wenxin\.ssh\id_rsa.pub&quot; --resource-group &quot;Linuxkey&quot; --name &quot;mySshPublicKeyName&quot;</li>
+</ul>
+<ul>
+<li>如果您不想安装CLI命令行工具，也可以使用附件中Azure 部署模板进行部署添加SSHKey资源。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang wenxin</p>
+<p>经过测试创建虚拟机时，可以选择“使用Azure中存储的现有密钥”</p>
+<p>该密钥为Azure 中的资源，只用来存放公钥，并不保存用户私钥。当您创建虚拟机并选择“生成新密对”时创建。az</p>
+<p>如需要建立该资源请使用最新版的Azure CLI命令行创建（当前版本2.21.0）</p>
+<p>az sshkey create --location &quot;Chinanorth2&quot; --public-key &quot;@C:\Users\zhang.wenxin\.ssh\id_rsa.pub&quot; --resource-group &quot;Linuxkey&quot; --name &quot;mySshPublicKeyName&quot;</p>
+<p>如下可以在资源组中筛选相关的SSHkey资源</p>
+<p>创建后可以在创建虚拟机中选择创建的Key</p>
+<p>如果您不想安装CLI命令行工具，也可以使用附件中Azure 部署模板进行部署添加SSHKey资源。</p>
+<p>使用模板部署，将附件代码粘</p>
+<p>贴到模板编辑器中保存</p>
+<p>填写相应的信息创建即可：</p></article>

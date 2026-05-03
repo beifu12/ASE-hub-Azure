@@ -1,0 +1,126 @@
+<article class="kb-article" data-title="[ARM-APPGW-SSL-TLS]使用火狐浏览器无法访问应用程序网关"><h1>[ARM-APPGW-SSL-TLS]使用火狐浏览器无法访问应用程序网关</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-08-22 15:01:58</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>感谢您提供的详细信息，我在本地电脑上也分别用Firefox和Chrome做了测试，使用Firefox访问后端五台WebApp, 均出现一致的报错信息“Secure Connection Failed“， 而通过Chrome访问没有任何问题，与用户反映现象一致。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>感谢您提供的详细信息，我在本地电脑上也分别用Firefox和Chrome做了测试，使用Firefox访问后端五台WebApp, 均出现一致的报错信息“Secure Connection Failed“， 而通过Chrome访问没有任何问题，与用户反映现象一致。</li>
+</ul>
+<ul>
+<li>密码套件，并且Chrome也支持该密码套件， 所以协商成功， 而Firefox所支持的列表中并没有该密码套件，所以导致协商失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_2018022820478_[HMC]火狐浏览器不能打开使用了应用网关的站点</li>
+</ul>
+<ul>
+<li>数据包：</li>
+</ul>
+<ul>
+<li>Chrome和Firefox发送给应用程序网关的“client hello”消息中携带cipher suites不同</li>
+</ul>
+<ul>
+<li>Chrome支持的有14个套接字组件并且在应用程序网关返回的“server hello”消息中使用“Cipher Suite: TLS_RSA_WITH_AES_128_GCM_SHA256 (0x009c)”完成成功协商。</li>
+</ul>
+<ul>
+<li>Firefox支持的有15个，并且应用程序网关并没有返回“server hello“消息， 而是重置了客户端的请求，</li>
+</ul>
+<ul>
+<li>Chrome:                                                                                                                                            Firefox:</li>
+</ul>
+<ul>
+<li>&quot;SSLPolicy&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;CipherSuites&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256&quot;,</li>
+</ul>
+<ul>
+<li>&quot;TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384&quot;,</li>
+</ul>
+<ul>
+<li>&quot;TLS_RSA_WITH_AES_128_GCM_SHA256&quot;</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;PolicyType&quot;: &quot;Custom&quot;</li>
+</ul>
+<ul>
+<li>在使用自定义SSL策略时有如下限制，应用程序网关使用 RSA SHA256 密码套件进行后端管理，应用网关中开启了“TLS_RSA_WITH_AES_128_GCM_SHA256”</li>
+</ul>
+<ul>
+<li>目前没有找到合适的方法， 以及不确定是否用户可以手动在Firefox上添加SSL组件，即使可以手动更改，由于用户的随机性和大量性，可见这并不是一种好的解决办法。</li>
+</ul>
+<ul>
+<li>【参考资料】</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>【抓包现象及分析】</li>
+</ul>
+<ul>
+<li>在使用Firefox访问webapp时，应用程序网关重置了浏览器发出的“client hello”请求，导致页面出现“Secure Connection Failed” 报错， 安全连接失败很可能是在SSL协商过程中出现错误，由此对比在Chrome和Firefox上的抓包和应用程序网关设置，有如下发现</li>
+</ul>
+<ul>
+<li>抽取后台配置可以观察到用户的应用程序网关使用了自定义SSL套接字，</li>
+</ul>
+<ul>
+<li>加该密码套件， 如”TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256“，并把Web 应用根证书添加到Firefox的 certificate manager的可信任证书列表中， 通过本地应用程序网关测试后验证使用Firefox可以成功访问Web APP.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>&quot;MinProtocolVersion&quot;: &quot;TLSv1_2&quot;,</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>【解决建议】</li>
+</ul>
+<ul>
+<li>但是可以通过添加应用程序网关密码套件可以解决该问题，在以上五组密码套件中选择一组Firefox可以支持的（排除TLS_RSA_WITH_AES_128_GCM_SHA256之外的五组）， 在应用程序网关上进行添</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>SSL策略配置 <a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-configure-ssl-policy-powershell#configure-a-custom-ssl-policy" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-configure-ssl-policy-powershell#configure-a-custom-ssl-policy</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2018022820478_[HMC]火狐浏览器不能打开使用了应用网关的站点</p>
+<p>数据包：</p>
+<p>感谢您提供的详细信息，我在本地电脑上也分别用Firefox和Chrome做了测试，使用Firefox访问后端五台WebApp, 均出现一致的报错信息“Secure Connection Failed“， 而通过Chrome访问没有任何问题，与用户反映现象一致。</p>
+<p>【抓包现象及分析】</p>
+<p>在使用Firefox访问webapp时，应用程序网关重置了浏览器发出的“client hello”请求，导致页面出现“Secure Connection Failed” 报错， 安全连接失败很可能是在SSL协商过程中出现错误，由此对比在Chrome和Firefox上的抓包和应用程序网关设置，有如下发现</p>
+<p>Chrome和Firefox发送给应用程序网关的“client hello”消息中携带cipher suites不同</p>
+<p>Chrome支持的有14个套接字组件并且在应用程序网关返回的“server hello”消息中使用“Cipher Suite: TLS_RSA_WITH_AES_128_GCM_SHA256 (0x009c)”完成成功协商。</p>
+<p>Firefox支持的有15个，并且应用程序网关并没有返回“server hello“消息， 而是重置了客户端的请求，</p>
+<p>Chrome:                                                                                                                                            Firefox:</p>
+<p>抽取后台配置可以观察到用户的应用程序网关使用了自定义SSL套接字，</p>
+<p>&quot;SSLPolicy&quot;: {</p>
+<p>&quot;CipherSuites&quot;: [</p>
+<p>&quot;TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256&quot;,</p>
+<p>&quot;TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384&quot;,</p>
+<p>&quot;TLS_RSA_WITH_AES_128_GCM_SHA256&quot;</p>
+<p>],</p>
+<p>&quot;MinProtocolVersion&quot;: &quot;TLSv1_2&quot;,</p>
+<p>&quot;PolicyType&quot;: &quot;Custom&quot;</p>
+<p>在使用自定义SSL策略时有如下限制，应用程序网关使用 RSA SHA256 密码套件进行后端管理，应用网关中开启了“TLS_RSA_WITH_AES_128_GCM_SHA256”</p>
+<p>密码套件，并且Chrome也支持该密码套件， 所以协商成功， 而Firefox所支持的列表中并没有该密码套件，所以导致协商失败</p>
+<p>【解决建议】</p>
+<p>目前没有找到合适的方法， 以及不确定是否用户可以手动在Firefox上添加SSL组件，即使可以手动更改，由于用户的随机性和大量性，可见这并不是一种好的解决办法。</p>
+<p>但是可以通过添加应用程序网关密码套件可以解决该问题，在以上五组密码套件中选择一组Firefox可以支持的（排除TLS_RSA_WITH_AES_128_GCM_SHA256之外的五组）， 在应用程序网关上进行添</p>
+<p>加该密码套件， 如”TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256“，并把Web 应用根证书添加到Firefox的 certificate manager的可信任证书列表中， 通过本地应用程序网关测试后验证使用Firefox可以成功访问Web APP.</p>
+<p>【参考资料】</p>
+<p>SSL策略配置 <a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-configure-ssl-policy-powershell#configure-a-custom-ssl-policy" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-configure-ssl-policy-powershell#configure-a-custom-ssl-policy</a></p></article>

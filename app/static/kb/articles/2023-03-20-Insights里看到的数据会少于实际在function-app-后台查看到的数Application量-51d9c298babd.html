@@ -1,0 +1,72 @@
+<article class="kb-article" data-title="Insights里看到的数据会少于实际在function app 后台查看到的数Application量"><h1>Insights里看到的数据会少于实际在function app 后台查看到的数Application量</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Application insights</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-03-20 11:36:24</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>经过研究，发现为什么“从Application Insights里看到的数据会少于实际在function app 后台查看到的数量。 例如： 从12/16 02：00-03：00 (UTC)时间，客户发送了2000条，在application insight 显示的是1731 条，在function app 查看后台数据是2000条。” 是因为Application Insights中采样/Sampling这个功能的存在。 由于这个sampling功能，Application Insights不一定会提取(inge...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>经过研究，发现为什么“从Application  Insights里看到的数据会少于实际在function app 后台查看到的数量。  例如： 从12/16 02：00-03：00 (UTC)时间，客户发送了2000条，在application insight 显示的是1731 条，在function app 查看后台数据是2000条。” 是因为Application Insights中采样/Sampling这个功能的存在。 由于这个sampling功能，Application Insights不一定会提取(ingest)全部的数据，需要结合采样速率。 具体请参考文档：  Azure Application Insights 中的遥测采样 - Azure Monitor | Azure Docs</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>我们从平台日志看到当前Application Insights abinbevddcn-proai的采样率为86.1194。</li>
+</ul>
+<ul>
+<li>用户可以对照文档和以下query语句查一下sampling RetainedPercentage。</li>
+</ul>
+<ul>
+<li>requests</li>
+</ul>
+<ul>
+<li>| where cloud_RoleName == &quot;abinbevddcn-o9tocontroltowerapi-profa&quot;</li>
+</ul>
+<ul>
+<li>| summarize RetainedPercentage = 100/avg(itemCount) by bin(timestamp, 1h), itemType</li>
+</ul>
+<ul>
+<li>Start time:   2021-12-16T02:10:00+00:00</li>
+</ul>
+<ul>
+<li>End Time:  2021-12-16T03:00:00+00:00</li>
+</ul>
+<ul>
+<li>若要关闭自适应采样，可以参考：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>经过研究，发现为什么“从Application  Insights里看到的数据会少于实际在function app 后台查看到的数量。  例如： 从12/16 02：00-03：00 (UTC)时间，客户发送了2000条，在application insight 显示的是1731 条，在function app 查看后台数据是2000条。” 是因为Application Insights中采样/Sampling这个功能的存在。 由于这个sampling功能，Application Insights不一定会提取(ingest)全部的数据，需要结合采样速率。 具体请参考文档：  Azure Application Insights 中的遥测采样 - Azure Monitor | Azure Docs</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Azure Function默认引入了自适应采样。  参考文档: <a href="https://docs.azure.cn/zh-cn/azure-monitor/app/sampling#adaptive-sampling" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/app/sampling#adaptive-sampling</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/azure-monitor/app/sampling#adaptive-sampling" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/app/sampling#adaptive-sampling</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-12-31</p>
+<p>经过研究，发现为什么“从Application  Insights里看到的数据会少于实际在function app 后台查看到的数量。  例如： 从12/16 02：00-03：00 (UTC)时间，客户发送了2000条，在application insight 显示的是1731 条，在function app 查看后台数据是2000条。” 是因为Application Insights中采样/Sampling这个功能的存在。 由于这个sampling功能，Application Insights不一定会提取(ingest)全部的数据，需要结合采样速率。 具体请参考文档：  Azure Application Insights 中的遥测采样 - Azure Monitor | Azure Docs</p>
+<p>Azure Function默认引入了自适应采样。  参考文档: <a href="https://docs.azure.cn/zh-cn/azure-monitor/app/sampling#adaptive-sampling" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/app/sampling#adaptive-sampling</a></p>
+<p>我们从平台日志看到当前Application Insights abinbevddcn-proai的采样率为86.1194。</p>
+<p>用户可以对照文档和以下query语句查一下sampling RetainedPercentage。</p>
+<p>requests</p>
+<p>| where cloud_RoleName == &quot;abinbevddcn-o9tocontroltowerapi-profa&quot;</p>
+<p>| summarize RetainedPercentage = 100/avg(itemCount) by bin(timestamp, 1h), itemType</p>
+<p>Start time:   2021-12-16T02:10:00+00:00</p>
+<p>End Time:  2021-12-16T03:00:00+00:00</p>
+<p>若要关闭自适应采样，可以参考：</p>
+<p><a href="https://docs.azure.cn/zh-cn/azure-monitor/app/sampling#adaptive-sampling" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/app/sampling#adaptive-sampling</a></p></article>

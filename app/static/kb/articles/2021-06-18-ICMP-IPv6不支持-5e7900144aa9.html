@@ -1,0 +1,62 @@
+<article class="kb-article" data-title="ICMP IPv6不支持"><h1>ICMP IPv6不支持</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: IPV6</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-06-18 10:34:38</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>也就是说尽管虚拟机关联了独立的IPV6公共IP地址，也是无法ping通外部的公网IPv6地址。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>也就是说尽管虚拟机关联了独立的IPV6公共IP地址，也是无法ping通外部的公网IPv6地址。</li>
+</ul>
+<ul>
+<li>所以在源主机看来，就是ping不通</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考工单：SR_20210610102021_[MS-LED]IPv6地址有问题</li>
+</ul>
+<ul>
+<li>Azure平台暂时不支持以公网IPv6地址为目的的ICMP协议。</li>
+</ul>
+<ul>
+<li>详情请见链接：IPv6 ICMP to/from the internet with public IP - Microsoft Q&amp;A</li>
+</ul>
+<ul>
+<li>截图源虚拟机的ipv6地址是2404:7940:100:2：：38</li>
+</ul>
+<ul>
+<li>但同一个虚拟网络内部的机器使用Ipv6  ping是没有问题的。</li>
+</ul>
+<ul>
+<li>但是与公网IPv6地址的TCP、UDP的连通性，是没有任何问题的</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在目标机器抓包发现，虽然ping包到达了目的端，但是数据包的校验和checksum失败，目标虚拟机就会丢弃该包，不回复。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-06-18</p>
+<p>参考工单：SR_20210610102021_[MS-LED]IPv6地址有问题</p>
+<p>Azure平台暂时不支持以公网IPv6地址为目的的ICMP协议。</p>
+<p>详情请见链接：IPv6 ICMP to/from the internet with public IP - Microsoft Q&amp;A</p>
+<p>也就是说尽管虚拟机关联了独立的IPV6公共IP地址，也是无法ping通外部的公网IPv6地址。</p>
+<p>在目标机器抓包发现，虽然ping包到达了目的端，但是数据包的校验和checksum失败，目标虚拟机就会丢弃该包，不回复。</p>
+<p>所以在源主机看来，就是ping不通</p>
+<p>截图源虚拟机的ipv6地址是2404:7940:100:2：：38</p>
+<p>但同一个虚拟网络内部的机器使用Ipv6  ping是没有问题的。</p>
+<p>但是与公网IPv6地址的TCP、UDP的连通性，是没有任何问题的</p></article>

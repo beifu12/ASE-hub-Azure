@@ -1,0 +1,277 @@
+<article class="kb-article" data-title="登陆Node 及搜集日志"><h1>登陆Node 及搜集日志</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-19 11:05:43</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Hi All,</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Hi All,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi All,</li>
+</ul>
+<ul>
+<li>最近AKS相关的工单有所上升，重新整理了登录AKS Node的两种方法及应该搜集哪些日志，请参考。</li>
+</ul>
+<ul>
+<li>1、根据官方说明登陆Node，并搜集Node中的日志</li>
+</ul>
+<ul>
+<li>=========================</li>
+</ul>
+<ul>
+<li>根据Azure官方说明进行操作</li>
+</ul>
+<ul>
+<li>在一台Linux机器中生成密钥对</li>
+</ul>
+<ul>
+<li>下载安装cli</li>
+</ul>
+<ul>
+<li>选择指定的订阅</li>
+</ul>
+<ul>
+<li>下载aks管理凭据</li>
+</ul>
+<ul>
+<li>登陆ssh帮助器pod</li>
+</ul>
+<ul>
+<li>安装或跟新ssh客户端</li>
+</ul>
+<ul>
+<li>apt-get update &amp;&amp; apt-get install openssh-client -y</li>
+</ul>
+<ul>
+<li>打开一个未连接到容器的新终端窗口，将专用 SSH 密钥复制到帮助程序 Pod 中。 此私钥用来与 AKS 节点建立 SSH 连接。</li>
+</ul>
+<ul>
+<li>返回到与容器建立的终端会话，更新复制的 id_rsa SSH 私钥中的权限，使其成为用户只读的</li>
+</ul>
+<ul>
+<li>chmod 0600 id_rsa</li>
+</ul>
+<ul>
+<li>与 AKS 节点建立 SSH 连接</li>
+</ul>
+<ul>
+<li>cd /tmp/</li>
+</ul>
+<ul>
+<li>2、使用node shell登陆Node   #####疑似已不适用于新版本--Jia.xiaoeli</li>
+</ul>
+<ul>
+<li>安装以及使用：</li>
+</ul>
+<ul>
+<li>安装node-shell工具</li>
+</ul>
+<ul>
+<li>chmod +x ./kubectl-node_shell</li>
+</ul>
+<ul>
+<li>sudo mv ./kubectl-node_shell /usr/local/bin/kubectl-node_shell</li>
+</ul>
+<ul>
+<li>登录账号并kubectl连接到集群：</li>
+</ul>
+<ul>
+<li>连接到集群：kubectl node-shell aks-agentpool-12844706-vmss000000</li>
+</ul>
+<ul>
+<li>Thanks.</li>
+</ul>
+<ul>
+<li>Best regards,</li>
+</ul>
+<ul>
+<li>Stone He | WATS</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>使用cli登陆Azure Portal</li>
+</ul>
+<ul>
+<li>mkdir logsCollection</li>
+</ul>
+<ul>
+<li>journalctl -u kubelet &gt; logsCollection/kubelet.log</li>
+</ul>
+<ul>
+<li>date &gt; logsCollection/dateOutput.txt</li>
+</ul>
+<ul>
+<li>last &gt; logsCollection/lastOutput.txt</li>
+</ul>
+<ul>
+<li>cd /var/log/</li>
+</ul>
+<ul>
+<li>cp -r azure/ /tmp/logsCollection/</li>
+</ul>
+<ul>
+<li>cp -r auth.log* messages* syslog* waagent.log* /tmp/logsCollection/</li>
+</ul>
+<ul>
+<li>ll /tmp/logsCollection/</li>
+</ul>
+<ul>
+<li>tar zcvf logsCollection.tgz logsCollection/*</li>
+</ul>
+<ul>
+<li>sudo chown azureuser:azureuser logsCollection.tgz</li>
+</ul>
+<ul>
+<li>scp -i id_rsa azureuser@10.*.*.*:/tmp/logsCollection.tgz .</li>
+</ul>
+<ul>
+<li>查看集群名称：kubectl get nodes</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az --version</li>
+</ul>
+<ul>
+<li>az cloud set -n AzureChinaCloud</li>
+</ul>
+<ul>
+<li>az login -u &quot;heliming@microsoftinternal.partner.onmschina.cn&quot;</li>
+</ul>
+<ul>
+<li>az account set -s 0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9</li>
+</ul>
+<ul>
+<li>运行如下命令，将公钥推送到vmss实例</li>
+</ul>
+<ul>
+<li>az vmss extension set  --resource-group $CLUSTER_RESOURCE_GROUP --vmss-name $SCALE_SET_NAME --name VMAccessForLinux --publisher Microsoft.OSTCExtensions --version 1.4 --protected-settings &quot;{\&quot;username\&quot;:\&quot;azureuser\&quot;, \&quot;ssh_key\&quot;:\&quot;$(cat ~/.ssh/id_rsa.pub)\&quot;}&quot;</li>
+</ul>
+<ul>
+<li>az vmss update-instances --instance-ids &#39;*&#39; --resource-group $CLUSTER_RESOURCE_GROUP --name $SCALE_SET_NAME</li>
+</ul>
+<ul>
+<li>az aks get-credentials -g hlmrge2 -n hlmakse2t1</li>
+</ul>
+<ul>
+<li>kubectl run -it --rm aks-ssh --image=debian</li>
+</ul>
+<ul>
+<li>kubectl cp ~/.ssh/id_rsa $(kubectl get pod -l run=aks-ssh -o jsonpath=&#39;{.items[0].metadata.name}&#39;):/id_rsa</li>
+</ul>
+<ul>
+<li>ssh -i id_rsa azureuser@10.240.0.4</li>
+</ul>
+<ul>
+<li>参考如下操作命令搜集日志：</li>
+</ul>
+<ul>
+<li>使用exit退出VMSS实例的SSH session，返回到aks-ssh pod, 使用scp命令将打包日志拷出到aks-ssh pod：</li>
+</ul>
+<ul>
+<li>重新打开一个新的未连接到该pod的终端窗口，在新窗口中使用kubectl cp命令将文件从aks-ssh pod拷贝到本地：</li>
+</ul>
+<ul>
+<li>kubectl cp aks-ssh:/logsCollection.tgz logsCollection.tgz</li>
+</ul>
+<ul>
+<li>将本地的文件拷贝到Pod内部的命令：</li>
+</ul>
+<ul>
+<li>kubectl cp /bin/ip ingress-basic/melting-penguin-nginx-ingress-controller-6c4446f4dd-rqlbq:/tmp</li>
+</ul>
+<ul>
+<li>az login</li>
+</ul>
+<ul>
+<li>az aks get-credentials --resource-group RGChinaN2 --name aks-cluster-cn2</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>CLUSTER_RESOURCE_GROUP=$(az aks show --resource-group  hlmrge2 --name hlmakse2t1 --query nodeResourceGroup -o tsv)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/ssh#create-the-ssh-connection" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/ssh#create-the-ssh-connection</a></li>
+</ul>
+<ul>
+<li>使用node shell登录： <a href="https://github.com/kvaps/kubectl-node-shell" target="_blank" rel="noopener">https://github.com/kvaps/kubectl-node-shell</a></li>
+</ul>
+<ul>
+<li>curl -LO <a href="https://github.com/kvaps/kubectl-node-shell/raw/master/kubectl-node_shell" target="_blank" rel="noopener">https://github.com/kvaps/kubectl-node-shell/raw/master/kubectl-node_shell</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi All,</p>
+<p>最近AKS相关的工单有所上升，重新整理了登录AKS Node的两种方法及应该搜集哪些日志，请参考。</p>
+<p>1、根据官方说明登陆Node，并搜集Node中的日志</p>
+<p>=========================</p>
+<p>根据Azure官方说明进行操作</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/ssh#create-the-ssh-connection" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/ssh#create-the-ssh-connection</a></p>
+<p>在一台Linux机器中生成密钥对</p>
+<p>下载安装cli</p>
+<p>az --version</p>
+<p>使用cli登陆Azure Portal</p>
+<p>az cloud set -n AzureChinaCloud</p>
+<p>az login -u &quot;heliming@microsoftinternal.partner.onmschina.cn&quot;</p>
+<p>选择指定的订阅</p>
+<p>az account set -s 0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9</p>
+<p>运行如下命令，将公钥推送到vmss实例</p>
+<p>CLUSTER_RESOURCE_GROUP=$(az aks show --resource-group  hlmrge2 --name hlmakse2t1 --query nodeResourceGroup -o tsv)</p>
+<p>az vmss extension set  --resource-group $CLUSTER_RESOURCE_GROUP --vmss-name $SCALE_SET_NAME --name VMAccessForLinux --publisher Microsoft.OSTCExtensions --version 1.4 --protected-settings &quot;{\&quot;username\&quot;:\&quot;azureuser\&quot;, \&quot;ssh_key\&quot;:\&quot;$(cat ~/.ssh/id_rsa.pub)\&quot;}&quot;</p>
+<p>az vmss update-instances --instance-ids &#39;*&#39; --resource-group $CLUSTER_RESOURCE_GROUP --name $SCALE_SET_NAME</p>
+<p>下载aks管理凭据</p>
+<p>az aks get-credentials -g hlmrge2 -n hlmakse2t1</p>
+<p>登陆ssh帮助器pod</p>
+<p>kubectl run -it --rm aks-ssh --image=debian</p>
+<p>安装或跟新ssh客户端</p>
+<p>apt-get update &amp;&amp; apt-get install openssh-client -y</p>
+<p>打开一个未连接到容器的新终端窗口，将专用 SSH 密钥复制到帮助程序 Pod 中。 此私钥用来与 AKS 节点建立 SSH 连接。</p>
+<p>kubectl cp ~/.ssh/id_rsa $(kubectl get pod -l run=aks-ssh -o jsonpath=&#39;{.items[0].metadata.name}&#39;):/id_rsa</p>
+<p>返回到与容器建立的终端会话，更新复制的 id_rsa SSH 私钥中的权限，使其成为用户只读的</p>
+<p>chmod 0600 id_rsa</p>
+<p>与 AKS 节点建立 SSH 连接</p>
+<p>ssh -i id_rsa azureuser@10.240.0.4</p>
+<p>参考如下操作命令搜集日志：</p>
+<p>cd /tmp/</p>
+<p>mkdir logsCollection</p>
+<p>journalctl -u kubelet &gt; logsCollection/kubelet.log</p>
+<p>date &gt; logsCollection/dateOutput.txt</p>
+<p>last &gt; logsCollection/lastOutput.txt</p>
+<p>cd /var/log/</p>
+<p>cp -r azure/ /tmp/logsCollection/</p>
+<p>cp -r auth.log* messages* syslog* waagent.log* /tmp/logsCollection/</p>
+<p>ll /tmp/logsCollection/</p>
+<p>tar zcvf logsCollection.tgz logsCollection/*</p>
+<p>sudo chown azureuser:azureuser logsCollection.tgz</p>
+<p>使用exit退出VMSS实例的SSH session，返回到aks-ssh pod, 使用scp命令将打包日志拷出到aks-ssh pod：</p>
+<p>scp -i id_rsa azureuser@10.*.*.*:/tmp/logsCollection.tgz .</p>
+<p>重新打开一个新的未连接到该pod的终端窗口，在新窗口中使用kubectl cp命令将文件从aks-ssh pod拷贝到本地：</p>
+<p>kubectl cp aks-ssh:/logsCollection.tgz logsCollection.tgz</p>
+<p>将本地的文件拷贝到Pod内部的命令：</p>
+<p>kubectl cp /bin/ip ingress-basic/melting-penguin-nginx-ingress-controller-6c4446f4dd-rqlbq:/tmp</p>
+<p>2、使用node shell登陆Node   #####疑似已不适用于新版本--Jia.xiaoeli</p>
+<p>使用node shell登录： <a href="https://github.com/kvaps/kubectl-node-shell" target="_blank" rel="noopener">https://github.com/kvaps/kubectl-node-shell</a></p>
+<p>安装以及使用：</p>
+<p>安装node-shell工具</p>
+<p>curl -LO <a href="https://github.com/kvaps/kubectl-node-shell/raw/master/kubectl-node_shell" target="_blank" rel="noopener">https://github.com/kvaps/kubectl-node-shell/raw/master/kubectl-node_shell</a></p>
+<p>chmod +x ./kubectl-node_shell</p>
+<p>sudo mv ./kubectl-node_shell /usr/local/bin/kubectl-node_shell</p>
+<p>登录账号并kubectl连接到集群：</p>
+<p>az login</p>
+<p>az aks get-credentials --resource-group RGChinaN2 --name aks-cluster-cn2</p>
+<p>查看集群名称：kubectl get nodes</p>
+<p>连接到集群：kubectl node-shell aks-agentpool-12844706-vmss000000</p>
+<p>Thanks.</p>
+<p>Best regards,</p>
+<p>Stone He | WATS</p></article>

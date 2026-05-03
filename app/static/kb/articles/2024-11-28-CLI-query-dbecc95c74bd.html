@@ -1,0 +1,169 @@
+<article class="kb-article" data-title="CLI query"><h1>CLI query</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Cli</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-28 17:45:43</li>
+<li>JD 相关性: 自动化/命令工具</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>CLI query</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>CLI query</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>CLI query</li>
+</ul>
+<ul>
+<li>LiHantao</li>
+</ul>
+<ul>
+<li>[lihantao@cen73-new ~]$ az vm show -g resourcelht -n cen73</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;additionalCapabilities&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;availabilitySet&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;diagnosticsProfile&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;bootDiagnostics&quot;: {</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;hardwareProfile&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;vmSize&quot;: &quot;Standard_A1&quot;</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/43f0bd4b-1b42-4efc-a0fa-0bd19834d2ba/resourceGroups/resourcelht/providers/Microsoft.Compute/virtualMachines/cen73&quot;,</li>
+</ul>
+<ul>
+<li>&quot;identity&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;instanceView&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;licenseType&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;location&quot;: &quot;chinanorth&quot;,</li>
+</ul>
+<ul>
+<li>… …</li>
+</ul>
+<ul>
+<li>同样，我们也可以在后面追加条件来指定只输出某些属性</li>
+</ul>
+<ul>
+<li>最后，为了使结果更加直观，我们还可以用sort_by()函数来让结果按某一属性进行排序，效果如下</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>但是当需要查看的属性比较多的时候，输出可能还是不太友好，可以再将结果定义为字典，为每一项属性定义名称</li>
+</ul>
+<ul>
+<li>此外，当我们只知道某一属性中包含某个字段时，可以借助contains()函数来进行查询</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>当我们使用az cli命令来查询某些资源信息时，默认会以json的格式进行输出，它会把所有的信息详细展示出来，虽然完整但并不适合我们快速查看某一项属性，如下：</li>
+</ul>
+<ul>
+<li>az vm show -g resourcelht -n cen73</li>
+</ul>
+<ul>
+<li>az vm show -g resourcelht -n cen73 --query &#39;[name,storageProfile]&#39;</li>
+</ul>
+<ul>
+<li>az vm show -g resourcelht -n cen73 --query &#39;{VMName:name, StorageProfile:storageProfile}&#39;</li>
+</ul>
+<ul>
+<li>当我们查询的结果为阵列，需要搜索指定条件的某一个对象的属性，则可通过下面的命令来检索</li>
+</ul>
+<ul>
+<li>az vm list -g resourcelht --query &quot;[?name==&#39;cen73&#39;]&quot;</li>
+</ul>
+<ul>
+<li>az vm list -g resourcelht --query &quot;[?name==&#39;cen73&#39;].[name, storageProfile]&quot;</li>
+</ul>
+<ul>
+<li>az vm list -g resourcelht --query &quot;[?name==&#39;cen73&#39;].{VMName:name, StorageProfile:storageProfile}&quot;</li>
+</ul>
+<ul>
+<li>az vm list -g resourcelht --query &quot;[?contains(id, &#39;cen73&#39;)].{VMName:name, StorageProfile:storageProfile}&quot;</li>
+</ul>
+<ul>
+<li>az vm list --query &quot;[].{VMName:name, VMId:id}&quot; -o table</li>
+</ul>
+<ul>
+<li>az vm list --query &quot;sort_by([].{VMName:name, VMId:id}, &amp;VMName)&quot; -o table</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>&quot;enabled&quot;: true,</li>
+</ul>
+<ul>
+<li>我们可以通过--query 参数来添加筛选条件，只输出我们希望看到的数据</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>&quot;storageUri&quot;: &quot;<a href="https://resourcelhtdiag872.blob.core.chinacloudapi.cn/&quot;" target="_blank" rel="noopener">https://resourcelhtdiag872.blob.core.chinacloudapi.cn/&quot;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>CLI query</p>
+<p>LiHantao</p>
+<p>当我们使用az cli命令来查询某些资源信息时，默认会以json的格式进行输出，它会把所有的信息详细展示出来，虽然完整但并不适合我们快速查看某一项属性，如下：</p>
+<p>az vm show -g resourcelht -n cen73</p>
+<p>[lihantao@cen73-new ~]$ az vm show -g resourcelht -n cen73</p>
+<p>{</p>
+<p>&quot;additionalCapabilities&quot;: null,</p>
+<p>&quot;availabilitySet&quot;: null,</p>
+<p>&quot;diagnosticsProfile&quot;: {</p>
+<p>&quot;bootDiagnostics&quot;: {</p>
+<p>&quot;enabled&quot;: true,</p>
+<p>&quot;storageUri&quot;: &quot;<a href="https://resourcelhtdiag872.blob.core.chinacloudapi.cn/&quot;" target="_blank" rel="noopener">https://resourcelhtdiag872.blob.core.chinacloudapi.cn/&quot;</a></p>
+<p>}</p>
+<p>},</p>
+<p>&quot;hardwareProfile&quot;: {</p>
+<p>&quot;vmSize&quot;: &quot;Standard_A1&quot;</p>
+<p>&quot;id&quot;: &quot;/subscriptions/43f0bd4b-1b42-4efc-a0fa-0bd19834d2ba/resourceGroups/resourcelht/providers/Microsoft.Compute/virtualMachines/cen73&quot;,</p>
+<p>&quot;identity&quot;: null,</p>
+<p>&quot;instanceView&quot;: null,</p>
+<p>&quot;licenseType&quot;: null,</p>
+<p>&quot;location&quot;: &quot;chinanorth&quot;,</p>
+<p>… …</p>
+<p>我们可以通过--query 参数来添加筛选条件，只输出我们希望看到的数据</p>
+<p>az vm show -g resourcelht -n cen73 --query &#39;[name,storageProfile]&#39;</p>
+<p>但是当需要查看的属性比较多的时候，输出可能还是不太友好，可以再将结果定义为字典，为每一项属性定义名称</p>
+<p>az vm show -g resourcelht -n cen73 --query &#39;{VMName:name, StorageProfile:storageProfile}&#39;</p>
+<p>当我们查询的结果为阵列，需要搜索指定条件的某一个对象的属性，则可通过下面的命令来检索</p>
+<p>az vm list -g resourcelht --query &quot;[?name==&#39;cen73&#39;]&quot;</p>
+<p>同样，我们也可以在后面追加条件来指定只输出某些属性</p>
+<p>az vm list -g resourcelht --query &quot;[?name==&#39;cen73&#39;].[name, storageProfile]&quot;</p>
+<p>az vm list -g resourcelht --query &quot;[?name==&#39;cen73&#39;].{VMName:name, StorageProfile:storageProfile}&quot;</p>
+<p>此外，当我们只知道某一属性中包含某个字段时，可以借助contains()函数来进行查询</p>
+<p>az vm list -g resourcelht --query &quot;[?contains(id, &#39;cen73&#39;)].{VMName:name, StorageProfile:storageProfile}&quot;</p>
+<p>最后，为了使结果更加直观，我们还可以用sort_by()函数来让结果按某一属性进行排序，效果如下</p>
+<p>az vm list --query &quot;[].{VMName:name, VMId:id}&quot; -o table</p>
+<p>az vm list --query &quot;sort_by([].{VMName:name, VMId:id}, &amp;VMName)&quot; -o table</p></article>

@@ -1,0 +1,103 @@
+<article class="kb-article" data-title="【Share】Routing Issue with ER, VPN and RouteServer"><h1>【Share】Routing Issue with ER, VPN and RouteServer</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2024-03-26 13:44:38</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2024.1</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2024.1</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2024.1</li>
+</ul>
+<ul>
+<li>工单编号： 20231122264436</li>
+</ul>
+<ul>
+<li>客户问题：</li>
+</ul>
+<ul>
+<li>客户正在尝试将 Azure China 连接到 Azure Global。</li>
+</ul>
+<ul>
+<li>客户有一条来自中国移动的Express Route电路，连接到Azure Global中的一个vWAN Hub内的ER Gateway，以及Azure China中的一个Transit vNET内的ER Gateway。</li>
+</ul>
+<ul>
+<li>并有另一个Azure China vNET，它与Transit vNET进行了对等连接，其中包含一个虚拟机（VM），该VM能够正常连接到Azure Global。</li>
+</ul>
+<ul>
+<li>现在需要在Transit vNET中添加一个Azure VPN VNG，以允许中国的On Premises站点通过VPN连接，然后通过Express Route路由到Azure Global进行内部应用程序访问。</li>
+</ul>
+<ul>
+<li>现在已经添加了VPN VNG和一个路由服务器，并启用了Branch to Branch，但在这样做时，失去了大部分Azure Global的路由。</li>
+</ul>
+<ul>
+<li>似乎来自Azure Global vWAN的未直接连接到East Asia Hub的路由都会丢失。如果禁用Branch to Branch，所有路由都恢复正常，但不会被通告到VPN VNG，因此On Premises站点失去访问。</li>
+</ul>
+<ul>
+<li>当分支到分支被禁用时，VPN网关没有接收到来自ER网关的路由。这是符合预期的。</li>
+</ul>
+<ul>
+<li>prefix 10.81.96.0/21 Attributes AFI/SAFI=IPv4:Unicast Origin=Egp NextHop=10.81.139.4 NextHopLl= AsPathSeq=12076-9929-9929 AsPathSet= LocalPref= Med= Communities=00002F2C:0000C740:FFEDFFED</li>
+</ul>
+<ul>
+<li>ER网关可以学习的路由没有BGP社区</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>当启用分支到分支时，我们检查所有Global Azure路由（包括美国中南部10.81.96.0/21、北欧10.78.0.0/18、东亚10.87.16.0/21）, ER是否可以学到</li>
+</ul>
+<ul>
+<li>经过检查发现， 来自Azure Global vWAN的任何未与东亚枢纽直接对等的路由都不会被中国ER网关接收。我们发现这些丢失的路线有bgp社区：00002F2C:0000C740:FFDFFED</li>
+</ul>
+<ul>
+<li>经PG确认</li>
+</ul>
+<ul>
+<li>ER Gateways are supposed to drop the routes which are tagged with community 65517 to avoid looping.This is by design</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>icm：<a href="https://portal.microsofticm.com/imp/v3/incidents/details/444657818/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/444657818/home</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024.1</p>
+<p>工单编号： 20231122264436</p>
+<p>icm：<a href="https://portal.microsofticm.com/imp/v3/incidents/details/444657818/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/444657818/home</a></p>
+<p>客户问题：</p>
+<p>客户正在尝试将 Azure China 连接到 Azure Global。</p>
+<p>客户有一条来自中国移动的Express Route电路，连接到Azure Global中的一个vWAN Hub内的ER Gateway，以及Azure China中的一个Transit vNET内的ER Gateway。</p>
+<p>并有另一个Azure China vNET，它与Transit vNET进行了对等连接，其中包含一个虚拟机（VM），该VM能够正常连接到Azure Global。</p>
+<p>现在需要在Transit vNET中添加一个Azure VPN VNG，以允许中国的On Premises站点通过VPN连接，然后通过Express Route路由到Azure Global进行内部应用程序访问。</p>
+<p>现在已经添加了VPN VNG和一个路由服务器，并启用了Branch to Branch，但在这样做时，失去了大部分Azure Global的路由。</p>
+<p>似乎来自Azure Global vWAN的未直接连接到East Asia Hub的路由都会丢失。如果禁用Branch to Branch，所有路由都恢复正常，但不会被通告到VPN VNG，因此On Premises站点失去访问。</p>
+<p>排查过程：</p>
+<p>当分支到分支被禁用时，VPN网关没有接收到来自ER网关的路由。这是符合预期的。</p>
+<p>当启用分支到分支时，我们检查所有Global Azure路由（包括美国中南部10.81.96.0/21、北欧10.78.0.0/18、东亚10.87.16.0/21）, ER是否可以学到</p>
+<p>经过检查发现， 来自Azure Global vWAN的任何未与东亚枢纽直接对等的路由都不会被中国ER网关接收。我们发现这些丢失的路线有bgp社区：00002F2C:0000C740:FFDFFED</p>
+<p>prefix 10.81.96.0/21 Attributes AFI/SAFI=IPv4:Unicast Origin=Egp NextHop=10.81.139.4 NextHopLl= AsPathSeq=12076-9929-9929 AsPathSet= LocalPref= Med= Communities=00002F2C:0000C740:FFEDFFED</p>
+<p>ER网关可以学习的路由没有BGP社区</p>
+<p>问题原因：</p>
+<p>经PG确认</p>
+<p>ER Gateways are supposed to drop the routes which are tagged with community 65517 to avoid looping.This is by design</p></article>

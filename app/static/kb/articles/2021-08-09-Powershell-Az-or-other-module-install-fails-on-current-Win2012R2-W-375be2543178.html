@@ -1,0 +1,101 @@
+<article class="kb-article" data-title="Powershell Az (or other) module install fails on current Win2012R2 &amp; Win2016 marketplace images"><h1>Powershell Az (or other) module install fails on current Win2012R2 &amp; Win2016 marketplace images</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Powershell</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-08-09 23:11:43</li>
+<li>JD 相关性: 售后排障; 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>在 Win2012R2 &amp; Win2016 marketplace image安装Az module失败，</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>在 Win2012R2 &amp; Win2016 marketplace image安装Az module失败，</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>因为这些镜像默认是禁用TLS1.2 ，但却是必需的。在这些情况下，有一个简单的解决方式强制会话使用TLS1.2。</li>
+</ul>
+<ul>
+<li>PackageManagement\Install-PackageProvider : No match was found for the specified search criteria for the provider</li>
+</ul>
+<ul>
+<li>has the tags.</li>
+</ul>
+<ul>
+<li>Ssl3, Tls</li>
+</ul>
+<ul>
+<li>We can force TLS 1.2 with the following:</li>
+</ul>
+<ul>
+<li>PS C:\Users\javan&gt;</li>
+</ul>
+<ul>
+<li>Tls12</li>
+</ul>
+<ul>
+<li>After this the Az module should install successfully.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>WARNING: Unable to download the list of available providers. Check your internet connection.</li>
+</ul>
+<ul>
+<li>&#39;NuGet&#39;. The package provider requires &#39;PackageManagement&#39; and &#39;Provider&#39; tags. Please check if the specified package</li>
+</ul>
+<ul>
+<li>Then check again to confirm TLS 1.2:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>请手动运行命令：[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12后，再安装Az</li>
+</ul>
+<ul>
+<li>Lately we are seeing some cases with Windows 2012R2 and Windows 2016 images where customers are getting errors when trying to install the Az PowerShell module such as:</li>
+</ul>
+<ul>
+<li>In admin PowerShell, run the following to check if TLS 1.2 is enabled:</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>PS C:\Users\javan&gt; [Net.ServicePointManager]::SecurityProtocol</li>
+</ul>
+<ul>
+<li>PS C:\Users\javan&gt; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>It appears on these images TLS1.2 is disabled by default but is required.  In these cases there is a simple workaround to force TLS1.2 on the session.</li>
+</ul>
+<ul>
+<li>The example above shows that only TLS v1.0 (no version) is enabled.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>WARNING: Unable to download from URI &#39;<a href="https://go.microsoft.com/fwlink/?LinkID=627338&amp;clcid=0x409&#39;" target="_blank" rel="noopener">https://go.microsoft.com/fwlink/?LinkID=627338&amp;clcid=0x409&#39;</a> to &#39;&#39;.</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>在 Win2012R2 &amp; Win2016 marketplace image安装Az module失败，</p>
+<p>因为这些镜像默认是禁用TLS1.2 ，但却是必需的。在这些情况下，有一个简单的解决方式强制会话使用TLS1.2。</p>
+<p>请手动运行命令：[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12后，再安装Az</p>
+<p>Lately we are seeing some cases with Windows 2012R2 and Windows 2016 images where customers are getting errors when trying to install the Az PowerShell module such as:</p>
+<p>WARNING: Unable to download from URI &#39;<a href="https://go.microsoft.com/fwlink/?LinkID=627338&amp;clcid=0x409&#39;" target="_blank" rel="noopener">https://go.microsoft.com/fwlink/?LinkID=627338&amp;clcid=0x409&#39;</a> to &#39;&#39;.</p>
+<p>WARNING: Unable to download the list of available providers. Check your internet connection.</p>
+<p>PackageManagement\Install-PackageProvider : No match was found for the specified search criteria for the provider</p>
+<p>&#39;NuGet&#39;. The package provider requires &#39;PackageManagement&#39; and &#39;Provider&#39; tags. Please check if the specified package</p>
+<p>has the tags.</p>
+<p>It appears on these images TLS1.2 is disabled by default but is required.  In these cases there is a simple workaround to force TLS1.2 on the session.</p>
+<p>In admin PowerShell, run the following to check if TLS 1.2 is enabled:</p>
+<p>PS C:\Users\javan&gt; [Net.ServicePointManager]::SecurityProtocol</p>
+<p>Ssl3, Tls</p>
+<p>The example above shows that only TLS v1.0 (no version) is enabled.</p>
+<p>We can force TLS 1.2 with the following:</p>
+<p>PS C:\Users\javan&gt; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12</p>
+<p>PS C:\Users\javan&gt;</p>
+<p>Then check again to confirm TLS 1.2:</p>
+<p>Tls12</p>
+<p>After this the Az module should install successfully.</p></article>

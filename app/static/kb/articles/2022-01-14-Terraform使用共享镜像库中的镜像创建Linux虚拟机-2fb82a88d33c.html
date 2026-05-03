@@ -1,0 +1,254 @@
+<article class="kb-article" data-title="Terraform使用共享镜像库中的镜像创建Linux虚拟机"><h1>Terraform使用共享镜像库中的镜像创建Linux虚拟机</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Cli</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-01-14 11:47:04</li>
+<li>JD 相关性: 自动化/命令工具</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>WangZhaoqing</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>Case num：20220113143762</li>
+</ul>
+<ul>
+<li>terraform版本有较新版本，之前0.几的版本在部署时会提示版本太老。当前最新版为1.1.3，provider版本时2.91.0.</li>
+</ul>
+<ul>
+<li>Unzip terraform_1.1.3_linux_amd64.zip</li>
+</ul>
+<ul>
+<li>terraform {</li>
+</ul>
+<ul>
+<li>required_providers {</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>provider &quot;azurerm&quot; {</li>
+</ul>
+<ul>
+<li>features {}</li>
+</ul>
+<ul>
+<li>data &quot;azurerm_shared_image&quot; &quot;example&quot; {</li>
+</ul>
+<ul>
+<li>resource &quot;azurerm_resource_group&quot; &quot;example&quot; {</li>
+</ul>
+<ul>
+<li>resource &quot;azurerm_virtual_network&quot; &quot;example&quot; {</li>
+</ul>
+<ul>
+<li>resource &quot;azurerm_subnet&quot; &quot;example&quot; {</li>
+</ul>
+<ul>
+<li>resource &quot;azurerm_network_interface&quot; &quot;example&quot; {</li>
+</ul>
+<ul>
+<li>ip_configuration {</li>
+</ul>
+<ul>
+<li>resource &quot;azurerm_linux_virtual_machine&quot; &quot;example&quot; {</li>
+</ul>
+<ul>
+<li>azurerm_network_interface.example.id,</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>os_disk {</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>解压后将terraform脚本放在/usr/bin下即可。</li>
+</ul>
+<ul>
+<li>新版本在指定terraform版本的语法上发生改变，以下为使用共享镜像库中的镜像创建Linux虚拟机的脚本。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>azurerm = {</li>
+</ul>
+<ul>
+<li>source = &quot;hashicorp/azurerm&quot;</li>
+</ul>
+<ul>
+<li>version = &quot;2.90.0&quot;</li>
+</ul>
+<ul>
+<li>subscription_id = &quot;a07125f6-e353-418a-ab1c-d29a656ae44d&quot;</li>
+</ul>
+<ul>
+<li>client_id       = &quot;27bbc68a-15ef-4173-9cc7-eaa634235822&quot;   //appid</li>
+</ul>
+<ul>
+<li>client_secret   = &quot;2ZPRexq8KN7OB-dZ1R3LK.3mkX1D.UB2h.&quot;   //paaaword</li>
+</ul>
+<ul>
+<li>tenant_id       = &quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;  //tenant id</li>
+</ul>
+<ul>
+<li>environment     = &quot;china&quot;</li>
+</ul>
+<ul>
+<li>name                = &quot;centosimage&quot;</li>
+</ul>
+<ul>
+<li>gallery_name        = &quot;image&quot;</li>
+</ul>
+<ul>
+<li>resource_group_name = &quot;cdn&quot;</li>
+</ul>
+<ul>
+<li>name     = &quot;testrg&quot;</li>
+</ul>
+<ul>
+<li>location = &quot;China East2&quot;</li>
+</ul>
+<ul>
+<li>name                = &quot;example-network&quot;</li>
+</ul>
+<ul>
+<li>address_space       = [&quot;10.0.0.0/16&quot;]</li>
+</ul>
+<ul>
+<li>location            = azurerm_resource_group.example.location</li>
+</ul>
+<ul>
+<li>resource_group_name = azurerm_resource_group.example.name</li>
+</ul>
+<ul>
+<li>name                 = &quot;internal&quot;</li>
+</ul>
+<ul>
+<li>resource_group_name  = azurerm_resource_group.example.name</li>
+</ul>
+<ul>
+<li>virtual_network_name = azurerm_virtual_network.example.name</li>
+</ul>
+<ul>
+<li>address_prefixes     = [&quot;10.0.2.0/24&quot;]</li>
+</ul>
+<ul>
+<li>name                = &quot;example-nic&quot;</li>
+</ul>
+<ul>
+<li>name                          = &quot;internal&quot;</li>
+</ul>
+<ul>
+<li>subnet_id                     = azurerm_subnet.example.id</li>
+</ul>
+<ul>
+<li>private_ip_address_allocation = &quot;Dynamic&quot;</li>
+</ul>
+<ul>
+<li>name                = &quot;example-machine&quot;</li>
+</ul>
+<ul>
+<li>size                = &quot;Standard_F2&quot;</li>
+</ul>
+<ul>
+<li>disable_password_authentication = &quot;false&quot;</li>
+</ul>
+<ul>
+<li>admin_username      = &quot;wzq&quot;</li>
+</ul>
+<ul>
+<li>admin_password      = &quot;!QAZ2wsx3edc&quot;</li>
+</ul>
+<ul>
+<li>network_interface_ids = [</li>
+</ul>
+<ul>
+<li>caching              = &quot;ReadWrite&quot;</li>
+</ul>
+<ul>
+<li>storage_account_type = &quot;Standard_LRS&quot;</li>
+</ul>
+<ul>
+<li>source_image_id = data.azurerm_shared_image.example.id</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>部署terraform  wget <a href="https://releases.hashicorp.com/terraform/1.1.3/terraform_1.1.3_linux_amd64.zip" target="_blank" rel="noopener">https://releases.hashicorp.com/terraform/1.1.3/terraform_1.1.3_linux_amd64.zip</a></li>
+</ul>
+<ul>
+<li>更多信息参考terraform官方文档：<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/linux_virtual_machine" target="_blank" rel="noopener">https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/linux_virtual_machine</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>WangZhaoqing</p>
+<p>Case num：20220113143762</p>
+<p>terraform版本有较新版本，之前0.几的版本在部署时会提示版本太老。当前最新版为1.1.3，provider版本时2.91.0.</p>
+<p>部署terraform  wget <a href="https://releases.hashicorp.com/terraform/1.1.3/terraform_1.1.3_linux_amd64.zip" target="_blank" rel="noopener">https://releases.hashicorp.com/terraform/1.1.3/terraform_1.1.3_linux_amd64.zip</a></p>
+<p>Unzip terraform_1.1.3_linux_amd64.zip</p>
+<p>解压后将terraform脚本放在/usr/bin下即可。</p>
+<p>新版本在指定terraform版本的语法上发生改变，以下为使用共享镜像库中的镜像创建Linux虚拟机的脚本。</p>
+<p>terraform {</p>
+<p>required_providers {</p>
+<p>azurerm = {</p>
+<p>source = &quot;hashicorp/azurerm&quot;</p>
+<p>version = &quot;2.90.0&quot;</p>
+<p>}</p>
+<p>provider &quot;azurerm&quot; {</p>
+<p>features {}</p>
+<p>subscription_id = &quot;a07125f6-e353-418a-ab1c-d29a656ae44d&quot;</p>
+<p>client_id       = &quot;27bbc68a-15ef-4173-9cc7-eaa634235822&quot;   //appid</p>
+<p>client_secret   = &quot;2ZPRexq8KN7OB-dZ1R3LK.3mkX1D.UB2h.&quot;   //paaaword</p>
+<p>tenant_id       = &quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;  //tenant id</p>
+<p>environment     = &quot;china&quot;</p>
+<p>data &quot;azurerm_shared_image&quot; &quot;example&quot; {</p>
+<p>name                = &quot;centosimage&quot;</p>
+<p>gallery_name        = &quot;image&quot;</p>
+<p>resource_group_name = &quot;cdn&quot;</p>
+<p>resource &quot;azurerm_resource_group&quot; &quot;example&quot; {</p>
+<p>name     = &quot;testrg&quot;</p>
+<p>location = &quot;China East2&quot;</p>
+<p>resource &quot;azurerm_virtual_network&quot; &quot;example&quot; {</p>
+<p>name                = &quot;example-network&quot;</p>
+<p>address_space       = [&quot;10.0.0.0/16&quot;]</p>
+<p>location            = azurerm_resource_group.example.location</p>
+<p>resource_group_name = azurerm_resource_group.example.name</p>
+<p>resource &quot;azurerm_subnet&quot; &quot;example&quot; {</p>
+<p>name                 = &quot;internal&quot;</p>
+<p>resource_group_name  = azurerm_resource_group.example.name</p>
+<p>virtual_network_name = azurerm_virtual_network.example.name</p>
+<p>address_prefixes     = [&quot;10.0.2.0/24&quot;]</p>
+<p>resource &quot;azurerm_network_interface&quot; &quot;example&quot; {</p>
+<p>name                = &quot;example-nic&quot;</p>
+<p>ip_configuration {</p>
+<p>name                          = &quot;internal&quot;</p>
+<p>subnet_id                     = azurerm_subnet.example.id</p>
+<p>private_ip_address_allocation = &quot;Dynamic&quot;</p>
+<p>resource &quot;azurerm_linux_virtual_machine&quot; &quot;example&quot; {</p>
+<p>name                = &quot;example-machine&quot;</p>
+<p>size                = &quot;Standard_F2&quot;</p>
+<p>disable_password_authentication = &quot;false&quot;</p>
+<p>admin_username      = &quot;wzq&quot;</p>
+<p>admin_password      = &quot;!QAZ2wsx3edc&quot;</p>
+<p>network_interface_ids = [</p>
+<p>azurerm_network_interface.example.id,</p>
+<p>]</p>
+<p>os_disk {</p>
+<p>caching              = &quot;ReadWrite&quot;</p>
+<p>storage_account_type = &quot;Standard_LRS&quot;</p>
+<p>source_image_id = data.azurerm_shared_image.example.id</p>
+<p>更多信息参考terraform官方文档：<a href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/linux_virtual_machine" target="_blank" rel="noopener">https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/linux_virtual_machine</a></p></article>

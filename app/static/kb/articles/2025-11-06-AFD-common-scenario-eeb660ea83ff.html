@@ -1,0 +1,128 @@
+<article class="kb-article" data-title="AFD common scenario"><h1>AFD common scenario</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AFD</li>
+<li>Section: Troubleshooting</li>
+<li>最近修改: 2025-11-06 16:10:42</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>如果需要清除缓存的话，直接到AFD overview页面，可以purge cache, 但注意，purge cache对wildcard域名不生效，比如无法清除*.azurecn.cn的缓存，只能够清除yipeng.azurecn.cn的缓存。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>如果需要清除缓存的话，直接到AFD overview页面，可以purge cache, 但注意，purge cache对wildcard域名不生效，比如无法清除*.azurecn.cn的缓存，只能够清除yipeng.azurecn.cn的缓存。</li>
+</ul>
+<ul>
+<li>现在假设我们遇到了一个502问题:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>大家好，又是我。</li>
+</ul>
+<ul>
+<li>X-Azure-Ref string, 我们在这里面判断，这个东西是基于Azure front door的访问（这个格式分为Roxy(Linux AKS cluster)/FDv2(windows AKS cluster)），目前已经全部整合到RoxyHttpRequest中：</li>
+</ul>
+<ul>
+<li>machinename会有标识：aks-roxy的就是roxy，aks-agent的应该是FDv2</li>
+</ul>
+<ul>
+<li>Roxy Http request :</li>
+</ul>
+<ul>
+<li>X-Cache: Azure Front door 是否配置了开启缓存， 如果有的话就是TCP_HIT,没有就是CONFIG_NOCACHE</li>
+</ul>
+<ul>
+<li>Request URL</li>
+</ul>
+<ul>
+<li>Status Code</li>
+</ul>
+<ul>
+<li>通过这里我们可以看到，我们是在AFD上做了转发配置。</li>
+</ul>
+<ul>
+<li>其他的后续慢慢更新。</li>
+</ul>
+<ul>
+<li>更新：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>AFD这两天GA了，最近大家可能会遇到需要排查的问题，在这里给大家写一些比较common的情况，以便大家后续排查。</li>
+</ul>
+<ul>
+<li>我们在排查AFD问题的过程中，有几个东西非常的关键：</li>
+</ul>
+<ul>
+<li>Tips: 目前从ASC里点击进去的log，会直接跳转到Global区，需要自行修改Diag和namespace,下面这个是我修改过的link，大家可以点击访问。</li>
+</ul>
+<ul>
+<li>我们通过bypass AFD的方式来进行验证，发现访问是200。</li>
+</ul>
+<ul>
+<li>则我们需要检查对应的配置：</li>
+</ul>
+<ul>
+<li>由于是VM自建IIS，非常的simple， 除了origin之外没有做任何配置， 那么我们检查origin的配置：</li>
+</ul>
+<ul>
+<li>检查了之后发现问题出在这里。</li>
+</ul>
+<ul>
+<li>如果origin本身是IP的话，那么证书检查SNI是不支持的，我们的后端需要添加对应的FQDN才能够支持SNI检测。</li>
+</ul>
+<ul>
+<li>通常情况来说，504是后端配置错误造成的，是AFD本身的FDv2/Roxy 无法与后端的origin host建立连接直接返回的timeout，这种时候，通常需要检查health probe，以确认后端情况。</li>
+</ul>
+<ul>
+<li>目前的ASC log链接全部都会直接跳转到Global区，并且Mooncake侧目前似乎没有对应的namespace可供大家查询，后续等待更新：</li>
+</ul>
+<ul>
+<li>关于WAF的查询，上方已经说过了，使用X-Azure-ref,通过RoxyHttprequest 判断，检查对应的machine name查看对应链接。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>我们可以通过此命令来验证问题源头：</li>
+</ul>
+<ul>
+<li>Curl -I &quot;origin URL&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>将这个关闭之后，502消失。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/9/3</p>
+<p>大家好，又是我。</p>
+<p>AFD这两天GA了，最近大家可能会遇到需要排查的问题，在这里给大家写一些比较common的情况，以便大家后续排查。</p>
+<p>我们在排查AFD问题的过程中，有几个东西非常的关键：</p>
+<p>X-Azure-Ref string, 我们在这里面判断，这个东西是基于Azure front door的访问（这个格式分为Roxy(Linux AKS cluster)/FDv2(windows AKS cluster)），目前已经全部整合到RoxyHttpRequest中：</p>
+<p>machinename会有标识：aks-roxy的就是roxy，aks-agent的应该是FDv2</p>
+<p>Tips: 目前从ASC里点击进去的log，会直接跳转到Global区，需要自行修改Diag和namespace,下面这个是我修改过的link，大家可以点击访问。</p>
+<p>Roxy Http request :</p>
+<p>X-Cache: Azure Front door 是否配置了开启缓存， 如果有的话就是TCP_HIT,没有就是CONFIG_NOCACHE</p>
+<p>Request URL</p>
+<p>Status Code</p>
+<p>如果需要清除缓存的话，直接到AFD overview页面，可以purge cache, 但注意，purge cache对wildcard域名不生效，比如无法清除*.azurecn.cn的缓存，只能够清除yipeng.azurecn.cn的缓存。</p>
+<p>现在假设我们遇到了一个502问题:</p>
+<p>我们可以通过此命令来验证问题源头：</p>
+<p>Curl -I &quot;origin URL&quot;</p>
+<p>通过这里我们可以看到，我们是在AFD上做了转发配置。</p>
+<p>我们通过bypass AFD的方式来进行验证，发现访问是200。</p>
+<p>则我们需要检查对应的配置：</p>
+<p>由于是VM自建IIS，非常的simple， 除了origin之外没有做任何配置， 那么我们检查origin的配置：</p>
+<p>检查了之后发现问题出在这里。</p>
+<p>如果origin本身是IP的话，那么证书检查SNI是不支持的，我们的后端需要添加对应的FQDN才能够支持SNI检测。</p>
+<p>将这个关闭之后，502消失。</p>
+<p>通常情况来说，504是后端配置错误造成的，是AFD本身的FDv2/Roxy 无法与后端的origin host建立连接直接返回的timeout，这种时候，通常需要检查health probe，以确认后端情况。</p>
+<p>目前的ASC log链接全部都会直接跳转到Global区，并且Mooncake侧目前似乎没有对应的namespace可供大家查询，后续等待更新：</p>
+<p>关于WAF的查询，上方已经说过了，使用X-Azure-ref,通过RoxyHttprequest 判断，检查对应的machine name查看对应链接。</p>
+<p>其他的后续慢慢更新。</p>
+<p>更新：</p></article>

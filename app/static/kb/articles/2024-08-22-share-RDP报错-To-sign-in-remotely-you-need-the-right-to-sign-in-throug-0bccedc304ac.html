@@ -1,0 +1,136 @@
+<article class="kb-article" data-title="【share】RDP报错：To sign in remotely, you need the right to sign in through Remote Desktop Services. By default, members ofthe Administrators group have this right. lf the group you&#39;re in doesn&#39;t have this right, or if the right has beenremoved from the Administrators group, you need to be granted this right manually."><h1>【share】RDP报错：To sign in remotely, you need the right to sign in through Remote Desktop Services. By default, members ofthe Administrators group have this right. lf the group you&#39;re in doesn&#39;t have this right, or if the right has beenremoved from the Administrators group, you need to be granted this right manually.</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-22 16:31:15</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>RDP报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>RDP报错：</li>
+</ul>
+<ul>
+<li>所以您的域用户或本地用户现在是无法RDP登录到vm上的</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>To sign in remotely, you need the right to sign in through Remote Desktop Services. By default, members ofthe Administrators group have this right. lf the group you&#39;re in doesn&#39;t have this right, or if the right has beenremoved from the Administrators group, you need to be granted this right manually.</li>
+</ul>
+<ul>
+<li>不管是域账户还是local admin都报这个</li>
+</ul>
+<ul>
+<li>代理是好的</li>
+</ul>
+<ul>
+<li>secedit /export /cfg c:\SecEditOutput.inf</li>
+</ul>
+<ul>
+<li>$rdpPolicy.Line</li>
+</ul>
+<ul>
+<li>客户</li>
+</ul>
+<ul>
+<li>从您的输出来看</li>
+</ul>
+<ul>
+<li>域控应该是 Administrator组</li>
+</ul>
+<ul>
+<li>Administrator组 为*S-1-5-32-544</li>
+</ul>
+<ul>
+<li>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</li>
+</ul>
+<ul>
+<li>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</li>
+</ul>
+<ul>
+<li>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</li>
+</ul>
+<ul>
+<li>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</li>
+</ul>
+<ul>
+<li>您最好先将dc的os磁盘打快照备份下</li>
+</ul>
+<ul>
+<li>我用我的dc测试了下，可以修改回来</li>
+</ul>
+<ul>
+<li>使用</li>
+</ul>
+<ul>
+<li>$content = Get-Content -Path C:\SecEditOutput.inf</li>
+</ul>
+<ul>
+<li>secedit /configure /db $env:TEMP\secedit.sdb /cfg C:\SecEditOutput.inf /areas USER_RIGHTS</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>$rdpPolicy = Select-String -Path c:\SecEditOutput.inf -Pattern &quot;SeRemoteInteractiveLogonRight&quot;</li>
+</ul>
+<ul>
+<li>您Allow log on through Remote Desktop Services 允许远程rdp登陆的组为 *S-1-5-32-555</li>
+</ul>
+<ul>
+<li>我查询了下 *S-1-5-32-555 应该是Remote Desktop Users 组， 而 DC上的本地组应该没有 Remote Desktop Users 组</li>
+</ul>
+<ul>
+<li>$newContent = $content -replace &#39;SeRemoteInteractiveLogonRight\s*=\s*\*S-1-5-32-555&#39;, &#39;SeRemoteInteractiveLogonRight = *S-1-5-32-544,*S-1-5-32-555&#39;</li>
+</ul>
+<ul>
+<li>查看结果</li>
+</ul>
+<ul>
+<li>温馨提示： 虚拟机系统问题已经超出了我们的Azure技术支持范畴。为了更好的客户服务体验，我们尝试帮您分析并排查此问题。与此同时，我们也不确认一定能够为您提供更多有价值的帮助，关于这一点，希望得到您的理解。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>请您用门户上的运行命令运行下如下命令，我们看下输出结果</li>
+</ul>
+<ul>
+<li>Set-Content -Path C:\SecEditOutput.inf -Value $newContent</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>RDP报错：</p>
+<p>To sign in remotely, you need the right to sign in through Remote Desktop Services. By default, members ofthe Administrators group have this right. lf the group you&#39;re in doesn&#39;t have this right, or if the right has beenremoved from the Administrators group, you need to be granted this right manually.</p>
+<p>不管是域账户还是local admin都报这个</p>
+<p>代理是好的</p>
+<p>请您用门户上的运行命令运行下如下命令，我们看下输出结果</p>
+<p>secedit /export /cfg c:\SecEditOutput.inf</p>
+<p>$rdpPolicy = Select-String -Path c:\SecEditOutput.inf -Pattern &quot;SeRemoteInteractiveLogonRight&quot;</p>
+<p>$rdpPolicy.Line</p>
+<p>客户</p>
+<p>从您的输出来看</p>
+<p>您Allow log on through Remote Desktop Services 允许远程rdp登陆的组为 *S-1-5-32-555</p>
+<p>域控应该是 Administrator组</p>
+<p>Administrator组 为*S-1-5-32-544</p>
+<p>我查询了下 *S-1-5-32-555 应该是Remote Desktop Users 组， 而 DC上的本地组应该没有 Remote Desktop Users 组</p>
+<p>所以您的域用户或本地用户现在是无法RDP登录到vm上的</p>
+<p>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</p>
+<p>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</p>
+<p>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</p>
+<p>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</p>
+<p>您最好先将dc的os磁盘打快照备份下</p>
+<p>我用我的dc测试了下，可以修改回来</p>
+<p>使用</p>
+<p>$content = Get-Content -Path C:\SecEditOutput.inf</p>
+<p>$newContent = $content -replace &#39;SeRemoteInteractiveLogonRight\s*=\s*\*S-1-5-32-555&#39;, &#39;SeRemoteInteractiveLogonRight = *S-1-5-32-544,*S-1-5-32-555&#39;</p>
+<p>Set-Content -Path C:\SecEditOutput.inf -Value $newContent</p>
+<p>secedit /configure /db $env:TEMP\secedit.sdb /cfg C:\SecEditOutput.inf /areas USER_RIGHTS</p>
+<p>查看结果</p>
+<p>温馨提示： 虚拟机系统问题已经超出了我们的Azure技术支持范畴。为了更好的客户服务体验，我们尝试帮您分析并排查此问题。与此同时，我们也不确认一定能够为您提供更多有价值的帮助，关于这一点，希望得到您的理解。</p></article>

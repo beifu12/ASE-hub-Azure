@@ -1,0 +1,99 @@
+<article class="kb-article" data-title="SR_2021041591420_[S500]资源组中有一个资源无法删除"><h1>SR_2021041591420_[S500]资源组中有一个资源无法删除</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure resource Mover</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-04-20 09:41:21</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Succeeded: 0, Failed: 1, Canceled: 0.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Succeeded: 0, Failed: 1, Canceled: 0.</li>
+</ul>
+<ul>
+<li>Error details</li>
+</ul>
+<ul>
+<li>(Code: DeleteCollectionFailedResourcesExists)</li>
+</ul>
+<ul>
+<li>直接删除“移动资源组”报错如下：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>Executed delete command on 1 selected items</li>
+</ul>
+<ul>
+<li>MoveCollection-ce-ce2-cn2: Deletion of move collection is not allowed when there are move resources present in it.</li>
+</ul>
+<ul>
+<li>Possible Causes: The move collection has move resources present in it.</li>
+</ul>
+<ul>
+<li>---------------------------------------------------------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>我这边的测试如下：</li>
+</ul>
+<ul>
+<li>在Azure资源转换器中删除“移动集合”中的资源，它只是清理“移动资源组”中的资源，并不会删除“资源组”</li>
+</ul>
+<ul>
+<li>再次删除“移动资源组”，可以成功删除</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>今天在尝试将一个PIP从China Ease Move到 China East2时遇到问题，后来把这个PIP直接删除了，然后发现在此过程中自动创建的资源组无法删除，检查发现其中有一个资源无法删除，报如下错误，按推荐操作进入到Across Regions之后发现其中有一个资源组，这个资源组属于删除的PIP之前所属的资源组，但里面还有很多其他资源，不可能把它删掉的，还请帮忙看看要如何处理。</li>
+</ul>
+<ul>
+<li>Recommended Action: In Portal open &#39;Azure Resource Mover&#39; &gt; Across regions &gt; Select SubscriptionId: d07fcfc4-b842-45c0-b3a9-8eee0da378f1, Source Region: chinaeast, Target Region: chinaeast2 &gt; delete all the resources, and then retry deleting the Resource group.</li>
+</ul>
+<ul>
+<li>确认contoso资源组还在，其中所有的资源也都在，没有受到影响。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法：</li>
+</ul>
+<ul>
+<li>解决方法就是先删除“移动集合”中的资源，才可以删除掉“移动资源组”。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>For PowerShell please use remove resource cmdlet and delete all resources and then try deleting move collection or resource group. Please follow documentation  <a href="https://go.microsoft.com/fwlink/?linkid=2145903." target="_blank" rel="noopener">https://go.microsoft.com/fwlink/?linkid=2145903.</a></li>
+</ul>
+<ul>
+<li>参考文档：<a href="https://docs.azure.cn/zh-cn/resource-mover/remove-move-resources" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/resource-mover/remove-move-resources</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>问题描述：</p>
+<p>今天在尝试将一个PIP从China Ease Move到 China East2时遇到问题，后来把这个PIP直接删除了，然后发现在此过程中自动创建的资源组无法删除，检查发现其中有一个资源无法删除，报如下错误，按推荐操作进入到Across Regions之后发现其中有一个资源组，这个资源组属于删除的PIP之前所属的资源组，但里面还有很多其他资源，不可能把它删掉的，还请帮忙看看要如何处理。</p>
+<p>Executed delete command on 1 selected items</p>
+<p>Succeeded: 0, Failed: 1, Canceled: 0.</p>
+<p>Error details</p>
+<p>MoveCollection-ce-ce2-cn2: Deletion of move collection is not allowed when there are move resources present in it.</p>
+<p>Possible Causes: The move collection has move resources present in it.</p>
+<p>Recommended Action: In Portal open &#39;Azure Resource Mover&#39; &gt; Across regions &gt; Select SubscriptionId: d07fcfc4-b842-45c0-b3a9-8eee0da378f1, Source Region: chinaeast, Target Region: chinaeast2 &gt; delete all the resources, and then retry deleting the Resource group.</p>
+<p>For PowerShell please use remove resource cmdlet and delete all resources and then try deleting move collection or resource group. Please follow documentation  <a href="https://go.microsoft.com/fwlink/?linkid=2145903." target="_blank" rel="noopener">https://go.microsoft.com/fwlink/?linkid=2145903.</a></p>
+<p>(Code: DeleteCollectionFailedResourcesExists)</p>
+<p>解决方法：</p>
+<p>解决方法就是先删除“移动集合”中的资源，才可以删除掉“移动资源组”。</p>
+<p>参考文档：<a href="https://docs.azure.cn/zh-cn/resource-mover/remove-move-resources" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/resource-mover/remove-move-resources</a></p>
+<p>---------------------------------------------------------------------------------------------------------------</p>
+<p>我这边的测试如下：</p>
+<p>直接删除“移动资源组”报错如下：</p>
+<p>在Azure资源转换器中删除“移动集合”中的资源，它只是清理“移动资源组”中的资源，并不会删除“资源组”</p>
+<p>再次删除“移动资源组”，可以成功删除</p>
+<p>确认contoso资源组还在，其中所有的资源也都在，没有受到影响。</p></article>

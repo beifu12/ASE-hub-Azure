@@ -1,0 +1,52 @@
+<article class="kb-article" data-title="[ARM] Portal 图形化界面配置跨订阅Link VNET to Express Route"><h1>[ARM] Portal 图形化界面配置跨订阅Link VNET to Express Route</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-07-27 09:52:26</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>1. 选择生成授权的SUB所在的ER</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>1.    选择生成授权的SUB所在的ER</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1.    选择生成授权的SUB所在的ER</li>
+</ul>
+<ul>
+<li>2.    点击授权，输入自定义名称后保存，并生成Authorization Key，复制该Authorization Key和Resource ID</li>
+</ul>
+<ul>
+<li>3.    创建expressroute 类型的Virtual Network Gateway，选择 虚拟网络（将VNET添加到ER的BGP路由中），划分网关子网（VNET需要内网路由，所以需要一个Gateway）</li>
+</ul>
+<ul>
+<li>5.    连接类型选择 ExpressRoute，订阅 选择 需要被授权所在的SUB，资源组 选择 VNET所在</li>
+</ul>
+<ul>
+<li>6.    虚拟网络网关 需要你创建一个Expressroute 类型的网关，虚拟网络网关在第三步创建，并且填写授权信息中的Resource ID到对等循环ID，Authorization Key到授权密钥</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>4.    如果你需要被授权的ID也是同一个账号，请在当前Portal下创建新的 连接</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>1.    选择生成授权的SUB所在的ER</p>
+<p>2.    点击授权，输入自定义名称后保存，并生成Authorization Key，复制该Authorization Key和Resource ID</p>
+<p>3.    创建expressroute 类型的Virtual Network Gateway，选择 虚拟网络（将VNET添加到ER的BGP路由中），划分网关子网（VNET需要内网路由，所以需要一个Gateway）</p>
+<p>4.    如果你需要被授权的ID也是同一个账号，请在当前Portal下创建新的 连接</p>
+<p>5.    连接类型选择 ExpressRoute，订阅 选择 需要被授权所在的SUB，资源组 选择 VNET所在</p>
+<p>6.    虚拟网络网关 需要你创建一个Expressroute 类型的网关，虚拟网络网关在第三步创建，并且填写授权信息中的Resource ID到对等循环ID，Authorization Key到授权密钥</p></article>

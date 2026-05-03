@@ -1,0 +1,123 @@
+<article class="kb-article" data-title="[ARM-APPGW-Cookie]About Cookie of AppGW"><h1>[ARM-APPGW-Cookie]About Cookie of AppGW</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-27 17:50:10</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Fuzhangliang/Zhanglihe</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Fuzhangliang/Zhanglihe</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Fuzhangliang/Zhanglihe</li>
+</ul>
+<ul>
+<li>Answer zhangliang’s question, what is the expiry time for waf affinity cookie?</li>
+</ul>
+<ul>
+<li>First let us see what is the cookie type?</li>
+</ul>
+<ul>
+<li>There are 2 different types of cookies: Session cookies and persistent cookies</li>
+</ul>
+<ul>
+<li>If a cookie does not contain an expiration date, it is considered a session cookie. Session cookies are stored in memory and never written to disk. When the browers closes the cookie is permanently lost from this point on.</li>
+</ul>
+<ul>
+<li>If the cookie contains an expiration date, it is considered a persistent cookie. On the date specified in the expiration, the cookie will be removed from the disk.</li>
+</ul>
+<ul>
+<li>There are several different fields a cookie can contain, seperated by semicolons. Definitions are below:</li>
+</ul>
+<ul>
+<li>expires:</li>
+</ul>
+<ul>
+<li>Determines when the cookie is to be deleted.</li>
+</ul>
+<ul>
+<li>Thereby there are Session cookies and persistent cookies.</li>
+</ul>
+<ul>
+<li>And if there is no expiry time, it is considered to be session cookie.</li>
+</ul>
+<ul>
+<li>It is identified from my dump:</li>
+</ul>
+<ul>
+<li>Our WAF generates session cookie which means this is temporary cookie for the client, when the client close the session or the browser is closed, the cookie is removed.</li>
+</ul>
+<ul>
+<li>If the same client initiate a new request to web app server, WAF will attach a new session cookie to “remember” this distribution(let’s say it is distributed to server1, backend pool has server1,2,3), the subsequent requests from this client in this session, will be directed to server1 consistently.</li>
+</ul>
+<ul>
+<li>Best Regards,</li>
+</ul>
+<ul>
+<li>Bing Yu (郁冰)</li>
+</ul>
+<ul>
+<li>Support Escalation Engineer</li>
+</ul>
+<ul>
+<li>Mooncake (China Azure) Support Team,</li>
+</ul>
+<ul>
+<li>Customer Service &amp; Support (CSS), GCR region</li>
+</ul>
+<ul>
+<li>Office:  +86-21-61886249</li>
+</ul>
+<ul>
+<li>biyu@microsoft.com</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>expires=&quot;Wdy, DD-Mon-YYYY HH:MM:SS GMT&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>开启了基于cookie的相关性功能后，网关会对客户端的访问请求set一个cookie,此后客户端带着这个cookie过来，网关就会将带有这个cookie的请求转发到后端同一台服务器。该cookie的生效时间是只能在浏览器开启的状态下有效，浏览器关闭之后cookie就失效（过期），此后该客户端的请求由于没有带有这个cookie所以又被网关认为是一个新的客户端重新set一个cookie。网关设置的cookie的键名是含有applicationgatewayaffinity等字样的字符串，键值是一个长字符串，很容易识别。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>我们正在跟进本工单，应用程序网关支持基于Cookie的会话保持，参见官方介绍：<a href="https://docs.azure.cn/zh-cn/application-gateway/overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/overview</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Fuzhangliang/Zhanglihe</p>
+<p>2019/01/22</p>
+<p>我们正在跟进本工单，应用程序网关支持基于Cookie的会话保持，参见官方介绍：<a href="https://docs.azure.cn/zh-cn/application-gateway/overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/overview</a></p>
+<p>开启了基于cookie的相关性功能后，网关会对客户端的访问请求set一个cookie,此后客户端带着这个cookie过来，网关就会将带有这个cookie的请求转发到后端同一台服务器。该cookie的生效时间是只能在浏览器开启的状态下有效，浏览器关闭之后cookie就失效（过期），此后该客户端的请求由于没有带有这个cookie所以又被网关认为是一个新的客户端重新set一个cookie。网关设置的cookie的键名是含有applicationgatewayaffinity等字样的字符串，键值是一个长字符串，很容易识别。</p>
+<p>Answer zhangliang’s question, what is the expiry time for waf affinity cookie?</p>
+<p>First let us see what is the cookie type?</p>
+<p>There are 2 different types of cookies: Session cookies and persistent cookies</p>
+<p>If a cookie does not contain an expiration date, it is considered a session cookie. Session cookies are stored in memory and never written to disk. When the browers closes the cookie is permanently lost from this point on.</p>
+<p>If the cookie contains an expiration date, it is considered a persistent cookie. On the date specified in the expiration, the cookie will be removed from the disk.</p>
+<p>There are several different fields a cookie can contain, seperated by semicolons. Definitions are below:</p>
+<p>expires:</p>
+<p>expires=&quot;Wdy, DD-Mon-YYYY HH:MM:SS GMT&quot;</p>
+<p>Determines when the cookie is to be deleted.</p>
+<p>Thereby there are Session cookies and persistent cookies.</p>
+<p>And if there is no expiry time, it is considered to be session cookie.</p>
+<p>It is identified from my dump:</p>
+<p>Our WAF generates session cookie which means this is temporary cookie for the client, when the client close the session or the browser is closed, the cookie is removed.</p>
+<p>If the same client initiate a new request to web app server, WAF will attach a new session cookie to “remember” this distribution(let’s say it is distributed to server1, backend pool has server1,2,3), the subsequent requests from this client in this session, will be directed to server1 consistently.</p>
+<p>Best Regards,</p>
+<p>Bing Yu (郁冰)</p>
+<p>Support Escalation Engineer</p>
+<p>Mooncake (China Azure) Support Team,</p>
+<p>Customer Service &amp; Support (CSS), GCR region</p>
+<p>Office:  +86-21-61886249</p>
+<p>biyu@microsoft.com</p></article>

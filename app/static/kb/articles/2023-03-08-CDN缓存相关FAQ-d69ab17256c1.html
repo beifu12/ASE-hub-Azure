@@ -1,0 +1,69 @@
+<article class="kb-article" data-title="CDN缓存相关FAQ"><h1>CDN缓存相关FAQ</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-03-08 13:20:28</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>场景：动态内容（max-age=1)通过CDN分发。要求，CDN在高并发的情况下，尽量减少上游HIT，能够在短时间内，或者上游不可用的情况下，使用缓存服务客户端。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>场景：动态内容（max-age=1)通过CDN分发。要求，CDN在高并发的情况下，尽量减少上游HIT，能够在短时间内，或者上游不可用的情况下，使用缓存服务客户端。</li>
+</ul>
+<ul>
+<li>1）上游内容返回给CDN服务器cache-control头如何影响CDN的回源频率？该头是否返回客户端？能否通过cache-control头来控制CDN，在服务不可用时使用CDN磁盘缓存（stale-if-error)?</li>
+</ul>
+<ul>
+<li>-如果设置不忽略cache-control，cdn节点按照cache-control的值进行缓存，但不支持stale-if-error。目前我们的服务主要针对静态资源，动态内容cdn缓存的帮助不大。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>工单：SR_20210804113272</li>
+</ul>
+<ul>
+<li>Last Update</li>
+</ul>
+<ul>
+<li>Aug 6, 2021</li>
+</ul>
+<ul>
+<li>问题：</li>
+</ul>
+<ul>
+<li>-不支持在cdn配置中添加自定义的cache-control头，不会生效。</li>
+</ul>
+<ul>
+<li>3) CDN自身设置里的“忽略cache-control”开关，如何影响CDN回源频率？是否影响返回给客户端的cache-control头？</li>
+</ul>
+<ul>
+<li>-不影响该header的值，但如果设置忽略cache-control，则cdn节点缓存按照cdn配置中的缓存规则而非cache-control头。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2) CDN自身设置里的HTTP头cache-control如何影响CDN的回源频率？该头是否返回客户端？能否通过该设置，控制客户端不缓存，或者must-revalidate.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>工单：SR_20210804113272</p>
+<p>Last Update</p>
+<p>Aug 6, 2021</p>
+<p>场景：动态内容（max-age=1)通过CDN分发。要求，CDN在高并发的情况下，尽量减少上游HIT，能够在短时间内，或者上游不可用的情况下，使用缓存服务客户端。</p>
+<p>问题：</p>
+<p>1）上游内容返回给CDN服务器cache-control头如何影响CDN的回源频率？该头是否返回客户端？能否通过cache-control头来控制CDN，在服务不可用时使用CDN磁盘缓存（stale-if-error)?</p>
+<p>-如果设置不忽略cache-control，cdn节点按照cache-control的值进行缓存，但不支持stale-if-error。目前我们的服务主要针对静态资源，动态内容cdn缓存的帮助不大。</p>
+<p>2) CDN自身设置里的HTTP头cache-control如何影响CDN的回源频率？该头是否返回客户端？能否通过该设置，控制客户端不缓存，或者must-revalidate.</p>
+<p>-不支持在cdn配置中添加自定义的cache-control头，不会生效。</p>
+<p>3) CDN自身设置里的“忽略cache-control”开关，如何影响CDN回源频率？是否影响返回给客户端的cache-control头？</p>
+<p>-不影响该header的值，但如果设置忽略cache-control，则cdn节点缓存按照cdn配置中的缓存规则而非cache-control头。</p></article>

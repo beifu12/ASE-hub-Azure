@@ -1,0 +1,142 @@
+<article class="kb-article" data-title="Windows netsh trace start 循环抓包"><h1>Windows netsh trace start 循环抓包</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Net Perf analysis</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-10 10:26:28</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Tracing will stop when the &quot;netsh trace stop&quot; command is issued or when the system reboots.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Tracing will stop when the &quot;netsh trace stop&quot; command is issued or when the system reboots.</li>
+</ul>
+<ul>
+<li>Starts tracing for the microsoft-windows-wlan-autoconfig provider Tracing will stop when the &quot;netsh trace stop&quot; command is issued or when the system reboots.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>@echo off</li>
+</ul>
+<ul>
+<li>:loop</li>
+</ul>
+<ul>
+<li>goto loop</li>
+</ul>
+<ul>
+<li>netsh » trace » start</li>
+</ul>
+<ul>
+<li>start Starts tracing.</li>
+</ul>
+<ul>
+<li>Defaults:</li>
+</ul>
+<ul>
+<li>Provider keywords default to all and level to 255 unless otherwise specified.</li>
+</ul>
+<ul>
+<li>For example:</li>
+</ul>
+<ul>
+<li>Default location and name will be used for the output file. If an old file exists, it will be overwritten.</li>
+</ul>
+<ul>
+<li>netsh trace show provider command can be used to display supported keywords and levels.</li>
+</ul>
+<ul>
+<li>Capture Filters:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>echo %date%-%time%&gt;&gt;D:\result.log</li>
+</ul>
+<ul>
+<li>Microsoft确认，Netsh无法循环抓写多个文件</li>
+</ul>
+<ul>
+<li>Default location and name will be used for the output file. If an old file exists, it will be overwritten. Only events with keyword &#39;state&#39; or &#39;ut:authentication&#39; will be logged.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>netsh trace start capture=yes report=disable  traceFile=&quot;D:\\probe001.etl&quot; overwrite=yes correlation=no maxSize=100MB persistent=yes protocol=tcp</li>
+</ul>
+<ul>
+<li>capture=no (specifies whether packet capture is enabled in addition to trace events)</li>
+</ul>
+<ul>
+<li>report=no (specifies whether a complementing report will be generated along with the trace file)</li>
+</ul>
+<ul>
+<li>persistent=no (specifies whether the tracing session continues across reboots, and is on until netsh trace stop is issued)</li>
+</ul>
+<ul>
+<li>maxSize=250 MB (specifies the maximum trace file size, 0=no maximum) fileMode=circular</li>
+</ul>
+<ul>
+<li>overwrite=yes (specifies whether an existing trace output file will be overwritten) correlation=yes (specifies whether related events will be correlated and grouped together)</li>
+</ul>
+<ul>
+<li>traceFile=%LOCALAPPDATA%\Temp\NetTraces\NetTrace.etl (specifies location of the output file)</li>
+</ul>
+<ul>
+<li>netsh trace start scenario=InternetClient capture=yes</li>
+</ul>
+<ul>
+<li>netsh trace start provider=microsoft-windows-wlan-autoconfig</li>
+</ul>
+<ul>
+<li>keywords=state,ut:authentication</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Usage: trace start [[scenario=]] [[globalKeywords=]keywords] [[globalLevel=]level] [[capture=]yes|no] [[report=]yes|no] [[persistent=]yes|no] [[traceFile=]path\filename] [[maxSize=]filemaxsize] [[fileMode=]single|circular|append] [[overwrite=]yes|no] [[correlation=]yes|no|disabled] [capturefilters] [[provider=]providerIdOrName] [[keywords=]keywordMaskOrSet] [[level=]level] [[provider=]provider2IdOrName] [[keywords=]keyword2MaskOrSet] [[level=]level2] ...</li>
+</ul>
+<ul>
+<li>Starts tracing for the InternetClient scenario and dependent providers with packet capture enabled.</li>
+</ul>
+<ul>
+<li>Capture filters are only supported when capture is explicitly enabled with capture=yes. Use &#39;netsh trace show CaptureFilterHelp&#39; to display a list of supported capture filters and their usage.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>From &lt;<a href="http://www.colorconsole.de/cmd/en/Windows_7/netsh/trace/start.htm&gt;" target="_blank" rel="noopener">http://www.colorconsole.de/cmd/en/Windows_7/netsh/trace/start.htm&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>@echo off</p>
+<p>:loop</p>
+<p>netsh trace start capture=yes report=disable  traceFile=&quot;D:\\probe001.etl&quot; overwrite=yes correlation=no maxSize=100MB persistent=yes protocol=tcp</p>
+<p>echo %date%-%time%&gt;&gt;D:\result.log</p>
+<p>goto loop</p>
+<p>Microsoft确认，Netsh无法循环抓写多个文件</p>
+<p>netsh » trace » start</p>
+<p>start Starts tracing.</p>
+<p>Usage: trace start [[scenario=]] [[globalKeywords=]keywords] [[globalLevel=]level] [[capture=]yes|no] [[report=]yes|no] [[persistent=]yes|no] [[traceFile=]path\filename] [[maxSize=]filemaxsize] [[fileMode=]single|circular|append] [[overwrite=]yes|no] [[correlation=]yes|no|disabled] [capturefilters] [[provider=]providerIdOrName] [[keywords=]keywordMaskOrSet] [[level=]level] [[provider=]provider2IdOrName] [[keywords=]keyword2MaskOrSet] [[level=]level2] ...</p>
+<p>Defaults:</p>
+<p>capture=no (specifies whether packet capture is enabled in addition to trace events)</p>
+<p>report=no (specifies whether a complementing report will be generated along with the trace file)</p>
+<p>persistent=no (specifies whether the tracing session continues across reboots, and is on until netsh trace stop is issued)</p>
+<p>maxSize=250 MB (specifies the maximum trace file size, 0=no maximum) fileMode=circular</p>
+<p>overwrite=yes (specifies whether an existing trace output file will be overwritten) correlation=yes (specifies whether related events will be correlated and grouped together)</p>
+<p>traceFile=%LOCALAPPDATA%\Temp\NetTraces\NetTrace.etl (specifies location of the output file)</p>
+<p>Provider keywords default to all and level to 255 unless otherwise specified.</p>
+<p>For example:</p>
+<p>netsh trace start scenario=InternetClient capture=yes</p>
+<p>Starts tracing for the InternetClient scenario and dependent providers with packet capture enabled.</p>
+<p>Tracing will stop when the &quot;netsh trace stop&quot; command is issued or when the system reboots.</p>
+<p>Default location and name will be used for the output file. If an old file exists, it will be overwritten.</p>
+<p>netsh trace start provider=microsoft-windows-wlan-autoconfig</p>
+<p>keywords=state,ut:authentication</p>
+<p>Starts tracing for the microsoft-windows-wlan-autoconfig provider Tracing will stop when the &quot;netsh trace stop&quot; command is issued or when the system reboots.</p>
+<p>Default location and name will be used for the output file. If an old file exists, it will be overwritten. Only events with keyword &#39;state&#39; or &#39;ut:authentication&#39; will be logged.</p>
+<p>netsh trace show provider command can be used to display supported keywords and levels.</p>
+<p>Capture Filters:</p>
+<p>Capture filters are only supported when capture is explicitly enabled with capture=yes. Use &#39;netsh trace show CaptureFilterHelp&#39; to display a list of supported capture filters and their usage.</p>
+<p>From &lt;<a href="http://www.colorconsole.de/cmd/en/Windows_7/netsh/trace/start.htm&gt;" target="_blank" rel="noopener">http://www.colorconsole.de/cmd/en/Windows_7/netsh/trace/start.htm&gt;</a></p></article>

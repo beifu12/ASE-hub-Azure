@@ -1,0 +1,58 @@
+<article class="kb-article" data-title="centos 7.5/7.6 安装图形化界面"><h1>centos 7.5/7.6 安装图形化界面</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-08-02 13:58:55</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>centos 7.5/7.6 安装图形化界面</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>centos 7.5/7.6 安装图形化界面</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>centos 7.5/7.6 安装图形化界面</li>
+</ul>
+<ul>
+<li>LiuHuan</li>
+</ul>
+<ul>
+<li>针对centos 7.6, 可以直接参考文档做。 测试可以成功。</li>
+</ul>
+<ul>
+<li>此外： 文档中有一个小问题</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>但是对centos 7.5. 在运行预配步骤中  yum groupinstall -y &quot;GNOME Desktop&quot; 可能会遇到报错 “file /boot/efi/EFI/centos from install of fwupdate-efi-12-5.el7.centos.x86_64 conflicts with file from package grub2-common-1:2.02-0.65.el7.centos.2.noarch ， 可以先运行yum upgrade -y （只升级所有包，不升级软件和系统内核），然后再运行yum groupinstall -y &quot;GNOME Desktop&quot;</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>第三步 编辑 /etc/systemd/system/vncserver@:1.service 对应的命令行中多了一个”\ “, 命令应该为 vim /etc/systemd/system/vncserver@:1.service</li>
+</ul>
+<ul>
+<li>第五步：启动服务以及开机启动命令中也同样多了一个”\”, 命令应该是 systemctl start vncserver@:1.service 以及  systemctl enable vncserver@:1.service</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>可以参考公网链接 <a href="https://blog.csdn.net/nahancy/article/details/86316971" target="_blank" rel="noopener">https://blog.csdn.net/nahancy/article/details/86316971</a> ， 测试可以成功启动图形化界面</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>centos 7.5/7.6 安装图形化界面</p>
+<p>LiuHuan</p>
+<p>可以参考公网链接 <a href="https://blog.csdn.net/nahancy/article/details/86316971" target="_blank" rel="noopener">https://blog.csdn.net/nahancy/article/details/86316971</a> ， 测试可以成功启动图形化界面</p>
+<p>针对centos 7.6, 可以直接参考文档做。 测试可以成功。</p>
+<p>但是对centos 7.5. 在运行预配步骤中  yum groupinstall -y &quot;GNOME Desktop&quot; 可能会遇到报错 “file /boot/efi/EFI/centos from install of fwupdate-efi-12-5.el7.centos.x86_64 conflicts with file from package grub2-common-1:2.02-0.65.el7.centos.2.noarch ， 可以先运行yum upgrade -y （只升级所有包，不升级软件和系统内核），然后再运行yum groupinstall -y &quot;GNOME Desktop&quot;</p>
+<p>此外： 文档中有一个小问题</p>
+<p>第三步 编辑 /etc/systemd/system/vncserver@:1.service 对应的命令行中多了一个”\ “, 命令应该为 vim /etc/systemd/system/vncserver@:1.service</p>
+<p>第五步：启动服务以及开机启动命令中也同样多了一个”\”, 命令应该是 systemctl start vncserver@:1.service 以及  systemctl enable vncserver@:1.service</p></article>

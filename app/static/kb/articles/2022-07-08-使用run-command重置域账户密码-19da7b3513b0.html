@@ -1,0 +1,161 @@
+<article class="kb-article" data-title="使用run-command重置域账户密码"><h1>使用run-command重置域账户密码</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-07-08 14:14:40</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>通过门户上的重置密码功能，可以重置的是管理员账户的密码，但是无法重置域账户的密码。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>通过门户上的重置密码功能，可以重置的是管理员账户的密码，但是无法重置域账户的密码。</li>
+</ul>
+<ul>
+<li>扩展报错信息：</li>
+</ul>
+<ul>
+<li>参考工单：SR_2021012576499_[MS-LED]无法重置账号密码</li>
+</ul>
+<ul>
+<li>域控虚拟机门户重置密码失败，提示“VMAccess Extension does not support Domain Controller”</li>
+</ul>
+<ul>
+<li>SR_2021012676968_[MS-LED]虚拟机无法重置密码</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>VMAccess Extension does not support Domain Controller.</li>
+</ul>
+<ul>
+<li>在虚拟机代理Ready的状态下，可以使用run-command重置域账户密码</li>
+</ul>
+<ul>
+<li>使用”运行名称”功能，重置域账户密码。</li>
+</ul>
+<ul>
+<li>SearchBase后的黄底部分，请输入账户的DistinguishedName；</li>
+</ul>
+<ul>
+<li>AsPlainText后的黄底部分，请输入密码。</li>
+</ul>
+<ul>
+<li>待运行完成且没有错误输出，请尝试使用新密码登陆。</li>
+</ul>
+<ul>
+<li>------------------------------------------------</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>原因分析：</li>
+</ul>
+<ul>
+<li>=============</li>
+</ul>
+<ul>
+<li>门户不支持重置域控服务器密码</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>使用Custom Script extension 为虚拟机重置密码成功。</li>
+</ul>
+<ul>
+<li>将net user &lt;UserName&gt; &lt;Password&gt; 写到一个后缀为ps1 的文件，并上传到同一区域的存储账户Blob 中</li>
+</ul>
+<ul>
+<li>为虚拟机添加 Custom Script Extension，并浏览选择1）中的ps1 文件</li>
+</ul>
+<ul>
+<li>为虚拟机添加扩展</li>
+</ul>
+<ul>
+<li>相关工单：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查步骤：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>1．点击  虚拟机 -&gt; 运行命令 &gt; RunPowerShellScript</li>
+</ul>
+<ul>
+<li>2．在 运行命令脚本中输入以下命令，点击运行，等待一段时间，获取输出结果，找您需要重置密码的的账户，并记录DistinguishedName</li>
+</ul>
+<ul>
+<li>Get-ADUser -Filter *|Select-Object name,samaccountname,DistinguishedName | Format-Table -AutoSize</li>
+</ul>
+<ul>
+<li>3．接着输入以下命令，再次运行。</li>
+</ul>
+<ul>
+<li>Get-ADUser -filter * -SearchBase &#39;CN=zlh,CN=Users,DC=evazhang,DC=xyz&#39; | Set-ADAccountPassword -Reset -NewPassword (ConvertTo-SecureString -AsPlainText &quot;**&quot; -Force)</li>
+</ul>
+<ul>
+<li>添加一个重置域控虚拟机密码的方法：在使用run-comamnd不work的情况下，可考虑使用自定义脚本扩展方法：</li>
+</ul>
+<ul>
+<li>通过runcommand 执行powershell脚本尝试重置用户密码但是runcommand窗口一直未有返回信息 。关于runcommand的官方文档为：在 Azure 中的 Windows VM 中运行 PowerShell 脚本 | Azure Docs</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>如果还是不行，建议尝试运行get-localuser，看一下本地账户是否有已有的账号可以重置密码并执行登录。</li>
+</ul>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-1-26</p>
+<p>通过门户上的重置密码功能，可以重置的是管理员账户的密码，但是无法重置域账户的密码。</p>
+<p>扩展报错信息：</p>
+<p>VMAccess Extension does not support Domain Controller.</p>
+<p>在虚拟机代理Ready的状态下，可以使用run-command重置域账户密码</p>
+<p>使用”运行名称”功能，重置域账户密码。</p>
+<p>1．点击  虚拟机 -&gt; 运行命令 &gt; RunPowerShellScript</p>
+<p>2．在 运行命令脚本中输入以下命令，点击运行，等待一段时间，获取输出结果，找您需要重置密码的的账户，并记录DistinguishedName</p>
+<p>Get-ADUser -Filter *|Select-Object name,samaccountname,DistinguishedName | Format-Table -AutoSize</p>
+<p>3．接着输入以下命令，再次运行。</p>
+<p>SearchBase后的黄底部分，请输入账户的DistinguishedName；</p>
+<p>AsPlainText后的黄底部分，请输入密码。</p>
+<p>待运行完成且没有错误输出，请尝试使用新密码登陆。</p>
+<p>Get-ADUser -filter * -SearchBase &#39;CN=zlh,CN=Users,DC=evazhang,DC=xyz&#39; | Set-ADAccountPassword -Reset -NewPassword (ConvertTo-SecureString -AsPlainText &quot;**&quot; -Force)</p>
+<p>参考工单：SR_2021012576499_[MS-LED]无法重置账号密码</p>
+<p>------------------------------------------------</p>
+<p>2021-1-29</p>
+<p>添加一个重置域控虚拟机密码的方法：在使用run-comamnd不work的情况下，可考虑使用自定义脚本扩展方法：</p>
+<p>问题描述：</p>
+<p>==========</p>
+<p>域控虚拟机门户重置密码失败，提示“VMAccess Extension does not support Domain Controller”</p>
+<p>排查步骤：</p>
+<p>========</p>
+<p>通过runcommand 执行powershell脚本尝试重置用户密码但是runcommand窗口一直未有返回信息 。关于runcommand的官方文档为：在 Azure 中的 Windows VM 中运行 PowerShell 脚本 | Azure Docs</p>
+<p>如果还是不行，建议尝试运行get-localuser，看一下本地账户是否有已有的账号可以重置密码并执行登录。</p>
+<p>原因分析：</p>
+<p>=============</p>
+<p>门户不支持重置域控服务器密码</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>使用Custom Script extension 为虚拟机重置密码成功。</p>
+<p>将net user &lt;UserName&gt; &lt;Password&gt; 写到一个后缀为ps1 的文件，并上传到同一区域的存储账户Blob 中</p>
+<p>为虚拟机添加 Custom Script Extension，并浏览选择1）中的ps1 文件</p>
+<p>为虚拟机添加扩展</p>
+<p>相关工单：</p>
+<p>SR_2021012676968_[MS-LED]虚拟机无法重置密码</p></article>

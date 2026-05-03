@@ -1,0 +1,143 @@
+<article class="kb-article" data-title="【Share】ABRS 备份SQL in VM 出现报错：Log chain is broken, as another backup product is taking backups."><h1>【Share】ABRS 备份SQL in VM 出现报错：Log chain is broken, as another backup product is taking backups.</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-11 10:59:49</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Inner Error Message</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Inner Error Message</li>
+</ul>
+<ul>
+<li>1， 首先根据官网提示，用户遇到的报错是可能是由于其他备份方案的干扰导致截断了日志链。参考：</li>
+</ul>
+<ul>
+<li>SR_20240620299813_Backup Failure Alerts</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2024.6.24</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=========</li>
+</ul>
+<ul>
+<li>Message</li>
+</ul>
+<ul>
+<li>Recommendations Please trigger a fu... by Ivan ZhouIvan Zhou (External)10:59 AM</li>
+</ul>
+<ul>
+<li>Recommendations</li>
+</ul>
+<ul>
+<li>2. If you have configured Azure IaaS VM image backup using Azure Backup service, please make sure that VM backup is using VSS copy.</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>4，查了SQL server 在azure 平台上的extention 也没有看到干扰内容。</li>
+</ul>
+<ul>
+<li>用户关闭了SQL backup 并在recovery service vault 中做了一次全备份之后问题得到了解决。</li>
+</ul>
+<ul>
+<li>更多参考：</li>
+</ul>
+<ul>
+<li>SQLSERVERAGENT (SQL Server Agent): SQL Server代理服务，用于自动化管理任务，如备份、警报等。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>用户的monitor 自19号之后出现报错提醒Log chain is broken, as another backup product is taking backups.</li>
+</ul>
+<ul>
+<li>Message Log chain is broken, as another b... by Ivan ZhouIvan Zhou (External)10:59 AM</li>
+</ul>
+<ul>
+<li>Log chain is broken, as another backup product is taking backups.</li>
+</ul>
+<ul>
+<li>Please trigger a full backup to fix the issue. This typically happens when a log backup is taken by some other backup, so to avoid this issue in future follow the below steps:</li>
+</ul>
+<ul>
+<li>Inner Error Message Please check if backu... by Ivan ZhouIvan Zhou (External)11:00 AM</li>
+</ul>
+<ul>
+<li>Please check if backup to URL is also configured for the database 3ppns.</li>
+</ul>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>2， 排查了目标SQL server VM 上的应用日志和system log 均没有发现对应时间点的异常备份情况。</li>
+</ul>
+<ul>
+<li>3， 进一步排查task scheduler也没有发现备份异常的情况。</li>
+</ul>
+<ul>
+<li>5，继续排查问题SQL server 上的所有service，发现除了SQL server agent 与我的测试环境中状态不一致。 默认仅使用ASR 备份的情况下SQL server agent 服务是stop 的状态，用户的是running状态。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>1. If you are using some other software to do SQL backup or using SQL native backup please disable it.</li>
+</ul>
+<ul>
+<li>6，继续排查，对比用户的环境和我的测试环境，这里发现用户的SQL 服务器bcnace-3ppns-db-qa 本身确实开启了另外一个backup 服务，该服务是SQL server 自身的automated backup 解决方案。而另外一台SQL 服务器BCNACE-3PPNS-DB-P 是保持的默认disabled 的状态。</li>
+</ul>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/backup/backup-sql-server-azure-troubleshoot#usererrorsqllsnvalidationfailure" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/backup-sql-server-azure-troubleshoot#usererrorsqllsnvalidationfailure</a></li>
+</ul>
+<ul>
+<li>如果使用Azure backup 来备份SQL server， 需要禁用其他所有SQL server 备份。参考：  <a href="https://docs.azure.cn/zh-cn/backup/tutorial-sql-backup" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/tutorial-sql-backup</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024.6.24</p>
+<p>问题描述：</p>
+<p>=========</p>
+<p>用户的monitor 自19号之后出现报错提醒Log chain is broken, as another backup product is taking backups.</p>
+<p>Message Log chain is broken, as another b... by Ivan ZhouIvan Zhou (External)10:59 AM</p>
+<p>Message</p>
+<p>Log chain is broken, as another backup product is taking backups.</p>
+<p>Recommendations Please trigger a fu... by Ivan ZhouIvan Zhou (External)10:59 AM</p>
+<p>Recommendations</p>
+<p>Please trigger a full backup to fix the issue. This typically happens when a log backup is taken by some other backup, so to avoid this issue in future follow the below steps:</p>
+<p>1. If you are using some other software to do SQL backup or using SQL native backup please disable it.</p>
+<p>2. If you have configured Azure IaaS VM image backup using Azure Backup service, please make sure that VM backup is using VSS copy.</p>
+<p>Inner Error Message Please check if backu... by Ivan ZhouIvan Zhou (External)11:00 AM</p>
+<p>Inner Error Message</p>
+<p>Please check if backup to URL is also configured for the database 3ppns.</p>
+<p>排查过程：</p>
+<p>==========</p>
+<p>1， 首先根据官网提示，用户遇到的报错是可能是由于其他备份方案的干扰导致截断了日志链。参考：</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/backup/backup-sql-server-azure-troubleshoot#usererrorsqllsnvalidationfailure" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/backup-sql-server-azure-troubleshoot#usererrorsqllsnvalidationfailure</a></p>
+<p>2， 排查了目标SQL server VM 上的应用日志和system log 均没有发现对应时间点的异常备份情况。</p>
+<p>3， 进一步排查task scheduler也没有发现备份异常的情况。</p>
+<p>4，查了SQL server 在azure 平台上的extention 也没有看到干扰内容。</p>
+<p>5，继续排查问题SQL server 上的所有service，发现除了SQL server agent 与我的测试环境中状态不一致。 默认仅使用ASR 备份的情况下SQL server agent 服务是stop 的状态，用户的是running状态。</p>
+<p>6，继续排查，对比用户的环境和我的测试环境，这里发现用户的SQL 服务器bcnace-3ppns-db-qa 本身确实开启了另外一个backup 服务，该服务是SQL server 自身的automated backup 解决方案。而另外一台SQL 服务器BCNACE-3PPNS-DB-P 是保持的默认disabled 的状态。</p>
+<p>解决方案：</p>
+<p>用户关闭了SQL backup 并在recovery service vault 中做了一次全备份之后问题得到了解决。</p>
+<p>更多参考：</p>
+<p>SR_20240620299813_Backup Failure Alerts</p>
+<p>SQLSERVERAGENT (SQL Server Agent): SQL Server代理服务，用于自动化管理任务，如备份、警报等。</p>
+<p>如果使用Azure backup 来备份SQL server， 需要禁用其他所有SQL server 备份。参考：  <a href="https://docs.azure.cn/zh-cn/backup/tutorial-sql-backup" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/tutorial-sql-backup</a></p></article>

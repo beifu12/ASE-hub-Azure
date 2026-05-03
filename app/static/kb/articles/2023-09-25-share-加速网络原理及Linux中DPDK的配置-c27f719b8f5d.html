@@ -1,0 +1,330 @@
+<article class="kb-article" data-title="【share】加速网络原理及Linux中DPDK的配置"><h1>【share】加速网络原理及Linux中DPDK的配置</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2023-09-25 00:07:49</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>HI ALL，</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>HI ALL，</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>HI ALL，</li>
+</ul>
+<ul>
+<li>最近有客户咨询Azure虚拟机加速网络和配置DPDK的问题，咨询此类问题的客户较少，官网上有文档，但是不太容易理解，具体配置DPDK也有很多坑。我这边将原理做了归纳总结，并且做了一个完整的测试，供大家参考。文章中如有错误还请各位老师不吝指正</li>
+</ul>
+<ul>
+<li>===加速网络原理部分===</li>
+</ul>
+<ul>
+<li>功能配置</li>
+</ul>
+<ul>
+<li>门户上可以在虚拟机&gt;&gt;网络&gt;&gt;网络接口&gt;&gt;编辑加速网络中启用或禁用加速网络功能</li>
+</ul>
+<ul>
+<li>架构对比</li>
+</ul>
+<ul>
+<li>无加速网络：</li>
+</ul>
+<ul>
+<li>Azure主机跟数据中心的交换机之间的流量会经过虚拟交换机中转</li>
+</ul>
+<ul>
+<li>有加速网络：</li>
+</ul>
+<ul>
+<li>Azure主机跟数据中心的交换机直接交换流量，不再经过虚拟交换机</li>
+</ul>
+<ul>
+<li>具体实现：</li>
+</ul>
+<ul>
+<li>在创建不带加速网络的Azure虚拟机时，平台会为VM的虚拟NIC配置一个默认接口，在OS中作为VMBUS设备存在，并且使用netvsc驱动，默认接口作为主接口，只有默认接口才可以配置IP地址与应用程序进行流量交互。</li>
+</ul>
+<ul>
+<li>开启加速网络功能后，平台会基于物理网卡提供的功能再为虚拟NIC创建一个VF接口，在OS中作为PCI设备存在，使用Mellanox mlx4 或 mlx5 驱动程序。</li>
+</ul>
+<ul>
+<li>接口配对</li>
+</ul>
+<ul>
+<li>加速网络功能开启后，NIC的默认接口和VF接口会自动完成配对，VF接口作为默认接口的从接口，这两个接口对应的是同一张NIC，所以它们共享相同的MAC地址，请再次注意，应用程序只与默认接口交互。</li>
+</ul>
+<ul>
+<li>数据流向</li>
+</ul>
+<ul>
+<li>应用程序将数据交付给默认接口，经驱动处理后转发到VF接口中发出。类似地，接收数据时，数据经由VF接口处理后转发到默认接口，并交付给应用程序</li>
+</ul>
+<ul>
+<li>===配置DPDK===</li>
+</ul>
+<ul>
+<li>DPDK是Data Plane Development Kit （数据面开发工具套件）的缩写，可绕过内核空间，直接通过用户空间调用系统资源，从而避免了内核空间与用户空间的上下文切换，减少了系统开销，有效地提升处理网络数据的速度</li>
+</ul>
+<ul>
+<li>先决条件：</li>
+</ul>
+<ul>
+<li>操作系统最低要求</li>
+</ul>
+<ul>
+<li>Linux OS</li>
+</ul>
+<ul>
+<li>内核版本</li>
+</ul>
+<ul>
+<li>Ubuntu 18.04</li>
+</ul>
+<ul>
+<li>4.15.0-1014-azure+</li>
+</ul>
+<ul>
+<li>SLES 15 SP1</li>
+</ul>
+<ul>
+<li>4.12.14-8.19-azure+</li>
+</ul>
+<ul>
+<li>CentOS 7.5</li>
+</ul>
+<ul>
+<li>3.10.0-862.11.6.el7.x86_64+</li>
+</ul>
+<ul>
+<li>Debian 10</li>
+</ul>
+<ul>
+<li>4.19.0-1-cloud+</li>
+</ul>
+<ul>
+<li>Linux 虚拟机上需要启用加速网络。 虚拟机应至少有两张网卡，第一张网卡作为跟Azure控制面通信的管理网卡，管理网卡不能由DPDK应用程序接管，否则会导致SSH断开。</li>
+</ul>
+<ul>
+<li>最佳实践</li>
+</ul>
+<ul>
+<li>环境：</li>
+</ul>
+<ul>
+<li>VM Size:        Standard D8ds v4</li>
+</ul>
+<ul>
+<li>OS版本：    CentOS Linux release 7.5.1804 (Core)</li>
+</ul>
+<ul>
+<li>内核版本：    Linux version 3.10.0-862.11.6.el7.x86_64</li>
+</ul>
+<ul>
+<li>虚拟机要在停机状态下才能添加第二张网卡，由于要客户的场景要测试与公网的交互，这里我们为第二张网卡关联一个公网IP地址以便访问外网，并为此网卡配置NSG出站规则放行到公网的出向流量</li>
+</ul>
+<ul>
+<li>在网络接口&gt;&gt;概述&gt;&gt;编辑加速网络中为第二张网卡启用加速网络功能，</li>
+</ul>
+<ul>
+<li>安装版本依赖项</li>
+</ul>
+<ul>
+<li>yum -y groupinstall &quot;Infiniband Support&quot;</li>
+</ul>
+<ul>
+<li>sudo dracut --add-drivers &quot;mlx4_en mlx4_ib mlx5_ib&quot; -f</li>
+</ul>
+<ul>
+<li>yum install -y gcc kernel-devel-<code>uname -r</code> numactl-devel.x86_64 librdmacm-devel libmnl-devel</li>
+</ul>
+<ul>
+<li>安装meson和ninja</li>
+</ul>
+<ul>
+<li>python3 -m pip install meson</li>
+</ul>
+<ul>
+<li>python3 -m pip install ninja</li>
+</ul>
+<ul>
+<li>解压此压缩包并进入到dpdk主目录</li>
+</ul>
+<ul>
+<li>tar -xf dpdk-19.11.14.tar.xz</li>
+</ul>
+<ul>
+<li>cd dpdk-stable-19.11.14/</li>
+</ul>
+<ul>
+<li>生成配置，编译并安装dpdk, 并进入到dpdk程序目录下</li>
+</ul>
+<ul>
+<li>meson builddir</li>
+</ul>
+<ul>
+<li>ninja -C builddir</li>
+</ul>
+<ul>
+<li>cd /tmp/dpdk/usr/local/bin</li>
+</ul>
+<ul>
+<li>echo 1024 | sudo tee /sys/devices/system/node/node*/hugepages/hugepages-2048kB/nr_hugepages</li>
+</ul>
+<ul>
+<li>mkdir /mnt/huge</li>
+</ul>
+<ul>
+<li>mount -t hugetlbfs nodev /mnt/huge</li>
+</ul>
+<ul>
+<li>ethtool -i eth2</li>
+</ul>
+<ul>
+<li>modprobe -a ib_uverbs</li>
+</ul>
+<ul>
+<li>show port info all</li>
+</ul>
+<ul>
+<li>start</li>
+</ul>
+<ul>
+<li>新开一个ssh窗口，指定一条eth1出站的精确路由，并使用paping工具发包</li>
+</ul>
+<ul>
+<li>tar -xf paping_1.5.5_x86-64_linux.tar.gz</li>
+</ul>
+<ul>
+<li>./paping 220.181.38.150 -p 80</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>开机SSH登录到VM，以root用户登录， ifconfig查看网卡验证加速网络功能。eth1为默认接口，eth2为VF接口从属于eth1(SLAVE)，它们共享相同的MAC地址</li>
+</ul>
+<ul>
+<li>使用ethtool查看VF接口的PCI地址, 我这里的地址是0002:00:02.0</li>
+</ul>
+<ul>
+<li>./dpdk-testpmd -w  0002:00:02.0 -- -i  --port-topology=chained</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>下载DPDK，这里推荐下载19.11.14 LTS版本, 这个版本的testpmd命令才有文档中的-w参数，</li>
+</ul>
+<ul>
+<li>运行以下命令配置运行环境（虚机每次重启后，要运行testpmd命令都要先配置一遍运行环境）</li>
+</ul>
+<ul>
+<li>grep Huge /proc/meminfo</li>
+</ul>
+<ul>
+<li>加载ib驱动后运行testpmd, 标黄部分改成自己的PCI地址, 进入到testpmd命令接口</li>
+</ul>
+<ul>
+<li>在testpmd命令接口中查看端口信息，并且对相应端口进行监听</li>
+</ul>
+<ul>
+<li>route add -host 220.181.38.150 dev eth1 gw 172.18.0.1                 #(标黄部分为eth1所在子网网关)</li>
+</ul>
+<ul>
+<li>切换回监听的ssh窗口，使用stop命令即可看见此端口上的数据包统计信息，这其实就是VF接口处理的包的数量信息</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>DESTDIR=/tmp/dpdk ninja -C builddir install</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>wget <a href="https://fast.dpdk.org/rel/dpdk-19.11.14.tar.xz" target="_blank" rel="noopener">https://fast.dpdk.org/rel/dpdk-19.11.14.tar.xz</a></li>
+</ul>
+<ul>
+<li>wget <a href="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/paping/paping_1.5.5_x86-64_linux.tar.gz" target="_blank" rel="noopener">https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/paping/paping_1.5.5_x86-64_linux.tar.gz</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/09/25</p>
+<p>HI ALL，</p>
+<p>最近有客户咨询Azure虚拟机加速网络和配置DPDK的问题，咨询此类问题的客户较少，官网上有文档，但是不太容易理解，具体配置DPDK也有很多坑。我这边将原理做了归纳总结，并且做了一个完整的测试，供大家参考。文章中如有错误还请各位老师不吝指正</p>
+<p>===加速网络原理部分===</p>
+<p>功能配置</p>
+<p>门户上可以在虚拟机&gt;&gt;网络&gt;&gt;网络接口&gt;&gt;编辑加速网络中启用或禁用加速网络功能</p>
+<p>架构对比</p>
+<p>无加速网络：</p>
+<p>Azure主机跟数据中心的交换机之间的流量会经过虚拟交换机中转</p>
+<p>有加速网络：</p>
+<p>Azure主机跟数据中心的交换机直接交换流量，不再经过虚拟交换机</p>
+<p>具体实现：</p>
+<p>在创建不带加速网络的Azure虚拟机时，平台会为VM的虚拟NIC配置一个默认接口，在OS中作为VMBUS设备存在，并且使用netvsc驱动，默认接口作为主接口，只有默认接口才可以配置IP地址与应用程序进行流量交互。</p>
+<p>开启加速网络功能后，平台会基于物理网卡提供的功能再为虚拟NIC创建一个VF接口，在OS中作为PCI设备存在，使用Mellanox mlx4 或 mlx5 驱动程序。</p>
+<p>接口配对</p>
+<p>加速网络功能开启后，NIC的默认接口和VF接口会自动完成配对，VF接口作为默认接口的从接口，这两个接口对应的是同一张NIC，所以它们共享相同的MAC地址，请再次注意，应用程序只与默认接口交互。</p>
+<p>数据流向</p>
+<p>应用程序将数据交付给默认接口，经驱动处理后转发到VF接口中发出。类似地，接收数据时，数据经由VF接口处理后转发到默认接口，并交付给应用程序</p>
+<p>===配置DPDK===</p>
+<p>DPDK是Data Plane Development Kit （数据面开发工具套件）的缩写，可绕过内核空间，直接通过用户空间调用系统资源，从而避免了内核空间与用户空间的上下文切换，减少了系统开销，有效地提升处理网络数据的速度</p>
+<p>先决条件：</p>
+<p>操作系统最低要求</p>
+<p>Linux OS</p>
+<p>内核版本</p>
+<p>Ubuntu 18.04</p>
+<p>4.15.0-1014-azure+</p>
+<p>SLES 15 SP1</p>
+<p>4.12.14-8.19-azure+</p>
+<p>CentOS 7.5</p>
+<p>3.10.0-862.11.6.el7.x86_64+</p>
+<p>Debian 10</p>
+<p>4.19.0-1-cloud+</p>
+<p>Linux 虚拟机上需要启用加速网络。 虚拟机应至少有两张网卡，第一张网卡作为跟Azure控制面通信的管理网卡，管理网卡不能由DPDK应用程序接管，否则会导致SSH断开。</p>
+<p>最佳实践</p>
+<p>环境：</p>
+<p>VM Size:        Standard D8ds v4</p>
+<p>OS版本：    CentOS Linux release 7.5.1804 (Core)</p>
+<p>内核版本：    Linux version 3.10.0-862.11.6.el7.x86_64</p>
+<p>虚拟机要在停机状态下才能添加第二张网卡，由于要客户的场景要测试与公网的交互，这里我们为第二张网卡关联一个公网IP地址以便访问外网，并为此网卡配置NSG出站规则放行到公网的出向流量</p>
+<p>在网络接口&gt;&gt;概述&gt;&gt;编辑加速网络中为第二张网卡启用加速网络功能，</p>
+<p>开机SSH登录到VM，以root用户登录， ifconfig查看网卡验证加速网络功能。eth1为默认接口，eth2为VF接口从属于eth1(SLAVE)，它们共享相同的MAC地址</p>
+<p>安装版本依赖项</p>
+<p>yum -y groupinstall &quot;Infiniband Support&quot;</p>
+<p>sudo dracut --add-drivers &quot;mlx4_en mlx4_ib mlx5_ib&quot; -f</p>
+<p>yum install -y gcc kernel-devel-<code>uname -r</code> numactl-devel.x86_64 librdmacm-devel libmnl-devel</p>
+<p>安装meson和ninja</p>
+<p>python3 -m pip install meson</p>
+<p>python3 -m pip install ninja</p>
+<p>下载DPDK，这里推荐下载19.11.14 LTS版本, 这个版本的testpmd命令才有文档中的-w参数，</p>
+<p>wget <a href="https://fast.dpdk.org/rel/dpdk-19.11.14.tar.xz" target="_blank" rel="noopener">https://fast.dpdk.org/rel/dpdk-19.11.14.tar.xz</a></p>
+<p>解压此压缩包并进入到dpdk主目录</p>
+<p>tar -xf dpdk-19.11.14.tar.xz</p>
+<p>cd dpdk-stable-19.11.14/</p>
+<p>生成配置，编译并安装dpdk, 并进入到dpdk程序目录下</p>
+<p>meson builddir</p>
+<p>ninja -C builddir</p>
+<p>DESTDIR=/tmp/dpdk ninja -C builddir install</p>
+<p>cd /tmp/dpdk/usr/local/bin</p>
+<p>运行以下命令配置运行环境（虚机每次重启后，要运行testpmd命令都要先配置一遍运行环境）</p>
+<p>echo 1024 | sudo tee /sys/devices/system/node/node*/hugepages/hugepages-2048kB/nr_hugepages</p>
+<p>mkdir /mnt/huge</p>
+<p>mount -t hugetlbfs nodev /mnt/huge</p>
+<p>grep Huge /proc/meminfo</p>
+<p>使用ethtool查看VF接口的PCI地址, 我这里的地址是0002:00:02.0</p>
+<p>ethtool -i eth2</p>
+<p>加载ib驱动后运行testpmd, 标黄部分改成自己的PCI地址, 进入到testpmd命令接口</p>
+<p>modprobe -a ib_uverbs</p>
+<p>./dpdk-testpmd -w  0002:00:02.0 -- -i  --port-topology=chained</p>
+<p>在testpmd命令接口中查看端口信息，并且对相应端口进行监听</p>
+<p>show port info all</p>
+<p>start</p>
+<p>新开一个ssh窗口，指定一条eth1出站的精确路由，并使用paping工具发包</p>
+<p>route add -host 220.181.38.150 dev eth1 gw 172.18.0.1                 #(标黄部分为eth1所在子网网关)</p>
+<p>wget <a href="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/paping/paping_1.5.5_x86-64_linux.tar.gz" target="_blank" rel="noopener">https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/paping/paping_1.5.5_x86-64_linux.tar.gz</a></p>
+<p>tar -xf paping_1.5.5_x86-64_linux.tar.gz</p>
+<p>./paping 220.181.38.150 -p 80</p>
+<p>切换回监听的ssh窗口，使用stop命令即可看见此端口上的数据包统计信息，这其实就是VF接口处理的包的数量信息</p></article>

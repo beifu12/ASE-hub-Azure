@@ -1,0 +1,417 @@
+<article class="kb-article" data-title="使用 Application Insights 跟踪 Azure AD B2C 中的用户行为"><h1>使用 Application Insights 跟踪 Azure AD B2C 中的用户行为</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-05-10 10:10:58</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>文件为模板进行修改的，该文件需要Facebook设置，由于国内暂无法访问facebook。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>文件为模板进行修改的，该文件需要Facebook设置，由于国内暂无法访问facebook。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>该文档是按照新手包的</li>
+</ul>
+<ul>
+<li>一、定义声明</li>
+</ul>
+<ul>
+<li>搜索 BuildingBlocks 元素。 查找 ClaimsSchema 元素。 如果看不到该元素，请添加它。</li>
+</ul>
+<ul>
+<li>复制如下信息到如图位置</li>
+</ul>
+<ul>
+<li>&lt;ClaimType Id=&quot;EventType&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;DisplayName&gt;Event type&lt;/DisplayName&gt;</li>
+</ul>
+<ul>
+<li>&lt;DataType&gt;string&lt;/DataType&gt;</li>
+</ul>
+<ul>
+<li>&lt;/ClaimType&gt;</li>
+</ul>
+<ul>
+<li>&lt;ClaimType Id=&quot;EventTimestamp&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;DisplayName&gt;Event timestamp&lt;/DisplayName&gt;</li>
+</ul>
+<ul>
+<li>&lt;ClaimType Id=&quot;PolicyId&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;DisplayName&gt;Policy Id&lt;/DisplayName&gt;</li>
+</ul>
+<ul>
+<li>&lt;ClaimType Id=&quot;Culture&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;DisplayName&gt;Culture ID&lt;/DisplayName&gt;</li>
+</ul>
+<ul>
+<li>&lt;ClaimType Id=&quot;CorrelationId&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;DisplayName&gt;Correlation Id&lt;/DisplayName&gt;</li>
+</ul>
+<ul>
+<li>&lt;ClaimType Id=&quot;federatedUser&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;DisplayName&gt;Federated user&lt;/DisplayName&gt;</li>
+</ul>
+<ul>
+<li>&lt;DataType&gt;boolean&lt;/DataType&gt;</li>
+</ul>
+<ul>
+<li>&lt;ClaimType Id=&quot;parsedDomain&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;DisplayName&gt;Domain name&lt;/DisplayName&gt;</li>
+</ul>
+<ul>
+<li>&lt;UserHelpText&gt;The domain portion of the email address.&lt;/UserHelpText&gt;</li>
+</ul>
+<ul>
+<li>&lt;ClaimType Id=&quot;userInLocalDirectory&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;DisplayName&gt;userInLocalDirectory&lt;/DisplayName&gt;</li>
+</ul>
+<ul>
+<li>二、新增技术配置文件</li>
+</ul>
+<ul>
+<li>搜索&lt;ClaimsProviders&gt; … &lt;/ClaimsProviders&gt;复制如下信息到其中间如图位置</li>
+</ul>
+<ul>
+<li>&lt;ClaimsProvider&gt;</li>
+</ul>
+<ul>
+<li>&lt;DisplayName&gt;Application Insights&lt;/DisplayName&gt;</li>
+</ul>
+<ul>
+<li>&lt;TechnicalProfiles&gt;</li>
+</ul>
+<ul>
+<li>&lt;TechnicalProfile Id=&quot;AppInsights-Common&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;Metadata&gt;</li>
+</ul>
+<ul>
+<li>&lt;Item Key=&quot;InstrumentationKey&quot;&gt;xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&lt;/Item&gt;</li>
+</ul>
+<ul>
+<li>&lt;Item Key=&quot;DeveloperMode&quot;&gt;false&lt;/Item&gt;</li>
+</ul>
+<ul>
+<li>&lt;/Metadata&gt;</li>
+</ul>
+<ul>
+<li>&lt;InputClaims&gt;</li>
+</ul>
+<ul>
+<li>&lt;InputClaim ClaimTypeReferenceId=&quot;EventTimestamp&quot; PartnerClaimType=&quot;{property:EventTimestamp}&quot; DefaultValue=&quot;{Context:DateTimeInUtc}&quot; /&gt;</li>
+</ul>
+<ul>
+<li>&lt;InputClaim ClaimTypeReferenceId=&quot;tenantId&quot; PartnerClaimType=&quot;{property:TenantId}&quot; DefaultValue=&quot;{Policy:TrustFrameworkTenantId}&quot; /&gt;</li>
+</ul>
+<ul>
+<li>&lt;InputClaim ClaimTypeReferenceId=&quot;PolicyId&quot; PartnerClaimType=&quot;{property:Policy}&quot; DefaultValue=&quot;{Policy:PolicyId}&quot; /&gt;</li>
+</ul>
+<ul>
+<li>&lt;InputClaim ClaimTypeReferenceId=&quot;CorrelationId&quot; PartnerClaimType=&quot;{property:CorrelationId}&quot; DefaultValue=&quot;{Context:CorrelationId}&quot; /&gt;</li>
+</ul>
+<ul>
+<li>&lt;InputClaim ClaimTypeReferenceId=&quot;Culture&quot; PartnerClaimType=&quot;{property:Culture}&quot; DefaultValue=&quot;{Culture:RFC5646}&quot; /&gt;</li>
+</ul>
+<ul>
+<li>&lt;/InputClaims&gt;</li>
+</ul>
+<ul>
+<li>&lt;/TechnicalProfile&gt;</li>
+</ul>
+<ul>
+<li>&lt;TechnicalProfile Id=&quot;AppInsights-SignInRequest&quot;&gt;</li>
+</ul>
+<p>-</p>
+<ul>
+<li>&lt;InputClaim ClaimTypeReferenceId=&quot;EventType&quot; PartnerClaimType=&quot;eventName&quot; DefaultValue=&quot;SignInRequest&quot; /&gt;</li>
+</ul>
+<ul>
+<li>&lt;IncludeTechnicalProfile ReferenceId=&quot;AppInsights-Common&quot; /&gt;</li>
+</ul>
+<ul>
+<li>&lt;TechnicalProfile Id=&quot;AppInsights-UserSignUp&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;InputClaim ClaimTypeReferenceId=&quot;EventType&quot; PartnerClaimType=&quot;eventName&quot; DefaultValue=&quot;UserSignUp&quot; /&gt;</li>
+</ul>
+<ul>
+<li>&lt;TechnicalProfile Id=&quot;AppInsights-SignInComplete&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;InputClaim ClaimTypeReferenceId=&quot;EventType&quot; PartnerClaimType=&quot;eventName&quot; DefaultValue=&quot;SignInComplete&quot; /&gt;</li>
+</ul>
+<ul>
+<li>&lt;InputClaim ClaimTypeReferenceId=&quot;federatedUser&quot; PartnerClaimType=&quot;{property:FederatedUser}&quot; DefaultValue=&quot;false&quot; /&gt;</li>
+</ul>
+<ul>
+<li>&lt;InputClaim ClaimTypeReferenceId=&quot;parsedDomain&quot; PartnerClaimType=&quot;{property:FederationPartner}&quot; DefaultValue=&quot;Not Applicable&quot; /&gt;</li>
+</ul>
+<ul>
+<li>&lt;InputClaim ClaimTypeReferenceId=&quot;identityProvider&quot; PartnerClaimType=&quot;{property:IDP}&quot; DefaultValue=&quot;Local&quot; /&gt;</li>
+</ul>
+<ul>
+<li>&lt;/TechnicalProfiles&gt;</li>
+</ul>
+<ul>
+<li>&lt;/ClaimsProvider&gt;</li>
+</ul>
+<ul>
+<li>复制TrustFrameworkBase.xml 中的</li>
+</ul>
+<ul>
+<li>&lt;UserJourney Id=&quot;SignUpOrSignIn&quot;&gt;</li>
+</ul>
+<ul>
+<li>...</li>
+</ul>
+<ul>
+<li>&lt;/UserJourney&gt;</li>
+</ul>
+<ul>
+<li>部分到</li>
+</ul>
+<ul>
+<li>TrustFrameworkExtensions.xml文件，并将ID名称改为SignUpOrSignIn1</li>
+</ul>
+<p>-</p>
+<ul>
+<li>&lt;OrchestrationStep Order=&quot;2&quot; Type=&quot;ClaimsExchange&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;ClaimsExchanges&gt;</li>
+</ul>
+<ul>
+<li>&lt;ClaimsExchange Id=&quot;TrackSignInRequest&quot; TechnicalProfileReferenceId=&quot;AppInsights-SignInRequest&quot; /&gt;</li>
+</ul>
+<ul>
+<li>&lt;/ClaimsExchanges&gt;</li>
+</ul>
+<ul>
+<li>&lt;/OrchestrationStep&gt;</li>
+</ul>
+<ul>
+<li>找到SendClaims 业务流程</li>
+</ul>
+<p>-</p>
+<ul>
+<li>&lt;OrchestrationStep Order=&quot;5&quot; Type=&quot;ClaimsExchange&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;Preconditions&gt;</li>
+</ul>
+<ul>
+<li>&lt;Precondition Type=&quot;ClaimsExist&quot; ExecuteActionsIf=&quot;false&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;Value&gt;newUser&lt;/Value&gt;</li>
+</ul>
+<ul>
+<li>&lt;Action&gt;SkipThisOrchestrationStep&lt;/Action&gt;</li>
+</ul>
+<ul>
+<li>&lt;/Precondition&gt;</li>
+</ul>
+<ul>
+<li>&lt;Precondition Type=&quot;ClaimEquals&quot; ExecuteActionsIf=&quot;true&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;Value&gt;false&lt;/Value&gt;</li>
+</ul>
+<ul>
+<li>&lt;/Preconditions&gt;</li>
+</ul>
+<ul>
+<li>&lt;ClaimsExchange Id=&quot;TrackUserSignUp&quot; TechnicalProfileReferenceId=&quot;AppInsights-UserSignup&quot; /&gt;</li>
+</ul>
+<p>-</p>
+<ul>
+<li>&lt;OrchestrationStep Order=&quot;7&quot; Type=&quot;ClaimsExchange&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;ClaimsExchange Id=&quot;TrackSignInComplete&quot; TechnicalProfileReferenceId=&quot;AppInsights-SignInComplete&quot; /&gt;</li>
+</ul>
+<ul>
+<li>分别复制如下信息到如图位置，具体需要依据您自定义的旅程文件而定。</li>
+</ul>
+<ul>
+<li>修改后，添加上传到自定义策略，由于我的用户路程名为如下：</li>
+</ul>
+<ul>
+<li>添加相应的登录RP文件（复制SignUpOrSignin.xml 并修改如下图位置）</li>
+</ul>
+<ul>
+<li>打开 Application Insights 选择 &quot; 使用情况&quot;，然后选择 &quot; 事件&quot;。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如下是我的测试基于新手包LocalAccounts\TrustFrameworkExtensions.xml的修改步骤，</li>
+</ul>
+<p>-</p>
+<ul>
+<li>三、添加技术配置文件，作为业务流程步骤</li>
+</ul>
+<ul>
+<li>如设置用户旅程文件的步骤，以用户登录注册页面为例，将如下三段分别进行添加到旅程中。</li>
+</ul>
+<ul>
+<li>注意，添加时请按顺序对这些步骤重新编号，不要跳过从 1 到 N 的任何整数。</li>
+</ul>
+<ul>
+<li>将AppInsights-SignInRequest作为第二个业务流程步骤调用，在CombinedSignInAndSignUp后面。 此步骤将跟踪已收到注册或登录请求。</li>
+</ul>
+<ul>
+<li>在 SendClaims 业务流程步骤之前，添加调用的新步骤 AppInsights-UserSignup 。 当用户在注册或登录旅程中选择 &quot;注册&quot; 按钮时，会触发此项。</li>
+</ul>
+<ul>
+<li>在 SendClaims 业务流程步骤后，调用 AppInsights-SignInComplete 。 此步骤演示成功完成的过程。</li>
+</ul>
+<ul>
+<li>测试登录，返回Application Insight查看记录如下：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>&lt;Protocol Name=&quot;Proprietary&quot; Handler=&quot;Web.TPEngine.Providers.Insights.AzureApplicationInsightsProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null&quot; /&gt;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>根据描述，可以通过application insight对文档中提到SignInRequest 事件，UserSignUp 事件以及SignInComplete 事件进行记录。</li>
+</ul>
+<ul>
+<li>&lt;Item Key=&quot;DisableTelemetry &quot;&gt;false&lt;/Item&gt;</li>
+</ul>
+<p>-</p>
+<ul>
+<li>将 AppInsights-Common 技术配置文件中的InstrumentationKey更改为 Application Insights 资源提供的 GUID。如下图：</li>
+</ul>
+<ul>
+<li>将“期间”设置为“过去一小时”，将“截止时间”设置为“3 分钟”。 可能需要刷新窗口才能查看结果。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考：<a href="https://docs.azure.cn/zh-cn/active-directory-b2c/analytics-with-application-insights?pivots=b2c-custom-policy" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/analytics-with-application-insights?pivots=b2c-custom-policy</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/05/10</p>
+<p>参考：<a href="https://docs.azure.cn/zh-cn/active-directory-b2c/analytics-with-application-insights?pivots=b2c-custom-policy" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/analytics-with-application-insights?pivots=b2c-custom-policy</a></p>
+<p>根据描述，可以通过application insight对文档中提到SignInRequest 事件，UserSignUp 事件以及SignInComplete 事件进行记录。</p>
+<p>该文档是按照新手包的</p>
+<p>文件为模板进行修改的，该文件需要Facebook设置，由于国内暂无法访问facebook。</p>
+<p>如下是我的测试基于新手包LocalAccounts\TrustFrameworkExtensions.xml的修改步骤，</p>
+<p>一、定义声明</p>
+<p>搜索 BuildingBlocks 元素。 查找 ClaimsSchema 元素。 如果看不到该元素，请添加它。</p>
+<p>复制如下信息到如图位置</p>
+<p>&lt;ClaimType Id=&quot;EventType&quot;&gt;</p>
+<p>&lt;DisplayName&gt;Event type&lt;/DisplayName&gt;</p>
+<p>&lt;DataType&gt;string&lt;/DataType&gt;</p>
+<p>&lt;/ClaimType&gt;</p>
+<p>&lt;ClaimType Id=&quot;EventTimestamp&quot;&gt;</p>
+<p>&lt;DisplayName&gt;Event timestamp&lt;/DisplayName&gt;</p>
+<p>&lt;ClaimType Id=&quot;PolicyId&quot;&gt;</p>
+<p>&lt;DisplayName&gt;Policy Id&lt;/DisplayName&gt;</p>
+<p>&lt;ClaimType Id=&quot;Culture&quot;&gt;</p>
+<p>&lt;DisplayName&gt;Culture ID&lt;/DisplayName&gt;</p>
+<p>&lt;ClaimType Id=&quot;CorrelationId&quot;&gt;</p>
+<p>&lt;DisplayName&gt;Correlation Id&lt;/DisplayName&gt;</p>
+<p>&lt;ClaimType Id=&quot;federatedUser&quot;&gt;</p>
+<p>&lt;DisplayName&gt;Federated user&lt;/DisplayName&gt;</p>
+<p>&lt;DataType&gt;boolean&lt;/DataType&gt;</p>
+<p>&lt;ClaimType Id=&quot;parsedDomain&quot;&gt;</p>
+<p>&lt;DisplayName&gt;Domain name&lt;/DisplayName&gt;</p>
+<p>&lt;UserHelpText&gt;The domain portion of the email address.&lt;/UserHelpText&gt;</p>
+<p>&lt;ClaimType Id=&quot;userInLocalDirectory&quot;&gt;</p>
+<p>&lt;DisplayName&gt;userInLocalDirectory&lt;/DisplayName&gt;</p>
+<p>二、新增技术配置文件</p>
+<p>搜索&lt;ClaimsProviders&gt; … &lt;/ClaimsProviders&gt;复制如下信息到其中间如图位置</p>
+<p>&lt;ClaimsProvider&gt;</p>
+<p>&lt;DisplayName&gt;Application Insights&lt;/DisplayName&gt;</p>
+<p>&lt;TechnicalProfiles&gt;</p>
+<p>&lt;TechnicalProfile Id=&quot;AppInsights-Common&quot;&gt;</p>
+<p>&lt;Protocol Name=&quot;Proprietary&quot; Handler=&quot;Web.TPEngine.Providers.Insights.AzureApplicationInsightsProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null&quot; /&gt;</p>
+<p>&lt;Metadata&gt;</p>
+<p>&lt;Item Key=&quot;InstrumentationKey&quot;&gt;xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&lt;/Item&gt;</p>
+<p>&lt;Item Key=&quot;DeveloperMode&quot;&gt;false&lt;/Item&gt;</p>
+<p>&lt;Item Key=&quot;DisableTelemetry &quot;&gt;false&lt;/Item&gt;</p>
+<p>&lt;/Metadata&gt;</p>
+<p>&lt;InputClaims&gt;</p>
+<p>&lt;InputClaim ClaimTypeReferenceId=&quot;EventTimestamp&quot; PartnerClaimType=&quot;{property:EventTimestamp}&quot; DefaultValue=&quot;{Context:DateTimeInUtc}&quot; /&gt;</p>
+<p>&lt;InputClaim ClaimTypeReferenceId=&quot;tenantId&quot; PartnerClaimType=&quot;{property:TenantId}&quot; DefaultValue=&quot;{Policy:TrustFrameworkTenantId}&quot; /&gt;</p>
+<p>&lt;InputClaim ClaimTypeReferenceId=&quot;PolicyId&quot; PartnerClaimType=&quot;{property:Policy}&quot; DefaultValue=&quot;{Policy:PolicyId}&quot; /&gt;</p>
+<p>&lt;InputClaim ClaimTypeReferenceId=&quot;CorrelationId&quot; PartnerClaimType=&quot;{property:CorrelationId}&quot; DefaultValue=&quot;{Context:CorrelationId}&quot; /&gt;</p>
+<p>&lt;InputClaim ClaimTypeReferenceId=&quot;Culture&quot; PartnerClaimType=&quot;{property:Culture}&quot; DefaultValue=&quot;{Culture:RFC5646}&quot; /&gt;</p>
+<p>&lt;/InputClaims&gt;</p>
+<p>&lt;/TechnicalProfile&gt;</p>
+<p>&lt;TechnicalProfile Id=&quot;AppInsights-SignInRequest&quot;&gt;</p>
+<p>&lt;InputClaim ClaimTypeReferenceId=&quot;EventType&quot; PartnerClaimType=&quot;eventName&quot; DefaultValue=&quot;SignInRequest&quot; /&gt;</p>
+<p>&lt;IncludeTechnicalProfile ReferenceId=&quot;AppInsights-Common&quot; /&gt;</p>
+<p>&lt;TechnicalProfile Id=&quot;AppInsights-UserSignUp&quot;&gt;</p>
+<p>&lt;InputClaim ClaimTypeReferenceId=&quot;EventType&quot; PartnerClaimType=&quot;eventName&quot; DefaultValue=&quot;UserSignUp&quot; /&gt;</p>
+<p>&lt;TechnicalProfile Id=&quot;AppInsights-SignInComplete&quot;&gt;</p>
+<p>&lt;InputClaim ClaimTypeReferenceId=&quot;EventType&quot; PartnerClaimType=&quot;eventName&quot; DefaultValue=&quot;SignInComplete&quot; /&gt;</p>
+<p>&lt;InputClaim ClaimTypeReferenceId=&quot;federatedUser&quot; PartnerClaimType=&quot;{property:FederatedUser}&quot; DefaultValue=&quot;false&quot; /&gt;</p>
+<p>&lt;InputClaim ClaimTypeReferenceId=&quot;parsedDomain&quot; PartnerClaimType=&quot;{property:FederationPartner}&quot; DefaultValue=&quot;Not Applicable&quot; /&gt;</p>
+<p>&lt;InputClaim ClaimTypeReferenceId=&quot;identityProvider&quot; PartnerClaimType=&quot;{property:IDP}&quot; DefaultValue=&quot;Local&quot; /&gt;</p>
+<p>&lt;/TechnicalProfiles&gt;</p>
+<p>&lt;/ClaimsProvider&gt;</p>
+<p>将 AppInsights-Common 技术配置文件中的InstrumentationKey更改为 Application Insights 资源提供的 GUID。如下图：</p>
+<p>三、添加技术配置文件，作为业务流程步骤</p>
+<p>如设置用户旅程文件的步骤，以用户登录注册页面为例，将如下三段分别进行添加到旅程中。</p>
+<p>注意，添加时请按顺序对这些步骤重新编号，不要跳过从 1 到 N 的任何整数。</p>
+<p>复制TrustFrameworkBase.xml 中的</p>
+<p>&lt;UserJourney Id=&quot;SignUpOrSignIn&quot;&gt;</p>
+<p>...</p>
+<p>&lt;/UserJourney&gt;</p>
+<p>部分到</p>
+<p>TrustFrameworkExtensions.xml文件，并将ID名称改为SignUpOrSignIn1</p>
+<p>将AppInsights-SignInRequest作为第二个业务流程步骤调用，在CombinedSignInAndSignUp后面。 此步骤将跟踪已收到注册或登录请求。</p>
+<p>&lt;OrchestrationStep Order=&quot;2&quot; Type=&quot;ClaimsExchange&quot;&gt;</p>
+<p>&lt;ClaimsExchanges&gt;</p>
+<p>&lt;ClaimsExchange Id=&quot;TrackSignInRequest&quot; TechnicalProfileReferenceId=&quot;AppInsights-SignInRequest&quot; /&gt;</p>
+<p>&lt;/ClaimsExchanges&gt;</p>
+<p>&lt;/OrchestrationStep&gt;</p>
+<p>找到SendClaims 业务流程</p>
+<p>在 SendClaims 业务流程步骤之前，添加调用的新步骤 AppInsights-UserSignup 。 当用户在注册或登录旅程中选择 &quot;注册&quot; 按钮时，会触发此项。</p>
+<p>&lt;OrchestrationStep Order=&quot;5&quot; Type=&quot;ClaimsExchange&quot;&gt;</p>
+<p>&lt;Preconditions&gt;</p>
+<p>&lt;Precondition Type=&quot;ClaimsExist&quot; ExecuteActionsIf=&quot;false&quot;&gt;</p>
+<p>&lt;Value&gt;newUser&lt;/Value&gt;</p>
+<p>&lt;Action&gt;SkipThisOrchestrationStep&lt;/Action&gt;</p>
+<p>&lt;/Precondition&gt;</p>
+<p>&lt;Precondition Type=&quot;ClaimEquals&quot; ExecuteActionsIf=&quot;true&quot;&gt;</p>
+<p>&lt;Value&gt;false&lt;/Value&gt;</p>
+<p>&lt;/Preconditions&gt;</p>
+<p>&lt;ClaimsExchange Id=&quot;TrackUserSignUp&quot; TechnicalProfileReferenceId=&quot;AppInsights-UserSignup&quot; /&gt;</p>
+<p>在 SendClaims 业务流程步骤后，调用 AppInsights-SignInComplete 。 此步骤演示成功完成的过程。</p>
+<p>&lt;OrchestrationStep Order=&quot;7&quot; Type=&quot;ClaimsExchange&quot;&gt;</p>
+<p>&lt;ClaimsExchange Id=&quot;TrackSignInComplete&quot; TechnicalProfileReferenceId=&quot;AppInsights-SignInComplete&quot; /&gt;</p>
+<p>分别复制如下信息到如图位置，具体需要依据您自定义的旅程文件而定。</p>
+<p>修改后，添加上传到自定义策略，由于我的用户路程名为如下：</p>
+<p>添加相应的登录RP文件（复制SignUpOrSignin.xml 并修改如下图位置）</p>
+<p>测试登录，返回Application Insight查看记录如下：</p>
+<p>打开 Application Insights 选择 &quot; 使用情况&quot;，然后选择 &quot; 事件&quot;。</p>
+<p>将“期间”设置为“过去一小时”，将“截止时间”设置为“3 分钟”。 可能需要刷新窗口才能查看结果。</p></article>

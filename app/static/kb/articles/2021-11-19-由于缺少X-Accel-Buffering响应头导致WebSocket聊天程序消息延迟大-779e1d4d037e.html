@@ -1,0 +1,64 @@
+<article class="kb-article" data-title="由于缺少X-Accel-Buffering响应头导致WebSocket聊天程序消息延迟大"><h1>由于缺少X-Accel-Buffering响应头导致WebSocket聊天程序消息延迟大</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-11-19 15:26:07</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Nov 19, 2021</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Nov 19, 2021</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Nov 19, 2021</li>
+</ul>
+<ul>
+<li>SR_20211116132380</li>
+</ul>
+<ul>
+<li>AppGW对WebSocket的支持：应用程序网关中的 WebSocket 支持概述</li>
+</ul>
+<ul>
+<li>工单中的问题为：应用程序网关当使用Https协议访问位于应用程序网关后端的WebSocket服务时，客户端收到的响应会出现约1分钟的延迟，而使用http访问则是正常的。根据我们产品团队的反馈，此问题确实与应用程序网关V2的设计有关：</li>
+</ul>
+<ul>
+<li>·        当使用http时，网关不会缓存后端的响应，会“实时”地发送给客户端；</li>
+</ul>
+<ul>
+<li>·        当使用https时，网关会缓存后端响应，直到后端服务器将所有数据都发送完成之后，才会将结果返回给客户端。</li>
+</ul>
+<ul>
+<li>对于应用程序网关侧来说，它是一个打包好的PaaS服务，当前并未开放禁用proxy_buffering这个功能给用户。即使产品团队手动从后台将这个特定网关的此功能禁用，后续网关在例行升级或者扩容的时候，此选项依然会失效，从而导致问题的再次发生。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>针对这个问题，产品团队推荐的解决方法为：后端服务器在返回给应用程序网关的响应标头中添加X-Accel-Buffering标头并将其置为“no”，这样网关在收到后端的响应之后，会立刻将其返回给客户端，而不进行缓存 (Module ngx_http_proxy_module (nginx.org))。</li>
+</ul>
+<ul>
+<li>Buffering can also be enabled or disabled by passing “yes” or “no” in the “X-Accel-Buffering” response header field.</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Nov 19, 2021</p>
+<p>SR_20211116132380</p>
+<p>AppGW对WebSocket的支持：应用程序网关中的 WebSocket 支持概述</p>
+<p>工单中的问题为：应用程序网关当使用Https协议访问位于应用程序网关后端的WebSocket服务时，客户端收到的响应会出现约1分钟的延迟，而使用http访问则是正常的。根据我们产品团队的反馈，此问题确实与应用程序网关V2的设计有关：</p>
+<p>·        当使用http时，网关不会缓存后端的响应，会“实时”地发送给客户端；</p>
+<p>·        当使用https时，网关会缓存后端响应，直到后端服务器将所有数据都发送完成之后，才会将结果返回给客户端。</p>
+<p>针对这个问题，产品团队推荐的解决方法为：后端服务器在返回给应用程序网关的响应标头中添加X-Accel-Buffering标头并将其置为“no”，这样网关在收到后端的响应之后，会立刻将其返回给客户端，而不进行缓存 (Module ngx_http_proxy_module (nginx.org))。</p>
+<p>Buffering can also be enabled or disabled by passing “yes” or “no” in the “X-Accel-Buffering” response header field.</p>
+<p>对于应用程序网关侧来说，它是一个打包好的PaaS服务，当前并未开放禁用proxy_buffering这个功能给用户。即使产品团队手动从后台将这个特定网关的此功能禁用，后续网关在例行升级或者扩容的时候，此选项依然会失效，从而导致问题的再次发生。</p></article>

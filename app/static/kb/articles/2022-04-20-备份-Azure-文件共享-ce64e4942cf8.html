@@ -1,0 +1,51 @@
+<article class="kb-article" data-title="备份 Azure 文件共享"><h1>备份 Azure 文件共享</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: 平台信息</li>
+<li>最近修改: 2022-04-20 10:59:08</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>无论是否使用Azure File，都无法限制订阅管理员对存储账户中的数据进行访问。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>无论是否使用Azure File，都无法限制订阅管理员对存储账户中的数据进行访问。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>120010921000124 | VM/Coca-Cola Beverages (Shanghai) Co., Ltd/SR_2020010901563_[TEC]azure files permission set</li>
+</ul>
+<ul>
+<li>Azure File为Windows和Linux客户端提供通过SMB访问Azure存储账户的方式。Azure File不能对存储账户中的数据设置访问权限。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>了解到您需要对上传到存储账户的文件设置权限，确保除了他自己和授权的几个用户，其他的人包括订阅管理员都无权进行查看，通过Azure File是否可以实现这个需求。调查结果如下请参考：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>综上，很遗憾目前从Azure层面尚没有一个服务可以满足您的这个需求。工单请标注”Solution Offered”，谢谢。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/backup/backup-azure-files" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/backup/backup-azure-files</a></li>
+</ul>
+<ul>
+<li>根据<a href="https://docs.azure.cn/zh-cn/storage/blobs/storage-encrypt-decrypt-blobs-key-vault，可以通过Azure" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/blobs/storage-encrypt-decrypt-blobs-key-vault，可以通过Azure</a> Key Vault对blob数据进行加密，但是无法限制订阅管理员对Key Vault的访问权限。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/backup/backup-azure-files" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/backup/backup-azure-files</a></p>
+<p>120010921000124 | VM/Coca-Cola Beverages (Shanghai) Co., Ltd/SR_2020010901563_[TEC]azure files permission set</p>
+<p>了解到您需要对上传到存储账户的文件设置权限，确保除了他自己和授权的几个用户，其他的人包括订阅管理员都无权进行查看，通过Azure File是否可以实现这个需求。调查结果如下请参考：</p>
+<p>Azure File为Windows和Linux客户端提供通过SMB访问Azure存储账户的方式。Azure File不能对存储账户中的数据设置访问权限。</p>
+<p>无论是否使用Azure File，都无法限制订阅管理员对存储账户中的数据进行访问。</p>
+<p>根据<a href="https://docs.azure.cn/zh-cn/storage/blobs/storage-encrypt-decrypt-blobs-key-vault，可以通过Azure" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/blobs/storage-encrypt-decrypt-blobs-key-vault，可以通过Azure</a> Key Vault对blob数据进行加密，但是无法限制订阅管理员对Key Vault的访问权限。</p>
+<p>综上，很遗憾目前从Azure层面尚没有一个服务可以满足您的这个需求。工单请标注”Solution Offered”，谢谢。</p></article>

@@ -1,0 +1,132 @@
+<article class="kb-article" data-title="【share】Windows虚拟机自定义网卡配置导致无法连接"><h1>【share】Windows虚拟机自定义网卡配置导致无法连接</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-12-31 10:40:28</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>自定义网卡配置导致虚拟机无法连接</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>自定义网卡配置导致虚拟机无法连接</li>
+</ul>
+<ul>
+<li>问题现象:</li>
+</ul>
+<ul>
+<li>由于客户将VM 网卡DHCP改为静态导致虚拟突然断开连接, 无法连接上VM</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Liuhaifeng&amp;Yangjiaqing</li>
+</ul>
+<ul>
+<li>在虚拟机的网卡上设置并指定一个新的IP地址,此例为172.31.0.11</li>
+</ul>
+<ul>
+<li>使用串行控制台，连接CMD：</li>
+</ul>
+<ul>
+<li>SAC&gt;cmd</li>
+</ul>
+<ul>
+<li>SAC&gt;ch -si 1</li>
+</ul>
+<ul>
+<li>登录CMD：</li>
+</ul>
+<ul>
+<li>网卡禁用：</li>
+</ul>
+<ul>
+<li>在内部手动固定IP后：</li>
+</ul>
+<ul>
+<li>使用netsh 根据接口名重设IP获取方式为DHCP</li>
+</ul>
+<ul>
+<li>在内部手动设置错误的DNS后：</li>
+</ul>
+<ul>
+<li>该操作不影响使用IP地址RDP虚拟机，因此可以登录之后修改DNS</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#查看网卡名称</li>
+</ul>
+<ul>
+<li>查看当前IP信息：ipconfig</li>
+</ul>
+<ul>
+<li>验证当前获取接口的IP信息：ipconfig</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在Portal上执行命令将网卡设置为DHCP</li>
+</ul>
+<ul>
+<li>get-NetIPInterface</li>
+</ul>
+<ul>
+<li>Set-NetIPInterface -InterfaceAlias &quot;Ethernet 2&quot; -Dhcp Enabled</li>
+</ul>
+<ul>
+<li>将SAC连接到CMD后，使用netsh命令启用网卡：</li>
+</ul>
+<ul>
+<li>同样可以使用netsh命令更改DNS为DHCP：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法1:</li>
+</ul>
+<ul>
+<li>如果客户非得用静态IP, 建议客户另外添加一块辅助网卡设置静态IP</li>
+</ul>
+<ul>
+<li>解决方法2:</li>
+</ul>
+<ul>
+<li>解决方法3：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>2024-12-31</p>
+<p>Liuhaifeng&amp;Yangjiaqing</p>
+<p>自定义网卡配置导致虚拟机无法连接</p>
+<p>问题现象:</p>
+<p>由于客户将VM 网卡DHCP改为静态导致虚拟突然断开连接, 无法连接上VM</p>
+<p>解决方法1:</p>
+<p>在虚拟机的网卡上设置并指定一个新的IP地址,此例为172.31.0.11</p>
+<p>如果客户非得用静态IP, 建议客户另外添加一块辅助网卡设置静态IP</p>
+<p>解决方法2:</p>
+<p>在Portal上执行命令将网卡设置为DHCP</p>
+<p>#查看网卡名称</p>
+<p>get-NetIPInterface</p>
+<p>Set-NetIPInterface -InterfaceAlias &quot;Ethernet 2&quot; -Dhcp Enabled</p>
+<p>解决方法3：</p>
+<p>使用串行控制台，连接CMD：</p>
+<p>SAC&gt;cmd</p>
+<p>SAC&gt;ch -si 1</p>
+<p>登录CMD：</p>
+<p>网卡禁用：</p>
+<p>将SAC连接到CMD后，使用netsh命令启用网卡：</p>
+<p>在内部手动固定IP后：</p>
+<p>查看当前IP信息：ipconfig</p>
+<p>使用netsh 根据接口名重设IP获取方式为DHCP</p>
+<p>验证当前获取接口的IP信息：ipconfig</p>
+<p>在内部手动设置错误的DNS后：</p>
+<p>该操作不影响使用IP地址RDP虚拟机，因此可以登录之后修改DNS</p>
+<p>同样可以使用netsh命令更改DNS为DHCP：</p></article>

@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="Troubleshooting issues with data upload into Azure"><h1>Troubleshooting issues with data upload into Azure</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Data Box POD</li>
+<li>最近修改: 2022-04-21 04:34:50</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Contact the customer and gather as much information as you can about the issue.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Contact the customer and gather as much information as you can about the issue.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Are there any ICM&#39;s already generated for the case</li>
+</ul>
+<ul>
+<li>Data transfer status and last update dates.</li>
+</ul>
+<ul>
+<li>Engage TA&#39;s or Raise ICM if needed</li>
+</ul>
+<ul>
+<li>References:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>If the customer believes data upload is taking long time, check ASC and confirm:</li>
+</ul>
+<ul>
+<li>Check with TA&#39;s or Raise ICM if needed</li>
+</ul>
+<ul>
+<li>Check Copy logs: for each order that is processed, the Data Box service creates a copy log in the associated storage account.</li>
+</ul>
+<ul>
+<li>By default, logs are written to a container named copylog. The logs are stored with the following naming convention:</li>
+</ul>
+<ul>
+<li>storage-account-name/databoxcopylog/ordername_device-serial-number_CopyLog_guid.xml</li>
+</ul>
+<ul>
+<li>Check Audit logs: Audit logs contain information on how to power on and access shares on the Data Box or Data Box Heavy when it is outside of Azure datacenter. These logs are located at: storage-account/azuredatabox-chainofcustodylogs</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Reading Large Data Box .xml Files with PowerShell: Azure Data Box Disk Reading Large Data Box Disk _verbose.xml and _error.xml Files with PowerShell-Gabriela</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Data copy to devices issues: <a href="https://msit.microsoftstream.com/video/65e30840-98dc-a228-4ab7-f1ec933fba83" target="_blank" rel="noopener">https://msit.microsoftstream.com/video/65e30840-98dc-a228-4ab7-f1ec933fba83</a></li>
+</ul>
+<ul>
+<li>Data Box Rental Devices: Prepare to Ship or Validation Tool Reports Errors: <a href="https://internal.evergreen.microsoft.com/en-us/topic/833381a1-ecbe-092a-bd5e-0f4efd8980ce" target="_blank" rel="noopener">https://internal.evergreen.microsoft.com/en-us/topic/833381a1-ecbe-092a-bd5e-0f4efd8980ce</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Contact the customer and gather as much information as you can about the issue.</p>
+<p>If the customer believes data upload is taking long time, check ASC and confirm:</p>
+<p>Are there any ICM&#39;s already generated for the case</p>
+<p>Data transfer status and last update dates.</p>
+<p>Check with TA&#39;s or Raise ICM if needed</p>
+<p>Check Copy logs: for each order that is processed, the Data Box service creates a copy log in the associated storage account.</p>
+<p>By default, logs are written to a container named copylog. The logs are stored with the following naming convention:</p>
+<p>storage-account-name/databoxcopylog/ordername_device-serial-number_CopyLog_guid.xml</p>
+<p>Check Audit logs: Audit logs contain information on how to power on and access shares on the Data Box or Data Box Heavy when it is outside of Azure datacenter. These logs are located at: storage-account/azuredatabox-chainofcustodylogs</p>
+<p>Engage TA&#39;s or Raise ICM if needed</p>
+<p>References:</p>
+<p>Data copy to devices issues: <a href="https://msit.microsoftstream.com/video/65e30840-98dc-a228-4ab7-f1ec933fba83" target="_blank" rel="noopener">https://msit.microsoftstream.com/video/65e30840-98dc-a228-4ab7-f1ec933fba83</a></p>
+<p>Data Box Rental Devices: Prepare to Ship or Validation Tool Reports Errors: <a href="https://internal.evergreen.microsoft.com/en-us/topic/833381a1-ecbe-092a-bd5e-0f4efd8980ce" target="_blank" rel="noopener">https://internal.evergreen.microsoft.com/en-us/topic/833381a1-ecbe-092a-bd5e-0f4efd8980ce</a></p>
+<p>Reading Large Data Box .xml Files with PowerShell: Azure Data Box Disk Reading Large Data Box Disk _verbose.xml and _error.xml Files with PowerShell-Gabriela</p></article>

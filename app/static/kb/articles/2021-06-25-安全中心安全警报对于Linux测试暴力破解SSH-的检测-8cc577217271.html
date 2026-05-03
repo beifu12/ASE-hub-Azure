@@ -1,0 +1,194 @@
+<article class="kb-article" data-title="安全中心安全警报对于Linux测试暴力破解SSH 的检测"><h1>安全中心安全警报对于Linux测试暴力破解SSH 的检测</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-06-25 14:25:35</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p><a href="https://docs.azure.cn/zh-cn/security-center/threat-protection" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/security-center/threat-protection</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/security-center/threat-protection" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/security-center/threat-protection</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Linux 计算机的威胁防护</li>
+</ul>
+<ul>
+<li>有关 Linux 警报的列表，请参阅警报引用表。</li>
+</ul>
+<ul>
+<li>以下是模拟操作：首先需要建立2台测试VM</li>
+</ul>
+<ul>
+<li>• VM1: Kali Linux 由于模拟暴力破解SSH</li>
+</ul>
+<ul>
+<li>在Azure安全中心的定价层设置中确保安全中心使用标准定价层</li>
+</ul>
+<ul>
+<li>在默认的工作区中，为虚拟机安装OMS 代理</li>
+</ul>
+<ul>
+<li>安装后确保虚拟机的代理工作正常</li>
+</ul>
+<ul>
+<li>接下来可以开始攻击模拟了</li>
+</ul>
+<ul>
+<li>登录kaili Linux 虚拟机，首先模拟SSH暴力破解的过程：</li>
+</ul>
+<ul>
+<li>找到字典文件解压并复制2份，命名为user.txt 由于 用户名的字典，pass.txt用户密码的字典。</li>
+</ul>
+<ul>
+<li>为了减少破解时间，我们尝试将2个文件减少的20行记录：</li>
+</ul>
+<ul>
+<li>跳到文件尾部</li>
+</ul>
+<ul>
+<li>G</li>
+</ul>
+<ul>
+<li>只保留前20行</li>
+</ul>
+<ul>
+<li>:21,.d</li>
+</ul>
+<ul>
+<li>随机将用户名添加到user.txt中，例如：</li>
+</ul>
+<ul>
+<li>将对应的密码随机添加到pass.txt 文件中</li>
+</ul>
+<ul>
+<li>hydra -I -L user.txt -P pass.txt 40.73.114.120 -t 4 ssh</li>
+</ul>
+<ul>
+<li>可以看到运行后过一段时间，用户名密码被检测出来了。</li>
+</ul>
+<ul>
+<li>最后，黑客还可能会下载安装木马等恶意软件，下面使用EICAR进行模拟，</li>
+</ul>
+<ul>
+<li>下载病毒测试文件</li>
+</ul>
+<ul>
+<li>如下使用IP下载虽然没有成功，但被检测到了（前三次）</li>
+</ul>
+<ul>
+<li>使用域名下载的没有被检测到。</li>
+</ul>
+<ul>
+<li>被暴力破解后的行为检测：</li>
+</ul>
+<ul>
+<li>可疑的下载</li>
+</ul>
+<ul>
+<li>最后过一段时间后还会生成一个攻击的总结：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>安全中心通过使用适用于 Linux 的 Log Analytics 代理，收集和扩充 auditd 记录，auditd 位于主线内核中。并将其聚合到事件中。 安全中心会持续对使用云和本地 Linux 计算机上的恶意行为的分析。 这些活动可能表明计算机正在受到攻击或已被破坏。</li>
+</ul>
+<ul>
+<li>本次验证如下安全攻击检测项目：</li>
+</ul>
+<ul>
+<li>在安全中心中查看代理扩展的情况</li>
+</ul>
+<ul>
+<li>经过查看详细信息，扩展生效大约需要12-24小时</li>
+</ul>
+<ul>
+<li>经过一天左右查看，系统已经进行过相应的扫描</li>
+</ul>
+<ul>
+<li>接下来进一步模拟暴破成功后，使用破解显示的用户名密码登录肉机Ubuntu系统，模拟黑客会使用这台机器，记录信息的操作logkeys --start以及攻击网站的操作perl slowloris.pl -dns server1.contoso.com，遇到报错没有关系（主要是匹配攻击的行为模式）。</li>
+</ul>
+<ul>
+<li>最后在安全中心的安全警报中进行验证，已经检测到了相关的信息：</li>
+</ul>
+<ul>
+<li>以上供大家参参考验证。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>接下来开始破解，执行如下命令，IP为Ubuntu的虚拟机地址</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>详细可以通过下载 Azure 安全中心 Playbook：Linux 检测来模拟 Linux 警报。</li>
+</ul>
+<ul>
+<li>VM2 设置使用密码验证SSH登陆，需要配置好Security Center agent 以及公共IP地址，同时建立五个用户用于测试。</li>
+</ul>
+<ul>
+<li>2台虚拟机均可以SSH访问，实际使用中建议使用安全中心的建议使用JIT功能减少SSH暴力破解的可能性。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/security-center/threat-protection" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/security-center/threat-protection</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/security-center/alerts-reference#alerts-linux" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/security-center/alerts-reference#alerts-linux</a></li>
+</ul>
+<ul>
+<li>• VM2: 使用Ubuntu 16.04 LTS 模拟被攻击的肉机 (有关支持的版本参考：<a href="https://docs.microsoft.com/en-us/azure/security-center/security-center-os-coverage)." target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/security-center/security-center-os-coverage).</a></li>
+</ul>
+<ul>
+<li><a href="http://www.eicar.org/download/eicar.com.txt" target="_blank" rel="noopener">http://www.eicar.org/download/eicar.com.txt</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020-08-17</p>
+<p><a href="https://docs.azure.cn/zh-cn/security-center/threat-protection" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/security-center/threat-protection</a></p>
+<p>Linux 计算机的威胁防护</p>
+<p>安全中心通过使用适用于 Linux 的 Log Analytics 代理，收集和扩充 auditd 记录，auditd 位于主线内核中。并将其聚合到事件中。 安全中心会持续对使用云和本地 Linux 计算机上的恶意行为的分析。 这些活动可能表明计算机正在受到攻击或已被破坏。</p>
+<p>有关 Linux 警报的列表，请参阅警报引用表。</p>
+<p><a href="https://docs.azure.cn/zh-cn/security-center/alerts-reference#alerts-linux" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/security-center/alerts-reference#alerts-linux</a></p>
+<p>本次验证如下安全攻击检测项目：</p>
+<p>详细可以通过下载 Azure 安全中心 Playbook：Linux 检测来模拟 Linux 警报。</p>
+<p>以下是模拟操作：首先需要建立2台测试VM</p>
+<p>• VM1: Kali Linux 由于模拟暴力破解SSH</p>
+<p>• VM2: 使用Ubuntu 16.04 LTS 模拟被攻击的肉机 (有关支持的版本参考：<a href="https://docs.microsoft.com/en-us/azure/security-center/security-center-os-coverage)." target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/security-center/security-center-os-coverage).</a></p>
+<p>VM2 设置使用密码验证SSH登陆，需要配置好Security Center agent 以及公共IP地址，同时建立五个用户用于测试。</p>
+<p>2台虚拟机均可以SSH访问，实际使用中建议使用安全中心的建议使用JIT功能减少SSH暴力破解的可能性。</p>
+<p>在Azure安全中心的定价层设置中确保安全中心使用标准定价层</p>
+<p>在默认的工作区中，为虚拟机安装OMS 代理</p>
+<p>安装后确保虚拟机的代理工作正常</p>
+<p>在安全中心中查看代理扩展的情况</p>
+<p>经过查看详细信息，扩展生效大约需要12-24小时</p>
+<p>经过一天左右查看，系统已经进行过相应的扫描</p>
+<p>接下来可以开始攻击模拟了</p>
+<p>登录kaili Linux 虚拟机，首先模拟SSH暴力破解的过程：</p>
+<p>找到字典文件解压并复制2份，命名为user.txt 由于 用户名的字典，pass.txt用户密码的字典。</p>
+<p>为了减少破解时间，我们尝试将2个文件减少的20行记录：</p>
+<p>跳到文件尾部</p>
+<p>G</p>
+<p>只保留前20行</p>
+<p>:21,.d</p>
+<p>随机将用户名添加到user.txt中，例如：</p>
+<p>将对应的密码随机添加到pass.txt 文件中</p>
+<p>接下来开始破解，执行如下命令，IP为Ubuntu的虚拟机地址</p>
+<p>hydra -I -L user.txt -P pass.txt 40.73.114.120 -t 4 ssh</p>
+<p>可以看到运行后过一段时间，用户名密码被检测出来了。</p>
+<p>接下来进一步模拟暴破成功后，使用破解显示的用户名密码登录肉机Ubuntu系统，模拟黑客会使用这台机器，记录信息的操作logkeys --start以及攻击网站的操作perl slowloris.pl -dns server1.contoso.com，遇到报错没有关系（主要是匹配攻击的行为模式）。</p>
+<p>最后，黑客还可能会下载安装木马等恶意软件，下面使用EICAR进行模拟，</p>
+<p>下载病毒测试文件</p>
+<p><a href="http://www.eicar.org/download/eicar.com.txt" target="_blank" rel="noopener">http://www.eicar.org/download/eicar.com.txt</a></p>
+<p>如下使用IP下载虽然没有成功，但被检测到了（前三次）</p>
+<p>使用域名下载的没有被检测到。</p>
+<p>最后在安全中心的安全警报中进行验证，已经检测到了相关的信息：</p>
+<p>被暴力破解后的行为检测：</p>
+<p>可疑的下载</p>
+<p>最后过一段时间后还会生成一个攻击的总结：</p>
+<p>以上供大家参参考验证。</p></article>

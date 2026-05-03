@@ -1,0 +1,124 @@
+<article class="kb-article" data-title="AKS portal创建虚拟节点池报错"><h1>AKS portal创建虚拟节点池报错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: K8S</li>
+<li>最近修改: 2024-09-24 15:40:47</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>测试了北2 东2 北3都报 如下报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>测试了北2 东2 北3都报 如下报错：</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;DeploymentFailed&quot;,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;details&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;VirtualNetworkServiceEndpointsNotSupported&quot;,</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;Virtual networks in chinanorth3 location do not support ServiceEndpoints for Microsoft.ContainerRegistry service.&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>实际测试时，文档中有一步需要添加ssh-keys，请参考如下标黄部分：</li>
+</ul>
+<ul>
+<li>--resource-group myResourceGroup \</li>
+</ul>
+<ul>
+<li>--name myAKSCluster \</li>
+</ul>
+<ul>
+<li>--addons virtual-node \</li>
+</ul>
+<ul>
+<li>--subnet-name myVirtualNodeSubnet</li>
+</ul>
+<ul>
+<li>通过部署示例应用，可以看到虚拟节点：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过portal 创建AKS时 选择启用虚拟节点池后报错：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>通过查找文档通过az cli命令创建虚拟节点池的方法可以启用节点池：</li>
+</ul>
+<ul>
+<li>az group create --name myResourceGroup --location chinanorth3</li>
+</ul>
+<ul>
+<li>az network vnet create --resource-group myResourceGroup --name myVnet --address-prefixes 10.0.0.0/8 --subnet-name myAKSSubnet --subnet-prefix 10.240.0.0/16</li>
+</ul>
+<ul>
+<li>az network vnet subnet create --resource-group myResourceGroup --vnet-name myVnet --name myVirtualNodeSubnet --address-prefixes 10.241.0.0/16</li>
+</ul>
+<ul>
+<li>az network vnet subnet show --resource-group myResourceGroup --vnet-name myVnet --name myAKSSubnet --query id -o tsv</li>
+</ul>
+<ul>
+<li>az aks create --resource-group myResourceGroup --name myAKSCluster --node-count 3 --network-plugin azure --vnet-subnet-id  /subscriptions/05a7ed23-e9a5-467b-b371-7a9d9f6a504b/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVnet/subnets/myAKSSubnet --generate-ssh-keys</li>
+</ul>
+<ul>
+<li>az aks enable-addons \</li>
+</ul>
+<ul>
+<li>命令执行成功后，查看aks虚拟节点池启用成功：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>&quot;message&quot;: &quot;At least one resource deployment operation failed. Please list deployment operations for details. Please see <a href="https://aka.ms/arm-deployment-operations" target="_blank" rel="noopener">https://aka.ms/arm-deployment-operations</a> for usage details.&quot;,</li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/virtual-nodes-cli" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/virtual-nodes-cli</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/7/8</p>
+<p>通过portal 创建AKS时 选择启用虚拟节点池后报错：</p>
+<p>测试了北2 东2 北3都报 如下报错：</p>
+<p>{</p>
+<p>&quot;code&quot;: &quot;DeploymentFailed&quot;,</p>
+<p>&quot;message&quot;: &quot;At least one resource deployment operation failed. Please list deployment operations for details. Please see <a href="https://aka.ms/arm-deployment-operations" target="_blank" rel="noopener">https://aka.ms/arm-deployment-operations</a> for usage details.&quot;,</p>
+<p>&quot;details&quot;: [</p>
+<p>&quot;code&quot;: &quot;VirtualNetworkServiceEndpointsNotSupported&quot;,</p>
+<p>&quot;message&quot;: &quot;Virtual networks in chinanorth3 location do not support ServiceEndpoints for Microsoft.ContainerRegistry service.&quot;</p>
+<p>}</p>
+<p>]</p>
+<p>通过查找文档通过az cli命令创建虚拟节点池的方法可以启用节点池：</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/virtual-nodes-cli" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/virtual-nodes-cli</a></p>
+<p>实际测试时，文档中有一步需要添加ssh-keys，请参考如下标黄部分：</p>
+<p>az group create --name myResourceGroup --location chinanorth3</p>
+<p>az network vnet create --resource-group myResourceGroup --name myVnet --address-prefixes 10.0.0.0/8 --subnet-name myAKSSubnet --subnet-prefix 10.240.0.0/16</p>
+<p>az network vnet subnet create --resource-group myResourceGroup --vnet-name myVnet --name myVirtualNodeSubnet --address-prefixes 10.241.0.0/16</p>
+<p>az network vnet subnet show --resource-group myResourceGroup --vnet-name myVnet --name myAKSSubnet --query id -o tsv</p>
+<p>az aks create --resource-group myResourceGroup --name myAKSCluster --node-count 3 --network-plugin azure --vnet-subnet-id  /subscriptions/05a7ed23-e9a5-467b-b371-7a9d9f6a504b/resourceGroups/myResourceGroup/providers/Microsoft.Network/virtualNetworks/myVnet/subnets/myAKSSubnet --generate-ssh-keys</p>
+<p>az aks enable-addons \</p>
+<p>--resource-group myResourceGroup \</p>
+<p>--name myAKSCluster \</p>
+<p>--addons virtual-node \</p>
+<p>--subnet-name myVirtualNodeSubnet</p>
+<p>命令执行成功后，查看aks虚拟节点池启用成功：</p>
+<p>通过部署示例应用，可以看到虚拟节点：</p></article>

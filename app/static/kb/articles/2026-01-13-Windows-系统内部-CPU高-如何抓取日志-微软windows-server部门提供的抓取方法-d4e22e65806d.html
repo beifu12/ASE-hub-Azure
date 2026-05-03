@@ -1,0 +1,167 @@
+<article class="kb-article" data-title="Windows 系统内部 CPU高 如何抓取日志，微软windows server部门提供的抓取方法"><h1>Windows 系统内部 CPU高 如何抓取日志，微软windows server部门提供的抓取方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-13 11:32:17</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Reviewer</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>Zhangwenxin</li>
+</ul>
+<ul>
+<li>===============</li>
+</ul>
+<ul>
+<li>//Perfmon</li>
+</ul>
+<ul>
+<li>开启性能日志</li>
+</ul>
+<ul>
+<li>问题复现后3-5分钟停止性能日志</li>
+</ul>
+<ul>
+<li>//WPR</li>
+</ul>
+<ul>
+<li>以管理员身份运行CMD，并运行：</li>
+</ul>
+<ul>
+<li>md c:\temp</li>
+</ul>
+<ul>
+<li>WPR.exe -start CPU -start DiskIO -start FileIO -start Network</li>
+</ul>
+<ul>
+<li>WPR.exe -stop c:\temp\WaitAnalysis.etl</li>
+</ul>
+<ul>
+<li>//TSS</li>
+</ul>
+<ul>
+<li>a.  从以下地址下载TSS工具：</li>
+</ul>
+<ul>
+<li>下载网址：</li>
+</ul>
+<ul>
+<li>b.  在C盘根目录下创建一个目录C:\SetupReport，并将TSS工具解压到其中</li>
+</ul>
+<ul>
+<li>cd C:\Setupreport\TSS</li>
+</ul>
+<ul>
+<li>运行示例截图：</li>
+</ul>
+<ul>
+<li>如果有Eula界面弹出，请阅读其中信息，并选择是否接受。</li>
+</ul>
+<ul>
+<li>f.  日志文件会默认打包并保存C:\MS_DATA，将C:\MS_DATA下TSS开头的压缩包发送给我们。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Windows 系统内部 CPU瞬时冲高并迅速回落这个是正常现象，只有持续保持在高占用率才可能需要去进一步排查的。我们可以抓取日志的时候，尽量可以让问题复现得越明显。</li>
+</ul>
+<ul>
+<li>在问题发生时需要抓取以下日志，以下是具体步骤：</li>
+</ul>
+<ul>
+<li>Logman.exe create counter Perf-1Seconds -f bincirc -max 4000 -c &quot;\LogicalDisk(*)\*&quot; &quot;\Memory\*&quot; &quot;\Network Interface(*)\*&quot; &quot;\PhysicalDisk(*)\*&quot; &quot;\Cluster CSV File System(*)\*&quot; &quot;\Cluster CSV Volume Manager(*)\*&quot; &quot;\SMB Client Shares(*)\*&quot; &quot;\SMB Server\*&quot; &quot;\SMB Server Shares(*)\*&quot; &quot;\SMB Server Sessions(*)\*&quot; &quot;\SMB Direct Connection(*)\*&quot; &quot;\Server\*&quot; &quot;\Server Work Queues(*)\*&quot; &quot;\System\*&quot; &quot;\Process(*)\*&quot; &quot;\Processor(*)\*&quot; &quot;\Cache\*&quot; &quot;\Cluster CSV Volume Cache(*)\*&quot; &quot;\Cluster CSV Coordinator(*)\*&quot; &quot;\Cluster Storage Hybrid Disks(*)\*&quot; &quot;\Cluster Storage Cache Stores(*)\*&quot; &quot;\ReFS(*)\*&quot; &quot;\Storage Spaces Write Cache(*)\*&quot; &quot;\Storage Spaces Virtual Disk(*)\*&quot; &quot;\Storage Spaces Tier(*)\*&quot; &quot;\RDMA Activity(*)\*&quot; “\Hyper-V Virtual Network Adapter(*)\*” “\Hyper-V Virtual Network Adapter Drop Reasons(*)\*” &quot;\Hyper-V Hypervisor Virtual Processor(*)\*&quot; &quot;\Hyper-V Virtual Storage Device(*)\*&quot; &quot;\Hyper-V Hypervisor Logical Processor(*)\*&quot; &quot;\Cluster Disk Counters(*)\*&quot; -si 00:00:01 -o C:\PerfMonLogs\Perf-1Second.blg</li>
+</ul>
+<ul>
+<li>Logman start Perf-1seconds</li>
+</ul>
+<ul>
+<li>Logman stop Perf-1seconds</li>
+</ul>
+<ul>
+<li>之后再抓取TSS日志，请参考下面的步骤。</li>
+</ul>
+<ul>
+<li>检查下载的TSS.ZIP的属性，如果有以下显示，请先解除锁定：</li>
+</ul>
+<ul>
+<li>.\TSS.ps1 -CollectLog DND_SetupReport -AcceptEula</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>以管理员身份运行CMD并运行命令：</li>
+</ul>
+<ul>
+<li>3分钟后运行以下命令停止wpr</li>
+</ul>
+<ul>
+<li>c.  以管理员权限打开一个PowerShell窗口，并使用命令以下命令切换到C:\Setupreport\TSS</li>
+</ul>
+<ul>
+<li>d.  运行以下的命令：</li>
+</ul>
+<ul>
+<li>Set-ExecutionPolicy -scope Process -ExecutionPolicy RemoteSigned -Force</li>
+</ul>
+<ul>
+<li>注：如果选择不接受的话，脚本会停止运行。</li>
+</ul>
+<ul>
+<li>e.  脚本会运行10-20分钟 (根据机器性能而定)，运行结束后，屏幕会有以下的输出：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://aka.ms/getTSS" target="_blank" rel="noopener">https://aka.ms/getTSS</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026/1/13</p>
+<p>Reviewer</p>
+<p>Zhangwenxin</p>
+<p>Windows 系统内部 CPU瞬时冲高并迅速回落这个是正常现象，只有持续保持在高占用率才可能需要去进一步排查的。我们可以抓取日志的时候，尽量可以让问题复现得越明显。</p>
+<p>在问题发生时需要抓取以下日志，以下是具体步骤：</p>
+<p>===============</p>
+<p>//Perfmon</p>
+<p>以管理员身份运行CMD并运行命令：</p>
+<p>Logman.exe create counter Perf-1Seconds -f bincirc -max 4000 -c &quot;\LogicalDisk(*)\*&quot; &quot;\Memory\*&quot; &quot;\Network Interface(*)\*&quot; &quot;\PhysicalDisk(*)\*&quot; &quot;\Cluster CSV File System(*)\*&quot; &quot;\Cluster CSV Volume Manager(*)\*&quot; &quot;\SMB Client Shares(*)\*&quot; &quot;\SMB Server\*&quot; &quot;\SMB Server Shares(*)\*&quot; &quot;\SMB Server Sessions(*)\*&quot; &quot;\SMB Direct Connection(*)\*&quot; &quot;\Server\*&quot; &quot;\Server Work Queues(*)\*&quot; &quot;\System\*&quot; &quot;\Process(*)\*&quot; &quot;\Processor(*)\*&quot; &quot;\Cache\*&quot; &quot;\Cluster CSV Volume Cache(*)\*&quot; &quot;\Cluster CSV Coordinator(*)\*&quot; &quot;\Cluster Storage Hybrid Disks(*)\*&quot; &quot;\Cluster Storage Cache Stores(*)\*&quot; &quot;\ReFS(*)\*&quot; &quot;\Storage Spaces Write Cache(*)\*&quot; &quot;\Storage Spaces Virtual Disk(*)\*&quot; &quot;\Storage Spaces Tier(*)\*&quot; &quot;\RDMA Activity(*)\*&quot; “\Hyper-V Virtual Network Adapter(*)\*” “\Hyper-V Virtual Network Adapter Drop Reasons(*)\*” &quot;\Hyper-V Hypervisor Virtual Processor(*)\*&quot; &quot;\Hyper-V Virtual Storage Device(*)\*&quot; &quot;\Hyper-V Hypervisor Logical Processor(*)\*&quot; &quot;\Cluster Disk Counters(*)\*&quot; -si 00:00:01 -o C:\PerfMonLogs\Perf-1Second.blg</p>
+<p>开启性能日志</p>
+<p>Logman start Perf-1seconds</p>
+<p>问题复现后3-5分钟停止性能日志</p>
+<p>Logman stop Perf-1seconds</p>
+<p>//WPR</p>
+<p>以管理员身份运行CMD，并运行：</p>
+<p>md c:\temp</p>
+<p>WPR.exe -start CPU -start DiskIO -start FileIO -start Network</p>
+<p>3分钟后运行以下命令停止wpr</p>
+<p>WPR.exe -stop c:\temp\WaitAnalysis.etl</p>
+<p>//TSS</p>
+<p>之后再抓取TSS日志，请参考下面的步骤。</p>
+<p>a.  从以下地址下载TSS工具：</p>
+<p>下载网址：</p>
+<p><a href="https://aka.ms/getTSS" target="_blank" rel="noopener">https://aka.ms/getTSS</a></p>
+<p>检查下载的TSS.ZIP的属性，如果有以下显示，请先解除锁定：</p>
+<p>b.  在C盘根目录下创建一个目录C:\SetupReport，并将TSS工具解压到其中</p>
+<p>c.  以管理员权限打开一个PowerShell窗口，并使用命令以下命令切换到C:\Setupreport\TSS</p>
+<p>cd C:\Setupreport\TSS</p>
+<p>运行示例截图：</p>
+<p>d.  运行以下的命令：</p>
+<p>Set-ExecutionPolicy -scope Process -ExecutionPolicy RemoteSigned -Force</p>
+<p>.\TSS.ps1 -CollectLog DND_SetupReport -AcceptEula</p>
+<p>如果有Eula界面弹出，请阅读其中信息，并选择是否接受。</p>
+<p>注：如果选择不接受的话，脚本会停止运行。</p>
+<p>e.  脚本会运行10-20分钟 (根据机器性能而定)，运行结束后，屏幕会有以下的输出：</p>
+<p>f.  日志文件会默认打包并保存C:\MS_DATA，将C:\MS_DATA下TSS开头的压缩包发送给我们。</p></article>

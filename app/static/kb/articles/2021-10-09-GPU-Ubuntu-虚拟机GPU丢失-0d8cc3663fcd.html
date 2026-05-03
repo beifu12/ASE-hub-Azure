@@ -1,0 +1,120 @@
+<article class="kb-article" data-title="GPU :Ubuntu 虚拟机GPU丢失"><h1>GPU :Ubuntu 虚拟机GPU丢失</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-10-09 13:30:16</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>现象：客户发现GPU服务器 - 偶发的丢失GPU设备</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>现象：客户发现GPU服务器 - 偶发的丢失GPU设备</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Translated by:</li>
+</ul>
+<ul>
+<li>VM | The Nielsen Company (Guangzhou) Limited |  SR_20210908120256_[S500]GPU服务器 - 偶发的丢失GPU设备  - TrackingID#2109140050001785</li>
+</ul>
+<ul>
+<li>Start-Date: 2021-09-07  16:36:23</li>
+</ul>
+<ul>
+<li>Commandline: /usr/bin/unattended-upgrade</li>
+</ul>
+<ul>
+<li>Install: libnvidia-compute-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-encode-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), xserver-xorg-video-nvidia-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-gl-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-fbc1-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-decode-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-cfg1-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), nvidia-utils-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), nvidia-prime:amd64 (0.8.8, automatic), nvidia-dkms-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), nvidia-compute-utils-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-ifr1-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), nvidia-driver-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-extra-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), nvidia-kernel-source-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic)</li>
+</ul>
+<ul>
+<li>Upgrade: libnvidia-compute-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), libnvidia-encode-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), xserver-xorg-video-nvidia-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), libnvidia-gl-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), libnvidia-fbc1-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), libnvidia-decode-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), libnvidia-cfg1-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), nvidia-utils-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), nvidia-dkms-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), nvidia-compute-utils-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), libnvidia-ifr1-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), nvidia-driver-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), nvidia-kernel-source-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1)</li>
+</ul>
+<ul>
+<li>End-Date: 2021-09-07  16:38:02</li>
+</ul>
+<ul>
+<li>Sep  7 18:01:33 edmonddantes kernel: [34870.277491] NVRM: API mismatch: the client has the version 460.91.03, but</li>
+</ul>
+<ul>
+<li>Sep  7 18:01:33 edmonddantes kernel: [34870.277491] NVRM: this kernel module has the version 450.36.06.  Please</li>
+</ul>
+<ul>
+<li>据此，我们判断Kernel module version不一致的问题Ubuntu 自动更新有关，推测可能需要重新启动才能继续正常运行。</li>
+</ul>
+<ul>
+<li>$ sudo nano /etc/apt/apt.conf.d/20auto-upgrades</li>
+</ul>
+<ul>
+<li>#将以下value由1改为0：</li>
+</ul>
+<ul>
+<li>APT::Periodic::Update-Package-Lists &quot;0&quot;;</li>
+</ul>
+<ul>
+<li>APT::Periodic::Download-Upgradeable-Packages &quot;0&quot;;</li>
+</ul>
+<ul>
+<li>APT::Periodic::AutocleanInterval &quot;0&quot;;</li>
+</ul>
+<ul>
+<li>APT::Periodic::Unattended-Upgrade &quot;0&quot;;</li>
+</ul>
+<ul>
+<li>#如您后续需要开启自动更新，可以将值改回1。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过排查日志发现：</li>
+</ul>
+<ul>
+<li>我们检查了/var/log/apt/history.log, 从日志中可以看到2021-09-07  16:36:23 开始libnvidia Install和upgrade相关日志记录。该时间和上一封邮件中提到的syslog中 Ubuntu系统自带的系统升级服务Daily apt upgrade在9月7日16:37启动时间是匹配的。</li>
+</ul>
+<ul>
+<li>另外，根据先前的syslog 记录：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>而根据用户目前命令返回结果modinfo version 460.91.03 和 Kernel Module  460.91.03是一致的。</li>
+</ul>
+<ul>
+<li>由于这个问题涉及到Ubuntu自带的自动升级服务Daily apt upgrade， 基于我们自己的Linux使用经验，我们建议您可以通过以下命令来disable Ubuntu自动更新：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案是禁用GPU自动更新</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Translated by:</p>
+<p>2021/10/09</p>
+<p>VM | The Nielsen Company (Guangzhou) Limited |  SR_20210908120256_[S500]GPU服务器 - 偶发的丢失GPU设备  - TrackingID#2109140050001785</p>
+<p>现象：客户发现GPU服务器 - 偶发的丢失GPU设备</p>
+<p>通过排查日志发现：</p>
+<p>我们检查了/var/log/apt/history.log, 从日志中可以看到2021-09-07  16:36:23 开始libnvidia Install和upgrade相关日志记录。该时间和上一封邮件中提到的syslog中 Ubuntu系统自带的系统升级服务Daily apt upgrade在9月7日16:37启动时间是匹配的。</p>
+<p>Start-Date: 2021-09-07  16:36:23</p>
+<p>Commandline: /usr/bin/unattended-upgrade</p>
+<p>Install: libnvidia-compute-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-encode-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), xserver-xorg-video-nvidia-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-gl-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-fbc1-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-decode-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-cfg1-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), nvidia-utils-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), nvidia-prime:amd64 (0.8.8, automatic), nvidia-dkms-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), nvidia-compute-utils-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-ifr1-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), nvidia-driver-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), libnvidia-extra-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic), nvidia-kernel-source-460:amd64 (460.91.03-0ubuntu0.18.04.1, automatic)</p>
+<p>Upgrade: libnvidia-compute-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), libnvidia-encode-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), xserver-xorg-video-nvidia-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), libnvidia-gl-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), libnvidia-fbc1-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), libnvidia-decode-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), libnvidia-cfg1-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), nvidia-utils-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), nvidia-dkms-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), nvidia-compute-utils-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), libnvidia-ifr1-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), nvidia-driver-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1), nvidia-kernel-source-450:amd64 (450.36.06-0ubuntu1, 460.91.03-0ubuntu0.18.04.1)</p>
+<p>End-Date: 2021-09-07  16:38:02</p>
+<p>另外，根据先前的syslog 记录：</p>
+<p>Sep  7 18:01:33 edmonddantes kernel: [34870.277491] NVRM: API mismatch: the client has the version 460.91.03, but</p>
+<p>Sep  7 18:01:33 edmonddantes kernel: [34870.277491] NVRM: this kernel module has the version 450.36.06.  Please</p>
+<p>而根据用户目前命令返回结果modinfo version 460.91.03 和 Kernel Module  460.91.03是一致的。</p>
+<p>据此，我们判断Kernel module version不一致的问题Ubuntu 自动更新有关，推测可能需要重新启动才能继续正常运行。</p>
+<p>解决方案是禁用GPU自动更新</p>
+<p>由于这个问题涉及到Ubuntu自带的自动升级服务Daily apt upgrade， 基于我们自己的Linux使用经验，我们建议您可以通过以下命令来disable Ubuntu自动更新：</p>
+<p>$ sudo nano /etc/apt/apt.conf.d/20auto-upgrades</p>
+<p>#将以下value由1改为0：</p>
+<p>APT::Periodic::Update-Package-Lists &quot;0&quot;;</p>
+<p>APT::Periodic::Download-Upgradeable-Packages &quot;0&quot;;</p>
+<p>APT::Periodic::AutocleanInterval &quot;0&quot;;</p>
+<p>APT::Periodic::Unattended-Upgrade &quot;0&quot;;</p>
+<p>#如您后续需要开启自动更新，可以将值改回1。</p></article>

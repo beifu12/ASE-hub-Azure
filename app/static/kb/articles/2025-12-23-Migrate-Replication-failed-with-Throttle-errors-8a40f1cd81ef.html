@@ -1,0 +1,562 @@
+<article class="kb-article" data-title="Migrate Replication failed with Throttle errors."><h1>Migrate Replication failed with Throttle errors.</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-23 16:27:43</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>Migrate两台本地物理机。初始全量复制已经完成，目前处于增量复制状态。其中一台没问题，另一台突然出现复制失败报错。</li>
+</ul>
+<ul>
+<li>收集了ASRDiagnostics日志，能够发现有Diff Throttle的报错：</li>
+</ul>
+<ul>
+<li>整体来说，如果怀疑是源Disk故障导致的offset的问题，通常还是需要PG解决。物理机经常会有这种问题，但是虚拟机一般不会。</li>
+</ul>
+<ul>
+<li>Replication not progress resync stuck Read failure with alert EA0414 VolumeReadFailureAlertAtOffset</li>
+</ul>
+<ul>
+<li>Error ID</li>
+</ul>
+<ul>
+<li>FastSync::readFromVolume: Failed to read volume &lt;diskid&gt;, at offset: 2736363929600, bytes read: 0, bytes requested: 4194304, error code: 1117</li>
+</ul>
+<ul>
+<li>FastSync::ProcessHcdTask::svc: FastSync::ProcessHcdTask::readFromVolume: Failed to read volume {35A9179F-BEA4-4053-BC9D-6180578B336C}, at offset: 274873712640, bytes read: 0, bytes requested: 4194304, error code: 1</li>
+</ul>
+<ul>
+<li>5 =&gt; I/O error</li>
+</ul>
+<ul>
+<li>FastSync::readFromVolume: Failed to read volume /dev/sda, at offset: 1424545021952, bytes read: 0, bytes requested: 4194304, error code: 5</li>
+</ul>
+<ul>
+<li>Exact reason for failure</li>
+</ul>
+<ul>
+<li>Disk not readable - hardware issue</li>
+</ul>
+<ul>
+<li>For disk hardware issue case need to follow below actions:</li>
+</ul>
+<ul>
+<li>Incident 376268538 : [Waiting on CSS][RCM V2A]: &lt;wespugh&gt; &lt;Cannot Complete initial replication&gt;</li>
+</ul>
+<ul>
+<li>Incident 393502746 : [Waiting on CSS]Failback Azure to onpremises [Sd 2305250030000897 Cx ashghal.gov.qa ][SE-anrod][reprotection cannot be perform VM keeps critical]</li>
+</ul>
+<ul>
+<li>Monitor the replication depending on size it will take its own time and replication should go to healthy state.</li>
+</ul>
+<ul>
+<li>| where Message contains &quot;Failed to read volume&quot;</li>
+</ul>
+<ul>
+<li>//| where HostId contains &quot;929969ff-502e-49f1-8b2a-05ee94edc110&quot;</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Xiangjia</li>
+</ul>
+<ul>
+<li>Case: 20251217387674</li>
+</ul>
+<ul>
+<li>ICM: Incident-51000000820669 Details - IcM</li>
+</ul>
+<ul>
+<li>=================================</li>
+</ul>
+<ul>
+<li>Drive Count : 2</li>
+</ul>
+<ul>
+<li>Drive ID[0]:\\.\PHYSICALDRIVE0</li>
+</ul>
+<ul>
+<li>Drive GUID[0]: 94D9CD82-65B3-4C00-9E27-B47157BDC07C</li>
+</ul>
+<ul>
+<li>Drive ID[1]:\\.\PHYSICALDRIVE1</li>
+</ul>
+<ul>
+<li>Drive GUID[1]: FCE71A4A-31F4-4100-877A-6C4CF0FD1927</li>
+</ul>
+<ul>
+<li>===============================</li>
+</ul>
+<ul>
+<li>关键日志：</li>
+</ul>
+<ul>
+<li>1.Appliance Server &amp; Source Server ASR日志</li>
+</ul>
+<ul>
+<li>Restart the service named Microsoft On-Premise to Azure Replication Agent on the appliance</li>
+</ul>
+<ul>
+<li>Wait for 30+ minutes</li>
+</ul>
+<ul>
+<li>If the replication is still not progressing, please collect</li>
+</ul>
+<ul>
+<li>2.Applicance server</li>
+</ul>
+<ul>
+<li>D:\PSCache\bc63f2b6-a9ae-4f70-8e10-a507fa4b8e42\{94D9CD82-65B3-4C00-9E27-B47157BDC07C}\a5325158-4a64-5d44-9f34-7c0001d84ade\resync\96adb19c-09fe-450c-a18a-3afb37c5c9e6</li>
+</ul>
+<ul>
+<li>Stop svagents service on the source machine</li>
+</ul>
+<ul>
+<li>On the appliance -&gt;</li>
+</ul>
+<ul>
+<li>Stopped rcmreplicationagent service</li>
+</ul>
+<ul>
+<li>Removed the below files to initiate a resync</li>
+</ul>
+<ul>
+<li>D:\PSCache\bc63f2b6-a9ae-4f70-8e10-a507fa4b8e42\{94D9CD82-65B3-4C00-9E27-B47157BDC07C}\a5325158-4a64-5d44-9f34-7c0001d84ade\resync\96adb19c-09fe-450c-a18a-3afb37c5c9e6\SourceResyncState_0000000000000002.json</li>
+</ul>
+<ul>
+<li>D:\PSCache\bc63f2b6-a9ae-4f70-8e10-a507fa4b8e42\{94D9CD82-65B3-4C00-9E27-B47157BDC07C}\a5325158-4a64-5d44-9f34-7c0001d84ade\resync\96adb19c-09fe-450c-a18a-3afb37c5c9e6\SourceResyncState_0000000000000003.json</li>
+</ul>
+<ul>
+<li>D:\PSCache\bc63f2b6-a9ae-4f70-8e10-a507fa4b8e42\{94D9CD82-65B3-4C00-9E27-B47157BDC07C}\a5325158-4a64-5d44-9f34-7c0001d84ade\resync\96adb19c-09fe-450c-a18a-3afb37c5c9e6\SourceResyncState_0000000000000004.json</li>
+</ul>
+<ul>
+<li>Note: Don&#39;t remove D:\PSCache\bc63f2b6-a9ae-4f70-8e10-a507fa4b8e42\{94D9CD82-65B3-4C00-9E27-B47157BDC07C}\a5325158-4a64-5d44-9f34-7c0001d84ade\resync\96adb19c-09fe-450c-a18a-3afb37c5c9e6\SourceResyncState_0000000000000002.json</li>
+</ul>
+<ul>
+<li>Started the rcmreplicationagent service on the appliance. Noticed that dataprotection started processing the files.</li>
+</ul>
+<ul>
+<li>相关KB，来自css的wiki:</li>
+</ul>
+<ul>
+<li>Follow</li>
+</ul>
+<ul>
+<li>1</li>
+</ul>
+<ul>
+<li>Edit</li>
+</ul>
+<ul>
+<li>Mahabir Singh Bisht</li>
+</ul>
+<ul>
+<li>Dec 5</li>
+</ul>
+<ul>
+<li>Windows:</li>
+</ul>
+<ul>
+<li>Plain Text</li>
+</ul>
+<ul>
+<li>OR</li>
+</ul>
+<ul>
+<li>Linux:</li>
+</ul>
+<ul>
+<li>(OR)</li>
+</ul>
+<ul>
+<li>The customer have Storage Replica feature installed in the servers, SR (storage replica) might adversely affect the ability of other things to access the disks/volumes</li>
+</ul>
+<ul>
+<li>(or)</li>
+</ul>
+<ul>
+<li>a. Download DiskReaderTests ).exe file attachment from</li>
+</ul>
+<ul>
+<li>b. Extract the zip file and copy DiskReaderTests.exe to local directory on agent.</li>
+</ul>
+<ul>
+<li>c. Open command prompt in admin mode, run the below command by replacing the appropriate values and collect the results.</li>
+</ul>
+<ul>
+<li>&lt;localdir&gt;:\DiskReaderTests.exe &lt;disk-index&gt; &lt;offset&gt; &lt;lengthInBytes&gt;</li>
+</ul>
+<ul>
+<li>Ex:</li>
+</ul>
+<ul>
+<li>Success Case</li>
+</ul>
+<ul>
+<li>C:\WINDOWS\system32&gt;D:\DiskReaderTests\Debug\DiskReaderTests.exe 1 214748364800 4194304</li>
+</ul>
+<ul>
+<li>Opening handle on device \\.\PhysicalDrive1</li>
+</ul>
+<ul>
+<li>SUCCESS: Read 4194304 bytes</li>
+</ul>
+<ul>
+<li>time dd if=/dev/sda of=/dev/null bs=4194304 count=1 skip=0</li>
+</ul>
+<ul>
+<li>time dd if=/dev/sda of=/dev/null bs=4194304 count=1 skip=339638</li>
+</ul>
+<ul>
+<li>For Azure VM disk resize case need to follow below actions to unblock re-protect failback:</li>
+</ul>
+<ul>
+<li>Work around steps for Example Azure VM ARCHSRVCFG01:</li>
+</ul>
+<ul>
+<li>Extend the VMDKs on the ASR appliance:</li>
+</ul>
+<ul>
+<li>b. Go to Appliance.</li>
+</ul>
+<ul>
+<li>While resynchronization is going on, you can do below step any time. Go to vCenter -&gt; on-prem Source machine -&gt; Edit settings -&gt; Detach the disk(vmdk which was modified in step one of appliance) -&gt; Make sure DO NOT SELECT OPTION(Delete from datastore) -&gt; click OK -&gt; Again go to Edit settings-&gt;Add new device-&gt; add existing Hard disk -&gt;Click Ok (This will Attach the VMDK([DS_SCADA01] ARCHSRVCFG01/ARCHSRVCFG01_1.vmdk) on the on-prem Source VM.</li>
+</ul>
+<ul>
+<li>This will reflect the new size on the On-Prem VM.</li>
+</ul>
+<ul>
+<li>Once healthy you are good to perform Planned failover (Failback).</li>
+</ul>
+<ul>
+<li>| where MachineId == &quot;&lt;vmID&gt;&quot;</li>
+</ul>
+<ul>
+<li>| where SubComponent contains &quot;dataprotection&quot;</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, SubComponent, ExtendedProperties,  Message</li>
+</ul>
+<ul>
+<li>| order by PreciseTimeStamp desc</li>
+</ul>
+<ul>
+<li>| take 100 //Taking only last 100 results</li>
+</ul>
+<ul>
+<li>union</li>
+</ul>
+<ul>
+<li>//| where PreciseTimeStamp &gt;= ago(3d)</li>
+</ul>
+<ul>
+<li>//| where HostName contains &quot;GQL&quot;</li>
+</ul>
+<ul>
+<li>//| where HostId == &quot;bed46d90-5b12-4ad4-8c47-d8dced0d8b49&quot;</li>
+</ul>
+<ul>
+<li>| where HostName contains &quot;ARCHSRVCFG01&quot;</li>
+</ul>
+<ul>
+<li>| where DiskName contains &quot;2&quot;</li>
+</ul>
+<ul>
+<li>//| where StampName !contains &quot;ecy&quot;</li>
+</ul>
+<ul>
+<li>//| where StampName !contains &quot;ccy&quot;</li>
+</ul>
+<ul>
+<li>//| where HostName contains &quot;FPL-U16&quot;</li>
+</ul>
+<ul>
+<li>//| where KernelVersion contains &quot;4.18.0-477.10.1.&quot;</li>
+</ul>
+<ul>
+<li>This is the time disk resize has been identified.</li>
+</ul>
+<ul>
+<li>bed46d90-5b12-4ad4-8c47-d8dced0d8b49  ARCHSRVCFG01  2023-05-28 10:52:48.0000000  9.54.6682.1  \\.\PHYSICALDRIVE2  322122547200</li>
+</ul>
+<ul>
+<li>bed46d90-5b12-4ad4-8c47-d8dced0d8b49  ARCHSRVCFG01  2023-05-28 12:32:26.0000000  9.54.6</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#~&gt; (12-19-2025 07:37:21):  ALWAYS  14296 10100 12 ProtectedGroupVolumes::LogDatapathThrottleInfo: ProtectedGroupVolumes::HandleDatapathThrottle: device {94D9CD82-65B3-4C00-9E27-B47157BDC07C} data source SOURCE_META_DATA is diff throttled Current TTL=59736 milisec</li>
+</ul>
+<ul>
+<li>#~&gt; (12-19-2025 07:37:21):  ALWAYS  14296 10100 13 ProtectedGroupVolumes::LogDatapathThrottleInfo: device {94D9CD82-65B3-4C00-9E27-B47157BDC07C} throttled 10 times in last 600 sec total throttle time=597112 milisec</li>
+</ul>
+<ul>
+<li>#~&gt; (12-18-2025 11:06:28):   ERROR  9176 12960 274 TransportStream::Write: Failed to send data with error [at C:\__w\1\s\host\cxpslib\client.h:BasicClient&lt;class HttpTraits&gt;::resultCode:1908]   Client throttled(sid: 5950.24eab79c170), remoteName: D:\PSCache/bc63f2b6-a9ae-4f70-8e10-a507fa4b8e42/{94D9CD82-65B3-4C00-9E27-B47157BDC07C}/a5325158-4a64-5d44-9f34-7c0001d84ade/diffsync/96adb19c-09fe-450c-a18a-3afb37c5c9e6/pre_completed_ediffcompleted_diff_P134101609114950590_93286176_1_E134104756708304445_93588861_ME1.dat, dataSize: 716932, moreData: 0 (may want to check server side logs for this sid) cxps C6140MV16.Go.JohnsonControls.com,10.111.64.246. Transport failures = 10, success = 0 since 640 secs.</li>
+</ul>
+<ul>
+<li>#~&gt; (12-18-2025 11:08:28):  ALWAYS  9176 12960 275 ProtectedGroupVolumes::LogDatapathThrottleInfo: ProtectedGroupVolumes::HandleDatapathThrottle: device {94D9CD82-65B3-4C00-9E27-B47157BDC07C} data source SOURCE_META_DATA is diff throttled Current TTL=59071 milisec</li>
+</ul>
+<ul>
+<li>#~&gt; (12-18-2025 11:08:28):  ALWAYS  9176 12960 276 ProtectedGroupVolumes::LogDatapathThrottleInfo: device {94D9CD82-65B3-4C00-9E27-B47157BDC07C} throttled 10 times in last 600 sec total throttle time=590850 milisec</li>
+</ul>
+<ul>
+<li>SDP logs from the appliance and the source machine</li>
+</ul>
+<ul>
+<li>#这部分是PG给的步骤，会产生一些新的ASRDiagnostic日志。</li>
+</ul>
+<ul>
+<li>首先运行chkdisk工具，确保磁盘没问题了，才可以进行之后的步骤。如果chkdisk有问题，那说明磁盘可能存在故障，后续步骤就没有意义了。</li>
+</ul>
+<ul>
+<li>Started the svagents service on the source machine.  #停止和启动source machine的svagent步骤可以触发resync。但是有些时候resync无法自动启动，就需要手动触发。PG说手动触发的方式是case by case的。第3步骤只是其中一种方式。</li>
+</ul>
+<ul>
+<li>Check whether the reported offset is readable for said offset and length using</li>
+</ul>
+<ul>
+<li>External tool(HexEditor) and if it fails then check with disk vendor for further assistance</li>
+</ul>
+<ul>
+<li>Run the util to check if the offset is readable or not</li>
+</ul>
+<ul>
+<li>Incident 265868465 : [P2A]: &lt;Konico Minolta&gt; &lt;ruharper&gt; &lt;DiskReadErrorLogger - Error code 1&gt;</li>
+</ul>
+<ul>
+<li>Failure Case: If the above command doesn&#39;t return SUCCESS, ask CX to check with the disk vendor for further assistance</li>
+</ul>
+<ul>
+<li>Please verify same with dd command for same offset with below command:</li>
+</ul>
+<ul>
+<li>time dd if=/dev/sda of=/dev/null bs=4194304 count=1 skip=&lt;offset to check/4194304&gt;</li>
+</ul>
+<ul>
+<li>For example to verify read at offset 0,</li>
+</ul>
+<ul>
+<li>For example to verify read at offset 1424545021952,</li>
+</ul>
+<ul>
+<li>If dd also give same error code 5 then please check with disk vendor for further assistance</li>
+</ul>
+<ul>
+<li>a. Login to vCenter.</li>
+</ul>
+<ul>
+<li>c. Identify the disks to be extended -&gt; You can check the same Vcenter-&gt;on-prem ASR appliance machine-&gt;Edit settings-&gt;search for the attached disk [DS_SCADA01] ARCHSRVCFG01/ARCHSRVCFG01_1.vmdk</li>
+</ul>
+<ul>
+<li>d. Modify the disk size to same as Azure VM disk size. which in this case would 4TB. Cross verify from the Azure VM disk size from portal.</li>
+</ul>
+<ul>
+<li>After extending the disk size on the appliance, resync will be performed automatically. Monitor it for some time(in my case it was 45mins). If in case you observe that resync is not taking place automatically, then perform the re-synchronization from the Portal &gt; you will observe the resync banner under Vault-&gt; replicated items.</li>
+</ul>
+<ul>
+<li>Location and names of logs that provide error information (from all platforms: CS/PS/protected VM)</li>
+</ul>
+<ul>
+<li>&lt;Agent install path&gt;\vxlogs/resync/&lt;device name&gt;&lt;volume group ID&gt;&lt;EndPointDeviceName&gt;\dataprotection*.log</li>
+</ul>
+<ul>
+<li>/var/log/vxlogs/resync/&lt;device name&gt;/&lt;volume group ID&gt;/&lt;EndPointDeviceName&gt;/dataprotection*.log</li>
+</ul>
+<ul>
+<li>Kusto queries required for gathering complete information on error</li>
+</ul>
+<ul>
+<li>union cluster(&#39;mabprod1&#39;).database(&#39;MABKustoProd1&#39;).InMageAdminLogV2,cluster(&#39;mabprodweu&#39;).database(&#39;MABKustoProd&#39;).InMageAdminLogV2,cluster(&#39;mabprodwus&#39;).database(&#39;MABKustoProd&#39;).InMageAdminLogV2</li>
+</ul>
+<ul>
+<li>For Azure VM disk resize case to know the deetails below kusto query:</li>
+</ul>
+<ul>
+<li>cluster(&quot;Asrcluscus&quot;).database(&quot;ASRKustoDB_US&quot;).RcmAgentTelemetrySourceV2,</li>
+</ul>
+<ul>
+<li>cluster(&quot;Asrclussea&quot;).database(&quot;ASRKustoDB_Asia&quot;).RcmAgentTelemetrySourceV2,</li>
+</ul>
+<ul>
+<li>cluster(&quot;Asrcluswe&quot;).database(&quot;ASRKustoDB_Europe&quot;).RcmAgentTelemetrySourceV2</li>
+</ul>
+<ul>
+<li>| sort by SrcLoggerTime asc</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>//| where SrcAgentVer contains &quot;9.54.668&quot;</li>
+</ul>
+<ul>
+<li>| project HostId, HostName, SrcLoggerTime, SrcAgentVer, DiskName, DeviceDrvSize</li>
+</ul>
+<ul>
+<li>//| summarize max(SrcLoggerTime) by HostName, HostId, SrcAgentVer, KernelVersion, StampName, SubscriptionId, OsVer, DiskName, NumDiskByAgent, FabType, ProtDiskId,DeviceDrvSize</li>
+</ul>
+<ul>
+<li>HostId  HostName  SrcLoggerTime  SrcAgentVer  DiskName  DeviceDrvSize</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>Solution大概步骤：</li>
+</ul>
+<ul>
+<li>Azure VM disk resize case: There is another case for re-protect protection from Azure to on-premises. Here Azure VM disk resize done after enabled the re-protect. As Azure VM disk resize done by user, after resizing done, the disk resynchronization starts automatically because of auto resync. As the re-sync progress got stuck here because old size of disk last offset read got failed here due to Azure VM disk resize. Here Azure VM got resized, but attached on-prem disk to new stack appliance has old size.</li>
+</ul>
+<ul>
+<li>The resolution is to uninstall the storage replica feature from the server and restart server.</li>
+</ul>
+<ul>
+<li>Recommended action to resolve the issue</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://asrclus1.kusto.windows.net/ASRKustoDB" target="_blank" rel="noopener">https://asrclus1.kusto.windows.net/ASRKustoDB</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Xiangjia</p>
+<p>Case: 20251217387674</p>
+<p>ICM: Incident-51000000820669 Details - IcM</p>
+<p>问题现象：</p>
+<p>Migrate两台本地物理机。初始全量复制已经完成，目前处于增量复制状态。其中一台没问题，另一台突然出现复制失败报错。</p>
+<p>收集了ASRDiagnostics日志，能够发现有Diff Throttle的报错：</p>
+<p>=================================</p>
+<p>Drive Count : 2</p>
+<p>Drive ID[0]:\\.\PHYSICALDRIVE0</p>
+<p>Drive GUID[0]: 94D9CD82-65B3-4C00-9E27-B47157BDC07C</p>
+<p>Drive ID[1]:\\.\PHYSICALDRIVE1</p>
+<p>Drive GUID[1]: FCE71A4A-31F4-4100-877A-6C4CF0FD1927</p>
+<p>#~&gt; (12-19-2025 07:37:21):  ALWAYS  14296 10100 12 ProtectedGroupVolumes::LogDatapathThrottleInfo: ProtectedGroupVolumes::HandleDatapathThrottle: device {94D9CD82-65B3-4C00-9E27-B47157BDC07C} data source SOURCE_META_DATA is diff throttled Current TTL=59736 milisec</p>
+<p>#~&gt; (12-19-2025 07:37:21):  ALWAYS  14296 10100 13 ProtectedGroupVolumes::LogDatapathThrottleInfo: device {94D9CD82-65B3-4C00-9E27-B47157BDC07C} throttled 10 times in last 600 sec total throttle time=597112 milisec</p>
+<p>===============================</p>
+<p>#~&gt; (12-18-2025 11:06:28):   ERROR  9176 12960 274 TransportStream::Write: Failed to send data with error [at C:\__w\1\s\host\cxpslib\client.h:BasicClient&lt;class HttpTraits&gt;::resultCode:1908]   Client throttled(sid: 5950.24eab79c170), remoteName: D:\PSCache/bc63f2b6-a9ae-4f70-8e10-a507fa4b8e42/{94D9CD82-65B3-4C00-9E27-B47157BDC07C}/a5325158-4a64-5d44-9f34-7c0001d84ade/diffsync/96adb19c-09fe-450c-a18a-3afb37c5c9e6/pre_completed_ediffcompleted_diff_P134101609114950590_93286176_1_E134104756708304445_93588861_ME1.dat, dataSize: 716932, moreData: 0 (may want to check server side logs for this sid) cxps C6140MV16.Go.JohnsonControls.com,10.111.64.246. Transport failures = 10, success = 0 since 640 secs.</p>
+<p>#~&gt; (12-18-2025 11:08:28):  ALWAYS  9176 12960 275 ProtectedGroupVolumes::LogDatapathThrottleInfo: ProtectedGroupVolumes::HandleDatapathThrottle: device {94D9CD82-65B3-4C00-9E27-B47157BDC07C} data source SOURCE_META_DATA is diff throttled Current TTL=59071 milisec</p>
+<p>#~&gt; (12-18-2025 11:08:28):  ALWAYS  9176 12960 276 ProtectedGroupVolumes::LogDatapathThrottleInfo: device {94D9CD82-65B3-4C00-9E27-B47157BDC07C} throttled 10 times in last 600 sec total throttle time=590850 milisec</p>
+<p>关键日志：</p>
+<p>1.Appliance Server &amp; Source Server ASR日志</p>
+<p>Restart the service named Microsoft On-Premise to Azure Replication Agent on the appliance</p>
+<p>Wait for 30+ minutes</p>
+<p>If the replication is still not progressing, please collect</p>
+<p>SDP logs from the appliance and the source machine</p>
+<p>#这部分是PG给的步骤，会产生一些新的ASRDiagnostic日志。</p>
+<p>2.Applicance server</p>
+<p>D:\PSCache\bc63f2b6-a9ae-4f70-8e10-a507fa4b8e42\{94D9CD82-65B3-4C00-9E27-B47157BDC07C}\a5325158-4a64-5d44-9f34-7c0001d84ade\resync\96adb19c-09fe-450c-a18a-3afb37c5c9e6</p>
+<p>Solution大概步骤：</p>
+<p>首先运行chkdisk工具，确保磁盘没问题了，才可以进行之后的步骤。如果chkdisk有问题，那说明磁盘可能存在故障，后续步骤就没有意义了。</p>
+<p>Stop svagents service on the source machine</p>
+<p>On the appliance -&gt;</p>
+<p>Stopped rcmreplicationagent service</p>
+<p>Removed the below files to initiate a resync</p>
+<p>D:\PSCache\bc63f2b6-a9ae-4f70-8e10-a507fa4b8e42\{94D9CD82-65B3-4C00-9E27-B47157BDC07C}\a5325158-4a64-5d44-9f34-7c0001d84ade\resync\96adb19c-09fe-450c-a18a-3afb37c5c9e6\SourceResyncState_0000000000000002.json</p>
+<p>D:\PSCache\bc63f2b6-a9ae-4f70-8e10-a507fa4b8e42\{94D9CD82-65B3-4C00-9E27-B47157BDC07C}\a5325158-4a64-5d44-9f34-7c0001d84ade\resync\96adb19c-09fe-450c-a18a-3afb37c5c9e6\SourceResyncState_0000000000000003.json</p>
+<p>D:\PSCache\bc63f2b6-a9ae-4f70-8e10-a507fa4b8e42\{94D9CD82-65B3-4C00-9E27-B47157BDC07C}\a5325158-4a64-5d44-9f34-7c0001d84ade\resync\96adb19c-09fe-450c-a18a-3afb37c5c9e6\SourceResyncState_0000000000000004.json</p>
+<p>Note: Don&#39;t remove D:\PSCache\bc63f2b6-a9ae-4f70-8e10-a507fa4b8e42\{94D9CD82-65B3-4C00-9E27-B47157BDC07C}\a5325158-4a64-5d44-9f34-7c0001d84ade\resync\96adb19c-09fe-450c-a18a-3afb37c5c9e6\SourceResyncState_0000000000000002.json</p>
+<p>Started the svagents service on the source machine.  #停止和启动source machine的svagent步骤可以触发resync。但是有些时候resync无法自动启动，就需要手动触发。PG说手动触发的方式是case by case的。第3步骤只是其中一种方式。</p>
+<p>Started the rcmreplicationagent service on the appliance. Noticed that dataprotection started processing the files.</p>
+<p>整体来说，如果怀疑是源Disk故障导致的offset的问题，通常还是需要PG解决。物理机经常会有这种问题，但是虚拟机一般不会。</p>
+<p>相关KB，来自css的wiki:</p>
+<p>Replication not progress resync stuck Read failure with alert EA0414 VolumeReadFailureAlertAtOffset</p>
+<p>Follow</p>
+<p>1</p>
+<p>Edit</p>
+<p>Mahabir Singh Bisht</p>
+<p>Dec 5</p>
+<p>Error ID</p>
+<p>Windows:</p>
+<p>Plain Text</p>
+<p>FastSync::readFromVolume: Failed to read volume &lt;diskid&gt;, at offset: 2736363929600, bytes read: 0, bytes requested: 4194304, error code: 1117</p>
+<p>OR</p>
+<p>FastSync::ProcessHcdTask::svc: FastSync::ProcessHcdTask::readFromVolume: Failed to read volume {35A9179F-BEA4-4053-BC9D-6180578B336C}, at offset: 274873712640, bytes read: 0, bytes requested: 4194304, error code: 1</p>
+<p>Linux:</p>
+<p>5 =&gt; I/O error</p>
+<p>FastSync::readFromVolume: Failed to read volume /dev/sda, at offset: 1424545021952, bytes read: 0, bytes requested: 4194304, error code: 5</p>
+<p>Exact reason for failure</p>
+<p>Disk not readable - hardware issue</p>
+<p>(OR)</p>
+<p>Azure VM disk resize case: There is another case for re-protect protection from Azure to on-premises. Here Azure VM disk resize done after enabled the re-protect. As Azure VM disk resize done by user, after resizing done, the disk resynchronization starts automatically because of auto resync. As the re-sync progress got stuck here because old size of disk last offset read got failed here due to Azure VM disk resize. Here Azure VM got resized, but attached on-prem disk to new stack appliance has old size.</p>
+<p>The customer have Storage Replica feature installed in the servers, SR (storage replica) might adversely affect the ability of other things to access the disks/volumes</p>
+<p>The resolution is to uninstall the storage replica feature from the server and restart server.</p>
+<p>Recommended action to resolve the issue</p>
+<p>For disk hardware issue case need to follow below actions:</p>
+<p>Check whether the reported offset is readable for said offset and length using</p>
+<p>External tool(HexEditor) and if it fails then check with disk vendor for further assistance</p>
+<p>(or)</p>
+<p>Run the util to check if the offset is readable or not</p>
+<p>a. Download DiskReaderTests ).exe file attachment from</p>
+<p>Incident 376268538 : [Waiting on CSS][RCM V2A]: &lt;wespugh&gt; &lt;Cannot Complete initial replication&gt;</p>
+<p>Incident 265868465 : [P2A]: &lt;Konico Minolta&gt; &lt;ruharper&gt; &lt;DiskReadErrorLogger - Error code 1&gt;</p>
+<p>b. Extract the zip file and copy DiskReaderTests.exe to local directory on agent.</p>
+<p>c. Open command prompt in admin mode, run the below command by replacing the appropriate values and collect the results.</p>
+<p>&lt;localdir&gt;:\DiskReaderTests.exe &lt;disk-index&gt; &lt;offset&gt; &lt;lengthInBytes&gt;</p>
+<p>Ex:</p>
+<p>Success Case</p>
+<p>C:\WINDOWS\system32&gt;D:\DiskReaderTests\Debug\DiskReaderTests.exe 1 214748364800 4194304</p>
+<p>Opening handle on device \\.\PhysicalDrive1</p>
+<p>SUCCESS: Read 4194304 bytes</p>
+<p>Failure Case: If the above command doesn&#39;t return SUCCESS, ask CX to check with the disk vendor for further assistance</p>
+<p>Please verify same with dd command for same offset with below command:</p>
+<p>time dd if=/dev/sda of=/dev/null bs=4194304 count=1 skip=&lt;offset to check/4194304&gt;</p>
+<p>For example to verify read at offset 0,</p>
+<p>time dd if=/dev/sda of=/dev/null bs=4194304 count=1 skip=0</p>
+<p>For example to verify read at offset 1424545021952,</p>
+<p>time dd if=/dev/sda of=/dev/null bs=4194304 count=1 skip=339638</p>
+<p>If dd also give same error code 5 then please check with disk vendor for further assistance</p>
+<p>For Azure VM disk resize case need to follow below actions to unblock re-protect failback:</p>
+<p>Incident 393502746 : [Waiting on CSS]Failback Azure to onpremises [Sd 2305250030000897 Cx ashghal.gov.qa ][SE-anrod][reprotection cannot be perform VM keeps critical]</p>
+<p>Work around steps for Example Azure VM ARCHSRVCFG01:</p>
+<p>Extend the VMDKs on the ASR appliance:</p>
+<p>a. Login to vCenter.</p>
+<p>b. Go to Appliance.</p>
+<p>c. Identify the disks to be extended -&gt; You can check the same Vcenter-&gt;on-prem ASR appliance machine-&gt;Edit settings-&gt;search for the attached disk [DS_SCADA01] ARCHSRVCFG01/ARCHSRVCFG01_1.vmdk</p>
+<p>d. Modify the disk size to same as Azure VM disk size. which in this case would 4TB. Cross verify from the Azure VM disk size from portal.</p>
+<p>After extending the disk size on the appliance, resync will be performed automatically. Monitor it for some time(in my case it was 45mins). If in case you observe that resync is not taking place automatically, then perform the re-synchronization from the Portal &gt; you will observe the resync banner under Vault-&gt; replicated items.</p>
+<p>While resynchronization is going on, you can do below step any time. Go to vCenter -&gt; on-prem Source machine -&gt; Edit settings -&gt; Detach the disk(vmdk which was modified in step one of appliance) -&gt; Make sure DO NOT SELECT OPTION(Delete from datastore) -&gt; click OK -&gt; Again go to Edit settings-&gt;Add new device-&gt; add existing Hard disk -&gt;Click Ok (This will Attach the VMDK([DS_SCADA01] ARCHSRVCFG01/ARCHSRVCFG01_1.vmdk) on the on-prem Source VM.</p>
+<p>This will reflect the new size on the On-Prem VM.</p>
+<p>Monitor the replication depending on size it will take its own time and replication should go to healthy state.</p>
+<p>Once healthy you are good to perform Planned failover (Failback).</p>
+<p>Location and names of logs that provide error information (from all platforms: CS/PS/protected VM)</p>
+<p>&lt;Agent install path&gt;\vxlogs/resync/&lt;device name&gt;&lt;volume group ID&gt;&lt;EndPointDeviceName&gt;\dataprotection*.log</p>
+<p>/var/log/vxlogs/resync/&lt;device name&gt;/&lt;volume group ID&gt;/&lt;EndPointDeviceName&gt;/dataprotection*.log</p>
+<p>Kusto queries required for gathering complete information on error</p>
+<p>union cluster(&#39;mabprod1&#39;).database(&#39;MABKustoProd1&#39;).InMageAdminLogV2,cluster(&#39;mabprodweu&#39;).database(&#39;MABKustoProd&#39;).InMageAdminLogV2,cluster(&#39;mabprodwus&#39;).database(&#39;MABKustoProd&#39;).InMageAdminLogV2</p>
+<p>| where MachineId == &quot;&lt;vmID&gt;&quot;</p>
+<p>| where SubComponent contains &quot;dataprotection&quot;</p>
+<p>| where Message contains &quot;Failed to read volume&quot;</p>
+<p>| project PreciseTimeStamp, SubComponent, ExtendedProperties,  Message</p>
+<p>| order by PreciseTimeStamp desc</p>
+<p>| take 100 //Taking only last 100 results</p>
+<p>For Azure VM disk resize case to know the deetails below kusto query:</p>
+<p>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://asrclus1.kusto.windows.net/ASRKustoDB" target="_blank" rel="noopener">https://asrclus1.kusto.windows.net/ASRKustoDB</a></p>
+<p>union</p>
+<p>cluster(&quot;Asrcluscus&quot;).database(&quot;ASRKustoDB_US&quot;).RcmAgentTelemetrySourceV2,</p>
+<p>cluster(&quot;Asrclussea&quot;).database(&quot;ASRKustoDB_Asia&quot;).RcmAgentTelemetrySourceV2,</p>
+<p>cluster(&quot;Asrcluswe&quot;).database(&quot;ASRKustoDB_Europe&quot;).RcmAgentTelemetrySourceV2</p>
+<p>//| where PreciseTimeStamp &gt;= ago(3d)</p>
+<p>//| where HostId contains &quot;929969ff-502e-49f1-8b2a-05ee94edc110&quot;</p>
+<p>//| where HostName contains &quot;GQL&quot;</p>
+<p>//| where HostId == &quot;bed46d90-5b12-4ad4-8c47-d8dced0d8b49&quot;</p>
+<p>| where HostName contains &quot;ARCHSRVCFG01&quot;</p>
+<p>| where DiskName contains &quot;2&quot;</p>
+<p>//| where SrcAgentVer contains &quot;9.54.668&quot;</p>
+<p>//| where StampName !contains &quot;ecy&quot;</p>
+<p>//| where StampName !contains &quot;ccy&quot;</p>
+<p>//| where HostName contains &quot;FPL-U16&quot;</p>
+<p>//| where KernelVersion contains &quot;4.18.0-477.10.1.&quot;</p>
+<p>| project HostId, HostName, SrcLoggerTime, SrcAgentVer, DiskName, DeviceDrvSize</p>
+<p>| sort by SrcLoggerTime asc</p>
+<p>//| summarize max(SrcLoggerTime) by HostName, HostId, SrcAgentVer, KernelVersion, StampName, SubscriptionId, OsVer, DiskName, NumDiskByAgent, FabType, ProtDiskId,DeviceDrvSize</p>
+<p>This is the time disk resize has been identified.</p>
+<p>HostId  HostName  SrcLoggerTime  SrcAgentVer  DiskName  DeviceDrvSize</p>
+<p>bed46d90-5b12-4ad4-8c47-d8dced0d8b49  ARCHSRVCFG01  2023-05-28 10:52:48.0000000  9.54.6682.1  \\.\PHYSICALDRIVE2  322122547200</p>
+<p>bed46d90-5b12-4ad4-8c47-d8dced0d8b49  ARCHSRVCFG01  2023-05-28 12:32:26.0000000  9.54.6</p></article>

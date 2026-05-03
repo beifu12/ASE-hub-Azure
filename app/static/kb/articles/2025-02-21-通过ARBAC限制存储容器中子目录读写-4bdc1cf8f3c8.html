@@ -1,0 +1,117 @@
+<article class="kb-article" data-title="通过ARBAC限制存储容器中子目录读写"><h1>通过ARBAC限制存储容器中子目录读写</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-02-21 09:28:05</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>case：20250219338978</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>case：20250219338978</li>
+</ul>
+<ul>
+<li>目前测试发现关于Blob.List的部分不好用，无法限制用户只看到符合规则的Blob文件。</li>
+</ul>
+<ul>
+<li>ARBAC无法单独使用，必须为用户分配最低的读者角色，否则无法看到资源。</li>
+</ul>
+<ul>
+<li>实现条件的代码如下（页面无法直接配置）</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>测试功能问题总结：</li>
+</ul>
+<ul>
+<li>目前ARBAC只有向DataActions实现权限细分。</li>
+</ul>
+<ul>
+<li>容器子路径作为限制条件时无论使用的匹配条件是StringStartsWith还是StringLike，后面必须写子目录格式与模糊匹配。例如: aabb/  和 aabb/* , 如果写成 aa*生效后会限制住所目录，并不是匹配aa开头。</li>
+</ul>
+<ul>
+<li>关于ABAC条件配置语法介绍可参考文档：Azure 角色分配条件格式和语法 - Azure ABAC | Azure Docs</li>
+</ul>
+<ul>
+<li>以下用户需求是实现存储账户中指定容器下的子目录的上传下载限制。</li>
+</ul>
+<ul>
+<li>(</li>
+</ul>
+<ul>
+<li>!(ActionMatches{&#39;Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write&#39;})</li>
+</ul>
+<ul>
+<li>AND</li>
+</ul>
+<ul>
+<li>!(ActionMatches{&#39;Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read&#39;} AND NOT SubOperationMatches{&#39;Blob.List&#39;})</li>
+</ul>
+<ul>
+<li>!(ActionMatches{&#39;Microsoft.Storage/storageAccounts/blobServices/containers/blobs/add/action&#39;})</li>
+</ul>
+<ul>
+<li>)</li>
+</ul>
+<ul>
+<li>OR</li>
+</ul>
+<ul>
+<li>@Resource[Microsoft.Storage/storageAccounts/blobServices/containers:name] StringEquals &#39;abc&#39;</li>
+</ul>
+<ul>
+<li>@Resource[Microsoft.Storage/storageAccounts/blobServices/containers/blobs:path] StringLike &#39;2022/*&#39;</li>
+</ul>
+<ul>
+<li>实现效果：</li>
+</ul>
+<ul>
+<li>当用户访问其它容器的文件时提示没有权限</li>
+</ul>
+<ul>
+<li>上传文件时显示被禁止，点击文件下载时显示没有权限。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>只有访问指定的容和目录时，可以上传下载和查看文件。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>示例文档：Blob 存储的 Azure 角色分配条件示例 - Azure Storage | Azure Docs 部分示例条件可以直接搭配使用，文档中的portal页面配置部分条件无法实现，因为页面默认选不到条件类型，只能使用code方式。建议code编写完成后再转换回视图模式，可以检查冲突的问题。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025-02-21</p>
+<p>case：20250219338978</p>
+<p>测试功能问题总结：</p>
+<p>目前ARBAC只有向DataActions实现权限细分。</p>
+<p>目前测试发现关于Blob.List的部分不好用，无法限制用户只看到符合规则的Blob文件。</p>
+<p>ARBAC无法单独使用，必须为用户分配最低的读者角色，否则无法看到资源。</p>
+<p>容器子路径作为限制条件时无论使用的匹配条件是StringStartsWith还是StringLike，后面必须写子目录格式与模糊匹配。例如: aabb/  和 aabb/* , 如果写成 aa*生效后会限制住所目录，并不是匹配aa开头。</p>
+<p>示例文档：Blob 存储的 Azure 角色分配条件示例 - Azure Storage | Azure Docs 部分示例条件可以直接搭配使用，文档中的portal页面配置部分条件无法实现，因为页面默认选不到条件类型，只能使用code方式。建议code编写完成后再转换回视图模式，可以检查冲突的问题。</p>
+<p>关于ABAC条件配置语法介绍可参考文档：Azure 角色分配条件格式和语法 - Azure ABAC | Azure Docs</p>
+<p>以下用户需求是实现存储账户中指定容器下的子目录的上传下载限制。</p>
+<p>实现条件的代码如下（页面无法直接配置）</p>
+<p>(</p>
+<p>!(ActionMatches{&#39;Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write&#39;})</p>
+<p>AND</p>
+<p>!(ActionMatches{&#39;Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read&#39;} AND NOT SubOperationMatches{&#39;Blob.List&#39;})</p>
+<p>!(ActionMatches{&#39;Microsoft.Storage/storageAccounts/blobServices/containers/blobs/add/action&#39;})</p>
+<p>)</p>
+<p>OR</p>
+<p>@Resource[Microsoft.Storage/storageAccounts/blobServices/containers:name] StringEquals &#39;abc&#39;</p>
+<p>@Resource[Microsoft.Storage/storageAccounts/blobServices/containers/blobs:path] StringLike &#39;2022/*&#39;</p>
+<p>实现效果：</p>
+<p>当用户访问其它容器的文件时提示没有权限</p>
+<p>上传文件时显示被禁止，点击文件下载时显示没有权限。</p>
+<p>只有访问指定的容和目录时，可以上传下载和查看文件。</p></article>

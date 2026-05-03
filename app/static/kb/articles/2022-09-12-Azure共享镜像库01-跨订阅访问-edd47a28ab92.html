@@ -1,0 +1,95 @@
+<article class="kb-article" data-title="Azure共享镜像库01-跨订阅访问"><h1>Azure共享镜像库01-跨订阅访问</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-09-12 19:46:37</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>接着左大上次分享的共享映像库，继续研究了下，共享映像库不仅支持跨数据中心来调用镜像，还可以实现跨订阅、跨用户来访问使用。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>接着左大上次分享的共享映像库，继续研究了下，共享映像库不仅支持跨数据中心来调用镜像，还可以实现跨订阅、跨用户来访问使用。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>接着左大上次分享的共享映像库，继续研究了下，共享映像库不仅支持跨数据中心来调用镜像，还可以实现跨订阅、跨用户来访问使用。</li>
+</ul>
+<ul>
+<li>将虚拟机通用化并捕获成托管镜像：</li>
+</ul>
+<ul>
+<li>使用az cli创建共享映像库</li>
+</ul>
+<ul>
+<li>创建映像定义（映像定义相当于对映像库中所有映像逻辑上的一个分组，可以根据不同映像类型创建多个映像定义）</li>
+</ul>
+<ul>
+<li>创建映像版本（映像版本即根据源镜像生成的具体映像）</li>
+</ul>
+<ul>
+<li>为指定用户分配rbac权限</li>
+</ul>
+<ul>
+<li>分配权限</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>根据官方文档，共享映像库SIG是tenant租户下的顶级资源，当我们为其配置RBAC来分配对应权限后，即可跨订阅、跨用户来进行调用。此外，映像库中的映像还可以根据我们的配置设定在不同区域产生指定数量的副本，以及映像的冗余方式（LRS、GRS、ZRS等）。具体配置步骤见下：</li>
+</ul>
+<ul>
+<li>查看共享映像库id</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>目前使用powershell和cli都可以配置此功能，创建完成后门户上可以看到对应资源但无法点击对应的功能按钮。Powershell需要安装azpowershell模块，老版本找不到最新的命令，本例仍使用cli</li>
+</ul>
+<ul>
+<li>az sig create --resource-group resourcelht --gallery-name gallerylht</li>
+</ul>
+<ul>
+<li>az sig image-definition create --resource-group resourcelht --gallery-name gallerylht --gallery-image-definition imagedef --publisher testlht --offer centos --sku 7.5 --os-type linux</li>
+</ul>
+<ul>
+<li>az sig image-version create --resource-group resourcelht --gallery-name gallerylht --gallery-image-definition imagedef --gallery-image-version 1.0.0 --managed-image “XXX&quot; --target-regions &quot;China North&quot; &quot;China East&quot; &quot;China North2&quot; &quot;China East2&quot;（这里把中国区4个数据中心都设置可用，可自行更改）</li>
+</ul>
+<ul>
+<li>az sig show --resource-group resourcelht --gallery-name gallerylht --query id</li>
+</ul>
+<ul>
+<li>az role assignment create --role &quot;Reader&quot; --assignee &quot;XXX@microsoftinternal.partner.onmschina.cn&quot; --scope “上面获取的映像库id”</li>
+</ul>
+<ul>
+<li>完成上述步骤，登陆指定用户账号，使用命令创建VM测试成功</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/windows/shared-image-galleries" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/windows/shared-image-galleries</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2019-05-27</p>
+<p>接着左大上次分享的共享映像库，继续研究了下，共享映像库不仅支持跨数据中心来调用镜像，还可以实现跨订阅、跨用户来访问使用。</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/windows/shared-image-galleries" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/windows/shared-image-galleries</a></p>
+<p>根据官方文档，共享映像库SIG是tenant租户下的顶级资源，当我们为其配置RBAC来分配对应权限后，即可跨订阅、跨用户来进行调用。此外，映像库中的映像还可以根据我们的配置设定在不同区域产生指定数量的副本，以及映像的冗余方式（LRS、GRS、ZRS等）。具体配置步骤见下：</p>
+<p>目前使用powershell和cli都可以配置此功能，创建完成后门户上可以看到对应资源但无法点击对应的功能按钮。Powershell需要安装azpowershell模块，老版本找不到最新的命令，本例仍使用cli</p>
+<p>将虚拟机通用化并捕获成托管镜像：</p>
+<p>使用az cli创建共享映像库</p>
+<p>az sig create --resource-group resourcelht --gallery-name gallerylht</p>
+<p>创建映像定义（映像定义相当于对映像库中所有映像逻辑上的一个分组，可以根据不同映像类型创建多个映像定义）</p>
+<p>az sig image-definition create --resource-group resourcelht --gallery-name gallerylht --gallery-image-definition imagedef --publisher testlht --offer centos --sku 7.5 --os-type linux</p>
+<p>创建映像版本（映像版本即根据源镜像生成的具体映像）</p>
+<p>az sig image-version create --resource-group resourcelht --gallery-name gallerylht --gallery-image-definition imagedef --gallery-image-version 1.0.0 --managed-image “XXX&quot; --target-regions &quot;China North&quot; &quot;China East&quot; &quot;China North2&quot; &quot;China East2&quot;（这里把中国区4个数据中心都设置可用，可自行更改）</p>
+<p>为指定用户分配rbac权限</p>
+<p>查看共享映像库id</p>
+<p>az sig show --resource-group resourcelht --gallery-name gallerylht --query id</p>
+<p>分配权限</p>
+<p>az role assignment create --role &quot;Reader&quot; --assignee &quot;XXX@microsoftinternal.partner.onmschina.cn&quot; --scope “上面获取的映像库id”</p>
+<p>完成上述步骤，登陆指定用户账号，使用命令创建VM测试成功</p></article>

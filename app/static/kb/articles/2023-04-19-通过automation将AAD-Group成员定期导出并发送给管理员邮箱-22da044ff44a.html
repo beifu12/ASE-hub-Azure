@@ -1,0 +1,219 @@
+<article class="kb-article" data-title="通过automation将AAD Group成员定期导出并发送给管理员邮箱"><h1>通过automation将AAD Group成员定期导出并发送给管理员邮箱</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Automation</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-19 14:37:45</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户账号开启mfa无法通过runbook认证，因为runbook不支持交互式认证。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户账号开启mfa无法通过runbook认证，因为runbook不支持交互式认证。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Nancy</li>
+</ul>
+<ul>
+<li>客户需求：通过automation将AAD Group成员定期导出并发送给管理员邮箱</li>
+</ul>
+<ul>
+<li>如下标黄需要替换为您环境中的值。</li>
+</ul>
+<ul>
+<li>$Cred=Get-AutomationPSCredential -Name &quot;zhangnan&quot;;              ##凭据的名称</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Credential $Cred -EnvironmentName AzureChinaCloud</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -SubscriptionId &quot;57e04838-xxxx-41d73c5154c0&quot;     ##订阅id</li>
+</ul>
+<ul>
+<li>$user=Get-AzADGroupMember -GroupObjectId &quot;f7e5aa79-xxxx-ac38-ed00a8611826&quot;  ##AAD Group的object id</li>
+</ul>
+<ul>
+<li>$username=$user.DisplayName</li>
+</ul>
+<ul>
+<li>$exportCSV=New-Object -TypeName System.Collections.ArrayList</li>
+</ul>
+<ul>
+<li>$exportCSV.Add($username)</li>
+</ul>
+<ul>
+<li># 将获取的有效信息通过邮件通知管理员</li>
+</ul>
+<ul>
+<li>$recipient=&quot;zhang.nan6@oe.21vianet.com&quot;  ##收件箱</li>
+</ul>
+<ul>
+<li>$emailFrom=&quot;sisiyxxx012@163.com&quot;    ##发件箱</li>
+</ul>
+<ul>
+<li>$smtpServer=&quot;smtp.163.com&quot;   ##发件邮箱服务器</li>
+</ul>
+<ul>
+<li>$smtpCredential=new-object -typename System.Management.Automation.PSCredential -argumentlist &quot;sisixxxx012@163.com&quot;,(ConvertTo-SecureString &quot;AHAVFxxxxYGED&quot; -AsPlainText -Force)    ##发件箱地址以及授权码，我这里使用的163邮箱，授权码需要进行额外设置。</li>
+</ul>
+<ul>
+<li>##更多信息关于163邮箱设置</li>
+</ul>
+<ul>
+<li>2，创建凭据。</li>
+</ul>
+<ul>
+<li>收到邮件：</li>
+</ul>
+<ul>
+<li>4，然后将runbook进行发布，并关联一个schedule。</li>
+</ul>
+<ul>
+<li>=====================</li>
+</ul>
+<ul>
+<li>我这里测试了使用service principle并分配api权限也同样可以实现，参考如下。</li>
+</ul>
+<ul>
+<li>1，首先使用aad管理员创建应用注册。</li>
+</ul>
+<ul>
+<li>2，记录下application id和directory id，后面会用到。</li>
+</ul>
+<ul>
+<li>3，创建一个secret并将其值保存到一个地方，后面会用到。</li>
+</ul>
+<ul>
+<li>4，为其赋予api权限：</li>
+</ul>
+<ul>
+<li>添加以下这些权限。</li>
+</ul>
+<ul>
+<li>然后进行管理员同意。</li>
+</ul>
+<ul>
+<li>$applicationId = &#39;d1a0e85a-bad1-xxxx-8b6df49393d8&#39; ##上面记录的appid</li>
+</ul>
+<ul>
+<li>$secret = &#39;D-9N_-.l-O4-xxxqDY5xzHIWdNU2&#39; | ConvertTo-SecureString -AsPlainText -Force  ##上面记录的secret</li>
+</ul>
+<ul>
+<li>$tenant = &quot;b388b808-xxx-a7cbbd8b7e9b&quot;  ##上面记录的directory id即tenant id</li>
+</ul>
+<ul>
+<li>$cred = New-Object -TypeName PSCredential -ArgumentList $applicationId, $secret</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -ServicePrincipal -Credential $cred  -Tenant &quot;b388b808xxx-a7cbbd8b7e9b&quot; -Environment AzureChinaCloud  ##仍然替换为上面tenant id</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -SubscriptionId &quot;57e04838-xxx-41d73c5154c0&quot;;</li>
+</ul>
+<ul>
+<li>$user=Get-AzADGroupMember -GroupObjectId &quot;f7e5aa79-xxx-ed00a8611826&quot;</li>
+</ul>
+<ul>
+<li>$recipient=&quot;zhang.nan6@oe.21vianet.com&quot;</li>
+</ul>
+<ul>
+<li>$emailFrom=&quot;sisiyizxxx2@163.com&quot;</li>
+</ul>
+<ul>
+<li>$smtpServer=&quot;smtp.163.com&quot;</li>
+</ul>
+<ul>
+<li>$smtpPort=&quot;25&quot;</li>
+</ul>
+<ul>
+<li>$smtpCredential=new-object -typename System.Management.Automation.PSCredential -argumentlist &quot;sisiyxxx@163.com&quot;,(ConvertTo-SecureString &quot;AHAVxxxWYGED&quot; -AsPlainText -Force)</li>
+</ul>
+<ul>
+<li>6，测试结果：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>$emailBody=&#39;Please check the Group User&#39;+[Environment]::NewLine+$exportCSV[0];</li>
+</ul>
+<ul>
+<li>Send-MailMessage -Subject &#39;Please check the Group User&#39; -Body $emailBody -To $recipient -From $emailFrom -SmtpServer $smtpServer -Credential $smtpCredential -Port $smtpPort -UseSsl</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>脚本参考如下：</li>
+</ul>
+<ul>
+<li>1，在自动化账户创建powershell类型的runbook，并粘贴如下脚本，修改对应您环境中的值。</li>
+</ul>
+<ul>
+<li>3，测试脚本</li>
+</ul>
+<ul>
+<li>5，修改脚本</li>
+</ul>
+<ul>
+<li>##下面脚本和之前提供您的是相同的。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>$smtpPort=&quot;25&quot;      ##端口号</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Nancy</p>
+<p>客户需求：通过automation将AAD Group成员定期导出并发送给管理员邮箱</p>
+<p>脚本参考如下：</p>
+<p>1，在自动化账户创建powershell类型的runbook，并粘贴如下脚本，修改对应您环境中的值。</p>
+<p>如下标黄需要替换为您环境中的值。</p>
+<p>$Cred=Get-AutomationPSCredential -Name &quot;zhangnan&quot;;              ##凭据的名称</p>
+<p>Connect-AzAccount -Credential $Cred -EnvironmentName AzureChinaCloud</p>
+<p>Select-AzSubscription -SubscriptionId &quot;57e04838-xxxx-41d73c5154c0&quot;     ##订阅id</p>
+<p>$user=Get-AzADGroupMember -GroupObjectId &quot;f7e5aa79-xxxx-ac38-ed00a8611826&quot;  ##AAD Group的object id</p>
+<p>$username=$user.DisplayName</p>
+<p>$exportCSV=New-Object -TypeName System.Collections.ArrayList</p>
+<p>$exportCSV.Add($username)</p>
+<h1>将获取的有效信息通过邮件通知管理员</h1>
+<p>$recipient=&quot;zhang.nan6@oe.21vianet.com&quot;  ##收件箱</p>
+<p>$emailFrom=&quot;sisiyxxx012@163.com&quot;    ##发件箱</p>
+<p>$smtpServer=&quot;smtp.163.com&quot;   ##发件邮箱服务器</p>
+<p>$smtpPort=&quot;25&quot;      ##端口号</p>
+<p>$smtpCredential=new-object -typename System.Management.Automation.PSCredential -argumentlist &quot;sisixxxx012@163.com&quot;,(ConvertTo-SecureString &quot;AHAVFxxxxYGED&quot; -AsPlainText -Force)    ##发件箱地址以及授权码，我这里使用的163邮箱，授权码需要进行额外设置。</p>
+<p>$emailBody=&#39;Please check the Group User&#39;+[Environment]::NewLine+$exportCSV[0];</p>
+<p>Send-MailMessage -Subject &#39;Please check the Group User&#39; -Body $emailBody -To $recipient -From $emailFrom -SmtpServer $smtpServer -Credential $smtpCredential -Port $smtpPort -UseSsl</p>
+<p>##更多信息关于163邮箱设置</p>
+<p>2，创建凭据。</p>
+<p>3，测试脚本</p>
+<p>收到邮件：</p>
+<p>4，然后将runbook进行发布，并关联一个schedule。</p>
+<p>=====================</p>
+<p>客户账号开启mfa无法通过runbook认证，因为runbook不支持交互式认证。</p>
+<p>我这里测试了使用service principle并分配api权限也同样可以实现，参考如下。</p>
+<p>1，首先使用aad管理员创建应用注册。</p>
+<p>2，记录下application id和directory id，后面会用到。</p>
+<p>3，创建一个secret并将其值保存到一个地方，后面会用到。</p>
+<p>4，为其赋予api权限：</p>
+<p>添加以下这些权限。</p>
+<p>然后进行管理员同意。</p>
+<p>5，修改脚本</p>
+<p>$applicationId = &#39;d1a0e85a-bad1-xxxx-8b6df49393d8&#39; ##上面记录的appid</p>
+<p>$secret = &#39;D-9N_-.l-O4-xxxqDY5xzHIWdNU2&#39; | ConvertTo-SecureString -AsPlainText -Force  ##上面记录的secret</p>
+<p>$tenant = &quot;b388b808-xxx-a7cbbd8b7e9b&quot;  ##上面记录的directory id即tenant id</p>
+<p>$cred = New-Object -TypeName PSCredential -ArgumentList $applicationId, $secret</p>
+<p>Connect-AzAccount -ServicePrincipal -Credential $cred  -Tenant &quot;b388b808xxx-a7cbbd8b7e9b&quot; -Environment AzureChinaCloud  ##仍然替换为上面tenant id</p>
+<p>##下面脚本和之前提供您的是相同的。</p>
+<p>Select-AzSubscription -SubscriptionId &quot;57e04838-xxx-41d73c5154c0&quot;;</p>
+<p>$user=Get-AzADGroupMember -GroupObjectId &quot;f7e5aa79-xxx-ed00a8611826&quot;</p>
+<p>$recipient=&quot;zhang.nan6@oe.21vianet.com&quot;</p>
+<p>$emailFrom=&quot;sisiyizxxx2@163.com&quot;</p>
+<p>$smtpServer=&quot;smtp.163.com&quot;</p>
+<p>$smtpPort=&quot;25&quot;</p>
+<p>$smtpCredential=new-object -typename System.Management.Automation.PSCredential -argumentlist &quot;sisiyxxx@163.com&quot;,(ConvertTo-SecureString &quot;AHAVxxxWYGED&quot; -AsPlainText -Force)</p>
+<p>6，测试结果：</p></article>

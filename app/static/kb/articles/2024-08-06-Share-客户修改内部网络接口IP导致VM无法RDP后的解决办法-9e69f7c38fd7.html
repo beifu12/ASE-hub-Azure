@@ -1,0 +1,81 @@
+<article class="kb-article" data-title="【Share】客户修改内部网络接口IP导致VM无法RDP后的解决办法"><h1>【Share】客户修改内部网络接口IP导致VM无法RDP后的解决办法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-06 14:50:31</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>最开始学习做测试时会有时候规划IP会进到虚拟机修改接口IP，但实际这种操作是不可以的。修改IP还是要在门户网络接口处修改，由Cloud-Init等组件去操作修改。</li>
+</ul>
+<ul>
+<li>今天协助同事解决工单20240806308388问题时发现了更好的实现方案，无需重置NIC。如何为Azure Windows VM 重置网络接口- Virtual Machines | Microsoft Learn</li>
+</ul>
+<ul>
+<li>1、SAC&gt;cmd</li>
+</ul>
+<ul>
+<li>2、SAC&gt;ch -si 1</li>
+</ul>
+<ul>
+<li>回车进入认证（域部分根据实际情况，无则回车）</li>
+</ul>
+<ul>
+<li>5、设置接口为DHCP自动获取：netsh interface ip set address name=&quot;Ethernet&quot; source=dhcp</li>
+</ul>
+<ul>
+<li>修改完成，正常RDP链接。</li>
+</ul>
+<ul>
+<li>备注：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>3、查看当前IP信息：ipconfig   /all</li>
+</ul>
+<ul>
+<li>4、查看接口：netsh interface show interface</li>
+</ul>
+<ul>
+<li>6、查看当前获取接口的的详细IP信息：ipconfig  /all</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>方法总结：使用串行控制台，进入SAC后进入CMD，使用netsh命令重新修改接口为DHCP</li>
+</ul>
+<ul>
+<li>使用运行命令功能，直接敲命令修改接口为DHCP，实际测试无法运行， 考虑到此功能依托于网络。网络不通则无法使用。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-08-06</p>
+<p>最开始学习做测试时会有时候规划IP会进到虚拟机修改接口IP，但实际这种操作是不可以的。修改IP还是要在门户网络接口处修改，由Cloud-Init等组件去操作修改。</p>
+<p>今天协助同事解决工单20240806308388问题时发现了更好的实现方案，无需重置NIC。如何为Azure Windows VM 重置网络接口- Virtual Machines | Microsoft Learn</p>
+<p>问题现象：</p>
+<p>方法总结：使用串行控制台，进入SAC后进入CMD，使用netsh命令重新修改接口为DHCP</p>
+<p>1、SAC&gt;cmd</p>
+<p>2、SAC&gt;ch -si 1</p>
+<p>回车进入认证（域部分根据实际情况，无则回车）</p>
+<p>3、查看当前IP信息：ipconfig   /all</p>
+<p>4、查看接口：netsh interface show interface</p>
+<p>5、设置接口为DHCP自动获取：netsh interface ip set address name=&quot;Ethernet&quot; source=dhcp</p>
+<p>6、查看当前获取接口的的详细IP信息：ipconfig  /all</p>
+<p>修改完成，正常RDP链接。</p>
+<p>备注：</p>
+<p>使用运行命令功能，直接敲命令修改接口为DHCP，实际测试无法运行， 考虑到此功能依托于网络。网络不通则无法使用。</p></article>

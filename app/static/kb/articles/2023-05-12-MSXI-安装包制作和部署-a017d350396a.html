@@ -1,0 +1,367 @@
+<article class="kb-article" data-title="MSXI 安装包制作和部署"><h1>MSXI 安装包制作和部署</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-05-12 11:32:17</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>这种方式不是所有应用程序都可以，有些无法捕获应用程序，如:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>这种方式不是所有应用程序都可以，有些无法捕获应用程序，如:</li>
+</ul>
+<ul>
+<li>有些需要注册的应用无法运行：</li>
+</ul>
+<ul>
+<li>注意：MSIX 应用附加目前不支持 Azure AD DS。 由于 Azure AD DS 计算机对象不会同步到 Azure Active Directory (Azure AD)，因此管理员无法为 Azure 文件存储提供所需的基于角色的访问控制 (RBAC) 权限。Azure 虚拟桌面 MSIX 应用附加常见问题解答 - Azure | Azure Docs</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>一、MSXI打包工具环境配置</li>
+</ul>
+<ul>
+<li>可以使用2种方法配置环境，一种是在干净的Windows10环境中工作，通过微软应用商店获取该获取 MSIX 打包工具（推荐使用该方法）</li>
+</ul>
+<ul>
+<li>推荐使用应用商店获取，简单快捷。</li>
+</ul>
+<ul>
+<li>另外一种，当系统中没有商店时在windows 10中安装Hyper-V，重启系统后</li>
+</ul>
+<ul>
+<li>从“开始”菜单中打开“Hyper-V Quick Create”。此功能已从 Windows 10 版本 1709 开始推出。</li>
+</ul>
+<ul>
+<li>选择MSIX 打包工具环境，创建虚拟机，该虚拟机是一个自定义 Windows 10 评估版本 (版本 1909)</li>
+</ul>
+<ul>
+<li>下载可能会需要些时间</li>
+</ul>
+<ul>
+<li>打开虚拟机并进行配置后（可能要花些时间）进入系统</li>
+</ul>
+<ul>
+<li>系统安装好后，可以进入并打开MSIX打包工具。</li>
+</ul>
+<ul>
+<li>二、安装包制作</li>
+</ul>
+<ul>
+<li>打开该工具选择 创建 应用程序包。</li>
+</ul>
+<ul>
+<li>打开MSIX打包工具后，选择应用打包，并创建新的包</li>
+</ul>
+<ul>
+<li>等待检测环境后点击下一步，选择需要打包的应用程序</li>
+</ul>
+<ul>
+<li>$cert = New-SelfSignedCertificate -CertStoreLocation Cert:\LocalMachine\My -DnsName &#39;yourdomainname&#39; -Type CodeSigningCert -Verbose</li>
+</ul>
+<ul>
+<li>$secPassword = ConvertTo-SecureString -String &#39;yourpassword&#39; -Force -AsPlainText</li>
+</ul>
+<ul>
+<li>$certPath = &quot;Cert:\LocalMachine\My\$($Cert.Thumbprint)&quot;</li>
+</ul>
+<ul>
+<li>Export-PfxCertificate -Cert $certPath -FilePath &#39;C:\temp\CodeSigning.pfx&#39; -Password $secPassword</li>
+</ul>
+<ul>
+<li>输入打包程序的相关信息</li>
+</ul>
+<ul>
+<li>如果是msi安装报，版本，名称信息会自动识别</li>
+</ul>
+<ul>
+<li>下一步后打包程序会调用安装包自动进行安装</li>
+</ul>
+<ul>
+<li>带应用程序安装完毕，捕获可运行的程序信息</li>
+</ul>
+<ul>
+<li>捕获后可进行相应的调整。</li>
+</ul>
+<ul>
+<li>下一步等待打包完成。</li>
+</ul>
+<ul>
+<li>会生成msix后缀的文件</li>
+</ul>
+<ul>
+<li>三、 受信任证书设置</li>
+</ul>
+<ul>
+<li>如果不导入证书，后期加载VHD时或报如下错误</li>
+</ul>
+<ul>
+<li>四、 准备 MSIX 映像</li>
+</ul>
+<ul>
+<li>MSIX 包需要采用 VHD 或 VHDX 格式才能正常工作。</li>
+</ul>
+<ul>
+<li>若要为 MSIX 创建 VHD 或 VHDX 包，请执行以下操作：</li>
+</ul>
+<ul>
+<li>resize-VHD -SizeBytes 800MB -Path .\Desktop\WeChat.vhd</li>
+</ul>
+<ul>
+<li>确保 VHD 能够容纳展开后的 MSIX 包。</li>
+</ul>
+<ul>
+<li>运行以下 cmdlet 来装载刚创建的 VHD：</li>
+</ul>
+<ul>
+<li>$vhdObject = Mount-VHD c:\temp\&lt;name&gt;.vhd -Passthru</li>
+</ul>
+<ul>
+<li>接下来，运行此 cmdlet 来初始化装载的 VHD：</li>
+</ul>
+<ul>
+<li>$disk = Initialize-Disk -Passthru -Number $vhdObject.Number</li>
+</ul>
+<ul>
+<li>然后运行此 cmdlet，为初始化的 VHD 创建新分区：</li>
+</ul>
+<ul>
+<li>$partition = New-Partition -AssignDriveLetter -UseMaximumSize -DiskNumber $disk.Number</li>
+</ul>
+<ul>
+<li>运行此 cmdlet 可设置分区的格式：</li>
+</ul>
+<ul>
+<li>Format-Volume -FileSystem NTFS -Confirm:$false -DriveLetter $partition.DriveLetter -Force</li>
+</ul>
+<ul>
+<li>需要通过将 MSIX 映像的文件“解压缩”到 VHD 中来展开该映像。</li>
+</ul>
+<ul>
+<li>若要展开 MSIX 映像，请执行以下操作：</li>
+</ul>
+<ul>
+<li>下载 msixmgr 工具，并将 .zip 文件夹保存到会话主机 VM 中的文件夹中。</li>
+</ul>
+<ul>
+<li>解压缩 msixmgr 工具 .zip 文件夹。</li>
+</ul>
+<ul>
+<li>运行以下 cmdlet，以将 MSIX 解压缩到在上一部分创建的 VHD 中。</li>
+</ul>
+<ul>
+<li>msixmgr.exe -Unpack -packagePath &lt;package&gt;.msix -destination &quot;E:\WeChat&quot; -applyacls</li>
+</ul>
+<ul>
+<li>卸载 VHD。</li>
+</ul>
+<ul>
+<li>disMount-VHD .\Desktop\WeChat.vhd</li>
+</ul>
+<ul>
+<li>五、参考设置文件共享与本地AD集成</li>
+</ul>
+<ul>
+<li>在本地域控制器上下载下载并解压缩 AzFilesHybrid 模块</li>
+</ul>
+<ul>
+<li>六、在AD中将Session host 加入安全组并同步到AAD</li>
+</ul>
+<ul>
+<li>七、在域中计算机上临时挂载共享并设置NTFS 权限</li>
+</ul>
+<ul>
+<li>并设置组和用户相应的权限</li>
+</ul>
+<ul>
+<li>参考说明将VHD文件放到共享的文件夹中</li>
+</ul>
+<ul>
+<li>八、添加MSIX package，设置好权限后会自动读取VHD中的包信息</li>
+</ul>
+<ul>
+<li>MSIX 应用附加当前是否已正式发布？</li>
+</ul>
+<ul>
+<li>MSIX 应用附加是 Windows 10 企业版和 Windows 10 企业版多会话版本 2004 或更高版本的一部分。 这两种操作系统当前均已正式发布。</li>
+</ul>
+<ul>
+<li>为主机池配置MSXI应用程序组</li>
+</ul>
+<ul>
+<li>为应用程序组分配权限</li>
+</ul>
+<ul>
+<li>九、 登录测试</li>
+</ul>
+<ul>
+<li>应用的图标会有如下远程链接的提示</li>
+</ul>
+<ul>
+<li>发布的应用程序中使用打开文件，保存文件通过Session host 主机。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如果是自定义证书，需要参考如下步骤在每一个session host节点上安装证书</li>
+</ul>
+<ul>
+<li>最后，在装载的 VHD 上创建父文件夹。 此步骤是必需的，因为 MSIX 包必须有父文件夹才能正常工作。 父文件夹如何命名无关紧要，只要父文件夹存在即可。</li>
+</ul>
+<ul>
+<li>确认工作区信息</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>此处需要使用证书验证打包程序，建立证书可以通过如下命令测试自签发证书</li>
+</ul>
+<ul>
+<li>首先，打开 PowerShell，运行以下 cmdlet 来创建 VHD：</li>
+</ul>
+<ul>
+<li>New-VHD -SizeBytes &lt;size&gt;MB -Path c:\temp\&lt;name&gt;.vhd -Dynamic -Confirm:$false</li>
+</ul>
+<ul>
+<li>如果因为空间不够可通过如下命令改为800</li>
+</ul>
+<ul>
+<li>以管理员身份打开命令提示符并导航到下载并解压缩 msixmgr 工具的文件夹。</li>
+</ul>
+<ul>
+<li>运行文档中的脚本</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>对于共享文件夹将Sessionhost组和相应的用户设置Storage File Data SMB Share Contributor权限</li>
+</ul>
+<ul>
+<li>如果涉及软件不能运行，请先建议用户在操作系统中直接运行，如果不能运行建议由windows 团队负责</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>详细参考：<a href="https://docs.microsoft.com/zh-cn/windows/msix/packaging-tool/quick-create-vm" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows/msix/packaging-tool/quick-create-vm</a></li>
+</ul>
+<ul>
+<li>详细参考：<a href="https://docs.microsoft.com/zh-cn/windows/msix/packaging-tool/create-app-package" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows/msix/packaging-tool/create-app-package</a></li>
+</ul>
+<ul>
+<li>参考：<a href="https://docs.microsoft.com/zh-cn/azure/virtual-desktop/app-attach#install-certificates" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-desktop/app-attach#install-certificates</a></li>
+</ul>
+<ul>
+<li>详见：<a href="https://docs.microsoft.com/zh-cn/azure/virtual-desktop/app-attach-image-prep#create-a-vhd-or-vhdx-package-for-msix" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-desktop/app-attach-image-prep#create-a-vhd-or-vhdx-package-for-msix</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-enable?WT.mc_id=Portal-Microsoft_Azure_FileStorage" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-enable?WT.mc_id=Portal-Microsoft_Azure_FileStorage</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/Azure-Samples/azure-files-samples/releases/download/v0.2.4/AzFilesHybrid.zip" target="_blank" rel="noopener">https://github.com/Azure-Samples/azure-files-samples/releases/download/v0.2.4/AzFilesHybrid.zip</a></li>
+</ul>
+<ul>
+<li>参考：<a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-file-share" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-file-share</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-image-prep#upload-msix-image-to-share" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-image-prep#upload-msix-image-to-share</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-azure-portal#add-an-msix-image-to-the-host-pool" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-azure-portal#add-an-msix-image-to-the-host-pool</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://docs.microsoft.com/zh-cn/azure/virtual-desktop/app-attach-faq&gt;" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-desktop/app-attach-faq&gt;</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/windows/msix/desktop/desktop-to-uwp-debug" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/windows/msix/desktop/desktop-to-uwp-debug</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-11-30</p>
+<p>一、MSXI打包工具环境配置</p>
+<p>可以使用2种方法配置环境，一种是在干净的Windows10环境中工作，通过微软应用商店获取该获取 MSIX 打包工具（推荐使用该方法）</p>
+<p>推荐使用应用商店获取，简单快捷。</p>
+<p>另外一种，当系统中没有商店时在windows 10中安装Hyper-V，重启系统后</p>
+<p>从“开始”菜单中打开“Hyper-V Quick Create”。此功能已从 Windows 10 版本 1709 开始推出。</p>
+<p>选择MSIX 打包工具环境，创建虚拟机，该虚拟机是一个自定义 Windows 10 评估版本 (版本 1909)</p>
+<p>下载可能会需要些时间</p>
+<p>打开虚拟机并进行配置后（可能要花些时间）进入系统</p>
+<p>系统安装好后，可以进入并打开MSIX打包工具。</p>
+<p>详细参考：<a href="https://docs.microsoft.com/zh-cn/windows/msix/packaging-tool/quick-create-vm" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows/msix/packaging-tool/quick-create-vm</a></p>
+<p>二、安装包制作</p>
+<p>打开该工具选择 创建 应用程序包。</p>
+<p>打开MSIX打包工具后，选择应用打包，并创建新的包</p>
+<p>等待检测环境后点击下一步，选择需要打包的应用程序</p>
+<p>此处需要使用证书验证打包程序，建立证书可以通过如下命令测试自签发证书</p>
+<p>$cert = New-SelfSignedCertificate -CertStoreLocation Cert:\LocalMachine\My -DnsName &#39;yourdomainname&#39; -Type CodeSigningCert -Verbose</p>
+<p>$secPassword = ConvertTo-SecureString -String &#39;yourpassword&#39; -Force -AsPlainText</p>
+<p>$certPath = &quot;Cert:\LocalMachine\My\$($Cert.Thumbprint)&quot;</p>
+<p>Export-PfxCertificate -Cert $certPath -FilePath &#39;C:\temp\CodeSigning.pfx&#39; -Password $secPassword</p>
+<p>输入打包程序的相关信息</p>
+<p>如果是msi安装报，版本，名称信息会自动识别</p>
+<p>下一步后打包程序会调用安装包自动进行安装</p>
+<p>带应用程序安装完毕，捕获可运行的程序信息</p>
+<p>捕获后可进行相应的调整。</p>
+<p>下一步等待打包完成。</p>
+<p>会生成msix后缀的文件</p>
+<p>详细参考：<a href="https://docs.microsoft.com/zh-cn/windows/msix/packaging-tool/create-app-package" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows/msix/packaging-tool/create-app-package</a></p>
+<p>三、 受信任证书设置</p>
+<p>如果是自定义证书，需要参考如下步骤在每一个session host节点上安装证书</p>
+<p>参考：<a href="https://docs.microsoft.com/zh-cn/azure/virtual-desktop/app-attach#install-certificates" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-desktop/app-attach#install-certificates</a></p>
+<p>如果不导入证书，后期加载VHD时或报如下错误</p>
+<p>四、 准备 MSIX 映像</p>
+<p>MSIX 包需要采用 VHD 或 VHDX 格式才能正常工作。</p>
+<p>详见：<a href="https://docs.microsoft.com/zh-cn/azure/virtual-desktop/app-attach-image-prep#create-a-vhd-or-vhdx-package-for-msix" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-desktop/app-attach-image-prep#create-a-vhd-or-vhdx-package-for-msix</a></p>
+<p>若要为 MSIX 创建 VHD 或 VHDX 包，请执行以下操作：</p>
+<p>首先，打开 PowerShell，运行以下 cmdlet 来创建 VHD：</p>
+<p>New-VHD -SizeBytes &lt;size&gt;MB -Path c:\temp\&lt;name&gt;.vhd -Dynamic -Confirm:$false</p>
+<p>如果因为空间不够可通过如下命令改为800</p>
+<p>resize-VHD -SizeBytes 800MB -Path .\Desktop\WeChat.vhd</p>
+<p>确保 VHD 能够容纳展开后的 MSIX 包。</p>
+<p>运行以下 cmdlet 来装载刚创建的 VHD：</p>
+<p>$vhdObject = Mount-VHD c:\temp\&lt;name&gt;.vhd -Passthru</p>
+<p>接下来，运行此 cmdlet 来初始化装载的 VHD：</p>
+<p>$disk = Initialize-Disk -Passthru -Number $vhdObject.Number</p>
+<p>然后运行此 cmdlet，为初始化的 VHD 创建新分区：</p>
+<p>$partition = New-Partition -AssignDriveLetter -UseMaximumSize -DiskNumber $disk.Number</p>
+<p>运行此 cmdlet 可设置分区的格式：</p>
+<p>Format-Volume -FileSystem NTFS -Confirm:$false -DriveLetter $partition.DriveLetter -Force</p>
+<p>最后，在装载的 VHD 上创建父文件夹。 此步骤是必需的，因为 MSIX 包必须有父文件夹才能正常工作。 父文件夹如何命名无关紧要，只要父文件夹存在即可。</p>
+<p>需要通过将 MSIX 映像的文件“解压缩”到 VHD 中来展开该映像。</p>
+<p>若要展开 MSIX 映像，请执行以下操作：</p>
+<p>下载 msixmgr 工具，并将 .zip 文件夹保存到会话主机 VM 中的文件夹中。</p>
+<p>解压缩 msixmgr 工具 .zip 文件夹。</p>
+<p>以管理员身份打开命令提示符并导航到下载并解压缩 msixmgr 工具的文件夹。</p>
+<p>运行以下 cmdlet，以将 MSIX 解压缩到在上一部分创建的 VHD 中。</p>
+<p>msixmgr.exe -Unpack -packagePath &lt;package&gt;.msix -destination &quot;E:\WeChat&quot; -applyacls</p>
+<p>卸载 VHD。</p>
+<p>disMount-VHD .\Desktop\WeChat.vhd</p>
+<p>五、参考设置文件共享与本地AD集成</p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-enable?WT.mc_id=Portal-Microsoft_Azure_FileStorage" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-enable?WT.mc_id=Portal-Microsoft_Azure_FileStorage</a></p>
+<p>在本地域控制器上下载下载并解压缩 AzFilesHybrid 模块</p>
+<p><a href="https://github.com/Azure-Samples/azure-files-samples/releases/download/v0.2.4/AzFilesHybrid.zip" target="_blank" rel="noopener">https://github.com/Azure-Samples/azure-files-samples/releases/download/v0.2.4/AzFilesHybrid.zip</a></p>
+<p>运行文档中的脚本</p>
+<p>六、在AD中将Session host 加入安全组并同步到AAD</p>
+<p>参考：<a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-file-share" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-file-share</a></p>
+<p>对于共享文件夹将Sessionhost组和相应的用户设置Storage File Data SMB Share Contributor权限</p>
+<p>七、在域中计算机上临时挂载共享并设置NTFS 权限</p>
+<p>并设置组和用户相应的权限</p>
+<p>参考说明将VHD文件放到共享的文件夹中</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-image-prep#upload-msix-image-to-share" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-image-prep#upload-msix-image-to-share</a></p>
+<p>八、添加MSIX package，设置好权限后会自动读取VHD中的包信息</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-azure-portal#add-an-msix-image-to-the-host-pool" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-azure-portal#add-an-msix-image-to-the-host-pool</a></p>
+<p>MSIX 应用附加当前是否已正式发布？</p>
+<p>MSIX 应用附加是 Windows 10 企业版和 Windows 10 企业版多会话版本 2004 或更高版本的一部分。 这两种操作系统当前均已正式发布。</p>
+<p>From &lt;<a href="https://docs.microsoft.com/zh-cn/azure/virtual-desktop/app-attach-faq&gt;" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-desktop/app-attach-faq&gt;</a></p>
+<p>为主机池配置MSXI应用程序组</p>
+<p>为应用程序组分配权限</p>
+<p>确认工作区信息</p>
+<p>九、 登录测试</p>
+<p>应用的图标会有如下远程链接的提示</p>
+<p>发布的应用程序中使用打开文件，保存文件通过Session host 主机。</p>
+<p>这种方式不是所有应用程序都可以，有些无法捕获应用程序，如:</p>
+<p>有些需要注册的应用无法运行：</p>
+<p>注意：MSIX 应用附加目前不支持 Azure AD DS。 由于 Azure AD DS 计算机对象不会同步到 Azure Active Directory (Azure AD)，因此管理员无法为 Azure 文件存储提供所需的基于角色的访问控制 (RBAC) 权限。Azure 虚拟桌面 MSIX 应用附加常见问题解答 - Azure | Azure Docs</p>
+<p>如果涉及软件不能运行，请先建议用户在操作系统中直接运行，如果不能运行建议由windows 团队负责</p>
+<p><a href="https://docs.microsoft.com/en-us/windows/msix/desktop/desktop-to-uwp-debug" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/windows/msix/desktop/desktop-to-uwp-debug</a></p></article>

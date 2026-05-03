@@ -1,0 +1,132 @@
+<article class="kb-article" data-title="CDN迁移AFD问题搜集"><h1>CDN迁移AFD问题搜集</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Roadmap.one</li>
+<li>Section: Roadmap</li>
+<li>最近修改: 2025-09-18 10:13:20</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>目前发现有一些功能、监控的指标等，无法完全平替到AFD，性能监控指标包括命中率、POP节点从600+减少到2个，以及图像加速等服务的缺失，有没有可以在不用第三方的情况下尽量满足原有的技术能力，同时如果要做CDN的缓存测试话，转到AFD后，有没有利于Azure平台的测试方法和工具，以免失去Azure平台的优先使用倾向性。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>目前发现有一些功能、监控的指标等，无法完全平替到AFD，性能监控指标包括命中率、POP节点从600+减少到2个，以及图像加速等服务的缺失，有没有可以在不用第三方的情况下尽量满足原有的技术能力，同时如果要做CDN的缓存测试话，转到AFD后，有没有利于Azure平台的测试方法和工具，以免失去Azure平台的优先使用倾向性。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Question</li>
+</ul>
+<ul>
+<li>Answer</li>
+</ul>
+<ul>
+<li>Note</li>
+</ul>
+<ul>
+<li>1</li>
+</ul>
+<ul>
+<li>CDN PG会不会提供一个工具用于判断CDN endpoint是否支持迁移到AFD，还是说需要客户自己去判断?</li>
+</ul>
+<ul>
+<li>By  FuZhangliang</li>
+</ul>
+<ul>
+<li>2</li>
+</ul>
+<ul>
+<li>对于自动迁移到AFD的场景，如果一个CDN Profile下有多个Endpoint，有的支持迁移到AFD，有的不支持迁移到AFD，自动迁移的时候是会自动迁移这些能支持迁移的CDN  endpoint吗？</li>
+</ul>
+<ul>
+<li>3</li>
+</ul>
+<ul>
+<li>关于判断迁移的Banner，大概什么时候发布，客户什么时候可以看到呢？</li>
+</ul>
+<ul>
+<li>4</li>
+</ul>
+<ul>
+<li>客户的场景很多情形是一个CDN Profile下面有很多的CDN  endpoint配置，针对CDN Profile 的Banner提示是否可以优化到针对CDN Endpoint？</li>
+</ul>
+<ul>
+<li>5</li>
+</ul>
+<ul>
+<li>如果进行了自动迁移，有Down机时间吗？如果有的话，大概多久？客户需要更新Cname记录吗？</li>
+</ul>
+<ul>
+<li>6</li>
+</ul>
+<ul>
+<li>自动迁移之前是否会告知什么时候操作？</li>
+</ul>
+<ul>
+<li>7</li>
+</ul>
+<ul>
+<li>By xinyuefeng</li>
+</ul>
+<ul>
+<li>8</li>
+</ul>
+<ul>
+<li>9</li>
+</ul>
+<ul>
+<li>By</li>
+</ul>
+<ul>
+<li>FuZihao</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>CDN PG 目前在开发后台判断逻辑和portal页面，后期会有一个banner，提示客户的CDN是否能够做自动迁移；相应也可以根据这个工具判断CDN功能配置是否符合条件做手动迁移。但是banner的提示是在profile层面，不会针对CDN endpoint判断。</li>
+</ul>
+<ul>
+<li>不会，PG确认banner只提示CDN Profile整体是否适合迁移的，不会identify具体的某一个CDN endpoint是否合适迁移。所以需要客户CDN Profile下的全部endpoint都满足条件才可以自动迁移</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>根据官网文档介绍“If you are using features that are enabled but not supported on Azure portal or API as stated in Customizations by service team per requests, you have to migrate to AFD on your own before November 15, 2025, AFD can’t migrate on your behalf.”看描述，我理解的是配置了非标操作的，则不支持自动迁移，但是看Customizations by service team per requests中列出的又不是所有的非标操作（比如修改回源超时时间，TLS加密套件等），这个显示是否针对所有非标操作，还是只针对Customizations by service team per requests列出来的这些操作？如果只针对列出来的这些非标操作，那么其他的非标操作在自动迁移过程中会自动带到AFD吗？</li>
+</ul>
+<ul>
+<li>Banner后续是否支持判断上述7中提到的场景，也就是启用了非标操作，Banner能否提示启用了什么非标操作，所以不支持自动迁移？如果Banner无法检查非标操作的话，有的客户不确定之前进行过的非标操作列表。对此有什么好建议吗》</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Question</p>
+<p>Answer</p>
+<p>Note</p>
+<p>1</p>
+<p>CDN PG会不会提供一个工具用于判断CDN endpoint是否支持迁移到AFD，还是说需要客户自己去判断?</p>
+<p>CDN PG 目前在开发后台判断逻辑和portal页面，后期会有一个banner，提示客户的CDN是否能够做自动迁移；相应也可以根据这个工具判断CDN功能配置是否符合条件做手动迁移。但是banner的提示是在profile层面，不会针对CDN endpoint判断。</p>
+<p>By  FuZhangliang</p>
+<p>2</p>
+<p>对于自动迁移到AFD的场景，如果一个CDN Profile下有多个Endpoint，有的支持迁移到AFD，有的不支持迁移到AFD，自动迁移的时候是会自动迁移这些能支持迁移的CDN  endpoint吗？</p>
+<p>不会，PG确认banner只提示CDN Profile整体是否适合迁移的，不会identify具体的某一个CDN endpoint是否合适迁移。所以需要客户CDN Profile下的全部endpoint都满足条件才可以自动迁移</p>
+<p>3</p>
+<p>关于判断迁移的Banner，大概什么时候发布，客户什么时候可以看到呢？</p>
+<p>4</p>
+<p>客户的场景很多情形是一个CDN Profile下面有很多的CDN  endpoint配置，针对CDN Profile 的Banner提示是否可以优化到针对CDN Endpoint？</p>
+<p>5</p>
+<p>如果进行了自动迁移，有Down机时间吗？如果有的话，大概多久？客户需要更新Cname记录吗？</p>
+<p>6</p>
+<p>自动迁移之前是否会告知什么时候操作？</p>
+<p>7</p>
+<p>根据官网文档介绍“If you are using features that are enabled but not supported on Azure portal or API as stated in Customizations by service team per requests, you have to migrate to AFD on your own before November 15, 2025, AFD can’t migrate on your behalf.”看描述，我理解的是配置了非标操作的，则不支持自动迁移，但是看Customizations by service team per requests中列出的又不是所有的非标操作（比如修改回源超时时间，TLS加密套件等），这个显示是否针对所有非标操作，还是只针对Customizations by service team per requests列出来的这些操作？如果只针对列出来的这些非标操作，那么其他的非标操作在自动迁移过程中会自动带到AFD吗？</p>
+<p>By xinyuefeng</p>
+<p>8</p>
+<p>Banner后续是否支持判断上述7中提到的场景，也就是启用了非标操作，Banner能否提示启用了什么非标操作，所以不支持自动迁移？如果Banner无法检查非标操作的话，有的客户不确定之前进行过的非标操作列表。对此有什么好建议吗》</p>
+<p>9</p>
+<p>目前发现有一些功能、监控的指标等，无法完全平替到AFD，性能监控指标包括命中率、POP节点从600+减少到2个，以及图像加速等服务的缺失，有没有可以在不用第三方的情况下尽量满足原有的技术能力，同时如果要做CDN的缓存测试话，转到AFD后，有没有利于Azure平台的测试方法和工具，以免失去Azure平台的优先使用倾向性。</p>
+<p>By</p>
+<p>FuZihao</p></article>

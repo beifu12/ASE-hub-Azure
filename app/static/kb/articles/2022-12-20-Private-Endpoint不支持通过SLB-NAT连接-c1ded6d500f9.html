@@ -1,0 +1,62 @@
+<article class="kb-article" data-title="Private Endpoint不支持通过SLB NAT连接"><h1>Private Endpoint不支持通过SLB NAT连接</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Private Endpoint</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-12-20 11:22:26</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：SR_20221130201570_入站NAT规则生效了，但是无法访问</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：SR_20221130201570_入站NAT规则生效了，但是无法访问</li>
+</ul>
+<ul>
+<li>对于客户的情况，客户始终无法通过SLB从外部访问到Private endpoint .  搭建和客户类似的架构，可能发现有的MYSQL Private endpoint能通过SLB的NAT规则从外部连接, 但是有的MYSQL Private endpoint就是连接不了，这是一个奇怪的现象。</li>
+</ul>
+<ul>
+<li>Private Endpoint can&#39;t  be used as next hop neither in UDR, nor in load balancing. Backend of load balancer can only be actual vm and it cannot be Private IP. So, we  neither support this in next hop of UDRs, nor in the load balancing rules.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>客户架构：</li>
+</ul>
+<ul>
+<li>创建了灵活MYSQL 服务器的Private endpoint，想通过SLB的入站NAT规则连接MySQL 的Private endpoint</li>
+</ul>
+<ul>
+<li>SLB的后端池填写Private  endpoint的IP地址</li>
+</ul>
+<ul>
+<li>案例结论：</li>
+</ul>
+<ul>
+<li>升级到PG，PG给出的结论是说这样的架构是不支持的，不能通过SLB访问Private Endpoint,不支持将Private endpoint放在LB后端，对于有的能访问通的情况，这是意外情况。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022/12/20</p>
+<p>参考工单：SR_20221130201570_入站NAT规则生效了，但是无法访问</p>
+<p>客户架构：</p>
+<p>创建了灵活MYSQL 服务器的Private endpoint，想通过SLB的入站NAT规则连接MySQL 的Private endpoint</p>
+<p>SLB的后端池填写Private  endpoint的IP地址</p>
+<p>排查过程：</p>
+<p>对于客户的情况，客户始终无法通过SLB从外部访问到Private endpoint .  搭建和客户类似的架构，可能发现有的MYSQL Private endpoint能通过SLB的NAT规则从外部连接, 但是有的MYSQL Private endpoint就是连接不了，这是一个奇怪的现象。</p>
+<p>案例结论：</p>
+<p>升级到PG，PG给出的结论是说这样的架构是不支持的，不能通过SLB访问Private Endpoint,不支持将Private endpoint放在LB后端，对于有的能访问通的情况，这是意外情况。</p>
+<p>Private Endpoint can&#39;t  be used as next hop neither in UDR, nor in load balancing. Backend of load balancer can only be actual vm and it cannot be Private IP. So, we  neither support this in next hop of UDRs, nor in the load balancing rules.</p></article>

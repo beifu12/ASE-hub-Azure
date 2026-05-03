@@ -1,0 +1,76 @@
+<article class="kb-article" data-title="【Share】iOS 使用ABM自动注册+备份还原的特殊情况"><h1>【Share】iOS 使用ABM自动注册+备份还原的特殊情况</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-29 14:10:56</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Reviewer</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>Lv Lei</li>
+</ul>
+<ul>
+<li>当iOS 设备使用ABM 设置助理的方式注册到Intune 时，在OOBE 期间会提示是否使用备份还原（如iCloud 备份）, 此时如果使用其他设备上的备份进行还原，设备继续在 远程管理 界面上启动ABM注册，完成后才能进入桌面。但如果使用同一设备上的备份进行还原，设备会直接到达桌面，不会再进行ABM 注册。</li>
+</ul>
+<ul>
+<li>本地测试情况：</li>
+</ul>
+<ul>
+<li>#如果选择其他设备的备份，会提示其配置将不会被恢复#</li>
+</ul>
+<ul>
+<li>#选择本机备份，不需要安装配置文件直接进入桌面#</li>
+</ul>
+<ul>
+<li>Intune 官方文档说明：Microsoft Intune 的 Linux 设备注册指南 - Microsoft Intune | Microsoft Learn</li>
+</ul>
+<ul>
+<li>苹果 官方文档说明：备份和恢复管理式设备 - 官方 Apple 支持 (中国)</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>这是由于苹果的备份机制导致的，简单来说就是，对于自动设备注册（ADE）的设备，备份中包括配置管理和配置描述文件，当将备份恢复到同一台设备时，会自动恢复恢复管理配置和设备管理服务注册描述文件。</li>
+</ul>
+<ul>
+<li>我本地测试使用通过ABM ADE 加入Intune 的iPad 测试, 设备在ABM中且被分配了自动注册的配置文件，将设备Intune 中擦除后，从iCloud 云备份恢复，如果选择其他设备的备份，会提示其配置将不会被恢复。如果选择本机备份，会跳过配置文件的安装直接进入桌面。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>截图来源： <a href="https://learn.microsoft.com/zh-cn/intune/intune-service/enrollment/backup-restore-ios?f_link_type=f_linkinlinenote&amp;flow_extra=eyJpbmxpbmVfZGlzcGxheV9wb3NpdGlvbiI6MCwiZG9jX3Bvc2l0aW9uIjowLCJkb2NfaWQiOiI1MWZkNzExZjQ1MTI1ZTBhLTNiZGUxMzRhMjIxY2I2YjMifQ%3D%3D#restoring-a-backup-to-an-iosipados-device" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/intune/intune-service/enrollment/backup-restore-ios?f_link_type=f_linkinlinenote&amp;flow_extra=eyJpbmxpbmVfZGlzcGxheV9wb3NpdGlvbiI6MCwiZG9jX3Bvc2l0aW9uIjowLCJkb2NfaWQiOiI1MWZkNzExZjQ1MTI1ZTBhLTNiZGUxMzRhMjIxY2I2YjMifQ%3D%3D#restoring-a-backup-to-an-iosipados-device</a></li>
+</ul>
+<ul>
+<li>截图来源： <a href="https://support.apple.com/zh-cn/guide/deployment/depd44f045b4/web" target="_blank" rel="noopener">https://support.apple.com/zh-cn/guide/deployment/depd44f045b4/web</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/29</p>
+<p>Reviewer</p>
+<p>Lv Lei</p>
+<p>当iOS 设备使用ABM 设置助理的方式注册到Intune 时，在OOBE 期间会提示是否使用备份还原（如iCloud 备份）, 此时如果使用其他设备上的备份进行还原，设备继续在 远程管理 界面上启动ABM注册，完成后才能进入桌面。但如果使用同一设备上的备份进行还原，设备会直接到达桌面，不会再进行ABM 注册。</p>
+<p>这是由于苹果的备份机制导致的，简单来说就是，对于自动设备注册（ADE）的设备，备份中包括配置管理和配置描述文件，当将备份恢复到同一台设备时，会自动恢复恢复管理配置和设备管理服务注册描述文件。</p>
+<p>本地测试情况：</p>
+<p>我本地测试使用通过ABM ADE 加入Intune 的iPad 测试, 设备在ABM中且被分配了自动注册的配置文件，将设备Intune 中擦除后，从iCloud 云备份恢复，如果选择其他设备的备份，会提示其配置将不会被恢复。如果选择本机备份，会跳过配置文件的安装直接进入桌面。</p>
+<p>#如果选择其他设备的备份，会提示其配置将不会被恢复#</p>
+<p>#选择本机备份，不需要安装配置文件直接进入桌面#</p>
+<p>Intune 官方文档说明：Microsoft Intune 的 Linux 设备注册指南 - Microsoft Intune | Microsoft Learn</p>
+<p>截图来源： <a href="https://learn.microsoft.com/zh-cn/intune/intune-service/enrollment/backup-restore-ios?f_link_type=f_linkinlinenote&amp;flow_extra=eyJpbmxpbmVfZGlzcGxheV9wb3NpdGlvbiI6MCwiZG9jX3Bvc2l0aW9uIjowLCJkb2NfaWQiOiI1MWZkNzExZjQ1MTI1ZTBhLTNiZGUxMzRhMjIxY2I2YjMifQ%3D%3D#restoring-a-backup-to-an-iosipados-device" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/intune/intune-service/enrollment/backup-restore-ios?f_link_type=f_linkinlinenote&amp;flow_extra=eyJpbmxpbmVfZGlzcGxheV9wb3NpdGlvbiI6MCwiZG9jX3Bvc2l0aW9uIjowLCJkb2NfaWQiOiI1MWZkNzExZjQ1MTI1ZTBhLTNiZGUxMzRhMjIxY2I2YjMifQ%3D%3D#restoring-a-backup-to-an-iosipados-device</a></p>
+<p>苹果 官方文档说明：备份和恢复管理式设备 - 官方 Apple 支持 (中国)</p>
+<p>截图来源： <a href="https://support.apple.com/zh-cn/guide/deployment/depd44f045b4/web" target="_blank" rel="noopener">https://support.apple.com/zh-cn/guide/deployment/depd44f045b4/web</a></p></article>

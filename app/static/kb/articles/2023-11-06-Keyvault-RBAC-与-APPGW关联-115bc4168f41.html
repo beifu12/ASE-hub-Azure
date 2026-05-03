@@ -1,0 +1,66 @@
+<article class="kb-article" data-title="Keyvault RBAC 与 APPGW关联"><h1>Keyvault RBAC 与 APPGW关联</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-11-06 14:27:04</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：SR_20220518166070_应用程序网关无法更新任何配置。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：SR_20220518166070_应用程序网关无法更新任何配置。</li>
+</ul>
+<ul>
+<li>门户操作报错截图：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>tiantian</li>
+</ul>
+<ul>
+<li>官方文档：使用 Azure Key Vault 证书进行dig  TLS 终止 | Azure Docs</li>
+</ul>
+<ul>
+<li>2、确保identity授予了keyvault的admin 和certificate  officer的权限，这两个权限，我们测试是足够的。</li>
+</ul>
+<ul>
+<li>以下是我的环境的成功的截图：</li>
+</ul>
+<ul>
+<li>1、Keyvault的授权方式为RBAC</li>
+</ul>
+<ul>
+<li>2、keyvault 中的证书可以成功被网关pull,网关状态是正常的。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Keyvault 使用RBAC的授权访问方式与APPGW集成时，目前暂不支持在门户执行关联appgw的操作，需要命令行的方式操作。</li>
+</ul>
+<ul>
+<li>1、Keyvault使用RBAC的方式访问与APpgw集成时，不能直接在门户创建侦听器的时候选择证书，门户暂不支持，而是要用Powershell操作，门户操作出现keyvault secretID无法指定的报错 ，门户操作会导致异常，导致网关failed。恢复方式为y用Powershell移除identity和证书，重新保存网关。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>tiantian</p>
+<p>2022/5/19</p>
+<p>参考工单：SR_20220518166070_应用程序网关无法更新任何配置。</p>
+<p>Keyvault 使用RBAC的授权访问方式与APPGW集成时，目前暂不支持在门户执行关联appgw的操作，需要命令行的方式操作。</p>
+<p>1、Keyvault使用RBAC的方式访问与APpgw集成时，不能直接在门户创建侦听器的时候选择证书，门户暂不支持，而是要用Powershell操作，门户操作出现keyvault secretID无法指定的报错 ，门户操作会导致异常，导致网关failed。恢复方式为y用Powershell移除identity和证书，重新保存网关。</p>
+<p>门户操作报错截图：</p>
+<p>官方文档：使用 Azure Key Vault 证书进行dig  TLS 终止 | Azure Docs</p>
+<p>2、确保identity授予了keyvault的admin 和certificate  officer的权限，这两个权限，我们测试是足够的。</p>
+<p>以下是我的环境的成功的截图：</p>
+<p>1、Keyvault的授权方式为RBAC</p>
+<p>2、keyvault 中的证书可以成功被网关pull,网关状态是正常的。</p></article>

@@ -1,0 +1,108 @@
+<article class="kb-article" data-title="批量将IP列表加入到NSG规则当中"><h1>批量将IP列表加入到NSG规则当中</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-06-24 15:47:12</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>为多个虚拟机的NSG添加此规则</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>为多个虚拟机的NSG添加此规则</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>为多个虚拟机的NSG添加此规则</li>
+</ul>
+<ul>
+<li>#首先，需要贵方进行编辑附件的CSV文件，将后期需要添加的虚拟机所使用的NSG 的名称、资源组名称完善在此CSV当中。</li>
+</ul>
+<ul>
+<li>CSV参阅附件。</li>
+</ul>
+<ul>
+<li>#导入CSV文件，获取配置：</li>
+</ul>
+<ul>
+<li>Import-Csv E:\123\NSGs.csv</li>
+</ul>
+<ul>
+<li>#获取CDN 源站IP范围，赋值给变量$iprange_prefix：</li>
+</ul>
+<ul>
+<li>$iprange_prefix=&quot;121.43.18.0/24,120.25.115.0/24,101.200.106.0/24,120.55.177.0/24,120.27.173.0/24,120.55.107.0/24,123.57.117.0/24,120.76.16.0/24,182.92.253.32/27,60.205.193.64/27,60.205.193.96/27,120.78.44.128/26,118.178.15.0/24,39.106.237.192/26,106.15.101.96/27,47.101.16.64/27,47.106.31.0/24,47.98.74.0/25,47.97.242.96/27,112.124.159.0/24,39.96.130.0/24,39.96.119.0/24,47.99.20.0/24,47.104.53.0/26,47.108.23.192/26,39.104.199.128/26,39.96.158.0/24,47.110.182.0/24,120.77.139.0/25,47.102.187.0/25&quot;</li>
+</ul>
+<ul>
+<li>#转换为数组：</li>
+</ul>
+<ul>
+<li>$iprange_prefix2 =  $iprange_prefix -split &quot;,&quot;</li>
+</ul>
+<ul>
+<li>#使配置生效：</li>
+</ul>
+<ul>
+<li>Import-Csv -Path E:\123\NSGs.csv | % { $nsg = Get-AzureRmNetworkSecurityGroup -ResourceGroupName $_.RESOURCEGROUP -Name $_.NAME;</li>
+</ul>
+<ul>
+<li>$iprange_prefix=&quot;121.43.18.0/24,120.25.115.0/24,101.200.106.0/24,120.55.177.0/24,120.27.173.0/24,120.55.107.0/24,123.57.117.0/24,120.76.16.0/24,182.92.253.32/27,60.205.193.64/27,60.205.193.96/27,120.78.44.128/26,118.178.15.0/24,39.106.237.192/26,106.15.101.96/27,47.101.16.64/27,47.106.31.0/24,47.98.74.0/25,47.97.242.96/27,112.124.159.0/24,39.96.130.0/24,39.96.119.0/24,47.99.20.0/24,47.104.53.0/26,47.108.23.192/26,39.104.199.128/26,39.96.158.0/24,47.110.182.0/24,120.77.139.0/25,47.102.187.0/25&quot;;</li>
+</ul>
+<ul>
+<li>$iprange_prefix2 =  $iprange_prefix -split &quot;,&quot;;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>#批量执行如下：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>#循环的脚本如下：</li>
+</ul>
+<ul>
+<li>Set-AzureRmNetworkSecurityGroup -NetworkSecurityGroup $nsg</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>#添加入站规则配置，端口号请修改确认：</li>
+</ul>
+<ul>
+<li>Add-AzureRmNetworkSecurityRuleConfig -Name CDN_WAF_Rules -NetworkSecurityGroup $nsg -Description &quot;This_is_CDN_Source_IP_Range&quot; -Protocol Tcp -SourcePortRange * -DestinationPortRange 8086 –SourceAddressPrefix $iprange_prefix2  -DestinationAddressPrefix * -Access Allow -Priority 2000 -Direction Inbound</li>
+</ul>
+<ul>
+<li>Add-AzureRmNetworkSecurityRuleConfig -Name CDN_WAF_Rules2 -NetworkSecurityGroup $nsg -Description &quot;This_is_CDN_Source_IP_Range&quot; -Protocol Tcp -SourcePortRange * -DestinationPortRange 8086 -SourceAddressPrefix $iprange_prefix2 -DestinationAddressPrefix * -Access Allow -Priority 2002 -Direction Inbound ;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020-09-07</p>
+<p>为多个虚拟机的NSG添加此规则</p>
+<p>#首先，需要贵方进行编辑附件的CSV文件，将后期需要添加的虚拟机所使用的NSG 的名称、资源组名称完善在此CSV当中。</p>
+<p>CSV参阅附件。</p>
+<p>#导入CSV文件，获取配置：</p>
+<p>Import-Csv E:\123\NSGs.csv</p>
+<p>#获取CDN 源站IP范围，赋值给变量$iprange_prefix：</p>
+<p>$iprange_prefix=&quot;121.43.18.0/24,120.25.115.0/24,101.200.106.0/24,120.55.177.0/24,120.27.173.0/24,120.55.107.0/24,123.57.117.0/24,120.76.16.0/24,182.92.253.32/27,60.205.193.64/27,60.205.193.96/27,120.78.44.128/26,118.178.15.0/24,39.106.237.192/26,106.15.101.96/27,47.101.16.64/27,47.106.31.0/24,47.98.74.0/25,47.97.242.96/27,112.124.159.0/24,39.96.130.0/24,39.96.119.0/24,47.99.20.0/24,47.104.53.0/26,47.108.23.192/26,39.104.199.128/26,39.96.158.0/24,47.110.182.0/24,120.77.139.0/25,47.102.187.0/25&quot;</p>
+<p>#转换为数组：</p>
+<p>$iprange_prefix2 =  $iprange_prefix -split &quot;,&quot;</p>
+<p>#添加入站规则配置，端口号请修改确认：</p>
+<p>Add-AzureRmNetworkSecurityRuleConfig -Name CDN_WAF_Rules -NetworkSecurityGroup $nsg -Description &quot;This_is_CDN_Source_IP_Range&quot; -Protocol Tcp -SourcePortRange * -DestinationPortRange 8086 –SourceAddressPrefix $iprange_prefix2  -DestinationAddressPrefix * -Access Allow -Priority 2000 -Direction Inbound</p>
+<p>#使配置生效：</p>
+<p>#循环的脚本如下：</p>
+<p>Import-Csv -Path E:\123\NSGs.csv | % { $nsg = Get-AzureRmNetworkSecurityGroup -ResourceGroupName $_.RESOURCEGROUP -Name $_.NAME;</p>
+<p>$iprange_prefix=&quot;121.43.18.0/24,120.25.115.0/24,101.200.106.0/24,120.55.177.0/24,120.27.173.0/24,120.55.107.0/24,123.57.117.0/24,120.76.16.0/24,182.92.253.32/27,60.205.193.64/27,60.205.193.96/27,120.78.44.128/26,118.178.15.0/24,39.106.237.192/26,106.15.101.96/27,47.101.16.64/27,47.106.31.0/24,47.98.74.0/25,47.97.242.96/27,112.124.159.0/24,39.96.130.0/24,39.96.119.0/24,47.99.20.0/24,47.104.53.0/26,47.108.23.192/26,39.104.199.128/26,39.96.158.0/24,47.110.182.0/24,120.77.139.0/25,47.102.187.0/25&quot;;</p>
+<p>$iprange_prefix2 =  $iprange_prefix -split &quot;,&quot;;</p>
+<p>Add-AzureRmNetworkSecurityRuleConfig -Name CDN_WAF_Rules2 -NetworkSecurityGroup $nsg -Description &quot;This_is_CDN_Source_IP_Range&quot; -Protocol Tcp -SourcePortRange * -DestinationPortRange 8086 -SourceAddressPrefix $iprange_prefix2 -DestinationAddressPrefix * -Access Allow -Priority 2002 -Direction Inbound ;</p>
+<p>Set-AzureRmNetworkSecurityGroup -NetworkSecurityGroup $nsg</p>
+<p>}</p>
+<p>#批量执行如下：</p></article>

@@ -1,0 +1,318 @@
+<article class="kb-article" data-title="[MCVKB][VM] OS Provisioning (Cloud-init) timeout"><h1>[MCVKB][VM] OS Provisioning (Cloud-init) timeout</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2021-08-18 17:37:34</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>[MCVKB][VM] OS Provisioning (Cloud-init) timeout</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>[MCVKB][VM] OS Provisioning (Cloud-init) timeout</li>
+</ul>
+<ul>
+<li>I’d like to share a case regarding VM OS Provisioning timeout.</li>
+</ul>
+<ul>
+<li>[Symptom]</li>
+</ul>
+<ul>
+<li>VM state is running but user cannot ssh to the VM: &quot;authentication method is not supported&quot;</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,364 - handlers.py[DEBUG]: diagnostic: diagnostic message: exception while getting metadata: &#39;module&#39; object has no attribute &#39;JSONDecodeError&#39;</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,367 - util.py[WARNING]: Getting data from &lt;class &#39;cloudinit.sources.DataSourceAzure.DataSourceAzure&#39;&gt; failed</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,368 - util.py[DEBUG]: Getting data from &lt;class &#39;cloudinit.sources.DataSourceAzure.DataSourceAzure&#39;&gt; failed</li>
+</ul>
+<ul>
+<li>except json.decoder.JSONDecodeError as e:</li>
+</ul>
+<ul>
+<li>AttributeError: &#39;module&#39; object has no attribute &#39;JSONDecodeError&#39;</li>
+</ul>
+<ul>
+<li>[Error]</li>
+</ul>
+<ul>
+<li>JSONDecodeError</li>
+</ul>
+<ul>
+<li>unicode characters in VM tags issue</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>OS Provisioning for VM &#39;CNCORPAZQDLARK01&#39; did not finish in the allotted time.</li>
+</ul>
+<ul>
+<li>-Image: CentOS 7.x (platform image)</li>
+</ul>
+<ul>
+<li>-Provision agent: Cloud-init v. 19.4 or similar</li>
+</ul>
+<ul>
+<li>2021-08-09T03:59:07.021096Z INFO Daemon Azure Linux Agent Version:2.2.46</li>
+</ul>
+<ul>
+<li>2021-08-09T03:59:07.037360Z INFO Daemon OS: centos 7.9.2009</li>
+</ul>
+<ul>
+<li>2021-08-09T03:59:07.056845Z INFO Daemon Python: 2.7.5</li>
+</ul>
+<ul>
+<li>2021-08-09T03:59:07.068380Z INFO Daemon CGroups Status: The cgroup filesystem is ready to use</li>
+</ul>
+<ul>
+<li>2021-08-09T03:59:07.082506Z INFO Daemon Run daemon</li>
+</ul>
+<ul>
+<li>2021-08-09T03:59:07.155495Z INFO Daemon Using cloud-init for provisioning</li>
+</ul>
+<ul>
+<li>2021-08-09T03:59:07.176372Z INFO Daemon Running CloudInit provisioning handler</li>
+</ul>
+<ul>
+<li>2021-08-09T03:59:07.186563Z INFO Daemon Waiting for cloud-init to copy ovf-env.xml to /var/lib/waagent/ovf-env.xml [1800 retries remaining, sleeping 1s]</li>
+</ul>
+<ul>
+<li>2021-08-09T03:59:08.241541Z INFO Daemon Waiting for cloud-init to copy ovf-env.xml to /var/lib/waagent/ovf-env.xml [1799 retries remaining, sleeping 1s]</li>
+</ul>
+<ul>
+<li>… …</li>
+</ul>
+<ul>
+<li>2021-08-09T09:37:52.306752Z INFO Daemon Waiting for cloud-init to copy ovf-env.xml to /var/lib/waagent/ovf-env.xml [1398 retries remaining, sleeping 1s]</li>
+</ul>
+<ul>
+<li>2021-08-09T09:37:52.319094Z WARNING Daemon cloud-init does not appear to be running</li>
+</ul>
+<ul>
+<li>/var/lib/waagent/ovf-env.xml: Userdata is provided to cloud-init inside the ovf-env.xml file.</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,250 - handlers.py[DEBUG]: start: azure-ds/_get_metadata_from_imds: _get_metadata_from_imds</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,337 - handlers.py[DEBUG]: finish: azure-ds/_get_metadata_from_imds: FAIL: _get_metadata_from_imds</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,337 - util.py[DEBUG]: Crawl of Azure Instance Metadata Service (IMDS) took 0.087 seconds</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,338 - util.py[DEBUG]: Running command [&#39;ip&#39;, &#39;-4&#39;, &#39;route&#39;, &#39;del&#39;, &#39;169.254.169.254/32&#39;, &#39;via&#39;, &#39;10.162.164.1&#39;, &#39;dev&#39;, &#39;eth0&#39;] with allowed return codes [0] (shell=False, capture=True)</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,341 - util.py[DEBUG]: Running command [&#39;ip&#39;, &#39;-4&#39;, &#39;route&#39;, &#39;del&#39;, &#39;168.63.129.16/32&#39;, &#39;via&#39;, &#39;10.162.164.1&#39;, &#39;dev&#39;, &#39;eth0&#39;] with allowed return codes [0] (shell=False, capture=True)</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,344 - util.py[DEBUG]: Running command [&#39;ip&#39;, &#39;-4&#39;, &#39;route&#39;, &#39;del&#39;, &#39;0.0.0.0/0&#39;, &#39;via&#39;, &#39;10.162.164.1&#39;, &#39;dev&#39;, &#39;eth0&#39;] with allowed return codes [0] (shell=False, capture=True)</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,347 - util.py[DEBUG]: Running command [&#39;ip&#39;, &#39;-family&#39;, &#39;inet&#39;, &#39;link&#39;, &#39;set&#39;, &#39;dev&#39;, &#39;eth0&#39;, &#39;down&#39;] with allowed return codes [0] (shell=False, capture=True)</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,360 - util.py[DEBUG]: Running command [&#39;ip&#39;, &#39;-family&#39;, &#39;inet&#39;, &#39;addr&#39;, &#39;del&#39;, &#39;10.162.164.18/23&#39;, &#39;dev&#39;, &#39;eth0&#39;] with allowed return codes [0] (shell=False, capture=True)</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,364 - handlers.py[DEBUG]: finish: azure-ds/get_metadata_from_imds: FAIL: get_metadata_from_imds</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,365 - handlers.py[DEBUG]: finish: azure-ds/crawl_metadata: FAIL: crawl_metadata</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,366 - util.py[DEBUG]: Crawl of metadata service took 1.089 seconds</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,366 - handlers.py[DEBUG]: finish: azure-ds/_get_data: FAIL: _get_data</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,367 - handlers.py[DEBUG]: finish: init-local/search-Azure: FAIL: no local data found from DataSourceAzure</li>
+</ul>
+<ul>
+<li>Traceback (most recent call last):</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/__init__.py&quot;, line 760, in find_source</li>
+</ul>
+<ul>
+<li>if s.update_metadata([EventType.BOOT_NEW_INSTANCE]):</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/__init__.py&quot;, line 649, in update_metadata</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/__init__.py&quot;, line 273, in get_data</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/helpers/azure.py&quot;, line 48, in impl</li>
+</ul>
+<ul>
+<li>return func(*args, **kwargs)</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/DataSourceAzure.py&quot;, line 526, in _get_data</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/DataSourceAzure.py&quot;, line 450, in crawl_metadata</li>
+</ul>
+<ul>
+<li>self.fallback_interface, retries=10)</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/DataSourceAzure.py&quot;, line 1404, in get_metadata_from_imds</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/DataSourceAzure.py&quot;, line 1426, in _get_metadata_from_imds</li>
+</ul>
+<ul>
+<li>*Azure provides the instance metadata service (IMDS) which is a REST service providing additional configuration information to the instance.</li>
+</ul>
+<ul>
+<li>[Cause]</li>
+</ul>
+<ul>
+<li>Recreate VM without Tags containing unicode characters, and add certain tags after creation.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>[Troubleshooting]</li>
+</ul>
+<ul>
+<li>=Error in /var/log/waagent.log</li>
+</ul>
+<ul>
+<li>=Error in /var/log/cloud-init.log</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib/python2.7/site-packages/cloudinit/util.py&quot;, line 2540, in log_time</li>
+</ul>
+<ul>
+<li>return util.log_time(**kwargs)</li>
+</ul>
+<ul>
+<li>Provisioning Troubleshooting (error code)</li>
+</ul>
+<ul>
+<li>Check the JSON template if the VM was deleted by cx:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>2021-08-09T03:59:07.163128Z INFO Daemon Clean protocol and wireserver endpoint</li>
+</ul>
+<ul>
+<li>result = self.get_data()</li>
+</ul>
+<ul>
+<li>return_value = self._get_data()</li>
+</ul>
+<ul>
+<li>func=self.crawl_metadata)</li>
+</ul>
+<ul>
+<li>ret = func(*args, **kwargs)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>2021-08-09T03:59:07.141882Z INFO Daemon cloud-init is enabled: True</li>
+</ul>
+<ul>
+<li>*It’s a Cloud-Init bug. Issue was fixed by Canonical for Cloud-Init around July 2020, but it’s possible that some old distros do not contain the Fix.</li>
+</ul>
+<ul>
+<li>[Solution]</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>2021-08-09 03:59:01,251 - url_helper.py[DEBUG]: [0/11] open &#39;<a href="http://169.254.169.254/metadata/instance?api-version=2017-12-01&#39;" target="_blank" rel="noopener">http://169.254.169.254/metadata/instance?api-version=2017-12-01&#39;</a> with {&#39;url&#39;: &#39;<a href="http://169.254.169.254/metadata/instance?api-version=2017-12-01&#39;," target="_blank" rel="noopener">http://169.254.169.254/metadata/instance?api-version=2017-12-01&#39;,</a> &#39;headers&#39;: {&#39;Metadata&#39;: &#39;true&#39;, &#39;User-Agent&#39;: &#39;Cloud-Init/19.4&#39;}, &#39;allow_redirects&#39;: True, &#39;method&#39;: &#39;GET&#39;, &#39;timeout&#39;: 2.0} configuration</li>
+</ul>
+<ul>
+<li>2021-08-09 03:59:01,337 - url_helper.py[DEBUG]: Read from <a href="http://169.254.169.254/metadata/instance?api-version=2017-12-01" target="_blank" rel="noopener">http://169.254.169.254/metadata/instance?api-version=2017-12-01</a> (200, 941b) after 1 attempts</li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/D041FC57?genevatraceguid=7ee7a3e3-5335-4eaf-afad-8774f6256e04" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/D041FC57?genevatraceguid=7ee7a3e3-5335-4eaf-afad-8774f6256e04</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>[MCVKB][VM] OS Provisioning (Cloud-init) timeout</p>
+<p>I’d like to share a case regarding VM OS Provisioning timeout.</p>
+<p>[Symptom]</p>
+<p>OS Provisioning for VM &#39;CNCORPAZQDLARK01&#39; did not finish in the allotted time.</p>
+<p>VM state is running but user cannot ssh to the VM: &quot;authentication method is not supported&quot;</p>
+<p>-Image: CentOS 7.x (platform image)</p>
+<p>-Provision agent: Cloud-init v. 19.4 or similar</p>
+<p>[Troubleshooting]</p>
+<p>=Error in /var/log/waagent.log</p>
+<p>2021-08-09T03:59:07.021096Z INFO Daemon Azure Linux Agent Version:2.2.46</p>
+<p>2021-08-09T03:59:07.037360Z INFO Daemon OS: centos 7.9.2009</p>
+<p>2021-08-09T03:59:07.056845Z INFO Daemon Python: 2.7.5</p>
+<p>2021-08-09T03:59:07.068380Z INFO Daemon CGroups Status: The cgroup filesystem is ready to use</p>
+<p>2021-08-09T03:59:07.082506Z INFO Daemon Run daemon</p>
+<p>2021-08-09T03:59:07.141882Z INFO Daemon cloud-init is enabled: True</p>
+<p>2021-08-09T03:59:07.155495Z INFO Daemon Using cloud-init for provisioning</p>
+<p>2021-08-09T03:59:07.163128Z INFO Daemon Clean protocol and wireserver endpoint</p>
+<p>2021-08-09T03:59:07.176372Z INFO Daemon Running CloudInit provisioning handler</p>
+<p>2021-08-09T03:59:07.186563Z INFO Daemon Waiting for cloud-init to copy ovf-env.xml to /var/lib/waagent/ovf-env.xml [1800 retries remaining, sleeping 1s]</p>
+<p>2021-08-09T03:59:08.241541Z INFO Daemon Waiting for cloud-init to copy ovf-env.xml to /var/lib/waagent/ovf-env.xml [1799 retries remaining, sleeping 1s]</p>
+<p>… …</p>
+<p>2021-08-09T09:37:52.306752Z INFO Daemon Waiting for cloud-init to copy ovf-env.xml to /var/lib/waagent/ovf-env.xml [1398 retries remaining, sleeping 1s]</p>
+<p>2021-08-09T09:37:52.319094Z WARNING Daemon cloud-init does not appear to be running</p>
+<p>/var/lib/waagent/ovf-env.xml: Userdata is provided to cloud-init inside the ovf-env.xml file.</p>
+<p>=Error in /var/log/cloud-init.log</p>
+<p>2021-08-09 03:59:01,250 - handlers.py[DEBUG]: start: azure-ds/_get_metadata_from_imds: _get_metadata_from_imds</p>
+<p>2021-08-09 03:59:01,251 - url_helper.py[DEBUG]: [0/11] open &#39;<a href="http://169.254.169.254/metadata/instance?api-version=2017-12-01&#39;" target="_blank" rel="noopener">http://169.254.169.254/metadata/instance?api-version=2017-12-01&#39;</a> with {&#39;url&#39;: &#39;<a href="http://169.254.169.254/metadata/instance?api-version=2017-12-01&#39;," target="_blank" rel="noopener">http://169.254.169.254/metadata/instance?api-version=2017-12-01&#39;,</a> &#39;headers&#39;: {&#39;Metadata&#39;: &#39;true&#39;, &#39;User-Agent&#39;: &#39;Cloud-Init/19.4&#39;}, &#39;allow_redirects&#39;: True, &#39;method&#39;: &#39;GET&#39;, &#39;timeout&#39;: 2.0} configuration</p>
+<p>2021-08-09 03:59:01,337 - url_helper.py[DEBUG]: Read from <a href="http://169.254.169.254/metadata/instance?api-version=2017-12-01" target="_blank" rel="noopener">http://169.254.169.254/metadata/instance?api-version=2017-12-01</a> (200, 941b) after 1 attempts</p>
+<p>2021-08-09 03:59:01,337 - handlers.py[DEBUG]: finish: azure-ds/_get_metadata_from_imds: FAIL: _get_metadata_from_imds</p>
+<p>2021-08-09 03:59:01,337 - util.py[DEBUG]: Crawl of Azure Instance Metadata Service (IMDS) took 0.087 seconds</p>
+<p>2021-08-09 03:59:01,338 - util.py[DEBUG]: Running command [&#39;ip&#39;, &#39;-4&#39;, &#39;route&#39;, &#39;del&#39;, &#39;169.254.169.254/32&#39;, &#39;via&#39;, &#39;10.162.164.1&#39;, &#39;dev&#39;, &#39;eth0&#39;] with allowed return codes [0] (shell=False, capture=True)</p>
+<p>2021-08-09 03:59:01,341 - util.py[DEBUG]: Running command [&#39;ip&#39;, &#39;-4&#39;, &#39;route&#39;, &#39;del&#39;, &#39;168.63.129.16/32&#39;, &#39;via&#39;, &#39;10.162.164.1&#39;, &#39;dev&#39;, &#39;eth0&#39;] with allowed return codes [0] (shell=False, capture=True)</p>
+<p>2021-08-09 03:59:01,344 - util.py[DEBUG]: Running command [&#39;ip&#39;, &#39;-4&#39;, &#39;route&#39;, &#39;del&#39;, &#39;0.0.0.0/0&#39;, &#39;via&#39;, &#39;10.162.164.1&#39;, &#39;dev&#39;, &#39;eth0&#39;] with allowed return codes [0] (shell=False, capture=True)</p>
+<p>2021-08-09 03:59:01,347 - util.py[DEBUG]: Running command [&#39;ip&#39;, &#39;-family&#39;, &#39;inet&#39;, &#39;link&#39;, &#39;set&#39;, &#39;dev&#39;, &#39;eth0&#39;, &#39;down&#39;] with allowed return codes [0] (shell=False, capture=True)</p>
+<p>2021-08-09 03:59:01,360 - util.py[DEBUG]: Running command [&#39;ip&#39;, &#39;-family&#39;, &#39;inet&#39;, &#39;addr&#39;, &#39;del&#39;, &#39;10.162.164.18/23&#39;, &#39;dev&#39;, &#39;eth0&#39;] with allowed return codes [0] (shell=False, capture=True)</p>
+<p>2021-08-09 03:59:01,364 - handlers.py[DEBUG]: diagnostic: diagnostic message: exception while getting metadata: &#39;module&#39; object has no attribute &#39;JSONDecodeError&#39;</p>
+<p>2021-08-09 03:59:01,364 - handlers.py[DEBUG]: finish: azure-ds/get_metadata_from_imds: FAIL: get_metadata_from_imds</p>
+<p>2021-08-09 03:59:01,365 - handlers.py[DEBUG]: finish: azure-ds/crawl_metadata: FAIL: crawl_metadata</p>
+<p>2021-08-09 03:59:01,366 - util.py[DEBUG]: Crawl of metadata service took 1.089 seconds</p>
+<p>2021-08-09 03:59:01,366 - handlers.py[DEBUG]: finish: azure-ds/_get_data: FAIL: _get_data</p>
+<p>2021-08-09 03:59:01,367 - handlers.py[DEBUG]: finish: init-local/search-Azure: FAIL: no local data found from DataSourceAzure</p>
+<p>2021-08-09 03:59:01,367 - util.py[WARNING]: Getting data from &lt;class &#39;cloudinit.sources.DataSourceAzure.DataSourceAzure&#39;&gt; failed</p>
+<p>2021-08-09 03:59:01,368 - util.py[DEBUG]: Getting data from &lt;class &#39;cloudinit.sources.DataSourceAzure.DataSourceAzure&#39;&gt; failed</p>
+<p>Traceback (most recent call last):</p>
+<p>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/__init__.py&quot;, line 760, in find_source</p>
+<p>if s.update_metadata([EventType.BOOT_NEW_INSTANCE]):</p>
+<p>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/__init__.py&quot;, line 649, in update_metadata</p>
+<p>result = self.get_data()</p>
+<p>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/__init__.py&quot;, line 273, in get_data</p>
+<p>return_value = self._get_data()</p>
+<p>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/helpers/azure.py&quot;, line 48, in impl</p>
+<p>return func(*args, **kwargs)</p>
+<p>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/DataSourceAzure.py&quot;, line 526, in _get_data</p>
+<p>func=self.crawl_metadata)</p>
+<p>File &quot;/usr/lib/python2.7/site-packages/cloudinit/util.py&quot;, line 2540, in log_time</p>
+<p>ret = func(*args, **kwargs)</p>
+<p>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/DataSourceAzure.py&quot;, line 450, in crawl_metadata</p>
+<p>self.fallback_interface, retries=10)</p>
+<p>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/DataSourceAzure.py&quot;, line 1404, in get_metadata_from_imds</p>
+<p>return util.log_time(**kwargs)</p>
+<p>File &quot;/usr/lib/python2.7/site-packages/cloudinit/sources/DataSourceAzure.py&quot;, line 1426, in _get_metadata_from_imds</p>
+<p>except json.decoder.JSONDecodeError as e:</p>
+<p>AttributeError: &#39;module&#39; object has no attribute &#39;JSONDecodeError&#39;</p>
+<p>*Azure provides the instance metadata service (IMDS) which is a REST service providing additional configuration information to the instance.</p>
+<p>[Error]</p>
+<p>JSONDecodeError</p>
+<p>Provisioning Troubleshooting (error code)</p>
+<p>[Cause]</p>
+<p>unicode characters in VM tags issue</p>
+<p>*It’s a Cloud-Init bug. Issue was fixed by Canonical for Cloud-Init around July 2020, but it’s possible that some old distros do not contain the Fix.</p>
+<p>[Solution]</p>
+<p>Recreate VM without Tags containing unicode characters, and add certain tags after creation.</p>
+<p>Check the JSON template if the VM was deleted by cx:</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/D041FC57?genevatraceguid=7ee7a3e3-5335-4eaf-afad-8774f6256e04" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/D041FC57?genevatraceguid=7ee7a3e3-5335-4eaf-afad-8774f6256e04</a></p></article>

@@ -1,0 +1,120 @@
+<article class="kb-article" data-title="无法创建终结点“xx”。错误: Property EnforceMtls is not allowed to set in current API Version"><h1>无法创建终结点“xx”。错误: Property EnforceMtls is not allowed to set in current API Version</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AFD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-29 17:01:11</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>客户在创建AFD时报错 Property EnforceMtls is not allowed to set in current API Version</li>
+</ul>
+<ul>
+<li>并且之后也无法添加endpoint，只要添加就会遇到相同错误：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025.10.28</li>
+</ul>
+<ul>
+<li>| where (TIMESTAMP &gt;= datetime(2025-10-28 T00:00:00.0000000Z) and TIMESTAMP &lt;= datetime(2025-10-30T10:59:59.0000000Z))</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP, subscriptionId, resourceUri, eventName, status, authorization, properties, customerOperationName,correlationId</li>
+</ul>
+<ul>
+<li>| where subscriptionId contains &quot;9c6096b8-5d3f-4b0c-9caf-9ac1ef579ddf&quot;</li>
+</ul>
+<ul>
+<li>| where correlationId contains &quot;2751e166-736e-4c8c-a9a2-c6208ace91bf&quot;</li>
+</ul>
+<ul>
+<li>发现在创建endpoint时会添加enforceMtls属性：</li>
+</ul>
+<ul>
+<li>对比正常情况并没有这个属性：</li>
+</ul>
+<ul>
+<li>这时候就基本可以确定问题原因了。</li>
+</ul>
+<ul>
+<li>产生原因：</li>
+</ul>
+<ul>
+<li>创建endpoint时错误的调用了SA的api version (旧) 而不是AFD的api version (新), 从而产生了这个enforceMtls属性。</li>
+</ul>
+<ul>
+<li>Trying to add Front Door to a brand new blob storage account, I get: &quot;Property EnforceMtls is not allowed to set in current API Version&quot; - Microsoft Q&amp;A</li>
+</ul>
+<ul>
+<li>解决办法：</li>
+</ul>
+<ul>
+<li>把origin 从SA 修改成随便一个其他设置，比如1.1.1.1，然后再添加endpoint。</li>
+</ul>
+<ul>
+<li>之后再把origin改回SA即可。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查步骤：</li>
+</ul>
+<ul>
+<li>查看arm log:</li>
+</ul>
+<ul>
+<li>cluster(&#39;armmcadx.chinaeast2.kusto.chinacloudapi.cn&#39;).database(&quot;armmc&quot;).EventServiceEntries</li>
+</ul>
+<ul>
+<li>这个时候查看客户origin配置发现是SA blob：</li>
+</ul>
+<ul>
+<li>然后再去确认一下该SA创建时间是否为2022年之前：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>{&quot;requestbody&quot;:&quot;{\&quot;location\&quot;:\&quot;Global\&quot;,\&quot;properties\&quot;:{\&quot;hostName\&quot;:\&quot;Veritasendpoint-g8bnevh9bvbzc2fx.z01.frontdoor.azure.cn\&quot;,\&quot;enabledState\&quot;:\&quot;Enabled\&quot;,\&quot;enforceMtls\&quot;:\&quot;Disabled\&quot;,\&quot;deploymentStatus\&quot;:null}}&quot;,&quot;eventCategory&quot;:&quot;Administrative&quot;,&quot;entity&quot;:&quot;/subscriptions/aad6fb38-6efd-495a-83f6-e8b048d34646/resourcegroups/Veritas/providers/Microsoft.Cdn/Profiles/VeritasFrontDoor/AfdEndpoints/Veritasendpoint&quot;,&quot;message&quot;:&quot;Microsoft.Cdn/Profiles/AfdEndpoints/write&quot;,&quot;hierarchy&quot;:&quot;1cf62576-9460-4b92-9fbc-eb4b6020a1cd/aad6fb38-6efd-495a-83f6-e8b048d34646&quot;}</li>
+</ul>
+<ul>
+<li>{&quot;requestbody&quot;:&quot;{\&quot;location\&quot;:\&quot;Global\&quot;,\&quot;properties\&quot;:{\&quot;hostName\&quot;:\&quot;afd5max-hpakg6ecc9fxaeb5.z01.frontdoor.azure.cn\&quot;,\&quot;enabledState\&quot;:\&quot;Enabled\&quot;,\&quot;deploymentStatus\&quot;:null}}&quot;,&quot;eventCategory&quot;:&quot;Administrative&quot;,&quot;entity&quot;:&quot;/subscriptions/9c6096b8-5d3f-4b0c-9caf-9ac1ef579ddf/resourcegroups/max-rg/providers/Microsoft.Cdn/Profiles/test/AfdEndpoints/afd5max&quot;,&quot;message&quot;:&quot;Microsoft.Cdn/Profiles/AfdEndpoints/write&quot;,&quot;hierarchy&quot;:&quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/9c6096b8-5d3f-4b0c-9caf-9ac1ef579ddf&quot;}</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025.10.28</p>
+<p>问题现象：</p>
+<p>客户在创建AFD时报错 Property EnforceMtls is not allowed to set in current API Version</p>
+<p>并且之后也无法添加endpoint，只要添加就会遇到相同错误：</p>
+<p>排查步骤：</p>
+<p>查看arm log:</p>
+<p>cluster(&#39;armmcadx.chinaeast2.kusto.chinacloudapi.cn&#39;).database(&quot;armmc&quot;).EventServiceEntries</p>
+<p>| where (TIMESTAMP &gt;= datetime(2025-10-28 T00:00:00.0000000Z) and TIMESTAMP &lt;= datetime(2025-10-30T10:59:59.0000000Z))</p>
+<p>| project TIMESTAMP, subscriptionId, resourceUri, eventName, status, authorization, properties, customerOperationName,correlationId</p>
+<p>| where subscriptionId contains &quot;9c6096b8-5d3f-4b0c-9caf-9ac1ef579ddf&quot;</p>
+<p>| where correlationId contains &quot;2751e166-736e-4c8c-a9a2-c6208ace91bf&quot;</p>
+<p>发现在创建endpoint时会添加enforceMtls属性：</p>
+<p>{&quot;requestbody&quot;:&quot;{\&quot;location\&quot;:\&quot;Global\&quot;,\&quot;properties\&quot;:{\&quot;hostName\&quot;:\&quot;Veritasendpoint-g8bnevh9bvbzc2fx.z01.frontdoor.azure.cn\&quot;,\&quot;enabledState\&quot;:\&quot;Enabled\&quot;,\&quot;enforceMtls\&quot;:\&quot;Disabled\&quot;,\&quot;deploymentStatus\&quot;:null}}&quot;,&quot;eventCategory&quot;:&quot;Administrative&quot;,&quot;entity&quot;:&quot;/subscriptions/aad6fb38-6efd-495a-83f6-e8b048d34646/resourcegroups/Veritas/providers/Microsoft.Cdn/Profiles/VeritasFrontDoor/AfdEndpoints/Veritasendpoint&quot;,&quot;message&quot;:&quot;Microsoft.Cdn/Profiles/AfdEndpoints/write&quot;,&quot;hierarchy&quot;:&quot;1cf62576-9460-4b92-9fbc-eb4b6020a1cd/aad6fb38-6efd-495a-83f6-e8b048d34646&quot;}</p>
+<p>对比正常情况并没有这个属性：</p>
+<p>{&quot;requestbody&quot;:&quot;{\&quot;location\&quot;:\&quot;Global\&quot;,\&quot;properties\&quot;:{\&quot;hostName\&quot;:\&quot;afd5max-hpakg6ecc9fxaeb5.z01.frontdoor.azure.cn\&quot;,\&quot;enabledState\&quot;:\&quot;Enabled\&quot;,\&quot;deploymentStatus\&quot;:null}}&quot;,&quot;eventCategory&quot;:&quot;Administrative&quot;,&quot;entity&quot;:&quot;/subscriptions/9c6096b8-5d3f-4b0c-9caf-9ac1ef579ddf/resourcegroups/max-rg/providers/Microsoft.Cdn/Profiles/test/AfdEndpoints/afd5max&quot;,&quot;message&quot;:&quot;Microsoft.Cdn/Profiles/AfdEndpoints/write&quot;,&quot;hierarchy&quot;:&quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/9c6096b8-5d3f-4b0c-9caf-9ac1ef579ddf&quot;}</p>
+<p>这个时候查看客户origin配置发现是SA blob：</p>
+<p>然后再去确认一下该SA创建时间是否为2022年之前：</p>
+<p>这时候就基本可以确定问题原因了。</p>
+<p>产生原因：</p>
+<p>创建endpoint时错误的调用了SA的api version (旧) 而不是AFD的api version (新), 从而产生了这个enforceMtls属性。</p>
+<p>Trying to add Front Door to a brand new blob storage account, I get: &quot;Property EnforceMtls is not allowed to set in current API Version&quot; - Microsoft Q&amp;A</p>
+<p>解决办法：</p>
+<p>把origin 从SA 修改成随便一个其他设置，比如1.1.1.1，然后再添加endpoint。</p>
+<p>之后再把origin改回SA即可。</p></article>

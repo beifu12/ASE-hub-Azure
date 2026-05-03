@@ -1,0 +1,142 @@
+<article class="kb-article" data-title="【Share】centos7.9 安装高于 az cli2.38 版本的方法"><h1>【Share】centos7.9 安装高于 az cli2.38 版本的方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-08-08 15:28:04</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>由于官方文档只写明了centos7只支持到az cli 2.38，用以下操作我只在centos7.9和az cli2.42尝试了简单的命令，无法保证所有功能正常，且此方法会安装openssl-1.1.1d和python3.7.0，请您充分测试后用于生产环境。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>由于官方文档只写明了centos7只支持到az cli 2.38，用以下操作我只在centos7.9和az cli2.42尝试了简单的命令，无法保证所有功能正常，且此方法会安装openssl-1.1.1d和python3.7.0，请您充分测试后用于生产环境。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>sudo yum install gcc gcc-c++ make ncurses patch wget tar zlib zlib-devel -y</li>
+</ul>
+<ul>
+<li># build openssl from source</li>
+</ul>
+<ul>
+<li>cd ~</li>
+</ul>
+<ul>
+<li>tar -xzf openssl-1.1.1d.tar.gz</li>
+</ul>
+<ul>
+<li>cd openssl-1.1.1d</li>
+</ul>
+<ul>
+<li>./config --prefix=/usr/local/ssl --openssldir=/usr/local/ssl</li>
+</ul>
+<ul>
+<li>make</li>
+</ul>
+<ul>
+<li>sudo make install</li>
+</ul>
+<ul>
+<li># configure shared object lookup directory so that libssl.so.1.1 can be found</li>
+</ul>
+<ul>
+<li>echo &quot;/usr/local/ssl/lib&quot; | sudo tee /etc/ld.so.conf.d/openssl-1.1.1d.conf</li>
+</ul>
+<ul>
+<li># reload config</li>
+</ul>
+<ul>
+<li>sudo ldconfig -v</li>
+</ul>
+<ul>
+<li>yum install libffi-devel -y</li>
+</ul>
+<ul>
+<li>cd $PYTHON_SRC_DIR/Python-$PYTHON_VERSION</li>
+</ul>
+<ul>
+<li>./configure --prefix=/usr --with-openssl=/usr/local/ssl</li>
+</ul>
+<ul>
+<li>unlink /bin/python</li>
+</ul>
+<ul>
+<li>ln -s /bin/python3.7 /bin/python</li>
+</ul>
+<ul>
+<li>ln -s /bin/pip37 /bin/pip</li>
+</ul>
+<ul>
+<li>#下载azcli 2.42.0</li>
+</ul>
+<ul>
+<li>tar -xzvf azure-cli-2.42.0.tar.gz</li>
+</ul>
+<ul>
+<li>cd azure-cli-azure-cli-2.42.0/scripts/</li>
+</ul>
+<ul>
+<li>sh ./install_full.sh</li>
+</ul>
+<ul>
+<li>ln -s /bin/python2 /bin/python   #恢复python      的指向为python2，否则yum会有问题，yum不能使用python3 ，或者去改yum的声明也行</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>由于官方文档只写明了centos7只支持到az cli 2.38，用以下操作我只在centos7.9和az cli2.42尝试了简单的命令，无法保证所有功能正常，且此方法会安装openssl-1.1.1d和python3.7.0，请您充分测试后用于生产环境。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>PYTHON_VERSION=&quot;3.7.0&quot;</li>
+</ul>
+<ul>
+<li>PYTHON_SRC_DIR=$(mktemp -d)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>wget <a href="https://www.openssl.org/source/openssl-1.1.1d.tar.gz" target="_blank" rel="noopener">https://www.openssl.org/source/openssl-1.1.1d.tar.gz</a></li>
+</ul>
+<ul>
+<li>wget -qO- <a href="https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz" target="_blank" rel="noopener">https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz</a> | tar -xz -C &quot;$PYTHON_SRC_DIR&quot;</li>
+</ul>
+<ul>
+<li>wget <a href="https://github.com/Azure/azure-cli/archive/refs/tags/azure-cli-2.42.0.tar.gz" target="_blank" rel="noopener">https://github.com/Azure/azure-cli/archive/refs/tags/azure-cli-2.42.0.tar.gz</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>由于官方文档只写明了centos7只支持到az cli 2.38，用以下操作我只在centos7.9和az cli2.42尝试了简单的命令，无法保证所有功能正常，且此方法会安装openssl-1.1.1d和python3.7.0，请您充分测试后用于生产环境。</p>
+<p>sudo yum install gcc gcc-c++ make ncurses patch wget tar zlib zlib-devel -y</p>
+<h1>build openssl from source</h1>
+<p>cd ~</p>
+<p>wget <a href="https://www.openssl.org/source/openssl-1.1.1d.tar.gz" target="_blank" rel="noopener">https://www.openssl.org/source/openssl-1.1.1d.tar.gz</a></p>
+<p>tar -xzf openssl-1.1.1d.tar.gz</p>
+<p>cd openssl-1.1.1d</p>
+<p>./config --prefix=/usr/local/ssl --openssldir=/usr/local/ssl</p>
+<p>make</p>
+<p>sudo make install</p>
+<h1>configure shared object lookup directory so that libssl.so.1.1 can be found</h1>
+<p>echo &quot;/usr/local/ssl/lib&quot; | sudo tee /etc/ld.so.conf.d/openssl-1.1.1d.conf</p>
+<h1>reload config</h1>
+<p>sudo ldconfig -v</p>
+<p>yum install libffi-devel -y</p>
+<p>PYTHON_VERSION=&quot;3.7.0&quot;</p>
+<p>PYTHON_SRC_DIR=$(mktemp -d)</p>
+<p>wget -qO- <a href="https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz" target="_blank" rel="noopener">https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz</a> | tar -xz -C &quot;$PYTHON_SRC_DIR&quot;</p>
+<p>cd $PYTHON_SRC_DIR/Python-$PYTHON_VERSION</p>
+<p>./configure --prefix=/usr --with-openssl=/usr/local/ssl</p>
+<p>unlink /bin/python</p>
+<p>ln -s /bin/python3.7 /bin/python</p>
+<p>ln -s /bin/pip37 /bin/pip</p>
+<p>#下载azcli 2.42.0</p>
+<p>wget <a href="https://github.com/Azure/azure-cli/archive/refs/tags/azure-cli-2.42.0.tar.gz" target="_blank" rel="noopener">https://github.com/Azure/azure-cli/archive/refs/tags/azure-cli-2.42.0.tar.gz</a></p>
+<p>tar -xzvf azure-cli-2.42.0.tar.gz</p>
+<p>cd azure-cli-azure-cli-2.42.0/scripts/</p>
+<p>sh ./install_full.sh</p>
+<p>ln -s /bin/python2 /bin/python   #恢复python      的指向为python2，否则yum会有问题，yum不能使用python3 ，或者去改yum的声明也行</p></article>

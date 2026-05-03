@@ -1,0 +1,156 @@
+<article class="kb-article" data-title="逻辑应用中如何将json转换为XML格式"><h1>逻辑应用中如何将json转换为XML格式</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: logic app</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-18 10:45:09</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Johnny</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Johnny</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny</li>
+</ul>
+<ul>
+<li>客户需求是：</li>
+</ul>
+<ul>
+<li>TSGG</li>
+</ul>
+<ul>
+<li>如何将JSON字符串解析或拼接成规定的XML格式，</li>
+</ul>
+<ul>
+<li>JSON格式示例：</li>
+</ul>
+<ul>
+<li>{&quot;BATCHNO&quot;:&quot;21411YZE36&quot;,&quot;BUDAT&quot;:&quot;20210506&quot;,&quot;KOSTL&quot;:&quot;1A0005&quot;,&quot;LFART&quot;:&quot;ZLF&quot;,&quot;LIFNR&quot;:&quot;600001&quot;,&quot;ZWMSNO&quot;:&quot;210506003388&quot;,&quot;VBELN&quot;:&quot;0106855584&quot;,&quot;KUNWE&quot;:&quot;600002&quot;,&quot;SPART&quot;:&quot;10&quot;,&quot;ARTNR&quot;:&quot;F0000101&quot;,&quot;WRBTR&quot;:&quot;10.00&quot;}</li>
+</ul>
+<ul>
+<li>需要解析的XML文档格式要求：</li>
+</ul>
+<ul>
+<li>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</li>
+</ul>
+<ul>
+<li>&lt;ns0:ZFI_DOC_OTMS xmlns:ns0=&quot;urn:sap-com:document:sap:rfc:functions&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;ET_OTMS&gt;</li>
+</ul>
+<ul>
+<li>&lt;item&gt;</li>
+</ul>
+<ul>
+<li>&lt;BATCHNO&gt;21411YZE35&lt;/BATCHNO&gt;</li>
+</ul>
+<ul>
+<li>&lt;BUDAT&gt;20210426&lt;/BUDAT&gt;</li>
+</ul>
+<ul>
+<li>&lt;KOSTL&gt;1A0005&lt;/KOSTL&gt;</li>
+</ul>
+<ul>
+<li>&lt;LFART&gt;ZLF&lt;/LFART&gt;</li>
+</ul>
+<ul>
+<li>&lt;LIFNR&gt;600001&lt;/LIFNR&gt;</li>
+</ul>
+<ul>
+<li>&lt;ZWMSNO&gt;210426003388&lt;/ZWMSNO&gt;</li>
+</ul>
+<ul>
+<li>&lt;VBELN&gt;0106855583&lt;/VBELN&gt;</li>
+</ul>
+<ul>
+<li>&lt;KUNWE&gt;600002&lt;/KUNWE&gt;</li>
+</ul>
+<ul>
+<li>&lt;SPART&gt;10&lt;/SPART&gt;</li>
+</ul>
+<ul>
+<li>&lt;ARTNR&gt;F0000101&lt;/ARTNR&gt;</li>
+</ul>
+<ul>
+<li>&lt;WRBTR&gt;10.00&lt;/WRBTR&gt;</li>
+</ul>
+<ul>
+<li>&lt;/item&gt;</li>
+</ul>
+<ul>
+<li>&lt;/ET_OTMS&gt;</li>
+</ul>
+<ul>
+<li>&lt;/ns0:ZFI_DOC_OTMS&gt;</li>
+</ul>
+<ul>
+<li>这里测试了一下，您的json文件需加一个根：</li>
+</ul>
+<ul>
+<li>{&quot;item&quot;:{&quot;BATCHNO&quot;:&quot;21411YZE36&quot;,&quot;BUDAT&quot;:&quot;20210506&quot;,&quot;KOSTL&quot;:&quot;1A0005&quot;,&quot;LFART&quot;:&quot;ZLF&quot;,&quot;LIFNR&quot;:&quot;600001&quot;,&quot;ZWMSNO&quot;:&quot;210506003388&quot;,&quot;VBELN&quot;:&quot;0106855584&quot;,&quot;KUNWE&quot;:&quot;600002&quot;,&quot;SPART&quot;:&quot;10&quot;,&quot;ARTNR&quot;:&quot;F0000101&quot;,&quot;WRBTR&quot;:&quot;10.00&quot;}}</li>
+</ul>
+<ul>
+<li>concat(&#39;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#39;,xml(json(variables(&#39;test&#39;))))</li>
+</ul>
+<ul>
+<li>之后就可以转换正您需要的xml形式了。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过排查客户这种格式直接转XML有问题需要添加一个根：</li>
+</ul>
+<ul>
+<li>表达式中函数的参考指南 - Azure Logic Apps | Azure Docs</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>而您要添加的其他字符串可以通过concat函数合并：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/05/14</p>
+<p>Johnny</p>
+<p>客户需求是：</p>
+<p>TSGG</p>
+<p>如何将JSON字符串解析或拼接成规定的XML格式，</p>
+<p>JSON格式示例：</p>
+<p>{&quot;BATCHNO&quot;:&quot;21411YZE36&quot;,&quot;BUDAT&quot;:&quot;20210506&quot;,&quot;KOSTL&quot;:&quot;1A0005&quot;,&quot;LFART&quot;:&quot;ZLF&quot;,&quot;LIFNR&quot;:&quot;600001&quot;,&quot;ZWMSNO&quot;:&quot;210506003388&quot;,&quot;VBELN&quot;:&quot;0106855584&quot;,&quot;KUNWE&quot;:&quot;600002&quot;,&quot;SPART&quot;:&quot;10&quot;,&quot;ARTNR&quot;:&quot;F0000101&quot;,&quot;WRBTR&quot;:&quot;10.00&quot;}</p>
+<p>需要解析的XML文档格式要求：</p>
+<p>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</p>
+<p>&lt;ns0:ZFI_DOC_OTMS xmlns:ns0=&quot;urn:sap-com:document:sap:rfc:functions&quot;&gt;</p>
+<p>&lt;ET_OTMS&gt;</p>
+<p>&lt;item&gt;</p>
+<p>&lt;BATCHNO&gt;21411YZE35&lt;/BATCHNO&gt;</p>
+<p>&lt;BUDAT&gt;20210426&lt;/BUDAT&gt;</p>
+<p>&lt;KOSTL&gt;1A0005&lt;/KOSTL&gt;</p>
+<p>&lt;LFART&gt;ZLF&lt;/LFART&gt;</p>
+<p>&lt;LIFNR&gt;600001&lt;/LIFNR&gt;</p>
+<p>&lt;ZWMSNO&gt;210426003388&lt;/ZWMSNO&gt;</p>
+<p>&lt;VBELN&gt;0106855583&lt;/VBELN&gt;</p>
+<p>&lt;KUNWE&gt;600002&lt;/KUNWE&gt;</p>
+<p>&lt;SPART&gt;10&lt;/SPART&gt;</p>
+<p>&lt;ARTNR&gt;F0000101&lt;/ARTNR&gt;</p>
+<p>&lt;WRBTR&gt;10.00&lt;/WRBTR&gt;</p>
+<p>&lt;/item&gt;</p>
+<p>&lt;/ET_OTMS&gt;</p>
+<p>&lt;/ns0:ZFI_DOC_OTMS&gt;</p>
+<p>通过排查客户这种格式直接转XML有问题需要添加一个根：</p>
+<p>这里测试了一下，您的json文件需加一个根：</p>
+<p>{&quot;item&quot;:{&quot;BATCHNO&quot;:&quot;21411YZE36&quot;,&quot;BUDAT&quot;:&quot;20210506&quot;,&quot;KOSTL&quot;:&quot;1A0005&quot;,&quot;LFART&quot;:&quot;ZLF&quot;,&quot;LIFNR&quot;:&quot;600001&quot;,&quot;ZWMSNO&quot;:&quot;210506003388&quot;,&quot;VBELN&quot;:&quot;0106855584&quot;,&quot;KUNWE&quot;:&quot;600002&quot;,&quot;SPART&quot;:&quot;10&quot;,&quot;ARTNR&quot;:&quot;F0000101&quot;,&quot;WRBTR&quot;:&quot;10.00&quot;}}</p>
+<p>而您要添加的其他字符串可以通过concat函数合并：</p>
+<p>表达式中函数的参考指南 - Azure Logic Apps | Azure Docs</p>
+<p>concat(&#39;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#39;,xml(json(variables(&#39;test&#39;))))</p>
+<p>之后就可以转换正您需要的xml形式了。</p></article>

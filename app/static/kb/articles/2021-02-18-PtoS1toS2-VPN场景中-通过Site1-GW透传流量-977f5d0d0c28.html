@@ -1,0 +1,163 @@
+<article class="kb-article" data-title="&quot;PtoS1toS2&quot; VPN场景中，通过Site1 GW透传流量"><h1>&quot;PtoS1toS2&quot; VPN场景中，通过Site1 GW透传流量</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-02-18 15:36:03</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>实现透传的思路和以前一样，就是在Point和Site2这两端分别增加去往对端的路由。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>实现透传的思路和以前一样，就是在Point和Site2这两端分别增加去往对端的路由。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>实现透传的思路和以前一样，就是在Point和Site2这两端分别增加去往对端的路由。</li>
+</ul>
+<ul>
+<li>如下两种方式和之前镇山分享的一种方式中，Site2一端的配置方法都是一样的。</li>
+</ul>
+<ul>
+<li>区别在于Point端的配置：</li>
+</ul>
+<ul>
+<li>之前Point端的配置方式是：在Point上加静态路由route add x.x.x.x MASK x.x.x.x x.x.x.x，每次拨号后需要手动加一次（我测了下加永久路由的方式，但是不生效，很纳闷）。</li>
+</ul>
+<ul>
+<li>如下方式一：每台拨号的Point都要改配置文件，但不需要每次拨号都改。</li>
+</ul>
+<ul>
+<li>如下方式二：Point端无需额外操作，只需安装VPN Client和客户端证书。（对于用户而言，大多不了解路由啊这些乱七八糟的东西，推荐这种方式）</li>
+</ul>
+<ul>
+<li>一、组网：</li>
+</ul>
+<ul>
+<li>Local PCs-----[P2S VPN]------Vnet03-------[S2S VPN]-----Vnet02</li>
+</ul>
+<ul>
+<li>10.33.0.0/16                                          10.10.0.0/16</li>
+</ul>
+<ul>
+<li>(P2S address pool:192.168.123.0/24)</li>
+</ul>
+<ul>
+<li>二、需求：</li>
+</ul>
+<ul>
+<li>在以上P2S和S2S VPN基础上，实现Local PC和VNet02之间互通</li>
+</ul>
+<ul>
+<li>三、可以用如下两种配置方式，推荐使用方式二</li>
+</ul>
+<ul>
+<li>方式一：</li>
+</ul>
+<ul>
+<li>基于P2S和S2S VPN基础上，再增加如下两个配置：</li>
+</ul>
+<ul>
+<li>1、在路径C:\Users\yao.yuejian\AppData\Roaming\Microsoft\Network\Connections\Cm\101cd3bb-cdd1-47d7-9c4d-ae125e3a9cb2\routes.txt下增加如下第三行标红路由：</li>
+</ul>
+<ul>
+<li>ADD 10.33.0.0 MASK 255.255.0.0 default METRIC default IF default</li>
+</ul>
+<ul>
+<li>ADD 192.168.123.0 MASK 255.255.255.0 default METRIC default IF default （默认有以上两条路由）</li>
+</ul>
+<ul>
+<li>ADD 10.10.0.0 MASK 255.255.0.0 default METRIC default IF default （PS：如果P2S在此修改前已经连接，修改配置后再重新连接以调用新配置）</li>
+</ul>
+<ul>
+<li>2、Vnet02连接的本地网络网关中增加地址空间（P2S的address pool）</li>
+</ul>
+<ul>
+<li>测试结果：</li>
+</ul>
+<ul>
+<li>Vnet02中的VM:</li>
+</ul>
+<ul>
+<li>Local PC:</li>
+</ul>
+<ul>
+<li>方式二：</li>
+</ul>
+<ul>
+<li>基于P2S和S2S VPN基础上</li>
+</ul>
+<ul>
+<li>配置P2S VPN过程差异如下：</li>
+</ul>
+<ul>
+<li>1)、先将Vnet02的地址空间增加到Vnet03里</li>
+</ul>
+<ul>
+<li>2)、下载VPN Client，安装完成后，在路径C:\Users\yao.yuejian\AppData\Roaming\Microsoft\Network\Connections\Cm\101cd3bb-cdd1-47d7-9c4d-ae125e3a9cb2\routes.txt下可以看到10.10.0.0/16的路由</li>
+</ul>
+<ul>
+<li>（其实就是为了在下载的VPN Client中里增加去往Vnet02的路由）</li>
+</ul>
+<ul>
+<li>3)、删除Vnet03中新加的地址空间</li>
+</ul>
+<ul>
+<li>Vnet02中的VM：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如下配置步骤，供参考：</li>
+</ul>
+<ul>
+<li>（这个步骤，每一台Local PC都要去配置一次）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>（只需要配置一次，所有Local PC只需安装VPN Client）</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>实现透传的思路和以前一样，就是在Point和Site2这两端分别增加去往对端的路由。</p>
+<p>如下两种方式和之前镇山分享的一种方式中，Site2一端的配置方法都是一样的。</p>
+<p>区别在于Point端的配置：</p>
+<p>之前Point端的配置方式是：在Point上加静态路由route add x.x.x.x MASK x.x.x.x x.x.x.x，每次拨号后需要手动加一次（我测了下加永久路由的方式，但是不生效，很纳闷）。</p>
+<p>如下方式一：每台拨号的Point都要改配置文件，但不需要每次拨号都改。</p>
+<p>如下方式二：Point端无需额外操作，只需安装VPN Client和客户端证书。（对于用户而言，大多不了解路由啊这些乱七八糟的东西，推荐这种方式）</p>
+<p>如下配置步骤，供参考：</p>
+<p>一、组网：</p>
+<p>Local PCs-----[P2S VPN]------Vnet03-------[S2S VPN]-----Vnet02</p>
+<p>10.33.0.0/16                                          10.10.0.0/16</p>
+<p>(P2S address pool:192.168.123.0/24)</p>
+<p>二、需求：</p>
+<p>在以上P2S和S2S VPN基础上，实现Local PC和VNet02之间互通</p>
+<p>三、可以用如下两种配置方式，推荐使用方式二</p>
+<p>方式一：</p>
+<p>基于P2S和S2S VPN基础上，再增加如下两个配置：</p>
+<p>1、在路径C:\Users\yao.yuejian\AppData\Roaming\Microsoft\Network\Connections\Cm\101cd3bb-cdd1-47d7-9c4d-ae125e3a9cb2\routes.txt下增加如下第三行标红路由：</p>
+<p>ADD 10.33.0.0 MASK 255.255.0.0 default METRIC default IF default</p>
+<p>ADD 192.168.123.0 MASK 255.255.255.0 default METRIC default IF default （默认有以上两条路由）</p>
+<p>ADD 10.10.0.0 MASK 255.255.0.0 default METRIC default IF default （PS：如果P2S在此修改前已经连接，修改配置后再重新连接以调用新配置）</p>
+<p>（这个步骤，每一台Local PC都要去配置一次）</p>
+<p>2、Vnet02连接的本地网络网关中增加地址空间（P2S的address pool）</p>
+<p>测试结果：</p>
+<p>Vnet02中的VM:</p>
+<p>Local PC:</p>
+<p>方式二：</p>
+<p>基于P2S和S2S VPN基础上</p>
+<p>配置P2S VPN过程差异如下：</p>
+<p>（只需要配置一次，所有Local PC只需安装VPN Client）</p>
+<p>1)、先将Vnet02的地址空间增加到Vnet03里</p>
+<p>2)、下载VPN Client，安装完成后，在路径C:\Users\yao.yuejian\AppData\Roaming\Microsoft\Network\Connections\Cm\101cd3bb-cdd1-47d7-9c4d-ae125e3a9cb2\routes.txt下可以看到10.10.0.0/16的路由</p>
+<p>（其实就是为了在下载的VPN Client中里增加去往Vnet02的路由）</p>
+<p>3)、删除Vnet03中新加的地址空间</p>
+<p>Vnet02中的VM：</p></article>

@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="获取应用程序自定义令牌属性"><h1>获取应用程序自定义令牌属性</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: Kusto Jarvis常用命令</li>
+<li>最近修改: 2024-03-07 10:27:47</li>
+<li>JD 相关性: 自动化/命令工具; Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Case num: SR_20240126275845_How to I configute tenant_region_scope claim for an application</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Case num: SR_20240126275845_How to I configute tenant_region_scope claim for an application</li>
+</ul>
+<ul>
+<li>问题现象：用户使用相同的API分别向Global Azure和Azure China的应用获取token时解析token后看不到自定义属性，Global可以正常获取到属性和属性值，但是中国区看不到该属性</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>可以直接使用openid的方式进行应用程序认证并获取自定义属性tenant_region_scope</li>
+</ul>
+<ul>
+<li>Azure China referenced document : Microsoft identity platform and OAuth 2.0 authorization code flow | Azure Docs</li>
+</ul>
+<ul>
+<li>We currently confirm that there is a difference between Global Azure and Azure China, and Azure China does not support the custom properties of Access tokens when using SP to obtain tokens. Azure China can only be obtained using the user&#39;s method.</li>
+</ul>
+<ul>
+<li>Before using the user&#39;s way to get, first you need to do some configuration on your application.</li>
+</ul>
+<ul>
+<li>Add the user to the user and group, which is later used in postman</li>
+</ul>
+<ul>
+<li>You first need to configure the delegate user</li>
+</ul>
+<ul>
+<li>Then configure the postman as below（in resource）</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>因为中国区与Global的差异，用户此前方式是通过Graph API的方式进行验证的，中国区无法使用该方式，只能通过应用程序+用户方式进行双重认证后才能在token中</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Using Microsoft Graph PowerShell authentication commands | Microsoft Learn</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<ul>
+<li>Click ‘Managed application in local directory’ ,  enable ‘Assignment required’</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>WangZhaoqing</p>
+<p>Case num: SR_20240126275845_How to I configute tenant_region_scope claim for an application</p>
+<p>问题现象：用户使用相同的API分别向Global Azure和Azure China的应用获取token时解析token后看不到自定义属性，Global可以正常获取到属性和属性值，但是中国区看不到该属性</p>
+<p>解决方案：</p>
+<p>可以直接使用openid的方式进行应用程序认证并获取自定义属性tenant_region_scope</p>
+<p>Azure China referenced document : Microsoft identity platform and OAuth 2.0 authorization code flow | Azure Docs</p>
+<p>因为中国区与Global的差异，用户此前方式是通过Graph API的方式进行验证的，中国区无法使用该方式，只能通过应用程序+用户方式进行双重认证后才能在token中</p>
+<p>We currently confirm that there is a difference between Global Azure and Azure China, and Azure China does not support the custom properties of Access tokens when using SP to obtain tokens. Azure China can only be obtained using the user&#39;s method.</p>
+<p>Before using the user&#39;s way to get, first you need to do some configuration on your application.</p>
+<p>Click ‘Managed application in local directory’ ,  enable ‘Assignment required’</p>
+<p>Add the user to the user and group, which is later used in postman</p>
+<p>You first need to configure the delegate user</p>
+<p>Using Microsoft Graph PowerShell authentication commands | Microsoft Learn</p>
+<p>Then configure the postman as below（in resource）</p></article>

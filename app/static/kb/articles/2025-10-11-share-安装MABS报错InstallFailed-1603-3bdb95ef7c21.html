@@ -1,0 +1,250 @@
+<article class="kb-article" data-title="[ share] 安装MABS报错InstallFailed; 1603"><h1>[ share] 安装MABS报错InstallFailed; 1603</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2025-10-11 15:30:45</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>用户在HCI中hyper-V的虚拟机中安装MABS备份报错MABS can‘t regedit in ASR：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>用户在HCI中hyper-V的虚拟机中安装MABS备份报错MABS can‘t regedit  in ASR：</li>
+</ul>
+<ul>
+<li>关闭软删除后可以成功注册ASR，但是最后还是安装失败：</li>
+</ul>
+<ul>
+<li>[9/24/2024 4:13:57 AM] * Exception :  =&gt; The DPM installation failed.Review the error details, take appropriate action, and then run DPM Setup again.Microsoft.Internal.EnterpriseStorage.Dls.Setup.Exceptions.BackEndErrorException: exception ---&gt; Microsoft.Internal.EnterpriseStorage.Dls.Setup.Exceptions.MsiInvokeException: Exception of type &#39;Microsoft.Internal.EnterpriseStorage.Dls.Setup.Exceptions.MsiInvokeException&#39; was thrown.</li>
+</ul>
+<ul>
+<li>*** Mojito error was: InstallFailed; 1603; WindowsAPI</li>
+</ul>
+<ul>
+<li>[9/24/2024 4:13:57 AM] *** Error : The DPM installation failed. Review the error details, take appropriate action, and then run DPM Setup again.</li>
+</ul>
+<ul>
+<li>ID: 810. Details: Fatal error during installation</li>
+</ul>
+<ul>
+<li>[9/24/2024 4:13:57 AM] Information : Microsoft Azure Backup Server installation has failed. All the items that were copied during the installation process have been removed.</li>
+</ul>
+<ul>
+<li>For details, click the Error tab.</li>
+</ul>
+<ul>
+<li>StopServiceAndChangeStartType returned Error code = 0x00000000</li>
+</ul>
+<ul>
+<li>CustomAction _InstallProvider.E785582E_DD9D_4A85_B866_3A1BC05C6110 returned actual error code 1603 (note this may not be 100% accurate if translation happened inside sandbox)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Tangxin</li>
+</ul>
+<ul>
+<li>at Microsoft.Internal.EnterpriseStorage.Dls.Setup.Wizard.Installer.Install()</li>
+</ul>
+<ul>
+<li>at Microsoft.Internal.EnterpriseStorage.Dls.Setup.Wizard.BackEnd.Install(Installer installer)</li>
+</ul>
+<ul>
+<li>--- End of inner exception stack trace ---</li>
+</ul>
+<ul>
+<li>at Microsoft.Internal.EnterpriseStorage.Dls.Setup.Wizard.DpmInstaller.Install()</li>
+</ul>
+<ul>
+<li>at Microsoft.Internal.EnterpriseStorage.Dls.Setup.Wizard.VenusProgressPage.InstallDpm()</li>
+</ul>
+<ul>
+<li>at Microsoft.Internal.EnterpriseStorage.Dls.Setup.Wizard.VenusProgressPage.InstallerThreadEntry()</li>
+</ul>
+<ul>
+<li>Windows Server Core 或 Microsoft Hyper-V Server 不支持安装 Azure 备份服务器。</li>
+</ul>
+<ul>
+<li>使用 Azure 备份服务器备份工作负荷 - Azure Backup | Azure Docs</li>
+</ul>
+<ul>
+<li>与用户沟通，用户回复该机器不是Hyper-V Server，用户还有另外一套VM同样的环境可以成功安装MABS，</li>
+</ul>
+<ul>
+<li>It was running Hyper-V and Failover-Clustering:</li>
+</ul>
+<ul>
+<li>MSI (s) (20:D0) [03:49:43:218]: Creating MSIHANDLE (18432) of type 790536 for thread 8912</li>
+</ul>
+<ul>
+<li>MSI (s) (20:34) [03:49:43:218]: Invoking remote custom action. DLL: C:\Windows\Installer\MSI776A.tmp, Entrypoint: InstallProvider</li>
+</ul>
+<ul>
+<li>MSI (s) (20!98) [03:49:43:233]: Creating MSIHANDLE (18433) of type 790531 for thread 4760</li>
+</ul>
+<ul>
+<li>MSI (s) (20!98) [03:49:43:233]: Closing MSIHANDLE (18433) of type 790531 for thread 4760</li>
+</ul>
+<ul>
+<li>MSI (s) (20!98) [03:49:43:233]: Creating MSIHANDLE (18434) of type 790531 for thread 4760</li>
+</ul>
+<ul>
+<li>InstallProvider entered.</li>
+</ul>
+<ul>
+<li>MSI (s) (20!98) [03:49:43:233]: Closing MSIHANDLE (18434) of type 790531 for thread 4760</li>
+</ul>
+<ul>
+<li>MSI (s) (20!98) [03:49:43:233]: Creating MSIHANDLE (18435) of type 790531 for thread 4760</li>
+</ul>
+<ul>
+<li>Unregistering VSS providers</li>
+</ul>
+<ul>
+<li>MSI (s) (20!98) [03:49:43:233]: Closing MSIHANDLE (18435) of type 790531 for thread 4760</li>
+</ul>
+<ul>
+<li>MSI (s) (20!98) [03:49:44:249]: Creating MSIHANDLE (18436) of type 790531 for thread 4760</li>
+</ul>
+<ul>
+<li>MSI (s) (20!98) [03:49:44:249]: Closing MSIHANDLE (18436) of type 790531 for thread 4760</li>
+</ul>
+<ul>
+<li>MSI (s) (20!98) [03:49:44:436]: Creating MSIHANDLE (18437) of type 790531 for thread 4760</li>
+</ul>
+<ul>
+<li>MSI (s) (20!98) [03:49:44:436]: Closing MSIHANDLE (18437) of type 790531 for thread 4760</li>
+</ul>
+<ul>
+<li>MSI (s) (20:34) [03:49:44:889]: Closing MSIHANDLE (18432) of type 790536 for thread 8912</li>
+</ul>
+<ul>
+<li>MSI (s) (20:D0) [03:49:44:905]: Note: 1: 2265 2:  3: -2147287035</li>
+</ul>
+<ul>
+<li>We found that there is a red label on the non-working machine:</li>
+</ul>
+<ul>
+<li>该工单的问题在于，用户始终认为自己的虚拟环境没有问题，甚至还质疑文档错误，最初问用户该VM是否是hyperV cluster，</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>经过文档查询，怀疑是用户之前注册过该VM，虽然已经删除，但是没有关闭软删除：</li>
+</ul>
+<ul>
+<li>Troubleshoot the Azure Backup agent - Azure Backup | Microsoft Learn</li>
+</ul>
+<ul>
+<li>查询日志发现报错：InstallFailed; 1603</li>
+</ul>
+<ul>
+<li>对于该错误，查询了很多文档都没有进一步说明，由于用户是在hyper-V环境中，查询文档发现，</li>
+</ul>
+<ul>
+<li>经过与用户沟通，检查两台机器的环境组件，确实是一样的：</li>
+</ul>
+<ul>
+<li>We checked the window feature on other server cnsumabspw01, which has installed MABS successfully.</li>
+</ul>
+<ul>
+<li>排查进展进入僵局，于是升级CSS，</li>
+</ul>
+<ul>
+<li>CSS工程分析DPM log 发现有异样报错：</li>
+</ul>
+<ul>
+<li>As per the above stack we are also getting error 0x8004e00f, which means “COM+ was unable to talk to the Microsoft Distributed”. But we might need co-work with Windows engineers to have a further check next week.</li>
+</ul>
+<ul>
+<li>Please click on “My computer” and check if the error appears to the be same as below.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>UnInstallProviderCatalogAndDLL entered.</li>
+</ul>
+<ul>
+<li>Error in UnInstallProviderCatalogAndDLL. hr=0x8004e00f</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>然后建议检查服务组件，发现组件服务异常：</li>
+</ul>
+<ul>
+<li>最后建议用户执行“clear-clusternode -force”并且关闭 “failover clustering”feature.用户回复可以成功安装MABS。</li>
+</ul>
+<ul>
+<li>用户开始否认，最后回复不清楚当时安装的环境。最后在CSS工程师的建议下才解决。</li>
+</ul>
+<ul>
+<li>最后与CSS工程师沟通，工程师建议安装MABS最好是用新安装的干净windows系统，因为在测试过程中发现，安装过其他组件，或者将原来的MABS卸载后再安装，都有可能安装失败。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>[9/24/2024 4:15:41 AM] Data : Error Code Web Link = <a href="http://go.microsoft.com/fwlink/events.asp?ProdName=Microsoft" target="_blank" rel="noopener">http://go.microsoft.com/fwlink/events.asp?ProdName=Microsoft</a> System Center Data Protection Manager&amp;ProdVer=14.0.30.0&amp;EvtID=810&amp;EvtSrc=MSDPM&amp;LCID=1033&amp;P2wAppId=p2wMsdpmEE</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Tangxin</p>
+<p>用户在HCI中hyper-V的虚拟机中安装MABS备份报错MABS can‘t regedit  in ASR：</p>
+<p>经过文档查询，怀疑是用户之前注册过该VM，虽然已经删除，但是没有关闭软删除：</p>
+<p>Troubleshoot the Azure Backup agent - Azure Backup | Microsoft Learn</p>
+<p>关闭软删除后可以成功注册ASR，但是最后还是安装失败：</p>
+<p>查询日志发现报错：InstallFailed; 1603</p>
+<p>[9/24/2024 4:13:57 AM] * Exception :  =&gt; The DPM installation failed.Review the error details, take appropriate action, and then run DPM Setup again.Microsoft.Internal.EnterpriseStorage.Dls.Setup.Exceptions.BackEndErrorException: exception ---&gt; Microsoft.Internal.EnterpriseStorage.Dls.Setup.Exceptions.MsiInvokeException: Exception of type &#39;Microsoft.Internal.EnterpriseStorage.Dls.Setup.Exceptions.MsiInvokeException&#39; was thrown.</p>
+<p>at Microsoft.Internal.EnterpriseStorage.Dls.Setup.Wizard.Installer.Install()</p>
+<p>at Microsoft.Internal.EnterpriseStorage.Dls.Setup.Wizard.BackEnd.Install(Installer installer)</p>
+<p>--- End of inner exception stack trace ---</p>
+<p>at Microsoft.Internal.EnterpriseStorage.Dls.Setup.Wizard.DpmInstaller.Install()</p>
+<p>at Microsoft.Internal.EnterpriseStorage.Dls.Setup.Wizard.VenusProgressPage.InstallDpm()</p>
+<p>at Microsoft.Internal.EnterpriseStorage.Dls.Setup.Wizard.VenusProgressPage.InstallerThreadEntry()</p>
+<p>*** Mojito error was: InstallFailed; 1603; WindowsAPI</p>
+<p>[9/24/2024 4:13:57 AM] *** Error : The DPM installation failed. Review the error details, take appropriate action, and then run DPM Setup again.</p>
+<p>ID: 810. Details: Fatal error during installation</p>
+<p>[9/24/2024 4:13:57 AM] Information : Microsoft Azure Backup Server installation has failed. All the items that were copied during the installation process have been removed.</p>
+<p>For details, click the Error tab.</p>
+<p>[9/24/2024 4:15:41 AM] Data : Error Code Web Link = <a href="http://go.microsoft.com/fwlink/events.asp?ProdName=Microsoft" target="_blank" rel="noopener">http://go.microsoft.com/fwlink/events.asp?ProdName=Microsoft</a> System Center Data Protection Manager&amp;ProdVer=14.0.30.0&amp;EvtID=810&amp;EvtSrc=MSDPM&amp;LCID=1033&amp;P2wAppId=p2wMsdpmEE</p>
+<p>对于该错误，查询了很多文档都没有进一步说明，由于用户是在hyper-V环境中，查询文档发现，</p>
+<p>Windows Server Core 或 Microsoft Hyper-V Server 不支持安装 Azure 备份服务器。</p>
+<p>使用 Azure 备份服务器备份工作负荷 - Azure Backup | Azure Docs</p>
+<p>与用户沟通，用户回复该机器不是Hyper-V Server，用户还有另外一套VM同样的环境可以成功安装MABS，</p>
+<p>经过与用户沟通，检查两台机器的环境组件，确实是一样的：</p>
+<p>We checked the window feature on other server cnsumabspw01, which has installed MABS successfully.</p>
+<p>It was running Hyper-V and Failover-Clustering:</p>
+<p>排查进展进入僵局，于是升级CSS，</p>
+<p>CSS工程分析DPM log 发现有异样报错：</p>
+<p>MSI (s) (20:D0) [03:49:43:218]: Creating MSIHANDLE (18432) of type 790536 for thread 8912</p>
+<p>MSI (s) (20:34) [03:49:43:218]: Invoking remote custom action. DLL: C:\Windows\Installer\MSI776A.tmp, Entrypoint: InstallProvider</p>
+<p>MSI (s) (20!98) [03:49:43:233]: Creating MSIHANDLE (18433) of type 790531 for thread 4760</p>
+<p>MSI (s) (20!98) [03:49:43:233]: Closing MSIHANDLE (18433) of type 790531 for thread 4760</p>
+<p>MSI (s) (20!98) [03:49:43:233]: Creating MSIHANDLE (18434) of type 790531 for thread 4760</p>
+<p>InstallProvider entered.</p>
+<p>MSI (s) (20!98) [03:49:43:233]: Closing MSIHANDLE (18434) of type 790531 for thread 4760</p>
+<p>MSI (s) (20!98) [03:49:43:233]: Creating MSIHANDLE (18435) of type 790531 for thread 4760</p>
+<p>Unregistering VSS providers</p>
+<p>MSI (s) (20!98) [03:49:43:233]: Closing MSIHANDLE (18435) of type 790531 for thread 4760</p>
+<p>MSI (s) (20!98) [03:49:44:249]: Creating MSIHANDLE (18436) of type 790531 for thread 4760</p>
+<p>UnInstallProviderCatalogAndDLL entered.</p>
+<p>MSI (s) (20!98) [03:49:44:249]: Closing MSIHANDLE (18436) of type 790531 for thread 4760</p>
+<p>MSI (s) (20!98) [03:49:44:436]: Creating MSIHANDLE (18437) of type 790531 for thread 4760</p>
+<p>StopServiceAndChangeStartType returned Error code = 0x00000000</p>
+<p>MSI (s) (20!98) [03:49:44:436]: Closing MSIHANDLE (18437) of type 790531 for thread 4760</p>
+<p>Error in UnInstallProviderCatalogAndDLL. hr=0x8004e00f</p>
+<p>MSI (s) (20:34) [03:49:44:889]: Closing MSIHANDLE (18432) of type 790536 for thread 8912</p>
+<p>CustomAction _InstallProvider.E785582E_DD9D_4A85_B866_3A1BC05C6110 returned actual error code 1603 (note this may not be 100% accurate if translation happened inside sandbox)</p>
+<p>MSI (s) (20:D0) [03:49:44:905]: Note: 1: 2265 2:  3: -2147287035</p>
+<p>As per the above stack we are also getting error 0x8004e00f, which means “COM+ was unable to talk to the Microsoft Distributed”. But we might need co-work with Windows engineers to have a further check next week.</p>
+<p>然后建议检查服务组件，发现组件服务异常：</p>
+<p>We found that there is a red label on the non-working machine:</p>
+<p>Please click on “My computer” and check if the error appears to the be same as below.</p>
+<p>最后建议用户执行“clear-clusternode -force”并且关闭 “failover clustering”feature.用户回复可以成功安装MABS。</p>
+<p>该工单的问题在于，用户始终认为自己的虚拟环境没有问题，甚至还质疑文档错误，最初问用户该VM是否是hyperV cluster，</p>
+<p>用户开始否认，最后回复不清楚当时安装的环境。最后在CSS工程师的建议下才解决。</p>
+<p>最后与CSS工程师沟通，工程师建议安装MABS最好是用新安装的干净windows系统，因为在测试过程中发现，安装过其他组件，或者将原来的MABS卸载后再安装，都有可能安装失败。</p></article>

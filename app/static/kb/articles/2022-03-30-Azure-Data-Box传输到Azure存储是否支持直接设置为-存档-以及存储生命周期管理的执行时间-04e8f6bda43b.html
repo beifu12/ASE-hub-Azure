@@ -1,0 +1,67 @@
+<article class="kb-article" data-title="Azure Data Box传输到Azure存储是否支持直接设置为“存档”以及存储生命周期管理的执行时间"><h1>Azure Data Box传输到Azure存储是否支持直接设置为“存档”以及存储生命周期管理的执行时间</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-03-30 21:24:12</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：SR_20210624104601_[MS-LED]存储帐户的“冷”切换到“存档”</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：SR_20210624104601_[MS-LED]存储帐户的“冷”切换到“存档”</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考工单：SR_20210624104601_[MS-LED]存储帐户的“冷”切换到“存档”</li>
+</ul>
+<ul>
+<li>需求：</li>
+</ul>
+<ul>
+<li>Azure Data Box的PM说这个在他们的roadmap里面但是没有确切的时间表</li>
+</ul>
+<ul>
+<li>测试发现生命周期管理策略设置之后，需要约24小时才能执行。</li>
+</ul>
+<ul>
+<li>如下截图中，我的策略是在2021/6/25 上午9点多设置的，发现在2021/6/26上午9:35才执行。</li>
+</ul>
+<ul>
+<li>通过自动执行 Azure Blob 存储访问层来优化成本 | Azure Docs</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>和CSS的Sun Wei确认了下，目前Azure Data Box传输到Azure存储暂不支持直接设置为“存档”，</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>客户需要将本地数据700T左右，使用Azure Data Box传输到Azure存储，考虑到费用的问题，希望能直接设置为“存档”。如果后期转为“存档”，会产生额外的费用。</li>
+</ul>
+<ul>
+<li>客户可以使用生命周期管理，将blob设置为“存档”</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/blobs/storage-lifecycle-management-concepts?tabs=azure-portal#examples" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/blobs/storage-lifecycle-management-concepts?tabs=azure-portal#examples</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-06-28</p>
+<p>参考工单：SR_20210624104601_[MS-LED]存储帐户的“冷”切换到“存档”</p>
+<p>需求：</p>
+<p>客户需要将本地数据700T左右，使用Azure Data Box传输到Azure存储，考虑到费用的问题，希望能直接设置为“存档”。如果后期转为“存档”，会产生额外的费用。</p>
+<p>和CSS的Sun Wei确认了下，目前Azure Data Box传输到Azure存储暂不支持直接设置为“存档”，</p>
+<p>Azure Data Box的PM说这个在他们的roadmap里面但是没有确切的时间表</p>
+<p>客户可以使用生命周期管理，将blob设置为“存档”</p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/blobs/storage-lifecycle-management-concepts?tabs=azure-portal#examples" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/blobs/storage-lifecycle-management-concepts?tabs=azure-portal#examples</a></p>
+<p>测试发现生命周期管理策略设置之后，需要约24小时才能执行。</p>
+<p>如下截图中，我的策略是在2021/6/25 上午9点多设置的，发现在2021/6/26上午9:35才执行。</p>
+<p>通过自动执行 Azure Blob 存储访问层来优化成本 | Azure Docs</p></article>

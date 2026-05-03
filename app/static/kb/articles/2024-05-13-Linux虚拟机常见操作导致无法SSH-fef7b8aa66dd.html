@@ -1,0 +1,253 @@
+<article class="kb-article" data-title="Linux虚拟机常见操作导致无法SSH"><h1>Linux虚拟机常见操作导致无法SSH</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RDP_SSH</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2024-05-13 10:23:23</li>
+<li>JD 相关性: 售后排障; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>修改后，在界面上关机后再开机，虚拟机会无法ssh登陆。（针对固定IP的情况，如果配置文件中写入的IP与虚拟机启动后DHCP获取到的IP恰巧一致，这种情况下可以链接，但是如果再次重启的时候，DHCP获取到的IP可能会变化，所以仍然存在风险）</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>修改后，在界面上关机后再开机，虚拟机会无法ssh登陆。（针对固定IP的情况，如果配置文件中写入的IP与虚拟机启动后DHCP获取到的IP恰巧一致，这种情况下可以链接，但是如果再次重启的时候，DHCP获取到的IP可能会变化，所以仍然存在风险）</li>
+</ul>
+<ul>
+<li>错误地修改服务的配置文件/etc/ssh/sshd_config（语法错误或者配置错误），导致sshd服务无法启动失败：</li>
+</ul>
+<ul>
+<li>结果sshd服务就无法正常启动了：</li>
+</ul>
+<ul>
+<li>因此如果将虚拟机的系统盘挂载到用相同平台映像创建其他机器上作为数据盘，不要使用UUID挂载（可以使用device名称来挂载），否则可能因为UUID相同导致挂载错误的系统盘引起启动失败，导致无法连接（如果这种情况发生，分离磁盘可能会将正常的系统盘分离下来）。</li>
+</ul>
+<ul>
+<li>虚拟机做软raid后，使用device名称挂载而非UUID挂载，重启后软raid的device名称发生变化，导致无法正常挂载，虚拟机启动失败从而无法正常ssh：</li>
+</ul>
+<ul>
+<li>使用fio测试磁盘性能的时候，切勿使用filename参数测试已经完成格式化的磁盘，否则可能导致文件系统损坏，如果是针对系统盘测试，文件系统损坏后，可能无法正常启动系统导致无法使用：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>情景1</li>
+</ul>
+<ul>
+<li>在配置文件（/etc/sysconfig/network-scripts/ifcfg-eth0）中配置固定的IP地址或MAC地址：</li>
+</ul>
+<ul>
+<li>本情景测试环境为CentOS 6.5, 如果您当前使用的非该版本, 请注意版本的差异性。</li>
+</ul>
+<ul>
+<li>情景2</li>
+</ul>
+<ul>
+<li>由于针对该文件的修改方法多种多样，所以这里只举例说明，例如我们在修改sshd配置文件的时候，在某一行手误多输入了一个字母：</li>
+</ul>
+<ul>
+<li>情景3</li>
+</ul>
+<ul>
+<li>错误地配置了虚拟机的防火墙（firewalld），iptables等等：</li>
+</ul>
+<ul>
+<li>出于安全角度考虑，很多用户会针对ssh的客户端ip进行限制，或者配置其他安全策略，这种情况下，如果出现配置不当或者错误配置，会导致客户端不能正常ssh连接。</li>
+</ul>
+<ul>
+<li>关于iptables的使用说明：</li>
+</ul>
+<ul>
+<li>关于firewalld的使用说明：</li>
+</ul>
+<ul>
+<li>情景4</li>
+</ul>
+<ul>
+<li>同一个版本的Linux映像创建出来的虚拟机的系统盘UUID相同，例如使用平台映像创建两台CentOS6.5的虚拟机，系统盘UUID都为8fc4d768-29cd-462c-a7ab-5bf4bcfa9fa2：</li>
+</ul>
+<ul>
+<li>情景5</li>
+</ul>
+<ul>
+<li>mdadm --create /dev/md0 --level 0 --raid-devices 2 /dev/sdc1 /dev/sdd1</li>
+</ul>
+<ul>
+<li>mdadm --create /dev/md1 --level 0 --raid-devices 2 /dev/sde1 /dev/sdf1</li>
+</ul>
+<ul>
+<li>mdadm --create /dev/md2 --level 0 --raid-devices 2 /dev/md0 /dev/md1</li>
+</ul>
+<ul>
+<li>创建完成后，如果虚拟机重启，device名称会发生变化，从127开始向前递减：</li>
+</ul>
+<ul>
+<li>情景6</li>
+</ul>
+<ul>
+<li>安装：yum -y install fio</li>
+</ul>
+<ul>
+<li>测试的输出结果大致如下，从高亮的地方可以看到IOPS的数值：</li>
+</ul>
+<ul>
+<li>tempfile.dat: (g=0): rw=randwrite, bs=4K-4K/4K-4K/4K-4K, ioengine=sync, iodepth=1</li>
+</ul>
+<ul>
+<li>...</li>
+</ul>
+<ul>
+<li>fio-2.1.10</li>
+</ul>
+<ul>
+<li>Starting 16 processes</li>
+</ul>
+<ul>
+<li>tempfile.dat: Laying out IO file(s) (1 file(s) / 2048MB)</li>
+</ul>
+<ul>
+<li>……</li>
+</ul>
+<ul>
+<li>Jobs: 16 (f=16): [wwwwwwwwwwwwwwww] [100.0% done] [0KB/20413KB/0KB /s] [0/5103/0 iops] [eta 00m:00s]</li>
+</ul>
+<ul>
+<li>tempfile.dat: (groupid=0, jobs=16): err= 0: pid=11310: Wed Oct 28 08:38:20 2015</li>
+</ul>
+<ul>
+<li>write: io=1991.6MB, bw=20393KB/s, iops=5098, runt=100002msec</li>
+</ul>
+<ul>
+<li>clat (msec): min=1, max=142, avg= 3.13, stdev= 3.86</li>
+</ul>
+<ul>
+<li>lat (msec): min=1, max=142, avg= 3.13, stdev= 3.86</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>fio使用大致步骤：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>安装完成后，假设挂载点为/mnt/sdc，使用下面的命令测试：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>DHCP_HOSTNAME=DanCentOS65</li>
+</ul>
+<ul>
+<li>DEVICE=eth0</li>
+</ul>
+<ul>
+<li>ONBOOT=yes</li>
+</ul>
+<ul>
+<li>BOOTPROTO=static</li>
+</ul>
+<ul>
+<li>IPADDR=10.0.0.36</li>
+</ul>
+<ul>
+<li>NETMASK=255.255.255.224</li>
+</ul>
+<ul>
+<li>GATEWAY=10.0.0.33</li>
+</ul>
+<ul>
+<li>HWADDR=00:0C:29:13:5D:74</li>
+</ul>
+<ul>
+<li>TYPE=Ethernet</li>
+</ul>
+<ul>
+<li>USERCTL=no</li>
+</ul>
+<ul>
+<li>PEERDNS=yes</li>
+</ul>
+<ul>
+<li>IPV6INIT=no</li>
+</ul>
+<ul>
+<li>fio -directory=/data -name=tempfile.dat -direct=1 -rw=randwrite -bs=8k -size=2G -numjobs=16 -time_based -runtime=100 -group_reporting</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>如果在fstab文件中使用device名称进行挂载，会导致重启后，系统找不到/dev/md0，/dev/md1，/dev/md2，从而挂载失败无法启动。所以建议使用UUID进行挂载。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://wiki.centos.org/HowTos/Network/IPTables" target="_blank" rel="noopener">https://wiki.centos.org/HowTos/Network/IPTables</a></li>
+</ul>
+<ul>
+<li><a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Security_Guide/sec-Using_Firewalls.html#sec-Introduction_to_firewalld" target="_blank" rel="noopener">https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Security_Guide/sec-Using_Firewalls.html#sec-Introduction_to_firewalld</a></li>
+</ul>
+<ul>
+<li>例如，在创建raid的时候，使用md0，md1，md2作为名称进行创建（参考链接<a href="https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-configure-raid/）：" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-configure-raid/）：</a></li>
+</ul>
+<ul>
+<li>更新源：rpm -ivh <a href="http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm" target="_blank" rel="noopener">http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm</a></li>
+</ul>
+<ul>
+<li>参考链接：<a href="http://blog.csdn.net/commsea/article/details/11797011" target="_blank" rel="noopener">http://blog.csdn.net/commsea/article/details/11797011</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>情景1</p>
+<p>在配置文件（/etc/sysconfig/network-scripts/ifcfg-eth0）中配置固定的IP地址或MAC地址：</p>
+<p>DHCP_HOSTNAME=DanCentOS65</p>
+<p>DEVICE=eth0</p>
+<p>ONBOOT=yes</p>
+<p>BOOTPROTO=static</p>
+<p>IPADDR=10.0.0.36</p>
+<p>NETMASK=255.255.255.224</p>
+<p>GATEWAY=10.0.0.33</p>
+<p>HWADDR=00:0C:29:13:5D:74</p>
+<p>TYPE=Ethernet</p>
+<p>USERCTL=no</p>
+<p>PEERDNS=yes</p>
+<p>IPV6INIT=no</p>
+<p>修改后，在界面上关机后再开机，虚拟机会无法ssh登陆。（针对固定IP的情况，如果配置文件中写入的IP与虚拟机启动后DHCP获取到的IP恰巧一致，这种情况下可以链接，但是如果再次重启的时候，DHCP获取到的IP可能会变化，所以仍然存在风险）</p>
+<p>本情景测试环境为CentOS 6.5, 如果您当前使用的非该版本, 请注意版本的差异性。</p>
+<p>情景2</p>
+<p>错误地修改服务的配置文件/etc/ssh/sshd_config（语法错误或者配置错误），导致sshd服务无法启动失败：</p>
+<p>由于针对该文件的修改方法多种多样，所以这里只举例说明，例如我们在修改sshd配置文件的时候，在某一行手误多输入了一个字母：</p>
+<p>结果sshd服务就无法正常启动了：</p>
+<p>情景3</p>
+<p>错误地配置了虚拟机的防火墙（firewalld），iptables等等：</p>
+<p>出于安全角度考虑，很多用户会针对ssh的客户端ip进行限制，或者配置其他安全策略，这种情况下，如果出现配置不当或者错误配置，会导致客户端不能正常ssh连接。</p>
+<p>关于iptables的使用说明：</p>
+<p><a href="https://wiki.centos.org/HowTos/Network/IPTables" target="_blank" rel="noopener">https://wiki.centos.org/HowTos/Network/IPTables</a></p>
+<p>关于firewalld的使用说明：</p>
+<p><a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Security_Guide/sec-Using_Firewalls.html#sec-Introduction_to_firewalld" target="_blank" rel="noopener">https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Security_Guide/sec-Using_Firewalls.html#sec-Introduction_to_firewalld</a></p>
+<p>情景4</p>
+<p>同一个版本的Linux映像创建出来的虚拟机的系统盘UUID相同，例如使用平台映像创建两台CentOS6.5的虚拟机，系统盘UUID都为8fc4d768-29cd-462c-a7ab-5bf4bcfa9fa2：</p>
+<p>因此如果将虚拟机的系统盘挂载到用相同平台映像创建其他机器上作为数据盘，不要使用UUID挂载（可以使用device名称来挂载），否则可能因为UUID相同导致挂载错误的系统盘引起启动失败，导致无法连接（如果这种情况发生，分离磁盘可能会将正常的系统盘分离下来）。</p>
+<p>情景5</p>
+<p>虚拟机做软raid后，使用device名称挂载而非UUID挂载，重启后软raid的device名称发生变化，导致无法正常挂载，虚拟机启动失败从而无法正常ssh：</p>
+<p>例如，在创建raid的时候，使用md0，md1，md2作为名称进行创建（参考链接<a href="https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-configure-raid/）：" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-configure-raid/）：</a></p>
+<p>mdadm --create /dev/md0 --level 0 --raid-devices 2 /dev/sdc1 /dev/sdd1</p>
+<p>mdadm --create /dev/md1 --level 0 --raid-devices 2 /dev/sde1 /dev/sdf1</p>
+<p>mdadm --create /dev/md2 --level 0 --raid-devices 2 /dev/md0 /dev/md1</p>
+<p>创建完成后，如果虚拟机重启，device名称会发生变化，从127开始向前递减：</p>
+<p>如果在fstab文件中使用device名称进行挂载，会导致重启后，系统找不到/dev/md0，/dev/md1，/dev/md2，从而挂载失败无法启动。所以建议使用UUID进行挂载。</p>
+<p>情景6</p>
+<p>使用fio测试磁盘性能的时候，切勿使用filename参数测试已经完成格式化的磁盘，否则可能导致文件系统损坏，如果是针对系统盘测试，文件系统损坏后，可能无法正常启动系统导致无法使用：</p>
+<p>fio使用大致步骤：</p>
+<p>更新源：rpm -ivh <a href="http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm" target="_blank" rel="noopener">http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm</a></p>
+<p>安装：yum -y install fio</p>
+<p>安装完成后，假设挂载点为/mnt/sdc，使用下面的命令测试：</p>
+<p>fio -directory=/data -name=tempfile.dat -direct=1 -rw=randwrite -bs=8k -size=2G -numjobs=16 -time_based -runtime=100 -group_reporting</p>
+<p>测试的输出结果大致如下，从高亮的地方可以看到IOPS的数值：</p>
+<p>tempfile.dat: (g=0): rw=randwrite, bs=4K-4K/4K-4K/4K-4K, ioengine=sync, iodepth=1</p>
+<p>...</p>
+<p>fio-2.1.10</p>
+<p>Starting 16 processes</p>
+<p>tempfile.dat: Laying out IO file(s) (1 file(s) / 2048MB)</p>
+<p>……</p>
+<p>Jobs: 16 (f=16): [wwwwwwwwwwwwwwww] [100.0% done] [0KB/20413KB/0KB /s] [0/5103/0 iops] [eta 00m:00s]</p>
+<p>tempfile.dat: (groupid=0, jobs=16): err= 0: pid=11310: Wed Oct 28 08:38:20 2015</p>
+<p>write: io=1991.6MB, bw=20393KB/s, iops=5098, runt=100002msec</p>
+<p>clat (msec): min=1, max=142, avg= 3.13, stdev= 3.86</p>
+<p>lat (msec): min=1, max=142, avg= 3.13, stdev= 3.86</p>
+<p>参考链接：<a href="http://blog.csdn.net/commsea/article/details/11797011" target="_blank" rel="noopener">http://blog.csdn.net/commsea/article/details/11797011</a></p></article>

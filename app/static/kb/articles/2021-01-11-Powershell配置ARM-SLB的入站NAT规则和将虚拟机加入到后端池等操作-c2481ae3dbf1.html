@@ -1,0 +1,226 @@
+<article class="kb-article" data-title="Powershell配置ARM SLB的入站NAT规则和将虚拟机加入到后端池等操作"><h1>Powershell配置ARM SLB的入站NAT规则和将虚拟机加入到后端池等操作</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LB</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-01-11 13:16:56</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>fuzhangliang</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>fuzhangliang</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>fuzhangliang</li>
+</ul>
+<ul>
+<li>1、创建负载均衡器</li>
+</ul>
+<ul>
+<li>$rg=&quot;fuzlnewrg&quot;</li>
+</ul>
+<ul>
+<li>$ln=&quot;China North&quot;</li>
+</ul>
+<ul>
+<li>$publicIP = New-AzureRmPublicIpAddress   -ResourceGroupName $rg   -Location $ln   -AllocationMethod &quot;Dynamic&quot;   -Name &quot;fuzlcmdslbip&quot;</li>
+</ul>
+<ul>
+<li>$frontendIP = New-AzureRmLoadBalancerFrontendIpConfig   -Name &quot;slbfrontipconfig&quot;   -PublicIpAddress $publicIP</li>
+</ul>
+<ul>
+<li>$backendPool = New-AzureRmLoadBalancerBackendAddressPoolConfig -Name &quot;myBackEndPool&quot;</li>
+</ul>
+<ul>
+<li>= New-AzureRmLoadBalancer -ResourceGroupName $rg -Name &#39;fuzlcmdslb&#39; -Location $ln -FrontendIpConfiguration $frontendIP -BackendAddressPool $backendPool</li>
+</ul>
+<ul>
+<li>这个负载均衡器没有probe,没有负载均衡规则，没有入站NAT规则，后端池没有机器，所有这些配置，都可以后续加上，这里先将负载均衡器创建出来，如果有了负载均衡器，就不需要创建了</li>
+</ul>
+<ul>
+<li>在门户看，也是没NAT入站规则</li>
+</ul>
+<ul>
+<li>2、向负载均衡器添加NAT入站规则</li>
+</ul>
+<ul>
+<li>$lb = Get-AzureRmLoadBalancer -ResourceGroupName $rg -Name &#39;fuzlcmdslb&#39;</li>
+</ul>
+<ul>
+<li>这个配置只是在负载均衡器上添加了两个NAT规则，但是并没有将规则应用于后端池网卡虚拟机，所以规则中没有对应的虚拟机</li>
+</ul>
+<ul>
+<li>3、将入站NAT规则与虚拟机网卡进行关联</li>
+</ul>
+<ul>
+<li>获取网卡对象和刚才添加的NAT规则，然后将两者关联</li>
+</ul>
+<ul>
+<li>$lb=Get-AzureRmLoadBalancer -Name &quot;fuzlcmdslb&quot; -ResourceGroupName $rg #再次获取Loadbalancer对象，因为Loadbalancer的配置已经更新</li>
+</ul>
+<ul>
+<li>$lb.InboundNatRules #输出LoadBalancer的所有NAT规则，这是一个数组对象，我们只需要在数组下标位置为0，1的NAT规则，这是刚才添加的，注意数组从0开始</li>
+</ul>
+<ul>
+<li>所以我们需要这两个对象$lb.InboundNatRules[0]   和 $lb.InboundNatRules[1]</li>
+</ul>
+<ul>
+<li>$nic=Get-AzureRmNetworkInterface -Name fuzllbvm01140 -ResourceGroupName $rg</li>
+</ul>
+<ul>
+<li>#获取需要设置NAT规则的虚拟机的网卡对象,从网卡对象的输出属性中可以看出Ipconfigurations里面的LoadBalancerInboundNatRules没有任何规则。</li>
+</ul>
+<ul>
+<li>$nic.IpConfigurations[0].LoadBalancerInboundNatRules.Add( $lb.InboundNatRules[0])</li>
+</ul>
+<ul>
+<li>$nic.IpConfigurations[0].LoadBalancerInboundNatRules.Add( $lb.InboundNatRules[1])</li>
+</ul>
+<ul>
+<li>此时网卡就有NAT的rule设置了</li>
+</ul>
+<ul>
+<li>保存网卡配置即可完成NAT规则和负载均衡器的关联</li>
+</ul>
+<ul>
+<li>门户上看，确实和虚拟机的网卡进行关联</li>
+</ul>
+<ul>
+<li>另外可以将虚拟机关联到负载均衡器后端池，我刚才建的SLB后端池是空的，下面我将两台虚拟机加入到后端池</li>
+</ul>
+<ul>
+<li>操作如下：</li>
+</ul>
+<ul>
+<li>1、获取LB的后端池，目前只有一个后端池，所以数组额小标为0</li>
+</ul>
+<ul>
+<li>$lb=Get-AzureRmLoadBalancer -Name &quot;fuzlcmdslb&quot; -ResourceGroupName $rg</li>
+</ul>
+<ul>
+<li>$lb.BackendAddressPools[0]</li>
+</ul>
+<ul>
+<li>2、将虚拟机 的网卡关联到池</li>
+</ul>
+<ul>
+<li>$nic1=Get-AzureRmNetworkInterface -Name fuzllbvm01140 -ResourceGroupName $rg</li>
+</ul>
+<ul>
+<li>$nic2=Get-AzureRmNetworkInterface -Name fuzllbvm02310 -ResourceGroupName $rg</li>
+</ul>
+<ul>
+<li>$nic1.IpConfigurations[0].LoadBalancerBackendAddressPools.Add($lb.BackendAddressPools[0])</li>
+</ul>
+<ul>
+<li>$nic2.IpConfigurations[0].LoadBalancerBackendAddressPools.Add($lb.BackendAddressPools[0])</li>
+</ul>
+<ul>
+<li>从nic1的输出中，确实看到NIC1已经关联了LB的后端池</li>
+</ul>
+<ul>
+<li>保存网卡配置：</li>
+</ul>
+<ul>
+<li>然后在门户上看，虚拟机确实关联到SLB的后端池</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-AzureRmLoadBalancer -LoadBalancer $lb</li>
+</ul>
+<ul>
+<li>#用”.”是取对象的属性运算, 也可以使用命令获取NAT入站规则，实质都是一样</li>
+</ul>
+<ul>
+<li>#使用命令获取NAT规则是：$natrule3=Get-AzureRmLoadBalancerInboundNatRuleConfig -Name testfc03 -LoadBalancer $lb</li>
+</ul>
+<ul>
+<li>将使用命令获取到的NAT rule规则加到网卡上是使用：$nic.IpConfigurations[0].LoadBalancerInboundNatRules.Add($natrule3) ，跟添加数组元素的方法一样</li>
+</ul>
+<ul>
+<li>Set-AzureRmNetworkInterface -NetworkInterface $nic</li>
+</ul>
+<ul>
+<li>Set-AzureRmNetworkInterface -NetworkInterface $nic1</li>
+</ul>
+<ul>
+<li>Set-AzureRmNetworkInterface -NetworkInterface $nic2</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>向Loadbalancer添加三条NAT规则，命名为Testfc01，Testfc02，端口对应规则是8080-80,20000-22</li>
+</ul>
+<ul>
+<li>Add-AzureRmLoadBalancerInboundNatRuleConfig -Name testfc01 -LoadBalancer $lb -FrontendIpConfiguration $lb.FrontendIpConfigurations[0] -FrontendPort 20000  -BackendPort 22 -Protocol TCP</li>
+</ul>
+<ul>
+<li>Add-AzureRmLoadBalancerInboundNatRuleConfig -Name testfc02  -LoadBalancer $lb -FrontendIpConfiguration $lb.FrontendIpConfigurations[0] -FrontendPort 8080  -BackendPort 80 -Protocol TCP</li>
+</ul>
+<ul>
+<li>可以通过此端口SSH虚拟机</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>下面将$lb.InboundNatRules[0]   和 $lb.InboundNatRules[1]添加到网卡的配置中，</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>fuzhangliang</p>
+<p>1、创建负载均衡器</p>
+<p>$rg=&quot;fuzlnewrg&quot;</p>
+<p>$ln=&quot;China North&quot;</p>
+<p>$publicIP = New-AzureRmPublicIpAddress   -ResourceGroupName $rg   -Location $ln   -AllocationMethod &quot;Dynamic&quot;   -Name &quot;fuzlcmdslbip&quot;</p>
+<p>$frontendIP = New-AzureRmLoadBalancerFrontendIpConfig   -Name &quot;slbfrontipconfig&quot;   -PublicIpAddress $publicIP</p>
+<p>$backendPool = New-AzureRmLoadBalancerBackendAddressPoolConfig -Name &quot;myBackEndPool&quot;</p>
+<p>= New-AzureRmLoadBalancer -ResourceGroupName $rg -Name &#39;fuzlcmdslb&#39; -Location $ln -FrontendIpConfiguration $frontendIP -BackendAddressPool $backendPool</p>
+<p>这个负载均衡器没有probe,没有负载均衡规则，没有入站NAT规则，后端池没有机器，所有这些配置，都可以后续加上，这里先将负载均衡器创建出来，如果有了负载均衡器，就不需要创建了</p>
+<p>在门户看，也是没NAT入站规则</p>
+<p>2、向负载均衡器添加NAT入站规则</p>
+<p>$lb = Get-AzureRmLoadBalancer -ResourceGroupName $rg -Name &#39;fuzlcmdslb&#39;</p>
+<p>向Loadbalancer添加三条NAT规则，命名为Testfc01，Testfc02，端口对应规则是8080-80,20000-22</p>
+<p>Add-AzureRmLoadBalancerInboundNatRuleConfig -Name testfc01 -LoadBalancer $lb -FrontendIpConfiguration $lb.FrontendIpConfigurations[0] -FrontendPort 20000  -BackendPort 22 -Protocol TCP</p>
+<p>Add-AzureRmLoadBalancerInboundNatRuleConfig -Name testfc02  -LoadBalancer $lb -FrontendIpConfiguration $lb.FrontendIpConfigurations[0] -FrontendPort 8080  -BackendPort 80 -Protocol TCP</p>
+<p>Set-AzureRmLoadBalancer -LoadBalancer $lb</p>
+<p>这个配置只是在负载均衡器上添加了两个NAT规则，但是并没有将规则应用于后端池网卡虚拟机，所以规则中没有对应的虚拟机</p>
+<p>3、将入站NAT规则与虚拟机网卡进行关联</p>
+<p>获取网卡对象和刚才添加的NAT规则，然后将两者关联</p>
+<p>$lb=Get-AzureRmLoadBalancer -Name &quot;fuzlcmdslb&quot; -ResourceGroupName $rg #再次获取Loadbalancer对象，因为Loadbalancer的配置已经更新</p>
+<p>$lb.InboundNatRules #输出LoadBalancer的所有NAT规则，这是一个数组对象，我们只需要在数组下标位置为0，1的NAT规则，这是刚才添加的，注意数组从0开始</p>
+<p>所以我们需要这两个对象$lb.InboundNatRules[0]   和 $lb.InboundNatRules[1]</p>
+<p>#用”.”是取对象的属性运算, 也可以使用命令获取NAT入站规则，实质都是一样</p>
+<p>#使用命令获取NAT规则是：$natrule3=Get-AzureRmLoadBalancerInboundNatRuleConfig -Name testfc03 -LoadBalancer $lb</p>
+<p>$nic=Get-AzureRmNetworkInterface -Name fuzllbvm01140 -ResourceGroupName $rg</p>
+<p>#获取需要设置NAT规则的虚拟机的网卡对象,从网卡对象的输出属性中可以看出Ipconfigurations里面的LoadBalancerInboundNatRules没有任何规则。</p>
+<p>下面将$lb.InboundNatRules[0]   和 $lb.InboundNatRules[1]添加到网卡的配置中，</p>
+<p>$nic.IpConfigurations[0].LoadBalancerInboundNatRules.Add( $lb.InboundNatRules[0])</p>
+<p>$nic.IpConfigurations[0].LoadBalancerInboundNatRules.Add( $lb.InboundNatRules[1])</p>
+<p>将使用命令获取到的NAT rule规则加到网卡上是使用：$nic.IpConfigurations[0].LoadBalancerInboundNatRules.Add($natrule3) ，跟添加数组元素的方法一样</p>
+<p>此时网卡就有NAT的rule设置了</p>
+<p>保存网卡配置即可完成NAT规则和负载均衡器的关联</p>
+<p>Set-AzureRmNetworkInterface -NetworkInterface $nic</p>
+<p>门户上看，确实和虚拟机的网卡进行关联</p>
+<p>可以通过此端口SSH虚拟机</p>
+<p>另外可以将虚拟机关联到负载均衡器后端池，我刚才建的SLB后端池是空的，下面我将两台虚拟机加入到后端池</p>
+<p>操作如下：</p>
+<p>1、获取LB的后端池，目前只有一个后端池，所以数组额小标为0</p>
+<p>$lb=Get-AzureRmLoadBalancer -Name &quot;fuzlcmdslb&quot; -ResourceGroupName $rg</p>
+<p>$lb.BackendAddressPools[0]</p>
+<p>2、将虚拟机 的网卡关联到池</p>
+<p>$nic1=Get-AzureRmNetworkInterface -Name fuzllbvm01140 -ResourceGroupName $rg</p>
+<p>$nic2=Get-AzureRmNetworkInterface -Name fuzllbvm02310 -ResourceGroupName $rg</p>
+<p>$nic1.IpConfigurations[0].LoadBalancerBackendAddressPools.Add($lb.BackendAddressPools[0])</p>
+<p>$nic2.IpConfigurations[0].LoadBalancerBackendAddressPools.Add($lb.BackendAddressPools[0])</p>
+<p>从nic1的输出中，确实看到NIC1已经关联了LB的后端池</p>
+<p>保存网卡配置：</p>
+<p>Set-AzureRmNetworkInterface -NetworkInterface $nic1</p>
+<p>Set-AzureRmNetworkInterface -NetworkInterface $nic2</p>
+<p>然后在门户上看，虚拟机确实关联到SLB的后端池</p></article>

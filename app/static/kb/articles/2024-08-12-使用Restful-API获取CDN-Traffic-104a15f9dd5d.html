@@ -1,0 +1,697 @@
+<article class="kb-article" data-title="使用Restful API获取CDN Traffic"><h1>使用Restful API获取CDN Traffic</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-12 10:38:57</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2024.7.20</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2024.7.20</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2024.7.20</li>
+</ul>
+<ul>
+<li>涉及工单：20240517294238</li>
+</ul>
+<ul>
+<li>问题描述：用户的CDN因恶意访问产生了大量的流量费用；抱怨Azure CDN没有安全安全防护和流量预警功能。</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>注意CDN API每一次调用 都需要携带相应的授权头。</li>
+</ul>
+<ul>
+<li>对于获取流量的API request URI在获取授权头时，要把所有打算携带的参数都拿去计算然后获取一个授权头；不能只是一个请求URI。</li>
+</ul>
+<ul>
+<li># -*- coding: utf-8 -*-</li>
+</ul>
+<ul>
+<li>import urllib.parse</li>
+</ul>
+<ul>
+<li>import hmac</li>
+</ul>
+<ul>
+<li>import hashlib</li>
+</ul>
+<ul>
+<li>import requests</li>
+</ul>
+<ul>
+<li>import smtplib</li>
+</ul>
+<ul>
+<li>from collections import OrderedDict</li>
+</ul>
+<ul>
+<li>from datetime import datetime, timezone, timedelta</li>
+</ul>
+<ul>
+<li>from email.mime.text import MIMEText</li>
+</ul>
+<ul>
+<li>handler.suffix = &#39;%Y%m%d&#39;  # Append date to the file name to ensure a unique file per day</li>
+</ul>
+<ul>
+<li>handler.setFormatter(formatter)</li>
+</ul>
+<ul>
+<li># Email configuration settings</li>
+</ul>
+<ul>
+<li>class AzureCDNAuthorization:</li>
+</ul>
+<ul>
+<li>&quot;&quot;&quot;Class to handle Azure CDN API authorization using HMAC SHA256.&quot;&quot;&quot;</li>
+</ul>
+<ul>
+<li>def __init__(self, key_id, key_value):</li>
+</ul>
+<ul>
+<li>&quot;&quot;&quot;Initialize with key ID and key value.&quot;&quot;&quot;</li>
+</ul>
+<ul>
+<li>self.key_id = key_id</li>
+</ul>
+<ul>
+<li>self.key_value = key_value</li>
+</ul>
+<ul>
+<li>def calculate_header(self, request_url, request_time, http_method):</li>
+</ul>
+<ul>
+<li>&quot;&quot;&quot;Calculate and return the Authorization header for Azure CDN API requests.&quot;&quot;&quot;</li>
+</ul>
+<ul>
+<li># Parse URL and sort query parameters</li>
+</ul>
+<ul>
+<li># Construct message to hash</li>
+</ul>
+<ul>
+<li>urlparts.path,</li>
+</ul>
+<ul>
+<li>&quot;, &quot;.join([&#39;%s:%s&#39; % (key, value[0]) for (key, value) in ordered_queries.items()]),</li>
+</ul>
+<ul>
+<li>request_time,</li>
+</ul>
+<ul>
+<li>http_method</li>
+</ul>
+<ul>
+<li>)</li>
+</ul>
+<ul>
+<li># Calculate digest and format header</li>
+</ul>
+<ul>
+<li>bytearray(self.key_value, &quot;utf-8&quot;),</li>
+</ul>
+<ul>
+<li>bytearray(message, &quot;utf-8&quot;),</li>
+</ul>
+<ul>
+<li>hashlib.sha256</li>
+</ul>
+<ul>
+<li>).hexdigest().upper()</li>
+</ul>
+<ul>
+<li>return &quot;AzureCDN %s:%s&quot; % (self.key_id, digest)</li>
+</ul>
+<ul>
+<li># Function to fetch CDN endpoints</li>
+</ul>
+<ul>
+<li>def cdnEndpoints():</li>
+</ul>
+<ul>
+<li>&quot;&quot;&quot;Fetch list of CDN endpoints from Azure CDN API.&quot;&quot;&quot;</li>
+</ul>
+<ul>
+<li># Prepare request headers with current time</li>
+</ul>
+<ul>
+<li>&#39;Authorization&#39;: authorization_header,</li>
+</ul>
+<ul>
+<li>&#39;x-azurecdn-request-date&#39;: request_time,</li>
+</ul>
+<ul>
+<li>&#39;content-type&#39;: &#39;application/json&#39;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li># Make GET request and return response as JSON</li>
+</ul>
+<ul>
+<li>if response.status_code != 200:</li>
+</ul>
+<ul>
+<li>else:</li>
+</ul>
+<ul>
+<li>return response</li>
+</ul>
+<ul>
+<li>#startTime = &#39;2024-06-21T01:50:00Z&#39;</li>
+</ul>
+<ul>
+<li>#endTime = &#39;2024-06-21T08:21:00Z&#39;</li>
+</ul>
+<ul>
+<li># Iterate over CDN endpoints</li>
+</ul>
+<ul>
+<li>for endpoint in endpoints:</li>
+</ul>
+<ul>
+<li>&#39;granularity&#39;: granularity,</li>
+</ul>
+<ul>
+<li>&#39;startTime&#39;: startTime,</li>
+</ul>
+<ul>
+<li>&#39;endTime&#39;: endTime,</li>
+</ul>
+<ul>
+<li># Prepare request URL and headers</li>
+</ul>
+<ul>
+<li>alert_body.append(alert_body_item)</li>
+</ul>
+<ul>
+<li>return alert_body</li>
+</ul>
+<ul>
+<li># Function to send notification email</li>
+</ul>
+<ul>
+<li>def send_notification_email():</li>
+</ul>
+<ul>
+<li>msg[&#39;From&#39;] = email_from  # Set sender</li>
+</ul>
+<ul>
+<li>msg[&#39;To&#39;] = &#39;, &#39;.join(email_to)  # Set recipient(s)</li>
+</ul>
+<ul>
+<li>try:</li>
+</ul>
+<ul>
+<li># Send the email via SMTP</li>
+</ul>
+<ul>
+<li>server.ehlo()</li>
+</ul>
+<ul>
+<li>server.starttls()  # Start TLS for security</li>
+</ul>
+<ul>
+<li>server.sendmail(email_from, email_to, msg.as_string())</li>
+</ul>
+<ul>
+<li>except smtplib.SMTPException as e:</li>
+</ul>
+<ul>
+<li>return False</li>
+</ul>
+<ul>
+<li>finally:</li>
+</ul>
+<ul>
+<li>server.quit()</li>
+</ul>
+<ul>
+<li>return True  # Return True if email was sent successfully</li>
+</ul>
+<ul>
+<li># Main execution block</li>
+</ul>
+<ul>
+<li>send_notification_email()</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>import logging</li>
+</ul>
+<ul>
+<li>from logging.handlers import TimedRotatingFileHandler</li>
+</ul>
+<ul>
+<li># Configure the logger</li>
+</ul>
+<ul>
+<li>logger.setLevel(logging.INFO)</li>
+</ul>
+<ul>
+<li># Define the log file name with today&#39;s date</li>
+</ul>
+<ul>
+<li># Set up a log handler that creates a new log file every day</li>
+</ul>
+<ul>
+<li># Define the log format</li>
+</ul>
+<ul>
+<li># Add the handler to the logger</li>
+</ul>
+<ul>
+<li>logger.addHandler(handler)</li>
+</ul>
+<ul>
+<li>logger.error(f&#39;Failed to fetch cdn endpoints info, response is {response}&#39;)</li>
+</ul>
+<ul>
+<li># Function to check CDN traffic</li>
+</ul>
+<ul>
+<li>def cdnTraffic():</li>
+</ul>
+<ul>
+<li># Define start and end times for traffic data retrieval</li>
+</ul>
+<ul>
+<li># Fetch traffic data and analyze differences</li>
+</ul>
+<ul>
+<li>logger.error(alert_body_item)</li>
+</ul>
+<ul>
+<li>logger.info(f&#39;CDN traffic response is {response}. &#39;)</li>
+</ul>
+<ul>
+<li>if difference &gt; increase_traffic:</li>
+</ul>
+<ul>
+<li>&quot;&quot;&quot;Compose and send an email notification with CDN traffic alerts.&quot;&quot;&quot;</li>
+</ul>
+<ul>
+<li>msg[&#39;Subject&#39;] = &#39;Azure CDN Traffic Alert&#39;  # Set email subject</li>
+</ul>
+<ul>
+<li>server.login(smtp_username, smtp_password)</li>
+</ul>
+<ul>
+<li># Log the error or take other action</li>
+</ul>
+<ul>
+<li>logger.error(f&#39;Failed to send email: {e}&#39;)</li>
+</ul>
+<ul>
+<li># Check CDN traffic and trigger email notification if necessary</li>
+</ul>
+<ul>
+<li>if len(fetch_cdn_traffic) &gt; 1:</li>
+</ul>
+<ul>
+<li>elif len(fetch_cdn_traffic) == 0:</li>
+</ul>
+<ul>
+<li>logger.info(f&#39;There was no spike observed in the traffic.&#39;)</li>
+</ul>
+<ul>
+<li>Azure CDN traffic的统计有时延，当我们以每5分钟作为时间粒度去查询时，这个时延不固定 ，有可能这一次查询能够获取到前5分钟所采样的结果，但也有可能只能获取到前45分的一次采样结果。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>解决办法： 结合CDN文档中Restful API的介绍，最终给用户提供了如下Python脚本，建议其中Linux主机中，以crontab的方式部署定时任务，定期去获取其订阅中各个Endpoint(Customer domain)的流量情况，当发现流量增加超过一定阈值了，或者较近的一次流量达到某个阈值了，发送邮件告警。</li>
+</ul>
+<ul>
+<li>脚本内容：</li>
+</ul>
+<ul>
+<li>脚本可以获取用户订阅中每个Endpoint的流量信息；并记录日志文件。</li>
+</ul>
+<ul>
+<li>使用方法，将上述脚本保存为Python文件，直接执行python3 &lt;文件名&gt;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>logger = logging.getLogger(__name__)</li>
+</ul>
+<ul>
+<li>current_date = datetime.now().strftime(&#39;%Y-%m-%d&#39;)</li>
+</ul>
+<ul>
+<li>log_file_name = f&#39;log_{current_date}.txt&#39;</li>
+</ul>
+<ul>
+<li>handler = TimedRotatingFileHandler(log_file_name, when=&#39;midnight&#39;, interval=1)</li>
+</ul>
+<ul>
+<li>formatter = logging.Formatter(&#39;%(asctime)s - %(levelname)s - %(message)s&#39;)</li>
+</ul>
+<ul>
+<li>smtp_server = &#39;xxxx&#39;  # SMTP server address</li>
+</ul>
+<ul>
+<li>smtp_port = 587  # Port for TLS encryption</li>
+</ul>
+<ul>
+<li>smtp_username = &#39;xxxxxx&#39;  # Username for SMTP server authentication</li>
+</ul>
+<ul>
+<li>smtp_password = &#39;xxxxxx&#39;  # Password or authorization code for SMTP server</li>
+</ul>
+<ul>
+<li>email_from = &#39;xxxxx&#39;  # Sender&#39;s email address</li>
+</ul>
+<ul>
+<li>email_to = [&#39;xxxx&#39;, &#39;xxxxxx&#39;, &#39;xxxxx&#39;] # Recipient&#39;s email address(es)</li>
+</ul>
+<ul>
+<li>urlparts = urllib.parse.urlparse(request_url)</li>
+</ul>
+<ul>
+<li>queries = urllib.parse.parse_qs(urlparts.query)</li>
+</ul>
+<ul>
+<li>ordered_queries = OrderedDict(sorted(queries.items()))</li>
+</ul>
+<ul>
+<li>message = &quot;%s\r\n%s\r\n%s\r\n%s&quot; % (</li>
+</ul>
+<ul>
+<li>digest = hmac.new(</li>
+</ul>
+<ul>
+<li>request_time = datetime.now(timezone.utc).strftime(&#39;%Y-%m-%d %H:%M:%S&#39;)</li>
+</ul>
+<ul>
+<li>azure_cdn_auth = AzureCDNAuthorization(key_id, key_value)</li>
+</ul>
+<ul>
+<li>authorization_header = azure_cdn_auth.calculate_header(request_url, request_time, http_method=&#39;GET&#39;)</li>
+</ul>
+<ul>
+<li>headers = {</li>
+</ul>
+<ul>
+<li>response = requests.get(request_url, headers=headers)</li>
+</ul>
+<ul>
+<li>response = response.json()</li>
+</ul>
+<ul>
+<li>&quot;&quot;&quot;Check CDN traffic and generate alerts if thresholds are exceeded.&quot;&quot;&quot;</li>
+</ul>
+<ul>
+<li>now = datetime.now(timezone.utc)</li>
+</ul>
+<ul>
+<li>request_time = now.strftime(&#39;%Y-%m-%d %H:%M:%S&#39;)</li>
+</ul>
+<ul>
+<li>startTime = now - timedelta(minutes=60)</li>
+</ul>
+<ul>
+<li>startTime = startTime.strftime(&#39;%Y-%m-%dT%H:%M:%SZ&#39;)</li>
+</ul>
+<ul>
+<li>endTime = now - timedelta(minutes=54)</li>
+</ul>
+<ul>
+<li>alert_body = []  # Initialize list to hold alert messages</li>
+</ul>
+<ul>
+<li>params = {</li>
+</ul>
+<ul>
+<li>authorization_header_url = f&#39;{request_url}&amp;{urllib.parse.urlencode(params)}&#39;</li>
+</ul>
+<ul>
+<li>authorization_header = azure_cdn_auth.calculate_header(authorization_header_url, request_time, http_method=&#39;GET&#39;)</li>
+</ul>
+<ul>
+<li>response = requests.get(request_url, headers=headers, params=params)</li>
+</ul>
+<ul>
+<li>alert_body_item = f&#39;Failed to fetch CDN traffic at UTC time {request_time}, response is {response}.&#39;</li>
+</ul>
+<ul>
+<li>domain_name = response[&#39;DomainName&#39;]</li>
+</ul>
+<ul>
+<li>traffic_time = response[&#39;CDNItems&#39;][-1][&#39;Timestamp&#39;]</li>
+</ul>
+<ul>
+<li>cdn_traffic_1 = response[&#39;CDNItems&#39;][-2][&#39;VolumeInMB&#39;]</li>
+</ul>
+<ul>
+<li>cdn_traffic_2 = response[&#39;CDNItems&#39;][-1][&#39;VolumeInMB&#39;]</li>
+</ul>
+<ul>
+<li>difference = cdn_traffic_2 - cdn_traffic_1</li>
+</ul>
+<ul>
+<li># Check for traffic increases and threshold breaches</li>
+</ul>
+<ul>
+<li>alert_body_item = f&#39;The CDN traffic for {domain_name} has exceeded {increase_traffic}MB in growth at UTC time {traffic_time}, it is {cdn_traffic_2}MB.&#39;</li>
+</ul>
+<ul>
+<li>if cdn_traffic_2 &gt; threshold_traffic:</li>
+</ul>
+<ul>
+<li>alert_body_item = f&#39;The CDN traffic for {domain_name} is greater than {threshold_traffic}MB at UTC time {traffic_time}.&#39;</li>
+</ul>
+<ul>
+<li>msg = MIMEText(email_body)  # Combine alerts into email body</li>
+</ul>
+<ul>
+<li>server = smtplib.SMTP(smtp_server, smtp_port)</li>
+</ul>
+<ul>
+<li>if __name__ == &quot;__main__&quot;:</li>
+</ul>
+<ul>
+<li>subscription_id = &#39;your subscription id&#39;  # Replace with actual subscription ID</li>
+</ul>
+<ul>
+<li>key_id = &#39;your key id&#39;  # Replace with actual key ID</li>
+</ul>
+<ul>
+<li>key_value = &#39;your key value&#39;  # Replace with actual key value</li>
+</ul>
+<ul>
+<li>granularity = &#39;PerFiveMinutes&#39;  # Granularity of traffic data</li>
+</ul>
+<ul>
+<li>increase_traffic = 100  # Threshold for traffic increase in MB</li>
+</ul>
+<ul>
+<li>threshold_traffic = 500  # Overall traffic threshold in MB</li>
+</ul>
+<ul>
+<li>endpoints = cdnEndpoints()  # Get list of CDN endpoints</li>
+</ul>
+<ul>
+<li>fetch_cdn_traffic = cdnTraffic()</li>
+</ul>
+<ul>
+<li>email_body = &#39;\n&#39;.join(fetch_cdn_traffic)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/cdn/cdn-api" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-signature" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-signature</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-get-endpoint-volume" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-get-endpoint-volume</a></li>
+</ul>
+<ul>
+<li>request_url = f&#39;<a href="https://restapi.cdn.azure.cn/subscriptions/{subscription_id}/endpoints?apiVersion=1.0&#39;" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscription_id}/endpoints?apiVersion=1.0&#39;</a></li>
+</ul>
+<ul>
+<li>request_url = f&#39;<a href="https://restapi.cdn.azure.cn/subscriptions/{subscription_id}/endpoints/{endpoint[&quot;EndpointId&quot;]}/volume?apiVersion=1.0&#39;" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscription_id}/endpoints/{endpoint[&quot;EndpointId&quot;]}/volume?apiVersion=1.0&#39;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024.7.20</p>
+<p>涉及工单：20240517294238</p>
+<p>问题描述：用户的CDN因恶意访问产生了大量的流量费用；抱怨Azure CDN没有安全安全防护和流量预警功能。</p>
+<p>解决办法： 结合CDN文档中Restful API的介绍，最终给用户提供了如下Python脚本，建议其中Linux主机中，以crontab的方式部署定时任务，定期去获取其订阅中各个Endpoint(Customer domain)的流量情况，当发现流量增加超过一定阈值了，或者较近的一次流量达到某个阈值了，发送邮件告警。</p>
+<p>参考文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/cdn/cdn-api" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-signature" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-signature</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-get-endpoint-volume" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-get-endpoint-volume</a></p>
+<p>脚本内容：</p>
+<p>注意CDN API每一次调用 都需要携带相应的授权头。</p>
+<p>对于获取流量的API request URI在获取授权头时，要把所有打算携带的参数都拿去计算然后获取一个授权头；不能只是一个请求URI。</p>
+<p>脚本可以获取用户订阅中每个Endpoint的流量信息；并记录日志文件。</p>
+<h1>-*- coding: utf-8 -*-</h1>
+<p>import urllib.parse</p>
+<p>import hmac</p>
+<p>import hashlib</p>
+<p>import requests</p>
+<p>import smtplib</p>
+<p>import logging</p>
+<p>from logging.handlers import TimedRotatingFileHandler</p>
+<p>from collections import OrderedDict</p>
+<p>from datetime import datetime, timezone, timedelta</p>
+<p>from email.mime.text import MIMEText</p>
+<h1>Configure the logger</h1>
+<p>logger = logging.getLogger(__name__)</p>
+<p>logger.setLevel(logging.INFO)</p>
+<h1>Define the log file name with today&#39;s date</h1>
+<p>current_date = datetime.now().strftime(&#39;%Y-%m-%d&#39;)</p>
+<p>log_file_name = f&#39;log_{current_date}.txt&#39;</p>
+<h1>Set up a log handler that creates a new log file every day</h1>
+<p>handler = TimedRotatingFileHandler(log_file_name, when=&#39;midnight&#39;, interval=1)</p>
+<p>handler.suffix = &#39;%Y%m%d&#39;  # Append date to the file name to ensure a unique file per day</p>
+<h1>Define the log format</h1>
+<p>formatter = logging.Formatter(&#39;%(asctime)s - %(levelname)s - %(message)s&#39;)</p>
+<p>handler.setFormatter(formatter)</p>
+<h1>Add the handler to the logger</h1>
+<p>logger.addHandler(handler)</p>
+<h1>Email configuration settings</h1>
+<p>smtp_server = &#39;xxxx&#39;  # SMTP server address</p>
+<p>smtp_port = 587  # Port for TLS encryption</p>
+<p>smtp_username = &#39;xxxxxx&#39;  # Username for SMTP server authentication</p>
+<p>smtp_password = &#39;xxxxxx&#39;  # Password or authorization code for SMTP server</p>
+<p>email_from = &#39;xxxxx&#39;  # Sender&#39;s email address</p>
+<p>email_to = [&#39;xxxx&#39;, &#39;xxxxxx&#39;, &#39;xxxxx&#39;] # Recipient&#39;s email address(es)</p>
+<p>class AzureCDNAuthorization:</p>
+<p>&quot;&quot;&quot;Class to handle Azure CDN API authorization using HMAC SHA256.&quot;&quot;&quot;</p>
+<p>def __init__(self, key_id, key_value):</p>
+<p>&quot;&quot;&quot;Initialize with key ID and key value.&quot;&quot;&quot;</p>
+<p>self.key_id = key_id</p>
+<p>self.key_value = key_value</p>
+<p>def calculate_header(self, request_url, request_time, http_method):</p>
+<p>&quot;&quot;&quot;Calculate and return the Authorization header for Azure CDN API requests.&quot;&quot;&quot;</p>
+<h1>Parse URL and sort query parameters</h1>
+<p>urlparts = urllib.parse.urlparse(request_url)</p>
+<p>queries = urllib.parse.parse_qs(urlparts.query)</p>
+<p>ordered_queries = OrderedDict(sorted(queries.items()))</p>
+<h1>Construct message to hash</h1>
+<p>message = &quot;%s\r\n%s\r\n%s\r\n%s&quot; % (</p>
+<p>urlparts.path,</p>
+<p>&quot;, &quot;.join([&#39;%s:%s&#39; % (key, value[0]) for (key, value) in ordered_queries.items()]),</p>
+<p>request_time,</p>
+<p>http_method</p>
+<p>)</p>
+<h1>Calculate digest and format header</h1>
+<p>digest = hmac.new(</p>
+<p>bytearray(self.key_value, &quot;utf-8&quot;),</p>
+<p>bytearray(message, &quot;utf-8&quot;),</p>
+<p>hashlib.sha256</p>
+<p>).hexdigest().upper()</p>
+<p>return &quot;AzureCDN %s:%s&quot; % (self.key_id, digest)</p>
+<h1>Function to fetch CDN endpoints</h1>
+<p>def cdnEndpoints():</p>
+<p>&quot;&quot;&quot;Fetch list of CDN endpoints from Azure CDN API.&quot;&quot;&quot;</p>
+<h1>Prepare request headers with current time</h1>
+<p>request_time = datetime.now(timezone.utc).strftime(&#39;%Y-%m-%d %H:%M:%S&#39;)</p>
+<p>azure_cdn_auth = AzureCDNAuthorization(key_id, key_value)</p>
+<p>request_url = f&#39;<a href="https://restapi.cdn.azure.cn/subscriptions/{subscription_id}/endpoints?apiVersion=1.0&#39;" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscription_id}/endpoints?apiVersion=1.0&#39;</a></p>
+<p>authorization_header = azure_cdn_auth.calculate_header(request_url, request_time, http_method=&#39;GET&#39;)</p>
+<p>headers = {</p>
+<p>&#39;Authorization&#39;: authorization_header,</p>
+<p>&#39;x-azurecdn-request-date&#39;: request_time,</p>
+<p>&#39;content-type&#39;: &#39;application/json&#39;</p>
+<p>}</p>
+<h1>Make GET request and return response as JSON</h1>
+<p>response = requests.get(request_url, headers=headers)</p>
+<p>if response.status_code != 200:</p>
+<p>logger.error(f&#39;Failed to fetch cdn endpoints info, response is {response}&#39;)</p>
+<p>else:</p>
+<p>response = response.json()</p>
+<p>return response</p>
+<h1>Function to check CDN traffic</h1>
+<p>def cdnTraffic():</p>
+<p>&quot;&quot;&quot;Check CDN traffic and generate alerts if thresholds are exceeded.&quot;&quot;&quot;</p>
+<p>now = datetime.now(timezone.utc)</p>
+<p>request_time = now.strftime(&#39;%Y-%m-%d %H:%M:%S&#39;)</p>
+<h1>Define start and end times for traffic data retrieval</h1>
+<p>startTime = now - timedelta(minutes=60)</p>
+<p>startTime = startTime.strftime(&#39;%Y-%m-%dT%H:%M:%SZ&#39;)</p>
+<p>endTime = now - timedelta(minutes=54)</p>
+<p>#startTime = &#39;2024-06-21T01:50:00Z&#39;</p>
+<p>#endTime = &#39;2024-06-21T08:21:00Z&#39;</p>
+<p>alert_body = []  # Initialize list to hold alert messages</p>
+<h1>Iterate over CDN endpoints</h1>
+<p>for endpoint in endpoints:</p>
+<p>params = {</p>
+<p>&#39;granularity&#39;: granularity,</p>
+<p>&#39;startTime&#39;: startTime,</p>
+<p>&#39;endTime&#39;: endTime,</p>
+<h1>Prepare request URL and headers</h1>
+<p>request_url = f&#39;<a href="https://restapi.cdn.azure.cn/subscriptions/{subscription_id}/endpoints/{endpoint[&quot;EndpointId&quot;]}/volume?apiVersion=1.0&#39;" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscription_id}/endpoints/{endpoint[&quot;EndpointId&quot;]}/volume?apiVersion=1.0&#39;</a></p>
+<p>authorization_header_url = f&#39;{request_url}&amp;{urllib.parse.urlencode(params)}&#39;</p>
+<p>authorization_header = azure_cdn_auth.calculate_header(authorization_header_url, request_time, http_method=&#39;GET&#39;)</p>
+<h1>Fetch traffic data and analyze differences</h1>
+<p>response = requests.get(request_url, headers=headers, params=params)</p>
+<p>alert_body_item = f&#39;Failed to fetch CDN traffic at UTC time {request_time}, response is {response}.&#39;</p>
+<p>logger.error(alert_body_item)</p>
+<p>alert_body.append(alert_body_item)</p>
+<p>logger.info(f&#39;CDN traffic response is {response}. &#39;)</p>
+<p>domain_name = response[&#39;DomainName&#39;]</p>
+<p>traffic_time = response[&#39;CDNItems&#39;][-1][&#39;Timestamp&#39;]</p>
+<p>cdn_traffic_1 = response[&#39;CDNItems&#39;][-2][&#39;VolumeInMB&#39;]</p>
+<p>cdn_traffic_2 = response[&#39;CDNItems&#39;][-1][&#39;VolumeInMB&#39;]</p>
+<p>difference = cdn_traffic_2 - cdn_traffic_1</p>
+<h1>Check for traffic increases and threshold breaches</h1>
+<p>if difference &gt; increase_traffic:</p>
+<p>alert_body_item = f&#39;The CDN traffic for {domain_name} has exceeded {increase_traffic}MB in growth at UTC time {traffic_time}, it is {cdn_traffic_2}MB.&#39;</p>
+<p>if cdn_traffic_2 &gt; threshold_traffic:</p>
+<p>alert_body_item = f&#39;The CDN traffic for {domain_name} is greater than {threshold_traffic}MB at UTC time {traffic_time}.&#39;</p>
+<p>return alert_body</p>
+<h1>Function to send notification email</h1>
+<p>def send_notification_email():</p>
+<p>&quot;&quot;&quot;Compose and send an email notification with CDN traffic alerts.&quot;&quot;&quot;</p>
+<p>msg = MIMEText(email_body)  # Combine alerts into email body</p>
+<p>msg[&#39;Subject&#39;] = &#39;Azure CDN Traffic Alert&#39;  # Set email subject</p>
+<p>msg[&#39;From&#39;] = email_from  # Set sender</p>
+<p>msg[&#39;To&#39;] = &#39;, &#39;.join(email_to)  # Set recipient(s)</p>
+<p>try:</p>
+<h1>Send the email via SMTP</h1>
+<p>server = smtplib.SMTP(smtp_server, smtp_port)</p>
+<p>server.ehlo()</p>
+<p>server.starttls()  # Start TLS for security</p>
+<p>server.login(smtp_username, smtp_password)</p>
+<p>server.sendmail(email_from, email_to, msg.as_string())</p>
+<p>except smtplib.SMTPException as e:</p>
+<h1>Log the error or take other action</h1>
+<p>logger.error(f&#39;Failed to send email: {e}&#39;)</p>
+<p>return False</p>
+<p>finally:</p>
+<p>server.quit()</p>
+<p>return True  # Return True if email was sent successfully</p>
+<h1>Main execution block</h1>
+<p>if __name__ == &quot;__main__&quot;:</p>
+<p>subscription_id = &#39;your subscription id&#39;  # Replace with actual subscription ID</p>
+<p>key_id = &#39;your key id&#39;  # Replace with actual key ID</p>
+<p>key_value = &#39;your key value&#39;  # Replace with actual key value</p>
+<p>granularity = &#39;PerFiveMinutes&#39;  # Granularity of traffic data</p>
+<p>increase_traffic = 100  # Threshold for traffic increase in MB</p>
+<p>threshold_traffic = 500  # Overall traffic threshold in MB</p>
+<p>endpoints = cdnEndpoints()  # Get list of CDN endpoints</p>
+<h1>Check CDN traffic and trigger email notification if necessary</h1>
+<p>fetch_cdn_traffic = cdnTraffic()</p>
+<p>if len(fetch_cdn_traffic) &gt; 1:</p>
+<p>email_body = &#39;\n&#39;.join(fetch_cdn_traffic)</p>
+<p>send_notification_email()</p>
+<p>elif len(fetch_cdn_traffic) == 0:</p>
+<p>logger.info(f&#39;There was no spike observed in the traffic.&#39;)</p>
+<p>使用方法，将上述脚本保存为Python文件，直接执行python3 &lt;文件名&gt;</p>
+<p>Azure CDN traffic的统计有时延，当我们以每5分钟作为时间粒度去查询时，这个时延不固定 ，有可能这一次查询能够获取到前5分钟所采样的结果，但也有可能只能获取到前45分的一次采样结果。</p></article>

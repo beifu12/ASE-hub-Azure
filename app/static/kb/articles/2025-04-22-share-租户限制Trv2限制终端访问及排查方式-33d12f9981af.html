@@ -1,0 +1,245 @@
+<article class="kb-article" data-title="[share]租户限制Trv2限制终端访问及排查方式"><h1>[share]租户限制Trv2限制终端访问及排查方式</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-04-22 16:34:19</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>如果失败，说明 Proxy 服务器阻挡了请求或未附加 TRv2 Header。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>如果失败，说明 Proxy 服务器阻挡了请求或未附加 TRv2 Header。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025 04 22</li>
+</ul>
+<ul>
+<li>Case: 20250114334865</li>
+</ul>
+<ul>
+<li>问题背景：</li>
+</ul>
+<ul>
+<li>客户使用租户限制通过组策略推送到终端，限制终端登录的目标tenant。实现tenant白名单的功能。</li>
+</ul>
+<ul>
+<li>参考官方文档配置是可以实现租户白名单功能的。</li>
+</ul>
+<ul>
+<li>文档链接：配置租户限制 - Microsoft Entra ID | Azure Docs</li>
+</ul>
+<ul>
+<li>适用于 Windows 10 2021 年 11 月更新 (21H2) 的管理模板 (.admx) 和组策略设置</li>
+</ul>
+<ul>
+<li>通过gpedit进入组策略编辑功能</li>
+</ul>
+<ul>
+<li>找到计算机配置 &gt; 管理模板 &gt; Windows 组件 &gt; 租户限制</li>
+</ul>
+<ul>
+<li>测试结果如下，如果是在租户限制中没有配置的租户ID或者是阻止登陆的租户ID，在浏览器登录时都将被阻止。</li>
+</ul>
+<ul>
+<li>正常的日志会记录服务的正常启动状态和同步状态。</li>
+</ul>
+<ul>
+<li>正常同步后在注册表中可以看到同步后的endpoint list信息。</li>
+</ul>
+<ul>
+<li>正常的sec-Restrict-Tenant-Access-Policy值为&lt;TenantId&gt;:&lt;policyGuid&gt;</li>
+</ul>
+<ul>
+<li>方案 1：测试 cloudidsvc 访问 O365</li>
+</ul>
+<ul>
+<li>Test-NetConnection -ComputerName endpoints.office.com -Port 443</li>
+</ul>
+<ul>
+<li>sec-Restrict-Tenant-Access-Policy: &lt;TenantId&gt;:&lt;policyGuid&gt;</li>
+</ul>
+<ul>
+<li>如果 Header 丢失，则 Proxy 服务器配置错误，需要调整规则。</li>
+</ul>
+<ul>
+<li>如果手动添加 Header 后请求成功，说明 Proxy 服务器没有正确添加该 Header，需要 IT 团队修改配置。</li>
+</ul>
+<ul>
+<li>netsh winhttp show proxy</li>
+</ul>
+<ul>
+<li>netsh winhttp reset proxy</li>
+</ul>
+<ul>
+<li>如果禁用代理后访问 endpoints.office.com 成功，说明 Proxy 配置问题，需要修正。</li>
+</ul>
+<ul>
+<li>方案 4：联系 IT 团队调整 Proxy 配置</li>
+</ul>
+<ul>
+<li>需要 IT 团队执行的调整：</li>
+</ul>
+<ul>
+<li>在 Proxy 服务器上强制添加 TRv2 Header：</li>
+</ul>
+<ul>
+<li>确保 Proxy 不拦截 TLS/SSL，允许 endpoints.office.com 直连。</li>
+</ul>
+<ul>
+<li>放行以下 Microsoft 365 相关 URL：</li>
+</ul>
+<ul>
+<li>已知的不支持Trv2的场景如下：</li>
+</ul>
+<ul>
+<li>对于跨云访问经过测试都是默认阻止的，无论是否配置了global tenant id都是阻止状态。这是产品本身的设计。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>验证结果：</li>
+</ul>
+<ul>
+<li>主要分享排查思路以及官方文档中没有的部分。</li>
+</ul>
+<ul>
+<li>当出现问题时首先需要排查服务日志，日志路径在%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TenantRestrictions%4Operational.evtx</li>
+</ul>
+<ul>
+<li>查看路径：HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\TenantRestrictions\TenantRestrictionsList中的hostnames</li>
+</ul>
+<ul>
+<li>正常情况下通过抓包可以看到包中的带有租户ID和策略ID的信息</li>
+</ul>
+<ul>
+<li>更多排查步骤：</li>
+</ul>
+<ul>
+<li>步骤 1.1：测试 DNS 解析</li>
+</ul>
+<ul>
+<li>步骤 1.2：测试网络连通性</li>
+</ul>
+<ul>
+<li>步骤 1.3：直接访问终结点</li>
+</ul>
+<ul>
+<li>方案 2：确认 Proxy 是否正确添加 TRv2 Header</li>
+</ul>
+<ul>
+<li>步骤 2.1：抓包检查 TRv2 Header</li>
+</ul>
+<ul>
+<li>步骤 2.2：使用 curl 测试手动附加 Header</li>
+</ul>
+<ul>
+<li>方案 3：检查 Windows 代理配置</li>
+</ul>
+<ul>
+<li>步骤 3.1：查看当前代理设置</li>
+</ul>
+<ul>
+<li>步骤 3.2：禁用代理（仅测试）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>nslookup endpoints.office.com</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>如果 TcpTestSucceeded: False，说明防火墙或 Proxy 阻挡了 TCP 443 端口。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>测试主机需要参考以上文档部分通过管理模板在终端设备上部署Trv2的GPO策略，部署后操作系统内部即可看到相关组策略，按照文档将云中的租户限制的tenant id和policy id配置到操作系统内部的组策略中即可。</li>
+</ul>
+<ul>
+<li>配置完成后建议先更新以下组策略服务使其尽快生效，或者重启操作系统。</li>
+</ul>
+<ul>
+<li>租户限制功能通过cloudidsvc服务通过读取GPO配置策略限制信息，在request header中将GPO中配置的tenant id和policy id附加进去，同时服务会将租户限制中的租户配置域名同步到注册表中，通过比对两边配置情况来进行登录的阻止和允许。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>curl -v <a href="https://endpoints.office.com/version" target="_blank" rel="noopener">https://endpoints.office.com/version</a></li>
+</ul>
+<ul>
+<li>使用 Wireshark 或 Fiddler 抓包 <a href="https://endpoints.office.com/version，检查" target="_blank" rel="noopener">https://endpoints.office.com/version，检查</a> 是否包含 sec-Restrict-Tenant-Access-Policy 头部：</li>
+</ul>
+<ul>
+<li>curl -v -H &quot;sec-Restrict-Tenant-Access-Policy: &lt;TenantId&gt;:&lt;policyGuid&gt;&quot; <a href="https://endpoints.office.com/version" target="_blank" rel="noopener">https://endpoints.office.com/version</a></li>
+</ul>
+<ul>
+<li>如果设备使用代理： 确保 Proxy 允许 cloudidsvc 访问 <a href="https://endpoints.office.com。" target="_blank" rel="noopener">https://endpoints.office.com。</a></li>
+</ul>
+<ul>
+<li>确保 Proxy 允许 cloudidsvc 访问 <a href="https://endpoints.office.com/。" target="_blank" rel="noopener">https://endpoints.office.com/。</a></li>
+</ul>
+<ul>
+<li><a href="https://login.microsoftonline.com/" target="_blank" rel="noopener">https://login.microsoftonline.com/</a></li>
+</ul>
+<ul>
+<li><a href="https://endpoints.office.com/" target="_blank" rel="noopener">https://endpoints.office.com/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025 04 22</p>
+<p>Case: 20250114334865</p>
+<p>问题背景：</p>
+<p>客户使用租户限制通过组策略推送到终端，限制终端登录的目标tenant。实现tenant白名单的功能。</p>
+<p>验证结果：</p>
+<p>参考官方文档配置是可以实现租户白名单功能的。</p>
+<p>文档链接：配置租户限制 - Microsoft Entra ID | Azure Docs</p>
+<p>主要分享排查思路以及官方文档中没有的部分。</p>
+<p>适用于 Windows 10 2021 年 11 月更新 (21H2) 的管理模板 (.admx) 和组策略设置</p>
+<p>测试主机需要参考以上文档部分通过管理模板在终端设备上部署Trv2的GPO策略，部署后操作系统内部即可看到相关组策略，按照文档将云中的租户限制的tenant id和policy id配置到操作系统内部的组策略中即可。</p>
+<p>通过gpedit进入组策略编辑功能</p>
+<p>找到计算机配置 &gt; 管理模板 &gt; Windows 组件 &gt; 租户限制</p>
+<p>配置完成后建议先更新以下组策略服务使其尽快生效，或者重启操作系统。</p>
+<p>测试结果如下，如果是在租户限制中没有配置的租户ID或者是阻止登陆的租户ID，在浏览器登录时都将被阻止。</p>
+<p>当出现问题时首先需要排查服务日志，日志路径在%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-TenantRestrictions%4Operational.evtx</p>
+<p>正常的日志会记录服务的正常启动状态和同步状态。</p>
+<p>正常同步后在注册表中可以看到同步后的endpoint list信息。</p>
+<p>查看路径：HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\TenantRestrictions\TenantRestrictionsList中的hostnames</p>
+<p>租户限制功能通过cloudidsvc服务通过读取GPO配置策略限制信息，在request header中将GPO中配置的tenant id和policy id附加进去，同时服务会将租户限制中的租户配置域名同步到注册表中，通过比对两边配置情况来进行登录的阻止和允许。</p>
+<p>正常情况下通过抓包可以看到包中的带有租户ID和策略ID的信息</p>
+<p>正常的sec-Restrict-Tenant-Access-Policy值为&lt;TenantId&gt;:&lt;policyGuid&gt;</p>
+<p>更多排查步骤：</p>
+<p>方案 1：测试 cloudidsvc 访问 O365</p>
+<p>步骤 1.1：测试 DNS 解析</p>
+<p>nslookup endpoints.office.com</p>
+<p>步骤 1.2：测试网络连通性</p>
+<p>Test-NetConnection -ComputerName endpoints.office.com -Port 443</p>
+<p>如果 TcpTestSucceeded: False，说明防火墙或 Proxy 阻挡了 TCP 443 端口。</p>
+<p>步骤 1.3：直接访问终结点</p>
+<p>curl -v <a href="https://endpoints.office.com/version" target="_blank" rel="noopener">https://endpoints.office.com/version</a></p>
+<p>如果失败，说明 Proxy 服务器阻挡了请求或未附加 TRv2 Header。</p>
+<p>方案 2：确认 Proxy 是否正确添加 TRv2 Header</p>
+<p>步骤 2.1：抓包检查 TRv2 Header</p>
+<p>使用 Wireshark 或 Fiddler 抓包 <a href="https://endpoints.office.com/version，检查" target="_blank" rel="noopener">https://endpoints.office.com/version，检查</a> 是否包含 sec-Restrict-Tenant-Access-Policy 头部：</p>
+<p>sec-Restrict-Tenant-Access-Policy: &lt;TenantId&gt;:&lt;policyGuid&gt;</p>
+<p>如果 Header 丢失，则 Proxy 服务器配置错误，需要调整规则。</p>
+<p>步骤 2.2：使用 curl 测试手动附加 Header</p>
+<p>curl -v -H &quot;sec-Restrict-Tenant-Access-Policy: &lt;TenantId&gt;:&lt;policyGuid&gt;&quot; <a href="https://endpoints.office.com/version" target="_blank" rel="noopener">https://endpoints.office.com/version</a></p>
+<p>如果手动添加 Header 后请求成功，说明 Proxy 服务器没有正确添加该 Header，需要 IT 团队修改配置。</p>
+<p>方案 3：检查 Windows 代理配置</p>
+<p>步骤 3.1：查看当前代理设置</p>
+<p>netsh winhttp show proxy</p>
+<p>如果设备使用代理： 确保 Proxy 允许 cloudidsvc 访问 <a href="https://endpoints.office.com。" target="_blank" rel="noopener">https://endpoints.office.com。</a></p>
+<p>步骤 3.2：禁用代理（仅测试）</p>
+<p>netsh winhttp reset proxy</p>
+<p>如果禁用代理后访问 endpoints.office.com 成功，说明 Proxy 配置问题，需要修正。</p>
+<p>方案 4：联系 IT 团队调整 Proxy 配置</p>
+<p>需要 IT 团队执行的调整：</p>
+<p>确保 Proxy 允许 cloudidsvc 访问 <a href="https://endpoints.office.com/。" target="_blank" rel="noopener">https://endpoints.office.com/。</a></p>
+<p>在 Proxy 服务器上强制添加 TRv2 Header：</p>
+<p>确保 Proxy 不拦截 TLS/SSL，允许 endpoints.office.com 直连。</p>
+<p>放行以下 Microsoft 365 相关 URL：</p>
+<p><a href="https://login.microsoftonline.com/" target="_blank" rel="noopener">https://login.microsoftonline.com/</a></p>
+<p><a href="https://endpoints.office.com/" target="_blank" rel="noopener">https://endpoints.office.com/</a></p>
+<p>已知的不支持Trv2的场景如下：</p>
+<p>对于跨云访问经过测试都是默认阻止的，无论是否配置了global tenant id都是阻止状态。这是产品本身的设计。</p></article>

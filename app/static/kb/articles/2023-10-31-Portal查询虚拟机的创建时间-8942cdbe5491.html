@@ -1,0 +1,103 @@
+<article class="kb-article" data-title="Portal查询虚拟机的创建时间"><h1>Portal查询虚拟机的创建时间</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-10-31 15:51:53</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Zhangwenxin</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Zhangwenxin</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhangwenxin</li>
+</ul>
+<ul>
+<li>当然目前仍然可以根据托管磁盘的创建时间进行推断虚拟机的创建时间（虚拟机是通过映像创建，而不是通过磁盘创建。）</li>
+</ul>
+<ul>
+<li>&quot;kailitest01_OsDisk_1_3a40de54fb1b4e6aab13ce3a26d5fcd0&quot; `</li>
+</ul>
+<ul>
+<li>| Select Name, TimeCreated, @{N=&quot;VMname&quot;; e = {($_.managedby -split &quot;/&quot;)[8]} }</li>
+</ul>
+<ul>
+<li>Hi All,</li>
+</ul>
+<ul>
+<li>===================================================================================</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>注：获取token的简单方法是直接通过浏览器访问portal，并拷贝token</li>
+</ul>
+<ul>
+<li>当然最直接的方式是通过Acitvity log，但该log默认只保留90天，超过就需要提前将日志转存到其他位置以备查询，如Log Analytics</li>
+</ul>
+<ul>
+<li>又有客户咨询：如何查询虚拟机的时间。</li>
+</ul>
+<ul>
+<li>方法1：通过虚拟机内部查看创建时间</li>
+</ul>
+<ul>
+<li>方法2：通过活动日志查询3个月内创建的虚拟机</li>
+</ul>
+<ul>
+<li>通过在资源组—部署下查看相关资源，以查看资源的部署（创建）时间，示例如下：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>目前通过CLI 命令已经可以查看虚拟机的创建时间，如下：</li>
+</ul>
+<ul>
+<li>az vm show -g &quot;SECURITYTEST&quot; -n &quot;kailitest01&quot; --query  &quot;{CreationTime:timeCreated}&quot;</li>
+</ul>
+<ul>
+<li>az --version | select-string &quot;azure-cli&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>也可以通过REST API进行查询</li>
+</ul>
+<ul>
+<li>之前的解决方法为：</li>
+</ul>
+<ul>
+<li>进一步测试发现可以通过Azure Portal查看虚拟机的创建时间，查询方法见下：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://management.chinacloudapi.cn/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}?api-version=2022-08-01" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}?api-version=2022-08-01</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2019-3-26</p>
+<p>Zhangwenxin</p>
+<p>2022-11-16</p>
+<p>目前通过CLI 命令已经可以查看虚拟机的创建时间，如下：</p>
+<p>az vm show -g &quot;SECURITYTEST&quot; -n &quot;kailitest01&quot; --query  &quot;{CreationTime:timeCreated}&quot;</p>
+<p>az --version | select-string &quot;azure-cli&quot;</p>
+<p>也可以通过REST API进行查询</p>
+<p><a href="https://management.chinacloudapi.cn/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}?api-version=2022-08-01" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}?api-version=2022-08-01</a></p>
+<p>注：获取token的简单方法是直接通过浏览器访问portal，并拷贝token</p>
+<p>当然目前仍然可以根据托管磁盘的创建时间进行推断虚拟机的创建时间（虚拟机是通过映像创建，而不是通过磁盘创建。）</p>
+<p>&quot;kailitest01_OsDisk_1_3a40de54fb1b4e6aab13ce3a26d5fcd0&quot; `</p>
+<p>| Select Name, TimeCreated, @{N=&quot;VMname&quot;; e = {($_.managedby -split &quot;/&quot;)[8]} }</p>
+<p>当然最直接的方式是通过Acitvity log，但该log默认只保留90天，超过就需要提前将日志转存到其他位置以备查询，如Log Analytics</p>
+<p>Hi All,</p>
+<p>又有客户咨询：如何查询虚拟机的时间。</p>
+<p>之前的解决方法为：</p>
+<p>方法1：通过虚拟机内部查看创建时间</p>
+<p>方法2：通过活动日志查询3个月内创建的虚拟机</p>
+<p>进一步测试发现可以通过Azure Portal查看虚拟机的创建时间，查询方法见下：</p>
+<p>===================================================================================</p>
+<p>通过在资源组—部署下查看相关资源，以查看资源的部署（创建）时间，示例如下：</p></article>

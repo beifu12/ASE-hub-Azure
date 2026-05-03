@@ -1,0 +1,139 @@
+<article class="kb-article" data-title="Emerging Issue - UnicodeEncodeError python error in Linux Agent 2.3.0.x"><h1>Emerging Issue - UnicodeEncodeError python error in Linux Agent 2.3.0.x</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2021-08-04 15:05:39</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>In case you have cases about walinuxagent regarding the Unicode issues, please refer below TSG if that is the case.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>In case you have cases about walinuxagent regarding the Unicode issues, please refer below TSG if that is the case.</li>
+</ul>
+<ul>
+<li>WALA - UnicodeEncodeError python error in Linux Agent 2.3.0.x</li>
+</ul>
+<ul>
+<li>Symptom</li>
+</ul>
+<ul>
+<li>Linux Agent failed with the following error:</li>
+</ul>
+<ul>
+<li>UnicodeEncodeError: &#39;latin-1&#39; codec can&#39;t encode character &#39;\u2192&#39; in position 546: Body (&#39;\u2192&#39;) is not valid Latin-1. Use body.encode(&#39;utf-8&#39;) if you want to send it encoded in UTF-8.</li>
+</ul>
+<ul>
+<li>Error message:</li>
+</ul>
+<ul>
+<li>Bug: This is related to handling Unicode in the code: Fix telemetry unicode errors (Re-add Tasking 1937: Method Creation: Get Node Power Off)</li>
+</ul>
+<ul>
+<li>This issue happens when Unicode characters are included in the telemetry data (diagnostics data).</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi All,</li>
+</ul>
+<ul>
+<li>File &quot;bin/WALinuxAgent-2.3.1.1-py2.7.egg/azurelinuxagent/common/utils/restutil.py&quot;, line 538, in http_post</li>
+</ul>
+<ul>
+<li>File &quot;bin/WALinuxAgent-2.3.1.1-py2.7.egg/azurelinuxagent/common/utils/restutil.py&quot;, line 439, in http_request</li>
+</ul>
+<ul>
+<li>File &quot;bin/WALinuxAgent-2.3.1.1-py2.7.egg/azurelinuxagent/common/utils/restutil.py&quot;, line 347, in _http_request</li>
+</ul>
+<ul>
+<li>conn.request(method=method, url=url, body=data, headers=headers)</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib64/python3.6/http/client.py&quot;, line 1269, in request</li>
+</ul>
+<ul>
+<li>self._send_request(method, url, body, headers, encode_chunked)</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib64/python3.6/http/client.py&quot;, line 1314, in _send_request</li>
+</ul>
+<ul>
+<li>File &quot;/usr/lib64/python3.6/http/client.py&quot;, line 175, in _encode</li>
+</ul>
+<ul>
+<li>(name.title(), data[err.start:err.end], name)) from None</li>
+</ul>
+<ul>
+<li>Cause</li>
+</ul>
+<ul>
+<li>Mitigation</li>
+</ul>
+<ul>
+<li>Mitigation: To mitigate, you can try stopping the agent, removing all the files in the /var/lib/waagent/events directory, and restarting the agent.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2021-07-19T08:24:22.163310Z ERROR SendTelemetryHandler ExtHandler Event: name=WALinuxAgent, op=ReportEventErrors, message=DroppedEventsCount: 1</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Reasons (first 5 errors): [ProtocolError] [Wireserver Exception] &#39;latin-1&#39; codec can&#39;t encode character &#39;\u2192&#39; in position 546: Body (&#39;\u2192&#39;) is not valid Latin-1. Use body.encode(&#39;utf-8&#39;) if you want to send it encoded in UTF-8.: Traceback (most recent call last):</li>
+</ul>
+<ul>
+<li>File &quot;bin/WALinuxAgent-2.3.1.1-py2.7.egg/azurelinuxagent/common/protocol/wire.py&quot;, line 598, in call_wireserver</li>
+</ul>
+<ul>
+<li>resp = http_req(*args, **kwargs)</li>
+</ul>
+<ul>
+<li>retry_delay=retry_delay)</li>
+</ul>
+<ul>
+<li>redact_data=redact_data)</li>
+</ul>
+<ul>
+<li>body = _encode(body, &#39;body&#39;)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>The issue will be fixed in the next version (2.4.0.0).</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi All,</p>
+<p>In case you have cases about walinuxagent regarding the Unicode issues, please refer below TSG if that is the case.</p>
+<p>WALA - UnicodeEncodeError python error in Linux Agent 2.3.0.x</p>
+<p>Symptom</p>
+<p>Linux Agent failed with the following error:</p>
+<p>2021-07-19T08:24:22.163310Z ERROR SendTelemetryHandler ExtHandler Event: name=WALinuxAgent, op=ReportEventErrors, message=DroppedEventsCount: 1</p>
+<p>Reasons (first 5 errors): [ProtocolError] [Wireserver Exception] &#39;latin-1&#39; codec can&#39;t encode character &#39;\u2192&#39; in position 546: Body (&#39;\u2192&#39;) is not valid Latin-1. Use body.encode(&#39;utf-8&#39;) if you want to send it encoded in UTF-8.: Traceback (most recent call last):</p>
+<p>File &quot;bin/WALinuxAgent-2.3.1.1-py2.7.egg/azurelinuxagent/common/protocol/wire.py&quot;, line 598, in call_wireserver</p>
+<p>resp = http_req(*args, **kwargs)</p>
+<p>File &quot;bin/WALinuxAgent-2.3.1.1-py2.7.egg/azurelinuxagent/common/utils/restutil.py&quot;, line 538, in http_post</p>
+<p>retry_delay=retry_delay)</p>
+<p>File &quot;bin/WALinuxAgent-2.3.1.1-py2.7.egg/azurelinuxagent/common/utils/restutil.py&quot;, line 439, in http_request</p>
+<p>redact_data=redact_data)</p>
+<p>File &quot;bin/WALinuxAgent-2.3.1.1-py2.7.egg/azurelinuxagent/common/utils/restutil.py&quot;, line 347, in _http_request</p>
+<p>conn.request(method=method, url=url, body=data, headers=headers)</p>
+<p>File &quot;/usr/lib64/python3.6/http/client.py&quot;, line 1269, in request</p>
+<p>self._send_request(method, url, body, headers, encode_chunked)</p>
+<p>File &quot;/usr/lib64/python3.6/http/client.py&quot;, line 1314, in _send_request</p>
+<p>body = _encode(body, &#39;body&#39;)</p>
+<p>File &quot;/usr/lib64/python3.6/http/client.py&quot;, line 175, in _encode</p>
+<p>(name.title(), data[err.start:err.end], name)) from None</p>
+<p>UnicodeEncodeError: &#39;latin-1&#39; codec can&#39;t encode character &#39;\u2192&#39; in position 546: Body (&#39;\u2192&#39;) is not valid Latin-1. Use body.encode(&#39;utf-8&#39;) if you want to send it encoded in UTF-8.</p>
+<p>Error message:</p>
+<p>Cause</p>
+<p>Bug: This is related to handling Unicode in the code: Fix telemetry unicode errors (Re-add Tasking 1937: Method Creation: Get Node Power Off)</p>
+<p>This issue happens when Unicode characters are included in the telemetry data (diagnostics data).</p>
+<p>Mitigation</p>
+<p>The issue will be fixed in the next version (2.4.0.0).</p>
+<p>Mitigation: To mitigate, you can try stopping the agent, removing all the files in the /var/lib/waagent/events directory, and restarting the agent.</p></article>

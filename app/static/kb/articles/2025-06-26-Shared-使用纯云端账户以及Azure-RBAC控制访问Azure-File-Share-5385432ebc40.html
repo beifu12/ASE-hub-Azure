@@ -1,0 +1,61 @@
+<article class="kb-article" data-title="[Shared]使用纯云端账户以及Azure RBAC控制访问Azure File Share"><h1>[Shared]使用纯云端账户以及Azure RBAC控制访问Azure File Share</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-26 14:33:29</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>之后对单个Azure file添加如下角色分配,目前测试在分配之后,指定用户都可以正常访问指定Azure file,对于其他为分配权限的Azure File则无法访问,角色区别详见截图信息:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>之后对单个Azure file添加如下角色分配,目前测试在分配之后,指定用户都可以正常访问指定Azure file,对于其他为分配权限的Azure File则无法访问,角色区别详见截图信息:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>客户需求:</li>
+</ul>
+<ul>
+<li>以下是具体的配置信息:</li>
+</ul>
+<ul>
+<li>其次需要对指定的存储账户添加读者角色分配,是用户可以访问存储账户</li>
+</ul>
+<ul>
+<li>Storage File Data Privileged Contributor或者Storage File Data Privileged Reader</li>
+</ul>
+<ul>
+<li>结果参考:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如何实现在portal和storage explore中不同的用户访问不同的文件共享，而无法访问存储账户内的其他资源</li>
+</ul>
+<ul>
+<li>首先需要禁用存储账户的访问密码验证方法,阻止任何用户都可以查看Azure file或者Azure Blob等资源文件:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/files/authorize-oauth-rest?tabs=portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/authorize-oauth-rest?tabs=portal</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/06/26</p>
+<p>客户需求:</p>
+<p>如何实现在portal和storage explore中不同的用户访问不同的文件共享，而无法访问存储账户内的其他资源</p>
+<p>以下是具体的配置信息:</p>
+<p>首先需要禁用存储账户的访问密码验证方法,阻止任何用户都可以查看Azure file或者Azure Blob等资源文件:</p>
+<p>其次需要对指定的存储账户添加读者角色分配,是用户可以访问存储账户</p>
+<p>之后对单个Azure file添加如下角色分配,目前测试在分配之后,指定用户都可以正常访问指定Azure file,对于其他为分配权限的Azure File则无法访问,角色区别详见截图信息:</p>
+<p>Storage File Data Privileged Contributor或者Storage File Data Privileged Reader</p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/files/authorize-oauth-rest?tabs=portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/authorize-oauth-rest?tabs=portal</a></p>
+<p>结果参考:</p></article>

@@ -1,0 +1,191 @@
+<article class="kb-article" data-title="SR_20230515229576_使用自签名证书在Application Gateway上配置End-To-End TLS访问AKS承载的后端应用，Backend health状态为Unhealthy，证书CN不匹配"><h1>SR_20230515229576_使用自签名证书在Application Gateway上配置End-To-End TLS访问AKS承载的后端应用，Backend health状态为Unhealthy，证书CN不匹配</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-06-29 15:37:00</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>使用自签名证书在Application Gateway上配置End-To-End TLS，访问后端为AKS承载的nginx服务，nginx 服务使用了TLS加密，证书为自签名证书，外部直接https访问pod正常，但是从Application Gateway访问，则显示Backend health状态 为Unhealthy，报错信息为commonName不匹配,具体报错信息如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>使用自签名证书在Application Gateway上配置End-To-End TLS，访问后端为AKS承载的nginx服务，nginx   服务使用了TLS加密，证书为自签名证书，外部直接https访问pod正常，但是从Application Gateway访问，则显示Backend health状态   为Unhealthy，报错信息为commonName不匹配,具体报错信息如下：</li>
+</ul>
+<ul>
+<li>从报错来看是因为后端服务中使用了自签名证书，而证书的CN与Application Gateway probe中设置的主机头不匹配</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>HaoLing</li>
+</ul>
+<ul>
+<li>1.   问题描述</li>
+</ul>
+<ul>
+<li>appgw上传根证书</li>
+</ul>
+<ul>
+<li>后端应用中包含服务器证书和中间证书</li>
+</ul>
+<ul>
+<li>appgw后端设置中证书的CN与pod的证书CN是否一致</li>
+</ul>
+<ul>
+<li>appgw探测中主机名配置</li>
+</ul>
+<ul>
+<li>---</li>
+</ul>
+<ul>
+<li>kind: Service</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>labels:</li>
+</ul>
+<ul>
+<li>app: nginx</li>
+</ul>
+<ul>
+<li>name: nginx-svc</li>
+</ul>
+<ul>
+<li>namespace: default</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>type: NodePortClusterIP</li>
+</ul>
+<ul>
+<li>ports:</li>
+</ul>
+<ul>
+<li>- name: nginx</li>
+</ul>
+<ul>
+<li>port: 443</li>
+</ul>
+<ul>
+<li>targetPort: 443</li>
+</ul>
+<ul>
+<li>nodePort: 32327</li>
+</ul>
+<ul>
+<li>selector:</li>
+</ul>
+<ul>
+<li>参考文档：Annotations - Application Gateway Ingress Controller (azure.github.io)</li>
+</ul>
+<ul>
+<li>appgw后端设置上传根证书：</li>
+</ul>
+<ul>
+<li>appgw.ingress.kubernetes.io/appgw-trusted-root-certificate: &quot;name-of-my-root-cert1&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查思路</li>
+</ul>
+<ul>
+<li>查看客户yaml配置</li>
+</ul>
+<ul>
+<li>问题排查</li>
+</ul>
+<ul>
+<li>确认客户配置：使用AGIC,pod证书包含了根证书，中间证书以及服务器证书，根证书通过yaml方式上传到appgw</li>
+</ul>
+<ul>
+<li>查看客户配置的yaml</li>
+</ul>
+<ul>
+<li>查看appgw的后端设置以及探测配置</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>修改命令：appgw.ingress.kubernetes.io/health-probe-hostname: &lt;hostname&gt;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>appgw.ingress.kubernetes.io/backend-protocol: &quot;https&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>其中后端nginx service客户采用了nodeport的类型，基于客户的AGIC我们建议客户Service使用cluster IP类型且使用默认配置</li>
+</ul>
+<ul>
+<li>协助配置客户nginx pod证书格式是中间证书+服务器证书，验证pod上可以通过https正常访问nginx-svc</li>
+</ul>
+<ul>
+<li>后端设置：客户设置了“替代新的主机名”为是，由于后端池为ip地址，需要将其设置为否</li>
+</ul>
+<ul>
+<li>探测设置：其配置中主机名为默认，导致探测unhealthy，需要修改探测中的hostname</li>
+</ul>
+<ul>
+<li>探测恢复正常后，可以通过appgw正常访问aks中的nginx应用</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>The Common Name (CN) of the backend server certificate does not match the host header entered in the health probe configuration (v2 SKU) or the FQDN in the backend pool (v1 SKU). Verify if the hostname matches with the CN of the backend server certificate. To learn more visit - <a href="https://aka.ms/backendcertcnmismatch.、" target="_blank" rel="noopener">https://aka.ms/backendcertcnmismatch.、</a></li>
+</ul>
+<ul>
+<li>确认appgw SKU是V2，<a href="https://learn.microsoft.com/zh-cn/azure/application-gateway/ssl-overview" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/application-gateway/ssl-overview</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>HaoLing</p>
+<p>1.   问题描述</p>
+<p>使用自签名证书在Application Gateway上配置End-To-End TLS，访问后端为AKS承载的nginx服务，nginx   服务使用了TLS加密，证书为自签名证书，外部直接https访问pod正常，但是从Application Gateway访问，则显示Backend health状态   为Unhealthy，报错信息为commonName不匹配,具体报错信息如下：</p>
+<p>The Common Name (CN) of the backend server certificate does not match the host header entered in the health probe configuration (v2 SKU) or the FQDN in the backend pool (v1 SKU). Verify if the hostname matches with the CN of the backend server certificate. To learn more visit - <a href="https://aka.ms/backendcertcnmismatch.、" target="_blank" rel="noopener">https://aka.ms/backendcertcnmismatch.、</a></p>
+<p>排查思路</p>
+<p>从报错来看是因为后端服务中使用了自签名证书，而证书的CN与Application Gateway probe中设置的主机头不匹配</p>
+<p>确认appgw SKU是V2，<a href="https://learn.microsoft.com/zh-cn/azure/application-gateway/ssl-overview" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/application-gateway/ssl-overview</a></p>
+<p>appgw上传根证书</p>
+<p>后端应用中包含服务器证书和中间证书</p>
+<p>appgw后端设置中证书的CN与pod的证书CN是否一致</p>
+<p>appgw探测中主机名配置</p>
+<p>查看客户yaml配置</p>
+<p>问题排查</p>
+<p>确认客户配置：使用AGIC,pod证书包含了根证书，中间证书以及服务器证书，根证书通过yaml方式上传到appgw</p>
+<p>查看客户配置的yaml</p>
+<p>其中后端nginx service客户采用了nodeport的类型，基于客户的AGIC我们建议客户Service使用cluster IP类型且使用默认配置</p>
+<p>---</p>
+<p>kind: Service</p>
+<p>apiVersion: v1</p>
+<p>metadata:</p>
+<p>labels:</p>
+<p>app: nginx</p>
+<p>name: nginx-svc</p>
+<p>namespace: default</p>
+<p>spec:</p>
+<p>type: NodePortClusterIP</p>
+<p>ports:</p>
+<ul>
+<li>name: nginx</li>
+</ul>
+<p>port: 443</p>
+<p>targetPort: 443</p>
+<p>nodePort: 32327</p>
+<p>selector:</p>
+<p>协助配置客户nginx pod证书格式是中间证书+服务器证书，验证pod上可以通过https正常访问nginx-svc</p>
+<p>查看appgw的后端设置以及探测配置</p>
+<p>后端设置：客户设置了“替代新的主机名”为是，由于后端池为ip地址，需要将其设置为否</p>
+<p>探测设置：其配置中主机名为默认，导致探测unhealthy，需要修改探测中的hostname</p>
+<p>修改命令：appgw.ingress.kubernetes.io/health-probe-hostname: &lt;hostname&gt;</p>
+<p>参考文档：Annotations - Application Gateway Ingress Controller (azure.github.io)</p>
+<p>appgw后端设置上传根证书：</p>
+<p>appgw.ingress.kubernetes.io/backend-protocol: &quot;https&quot;</p>
+<p>appgw.ingress.kubernetes.io/appgw-trusted-root-certificate: &quot;name-of-my-root-cert1&quot;</p>
+<p>探测恢复正常后，可以通过appgw正常访问aks中的nginx应用</p></article>

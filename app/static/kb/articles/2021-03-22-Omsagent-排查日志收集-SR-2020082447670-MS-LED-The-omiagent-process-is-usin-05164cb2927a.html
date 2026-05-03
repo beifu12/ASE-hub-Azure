@@ -1,0 +1,82 @@
+<article class="kb-article" data-title="Omsagent 排查日志收集( SR_2020082447670_[MS-LED]The omiagent process is using 100% cpu.)"><h1>Omsagent 排查日志收集( SR_2020082447670_[MS-LED]The omiagent process is using 100% cpu.)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-03-22 16:26:24</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2020082447670_[MS-LED]The omiagent process is using 100% cpu.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2020082447670_[MS-LED]The omiagent process is using 100% cpu.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_2020082447670_[MS-LED]The omiagent process is using 100% cpu.</li>
+</ul>
+<ul>
+<li>1）从相关虚拟机上依次卸载omsagentforlinux和linuxDiagnostic扩展。</li>
+</ul>
+<ul>
+<li>for CentOS Linux, Oracle Linux, RHEL, SLES</li>
+</ul>
+<ul>
+<li>sudo rpm -e omsconfig omsagent scx omi</li>
+</ul>
+<ul>
+<li>sudo rm -f /etc/opt/microsoft/omsagent/conf/omsagent.conf</li>
+</ul>
+<ul>
+<li>Debian, Ubuntu</li>
+</ul>
+<ul>
+<li>sudo dpkg -P omsconfig omsagent scx omi</li>
+</ul>
+<ul>
+<li>请您参考，谢谢！</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过排查日志，发现您虚拟机中的omsagent有问题。</li>
+</ul>
+<ul>
+<li>Syslog中有很多找不到omi相关文件的报错，已经服务stop的报错：</li>
+</ul>
+<ul>
+<li>具体步骤如下：</li>
+</ul>
+<ul>
+<li>3）重新连接虚拟机到log analytics workspace。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>2）ssh到相关虚拟机，通过以下的命令清除omsagent安装包和相关。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>建议您将omsagent重新安装一下：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2020082447670_[MS-LED]The omiagent process is using 100% cpu.</p>
+<p>通过排查日志，发现您虚拟机中的omsagent有问题。</p>
+<p>Syslog中有很多找不到omi相关文件的报错，已经服务stop的报错：</p>
+<p>建议您将omsagent重新安装一下：</p>
+<p>具体步骤如下：</p>
+<p>1）从相关虚拟机上依次卸载omsagentforlinux和linuxDiagnostic扩展。</p>
+<p>2）ssh到相关虚拟机，通过以下的命令清除omsagent安装包和相关。</p>
+<p>for CentOS Linux, Oracle Linux, RHEL, SLES</p>
+<p>sudo rpm -e omsconfig omsagent scx omi</p>
+<p>sudo rm -f /etc/opt/microsoft/omsagent/conf/omsagent.conf</p>
+<p>Debian, Ubuntu</p>
+<p>sudo dpkg -P omsconfig omsagent scx omi</p>
+<p>3）重新连接虚拟机到log analytics workspace。</p>
+<p>请您参考，谢谢！</p></article>

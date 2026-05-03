@@ -1,0 +1,88 @@
+<article class="kb-article" data-title="【Share】iOS 如何限制Onedrive登陆个人账号"><h1>【Share】iOS 如何限制Onedrive登陆个人账号</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-29 14:10:43</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Reviewer</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>Lv Lei</li>
+</ul>
+<ul>
+<li>应用à应用配置策略à创建策略à托管设备à平台iOS/iPadOSà目标应用选择“microsoft onedrive” à下一步à输入XML数据à输入如下的内容à下一步à分配à创建</li>
+</ul>
+<ul>
+<li>&lt;dict&gt;</li>
+</ul>
+<ul>
+<li>&lt;key&gt;IntuneMAMAllowedAccountsOnly&lt;/key&gt;</li>
+</ul>
+<ul>
+<li>&lt;key&gt;IntuneMAMUPN&lt;/key&gt;</li>
+</ul>
+<ul>
+<li>&lt;string&gt;{{userprincipalname}}&lt;/string&gt;</li>
+</ul>
+<ul>
+<li>&lt;key&gt;IntuneMAMOID&lt;/key&gt;</li>
+</ul>
+<ul>
+<li>&lt;string&gt;{{userid}}&lt;/string&gt;</li>
+</ul>
+<ul>
+<li>&lt;key&gt;IntuneMAMRequireAccounts&lt;/key&gt;</li>
+</ul>
+<ul>
+<li>&lt;/dict&gt;</li>
+</ul>
+<ul>
+<li>#创建针对托管设备的应用配置策略#</li>
+</ul>
+<ul>
+<li>#设备侧情况#</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>&lt;string&gt;Enabled&lt;/string&gt;</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>截图来源： <a href="https://learn.microsoft.com/zh-cn/intune/intune-service/apps/app-configuration-policies-use-ios#allow-only-configured-organization-accounts-in-apps" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/intune/intune-service/apps/app-configuration-policies-use-ios#allow-only-configured-organization-accounts-in-apps</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/29</p>
+<p>Reviewer</p>
+<p>Lv Lei</p>
+<p>截图来源： <a href="https://learn.microsoft.com/zh-cn/intune/intune-service/apps/app-configuration-policies-use-ios#allow-only-configured-organization-accounts-in-apps" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/intune/intune-service/apps/app-configuration-policies-use-ios#allow-only-configured-organization-accounts-in-apps</a></p>
+<p>应用à应用配置策略à创建策略à托管设备à平台iOS/iPadOSà目标应用选择“microsoft onedrive” à下一步à输入XML数据à输入如下的内容à下一步à分配à创建</p>
+<p>&lt;dict&gt;</p>
+<p>&lt;key&gt;IntuneMAMAllowedAccountsOnly&lt;/key&gt;</p>
+<p>&lt;string&gt;Enabled&lt;/string&gt;</p>
+<p>&lt;key&gt;IntuneMAMUPN&lt;/key&gt;</p>
+<p>&lt;string&gt;{{userprincipalname}}&lt;/string&gt;</p>
+<p>&lt;key&gt;IntuneMAMOID&lt;/key&gt;</p>
+<p>&lt;string&gt;{{userid}}&lt;/string&gt;</p>
+<p>&lt;key&gt;IntuneMAMRequireAccounts&lt;/key&gt;</p>
+<p>&lt;/dict&gt;</p>
+<p>#创建针对托管设备的应用配置策略#</p>
+<p>#设备侧情况#</p></article>

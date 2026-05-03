@@ -1,0 +1,155 @@
+<article class="kb-article" data-title="【Share】由于azure policy导致部分网络服务无法创建的排查思路分享"><h1>【Share】由于azure policy导致部分网络服务无法创建的排查思路分享</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2024-08-29 11:24:18</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>关联工单 20240618299514_Private EndPoint failed to created</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>关联工单 20240618299514_Private EndPoint failed to created</li>
+</ul>
+<ul>
+<li>客户创建Recovery Services vaults的专用终结点出现策略的限制。但是其中的resource描述无法定位到。(实际上是平台自动配置private dns zone中的记录名)</li>
+</ul>
+<ul>
+<li>详细报错如下：</li>
+</ul>
+<ul>
+<li>&quot;status&quot;: &quot;Failed&quot;,</li>
+</ul>
+<ul>
+<li>&quot;error&quot;: {</li>
+</ul>
+<ul>
+<li>403</li>
+</ul>
+<ul>
+<li>Http request failed with ErrorResponseMessageException. HttpStatus: &#39;Forbidden&#39;, ErrorCode: &#39;RequestDisallowedByPolicy&#39;, ErrorMessage: &#39;Resource &#39;5690961393780432687-ab-pod01-rec2&#39; was disallowed by policy. Policy identifiers: &#39;[{&quot;policyAssignment&quot;:{&quot;name&quot;:&quot;Enforce Tags at Resource Level&quot;,&quot;id&quot;:&quot;/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/providers/Microsoft.Authorization/policyAssignments/9bb255ba83134edb8abb4536&quot;},&quot;policyDefinition&quot;:{&quot;name&quot;:&quot;Enforce Tags at Resource Level&quot;,&quot;id&quot;:&quot;/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/providers/Microsoft.Authorization/policyDefinitions/95a8cfc2-fe2c-41a0-a4ef-af0012b7cb71&quot;}}]&#39;.&#39; and Target: &#39;5690961393780432687-ab-pod01-rec2&#39;.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20240829</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;RequestDisallowedByPolicy&quot;,</li>
+</ul>
+<ul>
+<li>&quot;target&quot;: &quot;5690961393780432687-ab-pod01-rec2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;Resource &#39;5690961393780432687-ab-pod01-rec2&#39; was disallowed by policy. Policy identifiers: &#39;[{\&quot;policyAssignment\&quot;:{\&quot;name\&quot;:\&quot;Enforce Tags at Resource Level\&quot;,\&quot;id\&quot;:\&quot;/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/providers/Microsoft.Authorization/policyAssignments/9bb255ba83134edb8abb4536\&quot;},\&quot;policyDefinition\&quot;:{\&quot;name\&quot;:\&quot;Enforce Tags at Resource Level\&quot;,\&quot;id\&quot;:\&quot;/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/providers/Microsoft.Authorization/policyDefinitions/95a8cfc2-fe2c-41a0-a4ef-af0012b7cb71\&quot;}}]&#39;.&quot;,</li>
+</ul>
+<ul>
+<li>&quot;details&quot;: []</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>operationName</li>
+</ul>
+<ul>
+<li>targetUri</li>
+</ul>
+<ul>
+<li>httpStatusCode</li>
+</ul>
+<ul>
+<li>PUT/SUBSCRIPTIONS/RESOURCEGROUPS/PROVIDERS/MICROSOFT.NETWORK/PRIVATEDNSZONES/A/</li>
+</ul>
+<ul>
+<li>主要是因为PUT/SUBSCRIPTIONS/RESOURCEGROUPS/PROVIDERS/MICROSOFT.NETWORK/PRIVATEDNSZONES/A/，专用DNS区域中的A记录添加被policy拦截了。</li>
+</ul>
+<ul>
+<li>message</li>
+</ul>
+<ul>
+<li>找到对应的分配，进行编辑，</li>
+</ul>
+<ul>
+<li>在高级中找到添加排除项，</li>
+</ul>
+<ul>
+<li>关于工单中的发现，private dns zone的Tags不支持全数字或带空格的内容。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>根据报错需要排查客户的policy配置问题，通过ASC查看客户的policy配置情况，根据policyid找到指定的策略，</li>
+</ul>
+<ul>
+<li>通过策略了解到客户是通过tags进行的判断，进一步检查客户的vault已经相关资源的tags情况，确认没有问题。</li>
+</ul>
+<ul>
+<li>保存之后，确认能够成功创建专用终结点。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<ul>
+<li>建议将以下两个进行添加，因为private DNS zone的虚拟网络链接依旧会被此policy拦截，建议再添加时virtualnetworklinks</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>进一步排查客户的操作日志可以确认到对应的operation的具体信息，确认到了问题原因，<a href="https://azurecm.chinanorth2.kusto.chinacloudapi.cn/azurecm?query=H4sIAAAAAAAEAG2RTU%2fDMAyGzyDxH8IubKgZbVeNDzEkBAh2GJqgXLi5ibcG1iTE7mASP56MDzEkJF9iv34fO95Si5YYQ3cPQtMo0G99VRsLCMR5%2fznW3FdCLVyrwZu%2bsnu9vgaGCgi%2f22LmhtmPrXKNsfM7fGmRmHa2t97Fa40BRTmeXN2X55OpOBuJ2I1sGuzmaV7IdCizrEzTk8947AmwekN%2f%2bq88H%2fzII%2bTg4F8MzF03072NKaitSAXj2Tg71mI0Eh0YFKCO9UymR9VAFjrP5VGRVbI4LmZpdpgNhwPs%2fGHsC%2bUsg7EkOhXVUssZSeMBSAZadjZwdfyTCXLttNiNqOur8qvqg3tCxb%2fTJmIaUBnCMq55z9D45FyxWRpejXVyiX7hVg1aTkqg51toMHEeA6zX%2bHwxhDnyQzDJGhkNuKULpzHBEFyYIBHMf1R3SK4NCsuVxwS0NmsXWEzD2pINxqvtbH8AG163HhcCAAA%3d&amp;web=0" target="_blank" rel="noopener">https://azurecm.chinanorth2.kusto.chinacloudapi.cn/azurecm?query=H4sIAAAAAAAEAG2RTU%2fDMAyGzyDxH8IubKgZbVeNDzEkBAh2GJqgXLi5ibcG1iTE7mASP56MDzEkJF9iv34fO95Si5YYQ3cPQtMo0G99VRsLCMR5%2fznW3FdCLVyrwZu%2bsnu9vgaGCgi%2f22LmhtmPrXKNsfM7fGmRmHa2t97Fa40BRTmeXN2X55OpOBuJ2I1sGuzmaV7IdCizrEzTk8947AmwekN%2f%2bq88H%2fzII%2bTg4F8MzF03072NKaitSAXj2Tg71mI0Eh0YFKCO9UymR9VAFjrP5VGRVbI4LmZpdpgNhwPs%2fGHsC%2bUsg7EkOhXVUssZSeMBSAZadjZwdfyTCXLttNiNqOur8qvqg3tCxb%2fTJmIaUBnCMq55z9D45FyxWRpejXVyiX7hVg1aTkqg51toMHEeA6zX%2bHwxhDnyQzDJGhkNuKULpzHBEFyYIBHMf1R3SK4NCsuVxwS0NmsXWEzD2pINxqvtbH8AG163HhcCAAA%3d&amp;web=0</a></li>
+</ul>
+<ul>
+<li><a href="https://management.chinacloudapi.cn:443/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/resourceGroups/RG-AZCN3-HUB/providers/Microsoft.Network/privateDnsZones/privatelink.bjb3.backup.windowsazure.cn/A/5690961393780432687-ab-pod01-id1?api-version=2020-01-01" target="_blank" rel="noopener">https://management.chinacloudapi.cn:443/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/resourceGroups/RG-AZCN3-HUB/providers/Microsoft.Network/privateDnsZones/privatelink.bjb3.backup.windowsazure.cn/A/5690961393780432687-ab-pod01-id1?api-version=2020-01-01</a></li>
+</ul>
+<ul>
+<li><a href="https://management.chinacloudapi.cn:443/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/resourceGroups/RG-AZCN3-HUB/providers/Microsoft.Network/privateDnsZones/privatelink.bjb3.backup.windowsazure.cn/A/5690961393780432687-ab-pod01-rec2?api-version=2020-01-01" target="_blank" rel="noopener">https://management.chinacloudapi.cn:443/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/resourceGroups/RG-AZCN3-HUB/providers/Microsoft.Network/privateDnsZones/privatelink.bjb3.backup.windowsazure.cn/A/5690961393780432687-ab-pod01-rec2?api-version=2020-01-01</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20240829</p>
+<p>关联工单 20240618299514_Private EndPoint failed to created</p>
+<p>问题描述：</p>
+<p>客户创建Recovery Services vaults的专用终结点出现策略的限制。但是其中的resource描述无法定位到。(实际上是平台自动配置private dns zone中的记录名)</p>
+<p>详细报错如下：</p>
+<p>{</p>
+<p>&quot;status&quot;: &quot;Failed&quot;,</p>
+<p>&quot;error&quot;: {</p>
+<p>&quot;code&quot;: &quot;RequestDisallowedByPolicy&quot;,</p>
+<p>&quot;target&quot;: &quot;5690961393780432687-ab-pod01-rec2&quot;,</p>
+<p>&quot;message&quot;: &quot;Resource &#39;5690961393780432687-ab-pod01-rec2&#39; was disallowed by policy. Policy identifiers: &#39;[{\&quot;policyAssignment\&quot;:{\&quot;name\&quot;:\&quot;Enforce Tags at Resource Level\&quot;,\&quot;id\&quot;:\&quot;/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/providers/Microsoft.Authorization/policyAssignments/9bb255ba83134edb8abb4536\&quot;},\&quot;policyDefinition\&quot;:{\&quot;name\&quot;:\&quot;Enforce Tags at Resource Level\&quot;,\&quot;id\&quot;:\&quot;/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/providers/Microsoft.Authorization/policyDefinitions/95a8cfc2-fe2c-41a0-a4ef-af0012b7cb71\&quot;}}]&#39;.&quot;,</p>
+<p>&quot;details&quot;: []</p>
+<p>}</p>
+<p>排查过程：</p>
+<p>根据报错需要排查客户的policy配置问题，通过ASC查看客户的policy配置情况，根据policyid找到指定的策略，</p>
+<p>通过策略了解到客户是通过tags进行的判断，进一步检查客户的vault已经相关资源的tags情况，确认没有问题。</p>
+<p>进一步排查客户的操作日志可以确认到对应的operation的具体信息，确认到了问题原因，<a href="https://azurecm.chinanorth2.kusto.chinacloudapi.cn/azurecm?query=H4sIAAAAAAAEAG2RTU%2fDMAyGzyDxH8IubKgZbVeNDzEkBAh2GJqgXLi5ibcG1iTE7mASP56MDzEkJF9iv34fO95Si5YYQ3cPQtMo0G99VRsLCMR5%2fznW3FdCLVyrwZu%2bsnu9vgaGCgi%2f22LmhtmPrXKNsfM7fGmRmHa2t97Fa40BRTmeXN2X55OpOBuJ2I1sGuzmaV7IdCizrEzTk8947AmwekN%2f%2bq88H%2fzII%2bTg4F8MzF03072NKaitSAXj2Tg71mI0Eh0YFKCO9UymR9VAFjrP5VGRVbI4LmZpdpgNhwPs%2fGHsC%2bUsg7EkOhXVUssZSeMBSAZadjZwdfyTCXLttNiNqOur8qvqg3tCxb%2fTJmIaUBnCMq55z9D45FyxWRpejXVyiX7hVg1aTkqg51toMHEeA6zX%2bHwxhDnyQzDJGhkNuKULpzHBEFyYIBHMf1R3SK4NCsuVxwS0NmsXWEzD2pINxqvtbH8AG163HhcCAAA%3d&amp;web=0" target="_blank" rel="noopener">https://azurecm.chinanorth2.kusto.chinacloudapi.cn/azurecm?query=H4sIAAAAAAAEAG2RTU%2fDMAyGzyDxH8IubKgZbVeNDzEkBAh2GJqgXLi5ibcG1iTE7mASP56MDzEkJF9iv34fO95Si5YYQ3cPQtMo0G99VRsLCMR5%2fznW3FdCLVyrwZu%2bsnu9vgaGCgi%2f22LmhtmPrXKNsfM7fGmRmHa2t97Fa40BRTmeXN2X55OpOBuJ2I1sGuzmaV7IdCizrEzTk8947AmwekN%2f%2bq88H%2fzII%2bTg4F8MzF03072NKaitSAXj2Tg71mI0Eh0YFKCO9UymR9VAFjrP5VGRVbI4LmZpdpgNhwPs%2fGHsC%2bUsg7EkOhXVUssZSeMBSAZadjZwdfyTCXLttNiNqOur8qvqg3tCxb%2fTJmIaUBnCMq55z9D45FyxWRpejXVyiX7hVg1aTkqg51toMHEeA6zX%2bHwxhDnyQzDJGhkNuKULpzHBEFyYIBHMf1R3SK4NCsuVxwS0NmsXWEzD2pINxqvtbH8AG163HhcCAAA%3d&amp;web=0</a></p>
+<p>operationName</p>
+<p>targetUri</p>
+<p>httpStatusCode</p>
+<p>PUT/SUBSCRIPTIONS/RESOURCEGROUPS/PROVIDERS/MICROSOFT.NETWORK/PRIVATEDNSZONES/A/</p>
+<p><a href="https://management.chinacloudapi.cn:443/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/resourceGroups/RG-AZCN3-HUB/providers/Microsoft.Network/privateDnsZones/privatelink.bjb3.backup.windowsazure.cn/A/5690961393780432687-ab-pod01-id1?api-version=2020-01-01" target="_blank" rel="noopener">https://management.chinacloudapi.cn:443/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/resourceGroups/RG-AZCN3-HUB/providers/Microsoft.Network/privateDnsZones/privatelink.bjb3.backup.windowsazure.cn/A/5690961393780432687-ab-pod01-id1?api-version=2020-01-01</a></p>
+<p>403</p>
+<p><a href="https://management.chinacloudapi.cn:443/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/resourceGroups/RG-AZCN3-HUB/providers/Microsoft.Network/privateDnsZones/privatelink.bjb3.backup.windowsazure.cn/A/5690961393780432687-ab-pod01-rec2?api-version=2020-01-01" target="_blank" rel="noopener">https://management.chinacloudapi.cn:443/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/resourceGroups/RG-AZCN3-HUB/providers/Microsoft.Network/privateDnsZones/privatelink.bjb3.backup.windowsazure.cn/A/5690961393780432687-ab-pod01-rec2?api-version=2020-01-01</a></p>
+<p>主要是因为PUT/SUBSCRIPTIONS/RESOURCEGROUPS/PROVIDERS/MICROSOFT.NETWORK/PRIVATEDNSZONES/A/，专用DNS区域中的A记录添加被policy拦截了。</p>
+<p>message</p>
+<p>Http request failed with ErrorResponseMessageException. HttpStatus: &#39;Forbidden&#39;, ErrorCode: &#39;RequestDisallowedByPolicy&#39;, ErrorMessage: &#39;Resource &#39;5690961393780432687-ab-pod01-rec2&#39; was disallowed by policy. Policy identifiers: &#39;[{&quot;policyAssignment&quot;:{&quot;name&quot;:&quot;Enforce Tags at Resource Level&quot;,&quot;id&quot;:&quot;/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/providers/Microsoft.Authorization/policyAssignments/9bb255ba83134edb8abb4536&quot;},&quot;policyDefinition&quot;:{&quot;name&quot;:&quot;Enforce Tags at Resource Level&quot;,&quot;id&quot;:&quot;/subscriptions/9ec4c668-6294-44c2-a1af-a1b8de4b5668/providers/Microsoft.Authorization/policyDefinitions/95a8cfc2-fe2c-41a0-a4ef-af0012b7cb71&quot;}}]&#39;.&#39; and Target: &#39;5690961393780432687-ab-pod01-rec2&#39;.</p>
+<p>解决方案：</p>
+<p>找到对应的分配，进行编辑，</p>
+<p>在高级中找到添加排除项，</p>
+<p>建议将以下两个进行添加，因为private DNS zone的虚拟网络链接依旧会被此policy拦截，建议再添加时virtualnetworklinks</p>
+<p>保存之后，确认能够成功创建专用终结点。</p>
+<p>关于工单中的发现，private dns zone的Tags不支持全数字或带空格的内容。</p></article>

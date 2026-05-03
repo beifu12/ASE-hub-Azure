@@ -1,0 +1,135 @@
+<article class="kb-article" data-title="【share】批量添加存储账户生命周期策略"><h1>【share】批量添加存储账户生命周期策略</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-08 17:04:26</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Reviewer</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>zhangwenxin</li>
+</ul>
+<ul>
+<li>）</li>
+</ul>
+<ul>
+<li>-------------------------------------------------</li>
+</ul>
+<ul>
+<li># 登录到 Azure 订阅</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud -subscriptionId &quot;your subscription id&quot;</li>
+</ul>
+<ul>
+<li># 获取所有存储账户</li>
+</ul>
+<ul>
+<li>$storageAccounts = Get-AzStorageAccount</li>
+</ul>
+<ul>
+<li># 遍历每个存储账户</li>
+</ul>
+<ul>
+<li>foreach ($account in $storageAccounts) {</li>
+</ul>
+<ul>
+<li>$rgName = $account.ResourceGroupName</li>
+</ul>
+<ul>
+<li>$accountName = $account.StorageAccountName</li>
+</ul>
+<ul>
+<li># 创建生命周期策略动作（删除超过x天的 Append/Block Blob）</li>
+</ul>
+<ul>
+<li>$actionDelete = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction Delete -daysAfterModificationGreaterThan 5</li>
+</ul>
+<ul>
+<li># 创建过滤器，仅适用于 Append/Block Blob</li>
+</ul>
+<ul>
+<li>$filter = New-AzStorageAccountManagementPolicyFilter -BlobType AppendBlob</li>
+</ul>
+<ul>
+<li># 创建生命周期策略规则</li>
+</ul>
+<ul>
+<li>$rule = New-AzStorageAccountManagementPolicyRule -Name &quot;DeleteAppendBlobGreaterThan5Days&quot; -Action $actionDelete -Filter $filter</li>
+</ul>
+<ul>
+<li># 创建并应用生命周期策略</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Lifecycle policy applied to storage account: $accountName&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Lifecycle policy applied to all storage accounts.&quot;</li>
+</ul>
+<ul>
+<li>---------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>添加效果：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如下命令可以遍历某订阅下所有存储账户，并添加“删除Last modified日期早于5天的所有AppendBlob”的规则</li>
+</ul>
+<ul>
+<li>Set-AzStorageAccountManagementPolicy -ResourceGroupName $rgName -StorageAccountName $accountName -Rule $rule</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>操作方法：您可复制如下命令到notepad中，将标黄处变更为自己环境中的值，保存为ps1格式文件，然后运行。（注： Set-AzStorageAccountManagementPolicy会覆盖现有策略，如果先前没有创建过策略，可运行脚本创建。如果先前手动在门户创建了策略并希望保留，需要在命令中定义多条规则，如 <a href="https://learn.microsoft.com/en-us/powershell/module/az.storage/set-azstorageaccountmanagementpolicy?view=azps-15.1.0#examples" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.storage/set-azstorageaccountmanagementpolicy?view=azps-15.1.0#examples</a> 所述。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Reviewer</p>
+<p>zhangwenxin</p>
+<p>如下命令可以遍历某订阅下所有存储账户，并添加“删除Last modified日期早于5天的所有AppendBlob”的规则</p>
+<p>操作方法：您可复制如下命令到notepad中，将标黄处变更为自己环境中的值，保存为ps1格式文件，然后运行。（注： Set-AzStorageAccountManagementPolicy会覆盖现有策略，如果先前没有创建过策略，可运行脚本创建。如果先前手动在门户创建了策略并希望保留，需要在命令中定义多条规则，如 <a href="https://learn.microsoft.com/en-us/powershell/module/az.storage/set-azstorageaccountmanagementpolicy?view=azps-15.1.0#examples" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.storage/set-azstorageaccountmanagementpolicy?view=azps-15.1.0#examples</a> 所述。</p>
+<p>）</p>
+<p>-------------------------------------------------</p>
+<h1>登录到 Azure 订阅</h1>
+<p>Connect-AzAccount -Environment AzureChinaCloud -subscriptionId &quot;your subscription id&quot;</p>
+<h1>获取所有存储账户</h1>
+<p>$storageAccounts = Get-AzStorageAccount</p>
+<h1>遍历每个存储账户</h1>
+<p>foreach ($account in $storageAccounts) {</p>
+<p>$rgName = $account.ResourceGroupName</p>
+<p>$accountName = $account.StorageAccountName</p>
+<h1>创建生命周期策略动作（删除超过x天的 Append/Block Blob）</h1>
+<p>$actionDelete = Add-AzStorageAccountManagementPolicyAction -BaseBlobAction Delete -daysAfterModificationGreaterThan 5</p>
+<h1>创建过滤器，仅适用于 Append/Block Blob</h1>
+<p>$filter = New-AzStorageAccountManagementPolicyFilter -BlobType AppendBlob</p>
+<h1>创建生命周期策略规则</h1>
+<p>$rule = New-AzStorageAccountManagementPolicyRule -Name &quot;DeleteAppendBlobGreaterThan5Days&quot; -Action $actionDelete -Filter $filter</p>
+<h1>创建并应用生命周期策略</h1>
+<p>Set-AzStorageAccountManagementPolicy -ResourceGroupName $rgName -StorageAccountName $accountName -Rule $rule</p>
+<p>Write-Host &quot;Lifecycle policy applied to storage account: $accountName&quot;</p>
+<p>}</p>
+<p>Write-Host &quot;Lifecycle policy applied to all storage accounts.&quot;</p>
+<p>---------------------------------------------------------------</p>
+<p>添加效果：</p></article>

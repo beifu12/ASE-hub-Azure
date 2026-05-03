@@ -1,0 +1,76 @@
+<article class="kb-article" data-title="ER线路资源中显示degraded报警"><h1>ER线路资源中显示degraded报警</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-08-14 14:04:35</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20250814</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20250814</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20250814</li>
+</ul>
+<ul>
+<li>举例说明：</li>
+</ul>
+<ul>
+<li>--------------------</li>
+</ul>
+<ul>
+<li>往下滚动，可以看到ARP信息是完整的。</li>
+</ul>
+<ul>
+<li>但如果我们再往下滚动，可以看到secondary的设备。也可以看到BGP没有启动。</li>
+</ul>
+<ul>
+<li>再往下，可以注意到，路由条目比primary的少。因为只有从ER GW的BGP学习的路由，都是VNet的网段，但没有地端宣告的路由。并且下面的ARP信息不完整。</li>
+</ul>
+<ul>
+<li>这本身并不是个会影响专线运行和连通性的问题，只是冗余的不足。日常使用没有问题，只体现在ER如果做维护时，会导致ER连通性的中断。如果客户的需求中，需要启用第二条peering，则需要和服务提供商协商进行配置。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>有些客户会在查看资源健康的时候，发现有一直报ER线路degraded的状况。原因其实很简单，是因为客户的ER线路中的，primary和secondary peering，只启用了一条所导致的。</li>
+</ul>
+<ul>
+<li>排查确认的步骤，不需要麻烦查看Jarvis。我们可以直接从ASC中的Microsoft.Network/expressRouteCircuits中，找到对应的Circuit资源，先确认DumpCircuitInfo。再到DumpRouting中确认更多详细信息。</li>
+</ul>
+<ul>
+<li>首先在DumpCircuitInfo中确认以下信息，primary和secondary的设备，对端的BGP peer IP。</li>
+</ul>
+<ul>
+<li>然后再到Diagnotics中跑这个DumpRouting的信息。（适合查看一切关于ER ARP，BGP，路由等信息的问题）</li>
+</ul>
+<ul>
+<li>其中，打开的文件中，可以看到最上面的第一部分是primary peering的信息，可以找到设备信息，BGP可以确认是启动的。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20250814</p>
+<p>有些客户会在查看资源健康的时候，发现有一直报ER线路degraded的状况。原因其实很简单，是因为客户的ER线路中的，primary和secondary peering，只启用了一条所导致的。</p>
+<p>排查确认的步骤，不需要麻烦查看Jarvis。我们可以直接从ASC中的Microsoft.Network/expressRouteCircuits中，找到对应的Circuit资源，先确认DumpCircuitInfo。再到DumpRouting中确认更多详细信息。</p>
+<p>举例说明：</p>
+<p>--------------------</p>
+<p>首先在DumpCircuitInfo中确认以下信息，primary和secondary的设备，对端的BGP peer IP。</p>
+<p>然后再到Diagnotics中跑这个DumpRouting的信息。（适合查看一切关于ER ARP，BGP，路由等信息的问题）</p>
+<p>其中，打开的文件中，可以看到最上面的第一部分是primary peering的信息，可以找到设备信息，BGP可以确认是启动的。</p>
+<p>往下滚动，可以看到ARP信息是完整的。</p>
+<p>但如果我们再往下滚动，可以看到secondary的设备。也可以看到BGP没有启动。</p>
+<p>再往下，可以注意到，路由条目比primary的少。因为只有从ER GW的BGP学习的路由，都是VNet的网段，但没有地端宣告的路由。并且下面的ARP信息不完整。</p>
+<p>这本身并不是个会影响专线运行和连通性的问题，只是冗余的不足。日常使用没有问题，只体现在ER如果做维护时，会导致ER连通性的中断。如果客户的需求中，需要启用第二条peering，则需要和服务提供商协商进行配置。</p></article>

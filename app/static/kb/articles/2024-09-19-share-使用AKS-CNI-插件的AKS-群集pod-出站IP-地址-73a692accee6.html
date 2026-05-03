@@ -1,0 +1,171 @@
+<article class="kb-article" data-title="【share】使用AKS CNI 插件的AKS 群集pod 出站IP 地址"><h1>【share】使用AKS CNI 插件的AKS 群集pod 出站IP 地址</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-09-19 14:42:33</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>humingyue</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>humingyue</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>humingyue</li>
+</ul>
+<ul>
+<li>关联工单号：20240905313787</li>
+</ul>
+<ul>
+<li>实验目的：</li>
+</ul>
+<ul>
+<li>测试使用传统CNI插件和使用Azure CNI Pod Subnet 的AKS 群集的Pod 出站IP 的区别</li>
+</ul>
+<ul>
+<li>部署内容：</li>
+</ul>
+<ul>
+<li>使用传统CNI 插件的AKS 群集（即仅使用Azure CNI node subnet）</li>
+</ul>
+<ul>
+<li>使用Azure CNI Pod Subnet 的AKS 群集（目前china azure 上只能部署动态IP分派模式）</li>
+</ul>
+<ul>
+<li>Azure firewall</li>
+</ul>
+<ul>
+<li>实验过程：</li>
+</ul>
+<ul>
+<li>3， 部署azure 防火墙并使用UDR 将路由经过azure firewall 10.225.0.4</li>
+</ul>
+<ul>
+<li>4，在firewall 上配置ping 禁止的网络策略：</li>
+</ul>
+<ul>
+<li>如果文件中的镜像（默认是从docker.io拉取）有问题，可以使用这个:dockerhub.azk8s.cn/library/nginx</li>
+</ul>
+<ul>
+<li>登录该pod 进行ping 测试</li>
+</ul>
+<ul>
+<li>6， 对比两个群集中pod的出站IP：</li>
+</ul>
+<ul>
+<li>可以看到在传统CNI AKS cluster 中pod出站IP 会因为目标IP 与AKS 群集自身vnet关系而发生变化。</li>
+</ul>
+<ul>
+<li>AKS node 地址：</li>
+</ul>
+<ul>
+<li>Pod 地址：</li>
+</ul>
+<ul>
+<li>当访问的目标为（vnet to vnet）VPN 对端的IP（10.1.16.4） 时，在azure firewall上看到的source IP 为10.224.0.4（pod 所在node IP），</li>
+</ul>
+<ul>
+<li>当访问的目标为与AKS 群集vnet建立peering 关系的vnet中的IP（10.0.3.5 ）时在azure firewall上看到的source IP为10.224.0.21（pod自己IP）</li>
+</ul>
+<ul>
+<li>而Azure CNI Pod Subnet 的AKS 群集 中pod 出站的IP 固定为自身的IP 地址：</li>
+</ul>
+<ul>
+<li>关于这一点有相关官网说明：</li>
+</ul>
+<ul>
+<li>Concepts - AKS Legacy Container Networking Interfaces (CNI) - Azure Kubernetes Service | Microsoft Learn</li>
+</ul>
+<ul>
+<li>相关官网参考：</li>
+</ul>
+<ul>
+<li>===============================================</li>
+</ul>
+<ul>
+<li>配置 Azure CNI 网络以动态分配 IP 并增强子网支持 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>根据官网说明Azure 提供的CNI 插件有多种模式</li>
+</ul>
+<ul>
+<li>Concepts - Azure CNI Pod Subnet networking in AKS - Azure Kubernetes Service | Microsoft Learn</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1，使用azure portal 创建使用传统CNI 插件的AKS 群集</li>
+</ul>
+<ul>
+<li>使用portal创建传统CNI AKS 群集：</li>
+</ul>
+<ul>
+<li>通常情况下在portal 界面使用的Azure CNI 插件是传统的CNI 模式，这种模式又叫“Azure CNI Node Subnet” 模式</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>2， 使用如下cli 命令创建使用Azure CNI Pod Subnet 的AKS 群集</li>
+</ul>
+<ul>
+<li>az aks create --name yyAKSCluster --resource-group ttgroup --location &quot;China East 2&quot;  --node-count 2 --network-plugin azure --vnet-subnet-id /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_ttgroup_AKS-CNI_chinaeast2/providers/Microsoft.Network/virtualNetworks/aks-vnet-36501240/subnets/nodesubnet  --pod-subnet-id /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_ttgroup_AKS-CNI_chinaeast2/providers/Microsoft.Network/virtualNetworks/aks-vnet-36501240/subnets/podsubnet --enable-addons monitoring --generate-ssh-keys</li>
+</ul>
+<ul>
+<li>5， 分别在两个AKS 群集中起busybox image的pod， 这个busybox 里自带ifconfig，wget，traceroute，telnet等命令</li>
+</ul>
+<ul>
+<li>kubectl exec -it ping-test3 --namespace default sh</li>
+</ul>
+<ul>
+<li>使用如下cli 命令创建使用Azure CNI Pod Subnet 的AKS 群集</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/configure-azure-cni?tabs=configure-networking-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/configure-azure-cni?tabs=configure-networking-portal</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-09-12</p>
+<p>humingyue</p>
+<p>关联工单号：20240905313787</p>
+<p>实验目的：</p>
+<p>测试使用传统CNI插件和使用Azure CNI Pod Subnet 的AKS 群集的Pod 出站IP 的区别</p>
+<p>部署内容：</p>
+<p>使用传统CNI 插件的AKS 群集（即仅使用Azure CNI node subnet）</p>
+<p>使用Azure CNI Pod Subnet 的AKS 群集（目前china azure 上只能部署动态IP分派模式）</p>
+<p>Azure firewall</p>
+<p>实验过程：</p>
+<p>1，使用azure portal 创建使用传统CNI 插件的AKS 群集</p>
+<p>2， 使用如下cli 命令创建使用Azure CNI Pod Subnet 的AKS 群集</p>
+<p>az aks create --name yyAKSCluster --resource-group ttgroup --location &quot;China East 2&quot;  --node-count 2 --network-plugin azure --vnet-subnet-id /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_ttgroup_AKS-CNI_chinaeast2/providers/Microsoft.Network/virtualNetworks/aks-vnet-36501240/subnets/nodesubnet  --pod-subnet-id /subscriptions/e11ede9d-d74a-4590-b362-4e5c0b16dfa1/resourceGroups/MC_ttgroup_AKS-CNI_chinaeast2/providers/Microsoft.Network/virtualNetworks/aks-vnet-36501240/subnets/podsubnet --enable-addons monitoring --generate-ssh-keys</p>
+<p>3， 部署azure 防火墙并使用UDR 将路由经过azure firewall 10.225.0.4</p>
+<p>4，在firewall 上配置ping 禁止的网络策略：</p>
+<p>5， 分别在两个AKS 群集中起busybox image的pod， 这个busybox 里自带ifconfig，wget，traceroute，telnet等命令</p>
+<p>如果文件中的镜像（默认是从docker.io拉取）有问题，可以使用这个:dockerhub.azk8s.cn/library/nginx</p>
+<p>登录该pod 进行ping 测试</p>
+<p>kubectl exec -it ping-test3 --namespace default sh</p>
+<p>6， 对比两个群集中pod的出站IP：</p>
+<p>可以看到在传统CNI AKS cluster 中pod出站IP 会因为目标IP 与AKS 群集自身vnet关系而发生变化。</p>
+<p>AKS node 地址：</p>
+<p>Pod 地址：</p>
+<p>当访问的目标为（vnet to vnet）VPN 对端的IP（10.1.16.4） 时，在azure firewall上看到的source IP 为10.224.0.4（pod 所在node IP），</p>
+<p>当访问的目标为与AKS 群集vnet建立peering 关系的vnet中的IP（10.0.3.5 ）时在azure firewall上看到的source IP为10.224.0.21（pod自己IP）</p>
+<p>而Azure CNI Pod Subnet 的AKS 群集 中pod 出站的IP 固定为自身的IP 地址：</p>
+<p>关于这一点有相关官网说明：</p>
+<p>Concepts - AKS Legacy Container Networking Interfaces (CNI) - Azure Kubernetes Service | Microsoft Learn</p>
+<p>相关官网参考：</p>
+<p>===============================================</p>
+<p>使用portal创建传统CNI AKS 群集：</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/configure-azure-cni?tabs=configure-networking-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/configure-azure-cni?tabs=configure-networking-portal</a></p>
+<p>使用如下cli 命令创建使用Azure CNI Pod Subnet 的AKS 群集</p>
+<p>配置 Azure CNI 网络以动态分配 IP 并增强子网支持 - Azure Kubernetes Service | Azure Docs</p>
+<p>根据官网说明Azure 提供的CNI 插件有多种模式</p>
+<p>通常情况下在portal 界面使用的Azure CNI 插件是传统的CNI 模式，这种模式又叫“Azure CNI Node Subnet” 模式</p>
+<p>Concepts - Azure CNI Pod Subnet networking in AKS - Azure Kubernetes Service | Microsoft Learn</p></article>

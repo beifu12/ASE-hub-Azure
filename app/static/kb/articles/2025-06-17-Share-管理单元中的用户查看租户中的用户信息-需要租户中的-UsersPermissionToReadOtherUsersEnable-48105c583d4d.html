@@ -1,0 +1,47 @@
+<article class="kb-article" data-title="【Share】管理单元中的用户查看租户中的用户信息，需要租户中的“UsersPermissionToReadOtherUsersEnabled”配置为True"><h1>【Share】管理单元中的用户查看租户中的用户信息，需要租户中的“UsersPermissionToReadOtherUsersEnabled”配置为True</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-17 17:35:15</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>管理单元中的用户可以看到租户中的用户信息，与租户中的“UsersPermissionToReadOtherUsersEnabled”是True有关：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>管理单元中的用户可以看到租户中的用户信息，与租户中的“UsersPermissionToReadOtherUsersEnabled”是True有关：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>关于参数说明及调整方法：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在测试租户中，该值是False的，管理单元中用户没有权限查看租户用户信息。</li>
+</ul>
+<ul>
+<li>我们将该值调整为True后，管理单元中的用户有权限查看租户中用户信息。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-MsolCompanySettings (MSOnline) | Microsoft Learn</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>管理单元中的用户可以看到租户中的用户信息，与租户中的“UsersPermissionToReadOtherUsersEnabled”是True有关：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/6/16</p>
+<p>管理单元中的用户可以看到租户中的用户信息，与租户中的“UsersPermissionToReadOtherUsersEnabled”是True有关：</p>
+<p>在测试租户中，该值是False的，管理单元中用户没有权限查看租户用户信息。</p>
+<p>我们将该值调整为True后，管理单元中的用户有权限查看租户中用户信息。</p>
+<p>关于参数说明及调整方法：</p>
+<p>Set-MsolCompanySettings (MSOnline) | Microsoft Learn</p></article>

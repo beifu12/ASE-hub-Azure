@@ -1,0 +1,825 @@
+<article class="kb-article" data-title="下面把你这一路从全新环境部署 OpenClaw、到用 .env + Feishu + Claude（不依赖 llama.cpp）跑通、再到开网页抓取与常用插件/技能命令，整理成一份可直接复制的命令笔记。\ （已按 Windows/PowerShell 场景写好；如用 CMD，请去掉注释并调整环境变量语法。）"><h1>下面把你这一路从全新环境部署 OpenClaw、到用 .env + Feishu + Claude（不依赖 llama.cpp）跑通、再到开网页抓取与常用插件/技能命令，整理成一份可直接复制的命令笔记。\ （已按 Windows/PowerShell 场景写好；如用 CMD，请去掉注释并调整环境变量语法。）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: New Section 2</li>
+<li>最近修改: 2026-02-14 11:21:40</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>常见报错速解：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>常见报错速解：</li>
+</ul>
+<ul>
+<li>{{4-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</li>
+</ul>
+<ul>
+<li>{{5-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</li>
+</ul>
+<ul>
+<li>{{6-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</li>
+</ul>
+<ul>
+<li>{{7-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</li>
+</ul>
+<ul>
+<li>禁用需要 API Key 的 Brave 搜索（避免“需要密钥”的提示） &gt; 先 openclaw plugins list | findstr /i brave 找到实际 ID {{8-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</li>
+</ul>
+<ul>
+<li>启用“浏览器搜索/抓取”相关（如果你的版本提供该插件） {{9-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</li>
+</ul>
+<ul>
+<li>{{10-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</li>
+</ul>
+<ul>
+<li>{{11-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</li>
+</ul>
+<ul>
+<li>{{12-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</li>
+</ul>
+<ul>
+<li>{{13-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</li>
+</ul>
+<ul>
+<li>{{14-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>0) 先决条件（一次性）</li>
+</ul>
+<ul>
+<li>Node.js LTS（自带 npm）。装好后新开一个终端。</li>
+</ul>
+<ul>
+<li># 安装 OpenClaw CLI（全局）</li>
+</ul>
+<ul>
+<li>npm i -g openclaw</li>
+</ul>
+<ul>
+<li>openclaw --version</li>
+</ul>
+<ul>
+<li>``</li>
+</ul>
+<ul>
+<li>1) 准备 .env（只放密钥；不要提交到 Git）</li>
+</ul>
+<ul>
+<li>用你自己的真实值替换下列占位。</li>
+</ul>
+<ul>
+<li># .env（示例）</li>
+</ul>
+<ul>
+<li># —— Feishu 机器人凭证（飞书开发者后台 → 凭证与基础信息 / 事件订阅）</li>
+</ul>
+<ul>
+<li># —— OpenClaw 网关访问令牌（随便生成个随机串即可）</li>
+</ul>
+<ul>
+<li># —— 模型提供方（只留 Anthropic；不依赖 llama.cpp）</li>
+</ul>
+<ul>
+<li>注：不要把密钥写进 JSON，统一走环境变量。</li>
+</ul>
+<ul>
+<li>2) 写 openclaw.json（用户目录）</li>
+</ul>
+<ul>
+<li>路径：C:\Users\Henry\.openclaw\openclaw.json</li>
+</ul>
+<ul>
+<li>这份配置只保留 Anthropic，默认模型 Claude 4.5 Opus (20251101)，启用 Feishu，不使用 llama.cpp。</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;models&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;providers&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;neolink-anthropic&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;api&quot;: &quot;anthropic-messages&quot;,</li>
+</ul>
+<ul>
+<li>&quot;apiKey&quot;: &quot;${NEOLINKANTHROPICKEY}&quot;,</li>
+</ul>
+<ul>
+<li>&quot;models&quot;: [</li>
+</ul>
+<ul>
+<li>{ &quot;id&quot;: &quot;claude-opus-4-5-20251101&quot;, &quot;name&quot;: &quot;Claude 4.5 Opus&quot;, &quot;contextWindow&quot;: 200000 },</li>
+</ul>
+<ul>
+<li>{ &quot;id&quot;: &quot;claude-sonnet-4-5-20250929&quot;, &quot;name&quot;: &quot;Claude 4.5 Sonnet&quot;, &quot;contextWindow&quot;: 200000 }</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;agents&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;defaults&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;model&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;primary&quot;: &quot;neolink-anthropic/claude-opus-4-5-20251101&quot;</li>
+</ul>
+<ul>
+<li>&quot;compaction&quot;: { &quot;mode&quot;: &quot;safeguard&quot; },</li>
+</ul>
+<ul>
+<li>&quot;maxConcurrent&quot;: 4,</li>
+</ul>
+<ul>
+<li>&quot;subagents&quot;: { &quot;maxConcurrent&quot;: 8 }</li>
+</ul>
+<ul>
+<li>&quot;messages&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;ackReactionScope&quot;: &quot;group-mentions&quot;</li>
+</ul>
+<ul>
+<li>&quot;commands&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;native&quot;: &quot;auto&quot;,</li>
+</ul>
+<ul>
+<li>&quot;nativeSkills&quot;: &quot;auto&quot;</li>
+</ul>
+<ul>
+<li>&quot;channels&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;feishu&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;dmPolicy&quot;: &quot;pairing&quot;,</li>
+</ul>
+<ul>
+<li>&quot;accounts&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;main&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;appId&quot;: &quot;${FEISHUAPPID}&quot;,</li>
+</ul>
+<ul>
+<li>&quot;appSecret&quot;: &quot;${FEISHUAPPSECRET}&quot;,</li>
+</ul>
+<ul>
+<li>&quot;verificationToken&quot;: &quot;${FEISHUVERIFICATIONTOKEN}&quot;,</li>
+</ul>
+<ul>
+<li>&quot;encryptKey&quot;: &quot;${FEISHUENCRYPTKEY}&quot;</li>
+</ul>
+<ul>
+<li>&quot;gateway&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;mode&quot;: &quot;local&quot;,</li>
+</ul>
+<ul>
+<li>&quot;port&quot;: 18789,</li>
+</ul>
+<ul>
+<li>&quot;bind&quot;: &quot;loopback&quot;,</li>
+</ul>
+<ul>
+<li>&quot;auth&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;mode&quot;: &quot;token&quot;,</li>
+</ul>
+<ul>
+<li>&quot;token&quot;: &quot;${OPENCLAWGATEWAYTOKEN}&quot;</li>
+</ul>
+<ul>
+<li>&quot;plugins&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;entries&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;meta&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;lastTouchedVersion&quot;: &quot;2026.2.12&quot;</li>
+</ul>
+<ul>
+<li>如果之后你想切回 Sonnet，把 agents.defaults.model.primary 改为：\ neolink-anthropic/claude-sonnet-4-5-20250929。</li>
+</ul>
+<ul>
+<li>if ($_ -match &#39;^\s#&#39;) { return }</li>
+</ul>
+<ul>
+<li>if ($_ -match &#39;^\s</li>
+</ul>
+<ul>
+<li>启动日志里应该看到：</li>
+</ul>
+<ul>
+<li>agent model: neolink-anthropic/claude-opus-4-5-20251101</li>
+</ul>
+<ul>
+<li>[feishu] starting ... (mode: websocket)（你已经用长连接模式）</li>
+</ul>
+<ul>
+<li>[browser/service] Browser control service ready</li>
+</ul>
+<ul>
+<li>4) 开“网页抓取”能力（无 API Key）</li>
+</ul>
+<ul>
+<li>你已使用向导把 web_fetch 打开（keyless HTTP 抓取）。如需再次进入向导：</li>
+</ul>
+<ul>
+<li># 进入交互式向导 → 选择 &quot;Web tools&quot; → websearch = No, webfetch = Yes</li>
+</ul>
+<ul>
+<li>openclaw configure</li>
+</ul>
+<ul>
+<li>飞书里一句“帮我查今天的 AI 新闻，给出 3 条并附来源链接”，Agent 就会用 web_fetch 直接抓网页，而不是 Brave/Bing API。</li>
+</ul>
+<ul>
+<li>5) 浏览器中继（可选，用真实 Chrome 标签抓复杂页面）</li>
+</ul>
+<ul>
+<li># 安装扩展到本地目录（输出会告诉你扩展文件夹路径）</li>
+</ul>
+<ul>
+<li>openclaw browser extension install</li>
+</ul>
+<ul>
+<li>然后：</li>
+</ul>
+<ul>
+<li>打开 Chrome → chrome://extensions → 开发者模式</li>
+</ul>
+<ul>
+<li>“加载已解压的扩展” → 选择输出提示的目录（如 ~\.openclaw\browser\chrome-extension）</li>
+</ul>
+<ul>
+<li>固定图标、点进去让状态变为 ON（徽章）</li>
+</ul>
+<ul>
+<li>使用 CLI 控制浏览器（需另开第二个终端，并确保 Gateway 在第一个终端运行中）：</li>
+</ul>
+<ul>
+<li>openclaw --url ws://127.0.0.1:18789 --token $env:OPENCLAWGATEWAYTOKEN browser status</li>
+</ul>
+<ul>
+<li>若报 1006，基本是 Gateway 没在另一窗口运行或 token 不匹配。</li>
+</ul>
+<ul>
+<li>6) Feishu 侧（你已完成，但这里留作清单）</li>
+</ul>
+<ul>
+<li>开发者后台 → 机器人权限：消息读写、群聊消息、媒体/文件等</li>
+</ul>
+<ul>
+<li>事件与回调 → 订阅方式：长连接（你日志里是 WS 模式）</li>
+</ul>
+<ul>
+<li>把机器人拉到测试群或直接私聊</li>
+</ul>
+<ul>
+<li>收到图片/文件时交给 Agent（你已启用 feishu_drive/feishu_doc/feishu_wiki 工具）</li>
+</ul>
+<ul>
+<li>这版大多插件内置，主要是启用/禁用；安装第三方插件需看文档（通常 openclaw plugins install &lt;npm包名&gt;，但不是每个版本都支持）。</li>
+</ul>
+<ul>
+<li>openclaw plugins list</li>
+</ul>
+<ul>
+<li># 启用/禁用插件（替换成你在 plugins list 里看到的真实 ID）</li>
+</ul>
+<ul>
+<li># （如有）安装/卸载第三方插件（可能并非所有版本支持）</li>
+</ul>
+<ul>
+<li># openclaw plugins install @scope/some-plugin</li>
+</ul>
+<ul>
+<li># openclaw plugins uninstall @scope/some-plugin</li>
+</ul>
+<ul>
+<li>openclaw skills list</li>
+</ul>
+<ul>
+<li># 启用某个技能（把 &lt;ID&gt; 换成 skills list 列出的真实 ID）</li>
+</ul>
+<ul>
+<li>常见用途示例：</li>
+</ul>
+<ul>
+<li>启用“浏览器搜索/抓取”相关（如果你的版本提供该插件）</li>
+</ul>
+<ul>
+<li># 或 search.browser / browser_search（以实际名称为准）</li>
+</ul>
+<ul>
+<li>8) 语音（语音转文字，OGG/OPUS → WAV）（可选增强）</li>
+</ul>
+<ul>
+<li>你的构建未内置 STT 向导；可选两条路：</li>
+</ul>
+<ul>
+<li>A. 本地 Whisper CLI（无需云 Key）</li>
+</ul>
+<ul>
+<li># 安装 ffmpeg（OGG → WAV）</li>
+</ul>
+<ul>
+<li>choco install ffmpeg -y</li>
+</ul>
+<ul>
+<li># 或下载压缩包，解压到 C:\ffmpeg，并将 C:\ffmpeg\bin 加入 PATH</li>
+</ul>
+<ul>
+<li># 安装 Whisper CLI</li>
+</ul>
+<ul>
+<li>pip install -U openai-whisper</li>
+</ul>
+<ul>
+<li># 启用对应 Skill（先从 skills list 找到“Local speech-to-text with the Whisper CLI”的 ID）</li>
+</ul>
+<ul>
+<li>B. 云 STT（OpenAI / Deepgram / AssemblyAI / Azure Speech）</li>
+</ul>
+<ul>
+<li># 以 OpenAI 为例：</li>
+</ul>
+<ul>
+<li>setx OPENAIAPIKEY &quot;sk-xxxx&quot; /M</li>
+</ul>
+<ul>
+<li># 再启用对应 Skill（从 skills list 找到“OpenAI Audio Transcriptions API”的 ID）</li>
+</ul>
+<ul>
+<li># 或 Deepgram：</li>
+</ul>
+<ul>
+<li>setx DEEPGRAMAPIKEY &quot;dgxxxx&quot; /M</li>
+</ul>
+<ul>
+<li># 或 AssemblyAI：</li>
+</ul>
+<ul>
+<li>setx ASSEMBLYAIAPIKEY &quot;xxxx&quot; /M</li>
+</ul>
+<ul>
+<li># 或 Azure：</li>
+</ul>
+<ul>
+<li>setx AZURESPEECHKEY &quot;xxxx&quot; /M</li>
+</ul>
+<ul>
+<li>setx AZURESPEECH_REGION &quot;eastasia&quot; /M</li>
+</ul>
+<ul>
+<li>权宜之计：没有 STT 时，先在本地把 .ogg 转 .wav 再发给机器人：</li>
+</ul>
+<ul>
+<li>ffmpeg -i input.ogg -ar 16000 -ac 1 -c:a pcm_s16le output.wav</li>
+</ul>
+<ul>
+<li>openclaw config print</li>
+</ul>
+<ul>
+<li># 修改某个字段（例如把默认模型固定为 Opus）</li>
+</ul>
+<ul>
+<li>openclaw config set agents.defaults.model.primary &quot;neolink-anthropic/claude-opus-4-5-20251101&quot;</li>
+</ul>
+<ul>
+<li># 再看是否生效</li>
+</ul>
+<ul>
+<li>openclaw config print | findstr /i &quot;primary&quot;</li>
+</ul>
+<ul>
+<li>openclaw doctor --fix</li>
+</ul>
+<ul>
+<li># 网关连通性（第二个窗口执行；第一个窗口需在运行 openclaw gateway）</li>
+</ul>
+<ul>
+<li>openclaw --url ws://127.0.0.1:18789 --token $env:OPENCLAWGATEWAYTOKEN ping</li>
+</ul>
+<ul>
+<li>gateway closed (1006)：当下没有在另一个窗口运行 openclaw gateway，或 token 不一致。</li>
+</ul>
+<ul>
+<li>“需要 Brave Search API 密钥”：禁用 Brave 搜索插件，启用/使用 web_fetch（已配置）。</li>
+</ul>
+<ul>
+<li># 全局安装 CLI</li>
+</ul>
+<ul>
+<li># 准备 ~/.openclaw/openclaw.json（按上文示例）</li>
+</ul>
+<ul>
+<li># 准备 .env（按上文示例）</li>
+</ul>
+<ul>
+<li># 注入 .env</li>
+</ul>
+<ul>
+<li>$name, $value = $_ -split &#39;=&#39;, 2</li>
+</ul>
+<ul>
+<li>[System.Environment]::SetEnvironmentVariable($name.Trim(), $value.Trim(), &#39;Process&#39;)</li>
+</ul>
+<ul>
+<li># 3.2 校验配置</li>
+</ul>
+<ul>
+<li># 3.4 启动网关（保持这个窗口常驻运行）</li>
+</ul>
+<ul>
+<li>openclaw gateway</li>
+</ul>
+<ul>
+<li># 交互配置里开启 webfetch</li>
+</ul>
+<ul>
+<li>openclaw configure   # 选择 Web tools → Web search: No → Web fetch: Yes</li>
+</ul>
+<ul>
+<li># 启动网关（保持运行）</li>
+</ul>
+<ul>
+<li>#（可选）安装浏览器中继扩展并在 Chrome 里加载</li>
+</ul>
+<ul>
+<li>#（可选）第二个窗口里控制浏览器</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li># 验证</li>
+</ul>
+<ul>
+<li>7) 插件与技能（安装 / 启用 / 禁用 / 查看）</li>
+</ul>
+<ul>
+<li># 查看所有插件</li>
+</ul>
+<ul>
+<li># 查看技能（skills），常用于启用某项能力（如本地 Whisper CLI 转写）</li>
+</ul>
+<ul>
+<li># 打印最终生效配置（用于确认是否被覆盖）</li>
+</ul>
+<ul>
+<li>openclaw config validate</li>
+</ul>
+<ul>
+<li># 插件/技能（查看/启用/禁用）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li># 3.1 将 .env 注入为当前会话环境变量（PowerShell用法）</li>
+</ul>
+<ul>
+<li>Get-Content .env | ForEach-Object {</li>
+</ul>
+<ul>
+<li>9) 常用排错命令</li>
+</ul>
+<ul>
+<li>10) 一键回顾（你之前做过的关键命令）</li>
+</ul>
+<ul>
+<li>Get-Content .env | % { if ($_ -notmatch &#39;^\s#|^\s</li>
+</ul>
+<ul>
+<li>如果你愿意，我可以把你现在生效的 config print 里 Feishu 与模型段贴出来（打码敏感值即可），我会再核对一次默认模型已固定为 Opus (20251101)，并根据你 skills list 的实际 ID 给出可直接启用语音转文字的命令行。 ) { return }</li>
+</ul>
+<ul>
+<li>如果你愿意，我可以把你现在生效的 config print 里 Feishu 与模型段贴出来（打码敏感值即可），我会再核对一次默认模型已固定为 Opus (20251101)，并根据你 skills list 的实际 ID 给出可直接启用语音转文字的命令行。 ) { $n,$v = $_ -split &#39;=&#39;,2; [Environment]::SetEnvironmentVariable($n.Trim(),$v.Trim(),&#39;Process&#39;) } }</li>
+</ul>
+<ul>
+<li>如果你愿意，我可以把你现在生效的 config print 里 Feishu 与模型段贴出来（打码敏感值即可），我会再核对一次默认模型已固定为 Opus (20251101)，并根据你 skills list 的实际 ID 给出可直接启用语音转文字的命令行。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>FEISHUAPPID=clixxxxx</li>
+</ul>
+<ul>
+<li>FEISHUAPPSECRET=xxxxx</li>
+</ul>
+<ul>
+<li>FEISHUVERIFICATIONTOKEN=xxxxx</li>
+</ul>
+<ul>
+<li>FEISHUENCRYPTKEY=xxxxx</li>
+</ul>
+<ul>
+<li>OPENCLAWGATEWAYTOKEN=xxxxx</li>
+</ul>
+<ul>
+<li>NEOLINKANTHROPIC_KEY=sk-xxxxx</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>&quot;enabled&quot;: true,</li>
+</ul>
+<ul>
+<li>&quot;feishu&quot;: { &quot;enabled&quot;: true }</li>
+</ul>
+<ul>
+<li>3) 注入 .env → 验证 → 自动修复 → 启动 Gateway</li>
+</ul>
+<ul>
+<li>openclaw plugins enable feishu</li>
+</ul>
+<ul>
+<li>openclaw plugins disable feishu</li>
+</ul>
+<ul>
+<li>openclaw skills enable &lt;ID&gt;</li>
+</ul>
+<ul>
+<li>openclaw skills disable &lt;ID&gt;</li>
+</ul>
+<ul>
+<li>禁用需要 API Key 的 Brave 搜索（避免“需要密钥”的提示） &gt; 先 openclaw plugins list | findstr /i brave 找到实际 ID openclaw plugins disable search.brave</li>
+</ul>
+<ul>
+<li>openclaw plugins enable browser</li>
+</ul>
+<ul>
+<li>openclaw skills enable &lt;whisper-cli-skill-id&gt;</li>
+</ul>
+<ul>
+<li>openclaw skills enable &lt;openai-audio-transcribe-skill-id&gt;</li>
+</ul>
+<ul>
+<li>openclaw skills enable &lt;deepgram-stt-skill-id&gt;</li>
+</ul>
+<ul>
+<li>openclaw skills enable &lt;assemblyai-stt-skill-id&gt;</li>
+</ul>
+<ul>
+<li>openclaw skills enable &lt;azure-speech-stt-skill-id&gt;</li>
+</ul>
+<ul>
+<li># 健康检查 / 自动修复</li>
+</ul>
+<ul>
+<li>“feishu configured, not enabled yet”：plugins.entries.feishu.enabled 或 channels.feishu.enabled 未生效；在 C:\Users\Henry\.openclaw\openclaw.json 改为 true 并重启。</li>
+</ul>
+<ul>
+<li># 3.3 自动修复常见问题</li>
+</ul>
+<ul>
+<li># 验证 + 修复</li>
+</ul>
+<ul>
+<li>openclaw plugins disable search.brave    # 如果存在该插件且你不想用 API 搜索</li>
+</ul>
+<ul>
+<li>openclaw skills enable &lt;skill-id&gt;        # 如 Whisper CLI / OpenAI STT 等</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>&quot;baseUrl&quot;: &quot;<a href="http://120.133.40.59/vnet/api&quot;," target="_blank" rel="noopener">http://120.133.40.59/vnet/api&quot;,</a></li>
+</ul>
+<ul>
+<li>openclaw --url ws://127.0.0.1:18789 --token $env:OPENCLAWGATEWAYTOKEN browser open <a href="https://example.com" target="_blank" rel="noopener">https://example.com</a></li>
+</ul>
+<ul>
+<li>openclaw --url ws://127.0.0.1:18789 --token $env:OPENCLAWGATEWAY_TOKEN browser open <a href="https://example.com" target="_blank" rel="noopener">https://example.com</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://m365.cloud.microsoft/chat/?internalredirect=CCM&amp;auth=2&gt;" target="_blank" rel="noopener">https://m365.cloud.microsoft/chat/?internalredirect=CCM&amp;auth=2&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>0) 先决条件（一次性）</p>
+<p>Node.js LTS（自带 npm）。装好后新开一个终端。</p>
+<h1>安装 OpenClaw CLI（全局）</h1>
+<p>npm i -g openclaw</p>
+<h1>验证</h1>
+<p>openclaw --version</p>
+<p>``</p>
+<p>1) 准备 .env（只放密钥；不要提交到 Git）</p>
+<p>用你自己的真实值替换下列占位。</p>
+<h1>.env（示例）</h1>
+<h1>—— Feishu 机器人凭证（飞书开发者后台 → 凭证与基础信息 / 事件订阅）</h1>
+<p>FEISHUAPPID=clixxxxx</p>
+<p>FEISHUAPPSECRET=xxxxx</p>
+<p>FEISHUVERIFICATIONTOKEN=xxxxx</p>
+<p>FEISHUENCRYPTKEY=xxxxx</p>
+<h1>—— OpenClaw 网关访问令牌（随便生成个随机串即可）</h1>
+<p>OPENCLAWGATEWAYTOKEN=xxxxx</p>
+<h1>—— 模型提供方（只留 Anthropic；不依赖 llama.cpp）</h1>
+<p>NEOLINKANTHROPIC_KEY=sk-xxxxx</p>
+<p>注：不要把密钥写进 JSON，统一走环境变量。</p>
+<p>2) 写 openclaw.json（用户目录）</p>
+<p>路径：C:\Users\Henry\.openclaw\openclaw.json</p>
+<p>这份配置只保留 Anthropic，默认模型 Claude 4.5 Opus (20251101)，启用 Feishu，不使用 llama.cpp。</p>
+<p>{</p>
+<p>&quot;models&quot;: {</p>
+<p>&quot;providers&quot;: {</p>
+<p>&quot;neolink-anthropic&quot;: {</p>
+<p>&quot;baseUrl&quot;: &quot;<a href="http://120.133.40.59/vnet/api&quot;," target="_blank" rel="noopener">http://120.133.40.59/vnet/api&quot;,</a></p>
+<p>&quot;api&quot;: &quot;anthropic-messages&quot;,</p>
+<p>&quot;apiKey&quot;: &quot;${NEOLINKANTHROPICKEY}&quot;,</p>
+<p>&quot;models&quot;: [</p>
+<p>{ &quot;id&quot;: &quot;claude-opus-4-5-20251101&quot;, &quot;name&quot;: &quot;Claude 4.5 Opus&quot;, &quot;contextWindow&quot;: 200000 },</p>
+<p>{ &quot;id&quot;: &quot;claude-sonnet-4-5-20250929&quot;, &quot;name&quot;: &quot;Claude 4.5 Sonnet&quot;, &quot;contextWindow&quot;: 200000 }</p>
+<p>]</p>
+<p>}</p>
+<p>},</p>
+<p>&quot;agents&quot;: {</p>
+<p>&quot;defaults&quot;: {</p>
+<p>&quot;model&quot;: {</p>
+<p>&quot;primary&quot;: &quot;neolink-anthropic/claude-opus-4-5-20251101&quot;</p>
+<p>&quot;compaction&quot;: { &quot;mode&quot;: &quot;safeguard&quot; },</p>
+<p>&quot;maxConcurrent&quot;: 4,</p>
+<p>&quot;subagents&quot;: { &quot;maxConcurrent&quot;: 8 }</p>
+<p>&quot;messages&quot;: {</p>
+<p>&quot;ackReactionScope&quot;: &quot;group-mentions&quot;</p>
+<p>&quot;commands&quot;: {</p>
+<p>&quot;native&quot;: &quot;auto&quot;,</p>
+<p>&quot;nativeSkills&quot;: &quot;auto&quot;</p>
+<p>&quot;channels&quot;: {</p>
+<p>&quot;feishu&quot;: {</p>
+<p>&quot;enabled&quot;: true,</p>
+<p>&quot;dmPolicy&quot;: &quot;pairing&quot;,</p>
+<p>&quot;accounts&quot;: {</p>
+<p>&quot;main&quot;: {</p>
+<p>&quot;appId&quot;: &quot;${FEISHUAPPID}&quot;,</p>
+<p>&quot;appSecret&quot;: &quot;${FEISHUAPPSECRET}&quot;,</p>
+<p>&quot;verificationToken&quot;: &quot;${FEISHUVERIFICATIONTOKEN}&quot;,</p>
+<p>&quot;encryptKey&quot;: &quot;${FEISHUENCRYPTKEY}&quot;</p>
+<p>&quot;gateway&quot;: {</p>
+<p>&quot;mode&quot;: &quot;local&quot;,</p>
+<p>&quot;port&quot;: 18789,</p>
+<p>&quot;bind&quot;: &quot;loopback&quot;,</p>
+<p>&quot;auth&quot;: {</p>
+<p>&quot;mode&quot;: &quot;token&quot;,</p>
+<p>&quot;token&quot;: &quot;${OPENCLAWGATEWAYTOKEN}&quot;</p>
+<p>&quot;plugins&quot;: {</p>
+<p>&quot;entries&quot;: {</p>
+<p>&quot;feishu&quot;: { &quot;enabled&quot;: true }</p>
+<p>&quot;meta&quot;: {</p>
+<p>&quot;lastTouchedVersion&quot;: &quot;2026.2.12&quot;</p>
+<p>如果之后你想切回 Sonnet，把 agents.defaults.model.primary 改为：\ neolink-anthropic/claude-sonnet-4-5-20250929。</p>
+<p>3) 注入 .env → 验证 → 自动修复 → 启动 Gateway</p>
+<h1>3.1 将 .env 注入为当前会话环境变量（PowerShell用法）</h1>
+<p>Get-Content .env | ForEach-Object {</p>
+<p>if ($_ -match &#39;^\s#&#39;) { return }</p>
+<p>if ($_ -match &#39;^\s</p>
+<p>启动日志里应该看到：</p>
+<p>agent model: neolink-anthropic/claude-opus-4-5-20251101</p>
+<p>[feishu] starting ... (mode: websocket)（你已经用长连接模式）</p>
+<p>[browser/service] Browser control service ready</p>
+<p>4) 开“网页抓取”能力（无 API Key）</p>
+<p>你已使用向导把 web_fetch 打开（keyless HTTP 抓取）。如需再次进入向导：</p>
+<h1>进入交互式向导 → 选择 &quot;Web tools&quot; → websearch = No, webfetch = Yes</h1>
+<p>openclaw configure</p>
+<p>飞书里一句“帮我查今天的 AI 新闻，给出 3 条并附来源链接”，Agent 就会用 web_fetch 直接抓网页，而不是 Brave/Bing API。</p>
+<p>5) 浏览器中继（可选，用真实 Chrome 标签抓复杂页面）</p>
+<h1>安装扩展到本地目录（输出会告诉你扩展文件夹路径）</h1>
+<p>openclaw browser extension install</p>
+<p>然后：</p>
+<p>打开 Chrome → chrome://extensions → 开发者模式</p>
+<p>“加载已解压的扩展” → 选择输出提示的目录（如 ~\.openclaw\browser\chrome-extension）</p>
+<p>固定图标、点进去让状态变为 ON（徽章）</p>
+<p>使用 CLI 控制浏览器（需另开第二个终端，并确保 Gateway 在第一个终端运行中）：</p>
+<p>openclaw --url ws://127.0.0.1:18789 --token $env:OPENCLAWGATEWAYTOKEN browser open <a href="https://example.com" target="_blank" rel="noopener">https://example.com</a></p>
+<p>openclaw --url ws://127.0.0.1:18789 --token $env:OPENCLAWGATEWAYTOKEN browser status</p>
+<p>若报 1006，基本是 Gateway 没在另一窗口运行或 token 不匹配。</p>
+<p>6) Feishu 侧（你已完成，但这里留作清单）</p>
+<p>开发者后台 → 机器人权限：消息读写、群聊消息、媒体/文件等</p>
+<p>事件与回调 → 订阅方式：长连接（你日志里是 WS 模式）</p>
+<p>把机器人拉到测试群或直接私聊</p>
+<p>收到图片/文件时交给 Agent（你已启用 feishu_drive/feishu_doc/feishu_wiki 工具）</p>
+<p>7) 插件与技能（安装 / 启用 / 禁用 / 查看）</p>
+<p>这版大多插件内置，主要是启用/禁用；安装第三方插件需看文档（通常 openclaw plugins install &lt;npm包名&gt;，但不是每个版本都支持）。</p>
+<h1>查看所有插件</h1>
+<p>openclaw plugins list</p>
+<h1>启用/禁用插件（替换成你在 plugins list 里看到的真实 ID）</h1>
+<p>openclaw plugins enable feishu</p>
+<p>openclaw plugins disable feishu</p>
+<h1>（如有）安装/卸载第三方插件（可能并非所有版本支持）</h1>
+<h1>openclaw plugins install @scope/some-plugin</h1>
+<h1>openclaw plugins uninstall @scope/some-plugin</h1>
+<h1>查看技能（skills），常用于启用某项能力（如本地 Whisper CLI 转写）</h1>
+<p>openclaw skills list</p>
+<h1>启用某个技能（把 &lt;ID&gt; 换成 skills list 列出的真实 ID）</h1>
+<p>openclaw skills enable &lt;ID&gt;</p>
+<p>openclaw skills disable &lt;ID&gt;</p>
+<p>常见用途示例：</p>
+<p>禁用需要 API Key 的 Brave 搜索（避免“需要密钥”的提示） &gt; 先 openclaw plugins list | findstr /i brave 找到实际 ID openclaw plugins disable search.brave</p>
+<p>启用“浏览器搜索/抓取”相关（如果你的版本提供该插件）</p>
+<p>openclaw plugins enable browser</p>
+<h1>或 search.browser / browser_search（以实际名称为准）</h1>
+<p>8) 语音（语音转文字，OGG/OPUS → WAV）（可选增强）</p>
+<p>你的构建未内置 STT 向导；可选两条路：</p>
+<p>A. 本地 Whisper CLI（无需云 Key）</p>
+<h1>安装 ffmpeg（OGG → WAV）</h1>
+<p>choco install ffmpeg -y</p>
+<h1>或下载压缩包，解压到 C:\ffmpeg，并将 C:\ffmpeg\bin 加入 PATH</h1>
+<h1>安装 Whisper CLI</h1>
+<p>pip install -U openai-whisper</p>
+<h1>启用对应 Skill（先从 skills list 找到“Local speech-to-text with the Whisper CLI”的 ID）</h1>
+<p>openclaw skills enable &lt;whisper-cli-skill-id&gt;</p>
+<p>B. 云 STT（OpenAI / Deepgram / AssemblyAI / Azure Speech）</p>
+<h1>以 OpenAI 为例：</h1>
+<p>setx OPENAIAPIKEY &quot;sk-xxxx&quot; /M</p>
+<h1>再启用对应 Skill（从 skills list 找到“OpenAI Audio Transcriptions API”的 ID）</h1>
+<p>openclaw skills enable &lt;openai-audio-transcribe-skill-id&gt;</p>
+<h1>或 Deepgram：</h1>
+<p>setx DEEPGRAMAPIKEY &quot;dgxxxx&quot; /M</p>
+<p>openclaw skills enable &lt;deepgram-stt-skill-id&gt;</p>
+<h1>或 AssemblyAI：</h1>
+<p>setx ASSEMBLYAIAPIKEY &quot;xxxx&quot; /M</p>
+<p>openclaw skills enable &lt;assemblyai-stt-skill-id&gt;</p>
+<h1>或 Azure：</h1>
+<p>setx AZURESPEECHKEY &quot;xxxx&quot; /M</p>
+<p>setx AZURESPEECH_REGION &quot;eastasia&quot; /M</p>
+<p>openclaw skills enable &lt;azure-speech-stt-skill-id&gt;</p>
+<p>权宜之计：没有 STT 时，先在本地把 .ogg 转 .wav 再发给机器人：</p>
+<p>ffmpeg -i input.ogg -ar 16000 -ac 1 -c:a pcm_s16le output.wav</p>
+<p>9) 常用排错命令</p>
+<h1>打印最终生效配置（用于确认是否被覆盖）</h1>
+<p>openclaw config print</p>
+<h1>修改某个字段（例如把默认模型固定为 Opus）</h1>
+<p>openclaw config set agents.defaults.model.primary &quot;neolink-anthropic/claude-opus-4-5-20251101&quot;</p>
+<h1>再看是否生效</h1>
+<p>openclaw config print | findstr /i &quot;primary&quot;</p>
+<h1>健康检查 / 自动修复</h1>
+<p>openclaw config validate</p>
+<p>openclaw doctor --fix</p>
+<h1>网关连通性（第二个窗口执行；第一个窗口需在运行 openclaw gateway）</h1>
+<p>openclaw --url ws://127.0.0.1:18789 --token $env:OPENCLAWGATEWAYTOKEN ping</p>
+<p>常见报错速解：</p>
+<p>gateway closed (1006)：当下没有在另一个窗口运行 openclaw gateway，或 token 不一致。</p>
+<p>“需要 Brave Search API 密钥”：禁用 Brave 搜索插件，启用/使用 web_fetch（已配置）。</p>
+<p>“feishu configured, not enabled yet”：plugins.entries.feishu.enabled 或 channels.feishu.enabled 未生效；在 C:\Users\Henry\.openclaw\openclaw.json 改为 true 并重启。</p>
+<p>10) 一键回顾（你之前做过的关键命令）</p>
+<h1>全局安装 CLI</h1>
+<h1>准备 ~/.openclaw/openclaw.json（按上文示例）</h1>
+<h1>准备 .env（按上文示例）</h1>
+<h1>注入 .env</h1>
+<p>Get-Content .env | % { if ($_ -notmatch &#39;^\s#|^\s</p>
+<p>如果你愿意，我可以把你现在生效的 config print 里 Feishu 与模型段贴出来（打码敏感值即可），我会再核对一次默认模型已固定为 Opus (20251101)，并根据你 skills list 的实际 ID 给出可直接启用语音转文字的命令行。 ) { return }</p>
+<p>$name, $value = $_ -split &#39;=&#39;, 2</p>
+<p>[System.Environment]::SetEnvironmentVariable($name.Trim(), $value.Trim(), &#39;Process&#39;)</p>
+<h1>3.2 校验配置</h1>
+<h1>3.3 自动修复常见问题</h1>
+<h1>3.4 启动网关（保持这个窗口常驻运行）</h1>
+<p>openclaw gateway</p>
+<p>{{4-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</p>
+<p>{{5-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</p>
+<p>{{6-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</p>
+<p>{{7-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</p>
+<p>禁用需要 API Key 的 Brave 搜索（避免“需要密钥”的提示） &gt; 先 openclaw plugins list | findstr /i brave 找到实际 ID {{8-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</p>
+<p>启用“浏览器搜索/抓取”相关（如果你的版本提供该插件） {{9-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</p>
+<p>{{10-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</p>
+<p>{{11-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</p>
+<p>{{12-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</p>
+<p>{{13-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</p>
+<p>{{14-raw-markdown-248bda3e-88b1-403e-aef8-a530eb6ddcad}}</p>
+<p>如果你愿意，我可以把你现在生效的 config print 里 Feishu 与模型段贴出来（打码敏感值即可），我会再核对一次默认模型已固定为 Opus (20251101)，并根据你 skills list 的实际 ID 给出可直接启用语音转文字的命令行。 ) { $n,$v = $_ -split &#39;=&#39;,2; [Environment]::SetEnvironmentVariable($n.Trim(),$v.Trim(),&#39;Process&#39;) } }</p>
+<h1>验证 + 修复</h1>
+<h1>交互配置里开启 webfetch</h1>
+<p>openclaw configure   # 选择 Web tools → Web search: No → Web fetch: Yes</p>
+<h1>启动网关（保持运行）</h1>
+<p>#（可选）安装浏览器中继扩展并在 Chrome 里加载</p>
+<p>#（可选）第二个窗口里控制浏览器</p>
+<p>openclaw --url ws://127.0.0.1:18789 --token $env:OPENCLAWGATEWAY_TOKEN browser open <a href="https://example.com" target="_blank" rel="noopener">https://example.com</a></p>
+<h1>插件/技能（查看/启用/禁用）</h1>
+<p>openclaw plugins disable search.brave    # 如果存在该插件且你不想用 API 搜索</p>
+<p>openclaw skills enable &lt;skill-id&gt;        # 如 Whisper CLI / OpenAI STT 等</p>
+<p>如果你愿意，我可以把你现在生效的 config print 里 Feishu 与模型段贴出来（打码敏感值即可），我会再核对一次默认模型已固定为 Opus (20251101)，并根据你 skills list 的实际 ID 给出可直接启用语音转文字的命令行。</p>
+<p>From &lt;<a href="https://m365.cloud.microsoft/chat/?internalredirect=CCM&amp;auth=2&gt;" target="_blank" rel="noopener">https://m365.cloud.microsoft/chat/?internalredirect=CCM&amp;auth=2&gt;</a></p></article>

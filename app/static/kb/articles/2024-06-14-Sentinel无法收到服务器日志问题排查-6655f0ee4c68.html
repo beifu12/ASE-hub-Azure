@@ -1,0 +1,144 @@
+<article class="kb-article" data-title="Sentinel无法收到服务器日志问题排查"><h1>Sentinel无法收到服务器日志问题排查</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Microsoft Sentinel</li>
+<li>Section: Azure Microsoft Sentinel</li>
+<li>最近修改: 2024-06-14 15:41:35</li>
+<li>JD 相关性: Defender/Sentinel/安全</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>##问题描述：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>##问题描述：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>##问题描述：</li>
+</ul>
+<ul>
+<li>Sentinel之前收集服务器日志正常，突然出现问题，但是AMA心跳正常传到Sentinel</li>
+</ul>
+<ul>
+<li>一般在客户端上需要收集的日志：</li>
+</ul>
+<ul>
+<li>/etc/opt/microsoft/azuremonitoragent/config-cache/configchunks/</li>
+</ul>
+<ul>
+<li>##问题原因：</li>
+</ul>
+<ul>
+<li>Pepsico-Store-Pool-SVR02</li>
+</ul>
+<ul>
+<li>pep-prd-openai-app01-vm</li>
+</ul>
+<ul>
+<li>但客户反馈之前清理过磁盘空间，指导用户重启AMA服务后，问题解决。</li>
+</ul>
+<ul>
+<li>systemctl restart azuremonitoragent</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>##排查思路：</li>
+</ul>
+<ul>
+<li>/var/opt/microsoft/azuremonitoragent/log/</li>
+</ul>
+<ul>
+<li>/etc/rsyslog.d/</li>
+</ul>
+<ul>
+<li>/etc/rsyslog.conf</li>
+</ul>
+<ul>
+<li>可以参考的官方文档，排查Azure Monitor 代理问题。</li>
+</ul>
+<ul>
+<li>以下几个关键检查：</li>
+</ul>
+<ul>
+<li>a.验证是否已成功安装和预配扩展，检查代理服务是否正在运行。</li>
+</ul>
+<ul>
+<li>b.检查计算机上位于 /var/opt/microsoft/azuremonitoragent/log/mdsd.* 的内核代理日志是否存在任何错误。</li>
+</ul>
+<ul>
+<li>c.检查是否显示在此位置 /etc/opt/microsoft/azuremonitoragent/config-cache/configchunks/ 下载的最新 DCR。</li>
+</ul>
+<ul>
+<li>d.服务质量 (QoS) 文件 /var/opt/microsoft/azuremonitoragent/log/mdsd.qos 可以以 CSV 格式对已处理事件进行 15 分钟的聚合，且包含有关指定时间范围内已处理 syslog 事件数量的信息。</li>
+</ul>
+<ul>
+<li>分析日志，发现两台VM的  \var\opt\microsoft\azuremonitoragent\log\ mdsd.err日中，一直报No space left on device的Error。</li>
+</ul>
+<ul>
+<li>/var/opt/microsoft/azuremonitoragent/events/alert.alert/116886.log: No space left on device</li>
+</ul>
+<ul>
+<li>2024-06-11T07:39:36.9021190Z: Error while deleting events during Flush from Local persistent store local5.critical: IO error: No space left on device: While open a file for appending: /var/opt/microsoft/azuremonitoragent/events/local5.critical/116883.log: No space left on device</li>
+</ul>
+<ul>
+<li>2024-06-11T07:39:36.9021890Z: Error while Compacting events during Flush in Local persistent store local5.critical: IO error: No space left on device: While open a file for appending: /var/opt/microsoft/azuremonitoragent/events/local5.critical/116883.log: No space left on device</li>
+</ul>
+<ul>
+<li>/var/opt/microsoft/azuremonitoragent/events/mail.emergency/021734.log: No space left on device</li>
+</ul>
+<ul>
+<li>2024-06-11T07:33:45.2263800Z: Error while deleting events during Flush from Local persistent store cron.notice: IO error: No space left on device: While open a file for appending: /var/opt/microsoft/azuremonitoragent/events/cron.notice/020505.log: No space left on device</li>
+</ul>
+<ul>
+<li>2024-06-11T07:33:45.2264610Z: Error while Compacting events during Flush in Local persistent store cron.notice: IO error: No space left on device: While open a file for appending: /var/opt/microsoft/azuremonitoragent/events/cron.notice/020505.log: No space left on device</li>
+</ul>
+<ul>
+<li>ASC上可以抽取AMA日志，如下：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/azure-monitor/agents/azure-monitor-agent-troubleshoot-linux-vm" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/azure-monitor/agents/azure-monitor-agent-troubleshoot-linux-vm</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/azure-monitor/agents/azure-monitor-agent-troubleshoot-linux-vm-rsyslog" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/azure-monitor/agents/azure-monitor-agent-troubleshoot-linux-vm-rsyslog</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-6-14</p>
+<p>##问题描述：</p>
+<p>Sentinel之前收集服务器日志正常，突然出现问题，但是AMA心跳正常传到Sentinel</p>
+<p>##排查思路：</p>
+<p>一般在客户端上需要收集的日志：</p>
+<p>/var/opt/microsoft/azuremonitoragent/log/</p>
+<p>/etc/opt/microsoft/azuremonitoragent/config-cache/configchunks/</p>
+<p>/etc/rsyslog.d/</p>
+<p>/etc/rsyslog.conf</p>
+<p>可以参考的官方文档，排查Azure Monitor 代理问题。</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/azure-monitor/agents/azure-monitor-agent-troubleshoot-linux-vm" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/azure-monitor/agents/azure-monitor-agent-troubleshoot-linux-vm</a></p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/azure-monitor/agents/azure-monitor-agent-troubleshoot-linux-vm-rsyslog" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/azure-monitor/agents/azure-monitor-agent-troubleshoot-linux-vm-rsyslog</a></p>
+<p>以下几个关键检查：</p>
+<p>a.验证是否已成功安装和预配扩展，检查代理服务是否正在运行。</p>
+<p>b.检查计算机上位于 /var/opt/microsoft/azuremonitoragent/log/mdsd.* 的内核代理日志是否存在任何错误。</p>
+<p>c.检查是否显示在此位置 /etc/opt/microsoft/azuremonitoragent/config-cache/configchunks/ 下载的最新 DCR。</p>
+<p>d.服务质量 (QoS) 文件 /var/opt/microsoft/azuremonitoragent/log/mdsd.qos 可以以 CSV 格式对已处理事件进行 15 分钟的聚合，且包含有关指定时间范围内已处理 syslog 事件数量的信息。</p>
+<p>##问题原因：</p>
+<p>分析日志，发现两台VM的  \var\opt\microsoft\azuremonitoragent\log\ mdsd.err日中，一直报No space left on device的Error。</p>
+<p>Pepsico-Store-Pool-SVR02</p>
+<p>/var/opt/microsoft/azuremonitoragent/events/alert.alert/116886.log: No space left on device</p>
+<p>2024-06-11T07:39:36.9021190Z: Error while deleting events during Flush from Local persistent store local5.critical: IO error: No space left on device: While open a file for appending: /var/opt/microsoft/azuremonitoragent/events/local5.critical/116883.log: No space left on device</p>
+<p>2024-06-11T07:39:36.9021890Z: Error while Compacting events during Flush in Local persistent store local5.critical: IO error: No space left on device: While open a file for appending: /var/opt/microsoft/azuremonitoragent/events/local5.critical/116883.log: No space left on device</p>
+<p>pep-prd-openai-app01-vm</p>
+<p>/var/opt/microsoft/azuremonitoragent/events/mail.emergency/021734.log: No space left on device</p>
+<p>2024-06-11T07:33:45.2263800Z: Error while deleting events during Flush from Local persistent store cron.notice: IO error: No space left on device: While open a file for appending: /var/opt/microsoft/azuremonitoragent/events/cron.notice/020505.log: No space left on device</p>
+<p>2024-06-11T07:33:45.2264610Z: Error while Compacting events during Flush in Local persistent store cron.notice: IO error: No space left on device: While open a file for appending: /var/opt/microsoft/azuremonitoragent/events/cron.notice/020505.log: No space left on device</p>
+<p>但客户反馈之前清理过磁盘空间，指导用户重启AMA服务后，问题解决。</p>
+<p>systemctl restart azuremonitoragent</p>
+<p>ASC上可以抽取AMA日志，如下：</p></article>

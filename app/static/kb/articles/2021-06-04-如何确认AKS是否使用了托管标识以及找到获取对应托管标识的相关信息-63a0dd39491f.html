@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="如何确认AKS是否使用了托管标识以及找到获取对应托管标识的相关信息"><h1>如何确认AKS是否使用了托管标识以及找到获取对应托管标识的相关信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: OperationGuid</li>
+<li>最近修改: 2021-06-04 13:30:02</li>
+<li>JD 相关性: AKS/容器; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>由于目前在门户的应用中，无法根据对象ID来搜索应用。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>由于目前在门户的应用中，无法根据对象ID来搜索应用。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>研究发现使用以下方式可以获取到</li>
+</ul>
+<ul>
+<li>如果群集正在使用托管标识，你将看到 clientId 值为“msi”。 改用服务主体的群集将改为显示对象 ID。</li>
+</ul>
+<ul>
+<li>例如：</li>
+</ul>
+<ul>
+<li>托管标识的ObjectId在结果中显示为principalId</li>
+</ul>
+<ul>
+<li>注：我们可以在门户上根据appid和名称来检索。</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>近期发现在门户上创建AKS集群时，默认已经都是使用  系统分配的托管标识。当我们在排查AKS创建资源遇到权限问题时，往往要找到对应的托管标识。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用以下命令验证AKS集群是否使用托管标识</li>
+</ul>
+<ul>
+<li>az aks show -g &lt;RGName&gt; -n &lt;ClusterName&gt; --query &quot;servicePrincipalProfile&quot;</li>
+</ul>
+<ul>
+<li>验证群集是否正在使用托管标识后，可以使用以下命令来查找控制平面系统分配的标识的对象 ID：</li>
+</ul>
+<ul>
+<li>az aks show -g &lt;RGName&gt; -n &lt;ClusterName&gt; --query &quot;identity&quot;</li>
+</ul>
+<ul>
+<li>az aks show -g aksavaad -n aks --query identity</li>
+</ul>
+<ul>
+<li>我们可以使用以下命令获取到该托管标识的相关信息，如appId,displayname等</li>
+</ul>
+<ul>
+<li>az ad sp list --filter &quot;objectId eq &#39;71ceed93-1aab-419c-9aa8-a838672990c0&#39;&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/aks/use-managed-identity" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/use-managed-identity</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/cli/azure/ad/sp?view=azure-cli-latest#az_ad_sp_list" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/cli/azure/ad/sp?view=azure-cli-latest#az_ad_sp_list</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>近期发现在门户上创建AKS集群时，默认已经都是使用  系统分配的托管标识。当我们在排查AKS创建资源遇到权限问题时，往往要找到对应的托管标识。</p>
+<p>研究发现使用以下方式可以获取到</p>
+<p>使用以下命令验证AKS集群是否使用托管标识</p>
+<p>az aks show -g &lt;RGName&gt; -n &lt;ClusterName&gt; --query &quot;servicePrincipalProfile&quot;</p>
+<p>如果群集正在使用托管标识，你将看到 clientId 值为“msi”。 改用服务主体的群集将改为显示对象 ID。</p>
+<p>例如：</p>
+<p>验证群集是否正在使用托管标识后，可以使用以下命令来查找控制平面系统分配的标识的对象 ID：</p>
+<p>az aks show -g &lt;RGName&gt; -n &lt;ClusterName&gt; --query &quot;identity&quot;</p>
+<p>az aks show -g aksavaad -n aks --query identity</p>
+<p>托管标识的ObjectId在结果中显示为principalId</p>
+<p>由于目前在门户的应用中，无法根据对象ID来搜索应用。</p>
+<p>我们可以使用以下命令获取到该托管标识的相关信息，如appId,displayname等</p>
+<p>az ad sp list --filter &quot;objectId eq &#39;71ceed93-1aab-419c-9aa8-a838672990c0&#39;&quot;</p>
+<p>注：我们可以在门户上根据appid和名称来检索。</p>
+<p>参考文档：</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/aks/use-managed-identity" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/use-managed-identity</a></p>
+<p><a href="https://docs.microsoft.com/en-us/cli/azure/ad/sp?view=azure-cli-latest#az_ad_sp_list" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/cli/azure/ad/sp?view=azure-cli-latest#az_ad_sp_list</a></p></article>

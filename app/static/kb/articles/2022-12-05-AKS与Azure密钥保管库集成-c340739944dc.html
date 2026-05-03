@@ -1,0 +1,154 @@
+<article class="kb-article" data-title="AKS与Azure密钥保管库集成"><h1>AKS与Azure密钥保管库集成</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-12-05 15:24:19</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>官方文档： <a href="https://docs.azure.cn/zh-cn/aks/csi-secrets-store-driver" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/csi-secrets-store-driver</a> &amp; <a href="https://docs.azure.cn/zh-cn/aks/csi-secrets-store-identity-access" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/csi-secrets-store-identity-access</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>官方文档： <a href="https://docs.azure.cn/zh-cn/aks/csi-secrets-store-driver" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/csi-secrets-store-driver</a> &amp; <a href="https://docs.azure.cn/zh-cn/aks/csi-secrets-store-identity-access" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/csi-secrets-store-identity-access</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>登录Azure账号</li>
+</ul>
+<ul>
+<li>为现有集群添加azure-keyvault-secrets-provider提供程序</li>
+</ul>
+<ul>
+<li>连接至AKS群集</li>
+</ul>
+<ul>
+<li>创建一个用户分配的托管标识并分配给规模集</li>
+</ul>
+<ul>
+<li>dc872136fbd2/resourceGroups/myResourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/useridentity //此处资源组为vmss所在资源组及规模集名称</li>
+</ul>
+<ul>
+<li>创建一个SecretProviderClass，</li>
+</ul>
+<ul>
+<li>创建一个测试pod，yaml文件和文档没变化</li>
+</ul>
+<ul>
+<li>.\kubectl.exe apply -f pod.yaml</li>
+</ul>
+<ul>
+<li>Pod创建成功</li>
+</ul>
+<ul>
+<li>.\kubectl.exe exec busybox-secrets-store-inline-user-msi -- ls /mnt/secrets-store/</li>
+</ul>
+<ul>
+<li>获取机密值</li>
+</ul>
+<ul>
+<li>.\kubectl.exe exec busybox-secrets-store-inline-user-msi -- cat /mnt/secrets-store/ExampleSecret</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>测试步骤(以下标黄处替换为自己的值)：</li>
+</ul>
+<ul>
+<li>运行az --version,验证已使用最新的CLI及aks-preview版本。</li>
+</ul>
+<ul>
+<li>请确认已经安装了kubectl，如未安装，请使用az aks install-cli进行安装。进入kubectl安装目录（默认是C:\Users\xiaojing\.azure-kubectl），或配置全局环境变量。</li>
+</ul>
+<ul>
+<li>检查是否在节点上安装了机密存储 CSI 驱动程序和 Azure 密钥保管库提供程序</li>
+</ul>
+<ul>
+<li>在现有密钥保管库中创建一个机密ExampleSecret，如已拥有机密，可忽略此步骤。</li>
+</ul>
+<ul>
+<li>验证机密，在测试pod上可以获取到机密。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如未安装aks-preview，请运行az extension add --name aks-preview安装该扩展；如已安装，但是非最新版本，请运行az extension update --name aks-preview更新至最新版本。如未使用最新版本，可能会在运行后续命令时无法识别提供程序。</li>
+</ul>
+<ul>
+<li>az cloud set -n AzureChinaCloud   //设置云环境为中国区</li>
+</ul>
+<ul>
+<li>az login  //弹出登录界面，输入用户名、密码进行登录</li>
+</ul>
+<ul>
+<li>az account set -s &lt;subid&gt;  //选择对应订阅</li>
+</ul>
+<ul>
+<li>az aks enable-addons --addons azure-keyvault-secrets-provider --name myAKSCluster --resource-group myResourceGroup</li>
+</ul>
+<ul>
+<li>az aks get-credentials --resource-group myResourceGroup --name myAKSCluster</li>
+</ul>
+<ul>
+<li>az keyvault secret set --vault-name xjkeyvault -n ExampleSecret --value MyAKSExampleSecret</li>
+</ul>
+<ul>
+<li>az identity create -g myResourceGroup -n useridentity</li>
+</ul>
+<ul>
+<li>az vmss identity assign -g MC_myResourceGroup_myAKSCluster_chinanorth2 -n aks-agentpool-19694923-vmss --identities /subscriptions/d3c17595-846b-42e1-8e58-</li>
+</ul>
+<ul>
+<li>为标识授予可Get密钥管库中的密钥、机密或证书，此处只做了secret的授权，如需证书和密钥，请参考文档命令即可</li>
+</ul>
+<ul>
+<li>az keyvault set-policy -n xjkeyvault --secret-permissions get --spn 09e953c2-e9cc-4208-a119-e7920ab66cb2</li>
+</ul>
+<ul>
+<li>kubectl apply -f secretproviderclass.yaml</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>官方文档： <a href="https://docs.azure.cn/zh-cn/aks/csi-secrets-store-driver" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/csi-secrets-store-driver</a> &amp; <a href="https://docs.azure.cn/zh-cn/aks/csi-secrets-store-identity-access" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/csi-secrets-store-identity-access</a></li>
+</ul>
+<ul>
+<li>下载安装最新CLI ， <a href="https://docs.azure.cn/zh-cn/cli/install-azure-cli-windows?view=azure-cli-latest&amp;tabs=azure-cli" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cli/install-azure-cli-windows?view=azure-cli-latest&amp;tabs=azure-cli</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>官方文档： <a href="https://docs.azure.cn/zh-cn/aks/csi-secrets-store-driver" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/csi-secrets-store-driver</a> &amp; <a href="https://docs.azure.cn/zh-cn/aks/csi-secrets-store-identity-access" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/csi-secrets-store-identity-access</a></p>
+<p>测试步骤(以下标黄处替换为自己的值)：</p>
+<p>下载安装最新CLI ， <a href="https://docs.azure.cn/zh-cn/cli/install-azure-cli-windows?view=azure-cli-latest&amp;tabs=azure-cli" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cli/install-azure-cli-windows?view=azure-cli-latest&amp;tabs=azure-cli</a></p>
+<p>运行az --version,验证已使用最新的CLI及aks-preview版本。</p>
+<p>如未安装aks-preview，请运行az extension add --name aks-preview安装该扩展；如已安装，但是非最新版本，请运行az extension update --name aks-preview更新至最新版本。如未使用最新版本，可能会在运行后续命令时无法识别提供程序。</p>
+<p>登录Azure账号</p>
+<p>az cloud set -n AzureChinaCloud   //设置云环境为中国区</p>
+<p>az login  //弹出登录界面，输入用户名、密码进行登录</p>
+<p>az account set -s &lt;subid&gt;  //选择对应订阅</p>
+<p>为现有集群添加azure-keyvault-secrets-provider提供程序</p>
+<p>az aks enable-addons --addons azure-keyvault-secrets-provider --name myAKSCluster --resource-group myResourceGroup</p>
+<p>连接至AKS群集</p>
+<p>az aks get-credentials --resource-group myResourceGroup --name myAKSCluster</p>
+<p>请确认已经安装了kubectl，如未安装，请使用az aks install-cli进行安装。进入kubectl安装目录（默认是C:\Users\xiaojing\.azure-kubectl），或配置全局环境变量。</p>
+<p>检查是否在节点上安装了机密存储 CSI 驱动程序和 Azure 密钥保管库提供程序</p>
+<p>在现有密钥保管库中创建一个机密ExampleSecret，如已拥有机密，可忽略此步骤。</p>
+<p>az keyvault secret set --vault-name xjkeyvault -n ExampleSecret --value MyAKSExampleSecret</p>
+<p>创建一个用户分配的托管标识并分配给规模集</p>
+<p>az identity create -g myResourceGroup -n useridentity</p>
+<p>az vmss identity assign -g MC_myResourceGroup_myAKSCluster_chinanorth2 -n aks-agentpool-19694923-vmss --identities /subscriptions/d3c17595-846b-42e1-8e58-</p>
+<p>dc872136fbd2/resourceGroups/myResourceGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/useridentity //此处资源组为vmss所在资源组及规模集名称</p>
+<p>为标识授予可Get密钥管库中的密钥、机密或证书，此处只做了secret的授权，如需证书和密钥，请参考文档命令即可</p>
+<p>az keyvault set-policy -n xjkeyvault --secret-permissions get --spn 09e953c2-e9cc-4208-a119-e7920ab66cb2</p>
+<p>创建一个SecretProviderClass，</p>
+<p>kubectl apply -f secretproviderclass.yaml</p>
+<p>创建一个测试pod，yaml文件和文档没变化</p>
+<p>.\kubectl.exe apply -f pod.yaml</p>
+<p>Pod创建成功</p>
+<p>验证机密，在测试pod上可以获取到机密。</p>
+<p>.\kubectl.exe exec busybox-secrets-store-inline-user-msi -- ls /mnt/secrets-store/</p>
+<p>获取机密值</p>
+<p>.\kubectl.exe exec busybox-secrets-store-inline-user-msi -- cat /mnt/secrets-store/ExampleSecret</p></article>

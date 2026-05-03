@@ -1,0 +1,106 @@
+<article class="kb-article" data-title="【share】虚拟机或AKS 节点curl域名api.weixin.qq.com偶发性响应慢的问题--ISP 的低位端口封堵行为"><h1>【share】虚拟机或AKS 节点curl域名api.weixin.qq.com偶发性响应慢的问题--ISP 的低位端口封堵行为</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2022-03-15 16:13:22</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Hi all，</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Hi all，</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi all，</li>
+</ul>
+<ul>
+<li>分享一个网络工单：SR_20210915121544_[S500]生产环境AKS集群节点访问外部地址响应慢</li>
+</ul>
+<ul>
+<li>===问题描述：</li>
+</ul>
+<ul>
+<li>访问180.97.7.108：</li>
+</ul>
+<ul>
+<li>====下一步方案：</li>
+</ul>
+<ul>
+<li>可以参考的mitigate该问题的方案：</li>
+</ul>
+<ul>
+<li>Miya Hu（胡明月）| Azure Technical support Engineer |Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>===排查小结：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>1.        AKS 集群使用basic SKU 负载均衡器的公网IP（52.131.244.251）进行出站公网访问，此时将为每个节点分配1024个SANT端口供集群的出站公网访问（从端口号1024开始分配）。更多关于LB出站SNAT的说明可参考：用于出站连接的源网络地址转换 (SNAT) - Azure Load Balancer | Azure Docs</li>
+</ul>
+<ul>
+<li>2.        后台查看节点aks-agentpool-82483739-1分配的出站SNAT端口范围是1024-2048。根据我们之前工单中的经验以及进一步的验证测试，访问IP 180.97.7.108时存在公网ISP对某些IP地址的低位端口封堵的情况，经测试具体被封堵的端口为：1025，1068以及1418，测试访问101.226.212.27时不存在这个情况。</li>
+</ul>
+<ul>
+<li>访问101.226.212.27，对应端口无超时现象：</li>
+</ul>
+<ul>
+<li>对于Basic SKU LB 的AKS集群的，该端口是不可自定义配置的，因此无法为虚机指定端口的分配。而该低位端口的封堵行为是公网链路的ISP所实施的，Azure无法去控制该行为。</li>
+</ul>
+<ul>
+<li>1.        由于API域名解析出的两个IP地址中，仅一个存在低位端口封堵的情况，可以使用目前写定host的方式，虚拟机访问该域名时仅访问101.226.212.27这个IP地址，但是风险在与对方API的IP地址不一定永久固定，因此若出现对方IP地址更换的情况，会导致该节点无法访问该API；</li>
+</ul>
+<ul>
+<li>备注：具有实例级公网IP地址的虚拟机在进行出站访问时，会使用该实例公网IP，并首先选用高位端口进行出站，此时不存在端口的SNAT行为。</li>
+</ul>
+<ul>
+<li>3.        在应用上使用重试的机制，在超过设定的超时阈值后，重新发起请求。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>2.        使用NVA的方案。将AKS 集群针对该IP地址的访问强制路由给一台带实例公网IP地址的NVA虚拟机，并由NVA的实例级别公网IP发送出去。（需要在网卡上开启IP forwarding）</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>AKS 集群有6个节点中其中一个节点curl域名api.weixin.qq.com偶发性响应慢，其中api.weixin.qq.com解析可以得到两个IP地址（101.226.212.27, 180.97.7.108）响应慢的问题仅出现在180.97.7.108，访问其他域名如www.baidu.com等没有问题。</li>
+</ul>
+<ul>
+<li>Support direct line: 010-56060226  Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></li>
+</ul>
+<ul>
+<li>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/9/24</p>
+<p>Hi all，</p>
+<p>分享一个网络工单：SR_20210915121544_[S500]生产环境AKS集群节点访问外部地址响应慢</p>
+<p>===问题描述：</p>
+<p>AKS 集群有6个节点中其中一个节点curl域名api.weixin.qq.com偶发性响应慢，其中api.weixin.qq.com解析可以得到两个IP地址（101.226.212.27, 180.97.7.108）响应慢的问题仅出现在180.97.7.108，访问其他域名如www.baidu.com等没有问题。</p>
+<p>===排查小结：</p>
+<p>1.        AKS 集群使用basic SKU 负载均衡器的公网IP（52.131.244.251）进行出站公网访问，此时将为每个节点分配1024个SANT端口供集群的出站公网访问（从端口号1024开始分配）。更多关于LB出站SNAT的说明可参考：用于出站连接的源网络地址转换 (SNAT) - Azure Load Balancer | Azure Docs</p>
+<p>2.        后台查看节点aks-agentpool-82483739-1分配的出站SNAT端口范围是1024-2048。根据我们之前工单中的经验以及进一步的验证测试，访问IP 180.97.7.108时存在公网ISP对某些IP地址的低位端口封堵的情况，经测试具体被封堵的端口为：1025，1068以及1418，测试访问101.226.212.27时不存在这个情况。</p>
+<p>访问180.97.7.108：</p>
+<p>访问101.226.212.27，对应端口无超时现象：</p>
+<p>====下一步方案：</p>
+<p>对于Basic SKU LB 的AKS集群的，该端口是不可自定义配置的，因此无法为虚机指定端口的分配。而该低位端口的封堵行为是公网链路的ISP所实施的，Azure无法去控制该行为。</p>
+<p>可以参考的mitigate该问题的方案：</p>
+<p>1.        由于API域名解析出的两个IP地址中，仅一个存在低位端口封堵的情况，可以使用目前写定host的方式，虚拟机访问该域名时仅访问101.226.212.27这个IP地址，但是风险在与对方API的IP地址不一定永久固定，因此若出现对方IP地址更换的情况，会导致该节点无法访问该API；</p>
+<p>2.        使用NVA的方案。将AKS 集群针对该IP地址的访问强制路由给一台带实例公网IP地址的NVA虚拟机，并由NVA的实例级别公网IP发送出去。（需要在网卡上开启IP forwarding）</p>
+<p>备注：具有实例级公网IP地址的虚拟机在进行出站访问时，会使用该实例公网IP，并首先选用高位端口进行出站，此时不存在端口的SNAT行为。</p>
+<p>3.        在应用上使用重试的机制，在超过设定的超时阈值后，重新发起请求。</p>
+<p>Miya Hu（胡明月）| Azure Technical support Engineer |Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060226  Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></p>
+<p>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</p></article>

@@ -1,0 +1,153 @@
+<article class="kb-article" data-title="VMSS如何加入工作区，并通过工作区配置内存和单块磁盘使用率报警"><h1>VMSS如何加入工作区，并通过工作区配置内存和单块磁盘使用率报警</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VMSS</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-11-22 11:32:41</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20210811</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20210811</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20210811</li>
+</ul>
+<ul>
+<li>所以现在可以推荐客户使用工作区报警，功能还是很强大的。</li>
+</ul>
+<ul>
+<li>#########################</li>
+</ul>
+<ul>
+<li>Test1.json</li>
+</ul>
+<ul>
+<li>{&quot;workspaceId&quot;:&quot;xxxxx4c87-8d4d-4793cceff9c7&quot;}</li>
+</ul>
+<ul>
+<li>Test2.json</li>
+</ul>
+<ul>
+<li>{&quot;workspaceKey&quot;:&quot;xxxxxCRekFBl5ubdeAXv99jxZmVmPzj3hRHyFf/KZ2iRtsUQ8YTvx41jMS1rHL/Q==&quot;}</li>
+</ul>
+<ul>
+<li>应用到实例</li>
+</ul>
+<ul>
+<li>安装前</li>
+</ul>
+<ul>
+<li>VMSS扩展状态</li>
+</ul>
+<ul>
+<li>安装后</li>
+</ul>
+<ul>
+<li>VMSS状态</li>
+</ul>
+<ul>
+<li>也可以使用instancename：</li>
+</ul>
+<ul>
+<li>所以现在可以推荐可以使用工作区报警，功能还是很强大的。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>具体步骤如下：</li>
+</ul>
+<ul>
+<li>###check extension version###Noted by Jia.Xiaolei 2022-09-04####</li>
+</ul>
+<ul>
+<li>查看VMSS扩展的Publisher</li>
+</ul>
+<ul>
+<li>查看VMSS扩展的Publisher的扩展列表</li>
+</ul>
+<ul>
+<li>Log Analytics Workspace连接状态</li>
+</ul>
+<ul>
+<li>Log Analytics Workspace 状态</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>由于现在经典警报指标都不可用了（除非使用powershell配置，见之前分享存储账户防火墙是否影响诊断来宾指标配置的经典报警）</li>
+</ul>
+<ul>
+<li>虚拟机规模集连接工作区不能通过portal直接操作，需要通过azure cli命令来实现。</li>
+</ul>
+<ul>
+<li>安装命令</li>
+</ul>
+<ul>
+<li>az vmss extension set --name &quot;OmsAgentForLinux&quot; --publisher &quot;Microsoft.EnterpriseCloud.Monitoring&quot; --version &quot;1.XX.XX&quot; --resource-group &quot;VMSS&quot; --vmss-name &quot;VMSS&quot; --settings ./test1.json --protected-settings ./test2.json</li>
+</ul>
+<ul>
+<li>az vmss update-instances --instance-ids &quot;*&quot; --resource-group VMSS --name VMSS</li>
+</ul>
+<ul>
+<li>az vmss extension image list --location &quot;ChinaNorth2&quot; --latest --query &quot;[].publisher&quot;</li>
+</ul>
+<ul>
+<li>az vmss extension image list --location &quot;ChinaNorth2&quot; --publisher &quot;Microsoft.EnterpriseCloud.Monitoring&quot;</li>
+</ul>
+<ul>
+<li>由于现在经典警报指标都不可用了（除非使用powershell配置，见之前分享）</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>这个建议不要提供给用户，目前这个后续测试会有问题。</li>
+</ul>
+<ul>
+<li>成功加入工作区后，就可以通过工作区进行警报配置了 :</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://azure.microsoft.com/en-us/blog/virtual-machine-scale-set-insights-from-azure-monitor/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/blog/virtual-machine-scale-set-insights-from-azure-monitor/</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/oms-linux#agent-and-vm-extension-version" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/oms-linux#agent-and-vm-extension-version</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20210811</p>
+<p>这个建议不要提供给用户，目前这个后续测试会有问题。</p>
+<p><a href="https://azure.microsoft.com/en-us/blog/virtual-machine-scale-set-insights-from-azure-monitor/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/blog/virtual-machine-scale-set-insights-from-azure-monitor/</a></p>
+<p>由于现在经典警报指标都不可用了（除非使用powershell配置，见之前分享存储账户防火墙是否影响诊断来宾指标配置的经典报警）</p>
+<p>所以现在可以推荐客户使用工作区报警，功能还是很强大的。</p>
+<p>虚拟机规模集连接工作区不能通过portal直接操作，需要通过azure cli命令来实现。</p>
+<p>具体步骤如下：</p>
+<p>安装命令</p>
+<p>az vmss extension set --name &quot;OmsAgentForLinux&quot; --publisher &quot;Microsoft.EnterpriseCloud.Monitoring&quot; --version &quot;1.XX.XX&quot; --resource-group &quot;VMSS&quot; --vmss-name &quot;VMSS&quot; --settings ./test1.json --protected-settings ./test2.json</p>
+<p>###check extension version###Noted by Jia.Xiaolei 2022-09-04####</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/oms-linux#agent-and-vm-extension-version" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/oms-linux#agent-and-vm-extension-version</a></p>
+<p>#########################</p>
+<p>Test1.json</p>
+<p>{&quot;workspaceId&quot;:&quot;xxxxx4c87-8d4d-4793cceff9c7&quot;}</p>
+<p>Test2.json</p>
+<p>{&quot;workspaceKey&quot;:&quot;xxxxxCRekFBl5ubdeAXv99jxZmVmPzj3hRHyFf/KZ2iRtsUQ8YTvx41jMS1rHL/Q==&quot;}</p>
+<p>应用到实例</p>
+<p>az vmss update-instances --instance-ids &quot;*&quot; --resource-group VMSS --name VMSS</p>
+<p>查看VMSS扩展的Publisher</p>
+<p>az vmss extension image list --location &quot;ChinaNorth2&quot; --latest --query &quot;[].publisher&quot;</p>
+<p>查看VMSS扩展的Publisher的扩展列表</p>
+<p>az vmss extension image list --location &quot;ChinaNorth2&quot; --publisher &quot;Microsoft.EnterpriseCloud.Monitoring&quot;</p>
+<p>安装前</p>
+<p>VMSS扩展状态</p>
+<p>Log Analytics Workspace连接状态</p>
+<p>安装后</p>
+<p>VMSS状态</p>
+<p>Log Analytics Workspace 状态</p>
+<p>成功加入工作区后，就可以通过工作区进行警报配置了 :</p>
+<p>也可以使用instancename：</p>
+<p>由于现在经典警报指标都不可用了（除非使用powershell配置，见之前分享）</p>
+<p>所以现在可以推荐可以使用工作区报警，功能还是很强大的。</p></article>

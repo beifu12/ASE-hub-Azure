@@ -1,0 +1,106 @@
+<article class="kb-article" data-title="Scenario - Winload.exe - 0xc000000e"><h1>Scenario - Winload.exe - 0xc000000e</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2021-07-14 00:17:14</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>The VM screenshot shows the binary winload.exe crashing with the error 0xc000000e</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>The VM screenshot shows the binary winload.exe crashing with the error 0xc000000e</li>
+</ul>
+<ul>
+<li>Or another option of the same issue is</li>
+</ul>
+<ul>
+<li>bcdedit /store e:\boot\bcd /set {default} bootstatuspolicy IgnoreAllFailures</li>
+</ul>
+<ul>
+<li>Note: On same cases you will have the on the windows partition the variables Devices and OSDevices shown as &#39;unknown&#39; which is clear that this action plan needs to be followed, however it was also found some cases where those variables were pointing to the proper partition but still it was needed to overwrite those entries and only then the VM came up. In a minimum number, you could also find this two partitions merged to one, in that case the same action plan applies however pointing to the proper partition reference.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>The binary \windows\system32\winload.exe exist on the drive</li>
+</ul>
+<ul>
+<li>Action plan</li>
+</ul>
+<ul>
+<li>- Once the OS disk is attached on a working machine, run the following from an elevated CMD</li>
+</ul>
+<ul>
+<li>bcdedit /store e:\boot\bcd /set {bootmgr} device partition=e:</li>
+</ul>
+<ul>
+<li>bcdedit /store e:\boot\bcd /set {default} device partition=f:</li>
+</ul>
+<ul>
+<li>bcdedit /store e:\boot\bcd /set {default} osdevice partition=f:</li>
+</ul>
+<ul>
+<li>Where</li>
+</ul>
+<ul>
+<li>E: is the partition holding the folder \boot\bcd</li>
+</ul>
+<ul>
+<li>F is the volume of the Windows directory</li>
+</ul>
+<ul>
+<li>{default} is the ID of the partition holding \windows folder</li>
+</ul>
+<ul>
+<li>Recreate the VM</li>
+</ul>
+<ul>
+<li>Note2: On the action plan on this TSG, the identifier for the windows folder is shown as {default} which is the default value however on the screenshot above, the identifier ir a hex string like {7657baf7-492a-4263-a54e-cc66570d9e23}</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>If you check what is the error code 0xc000000e</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>bcdedit /store e:\boot\bcd /set {bootmgr} integrityservices enable</li>
+</ul>
+<ul>
+<li>bcdedit /store e:\boot\bcd /set {default} integrityservices enable</li>
+</ul>
+<ul>
+<li>bcdedit /store e:\boot\bcd /set {default} recoveryenabled Off</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>The VM screenshot shows the binary winload.exe crashing with the error 0xc000000e</p>
+<p>Or another option of the same issue is</p>
+<p>The binary \windows\system32\winload.exe exist on the drive</p>
+<p>If you check what is the error code 0xc000000e</p>
+<p>Action plan</p>
+<ul>
+<li>Once the OS disk is attached on a working machine, run the following from an elevated CMD</li>
+</ul>
+<p>bcdedit /store e:\boot\bcd /set {bootmgr} device partition=e:</p>
+<p>bcdedit /store e:\boot\bcd /set {bootmgr} integrityservices enable</p>
+<p>bcdedit /store e:\boot\bcd /set {default} device partition=f:</p>
+<p>bcdedit /store e:\boot\bcd /set {default} integrityservices enable</p>
+<p>bcdedit /store e:\boot\bcd /set {default} recoveryenabled Off</p>
+<p>bcdedit /store e:\boot\bcd /set {default} osdevice partition=f:</p>
+<p>bcdedit /store e:\boot\bcd /set {default} bootstatuspolicy IgnoreAllFailures</p>
+<p>Where</p>
+<p>E: is the partition holding the folder \boot\bcd</p>
+<p>F is the volume of the Windows directory</p>
+<p>{default} is the ID of the partition holding \windows folder</p>
+<p>Recreate the VM</p>
+<p>Note: On same cases you will have the on the windows partition the variables Devices and OSDevices shown as &#39;unknown&#39; which is clear that this action plan needs to be followed, however it was also found some cases where those variables were pointing to the proper partition but still it was needed to overwrite those entries and only then the VM came up. In a minimum number, you could also find this two partitions merged to one, in that case the same action plan applies however pointing to the proper partition reference.</p>
+<p>Note2: On the action plan on this TSG, the identifier for the windows folder is shown as {default} which is the default value however on the screenshot above, the identifier ir a hex string like {7657baf7-492a-4263-a54e-cc66570d9e23}</p></article>

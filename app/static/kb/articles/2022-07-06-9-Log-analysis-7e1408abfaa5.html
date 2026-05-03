@@ -1,0 +1,245 @@
+<article class="kb-article" data-title="9. Log analysis"><h1>9. Log analysis</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Data Box Disk</li>
+<li>最近修改: 2022-07-06 15:22:59</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>BC5-error</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>BC5-error</li>
+</ul>
+<ul>
+<li>会报错，无法创建container</li>
+</ul>
+<ul>
+<li>创建container bc5-error;但内部数据复制不完整，又缺失</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Type</li>
+</ul>
+<ul>
+<li>Name</li>
+</ul>
+<ul>
+<li>Expectation</li>
+</ul>
+<ul>
+<li>Result</li>
+</ul>
+<ul>
+<li>Blockblob</li>
+</ul>
+<ul>
+<li>Subfolder</li>
+</ul>
+<ul>
+<li>bc1-tech</li>
+</ul>
+<ul>
+<li>创建container</li>
+</ul>
+<ul>
+<li>Created;但里面的回收站和第一个文件夹没有创建</li>
+</ul>
+<ul>
+<li>bc2-software</li>
+</ul>
+<ul>
+<li>Created</li>
+</ul>
+<ul>
+<li>bc-dup</li>
+</ul>
+<ul>
+<li>创建container。和第二个盘中文件夹重名，测试import情况</li>
+</ul>
+<ul>
+<li>Created; 里面的文件也复制成功。</li>
+</ul>
+<ul>
+<li>Files</li>
+</ul>
+<ul>
+<li>&lt;多个文件，包括大写小写等各种命名&gt;</li>
+</ul>
+<ul>
+<li>复制到$root container</li>
+</ul>
+<ul>
+<li>Completed</li>
+</ul>
+<ul>
+<li>PageBlob</li>
+</ul>
+<ul>
+<li>pc1-rhel</li>
+</ul>
+<ul>
+<li>创建container，文件格式page</li>
+</ul>
+<ul>
+<li>Created; 里面的文件也复制成功。格式pageblob</li>
+</ul>
+<ul>
+<li>pc2-suse</li>
+</ul>
+<ul>
+<li>pc-dup</li>
+</ul>
+<ul>
+<li>创建container。和第二个盘重名，测试import情况</li>
+</ul>
+<ul>
+<li>&lt;many iso files &gt;</li>
+</ul>
+<ul>
+<li>复制到$root, 文件格式block</li>
+</ul>
+<ul>
+<li>AzureFile</li>
+</ul>
+<ul>
+<li>fs1-pic</li>
+</ul>
+<ul>
+<li>创建fileshare</li>
+</ul>
+<ul>
+<li>fs2-music</li>
+</ul>
+<ul>
+<li>fs-dup</li>
+</ul>
+<ul>
+<li>创建fileshare,和第二个盘重名，测试import情况</li>
+</ul>
+<ul>
+<li>bc3-docs</li>
+</ul>
+<ul>
+<li>bc4-other(hidden)</li>
+</ul>
+<ul>
+<li>Created; adtatpvecache没有复制，但回收站被复制了</li>
+</ul>
+<ul>
+<li>数据复制到已创建的container</li>
+</ul>
+<ul>
+<li>&lt;file many，包括大写小写各种命名&gt;</li>
+</ul>
+<ul>
+<li>pc3-rhel</li>
+</ul>
+<ul>
+<li>Created; 里面的文件大多数复制成，少部分复制到容器：databox-invalid-pb-cssmooncatestjob</li>
+</ul>
+<ul>
+<li>pc4-suse</li>
+</ul>
+<ul>
+<li>里面的文件大多数复制成，少部分复制到容器：databox-invalid-pb-cssmooncatestjob</li>
+</ul>
+<ul>
+<li>&lt;other isos many&gt;</li>
+</ul>
+<ul>
+<li>复制到容器：databox-invalid-pb-cssmooncatestjob</li>
+</ul>
+<ul>
+<li>fs3-movie</li>
+</ul>
+<ul>
+<li>fs4-tool</li>
+</ul>
+<ul>
+<li>Other files</li>
+</ul>
+<ul>
+<li>不支持</li>
+</ul>
+<ul>
+<li>复制到share中：databox-cssmooncatestjob-1</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查看</li>
+</ul>
+<ul>
+<li>Disk1 …86 目录结构(做了数据验证)</li>
+</ul>
+<ul>
+<li>Disk2 2024289445EF 结构(没做数据验证)：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>查看</p>
+<p>Disk1 …86 目录结构(做了数据验证)</p>
+<p>Type</p>
+<p>Name</p>
+<p>Expectation</p>
+<p>Result</p>
+<p>Blockblob</p>
+<p>Subfolder</p>
+<p>bc1-tech</p>
+<p>创建container</p>
+<p>Created;但里面的回收站和第一个文件夹没有创建</p>
+<p>bc2-software</p>
+<p>Created</p>
+<p>bc-dup</p>
+<p>创建container。和第二个盘中文件夹重名，测试import情况</p>
+<p>Created; 里面的文件也复制成功。</p>
+<p>Files</p>
+<p>&lt;多个文件，包括大写小写等各种命名&gt;</p>
+<p>复制到$root container</p>
+<p>Completed</p>
+<p>PageBlob</p>
+<p>pc1-rhel</p>
+<p>创建container，文件格式page</p>
+<p>Created; 里面的文件也复制成功。格式pageblob</p>
+<p>pc2-suse</p>
+<p>pc-dup</p>
+<p>创建container。和第二个盘重名，测试import情况</p>
+<p>&lt;many iso files &gt;</p>
+<p>复制到$root, 文件格式block</p>
+<p>AzureFile</p>
+<p>fs1-pic</p>
+<p>创建fileshare</p>
+<p>fs2-music</p>
+<p>fs-dup</p>
+<p>创建fileshare,和第二个盘重名，测试import情况</p>
+<p>Disk2 2024289445EF 结构(没做数据验证)：</p>
+<p>bc3-docs</p>
+<p>bc4-other(hidden)</p>
+<p>Created; adtatpvecache没有复制，但回收站被复制了</p>
+<p>数据复制到已创建的container</p>
+<p>BC5-error</p>
+<p>会报错，无法创建container</p>
+<p>创建container bc5-error;但内部数据复制不完整，又缺失</p>
+<p>&lt;file many，包括大写小写各种命名&gt;</p>
+<p>pc3-rhel</p>
+<p>Created; 里面的文件大多数复制成，少部分复制到容器：databox-invalid-pb-cssmooncatestjob</p>
+<p>pc4-suse</p>
+<p>里面的文件大多数复制成，少部分复制到容器：databox-invalid-pb-cssmooncatestjob</p>
+<p>&lt;other isos many&gt;</p>
+<p>复制到容器：databox-invalid-pb-cssmooncatestjob</p>
+<p>fs3-movie</p>
+<p>fs4-tool</p>
+<p>Other files</p>
+<p>不支持</p>
+<p>复制到share中：databox-cssmooncatestjob-1</p></article>

@@ -1,0 +1,196 @@
+<article class="kb-article" data-title="How to get the VFP stateful flow table"><h1>How to get the VFP stateful flow table</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: TSGs</li>
+<li>最近修改: 2025-10-29 16:36:25</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>I’d like to share this approach for how to get the VFP stateful flow table, it’s useful when you need debug datapath related issue.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>I’d like to share this approach for how to get the VFP stateful flow table, it’s useful when you need debug datapath related issue.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20210625</li>
+</ul>
+<ul>
+<li>可以使用下表获取部分VPF信息，只能获取测试目标IP匹配的全部VFP信息条目</li>
+</ul>
+<ul>
+<li>Hi Team,</li>
+</ul>
+<ul>
+<li>Tools: FcShell</li>
+</ul>
+<ul>
+<li>Parameters: Cluster-ID, Node-ID, Container-ID,InterFaceMac(optional if there is only one vNIC)</li>
+</ul>
+<ul>
+<li>Command: (Get-Fabric Cluster-ID).FabricConnection.NetworkManagementService.GetVfpFiltersForContainer(&#39;Node-ID&#39;,&#39;Container-ID&#39;,&#39;InterfaceMac&#39;,&#39;VFP_DEFAULT_LAYER_STATEFULL&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;</li>
+</ul>
+<ul>
+<li>,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;list-flow&#39;,&#39;&#39;).VfpContainerConfiguration.VfpRules</li>
+</ul>
+<ul>
+<li>Example:</li>
+</ul>
+<ul>
+<li>(Get-Fabric sha20prdapp03).FabricConnection.NetworkManagementService.GetVfpFiltersForContainer(&#39;0bb60521-27b0-4cf9-865f-492225891c91&#39;,&#39;afc3fb07-9d17-4434-a56c-df31e43e0111&#39;,&#39;&#39;,&#39;VFP_DEFAULT_LAYER_STATEFULL&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;</li>
+</ul>
+<ul>
+<li>,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;list-flow&#39;,&#39;&#39;).VfpContainerConfiguration.VfpRules &gt; c:\netshare\flow.txt</li>
+</ul>
+<ul>
+<li>Outputs:</li>
+</ul>
+<ul>
+<li>Layer         :</li>
+</ul>
+<ul>
+<li>Switch        : External</li>
+</ul>
+<ul>
+<li>Port          : External_0003FF024FD7</li>
+</ul>
+<ul>
+<li>MacAddress    : 0003FF024FD7</li>
+</ul>
+<ul>
+<li>Rule          :</li>
+</ul>
+<ul>
+<li>ITEM LIST</li>
+</ul>
+<ul>
+<li>===========</li>
+</ul>
+<ul>
+<li>OUT TCP    172.16.100.69:80 =&gt; 172.16.30.7:46360 Type: allow  Flags: 0x2 TTL: 246/255 Ref: 2</li>
+</ul>
+<ul>
+<li>Paired,</li>
+</ul>
+<ul>
+<li>OUT TCP    172.16.100.69:80 =&gt; 172.16.30.7:46802 Type: allow  Flags: 0x2 TTL: 249/255 Ref: 2</li>
+</ul>
+<ul>
+<li>OUT TCP    172.16.97.71:46714 =&gt; 172.16.34.98:5672 Type: allow  Flags: 0x6 TTL: 246/255 Ref: 2</li>
+</ul>
+<ul>
+<li>Paired, Main,</li>
+</ul>
+<ul>
+<li>OUT TCP    172.16.99.130:39938 =&gt; 172.16.34.53:5672 Type: allow  Flags: 0x6 TTL: 138/255 Ref: 1</li>
+</ul>
+<ul>
+<li>Best Regards,</li>
+</ul>
+<ul>
+<li>Vincent Lyu</li>
+</ul>
+<ul>
+<li>Support Escalation Engineer</li>
+</ul>
+<ul>
+<li>Mooncake (China Azure) Support Team,</li>
+</ul>
+<ul>
+<li>Customer Service &amp; Support (CSS), GCR region</li>
+</ul>
+<ul>
+<li>Office:  +86-21-61885476</li>
+</ul>
+<ul>
+<li>welv@microsoft.com</li>
+</ul>
+<ul>
+<li>20191018</li>
+</ul>
+<ul>
+<li>20191018增加内容如下：</li>
+</ul>
+<ul>
+<li>16.8.4</li>
+</ul>
+<ul>
+<li>搜索基本ILB的内网IP，即可看到ILB对应的PA地址：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>ASC如果不能获取node Id和Container ID, test traffic功能就不可用，也无法获取到VM的VFP路由表信息。</li>
+</ul>
+<ul>
+<li>ASC获取VM的VFP信息，从VFP信息中获取ILB的PA地址：</li>
+</ul>
+<ul>
+<li>登录ASC，进入到对应的VM，然后进入Test Traffic:</li>
+</ul>
+<ul>
+<li>测试Test Traffic后，会看到如下Vfp Full，点击下载即可。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在查出的结果中在notepod++中使用如下替换命令，替换为方便可读的格式：</li>
+</ul>
+<ul>
+<li>Let me know if you have questions when running the command. Thanks.</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/10A40515?genevatraceguid=43bdfaee-b316-49e6-b7bd-ae8ba0821bf1" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/10A40515?genevatraceguid=43bdfaee-b316-49e6-b7bd-ae8ba0821bf1</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20210625</p>
+<p>ASC如果不能获取node Id和Container ID, test traffic功能就不可用，也无法获取到VM的VFP路由表信息。</p>
+<p>可以使用下表获取部分VPF信息，只能获取测试目标IP匹配的全部VFP信息条目</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/10A40515?genevatraceguid=43bdfaee-b316-49e6-b7bd-ae8ba0821bf1" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/10A40515?genevatraceguid=43bdfaee-b316-49e6-b7bd-ae8ba0821bf1</a></p>
+<p>在查出的结果中在notepod++中使用如下替换命令，替换为方便可读的格式：</p>
+<p>2018/12/13</p>
+<p>Hi Team,</p>
+<p>I’d like to share this approach for how to get the VFP stateful flow table, it’s useful when you need debug datapath related issue.</p>
+<p>Tools: FcShell</p>
+<p>Parameters: Cluster-ID, Node-ID, Container-ID,InterFaceMac(optional if there is only one vNIC)</p>
+<p>Command: (Get-Fabric Cluster-ID).FabricConnection.NetworkManagementService.GetVfpFiltersForContainer(&#39;Node-ID&#39;,&#39;Container-ID&#39;,&#39;InterfaceMac&#39;,&#39;VFP_DEFAULT_LAYER_STATEFULL&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;</p>
+<p>,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;list-flow&#39;,&#39;&#39;).VfpContainerConfiguration.VfpRules</p>
+<p>Example:</p>
+<p>(Get-Fabric sha20prdapp03).FabricConnection.NetworkManagementService.GetVfpFiltersForContainer(&#39;0bb60521-27b0-4cf9-865f-492225891c91&#39;,&#39;afc3fb07-9d17-4434-a56c-df31e43e0111&#39;,&#39;&#39;,&#39;VFP_DEFAULT_LAYER_STATEFULL&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;</p>
+<p>,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;list-flow&#39;,&#39;&#39;).VfpContainerConfiguration.VfpRules &gt; c:\netshare\flow.txt</p>
+<p>Outputs:</p>
+<p>Layer         :</p>
+<p>Switch        : External</p>
+<p>Port          : External_0003FF024FD7</p>
+<p>MacAddress    : 0003FF024FD7</p>
+<p>Rule          :</p>
+<p>ITEM LIST</p>
+<p>===========</p>
+<p>OUT TCP    172.16.100.69:80 =&gt; 172.16.30.7:46360 Type: allow  Flags: 0x2 TTL: 246/255 Ref: 2</p>
+<p>Paired,</p>
+<p>OUT TCP    172.16.100.69:80 =&gt; 172.16.30.7:46802 Type: allow  Flags: 0x2 TTL: 249/255 Ref: 2</p>
+<p>OUT TCP    172.16.97.71:46714 =&gt; 172.16.34.98:5672 Type: allow  Flags: 0x6 TTL: 246/255 Ref: 2</p>
+<p>Paired, Main,</p>
+<p>OUT TCP    172.16.99.130:39938 =&gt; 172.16.34.53:5672 Type: allow  Flags: 0x6 TTL: 138/255 Ref: 1</p>
+<p>Let me know if you have questions when running the command. Thanks.</p>
+<p>Best Regards,</p>
+<p>Vincent Lyu</p>
+<p>Support Escalation Engineer</p>
+<p>Mooncake (China Azure) Support Team,</p>
+<p>Customer Service &amp; Support (CSS), GCR region</p>
+<p>Office:  +86-21-61885476</p>
+<p>welv@microsoft.com</p>
+<p>20191018</p>
+<p>20191018增加内容如下：</p>
+<p>ASC获取VM的VFP信息，从VFP信息中获取ILB的PA地址：</p>
+<p>登录ASC，进入到对应的VM，然后进入Test Traffic:</p>
+<p>测试Test Traffic后，会看到如下Vfp Full，点击下载即可。</p>
+<p>16.8.4</p>
+<p>搜索基本ILB的内网IP，即可看到ILB对应的PA地址：</p></article>

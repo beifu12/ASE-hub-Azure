@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="CentOS6.9启动图形界面操作文档"><h1>CentOS6.9启动图形界面操作文档</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-03-08 14:59:39</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>yum groupinstall &quot;X Window System&quot; -y</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>yum groupinstall  &quot;X Window System&quot;  -y</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>yum groupinstall  &quot;X Window System&quot;  -y</li>
+</ul>
+<ul>
+<li>yum install gnome-*  -y</li>
+</ul>
+<ul>
+<li>yum install  tigervnc-server tigervnc-server-module libXfont pixman xterm –y</li>
+</ul>
+<ul>
+<li>4   vi  /etc/sysconfig/vncservers   #编辑VNC的配置文件加入下面两行</li>
+</ul>
+<ul>
+<li>VNCSERVERARGS[1]=&quot;-geometry 1024x768&quot;</li>
+</ul>
+<ul>
+<li>startx      #启动x windows</li>
+</ul>
+<ul>
+<li>vncpasswd  # 设定在本地使用vncviewer连接VM时 的密码，连续输入两次</li>
+</ul>
+<ul>
+<li>vncserver :1  #启动vnc连接实例</li>
+</ul>
+<ul>
+<li>chkconfig vncserver on   #设置开机下次开机自动运行VNC server</li>
+</ul>
+<ul>
+<li>在本地使用vncviewer 连接VM</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>登录portal依次点击虚拟机-名称----网络接口---网络接口名称---网络安全组，然后点击入站安全规则---添加</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>VNCSERVERS=&quot;1:root&quot;</li>
+</ul>
+<ul>
+<li>VNC server第一个连接默认监听5901 端口，需要在portal上设置VM的NSG规则，添加入站策略，放行5901端口</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>yum groupinstall  &quot;X Window System&quot;  -y</p>
+<p>yum install gnome-*  -y</p>
+<p>yum install  tigervnc-server tigervnc-server-module libXfont pixman xterm –y</p>
+<p>4   vi  /etc/sysconfig/vncservers   #编辑VNC的配置文件加入下面两行</p>
+<p>VNCSERVERS=&quot;1:root&quot;</p>
+<p>VNCSERVERARGS[1]=&quot;-geometry 1024x768&quot;</p>
+<p>startx      #启动x windows</p>
+<p>vncpasswd  # 设定在本地使用vncviewer连接VM时 的密码，连续输入两次</p>
+<p>vncserver :1  #启动vnc连接实例</p>
+<p>chkconfig vncserver on   #设置开机下次开机自动运行VNC server</p>
+<p>VNC server第一个连接默认监听5901 端口，需要在portal上设置VM的NSG规则，添加入站策略，放行5901端口</p>
+<p>登录portal依次点击虚拟机-名称----网络接口---网络接口名称---网络安全组，然后点击入站安全规则---添加</p>
+<p>在本地使用vncviewer 连接VM</p></article>

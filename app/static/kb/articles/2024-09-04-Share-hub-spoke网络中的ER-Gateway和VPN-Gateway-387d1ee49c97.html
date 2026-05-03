@@ -1,0 +1,140 @@
+<article class="kb-article" data-title="【Share】hub-spoke网络中的ER Gateway和VPN Gateway"><h1>【Share】hub-spoke网络中的ER Gateway和VPN Gateway</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2024-09-04 17:36:24</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>使用ER Gateway后，UDR路由的下一跳类型被改为None的情况，Spoke1和Spoke2之间的网络测试并不通：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>使用ER Gateway后，UDR路由的下一跳类型被改为None的情况，Spoke1和Spoke2之间的网络测试并不通：</li>
+</ul>
+<ul>
+<li>所以此时：Spoke1和Spoke2之间不通，Spoke3和Spoke4之间不通，其余的都是通的。</li>
+</ul>
+<ul>
+<li>对等互联的路由具有不可传递性，也就是A-B-C的拓扑中，A和C之间是不通的。</li>
+</ul>
+<ul>
+<li>VPN Gateway和ER Gateway双活的场景中，UDR无法指定Virtual Network Gateway为下一跳。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Nov 29, 2023</li>
+</ul>
+<ul>
+<li>最近处理了一个hub-spoke网络的工单，做了一些hub网络集成ER Gateway或VPN Gateway的测试，分享几种测试场景。</li>
+</ul>
+<ul>
+<li>基础拓扑：</li>
+</ul>
+<ul>
+<li>此时三个VM的路由：</li>
+</ul>
+<ul>
+<li>场景：Hub中创建VPN Gateway，并在spoke上绑定UDR</li>
+</ul>
+<ul>
+<li>此时VPN Gateway的创建，并不会影响三个VM的有效路由。</li>
+</ul>
+<ul>
+<li>场景2：把VPN Gateway删除，创建ER Gateway。UDR保持不变。</li>
+</ul>
+<ul>
+<li>场景3：拓扑变化为下面，两个hub中的ER Gateway连接到了同一个ER Circuit</li>
+</ul>
+<ul>
+<li>此时，需要特别注意，ER具有的一个特性：</li>
+</ul>
+<ul>
+<li>关注下此时6个虚拟机的路由表变化：</li>
+</ul>
+<ul>
+<li>20240711303848</li>
+</ul>
+<ul>
+<li>可以看到，只有同一个Hub下的Spoke之间没有彼此的路由。其余的路由都有。</li>
+</ul>
+<ul>
+<li>Ping测试结果也符合路由表的情况：</li>
+</ul>
+<ul>
+<li>场景4：在场景3的基础上，在Hub1和Hub2中各创建VPN Gateway，构建ER Gateway和VPN Gateway共存场景。</li>
+</ul>
+<ul>
+<li>此时系统路由没有变化，主要关注的是UDR路由。可以看到，ER Gateway和VPN Gateway双活场景下，UDR依然不生效，下一跳被改为&quot;None&quot;，同一个hub下的spoke之间还是不能互通。</li>
+</ul>
+<ul>
+<li>有文档支持：</li>
+</ul>
+<ul>
+<li>总结：</li>
+</ul>
+<ul>
+<li>VPN Gateway可以作为UDR的下一跳，并且能够转发流量。</li>
+</ul>
+<ul>
+<li>ER Gateway不能作为UDR的下一跳，路由表下一跳会被自动修改为None，从而导致流量被直接丢弃，不会转发到子网外部。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>但是，我们可以在两个spoke的subnet上绑定自定义路由表UDR，目标是对方spoke，下一跳指向Virtual Network Gateway。此时再查看VM路由表，可以看到Spoke之间有了彼此的路由，也能相互ping通。</li>
+</ul>
+<ul>
+<li>为了便于观察，我们把路由表标注于拓扑图上：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>在上述的基础拓扑场景下，Spoke之间是没有彼此的路由的，这是由于VNet Peering的路由具有“不可传递性”。参考： <a href="https://docs.azure.cn/zh-cn/virtual-network/virtual-networks-faq#vnet-peering" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-network/virtual-networks-faq#vnet-peering</a></li>
+</ul>
+<ul>
+<li>这是需要特别注意的地方，也就是说ER网关与UDR具有天生的不兼容性。这一点在文档中也有所体现，参考： <a href="https://docs.azure.cn/zh-cn/virtual-network/virtual-networks-udr-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-network/virtual-networks-udr-overview</a></li>
+</ul>
+<ul>
+<li>（截图摘自： <a href="https://docs.azure.cn/zh-cn/expressroute/virtual-network-connectivity-guidance）" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/expressroute/virtual-network-connectivity-guidance）</a></li>
+</ul>
+<ul>
+<li>如果两个VNET中的都有ER Gateway，并且都连接到了同一个ER Circuit，那么这两个VNET就被拉通了。当然这不是官方推荐的业务流量模式： <a href="https://docs.azure.cn/zh-cn/expressroute/virtual-network-connectivity-guidance" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/expressroute/virtual-network-connectivity-guidance</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Nov 29, 2023</p>
+<p>最近处理了一个hub-spoke网络的工单，做了一些hub网络集成ER Gateway或VPN Gateway的测试，分享几种测试场景。</p>
+<p>基础拓扑：</p>
+<p>在上述的基础拓扑场景下，Spoke之间是没有彼此的路由的，这是由于VNet Peering的路由具有“不可传递性”。参考： <a href="https://docs.azure.cn/zh-cn/virtual-network/virtual-networks-faq#vnet-peering" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-network/virtual-networks-faq#vnet-peering</a></p>
+<p>此时三个VM的路由：</p>
+<p>场景：Hub中创建VPN Gateway，并在spoke上绑定UDR</p>
+<p>此时VPN Gateway的创建，并不会影响三个VM的有效路由。</p>
+<p>但是，我们可以在两个spoke的subnet上绑定自定义路由表UDR，目标是对方spoke，下一跳指向Virtual Network Gateway。此时再查看VM路由表，可以看到Spoke之间有了彼此的路由，也能相互ping通。</p>
+<p>场景2：把VPN Gateway删除，创建ER Gateway。UDR保持不变。</p>
+<p>使用ER Gateway后，UDR路由的下一跳类型被改为None的情况，Spoke1和Spoke2之间的网络测试并不通：</p>
+<p>这是需要特别注意的地方，也就是说ER网关与UDR具有天生的不兼容性。这一点在文档中也有所体现，参考： <a href="https://docs.azure.cn/zh-cn/virtual-network/virtual-networks-udr-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-network/virtual-networks-udr-overview</a></p>
+<p>场景3：拓扑变化为下面，两个hub中的ER Gateway连接到了同一个ER Circuit</p>
+<p>此时，需要特别注意，ER具有的一个特性：</p>
+<p>（截图摘自： <a href="https://docs.azure.cn/zh-cn/expressroute/virtual-network-connectivity-guidance）" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/expressroute/virtual-network-connectivity-guidance）</a></p>
+<p>关注下此时6个虚拟机的路由表变化：</p>
+<p>为了便于观察，我们把路由表标注于拓扑图上：</p>
+<p>20240711303848</p>
+<p>可以看到，只有同一个Hub下的Spoke之间没有彼此的路由。其余的路由都有。</p>
+<p>所以此时：Spoke1和Spoke2之间不通，Spoke3和Spoke4之间不通，其余的都是通的。</p>
+<p>Ping测试结果也符合路由表的情况：</p>
+<p>场景4：在场景3的基础上，在Hub1和Hub2中各创建VPN Gateway，构建ER Gateway和VPN Gateway共存场景。</p>
+<p>此时系统路由没有变化，主要关注的是UDR路由。可以看到，ER Gateway和VPN Gateway双活场景下，UDR依然不生效，下一跳被改为&quot;None&quot;，同一个hub下的spoke之间还是不能互通。</p>
+<p>有文档支持：</p>
+<p>总结：</p>
+<p>对等互联的路由具有不可传递性，也就是A-B-C的拓扑中，A和C之间是不通的。</p>
+<p>VPN Gateway可以作为UDR的下一跳，并且能够转发流量。</p>
+<p>ER Gateway不能作为UDR的下一跳，路由表下一跳会被自动修改为None，从而导致流量被直接丢弃，不会转发到子网外部。</p>
+<p>VPN Gateway和ER Gateway双活的场景中，UDR无法指定Virtual Network Gateway为下一跳。</p>
+<p>如果两个VNET中的都有ER Gateway，并且都连接到了同一个ER Circuit，那么这两个VNET就被拉通了。当然这不是官方推荐的业务流量模式： <a href="https://docs.azure.cn/zh-cn/expressroute/virtual-network-connectivity-guidance" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/expressroute/virtual-network-connectivity-guidance</a></p></article>

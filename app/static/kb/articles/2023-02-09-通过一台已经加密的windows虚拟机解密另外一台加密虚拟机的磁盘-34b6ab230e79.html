@@ -1,0 +1,112 @@
+<article class="kb-article" data-title="通过一台已经加密的windows虚拟机解密另外一台加密虚拟机的磁盘"><h1>通过一台已经加密的windows虚拟机解密另外一台加密虚拟机的磁盘</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-02-09 16:31:27</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>最近在处理这个工单【SR_2020031312383_[S500]Unable to export BEK file for Encrypted volume】时，客户的一台已经加密的windows虚拟机无法启动，他想在另外一台windows中进行解密。通过查找官方文档，发现一篇这个文档</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>最近在处理这个工单【SR_2020031312383_[S500]Unable to export BEK file for Encrypted volume】时，客户的一台已经加密的windows虚拟机无法启动，他想在另外一台windows中进行解密。通过查找官方文档，发现一篇这个文档</li>
+</ul>
+<ul>
+<li>BitLocker boot errors on n Azure VM。我这边测试可以进行解密的操作。以便让客户能还原出相应的磁盘数据。</li>
+</ul>
+<ul>
+<li>后续，我这边再测试linux时遇到一个问题。就是在尝试解密时，遇到以下报错：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20200323</li>
+</ul>
+<ul>
+<li>ZuoTeng</li>
+</ul>
+<ul>
+<li>$vmName = &quot;myVM&quot;</li>
+</ul>
+<ul>
+<li>$vault = &quot;myKeyVault&quot;</li>
+</ul>
+<ul>
+<li>| Sort-Object -Property Created `</li>
+</ul>
+<ul>
+<li>| ft  Created, `</li>
+</ul>
+<ul>
+<li>@{Label=&quot;Content Type&quot;;Expression={$_.ContentType}}, `</li>
+</ul>
+<ul>
+<li>@{Label =&quot;Volume&quot;; Expression = {$_.Tags.VolumeLetter}}, `</li>
+</ul>
+<ul>
+<li>@{Label =&quot;DiskEncryptionKeyFileName&quot;; Expression = {$_.Tags.DiskEncryptionKeyFileName}}</li>
+</ul>
+<ul>
+<li>因为linux加密后的虚拟机 tag中vmname是空的。你的去门户找到对应的secret name，填写到下面的$bek中。</li>
+</ul>
+<ul>
+<li>$bek = &quot; ***********&quot;</li>
+</ul>
+<ul>
+<li>$keyVaultSecret = Get-AzKeyVaultSecret -VaultName $vault -Name $bek</li>
+</ul>
+<ul>
+<li>$bekSecretBase64 = $keyVaultSecret.SecretValueText</li>
+</ul>
+<ul>
+<li>$bekFileBytes = [Convert]::FromBase64String($bekSecretbase64)</li>
+</ul>
+<ul>
+<li>$path = &quot;C:\BEK\DiskEncryptionKeyFileName.BEK&quot;</li>
+</ul>
+<ul>
+<li>[System.IO.File]::WriteAllBytes($path,$bekFileBytes)</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Device /dev/sdc2 is not a valid LUKS device. [目前没有解决，还在查看是否有解决的途径]</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Linux的虚拟机在尝试导出secret时，运行上面文档中的以下powershell命令时，会输出空数据：</li>
+</ul>
+<ul>
+<li>Get-AzKeyVaultSecret -VaultName $vault | where {($_.Tags.MachineName -eq $vmName) -and ($_.ContentType -match &#39;BEK&#39;)} `</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20200323</p>
+<p>ZuoTeng</p>
+<p>最近在处理这个工单【SR_2020031312383_[S500]Unable to export BEK file for Encrypted volume】时，客户的一台已经加密的windows虚拟机无法启动，他想在另外一台windows中进行解密。通过查找官方文档，发现一篇这个文档</p>
+<p>BitLocker boot errors on n Azure VM。我这边测试可以进行解密的操作。以便让客户能还原出相应的磁盘数据。</p>
+<p>后续，我这边再测试linux时遇到一个问题。就是在尝试解密时，遇到以下报错：</p>
+<p>Device /dev/sdc2 is not a valid LUKS device. [目前没有解决，还在查看是否有解决的途径]</p>
+<p>Linux的虚拟机在尝试导出secret时，运行上面文档中的以下powershell命令时，会输出空数据：</p>
+<p>$vmName = &quot;myVM&quot;</p>
+<p>$vault = &quot;myKeyVault&quot;</p>
+<p>Get-AzKeyVaultSecret -VaultName $vault | where {($_.Tags.MachineName -eq $vmName) -and ($_.ContentType -match &#39;BEK&#39;)} `</p>
+<p>| Sort-Object -Property Created `</p>
+<p>| ft  Created, `</p>
+<p>@{Label=&quot;Content Type&quot;;Expression={$_.ContentType}}, `</p>
+<p>@{Label =&quot;Volume&quot;; Expression = {$_.Tags.VolumeLetter}}, `</p>
+<p>@{Label =&quot;DiskEncryptionKeyFileName&quot;; Expression = {$_.Tags.DiskEncryptionKeyFileName}}</p>
+<p>因为linux加密后的虚拟机 tag中vmname是空的。你的去门户找到对应的secret name，填写到下面的$bek中。</p>
+<p>$bek = &quot; ***********&quot;</p>
+<p>$keyVaultSecret = Get-AzKeyVaultSecret -VaultName $vault -Name $bek</p>
+<p>$bekSecretBase64 = $keyVaultSecret.SecretValueText</p>
+<p>$bekFileBytes = [Convert]::FromBase64String($bekSecretbase64)</p>
+<p>$path = &quot;C:\BEK\DiskEncryptionKeyFileName.BEK&quot;</p>
+<p>[System.IO.File]::WriteAllBytes($path,$bekFileBytes)</p></article>

@@ -1,0 +1,152 @@
+<article class="kb-article" data-title="S2S diubao频繁中断"><h1>S2S diubao频繁中断</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-09-24 14:55:27</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Failure type: IKE/Authip Quick Mode Failure</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Failure type: IKE/Authip Quick Mode Failure</li>
+</ul>
+<ul>
+<li>Failure error code:0x0000363e</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>YaoYuejian</li>
+</ul>
+<ul>
+<li>Dears</li>
+</ul>
+<ul>
+<li>Type specific info:</li>
+</ul>
+<ul>
+<li>Main mode SA assumed to be invalid because peer stopped responding.</li>
+</ul>
+<ul>
+<li>再看数据包，Azure VPN GW和本地设备之间第一阶段没问题，第二阶段明显不是正常的交换过程（一对儿感兴趣流对应三个报文）</li>
+</ul>
+<ul>
+<li>详细看第二阶段的报文，本地VPN GW返回的包中，只响应了Message ID=2的协商请求，并完成了三次交换</li>
+</ul>
+<ul>
+<li>以上，Message ID=2的感兴趣流可以协商成功，说明加密算法，哈希算法等各种算法没问题</li>
+</ul>
+<ul>
+<li>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>……..</li>
+</ul>
+<ul>
+<li>[0]030C.0D40::08/27/2018-02:08:32.709 [ikeext] 3778|113.247.240.26|Sending Packet</li>
+</ul>
+<ul>
+<li>[0]030C.0D40::08/27/2018-02:08:32.709 [ikeext] 3778|113.247.240.26|iCookie d7ff54ebc94d0c50 rCookie d662b4352a710d77</li>
+</ul>
+<ul>
+<li>[0]030C.0D40::08/27/2018-02:08:32.709 [ikeext] 3778|113.247.240.26|Exchange type: IKE Quick Mode Length 372 NextPayload HASH Flags 0x1 Messid 0x00000001</li>
+</ul>
+<ul>
+<li>0]030C.0D40::08/27/2018-02:08:32.710 [ikeext] 3778|113.247.240.26|Got SPI from BFE 3501399250</li>
+</ul>
+<ul>
+<li>………</li>
+</ul>
+<ul>
+<li>[0]030C.0D40::08/27/2018-02:08:32.710 [ikeext] 3778|113.247.240.26|Sending Packet</li>
+</ul>
+<ul>
+<li>[0]030C.0D40::08/27/2018-02:08:32.710 [ikeext] 3778|113.247.240.26|iCookie d7ff54ebc94d0c50 rCookie d662b4352a710d77</li>
+</ul>
+<ul>
+<li>[0]030C.0D40::08/27/2018-02:08:32.710 [ikeext] 3778|113.247.240.26|Exchange type: IKE Quick Mode Length 372 NextPayload HASH Flags 0x1 Messid 0x00000002</li>
+</ul>
+<ul>
+<li>BestRegards</li>
+</ul>
+<ul>
+<li>YaoYuejian | WATS</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>今天接了一个S2S VPN 频繁中断的工单，每次中断时间5s左右。根据以往经验来说，频繁中断一般是感兴趣流或者sa lifetime的问题，可以直接找客户检查参数配置。</li>
+</ul>
+<ul>
+<li>不过除了经验之外，也分享一下排查过程，大家可以参考一下。</li>
+</ul>
+<ul>
+<li>控制层面的问题，一般只需在 VPN GW抓包就够了，先看了一下wfpdiag.txt的报错，第二阶段失败</li>
+</ul>
+<ul>
+<li>远程到客户那里检查配置，发现对端感兴趣流源地址是172.30.1.0/24和10.39.0.0/16，172.30.0.0/16之后，就恢复正常了。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Message ID=1的报文一直在重传，所以日志里的报错虽然不是很准确，但是也是有点依据的</li>
+</ul>
+<ul>
+<li>[0]030C.0D40::08/27/2018-02:08:32.709 [ikeext] 3778|113.247.240.26|Local address : 10.189.0.0.0 Mask 255.255.0.0 Protocol 0</li>
+</ul>
+<ul>
+<li>[0]030C.0D40::08/27/2018-02:08:32.709 [ikeext] 3778|113.247.240.26|Peer address : 172.30.0.0.0 Mask 255.255.0.0 Protocol 0</li>
+</ul>
+<ul>
+<li>[0]030C.0D40::08/27/2018-02:08:32.710 [ikeext] 3778|113.247.240.26|Local address : 10.189.0.0.0 Mask 255.255.0.0 Protocol 0</li>
+</ul>
+<ul>
+<li>[0]030C.0D40::08/27/2018-02:08:32.710 [ikeext] 3778|113.247.240.26|Peer address : 10.39.0.0.0 Mask 255.255.0.0 Protocol 0</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>(两个VPN GW之间可以通过一个第一阶段的sa协商多个第二阶段的sa，通过Message ID来标识不同的感兴趣流)</li>
+</ul>
+<ul>
+<li>由于第二阶段的报文都是加密的，没办法看出具体内容，但可以在日志中找到两个Message ID对应的感兴趣流，最后定位是172.30.0.0/16的感兴趣流有问题（这一步也可以通过Jarvis查本地网络网关的配置，但是就是没办法和Message ID对应上找到具体是哪个地址段）</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>YaoYuejian</p>
+<p>2018/8/27</p>
+<p>Dears</p>
+<p>今天接了一个S2S VPN 频繁中断的工单，每次中断时间5s左右。根据以往经验来说，频繁中断一般是感兴趣流或者sa lifetime的问题，可以直接找客户检查参数配置。</p>
+<p>不过除了经验之外，也分享一下排查过程，大家可以参考一下。</p>
+<p>控制层面的问题，一般只需在 VPN GW抓包就够了，先看了一下wfpdiag.txt的报错，第二阶段失败</p>
+<p>Failure type: IKE/Authip Quick Mode Failure</p>
+<p>Type specific info:</p>
+<p>Failure error code:0x0000363e</p>
+<p>Main mode SA assumed to be invalid because peer stopped responding.</p>
+<p>再看数据包，Azure VPN GW和本地设备之间第一阶段没问题，第二阶段明显不是正常的交换过程（一对儿感兴趣流对应三个报文）</p>
+<p>详细看第二阶段的报文，本地VPN GW返回的包中，只响应了Message ID=2的协商请求，并完成了三次交换</p>
+<p>Message ID=1的报文一直在重传，所以日志里的报错虽然不是很准确，但是也是有点依据的</p>
+<p>(两个VPN GW之间可以通过一个第一阶段的sa协商多个第二阶段的sa，通过Message ID来标识不同的感兴趣流)</p>
+<p>以上，Message ID=2的感兴趣流可以协商成功，说明加密算法，哈希算法等各种算法没问题</p>
+<p>由于第二阶段的报文都是加密的，没办法看出具体内容，但可以在日志中找到两个Message ID对应的感兴趣流，最后定位是172.30.0.0/16的感兴趣流有问题（这一步也可以通过Jarvis查本地网络网关的配置，但是就是没办法和Message ID对应上找到具体是哪个地址段）</p>
+<p>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+<p>[0]030C.0D40::08/27/2018-02:08:32.709 [ikeext] 3778|113.247.240.26|Local address : 10.189.0.0.0 Mask 255.255.0.0 Protocol 0</p>
+<p>[0]030C.0D40::08/27/2018-02:08:32.709 [ikeext] 3778|113.247.240.26|Peer address : 172.30.0.0.0 Mask 255.255.0.0 Protocol 0</p>
+<p>……..</p>
+<p>[0]030C.0D40::08/27/2018-02:08:32.709 [ikeext] 3778|113.247.240.26|Sending Packet</p>
+<p>[0]030C.0D40::08/27/2018-02:08:32.709 [ikeext] 3778|113.247.240.26|iCookie d7ff54ebc94d0c50 rCookie d662b4352a710d77</p>
+<p>[0]030C.0D40::08/27/2018-02:08:32.709 [ikeext] 3778|113.247.240.26|Exchange type: IKE Quick Mode Length 372 NextPayload HASH Flags 0x1 Messid 0x00000001</p>
+<p>0]030C.0D40::08/27/2018-02:08:32.710 [ikeext] 3778|113.247.240.26|Got SPI from BFE 3501399250</p>
+<p>[0]030C.0D40::08/27/2018-02:08:32.710 [ikeext] 3778|113.247.240.26|Local address : 10.189.0.0.0 Mask 255.255.0.0 Protocol 0</p>
+<p>[0]030C.0D40::08/27/2018-02:08:32.710 [ikeext] 3778|113.247.240.26|Peer address : 10.39.0.0.0 Mask 255.255.0.0 Protocol 0</p>
+<p>………</p>
+<p>[0]030C.0D40::08/27/2018-02:08:32.710 [ikeext] 3778|113.247.240.26|Sending Packet</p>
+<p>[0]030C.0D40::08/27/2018-02:08:32.710 [ikeext] 3778|113.247.240.26|iCookie d7ff54ebc94d0c50 rCookie d662b4352a710d77</p>
+<p>[0]030C.0D40::08/27/2018-02:08:32.710 [ikeext] 3778|113.247.240.26|Exchange type: IKE Quick Mode Length 372 NextPayload HASH Flags 0x1 Messid 0x00000002</p>
+<p>远程到客户那里检查配置，发现对端感兴趣流源地址是172.30.1.0/24和10.39.0.0/16，172.30.0.0/16之后，就恢复正常了。</p>
+<p>BestRegards</p>
+<p>YaoYuejian | WATS</p></article>

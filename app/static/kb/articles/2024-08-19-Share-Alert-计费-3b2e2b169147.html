@@ -1,0 +1,95 @@
+<article class="kb-article" data-title="[Share]Alert 计费"><h1>[Share]Alert 计费</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-19 11:36:46</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Create</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Create</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Create</li>
+</ul>
+<ul>
+<li>Azure 监控器价格_预算报价 - Azure 云计算</li>
+</ul>
+<ul>
+<li>例如您设置的5 分钟间隔</li>
+</ul>
+<ul>
+<li>例如我们工程师部署了如下两条警报，那么计费为：每月 ￥16.18X2= ￥32.36。</li>
+</ul>
+<ul>
+<li>关于维度的计费我们官网还在更新中，您可以参考如下价格：</li>
+</ul>
+<ul>
+<li>日志警报下的维度，经测试及技术文档描述信息如下：</li>
+</ul>
+<ul>
+<li>在上述文档中有以下描述：</li>
+</ul>
+<ul>
+<li>对于维度数量的计算找到如下信息：</li>
+</ul>
+<ul>
+<li>对于普通的维度，时序的数量是不同维度值的乘积。</li>
+</ul>
+<ul>
+<li>但是在测试中发现会有以下情况，我的测试环境针对VM配置警报，但是我们的VM会有定时关机的操作。</li>
+</ul>
+<ul>
+<li>在VM关机之后，我定义的维度computer值会随之消失，同时在文档中有以下描述：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>其中Alerts System Log Monitored at 5 Minute Frequency的计费请参考如下链接</li>
+</ul>
+<ul>
+<li>那么：个工作区 * 1 日志警报查询 * 每月每个日志预警规则 ￥16.18 = 每月 ￥16.18</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>目前建议可以参考在警报规则如下图位置的时序数量进行计算：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://azure.microsoft.com/zh-cn/pricing/details/monitor/" target="_blank" rel="noopener">https://azure.microsoft.com/zh-cn/pricing/details/monitor/</a>           （global）</li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-create-log-alert-rule" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-create-log-alert-rule</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-metric-multiple-time-series-single-rule" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-metric-multiple-time-series-single-rule</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Create</p>
+<p>2024-08-01</p>
+<p>其中Alerts System Log Monitored at 5 Minute Frequency的计费请参考如下链接</p>
+<p>Azure 监控器价格_预算报价 - Azure 云计算</p>
+<p>例如您设置的5 分钟间隔</p>
+<p>那么：个工作区 * 1 日志警报查询 * 每月每个日志预警规则 ￥16.18 = 每月 ￥16.18</p>
+<p>例如我们工程师部署了如下两条警报，那么计费为：每月 ￥16.18X2= ￥32.36。</p>
+<p>关于维度的计费我们官网还在更新中，您可以参考如下价格：</p>
+<p><a href="https://azure.microsoft.com/zh-cn/pricing/details/monitor/" target="_blank" rel="noopener">https://azure.microsoft.com/zh-cn/pricing/details/monitor/</a>           （global）</p>
+<p>日志警报下的维度，经测试及技术文档描述信息如下：</p>
+<p><a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-create-log-alert-rule" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-create-log-alert-rule</a></p>
+<p>在上述文档中有以下描述：</p>
+<p>对于维度数量的计算找到如下信息：</p>
+<p><a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-metric-multiple-time-series-single-rule" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-metric-multiple-time-series-single-rule</a></p>
+<p>对于普通的维度，时序的数量是不同维度值的乘积。</p>
+<p>但是在测试中发现会有以下情况，我的测试环境针对VM配置警报，但是我们的VM会有定时关机的操作。</p>
+<p>在VM关机之后，我定义的维度computer值会随之消失，同时在文档中有以下描述：</p>
+<p>目前建议可以参考在警报规则如下图位置的时序数量进行计算：</p></article>

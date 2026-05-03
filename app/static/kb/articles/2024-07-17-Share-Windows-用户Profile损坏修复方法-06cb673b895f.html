@@ -1,0 +1,72 @@
+<article class="kb-article" data-title="【Share】Windows 用户Profile损坏修复方法"><h1>【Share】Windows 用户Profile损坏修复方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-17 12:54:21</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>一、客户遇到登录弹出无法登录到账户，账户文件夹变为Temp，该问题为用户文件数据损坏或丢失。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>一、客户遇到登录弹出无法登录到账户，账户文件夹变为Temp，该问题为用户文件数据损坏或丢失。</li>
+</ul>
+<ul>
+<li>二、登录账户报错如下截图类</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>①删除注册表文件夹记录</li>
+</ul>
+<ul>
+<li>Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\</li>
+</ul>
+<ul>
+<li>②到高级系统设置用户Profile，删除原有目录记录重新登录即可。（原有数据自行备份保留。）</li>
+</ul>
+<ul>
+<li>Azure vm 需要使用其他账户登录进去后</li>
+</ul>
+<ul>
+<li>Sfc /scannow</li>
+</ul>
+<ul>
+<li>1.重复3次左右非正常开机，进入高级恢复，依次点击“疑难解答”→“高级选项”，点击“启动设置→“重启”，选择安全模式。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>备注：一般的步骤：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Windows+x，打开“命令提示符（管理员），执行以下命令：</li>
+</ul>
+<ul>
+<li>2.Windows+x，打开“命令提示符（管理员），执行以下命令：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>服务未启动（实际已启动），该问题一般为默认用户配置文件被删除，新链接的用户（无已有配置文件）无法登录。需要修复。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-07-17</p>
+<p>一、客户遇到登录弹出无法登录到账户，账户文件夹变为Temp，该问题为用户文件数据损坏或丢失。</p>
+<p>①删除注册表文件夹记录</p>
+<p>Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\</p>
+<p>②到高级系统设置用户Profile，删除原有目录记录重新登录即可。（原有数据自行备份保留。）</p>
+<p>二、登录账户报错如下截图类</p>
+<p>服务未启动（实际已启动），该问题一般为默认用户配置文件被删除，新链接的用户（无已有配置文件）无法登录。需要修复。</p>
+<p>Azure vm 需要使用其他账户登录进去后</p>
+<p>Windows+x，打开“命令提示符（管理员），执行以下命令：</p>
+<p>Sfc /scannow</p>
+<p>备注：一般的步骤：</p>
+<p>1.重复3次左右非正常开机，进入高级恢复，依次点击“疑难解答”→“高级选项”，点击“启动设置→“重启”，选择安全模式。</p>
+<p>2.Windows+x，打开“命令提示符（管理员），执行以下命令：</p></article>

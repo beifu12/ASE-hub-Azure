@@ -1,0 +1,99 @@
+<article class="kb-article" data-title="存储账户防火墙是否影响诊断来宾指标配置的经典报警"><h1>存储账户防火墙是否影响诊断来宾指标配置的经典报警</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-07-15 15:07:23</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>先总结几点：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>先总结几点：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>先总结几点：</li>
+</ul>
+<ul>
+<li>以下是具体测试：</li>
+</ul>
+<ul>
+<li>模拟memory 超过95%：</li>
+</ul>
+<ul>
+<li>可以触发警报邮件：</li>
+</ul>
+<ul>
+<li>指标处已经看不到了：</li>
+</ul>
+<ul>
+<li>然后再模拟memory 超过95%后：</li>
+</ul>
+<ul>
+<li>等待了半个小时以上，还是不能收到警报。</li>
+</ul>
+<ul>
+<li>以上也是符合来宾指标不支持存储账户开启防火墙。</li>
+</ul>
+<ul>
+<li>如下global的官方文档：</li>
+</ul>
+<ul>
+<li>请您参考。</li>
+</ul>
+<ul>
+<li>谢谢！</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1、通过与PG确认，如果诊断设置使用的存储账户开启了防火墙，就不能正常看来宾（经典）指标</li>
+</ul>
+<ul>
+<li>然后给，虚拟机诊断设置对应的存储账户开启防火墙：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>2、经典警报global已经与2021.5.31停止支持，中国区会在2024.2.29停止支持，在此之前是有限支持，我理解就是只能powershell创建。</li>
+</ul>
+<ul>
+<li>通过powershell的脚本创建了基于来宾指标的经典警报：(只能在隐藏信息中找到)</li>
+</ul>
+<ul>
+<li>且通过powershell命令也查看不到这个警报规则：</li>
+</ul>
+<ul>
+<li>目前powershell 只支持Get-AzMetricAlertRuleV2 ，这个命令只能查看非经典的警报，Get-AzMetricAlertRule这个命令找不到，但是Add-AzMetricAlertRule 命令还是可以使用的：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/azure-monitor/alerts/monitoring-classic-retirement?WT.mc_id=Portal-Microsoft_Azure_Monitoring" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/azure-monitor/alerts/monitoring-classic-retirement?WT.mc_id=Portal-Microsoft_Azure_Monitoring</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-07-15</p>
+<p>先总结几点：</p>
+<p>1、通过与PG确认，如果诊断设置使用的存储账户开启了防火墙，就不能正常看来宾（经典）指标</p>
+<p>2、经典警报global已经与2021.5.31停止支持，中国区会在2024.2.29停止支持，在此之前是有限支持，我理解就是只能powershell创建。</p>
+<p>以下是具体测试：</p>
+<p>通过powershell的脚本创建了基于来宾指标的经典警报：(只能在隐藏信息中找到)</p>
+<p>且通过powershell命令也查看不到这个警报规则：</p>
+<p>目前powershell 只支持Get-AzMetricAlertRuleV2 ，这个命令只能查看非经典的警报，Get-AzMetricAlertRule这个命令找不到，但是Add-AzMetricAlertRule 命令还是可以使用的：</p>
+<p>模拟memory 超过95%：</p>
+<p>可以触发警报邮件：</p>
+<p>然后给，虚拟机诊断设置对应的存储账户开启防火墙：</p>
+<p>指标处已经看不到了：</p>
+<p>然后再模拟memory 超过95%后：</p>
+<p>等待了半个小时以上，还是不能收到警报。</p>
+<p>以上也是符合来宾指标不支持存储账户开启防火墙。</p>
+<p>如下global的官方文档：</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/azure-monitor/alerts/monitoring-classic-retirement?WT.mc_id=Portal-Microsoft_Azure_Monitoring" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/azure-monitor/alerts/monitoring-classic-retirement?WT.mc_id=Portal-Microsoft_Azure_Monitoring</a></p>
+<p>请您参考。</p>
+<p>谢谢！</p></article>

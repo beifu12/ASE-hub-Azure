@@ -1,0 +1,143 @@
+<article class="kb-article" data-title="【share】Configure WHFB via Intune based on Cloud kerberos trust type"><h1>【share】Configure WHFB via Intune based on Cloud kerberos trust type</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-03-22 16:02:42</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Reviewer</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>WenXin</li>
+</ul>
+<ul>
+<li>Windows hello for business的配置基于Trust type分为Cloud Kerberos，Key，Certificate。</li>
+</ul>
+<ul>
+<li>Cloud Kerberos相比较另外两种方式，并不需要PKI的基础架构，且WHFB的Provison和认证并不会有延迟。</li>
+</ul>
+<ul>
+<li>具体对比：</li>
+</ul>
+<ul>
+<li>Reference KB：Plan a Windows Hello for Business Deployment | Microsoft Learn</li>
+</ul>
+<ul>
+<li>配置文档：Configure Microsoft Entra hybrid join - Microsoft Entra ID | Microsoft Learn</li>
+</ul>
+<ul>
+<li>1.2 身份认证开启PHS（Entra ID Connect开启密码同步）</li>
+</ul>
+<ul>
+<li>2.1 部署Microsoft Entra Kerberos</li>
+</ul>
+<ul>
+<li>参考【Share】混合加入环境下通过启用 kerberos 云信任实现反钓鱼MFA需求</li>
+</ul>
+<ul>
+<li>2.2 Intune管理中心创建如下Policy，开启windows hello</li>
+</ul>
+<ul>
+<li>Reference KB：Windows Hello for Business cloud Kerberos trust deployment guide | Microsoft Learn</li>
+</ul>
+<ul>
+<li>2.3 终端PC设置WHFB</li>
+</ul>
+<ul>
+<li>打开sign in option，选择“windows hello PIN”，点击“添加”</li>
+</ul>
+<ul>
+<li>设置PIN前，做MFA认证</li>
+</ul>
+<ul>
+<li>‘</li>
+</ul>
+<ul>
+<li>设置PIN Code</li>
+</ul>
+<ul>
+<li>注销重新登录PC，使用PIN认证</li>
+</ul>
+<ul>
+<li>关于windows hello的Provision和Authentication的Process：</li>
+</ul>
+<ul>
+<li>How Windows Hello for Business provisioning works | Microsoft Learn</li>
+</ul>
+<ul>
+<li>How Windows Hello for Business authentication works | Microsoft Learn</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>部署步骤：</li>
+</ul>
+<ul>
+<li>1.先决条件检查</li>
+</ul>
+<ul>
+<li>1.1 确认部署windwos device的混合加入（Hybird Entra ID Join）</li>
+</ul>
+<ul>
+<li>部署步骤</li>
+</ul>
+<ul>
+<li>使用Setting Catalog开启如下三个选项：</li>
+</ul>
+<ul>
+<li>Event log可以查看Hello for Business的Operational log</li>
+</ul>
+<ul>
+<li>Entra ID Sign in log</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>1.3 目标设备加入Intune，保证后续可以通过MDM Configuration Profile下发WHFB相关的Policy</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Reviewer</p>
+<p>WenXin</p>
+<p>Windows hello for business的配置基于Trust type分为Cloud Kerberos，Key，Certificate。</p>
+<p>Cloud Kerberos相比较另外两种方式，并不需要PKI的基础架构，且WHFB的Provison和认证并不会有延迟。</p>
+<p>具体对比：</p>
+<p>Reference KB：Plan a Windows Hello for Business Deployment | Microsoft Learn</p>
+<p>部署步骤：</p>
+<p>1.先决条件检查</p>
+<p>1.1 确认部署windwos device的混合加入（Hybird Entra ID Join）</p>
+<p>配置文档：Configure Microsoft Entra hybrid join - Microsoft Entra ID | Microsoft Learn</p>
+<p>1.2 身份认证开启PHS（Entra ID Connect开启密码同步）</p>
+<p>1.3 目标设备加入Intune，保证后续可以通过MDM Configuration Profile下发WHFB相关的Policy</p>
+<p>部署步骤</p>
+<p>2.1 部署Microsoft Entra Kerberos</p>
+<p>参考【Share】混合加入环境下通过启用 kerberos 云信任实现反钓鱼MFA需求</p>
+<p>2.2 Intune管理中心创建如下Policy，开启windows hello</p>
+<p>使用Setting Catalog开启如下三个选项：</p>
+<p>Reference KB：Windows Hello for Business cloud Kerberos trust deployment guide | Microsoft Learn</p>
+<p>2.3 终端PC设置WHFB</p>
+<p>打开sign in option，选择“windows hello PIN”，点击“添加”</p>
+<p>设置PIN前，做MFA认证</p>
+<p>‘</p>
+<p>设置PIN Code</p>
+<p>注销重新登录PC，使用PIN认证</p>
+<p>Event log可以查看Hello for Business的Operational log</p>
+<p>Entra ID Sign in log</p>
+<p>关于windows hello的Provision和Authentication的Process：</p>
+<p>How Windows Hello for Business provisioning works | Microsoft Learn</p>
+<p>How Windows Hello for Business authentication works | Microsoft Learn</p></article>

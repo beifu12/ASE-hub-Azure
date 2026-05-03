@@ -1,0 +1,206 @@
+<article class="kb-article" data-title="Msix"><h1>Msix</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-05-15 10:52:00</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>驱动连接： <a href="https://learn.microsoft.com/en-us/windows/msix/packaging-tool/disconnected-environment#get-the-msix-packaging-tool-driver" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/windows/msix/packaging-tool/disconnected-environment#get-the-msix-packaging-tool-driver</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>驱动连接： <a href="https://learn.microsoft.com/en-us/windows/msix/packaging-tool/disconnected-environment#get-the-msix-packaging-tool-driver" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/windows/msix/packaging-tool/disconnected-environment#get-the-msix-packaging-tool-driver</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>PS C:\Windows\system32&gt; $cert = New-SelfSignedCertificate -CertStoreLocation Cert:\LocalMachine\My -DnsName &#39;bcbcc.top&#39; -Type CodeSigningCert -Verbose</li>
+</ul>
+<ul>
+<li>VERBOSE: Performing the operation &quot;Create a new self-signed certificate&quot; on target &quot;Cert:\LocalMachine\My&quot;.</li>
+</ul>
+<ul>
+<li>PS C:\Windows\system32&gt; $secPassword = ConvertTo-SecureString -String &#39;qwer1234!@#$&#39; -Force -AsPlainText</li>
+</ul>
+<ul>
+<li>PS C:\Windows\system32&gt; $certPath = &quot;Cert:\LocalMachine\My\$($Cert.Thumbprint)&quot;</li>
+</ul>
+<ul>
+<li>PS C:\Windows\system32&gt; Export-PfxCertificate -Cert $certPath -FilePath &#39;C:\temp\CodeSigning.pfx&#39; -Password $secPassword</li>
+</ul>
+<ul>
+<li>Directory: C:\temp</li>
+</ul>
+<ul>
+<li>Mode                 LastWriteTime         Length Name</li>
+</ul>
+<ul>
+<li>----                 -------------         ------ ----</li>
+</ul>
+<ul>
+<li>-a----         2023/5/15     10:29           2669 CodeSigning.pfx</li>
+</ul>
+<ul>
+<li>D:\Program Files (x86)\Tencent\WeChat</li>
+</ul>
+<ul>
+<li>2，</li>
+</ul>
+<ul>
+<li>d:\Program Files (x86)\Tencent\WeChat</li>
+</ul>
+<ul>
+<li>3，</li>
+</ul>
+<ul>
+<li>PS C:\Windows\system32&gt; New-VHD -SizeBytes 800MB -Path c:\temp\WeChatnew.vhd -Dynamic -Confirm:$false                                                                                                                                                                                                                                                                   ComputerName            : ZHANGNAN6-D-2                                                                                 Path                    : c:\temp\WeChatnew.vhd</li>
+</ul>
+<ul>
+<li>VhdFormat               : VHD</li>
+</ul>
+<ul>
+<li>VhdType                 : Dynamic</li>
+</ul>
+<ul>
+<li>FileSize                : 8192</li>
+</ul>
+<ul>
+<li>Size                    : 838860800</li>
+</ul>
+<ul>
+<li>MinimumSize             :</li>
+</ul>
+<ul>
+<li>PhysicalSectorSize      : 512</li>
+</ul>
+<ul>
+<li>BlockSize               : 2097152</li>
+</ul>
+<ul>
+<li>ParentPath              :</li>
+</ul>
+<ul>
+<li>DiskIdentifier          : E1D26824-1309-449E-B367-756CB8E6003B</li>
+</ul>
+<ul>
+<li>FragmentationPercentage : 0</li>
+</ul>
+<ul>
+<li>Alignment               : 1</li>
+</ul>
+<ul>
+<li>Attached                : False</li>
+</ul>
+<ul>
+<li>DiskNumber              :</li>
+</ul>
+<ul>
+<li>IsPMEMCompatible        : False</li>
+</ul>
+<ul>
+<li>AddressAbstractionType  : None</li>
+</ul>
+<ul>
+<li>Number                  :</li>
+</ul>
+<ul>
+<li>PS C:\Windows\system32&gt;  $vhdObject = Mount-VHD c:\temp\WeChatnew.vhd -Passthru</li>
+</ul>
+<ul>
+<li>PS C:\Windows\system32&gt; $disk = Initialize-Disk -Passthru -Number $vhdObject.Number</li>
+</ul>
+<ul>
+<li>PS C:\Windows\system32&gt; $partition = New-Partition -AssignDriveLetter -UseMaximumSize -DiskNumber $disk.Number</li>
+</ul>
+<ul>
+<li>PS C:\Windows\system32&gt; Format-Volume -FileSystem NTFS -Confirm:$false -DriveLetter $partition.DriveLetter -Force</li>
+</ul>
+<ul>
+<li>DriveLetter FriendlyName FileSystemType DriveType HealthStatus OperationalStatus SizeRemaining      Size</li>
+</ul>
+<ul>
+<li>----------- ------------ -------------- --------- ------------ ----------------- -------------      ----</li>
+</ul>
+<ul>
+<li>PS C:\Windows\system32&gt; cd D:\Downloads\msixmgr\x64</li>
+</ul>
+<ul>
+<li>PS D:\Downloads\msixmgr\x64&gt; .\msixmgr.exe -Unpack -packagePath F:\WeChat\WeChat_1.0.0.0_x64__rm1s0f7ptrv2y.msix -destination &quot;F:\WeChat&quot; -applyacls</li>
+</ul>
+<ul>
+<li>Finished unpacking packages to: F:\WeChat</li>
+</ul>
+<ul>
+<li>PS D:\Downloads\msixmgr\x64&gt; disMount-VHD c:\temp\WeChatnew.vhd</li>
+</ul>
+<ul>
+<li>PS D:\Downloads\msixmgr\x64&gt;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1，这里的安装位置和后步骤2中wechat安装位置要一致，否则步骤3检测会有问题。</li>
+</ul>
+<ul>
+<li>LogicalSectorSize       : 512</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>F                        NTFS           Fixed     Healthy      OK                    769.64 MB 783.93 MB</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>驱动连接： <a href="https://learn.microsoft.com/en-us/windows/msix/packaging-tool/disconnected-environment#get-the-msix-packaging-tool-driver" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/windows/msix/packaging-tool/disconnected-environment#get-the-msix-packaging-tool-driver</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>驱动连接： <a href="https://learn.microsoft.com/en-us/windows/msix/packaging-tool/disconnected-environment#get-the-msix-packaging-tool-driver" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/windows/msix/packaging-tool/disconnected-environment#get-the-msix-packaging-tool-driver</a></p>
+<p>PS C:\Windows\system32&gt; $cert = New-SelfSignedCertificate -CertStoreLocation Cert:\LocalMachine\My -DnsName &#39;bcbcc.top&#39; -Type CodeSigningCert -Verbose</p>
+<p>VERBOSE: Performing the operation &quot;Create a new self-signed certificate&quot; on target &quot;Cert:\LocalMachine\My&quot;.</p>
+<p>PS C:\Windows\system32&gt; $secPassword = ConvertTo-SecureString -String &#39;qwer1234!@#$&#39; -Force -AsPlainText</p>
+<p>PS C:\Windows\system32&gt; $certPath = &quot;Cert:\LocalMachine\My\$($Cert.Thumbprint)&quot;</p>
+<p>PS C:\Windows\system32&gt; Export-PfxCertificate -Cert $certPath -FilePath &#39;C:\temp\CodeSigning.pfx&#39; -Password $secPassword</p>
+<p>Directory: C:\temp</p>
+<p>Mode                 LastWriteTime         Length Name</p>
+<p>----                 -------------         ------ ----</p>
+<p>-a----         2023/5/15     10:29           2669 CodeSigning.pfx</p>
+<p>D:\Program Files (x86)\Tencent\WeChat</p>
+<p>1，这里的安装位置和后步骤2中wechat安装位置要一致，否则步骤3检测会有问题。</p>
+<p>2，</p>
+<p>d:\Program Files (x86)\Tencent\WeChat</p>
+<p>3，</p>
+<p>PS C:\Windows\system32&gt; New-VHD -SizeBytes 800MB -Path c:\temp\WeChatnew.vhd -Dynamic -Confirm:$false                                                                                                                                                                                                                                                                   ComputerName            : ZHANGNAN6-D-2                                                                                 Path                    : c:\temp\WeChatnew.vhd</p>
+<p>VhdFormat               : VHD</p>
+<p>VhdType                 : Dynamic</p>
+<p>FileSize                : 8192</p>
+<p>Size                    : 838860800</p>
+<p>MinimumSize             :</p>
+<p>LogicalSectorSize       : 512</p>
+<p>PhysicalSectorSize      : 512</p>
+<p>BlockSize               : 2097152</p>
+<p>ParentPath              :</p>
+<p>DiskIdentifier          : E1D26824-1309-449E-B367-756CB8E6003B</p>
+<p>FragmentationPercentage : 0</p>
+<p>Alignment               : 1</p>
+<p>Attached                : False</p>
+<p>DiskNumber              :</p>
+<p>IsPMEMCompatible        : False</p>
+<p>AddressAbstractionType  : None</p>
+<p>Number                  :</p>
+<p>PS C:\Windows\system32&gt;  $vhdObject = Mount-VHD c:\temp\WeChatnew.vhd -Passthru</p>
+<p>PS C:\Windows\system32&gt; $disk = Initialize-Disk -Passthru -Number $vhdObject.Number</p>
+<p>PS C:\Windows\system32&gt; $partition = New-Partition -AssignDriveLetter -UseMaximumSize -DiskNumber $disk.Number</p>
+<p>PS C:\Windows\system32&gt; Format-Volume -FileSystem NTFS -Confirm:$false -DriveLetter $partition.DriveLetter -Force</p>
+<p>DriveLetter FriendlyName FileSystemType DriveType HealthStatus OperationalStatus SizeRemaining      Size</p>
+<p>----------- ------------ -------------- --------- ------------ ----------------- -------------      ----</p>
+<p>F                        NTFS           Fixed     Healthy      OK                    769.64 MB 783.93 MB</p>
+<p>PS C:\Windows\system32&gt; cd D:\Downloads\msixmgr\x64</p>
+<p>PS D:\Downloads\msixmgr\x64&gt; .\msixmgr.exe -Unpack -packagePath F:\WeChat\WeChat_1.0.0.0_x64__rm1s0f7ptrv2y.msix -destination &quot;F:\WeChat&quot; -applyacls</p>
+<p>Finished unpacking packages to: F:\WeChat</p>
+<p>PS D:\Downloads\msixmgr\x64&gt; disMount-VHD c:\temp\WeChatnew.vhd</p>
+<p>PS D:\Downloads\msixmgr\x64&gt;</p></article>

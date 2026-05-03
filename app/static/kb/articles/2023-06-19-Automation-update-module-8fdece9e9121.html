@@ -1,0 +1,89 @@
+<article class="kb-article" data-title="Automation update module"><h1>Automation update module</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Automation</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-06-19 10:24:03</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Import az.account can reproduce your error:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Import az.account can reproduce your error:</li>
+</ul>
+<ul>
+<li>Then failed to import az.compute in runtime version 5.1:</li>
+</ul>
+<ul>
+<li>This is a known issue:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20230619</li>
+</ul>
+<ul>
+<li>From my test az.compute dependency by az.account.</li>
+</ul>
+<ul>
+<li>The runtime version 7.1 is in preview.</li>
+</ul>
+<ul>
+<li>I test runtime version 5.1 can import az.account successfully:</li>
+</ul>
+<ul>
+<li>You can follow the url:</li>
+</ul>
+<ul>
+<li>Make sure select az.account 2.12.1 or lower.</li>
+</ul>
+<ul>
+<li>$moduleName = &quot;Az.Accounts&quot;</li>
+</ul>
+<ul>
+<li>$moduleVersion = &quot;2.12.1&quot;</li>
+</ul>
+<ul>
+<li>Import successful：</li>
+</ul>
+<ul>
+<li>Az.Compute:</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/en-us/automation/automation-update-azure-modules" target="_blank" rel="noopener">https://docs.azure.cn/en-us/automation/automation-update-azure-modules</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/en-us/automation/shared-resources/modules#import-modules-by-using-powershell" target="_blank" rel="noopener">https://docs.azure.cn/en-us/automation/shared-resources/modules#import-modules-by-using-powershell</a></li>
+</ul>
+<ul>
+<li>New-AzAutomationModule -AutomationAccountName &quot;automationidentity&quot; -ResourceGroupName &quot;n2rg1&quot;  -Name $moduleName -ContentLinkUri &quot;<a href="https://www.powershellgallery.com/api/v2/package/$moduleName/$moduleVersion&quot;" target="_blank" rel="noopener">https://www.powershellgallery.com/api/v2/package/$moduleName/$moduleVersion&quot;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20230619</p>
+<p>From my test az.compute dependency by az.account.</p>
+<p>Import az.account can reproduce your error:</p>
+<p>The runtime version 7.1 is in preview.</p>
+<p>I test runtime version 5.1 can import az.account successfully:</p>
+<p>Then failed to import az.compute in runtime version 5.1:</p>
+<p>This is a known issue:</p>
+<p><a href="https://docs.azure.cn/en-us/automation/automation-update-azure-modules" target="_blank" rel="noopener">https://docs.azure.cn/en-us/automation/automation-update-azure-modules</a></p>
+<p>You can follow the url:</p>
+<p><a href="https://docs.azure.cn/en-us/automation/shared-resources/modules#import-modules-by-using-powershell" target="_blank" rel="noopener">https://docs.azure.cn/en-us/automation/shared-resources/modules#import-modules-by-using-powershell</a></p>
+<p>Make sure select az.account 2.12.1 or lower.</p>
+<p>$moduleName = &quot;Az.Accounts&quot;</p>
+<p>$moduleVersion = &quot;2.12.1&quot;</p>
+<p>New-AzAutomationModule -AutomationAccountName &quot;automationidentity&quot; -ResourceGroupName &quot;n2rg1&quot;  -Name $moduleName -ContentLinkUri &quot;<a href="https://www.powershellgallery.com/api/v2/package/$moduleName/$moduleVersion&quot;" target="_blank" rel="noopener">https://www.powershellgallery.com/api/v2/package/$moduleName/$moduleVersion&quot;</a></p>
+<p>Import successful：</p>
+<p>Az.Compute:</p></article>

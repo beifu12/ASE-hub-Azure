@@ -1,0 +1,150 @@
+<article class="kb-article" data-title="VirtualWan站点中新增链接后，云端网关无法发起与响应VPN请求"><h1>VirtualWan站点中新增链接后，云端网关无法发起与响应VPN请求</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Virtual Wan</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-05-06 14:40:06</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>关联工单：2104200060001457/NET/Hyatt International Hotel ... - TrackingID#2104200060001457,SR_2021041491098</li>
+</ul>
+<ul>
+<li>用户在拥有VWAN后，建立中心，中心内建立VPN站点，站点内建立链接后，将该VPN站点与中心相连，VPN联通。 随后，用户在该VPN站点新增链接后，发现该新的链接没有生效，后来通过断开VPN站点与中心的连接后，重新连接才成功。</li>
+</ul>
+<ul>
+<li>额外补充：Virtual Wan一个中心内可以建4个链接，也就是说一个本地地址空间的站点，可以有最多四个公共IP链接至vwan。</li>
+</ul>
+<ul>
+<li>$vpnSite = Get-AzVpnSite -ResourceGroupName $rgName -Name $vpnSiteName</li>
+</ul>
+<ul>
+<li>$vpnSite.VpnSiteLinks =&gt; This will show both VpnSiteLinks (bbb and ccc)</li>
+</ul>
+<ul>
+<li>$vpnSite.VpnSiteLinks[1] =&gt; Select index for newly added VpnSite i.e. ccc</li>
+</ul>
+<ul>
+<li>$vpnGateway = Get-AzVpnGateway -ResourceGroupName $rgName -Name $vpnGatewayName</li>
+</ul>
+<ul>
+<li>$vpnConnectionName = $vpnGateway.Connections[0] =&gt; This will give VpnConnectionName</li>
+</ul>
+<ul>
+<li>$existingVpnLinkConnection1 = $vpnGateway.Connections[0].VpnLinkConnections[0] =&gt; This will give existing VpnLinkConnection with existing VpnSiteLink: bbb</li>
+</ul>
+<ul>
+<li>$ipsecPolicies = $existingVpnLinkConnection1.IpsecPolicies</li>
+</ul>
+<ul>
+<li>// Create new VpnsiteLinkConnection with newly added VpnSiteLink i.e. ccc</li>
+</ul>
+<ul>
+<li>$newVpnSiteLinkConnection2 = New-AzVpnSiteLinkConnection -Name $vpnLink2ConnectionName -VpnSiteLink $vpnSite.VpnSiteLinks[1] -ConnectionBandwidth 100 -IpSecPolicy  $ipsecPolicies</li>
+</ul>
+<ul>
+<li>// Add newly created VpnSiteLinkConnection to Parent VpnConnection</li>
+</ul>
+<ul>
+<li>Update-AzVpnConnection -ResourceGroupName $rgName -ParentResourceName $vpnGatewayName -Name $vpnConnectionName -VpnSiteLinkConnection @($existingVpnLinkConnection1, $newVpnSiteLinkConnection2)</li>
+</ul>
+<ul>
+<li>$vpnGateway.Connections[0].VpnLinkConnections[1] =&gt; This will give newly created VpnLinkConnection with VpnSiteLink: ccc</li>
+</ul>
+<ul>
+<li>内部信息：</li>
+</ul>
+<ul>
+<li>我们在实验环境中进行了测试，问题可以复现。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>1.排查用户故障点时间内，发现VWAN的VPN网关收到了本地的请求，但没有响应本地的请求。</li>
+</ul>
+<ul>
+<li>2.模拟用户的环境进行试验，确认了在已经成功建立的VPN站点与中心的连接后，在VPN站点添加新的链接后，也是vwan端无法响应本地请求。当VPN站点与中心的连接断开并重建后，新链接则可以连接成功。 因此想询问这样的功能设计是否合理？</li>
+</ul>
+<ul>
+<li>经过CSS确认，该问题并非产品组期望值，目前该功能问题已经提交给产品组进行解决。如果希望在不中断已有链接的情况下，新建连接并生效，可以参考以下方法：</li>
+</ul>
+<ul>
+<li>// Get all VpnSites/VpnSiteLinks created from Portal.</li>
+</ul>
+<ul>
+<li>$vpnGatewayName = &quot;&quot; =&gt; Copy VpnGateway name from Portal</li>
+</ul>
+<ul>
+<li>感谢您的支持与协助，总结一下这几天我们所进行的排查：</li>
+</ul>
+<ul>
+<li>我们使用您的测试virtual-wan复现了问题，并将其留在了non-working状态以备后续排查。</li>
+</ul>
+<ul>
+<li>已经提交了IcM请后端研发排查一下这个问题。</li>
+</ul>
+<ul>
+<li>有任何排查结果会第一时间与您同步，如果您在这期间有任何其他问题，请随时联系我们。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>产品组确认该问题问portal的一个产品缺陷导致，可以使用以下PowerShell命令来mitigate问题：</li>
+</ul>
+<ul>
+<li>该问题有修复计划的，但是目前没有具体修复时间。如果问题修复前有任何增加link需求，可以使用前面的PowerShell进行mitigation操作。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在网络专家Channel进行了提问，以确认该行为是否为by design，得到否定答案，并建议保留现场继续排查</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Bug修复work item：<a href="https://msazure.visualstudio.com/One/_workitems/edit/9466818" target="_blank" rel="noopener">https://msazure.visualstudio.com/One/_workitems/edit/9466818</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>关联工单：2104200060001457/NET/Hyatt International Hotel ... - TrackingID#2104200060001457,SR_2021041491098</p>
+<p>问题现象：</p>
+<p>用户在拥有VWAN后，建立中心，中心内建立VPN站点，站点内建立链接后，将该VPN站点与中心相连，VPN联通。 随后，用户在该VPN站点新增链接后，发现该新的链接没有生效，后来通过断开VPN站点与中心的连接后，重新连接才成功。</p>
+<p>排查过程：</p>
+<p>1.排查用户故障点时间内，发现VWAN的VPN网关收到了本地的请求，但没有响应本地的请求。</p>
+<p>2.模拟用户的环境进行试验，确认了在已经成功建立的VPN站点与中心的连接后，在VPN站点添加新的链接后，也是vwan端无法响应本地请求。当VPN站点与中心的连接断开并重建后，新链接则可以连接成功。 因此想询问这样的功能设计是否合理？</p>
+<p>额外补充：Virtual Wan一个中心内可以建4个链接，也就是说一个本地地址空间的站点，可以有最多四个公共IP链接至vwan。</p>
+<p>经过CSS确认，该问题并非产品组期望值，目前该功能问题已经提交给产品组进行解决。如果希望在不中断已有链接的情况下，新建连接并生效，可以参考以下方法：</p>
+<p>产品组确认该问题问portal的一个产品缺陷导致，可以使用以下PowerShell命令来mitigate问题：</p>
+<p>// Get all VpnSites/VpnSiteLinks created from Portal.</p>
+<p>$vpnSite = Get-AzVpnSite -ResourceGroupName $rgName -Name $vpnSiteName</p>
+<p>$vpnSite.VpnSiteLinks =&gt; This will show both VpnSiteLinks (bbb and ccc)</p>
+<p>$vpnSite.VpnSiteLinks[1] =&gt; Select index for newly added VpnSite i.e. ccc</p>
+<p>$vpnGatewayName = &quot;&quot; =&gt; Copy VpnGateway name from Portal</p>
+<p>$vpnGateway = Get-AzVpnGateway -ResourceGroupName $rgName -Name $vpnGatewayName</p>
+<p>$vpnConnectionName = $vpnGateway.Connections[0] =&gt; This will give VpnConnectionName</p>
+<p>$existingVpnLinkConnection1 = $vpnGateway.Connections[0].VpnLinkConnections[0] =&gt; This will give existing VpnLinkConnection with existing VpnSiteLink: bbb</p>
+<p>$ipsecPolicies = $existingVpnLinkConnection1.IpsecPolicies</p>
+<p>// Create new VpnsiteLinkConnection with newly added VpnSiteLink i.e. ccc</p>
+<p>$newVpnSiteLinkConnection2 = New-AzVpnSiteLinkConnection -Name $vpnLink2ConnectionName -VpnSiteLink $vpnSite.VpnSiteLinks[1] -ConnectionBandwidth 100 -IpSecPolicy  $ipsecPolicies</p>
+<p>// Add newly created VpnSiteLinkConnection to Parent VpnConnection</p>
+<p>Update-AzVpnConnection -ResourceGroupName $rgName -ParentResourceName $vpnGatewayName -Name $vpnConnectionName -VpnSiteLinkConnection @($existingVpnLinkConnection1, $newVpnSiteLinkConnection2)</p>
+<p>$vpnGateway.Connections[0].VpnLinkConnections[1] =&gt; This will give newly created VpnLinkConnection with VpnSiteLink: ccc</p>
+<p>该问题有修复计划的，但是目前没有具体修复时间。如果问题修复前有任何增加link需求，可以使用前面的PowerShell进行mitigation操作。</p>
+<p>内部信息：</p>
+<p>Bug修复work item：<a href="https://msazure.visualstudio.com/One/_workitems/edit/9466818" target="_blank" rel="noopener">https://msazure.visualstudio.com/One/_workitems/edit/9466818</a></p>
+<p>感谢您的支持与协助，总结一下这几天我们所进行的排查：</p>
+<p>我们在实验环境中进行了测试，问题可以复现。</p>
+<p>在网络专家Channel进行了提问，以确认该行为是否为by design，得到否定答案，并建议保留现场继续排查</p>
+<p>我们使用您的测试virtual-wan复现了问题，并将其留在了non-working状态以备后续排查。</p>
+<p>已经提交了IcM请后端研发排查一下这个问题。</p>
+<p>有任何排查结果会第一时间与您同步，如果您在这期间有任何其他问题，请随时联系我们。</p></article>

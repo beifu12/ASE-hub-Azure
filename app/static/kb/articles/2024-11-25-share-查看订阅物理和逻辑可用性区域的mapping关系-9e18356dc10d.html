@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="【share】查看订阅物理和逻辑可用性区域的mapping关系"><h1>【share】查看订阅物理和逻辑可用性区域的mapping关系</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-25 17:39:22</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>每个数据中心都被分配到一个物理区域。 物理区域映射到 Azure 订阅中的逻辑区域，不同的订阅可能有不同的映射顺序。 Azure 订阅在创建订阅时自动分配其映射。 因此，一个订阅的区域映射可能与其他订阅的不同。 例如：订阅 A 的物理区域 X 可能映射到逻辑区域 1，而订阅 B 的物理区域 X 可能映射到逻辑区域 3。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>每个数据中心都被分配到一个物理区域。 物理区域映射到 Azure 订阅中的逻辑区域，不同的订阅可能有不同的映射顺序。 Azure 订阅在创建订阅时自动分配其映射。 因此，一个订阅的区域映射可能与其他订阅的不同。 例如：订阅 A 的物理区域 X 可能映射到逻辑区域 1，而订阅 B 的物理区域 X 可能映射到逻辑区域 3。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>每个数据中心都被分配到一个物理区域。 物理区域映射到 Azure 订阅中的逻辑区域，不同的订阅可能有不同的映射顺序。 Azure 订阅在创建订阅时自动分配其映射。 因此，一个订阅的区域映射可能与其他订阅的不同。 例如：订阅 A 的物理区域 X 可能映射到逻辑区域 1，而订阅 B 的物理区域 X 可能映射到逻辑区域 3。</li>
+</ul>
+<ul>
+<li>物理区域映射到 Azure 订阅中的逻辑区域，不同的订阅可能有不同的映射顺序。但同一订阅的映射关系是固定的.</li>
+</ul>
+<ul>
+<li>CLI:  az rest --method get --uri &#39;/subscriptions/{subscriptionId}/locations?api-version=2022-12-01&#39; --query &#39;value&#39;</li>
+</ul>
+<ul>
+<li>$subscriptionId = (Get-AzContext).Subscription.ID</li>
+</ul>
+<ul>
+<li>$response = Invoke-AzRestMethod -Method GET -Path &quot;/subscriptions/$subscriptionId/locations?api-version=2022-12-01&quot;</li>
+</ul>
+<ul>
+<li>$locations = ($response.Content | ConvertFrom-Json).value</li>
+</ul>
+<ul>
+<li>文档参考:  物理和逻辑可用性区域 :  什么是 Azure 可用性区域？ | Azure Docs</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>创建虚拟机时显示的zone1,2,3是逻辑可用性区域,  portal不会显示分配的物理可用性区域.</li>
+</ul>
+<ul>
+<li>已我的订阅为例:  从ASC中可以看到我的订阅mapping关系为 逻辑1对应物理3,  逻辑2对应物理1, 逻辑3对应物理2</li>
+</ul>
+<ul>
+<li>可以看到对应关系与创建虚拟机通过ASC查看到的一致.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>2,  以上方法需要我们创建虚拟机才可以查看到对应的映射关系，也可以使用Azure CLI 或 Azure PowerShell 从 API 检索信息</li>
+</ul>
+<ul>
+<li>Powershell:</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>1,  可以通过在北三区域不同逻辑可用性区域创建虚拟机，通过ASC查看具体分配到哪个物理区域.</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/11/24</p>
+<p>每个数据中心都被分配到一个物理区域。 物理区域映射到 Azure 订阅中的逻辑区域，不同的订阅可能有不同的映射顺序。 Azure 订阅在创建订阅时自动分配其映射。 因此，一个订阅的区域映射可能与其他订阅的不同。 例如：订阅 A 的物理区域 X 可能映射到逻辑区域 1，而订阅 B 的物理区域 X 可能映射到逻辑区域 3。</p>
+<p>创建虚拟机时显示的zone1,2,3是逻辑可用性区域,  portal不会显示分配的物理可用性区域.</p>
+<p>1,  可以通过在北三区域不同逻辑可用性区域创建虚拟机，通过ASC查看具体分配到哪个物理区域.</p>
+<p>已我的订阅为例:  从ASC中可以看到我的订阅mapping关系为 逻辑1对应物理3,  逻辑2对应物理1, 逻辑3对应物理2</p>
+<p>物理区域映射到 Azure 订阅中的逻辑区域，不同的订阅可能有不同的映射顺序。但同一订阅的映射关系是固定的.</p>
+<p>2,  以上方法需要我们创建虚拟机才可以查看到对应的映射关系，也可以使用Azure CLI 或 Azure PowerShell 从 API 检索信息</p>
+<p>CLI:  az rest --method get --uri &#39;/subscriptions/{subscriptionId}/locations?api-version=2022-12-01&#39; --query &#39;value&#39;</p>
+<p>Powershell:</p>
+<p>$subscriptionId = (Get-AzContext).Subscription.ID</p>
+<p>$response = Invoke-AzRestMethod -Method GET -Path &quot;/subscriptions/$subscriptionId/locations?api-version=2022-12-01&quot;</p>
+<p>$locations = ($response.Content | ConvertFrom-Json).value</p>
+<p>可以看到对应关系与创建虚拟机通过ASC查看到的一致.</p>
+<p>文档参考:  物理和逻辑可用性区域 :  什么是 Azure 可用性区域？ | Azure Docs</p></article>

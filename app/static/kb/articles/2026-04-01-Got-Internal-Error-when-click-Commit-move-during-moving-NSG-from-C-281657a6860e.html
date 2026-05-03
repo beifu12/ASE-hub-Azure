@@ -1,0 +1,68 @@
+<article class="kb-article" data-title="Got &quot;Internal Error&quot; when click &quot;Commit move&quot; during moving NSG from CN2 to CN3"><h1>Got &quot;Internal Error&quot; when click &quot;Commit move&quot; during moving NSG from CN2 to CN3</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AzureResourceMover</li>
+<li>Section: Troubleshooting</li>
+<li>最近修改: 2026-04-01 09:57:18</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Issue Description: Customer got &quot;Internal Error&quot; when click &quot;Commit move&quot; during moving NSG from CN2 to CN3</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Issue Description: Customer got &quot;Internal Error&quot; when click &quot;Commit move&quot; during moving NSG from CN2 to CN3</li>
+</ul>
+<ul>
+<li>RmsErrorEvent</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>| where PreciseTimeStamp &gt;= ago(1d)</li>
+</ul>
+<ul>
+<li>| where SubscriptionId contains &quot;810c644a-9866-4984-8e9c-14501f8b7871&quot;</li>
+</ul>
+<ul>
+<li>RmsDiagnosticEvent</li>
+</ul>
+<ul>
+<li>| where ServiceActivityId == &quot;df7553e2-0862-49af-9512-f1438bf6f174&quot;</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, Message, ServiceActivityId</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>分享一个Resource Mover的Case，主要想分享的点是这些kusto query和一个思路，虽然结局不是很圆满：</li>
+</ul>
+<ul>
+<li>| where LogLevel &lt; 3</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Kusto Endpoint:  <a href="https://rmskustomc.chinanorth2.kusto.chinacloudapi.cn" target="_blank" rel="noopener">https://rmskustomc.chinanorth2.kusto.chinacloudapi.cn</a></li>
+</ul>
+<ul>
+<li>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)]  <a href="https://rmskustomc.chinanorth2.kusto.chinacloudapi.cn/RMSKustoDB" target="_blank" rel="noopener">https://rmskustomc.chinanorth2.kusto.chinacloudapi.cn/RMSKustoDB</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>分享一个Resource Mover的Case，主要想分享的点是这些kusto query和一个思路，虽然结局不是很圆满：</p>
+<p>Issue Description: Customer got &quot;Internal Error&quot; when click &quot;Commit move&quot; during moving NSG from CN2 to CN3</p>
+<p>Kusto Endpoint:  <a href="https://rmskustomc.chinanorth2.kusto.chinacloudapi.cn" target="_blank" rel="noopener">https://rmskustomc.chinanorth2.kusto.chinacloudapi.cn</a></p>
+<p>RmsErrorEvent</p>
+<p>| where PreciseTimeStamp &gt;= ago(1d)</p>
+<p>| where SubscriptionId contains &quot;810c644a-9866-4984-8e9c-14501f8b7871&quot;</p>
+<p>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)]  <a href="https://rmskustomc.chinanorth2.kusto.chinacloudapi.cn/RMSKustoDB" target="_blank" rel="noopener">https://rmskustomc.chinanorth2.kusto.chinacloudapi.cn/RMSKustoDB</a></p>
+<p>RmsDiagnosticEvent</p>
+<p>| where ServiceActivityId == &quot;df7553e2-0862-49af-9512-f1438bf6f174&quot;</p>
+<p>| where LogLevel &lt; 3</p>
+<p>| project PreciseTimeStamp, Message, ServiceActivityId</p></article>

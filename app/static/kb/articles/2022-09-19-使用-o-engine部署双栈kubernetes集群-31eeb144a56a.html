@@ -1,0 +1,450 @@
+<article class="kb-article" data-title="使用  o-engine部署双栈kubernetes集群"><h1>使用  o-engine部署双栈kubernetes集群</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-09-19 15:42:09</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>fuzhangliang</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>fuzhangliang</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>fuzhangliang</li>
+</ul>
+<ul>
+<li>1、创建资源组</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/c1fe03e6-ff80-4d91-824d-ba495a000792/resourceGroups/engine&quot;,</li>
+</ul>
+<ul>
+<li>&quot;location&quot;: &quot;chinaeast2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;managedBy&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;engine&quot;,</li>
+</ul>
+<ul>
+<li>&quot;properties&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;provisioningState&quot;: &quot;Succeeded&quot;</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;tags&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: null</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>2、创建服务主体</li>
+</ul>
+<ul>
+<li>&quot;appId&quot;: &quot;7d45490b-641e-41e1-b231-25b36ec12b7e&quot;,</li>
+</ul>
+<ul>
+<li>&quot;displayName&quot;: &quot;azure-cli-2020-01-23-09-45-30&quot;,</li>
+</ul>
+<ul>
+<li>&quot;password&quot;: &quot;6b4a64d1-587f-4aeb-b163-0348de00a8af&quot;,</li>
+</ul>
+<ul>
+<li>&quot;tenant&quot;: &quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;</li>
+</ul>
+<ul>
+<li>3、下载模板文件</li>
+</ul>
+<ul>
+<li>5、部署集群</li>
+</ul>
+<ul>
+<li>./aks-engine deploy --subscription-id  c1fe03e6-ff80-4d91-824d-ba495a000792 \</li>
+</ul>
+<ul>
+<li>&gt;     --azure-env  AzureChinacloud \</li>
+</ul>
+<ul>
+<li>&gt;     --dns-prefix testaksengine \</li>
+</ul>
+<ul>
+<li>&gt;     --resource-group engine \</li>
+</ul>
+<ul>
+<li>&gt;     --location &quot;China East2&quot; \</li>
+</ul>
+<ul>
+<li>&gt;     --api-model ./k8s.json \</li>
+</ul>
+<ul>
+<li>&gt;     --client-id &quot;7d45490b-641e-41e1-b231-25b36ec12b7e&quot; \</li>
+</ul>
+<ul>
+<li>&gt;     --client-secret &quot;6b4a64d1-587f-4aeb-b163-0348de00a8af&quot; \</li>
+</ul>
+<ul>
+<li>&gt;     --set servicePrincipalProfile.clientId=&quot;7d45490b-641e-41e1-b231-25b36ec12b7e&quot; \</li>
+</ul>
+<ul>
+<li>&gt;5     --set servicePrincipalProfile.secret=&quot;6b4a64d1-587f-4aeb-b163-0348de00a8af&quot;</li>
+</ul>
+<ul>
+<li>INFO[0000] new api model file has been generated during merge: /tmp/mergedApiModel898780464</li>
+</ul>
+<ul>
+<li>WARN[0001] apimodel: missing masterProfile.dnsPrefix will use &quot;testaksengine&quot;</li>
+</ul>
+<ul>
+<li>INFO[0066] Starting ARM Deployment engine-268781358 in resource group engine. This will take some time...</li>
+</ul>
+<ul>
+<li>INFO[0291] Finished ARM Deployment (engine-268781358). Succeeded</li>
+</ul>
+<ul>
+<li>部署完成之后会在当前目录下-output/[deploymentname]/kubeconfig/ 目录下生成kubeconfig文件，后续我们将使用这个文件连接到集群</li>
+</ul>
+<ul>
+<li>NAME                        STATUS   ROLES    AGE     VERSION</li>
+</ul>
+<ul>
+<li>k8s-linuxpool1-27852076-0   Ready    agent    8m14s   v1.16.4</li>
+</ul>
+<ul>
+<li>k8s-linuxpool1-27852076-1   Ready    agent    8m14s   v1.16.4</li>
+</ul>
+<ul>
+<li>k8s-master-27852076-0       Ready    master   8m14s   v1.16.4</li>
+</ul>
+<ul>
+<li>(2)node有双站IP</li>
+</ul>
+<ul>
+<li>Hostname: k8s-linuxpool1-27852076-0</li>
+</ul>
+<ul>
+<li>InternalIP: 10.240.0.5</li>
+</ul>
+<ul>
+<li>InternalIP: 2001:1234:5678:9abc::6</li>
+</ul>
+<ul>
+<li>(3)node上给Pod分配双站IP</li>
+</ul>
+<ul>
+<li>10.244.0.0/24</li>
+</ul>
+<ul>
+<li>fc00::/24</li>
+</ul>
+<ul>
+<li>(4)部署以及svc</li>
+</ul>
+<ul>
+<li>注意如果部署ipv6的svc, IPfamily是Ipv6，如果使用ipv4的svc, ipfamily就是IPv4.</li>
+</ul>
+<ul>
+<li>apiVersion: apps/v1</li>
+</ul>
+<ul>
+<li>kind: Deployment</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: nginx-dep</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>replicas: 2</li>
+</ul>
+<ul>
+<li>selector:</li>
+</ul>
+<ul>
+<li>matchLabels:</li>
+</ul>
+<ul>
+<li>app: nginx-pod</li>
+</ul>
+<ul>
+<li>template:</li>
+</ul>
+<ul>
+<li>name: nginx-pod</li>
+</ul>
+<ul>
+<li>labels:</li>
+</ul>
+<ul>
+<li>containers:</li>
+</ul>
+<ul>
+<li>- name: nginx</li>
+</ul>
+<ul>
+<li>image: nginx</li>
+</ul>
+<ul>
+<li>ports:</li>
+</ul>
+<ul>
+<li>- containerPort: 80</li>
+</ul>
+<ul>
+<li>name: port80</li>
+</ul>
+<ul>
+<li>---</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: Service</li>
+</ul>
+<ul>
+<li>name: nginx-svc</li>
+</ul>
+<ul>
+<li>annotations:</li>
+</ul>
+<ul>
+<li>type: LoadBalancer</li>
+</ul>
+<ul>
+<li>ipFamily: IPv6</li>
+</ul>
+<ul>
+<li>- name: port80</li>
+</ul>
+<ul>
+<li>port: 80</li>
+</ul>
+<ul>
+<li>targetPort: 80</li>
+</ul>
+<ul>
+<li>~</li>
+</ul>
+<ul>
+<li>10.244.0.6</li>
+</ul>
+<ul>
+<li>fc00::6</li>
+</ul>
+<ul>
+<li>(7)run一个测试pod, 从这个Pod中可以ping  nginx-pod 的ipv6 地址</li>
+</ul>
+<ul>
+<li>（8）接下来增加nginx的ipv6监听配置：</li>
+</ul>
+<ul>
+<li>进入容器：kubectl  --kubeconfig=./kubeconfig.chinaeast2.json exec  nginx-dep-6664cc7d57-prw6c -it -- /bin/bash</li>
+</ul>
+<ul>
+<li>/etc/nginx/conf.d</li>
+</ul>
+<ul>
+<li>添加ipv6配置：sed -i &#39;2a listen [::]:80;&#39; default.conf</li>
+</ul>
+<ul>
+<li>重新加载nginx进程：</li>
+</ul>
+<ul>
+<li>此时外部测试，可以访问svc的ipv6地址：</li>
+</ul>
+<ul>
+<li>重要注意点：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>6、测试并验证集群</li>
+</ul>
+<ul>
+<li>(1)查看k8s版本</li>
+</ul>
+<ul>
+<li>(5)此时查看Pod有双站Ip</li>
+</ul>
+<ul>
+<li>(6)查看SVC，已经使用ipv6接入</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>0、这里使用一台linux机器，安装好azure cli和aks cli，然后进行部署</li>
+</ul>
+<ul>
+<li>az group create --name engine  --location &quot;China East2&quot;</li>
+</ul>
+<ul>
+<li>az ad sp create-for-rbac --role=&quot;Contributor&quot; --scopes=&quot;/subscriptions/c1fe03e6-ff80-4d91-824d-ba495a000792/resourceGroups/engine&quot;</li>
+</ul>
+<ul>
+<li>kubectl --kubeconfig=./kubeconfig.chinaeast2.json get nodes</li>
+</ul>
+<ul>
+<li>kubectl  --kubeconfig=./kubeconfig.chinaeast2.json get nodes k8s-linuxpool1-27852076-0 -o go-template --template=&#39;{{range .status.addresses}}{{printf &quot;%s: %s \n&quot; .type .address}}{{end}}&#39;</li>
+</ul>
+<ul>
+<li>kubectl --kubeconfig=./kubeconfig.chinaeast2.json get nodes k8s-linuxpool1-27852076-0 -o go-template --template=&#39;{{range .spec.podCIDRs}}{{printf &quot;%s\n&quot; .}}{{end}}&#39;</li>
+</ul>
+<ul>
+<li>kubectl --kubeconfig=./kubeconfig.chinaeast2.json get pods  nginx-dep-6664cc7d57-prw6c  -o go-template --template=&#39;{{range .status.podIPs}}{{printf &quot;%s \n&quot; .ip}}{{end}}&#39;</li>
+</ul>
+<ul>
+<li>kubectl --kubeconfig=./kubeconfig.chinaeast2.json  run --generator=run-pod/v1 -it --rm aks-ssh --image=debian</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>svc创建完成后，虽然会自动在node的nsg中添加访问规则，但经测试发现默认生成的规则缺少对ipv6的允许，所以如果以上配置完后，仍然不能访问，请在NSG中添加对Node 私有 ipv6地址的访问规则。目标端口选择svc 端口或者*都可以。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>如果以上步骤验证正常，说明集群已经具备双栈接入能力，但是此时从外部仍然不能访问nginx pod的Ipv6地址,具体原因是虽然pod已经具备双栈接入，但是nginx container由于nginx镜像缺少对ipv6地址的监听配置，所以仍然不能访问。</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>使用aks-engine可以部署双栈k8s集群，同时支持IPv4和ipv6的接入，双栈接入要求k8s在版本16及以上，具体步骤参考如下，模板文件参考：<a href="https://github.com/Azure/aks-engine/tree/master/examples/dualstack，k8s版本要求说明，参考：" target="_blank" rel="noopener">https://github.com/Azure/aks-engine/tree/master/examples/dualstack，k8s版本要求说明，参考：</a> <a href="https://kubernetes.io/docs/concepts/services-networking/dual-stack/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/services-networking/dual-stack/</a></li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;<a href="http://azure-cli-2020-01-23-09-45-30&quot;," target="_blank" rel="noopener">http://azure-cli-2020-01-23-09-45-30&quot;,</a></li>
+</ul>
+<ul>
+<li>curl &quot;<a href="https://raw.githubusercontent.com/Azure/aks-engine/master/examples/dualstack/kubernetes.json&quot;" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aks-engine/master/examples/dualstack/kubernetes.json&quot;</a> --output ./k8s.json</li>
+</ul>
+<ul>
+<li>4、下载AKS-engine:<a href="https://github.com/Azure/aks-engine/releases/tag/v0.43.3" target="_blank" rel="noopener">https://github.com/Azure/aks-engine/releases/tag/v0.43.3</a>  并解压</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>fuzhangliang</p>
+<p>使用aks-engine可以部署双栈k8s集群，同时支持IPv4和ipv6的接入，双栈接入要求k8s在版本16及以上，具体步骤参考如下，模板文件参考：<a href="https://github.com/Azure/aks-engine/tree/master/examples/dualstack，k8s版本要求说明，参考：" target="_blank" rel="noopener">https://github.com/Azure/aks-engine/tree/master/examples/dualstack，k8s版本要求说明，参考：</a> <a href="https://kubernetes.io/docs/concepts/services-networking/dual-stack/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/services-networking/dual-stack/</a></p>
+<p>0、这里使用一台linux机器，安装好azure cli和aks cli，然后进行部署</p>
+<p>1、创建资源组</p>
+<p>az group create --name engine  --location &quot;China East2&quot;</p>
+<p>{</p>
+<p>&quot;id&quot;: &quot;/subscriptions/c1fe03e6-ff80-4d91-824d-ba495a000792/resourceGroups/engine&quot;,</p>
+<p>&quot;location&quot;: &quot;chinaeast2&quot;,</p>
+<p>&quot;managedBy&quot;: null,</p>
+<p>&quot;name&quot;: &quot;engine&quot;,</p>
+<p>&quot;properties&quot;: {</p>
+<p>&quot;provisioningState&quot;: &quot;Succeeded&quot;</p>
+<p>},</p>
+<p>&quot;tags&quot;: null,</p>
+<p>&quot;type&quot;: null</p>
+<p>}</p>
+<p>2、创建服务主体</p>
+<p>az ad sp create-for-rbac --role=&quot;Contributor&quot; --scopes=&quot;/subscriptions/c1fe03e6-ff80-4d91-824d-ba495a000792/resourceGroups/engine&quot;</p>
+<p>&quot;appId&quot;: &quot;7d45490b-641e-41e1-b231-25b36ec12b7e&quot;,</p>
+<p>&quot;displayName&quot;: &quot;azure-cli-2020-01-23-09-45-30&quot;,</p>
+<p>&quot;name&quot;: &quot;<a href="http://azure-cli-2020-01-23-09-45-30&quot;," target="_blank" rel="noopener">http://azure-cli-2020-01-23-09-45-30&quot;,</a></p>
+<p>&quot;password&quot;: &quot;6b4a64d1-587f-4aeb-b163-0348de00a8af&quot;,</p>
+<p>&quot;tenant&quot;: &quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;</p>
+<p>3、下载模板文件</p>
+<p>curl &quot;<a href="https://raw.githubusercontent.com/Azure/aks-engine/master/examples/dualstack/kubernetes.json&quot;" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aks-engine/master/examples/dualstack/kubernetes.json&quot;</a> --output ./k8s.json</p>
+<p>4、下载AKS-engine:<a href="https://github.com/Azure/aks-engine/releases/tag/v0.43.3" target="_blank" rel="noopener">https://github.com/Azure/aks-engine/releases/tag/v0.43.3</a>  并解压</p>
+<p>5、部署集群</p>
+<p>./aks-engine deploy --subscription-id  c1fe03e6-ff80-4d91-824d-ba495a000792 \</p>
+<p>&gt;     --azure-env  AzureChinacloud \</p>
+<p>&gt;     --dns-prefix testaksengine \</p>
+<p>&gt;     --resource-group engine \</p>
+<p>&gt;     --location &quot;China East2&quot; \</p>
+<p>&gt;     --api-model ./k8s.json \</p>
+<p>&gt;     --client-id &quot;7d45490b-641e-41e1-b231-25b36ec12b7e&quot; \</p>
+<p>&gt;     --client-secret &quot;6b4a64d1-587f-4aeb-b163-0348de00a8af&quot; \</p>
+<p>&gt;     --set servicePrincipalProfile.clientId=&quot;7d45490b-641e-41e1-b231-25b36ec12b7e&quot; \</p>
+<p>&gt;5     --set servicePrincipalProfile.secret=&quot;6b4a64d1-587f-4aeb-b163-0348de00a8af&quot;</p>
+<p>INFO[0000] new api model file has been generated during merge: /tmp/mergedApiModel898780464</p>
+<p>WARN[0001] apimodel: missing masterProfile.dnsPrefix will use &quot;testaksengine&quot;</p>
+<p>INFO[0066] Starting ARM Deployment engine-268781358 in resource group engine. This will take some time...</p>
+<p>INFO[0291] Finished ARM Deployment (engine-268781358). Succeeded</p>
+<p>部署完成之后会在当前目录下-output/[deploymentname]/kubeconfig/ 目录下生成kubeconfig文件，后续我们将使用这个文件连接到集群</p>
+<p>6、测试并验证集群</p>
+<p>(1)查看k8s版本</p>
+<p>kubectl --kubeconfig=./kubeconfig.chinaeast2.json get nodes</p>
+<p>NAME                        STATUS   ROLES    AGE     VERSION</p>
+<p>k8s-linuxpool1-27852076-0   Ready    agent    8m14s   v1.16.4</p>
+<p>k8s-linuxpool1-27852076-1   Ready    agent    8m14s   v1.16.4</p>
+<p>k8s-master-27852076-0       Ready    master   8m14s   v1.16.4</p>
+<p>(2)node有双站IP</p>
+<p>kubectl  --kubeconfig=./kubeconfig.chinaeast2.json get nodes k8s-linuxpool1-27852076-0 -o go-template --template=&#39;{{range .status.addresses}}{{printf &quot;%s: %s \n&quot; .type .address}}{{end}}&#39;</p>
+<p>Hostname: k8s-linuxpool1-27852076-0</p>
+<p>InternalIP: 10.240.0.5</p>
+<p>InternalIP: 2001:1234:5678:9abc::6</p>
+<p>(3)node上给Pod分配双站IP</p>
+<p>kubectl --kubeconfig=./kubeconfig.chinaeast2.json get nodes k8s-linuxpool1-27852076-0 -o go-template --template=&#39;{{range .spec.podCIDRs}}{{printf &quot;%s\n&quot; .}}{{end}}&#39;</p>
+<p>10.244.0.0/24</p>
+<p>fc00::/24</p>
+<p>(4)部署以及svc</p>
+<p>注意如果部署ipv6的svc, IPfamily是Ipv6，如果使用ipv4的svc, ipfamily就是IPv4.</p>
+<p>apiVersion: apps/v1</p>
+<p>kind: Deployment</p>
+<p>metadata:</p>
+<p>name: nginx-dep</p>
+<p>spec:</p>
+<p>replicas: 2</p>
+<p>selector:</p>
+<p>matchLabels:</p>
+<p>app: nginx-pod</p>
+<p>template:</p>
+<p>name: nginx-pod</p>
+<p>labels:</p>
+<p>containers:</p>
+<ul>
+<li>name: nginx</li>
+</ul>
+<p>image: nginx</p>
+<p>ports:</p>
+<ul>
+<li>containerPort: 80</li>
+</ul>
+<p>name: port80</p>
+<p>---</p>
+<p>apiVersion: v1</p>
+<p>kind: Service</p>
+<p>name: nginx-svc</p>
+<p>annotations:</p>
+<p>type: LoadBalancer</p>
+<p>ipFamily: IPv6</p>
+<ul>
+<li>name: port80</li>
+</ul>
+<p>port: 80</p>
+<p>targetPort: 80</p>
+<p>~</p>
+<p>(5)此时查看Pod有双站Ip</p>
+<p>kubectl --kubeconfig=./kubeconfig.chinaeast2.json get pods  nginx-dep-6664cc7d57-prw6c  -o go-template --template=&#39;{{range .status.podIPs}}{{printf &quot;%s \n&quot; .ip}}{{end}}&#39;</p>
+<p>10.244.0.6</p>
+<p>fc00::6</p>
+<p>(6)查看SVC，已经使用ipv6接入</p>
+<p>(7)run一个测试pod, 从这个Pod中可以ping  nginx-pod 的ipv6 地址</p>
+<p>kubectl --kubeconfig=./kubeconfig.chinaeast2.json  run --generator=run-pod/v1 -it --rm aks-ssh --image=debian</p>
+<p>如果以上步骤验证正常，说明集群已经具备双栈接入能力，但是此时从外部仍然不能访问nginx pod的Ipv6地址,具体原因是虽然pod已经具备双栈接入，但是nginx container由于nginx镜像缺少对ipv6地址的监听配置，所以仍然不能访问。</p>
+<p>（8）接下来增加nginx的ipv6监听配置：</p>
+<p>进入容器：kubectl  --kubeconfig=./kubeconfig.chinaeast2.json exec  nginx-dep-6664cc7d57-prw6c -it -- /bin/bash</p>
+<p>/etc/nginx/conf.d</p>
+<p>添加ipv6配置：sed -i &#39;2a listen [::]:80;&#39; default.conf</p>
+<p>重新加载nginx进程：</p>
+<p>此时外部测试，可以访问svc的ipv6地址：</p>
+<p>重要注意点：</p>
+<p>svc创建完成后，虽然会自动在node的nsg中添加访问规则，但经测试发现默认生成的规则缺少对ipv6的允许，所以如果以上配置完后，仍然不能访问，请在NSG中添加对Node 私有 ipv6地址的访问规则。目标端口选择svc 端口或者*都可以。</p></article>

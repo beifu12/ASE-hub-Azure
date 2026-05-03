@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="【share】那个角色权限决定了是否允许用户查看其他用户的信息"><h1>【share】那个角色权限决定了是否允许用户查看其他用户的信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-30 09:45:43</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>结论：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>结论：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>结论：</li>
+</ul>
+<ul>
+<li>关于entra id 每个内置角色的权限介绍请参考如下文档，里面有详细记录。</li>
+</ul>
+<ul>
+<li>Microsoft Entra 内置角色 | Azure Docs</li>
+</ul>
+<ul>
+<li>背景：</li>
+</ul>
+<ul>
+<li>如图：</li>
+</ul>
+<ul>
+<li>那么是否可以进行角色分配，使用户可以看到用户列表呢， 经过测试发现，只要包含microsoft.directory/users/standard/read 的角色权限 都可以看到用户列表。</li>
+</ul>
+<ul>
+<li>另外，如果创建了一个自定义角色，只包含microsoft.directory/users/standard/read 权限，那么是可以看到用户列表的，但是点进去之后 ，点击监视、属性 这两部分都显示权限不足</li>
+</ul>
+<ul>
+<li>但是可以变通地看到 用户地属性信息。</li>
+</ul>
+<ul>
+<li>变通地看到 用户地属性信息</li>
+</ul>
+<ul>
+<li>管理视图，点击编辑列，进行添加：</li>
+</ul>
+<ul>
+<li>添加完成后，可以看到用户地 电话、邮件等用户属性信息都被列出来了。</li>
+</ul>
+<ul>
+<li>Thanks！</li>
+</ul>
+<ul>
+<li>Jun cui</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>microsoft.directory/users/standard/read  这个角色权限 决定了是否允许用户查看其他用户的信息。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-MsolCompanySettings -UsersPermissionToReadOtherUsersEnabled $false。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>如果设置  UsersPermissionToReadOtherUsersEnabled  为 false , 那么普通用户（没有分配任何角色）的用户是无法查看用户列表的。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/6/27</p>
+<p>结论：</p>
+<p>microsoft.directory/users/standard/read  这个角色权限 决定了是否允许用户查看其他用户的信息。</p>
+<p>关于entra id 每个内置角色的权限介绍请参考如下文档，里面有详细记录。</p>
+<p>Microsoft Entra 内置角色 | Azure Docs</p>
+<p>背景：</p>
+<p>如果设置  UsersPermissionToReadOtherUsersEnabled  为 false , 那么普通用户（没有分配任何角色）的用户是无法查看用户列表的。</p>
+<p>Set-MsolCompanySettings -UsersPermissionToReadOtherUsersEnabled $false。</p>
+<p>如图：</p>
+<p>那么是否可以进行角色分配，使用户可以看到用户列表呢， 经过测试发现，只要包含microsoft.directory/users/standard/read 的角色权限 都可以看到用户列表。</p>
+<p>另外，如果创建了一个自定义角色，只包含microsoft.directory/users/standard/read 权限，那么是可以看到用户列表的，但是点进去之后 ，点击监视、属性 这两部分都显示权限不足</p>
+<p>但是可以变通地看到 用户地属性信息。</p>
+<p>变通地看到 用户地属性信息</p>
+<p>管理视图，点击编辑列，进行添加：</p>
+<p>添加完成后，可以看到用户地 电话、邮件等用户属性信息都被列出来了。</p>
+<p>Thanks！</p>
+<p>Jun cui</p></article>

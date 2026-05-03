@@ -1,0 +1,65 @@
+<article class="kb-article" data-title="关于VPN网关SKU中的第2代"><h1>关于VPN网关SKU中的第2代</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: 标准话术</li>
+<li>最近修改: 2023-06-09 12:22:50</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Zhou Kun</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Zhou Kun</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhou Kun</li>
+</ul>
+<ul>
+<li>------------------------------------------------------------------------------------------------------------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>从这一结果来看：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Shaun已经帮忙确认并反馈文档组确认，但暂时还没有答复。如果用户咨询到相关问题，以下Shaun答复供参考：</li>
+</ul>
+<ul>
+<li>而在Public Azure的portal上，是可以选择“Generation的”：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>另外，我尝试在Public Azure上分别创建了Genration1和Generation2的网关，并使用Get-AzVirtualNetworkGateway | Format-list * 命令将所有的parameter打印出来，并未发现任何“Generation”或疑似“Generation“的参数。Generation2网关的所有参数与Generation1完全一致。另外，在New-AzVirtualNetworkGateway这个命令的参数说明中，也没有发现任何可以设置Generation的地方。</li>
+</ul>
+<ul>
+<li>Generation这个参数仅可以在portal上设置，在powershell和CLI中均不行；</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Global的VPN GW有了2代系的SKU，在创建时可以选择；目前中国区文档也跟着加上了，但实际不可选也不可用。</li>
+</ul>
+<ul>
+<li>该SKU在Mooncake上尚不支持。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>对于官方文档<a href="https://docs.azure.cn/zh-cn/vpn-gateway/vpn-gateway-about-vpn-gateway-settings#gwsku" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/vpn-gateway-about-vpn-gateway-settings#gwsku</a> 中提到的VPN网关SKU的新类型，我进行了验证。根据该文档中的描述，网关SKU分为“第一代”和“第二代”两种，但是我们在portal上创建网关时，并没有“Generation”这个选项，如下图所示：</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhou Kun</p>
+<p>Global的VPN GW有了2代系的SKU，在创建时可以选择；目前中国区文档也跟着加上了，但实际不可选也不可用。</p>
+<p>Shaun已经帮忙确认并反馈文档组确认，但暂时还没有答复。如果用户咨询到相关问题，以下Shaun答复供参考：</p>
+<p>------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+<p>对于官方文档<a href="https://docs.azure.cn/zh-cn/vpn-gateway/vpn-gateway-about-vpn-gateway-settings#gwsku" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/vpn-gateway-about-vpn-gateway-settings#gwsku</a> 中提到的VPN网关SKU的新类型，我进行了验证。根据该文档中的描述，网关SKU分为“第一代”和“第二代”两种，但是我们在portal上创建网关时，并没有“Generation”这个选项，如下图所示：</p>
+<p>而在Public Azure的portal上，是可以选择“Generation的”：</p>
+<p>另外，我尝试在Public Azure上分别创建了Genration1和Generation2的网关，并使用Get-AzVirtualNetworkGateway | Format-list * 命令将所有的parameter打印出来，并未发现任何“Generation”或疑似“Generation“的参数。Generation2网关的所有参数与Generation1完全一致。另外，在New-AzVirtualNetworkGateway这个命令的参数说明中，也没有发现任何可以设置Generation的地方。</p>
+<p>从这一结果来看：</p>
+<p>Generation这个参数仅可以在portal上设置，在powershell和CLI中均不行；</p>
+<p>该SKU在Mooncake上尚不支持。</p></article>

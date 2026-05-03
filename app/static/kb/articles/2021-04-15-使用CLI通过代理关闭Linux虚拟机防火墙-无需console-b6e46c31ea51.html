@@ -1,0 +1,134 @@
+<article class="kb-article" data-title="使用CLI通过代理关闭Linux虚拟机防火墙，无需console"><h1>使用CLI通过代理关闭Linux虚拟机防火墙，无需console</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Cli</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-04-15 10:37:10</li>
+<li>JD 相关性: 自动化/命令工具</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>会提示 Expecting property name enclosed in double quotes: line 1 column 2 (char 1)，无法运行。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>会提示 Expecting property name enclosed in double quotes: line 1 column 2 (char 1)，无法运行。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zuoxiaojing</li>
+</ul>
+<ul>
+<li>相关案例：</li>
+</ul>
+<ul>
+<li>问题描述</li>
+</ul>
+<ul>
+<li>#使用CLI登录Azure账号</li>
+</ul>
+<ul>
+<li>#使用run-command关闭防火墙</li>
+</ul>
+<ul>
+<li>#!/bin/bash</li>
+</ul>
+<ul>
+<li>----------------------------------</li>
+</ul>
+<ul>
+<li>有任何问题，欢迎随时与我沟通。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>虚拟机无法SSH，需要关闭防火墙恢复连接。由于机器代理状态正常，可建议客户使用CLI通过代理在VM内部运行命令或脚本实现关闭防火墙目的。</li>
+</ul>
+<ul>
+<li>方法一、使用Run-Command运行命令sudo ufw disable  （我测试成功）</li>
+</ul>
+<ul>
+<li>az cloud set -n AzureChinaCloud</li>
+</ul>
+<ul>
+<li>az login</li>
+</ul>
+<ul>
+<li>az account set -s d3c17595-846b-42e1-8e58-dc872136fbd2</li>
+</ul>
+<ul>
+<li>az vm run-command invoke -g ubuntu -n Ubun16 --command-id RunShellScript --scripts &quot;sudo ufw disable&quot;</li>
+</ul>
+<ul>
+<li>方法二、使用custom script运行命令sudo ufw disable （客户测试成功）</li>
+</ul>
+<ul>
+<li>脚本内容</li>
+</ul>
+<ul>
+<li>#运行以下命令关闭防火墙（可在linux CLI中运行，如在windows CLI中运行，需将settings后的引号更改下）</li>
+</ul>
+<ul>
+<li>这是因为引号问题，运行以下命令即可返回结果。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>SR_2020021906964_[MS-LED]10.81.16.105的22端口无法访问</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<ul>
+<li>ufw disable</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考链接： <a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/run-command" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/run-command</a></li>
+</ul>
+<ul>
+<li>#将以下脚本保存并上传到某个公网可以访问的位置，例如Azure Storage blob中，记录url。 如我的脚本存放位置 <a href="https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh" target="_blank" rel="noopener">https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh</a></li>
+</ul>
+<ul>
+<li>az vm extension set --publisher Microsoft.Azure.Extensions --version 2.0 --name CustomScript --vm-name Ubun16 --resource-group ubuntu --settings &#39;{&quot;fileUris&quot;:[&quot;<a href="https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh&quot;],&quot;commandToExecute&quot;:&quot;bash" target="_blank" rel="noopener">https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh&quot;],&quot;commandToExecute&quot;:&quot;bash</a> yzinstall2.sh&quot;}&#39;</li>
+</ul>
+<ul>
+<li>参考链接 <a href="https://docs.azure.cn/zh-cn/virtual-machines/extensions/custom-script-linux" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/extensions/custom-script-linux</a></li>
+</ul>
+<ul>
+<li>注：在windows CLI中运行 az vm extension set --publisher Microsoft.Azure.Extensions --version 2.0 --name CustomScript --vm-name Ubun16 --resource-group ubuntu --settings &#39;{&quot;fileUris&quot;:[&quot;<a href="https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh&quot;],&quot;commandToExecute&quot;:&quot;bash" target="_blank" rel="noopener">https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh&quot;],&quot;commandToExecute&quot;:&quot;bash</a> yzinstall2.sh&quot;}&#39;</li>
+</ul>
+<ul>
+<li>az vm extension set --publisher Microsoft.Azure.Extensions --version 2.0 --name CustomScript --vm-name Ubun16 --resource-group ubuntu --settings &quot;{&#39;fileUris&#39;:[&#39;<a href="https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh&#39;],&#39;commandToExecute&#39;:&#39;bash" target="_blank" rel="noopener">https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh&#39;],&#39;commandToExecute&#39;:&#39;bash</a> yzinstall2.sh&#39;}&quot;</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zuoxiaojing</p>
+<p>相关案例：</p>
+<p>SR_2020021906964_[MS-LED]10.81.16.105的22端口无法访问</p>
+<p>问题描述</p>
+<p>虚拟机无法SSH，需要关闭防火墙恢复连接。由于机器代理状态正常，可建议客户使用CLI通过代理在VM内部运行命令或脚本实现关闭防火墙目的。</p>
+<p>解决方案：</p>
+<p>方法一、使用Run-Command运行命令sudo ufw disable  （我测试成功）</p>
+<p>#使用CLI登录Azure账号</p>
+<p>az cloud set -n AzureChinaCloud</p>
+<p>az login</p>
+<p>az account set -s d3c17595-846b-42e1-8e58-dc872136fbd2</p>
+<p>#使用run-command关闭防火墙</p>
+<p>az vm run-command invoke -g ubuntu -n Ubun16 --command-id RunShellScript --scripts &quot;sudo ufw disable&quot;</p>
+<p>参考链接： <a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/run-command" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/run-command</a></p>
+<p>方法二、使用custom script运行命令sudo ufw disable （客户测试成功）</p>
+<p>#将以下脚本保存并上传到某个公网可以访问的位置，例如Azure Storage blob中，记录url。 如我的脚本存放位置 <a href="https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh" target="_blank" rel="noopener">https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh</a></p>
+<p>脚本内容</p>
+<p>#!/bin/bash</p>
+<p>ufw disable</p>
+<p>#运行以下命令关闭防火墙（可在linux CLI中运行，如在windows CLI中运行，需将settings后的引号更改下）</p>
+<p>az vm extension set --publisher Microsoft.Azure.Extensions --version 2.0 --name CustomScript --vm-name Ubun16 --resource-group ubuntu --settings &#39;{&quot;fileUris&quot;:[&quot;<a href="https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh&quot;],&quot;commandToExecute&quot;:&quot;bash" target="_blank" rel="noopener">https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh&quot;],&quot;commandToExecute&quot;:&quot;bash</a> yzinstall2.sh&quot;}&#39;</p>
+<p>参考链接 <a href="https://docs.azure.cn/zh-cn/virtual-machines/extensions/custom-script-linux" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/extensions/custom-script-linux</a></p>
+<p>----------------------------------</p>
+<p>注：在windows CLI中运行 az vm extension set --publisher Microsoft.Azure.Extensions --version 2.0 --name CustomScript --vm-name Ubun16 --resource-group ubuntu --settings &#39;{&quot;fileUris&quot;:[&quot;<a href="https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh&quot;],&quot;commandToExecute&quot;:&quot;bash" target="_blank" rel="noopener">https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh&quot;],&quot;commandToExecute&quot;:&quot;bash</a> yzinstall2.sh&quot;}&#39;</p>
+<p>会提示 Expecting property name enclosed in double quotes: line 1 column 2 (char 1)，无法运行。</p>
+<p>这是因为引号问题，运行以下命令即可返回结果。</p>
+<p>az vm extension set --publisher Microsoft.Azure.Extensions --version 2.0 --name CustomScript --vm-name Ubun16 --resource-group ubuntu --settings &quot;{&#39;fileUris&#39;:[&#39;<a href="https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh&#39;],&#39;commandToExecute&#39;:&#39;bash" target="_blank" rel="noopener">https://2012unmanagediag.blob.core.chinacloudapi.cn/script/yzinstall2.sh&#39;],&#39;commandToExecute&#39;:&#39;bash</a> yzinstall2.sh&#39;}&quot;</p>
+<p>有任何问题，欢迎随时与我沟通。</p></article>

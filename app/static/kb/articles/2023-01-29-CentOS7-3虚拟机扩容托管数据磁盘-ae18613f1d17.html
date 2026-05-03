@@ -1,0 +1,234 @@
+<article class="kb-article" data-title="CentOS7.3虚拟机扩容托管数据磁盘"><h1>CentOS7.3虚拟机扩容托管数据磁盘</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-01-29 14:02:39</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>备注：扩容磁盘需要关闭虚拟机，否则无法调整磁盘的大小</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>备注：扩容磁盘需要关闭虚拟机，否则无法调整磁盘的大小</li>
+</ul>
+<ul>
+<li>WARNING: Re-reading the partition table failed with error 16: Device or resource busy.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>CentOS7.3虚拟机扩展数据磁盘</li>
+</ul>
+<ul>
+<li>Azure | Stone He(贺俐铭)</li>
+</ul>
+<ul>
+<li>操作环境：</li>
+</ul>
+<ul>
+<li>[root@hlmcen73n1 sdc1]# cat /etc/redhat-release</li>
+</ul>
+<ul>
+<li>CentOS Linux release 7.3.1611 (Core)</li>
+</ul>
+<ul>
+<li>1.关闭虚拟机</li>
+</ul>
+<ul>
+<li>2.调整磁盘的大小（示例中将原来的1023G调整为了2047G）</li>
+</ul>
+<ul>
+<li>[root@hlmcen73n1 sdc1]# fdisk /dev/sdc</li>
+</ul>
+<ul>
+<li>Welcome to fdisk (util-linux 2.23.2).</li>
+</ul>
+<ul>
+<li>Changes will remain in memory only, until you decide to write them.</li>
+</ul>
+<ul>
+<li>Be careful before using the write command.</li>
+</ul>
+<ul>
+<li>Disk /dev/sdc: 2197.9 GB, 2197949513728 bytes, 4292870144 sectors</li>
+</ul>
+<ul>
+<li>I/O size (minimum/optimal): 512 bytes / 512 bytes</li>
+</ul>
+<ul>
+<li>Disk label type: dos</li>
+</ul>
+<ul>
+<li>Disk identifier: 0x1b9a454e</li>
+</ul>
+<ul>
+<li>n</li>
+</ul>
+<ul>
+<li>Device Boot      Start         End      Blocks   Id  System</li>
+</ul>
+<ul>
+<li>/dev/sdc1            2048  2145386495  1072692224   83  Linux</li>
+</ul>
+<ul>
+<li>Command (m for help): d         ##将原来的/dev/sdc1分区删除</li>
+</ul>
+<ul>
+<li>Selected partition 1</li>
+</ul>
+<ul>
+<li>Partition 1 is deleted</li>
+</ul>
+<ul>
+<li>Command (m for help): n               ##重新创建分区</li>
+</ul>
+<ul>
+<li>Partition type:</li>
+</ul>
+<ul>
+<li>p   primary (0 primary, 0 extended, 4 free)</li>
+</ul>
+<ul>
+<li>e   extended</li>
+</ul>
+<ul>
+<li>Partition number (1-4, default 1):</li>
+</ul>
+<ul>
+<li>First sector (2048-4292870143, default 2048): 2048  ##该值需要与上述标黄的start值相同</li>
+</ul>
+<ul>
+<li>Last sector, +sectors or +size{K,M,G} (2048-4292870143, default 4292870143):</li>
+</ul>
+<ul>
+<li>Using default value 4292870143</li>
+</ul>
+<ul>
+<li>Partition 1 of type Linux and of size 2 TiB is set</li>
+</ul>
+<ul>
+<li>Command (m for help): p</li>
+</ul>
+<ul>
+<li>/dev/sdc1            2048  4292870143  2146434048   83  Linux</li>
+</ul>
+<ul>
+<li>The partition table has been altered!</li>
+</ul>
+<ul>
+<li>Calling ioctl() to re-read partition table.</li>
+</ul>
+<ul>
+<li>The kernel still uses the old table. The new table will be used at</li>
+</ul>
+<ul>
+<li>the next reboot or after you run partprobe(8) or kpartx(8)</li>
+</ul>
+<ul>
+<li>Syncing disks.</li>
+</ul>
+<ul>
+<li>6.此时拉伸文件系统的话，会提示如下。需要重启电脑以便重读分区表后，才能成功拉伸文件系统</li>
+</ul>
+<ul>
+<li>8.重新挂载使用，已发现/dev/sdc1成功拉伸为了2047G（2T），并且之前的数据文件仍然正常存在。</li>
+</ul>
+<ul>
+<li>[root@hlmcen73n1 ~]# mount /dev/sdc1 /mnt/sdc1/</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>操作之前需要重点查看：</li>
+</ul>
+<ul>
+<li>3.启动虚拟机，查看到整块磁盘已经变为2047G，但/dev/sdc1分区还是1023G</li>
+</ul>
+<ul>
+<li>Command (m for help): p         ##查看目前的分区信息</li>
+</ul>
+<ul>
+<li>Sector size (logical/physical): 512 bytes / 512 bytes</li>
+</ul>
+<ul>
+<li>Command (m for help): w     ##如果确认信息无误，运行该参数，保存退出</li>
+</ul>
+<ul>
+<li>5.使用fdisk –l查看/dev/sdc1已经变为了2047G，但使用df –h查看/dev/sdc1还是1023G</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>4.使用命令：fdisk /dev/sdc，重新划分分区/dev/sdc1</li>
+</ul>
+<ul>
+<li>Select (default p):</li>
+</ul>
+<ul>
+<li>7.重启电脑后，重新使用命令：resize2fs拉伸文件系统，可以看到可以成功拉伸文件系统</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Units = sectors of 1 * 512 = 512 bytes</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>由于扩容磁盘的操作非同小可，一旦哪一步出现问题，就会导致分区损坏，数据丢失等一系列严重的问题，因此建议：在进行虚拟机分区扩容之前，一定要备份重要数据文件，并且先在测试机上验证以下步骤，再应用于您的生产机器。如果虚拟机的磁盘不够用了，建议附加新磁盘进行使用，不到万不得已一般不要扩容磁盘分区。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>CentOS7.3虚拟机扩展数据磁盘</p>
+<p>Azure | Stone He(贺俐铭)</p>
+<p>操作之前需要重点查看：</p>
+<p>由于扩容磁盘的操作非同小可，一旦哪一步出现问题，就会导致分区损坏，数据丢失等一系列严重的问题，因此建议：在进行虚拟机分区扩容之前，一定要备份重要数据文件，并且先在测试机上验证以下步骤，再应用于您的生产机器。如果虚拟机的磁盘不够用了，建议附加新磁盘进行使用，不到万不得已一般不要扩容磁盘分区。</p>
+<p>操作环境：</p>
+<p>[root@hlmcen73n1 sdc1]# cat /etc/redhat-release</p>
+<p>CentOS Linux release 7.3.1611 (Core)</p>
+<p>1.关闭虚拟机</p>
+<p>备注：扩容磁盘需要关闭虚拟机，否则无法调整磁盘的大小</p>
+<p>2.调整磁盘的大小（示例中将原来的1023G调整为了2047G）</p>
+<p>3.启动虚拟机，查看到整块磁盘已经变为2047G，但/dev/sdc1分区还是1023G</p>
+<p>4.使用命令：fdisk /dev/sdc，重新划分分区/dev/sdc1</p>
+<p>[root@hlmcen73n1 sdc1]# fdisk /dev/sdc</p>
+<p>Welcome to fdisk (util-linux 2.23.2).</p>
+<p>Changes will remain in memory only, until you decide to write them.</p>
+<p>Be careful before using the write command.</p>
+<p>Command (m for help): p         ##查看目前的分区信息</p>
+<p>Disk /dev/sdc: 2197.9 GB, 2197949513728 bytes, 4292870144 sectors</p>
+<p>Units = sectors of 1 * 512 = 512 bytes</p>
+<p>Sector size (logical/physical): 512 bytes / 512 bytes</p>
+<p>I/O size (minimum/optimal): 512 bytes / 512 bytes</p>
+<p>Disk label type: dos</p>
+<p>Disk identifier: 0x1b9a454e</p>
+<p>n</p>
+<p>Device Boot      Start         End      Blocks   Id  System</p>
+<p>/dev/sdc1            2048  2145386495  1072692224   83  Linux</p>
+<p>Command (m for help): d         ##将原来的/dev/sdc1分区删除</p>
+<p>Selected partition 1</p>
+<p>Partition 1 is deleted</p>
+<p>Command (m for help): n               ##重新创建分区</p>
+<p>Partition type:</p>
+<p>p   primary (0 primary, 0 extended, 4 free)</p>
+<p>e   extended</p>
+<p>Select (default p):</p>
+<p>Partition number (1-4, default 1):</p>
+<p>First sector (2048-4292870143, default 2048): 2048  ##该值需要与上述标黄的start值相同</p>
+<p>Last sector, +sectors or +size{K,M,G} (2048-4292870143, default 4292870143):</p>
+<p>Using default value 4292870143</p>
+<p>Partition 1 of type Linux and of size 2 TiB is set</p>
+<p>Command (m for help): p</p>
+<p>/dev/sdc1            2048  4292870143  2146434048   83  Linux</p>
+<p>Command (m for help): w     ##如果确认信息无误，运行该参数，保存退出</p>
+<p>The partition table has been altered!</p>
+<p>Calling ioctl() to re-read partition table.</p>
+<p>WARNING: Re-reading the partition table failed with error 16: Device or resource busy.</p>
+<p>The kernel still uses the old table. The new table will be used at</p>
+<p>the next reboot or after you run partprobe(8) or kpartx(8)</p>
+<p>Syncing disks.</p>
+<p>5.使用fdisk –l查看/dev/sdc1已经变为了2047G，但使用df –h查看/dev/sdc1还是1023G</p>
+<p>6.此时拉伸文件系统的话，会提示如下。需要重启电脑以便重读分区表后，才能成功拉伸文件系统</p>
+<p>7.重启电脑后，重新使用命令：resize2fs拉伸文件系统，可以看到可以成功拉伸文件系统</p>
+<p>8.重新挂载使用，已发现/dev/sdc1成功拉伸为了2047G（2T），并且之前的数据文件仍然正常存在。</p>
+<p>[root@hlmcen73n1 ~]# mount /dev/sdc1 /mnt/sdc1/</p></article>

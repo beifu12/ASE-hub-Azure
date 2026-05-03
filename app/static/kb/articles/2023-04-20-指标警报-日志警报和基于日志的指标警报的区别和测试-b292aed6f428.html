@@ -1,0 +1,234 @@
+<article class="kb-article" data-title="指标警报，日志警报和基于日志的指标警报的区别和测试"><h1>指标警报，日志警报和基于日志的指标警报的区别和测试</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-20 14:06:58</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>基于您的需求，使用Azure Monitor监控CPU使用率，内存使用率，磁盘使用率，并创建警报。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>基于您的需求，使用Azure Monitor监控CPU使用率，内存使用率，磁盘使用率，并创建警报。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>基于您的需求，使用Azure Monitor监控CPU使用率，内存使用率，磁盘使用率，并创建警报。</li>
+</ul>
+<ul>
+<li>根据目前Azure Monitor提供的警报类型，您可能用到的警报类型有3种：</li>
+</ul>
+<ul>
+<li>1)指标警报</li>
+</ul>
+<ul>
+<li>2)日志警报</li>
+</ul>
+<ul>
+<li>3)基于日志的指标警报</li>
+</ul>
+<ul>
+<li>参考截图：</li>
+</ul>
+<ul>
+<li>关于警报的状态，请您参考：</li>
+</ul>
+<ul>
+<li>指标警报，简单来讲，就是当我们选择一个监控目标，比如虚拟机时，平台会根据目标列出可用的平台指标，我们可以根据基于这些可用的指标设置警报。</li>
+</ul>
+<ul>
+<li>门户截图参考：</li>
+</ul>
+<ul>
+<li>警报邮件参考截图：</li>
+</ul>
+<ul>
+<li>对于指标警报，您可以选择平台为资源默认提供的指标进行监控报警，如Percentage CPU</li>
+</ul>
+<ul>
+<li>Linux和Windows是的指标名称是一样的。对于平台没有提供的指标，就不能使用这种方法了。</li>
+</ul>
+<ul>
+<li>Perf</li>
+</ul>
+<ul>
+<li>| where ObjectName == &quot;Memory&quot; and CounterName == &quot;% Committed Bytes In Use&quot; and Computer == &quot;zlhwin2016.tonio-e2.partner.onmschina.cn&quot;</li>
+</ul>
+<ul>
+<li>| where CounterValue &gt; 60</li>
+</ul>
+<ul>
+<li>警报规则门户截图参考：</li>
+</ul>
+<ul>
+<li>警报邮件截图参考：</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>在de</li>
+</ul>
+<ul>
+<li>下面是我设置的名称为winmem的基于日志的指标警报</li>
+</ul>
+<ul>
+<li>选择的signal为%Committed Bytes In Use</li>
+</ul>
+<ul>
+<li>Dimemsion中可以选择具体的虚拟机名称，可以设置多台。</li>
+</ul>
+<ul>
+<li>日志警报和基于日志的指标警报可以选择监控的指标取决与日志收集规则中可以收集上来的性能计数器的值。</li>
+</ul>
+<ul>
+<li>日志收集规则，请您参考：</li>
+</ul>
+<ul>
+<li>对于日志警报和基于日志的指标警报，以下一些Counters供您参考：</li>
+</ul>
+<ul>
+<li>对于内存</li>
+</ul>
+<ul>
+<li>Windows: \Memory\% Committed Bytes In Use</li>
+</ul>
+<ul>
+<li>Linux：Memory(*)\% Available Memory       Memory(*)\% Used Memory</li>
+</ul>
+<ul>
+<li>对于磁盘：</li>
+</ul>
+<ul>
+<li>对于CPU:</li>
+</ul>
+<ul>
+<li>Windows: \Processor Information(_Total)\% Processor Time</li>
+</ul>
+<ul>
+<li>Linux：Processor(*)\% Processor Time</li>
+</ul>
+<ul>
+<li>测试下来，指标警报几乎没有延迟，但目前看下来只能监控CPU。</li>
+</ul>
+<ul>
+<li>日志警报和基于日志的指标警报，由于日志引入延迟，会有一些延迟，我测试下来延迟在10分钟左右</li>
+</ul>
+<ul>
+<li>警报定价模型，以下官方文档供您参考：</li>
+</ul>
+<ul>
+<li>更多定价疑问，请您开工单咨询商务团队</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查看官方文档，发现对警报的状态有更新，之前日志警报都是无状态的。</li>
+</ul>
+<ul>
+<li>日志警报，就是通过使用 Log Analytics 查询来按设定的频率评估资源日志，并触发基于结果的警报。</li>
+</ul>
+<ul>
+<li>一般来讲，我们设置这类警报时，会基于查询结果的行数来判断是否触发警报。</li>
+</ul>
+<ul>
+<li>例如，我们在Log Analytics中查询内存使用百分比大于60%结果</li>
+</ul>
+<ul>
+<li>基于日志的指标警报，简单来讲，就是根据发送到 Log Analytics 中日志中的指标数据，创建警报。受监视的日志（可从 Azure 或本地计算机收集）被转换为指标，然后与任何其他指标一样，通过指标警报规则进行监视。</li>
+</ul>
+<ul>
+<li>设置时，我们选择指标警报的目标是有效的 Log Analytics 工作区，</li>
+</ul>
+<ul>
+<li>为选定 Log Analytics 工作区的指标警报选择的信号类型为“指标”。</li>
+</ul>
+<ul>
+<li>Windows: \LogicalDisk(_Total)\% Free Space</li>
+</ul>
+<ul>
+<li>Linux:Logical Disk(*)\% Used Space   Logical Disk(*)\% Free Space</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>目前，文档显示日志警报也可以是有状态的。但是，实际测试下来，日志警报当前在中国区还不能设置为状态警报，基于日志的指标警报可以设置为有状态警报，也就是可以选择自动resolve</li>
+</ul>
+<ul>
+<li>当查询到结果数大于0时，警报被触发，根据设置的Frequency of evaluation，警报会持续发送，不会被resolved。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-overview#alerts-and-state" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-overview#alerts-and-state</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-metric-logs#creating-metric-alert-for-log-analytics" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-metric-logs#creating-metric-alert-for-log-analytics</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/ZH-CN/azure-monitor/essentials/data-collection-rule-overview" target="_blank" rel="noopener">https://docs.azure.cn/ZH-CN/azure-monitor/essentials/data-collection-rule-overview</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/azure-monitor/logs/data-ingestion-time" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/logs/data-ingestion-time</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-unified-log#pricing-model" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-unified-log#pricing-model</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>基于您的需求，使用Azure Monitor监控CPU使用率，内存使用率，磁盘使用率，并创建警报。</p>
+<p>根据目前Azure Monitor提供的警报类型，您可能用到的警报类型有3种：</p>
+<p>1)指标警报</p>
+<p>2)日志警报</p>
+<p>3)基于日志的指标警报</p>
+<p>查看官方文档，发现对警报的状态有更新，之前日志警报都是无状态的。</p>
+<p>目前，文档显示日志警报也可以是有状态的。但是，实际测试下来，日志警报当前在中国区还不能设置为状态警报，基于日志的指标警报可以设置为有状态警报，也就是可以选择自动resolve</p>
+<p>参考截图：</p>
+<p>关于警报的状态，请您参考：</p>
+<p><a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-overview#alerts-and-state" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-overview#alerts-and-state</a></p>
+<p>指标警报，简单来讲，就是当我们选择一个监控目标，比如虚拟机时，平台会根据目标列出可用的平台指标，我们可以根据基于这些可用的指标设置警报。</p>
+<p>门户截图参考：</p>
+<p>警报邮件参考截图：</p>
+<p>对于指标警报，您可以选择平台为资源默认提供的指标进行监控报警，如Percentage CPU</p>
+<p>Linux和Windows是的指标名称是一样的。对于平台没有提供的指标，就不能使用这种方法了。</p>
+<p>日志警报，就是通过使用 Log Analytics 查询来按设定的频率评估资源日志，并触发基于结果的警报。</p>
+<p>一般来讲，我们设置这类警报时，会基于查询结果的行数来判断是否触发警报。</p>
+<p>例如，我们在Log Analytics中查询内存使用百分比大于60%结果</p>
+<p>Perf</p>
+<p>| where ObjectName == &quot;Memory&quot; and CounterName == &quot;% Committed Bytes In Use&quot; and Computer == &quot;zlhwin2016.tonio-e2.partner.onmschina.cn&quot;</p>
+<p>| where CounterValue &gt; 60</p>
+<p>警报规则门户截图参考：</p>
+<p>当查询到结果数大于0时，警报被触发，根据设置的Frequency of evaluation，警报会持续发送，不会被resolved。</p>
+<p>警报邮件截图参考：</p>
+<p>基于日志的指标警报，简单来讲，就是根据发送到 Log Analytics 中日志中的指标数据，创建警报。受监视的日志（可从 Azure 或本地计算机收集）被转换为指标，然后与任何其他指标一样，通过指标警报规则进行监视。</p>
+<p>参考文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-metric-logs#creating-metric-alert-for-log-analytics" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-metric-logs#creating-metric-alert-for-log-analytics</a></p>
+<p>设置时，我们选择指标警报的目标是有效的 Log Analytics 工作区，</p>
+<p>为选定 Log Analytics 工作区的指标警报选择的信号类型为“指标”。</p>
+<p>在de</p>
+<p>下面是我设置的名称为winmem的基于日志的指标警报</p>
+<p>选择的signal为%Committed Bytes In Use</p>
+<p>Dimemsion中可以选择具体的虚拟机名称，可以设置多台。</p>
+<p>日志警报和基于日志的指标警报可以选择监控的指标取决与日志收集规则中可以收集上来的性能计数器的值。</p>
+<p>日志收集规则，请您参考：</p>
+<p><a href="https://docs.azure.cn/ZH-CN/azure-monitor/essentials/data-collection-rule-overview" target="_blank" rel="noopener">https://docs.azure.cn/ZH-CN/azure-monitor/essentials/data-collection-rule-overview</a></p>
+<p>对于日志警报和基于日志的指标警报，以下一些Counters供您参考：</p>
+<p>对于内存</p>
+<p>Windows: \Memory\% Committed Bytes In Use</p>
+<p>Linux：Memory(*)\% Available Memory       Memory(*)\% Used Memory</p>
+<p>对于磁盘：</p>
+<p>Windows: \LogicalDisk(_Total)\% Free Space</p>
+<p>Linux:Logical Disk(*)\% Used Space   Logical Disk(*)\% Free Space</p>
+<p>对于CPU:</p>
+<p>Windows: \Processor Information(_Total)\% Processor Time</p>
+<p>Linux：Processor(*)\% Processor Time</p>
+<p>测试下来，指标警报几乎没有延迟，但目前看下来只能监控CPU。</p>
+<p>日志警报和基于日志的指标警报，由于日志引入延迟，会有一些延迟，我测试下来延迟在10分钟左右</p>
+<p><a href="https://docs.azure.cn/zh-cn/azure-monitor/logs/data-ingestion-time" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/logs/data-ingestion-time</a></p>
+<p>警报定价模型，以下官方文档供您参考：</p>
+<p><a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-unified-log#pricing-model" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-unified-log#pricing-model</a></p>
+<p>更多定价疑问，请您开工单咨询商务团队</p></article>

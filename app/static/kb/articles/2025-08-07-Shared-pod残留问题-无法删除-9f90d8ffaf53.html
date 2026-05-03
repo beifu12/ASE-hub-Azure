@@ -1,0 +1,326 @@
+<article class="kb-article" data-title="[Shared]pod残留问题,无法删除"><h1>[Shared]pod残留问题,无法删除</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-08-07 17:18:45</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题描述:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题描述:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述:</li>
+</ul>
+<ul>
+<li>由于之前的部署产生了多个pod，但是卸载了该部署之后，这些pod还有残留。</li>
+</ul>
+<ul>
+<li>手动强制删除也不行，一直占用资源。</li>
+</ul>
+<ul>
+<li>pod的状态如下：</li>
+</ul>
+<ul>
+<li>Name:             global-runner-deployment-lptfb-vzjgx</li>
+</ul>
+<ul>
+<li>Namespace:        actions-runner-system</li>
+</ul>
+<ul>
+<li>Priority:         0</li>
+</ul>
+<ul>
+<li>Service Account:  default</li>
+</ul>
+<ul>
+<li>Node:             aks-worker-24899273-vmss000001/172.29.32.9</li>
+</ul>
+<ul>
+<li>Start Time:       Mon, 04 Aug 2025 17:30:29 +0000</li>
+</ul>
+<ul>
+<li>Labels:           actions-runner-controller/inject-registration-token=true</li>
+</ul>
+<ul>
+<li>Annotations:      actions-runner-controller/token-expires-at: 2025-08-05T02:20:13+08:00</li>
+</ul>
+<ul>
+<li>actions-runner/unregistration-start-timestamp: 2025-08-04T17:33:11Z</li>
+</ul>
+<ul>
+<li>sync-time: 2025-08-04T17:30:28Z</li>
+</ul>
+<ul>
+<li>Status:           Succeeded</li>
+</ul>
+<ul>
+<li>IP:               10.244.2.178</li>
+</ul>
+<ul>
+<li>IPs:</li>
+</ul>
+<ul>
+<li>IP:           10.244.2.178</li>
+</ul>
+<ul>
+<li>Controlled By:  Runner/global-runner-deployment-lptfb-vzjgx</li>
+</ul>
+<ul>
+<li>Containers:</li>
+</ul>
+<ul>
+<li>runner:</li>
+</ul>
+<ul>
+<li>Container ID:   containerd://5a24de6180d9cbf491fb6ba3f8f90dd85cfbe9c5122853397ddc62f69c64bf93</li>
+</ul>
+<ul>
+<li>Image:          dev-jfrog.maezia.com/devops-docker-internal-local/tools/actions-runner:v2.318.0-ubuntu-22.04</li>
+</ul>
+<ul>
+<li>Image ID:       dev-jfrog.maezia.com/devops-docker-internal-local/tools/actions-runner@sha256:1dd2d234ef5c7c348b722a7cb688acc263fbf942fdbaf1dba2d389ef9070084f</li>
+</ul>
+<ul>
+<li>Port:           &lt;none&gt;</li>
+</ul>
+<ul>
+<li>Host Port:      &lt;none&gt;</li>
+</ul>
+<ul>
+<li>State:          Terminated</li>
+</ul>
+<ul>
+<li>Reason:       Completed</li>
+</ul>
+<ul>
+<li>Exit Code:    0</li>
+</ul>
+<ul>
+<li>Started:      Mon, 04 Aug 2025 17:30:30 +0000</li>
+</ul>
+<ul>
+<li>Finished:     Mon, 04 Aug 2025 17:31:46 +0000</li>
+</ul>
+<ul>
+<li>Ready:          False</li>
+</ul>
+<ul>
+<li>Restart Count:  0</li>
+</ul>
+<ul>
+<li>Environment:</li>
+</ul>
+<ul>
+<li>RUNNER_ORG:</li>
+</ul>
+<ul>
+<li>RUNNER_REPO:</li>
+</ul>
+<ul>
+<li>RUNNER_LABELS:                  global-runner,runner</li>
+</ul>
+<ul>
+<li>RUNNER_GROUP:</li>
+</ul>
+<ul>
+<li>这表明 Pod 不属于 Deployment，而是由 Runner CRD 管理。</li>
+</ul>
+<ul>
+<li>如果没有 Runner CRD，尝试强制删除 Pod</li>
+</ul>
+<ul>
+<li>如果 Runner 已删除但 Pod 仍然残留，可以尝试：</li>
+</ul>
+<ul>
+<li>Finalizers 的核心功能</li>
+</ul>
+<ul>
+<li>1. 防止资源被直接删除</li>
+</ul>
+<ul>
+<li>当 Kubernetes 收到删除请求时，如果 metadata.finalizers 非空，资源不会被立即删除，而是进入 Terminating 状态。</li>
+</ul>
+<ul>
+<li>只有当所有 finalizers 被移除后，资源才会被真正删除。</li>
+</ul>
+<ul>
+<li>2. 确保资源的清理顺序</li>
+</ul>
+<ul>
+<li>某些资源（如 PersistentVolume、Namespace）可能依赖其他资源（如存储卷、Pod）。</li>
+</ul>
+<ul>
+<li>Finalizers 确保依赖资源先被清理，再删除父资源。</li>
+</ul>
+<ul>
+<li>3. 允许外部控制器介入</li>
+</ul>
+<ul>
+<li>某些 自定义控制器（如 actions-runner-controller） 会插入自己的 finalizers，以便在资源删除前执行额外操作（如清理外部资源）。</li>
+</ul>
+<ul>
+<li>Finalizers 的工作原理</li>
+</ul>
+<ul>
+<li>用户发起删除请求</li>
+</ul>
+<ul>
+<li>如果存在 finalizers，资源状态变为 Terminating，但不会立即删除。</li>
+</ul>
+<ul>
+<li>控制器处理 Finalizers</li>
+</ul>
+<ul>
+<li>相关控制器（如 PersistentVolumeController、自定义 Operator）检测到 Terminating 状态，执行清理逻辑。</li>
+</ul>
+<ul>
+<li>控制器移除 Finalizers</li>
+</ul>
+<ul>
+<li>清理完成后，控制器从 metadata.finalizers 中移除自己的条目。</li>
+</ul>
+<ul>
+<li>资源最终删除</li>
+</ul>
+<ul>
+<li>当 finalizers 列表为空时，Kubernetes 真正删除资源。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>RUNNER_ENTERPRISE:              mobility-asia-smart-technology-company-limited</li>
+</ul>
+<ul>
+<li>确认 Pod 的控制来源,通过问题描述信息,您的 Pod 的 Controlled By 显示：</li>
+</ul>
+<ul>
+<li>进一步检查Runner:</li>
+</ul>
+<ul>
+<li>检查并删除 Runner 资源,Runner已经被删除</li>
+</ul>
+<ul>
+<li>Kubernetes 检查 finalizers</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>kubectl delete pod global-runner-deployment-lptfb-vzjgx -n actions-runner-system --force --grace-period=0</li>
+</ul>
+<ul>
+<li>执行上述命令未能很快完成,进一步查询可能原因,怀疑是Pod 被某些 Finalizers(终结器)卡住，导致无法完成删除操作。</li>
+</ul>
+<ul>
+<li>经检查发现确实存在Finalizers(终结器),使用如下命令修改后,pod自动被删除:</li>
+</ul>
+<ul>
+<li>kubectl patch pod global-runner-deployment-lptfb-vzjgx -n actions-runner-system -p &#39;{&quot;metadata&quot;:{&quot;finalizers&quot;:null}}&#39; --type=merge</li>
+</ul>
+<ul>
+<li>kubectl delete pod my-pod</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>pod-template-hash=69d5cc7dc5</li>
+</ul>
+<ul>
+<li>runner-deployment-name=global-runner-deployment</li>
+</ul>
+<ul>
+<li>runner-template-hash=8579bcdc6</li>
+</ul>
+<ul>
+<li>runnerset-name=global-runner-deployment-lptfb-vzjgx</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>DOCKER_ENABLED:</li>
+</ul>
+<ul>
+<li>排查步骤及解决方案:</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/08/07</p>
+<p>问题描述:</p>
+<p>由于之前的部署产生了多个pod，但是卸载了该部署之后，这些pod还有残留。</p>
+<p>手动强制删除也不行，一直占用资源。</p>
+<p>pod的状态如下：</p>
+<p>Name:             global-runner-deployment-lptfb-vzjgx</p>
+<p>Namespace:        actions-runner-system</p>
+<p>Priority:         0</p>
+<p>Service Account:  default</p>
+<p>Node:             aks-worker-24899273-vmss000001/172.29.32.9</p>
+<p>Start Time:       Mon, 04 Aug 2025 17:30:29 +0000</p>
+<p>Labels:           actions-runner-controller/inject-registration-token=true</p>
+<p>pod-template-hash=69d5cc7dc5</p>
+<p>runner-deployment-name=global-runner-deployment</p>
+<p>runner-template-hash=8579bcdc6</p>
+<p>runnerset-name=global-runner-deployment-lptfb-vzjgx</p>
+<p>Annotations:      actions-runner-controller/token-expires-at: 2025-08-05T02:20:13+08:00</p>
+<p>actions-runner/unregistration-start-timestamp: 2025-08-04T17:33:11Z</p>
+<p>sync-time: 2025-08-04T17:30:28Z</p>
+<p>Status:           Succeeded</p>
+<p>IP:               10.244.2.178</p>
+<p>IPs:</p>
+<p>IP:           10.244.2.178</p>
+<p>Controlled By:  Runner/global-runner-deployment-lptfb-vzjgx</p>
+<p>Containers:</p>
+<p>runner:</p>
+<p>Container ID:   containerd://5a24de6180d9cbf491fb6ba3f8f90dd85cfbe9c5122853397ddc62f69c64bf93</p>
+<p>Image:          dev-jfrog.maezia.com/devops-docker-internal-local/tools/actions-runner:v2.318.0-ubuntu-22.04</p>
+<p>Image ID:       dev-jfrog.maezia.com/devops-docker-internal-local/tools/actions-runner@sha256:1dd2d234ef5c7c348b722a7cb688acc263fbf942fdbaf1dba2d389ef9070084f</p>
+<p>Port:           &lt;none&gt;</p>
+<p>Host Port:      &lt;none&gt;</p>
+<p>State:          Terminated</p>
+<p>Reason:       Completed</p>
+<p>Exit Code:    0</p>
+<p>Started:      Mon, 04 Aug 2025 17:30:30 +0000</p>
+<p>Finished:     Mon, 04 Aug 2025 17:31:46 +0000</p>
+<p>Ready:          False</p>
+<p>Restart Count:  0</p>
+<p>Environment:</p>
+<p>RUNNER_ORG:</p>
+<p>RUNNER_REPO:</p>
+<p>RUNNER_ENTERPRISE:              mobility-asia-smart-technology-company-limited</p>
+<p>RUNNER_LABELS:                  global-runner,runner</p>
+<p>RUNNER_GROUP:</p>
+<p>DOCKER_ENABLED:</p>
+<p>排查步骤及解决方案:</p>
+<p>确认 Pod 的控制来源,通过问题描述信息,您的 Pod 的 Controlled By 显示：</p>
+<p>这表明 Pod 不属于 Deployment，而是由 Runner CRD 管理。</p>
+<p>进一步检查Runner:</p>
+<p>检查并删除 Runner 资源,Runner已经被删除</p>
+<p>如果没有 Runner CRD，尝试强制删除 Pod</p>
+<p>如果 Runner 已删除但 Pod 仍然残留，可以尝试：</p>
+<p>kubectl delete pod global-runner-deployment-lptfb-vzjgx -n actions-runner-system --force --grace-period=0</p>
+<p>执行上述命令未能很快完成,进一步查询可能原因,怀疑是Pod 被某些 Finalizers(终结器)卡住，导致无法完成删除操作。</p>
+<p>经检查发现确实存在Finalizers(终结器),使用如下命令修改后,pod自动被删除:</p>
+<p>kubectl patch pod global-runner-deployment-lptfb-vzjgx -n actions-runner-system -p &#39;{&quot;metadata&quot;:{&quot;finalizers&quot;:null}}&#39; --type=merge</p>
+<p>Finalizers 的核心功能</p>
+<p>1. 防止资源被直接删除</p>
+<p>当 Kubernetes 收到删除请求时，如果 metadata.finalizers 非空，资源不会被立即删除，而是进入 Terminating 状态。</p>
+<p>只有当所有 finalizers 被移除后，资源才会被真正删除。</p>
+<p>2. 确保资源的清理顺序</p>
+<p>某些资源（如 PersistentVolume、Namespace）可能依赖其他资源（如存储卷、Pod）。</p>
+<p>Finalizers 确保依赖资源先被清理，再删除父资源。</p>
+<p>3. 允许外部控制器介入</p>
+<p>某些 自定义控制器（如 actions-runner-controller） 会插入自己的 finalizers，以便在资源删除前执行额外操作（如清理外部资源）。</p>
+<p>Finalizers 的工作原理</p>
+<p>用户发起删除请求</p>
+<p>kubectl delete pod my-pod</p>
+<p>Kubernetes 检查 finalizers</p>
+<p>如果存在 finalizers，资源状态变为 Terminating，但不会立即删除。</p>
+<p>控制器处理 Finalizers</p>
+<p>相关控制器（如 PersistentVolumeController、自定义 Operator）检测到 Terminating 状态，执行清理逻辑。</p>
+<p>控制器移除 Finalizers</p>
+<p>清理完成后，控制器从 metadata.finalizers 中移除自己的条目。</p>
+<p>资源最终删除</p>
+<p>当 finalizers 列表为空时，Kubernetes 真正删除资源。</p></article>

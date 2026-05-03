@@ -1,0 +1,59 @@
+<article class="kb-article" data-title="Sentinel 无法更改付费层问题排查"><h1>Sentinel 无法更改付费层问题排查</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Microsoft Sentinel</li>
+<li>Section: Azure Microsoft Sentinel</li>
+<li>最近修改: 2025-07-23 14:13:04</li>
+<li>JD 相关性: Defender/Sentinel/安全</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Reponse 的message 显示了真正的报错原因为当前租户设置了 auzre policy 阻止了 付费层更改</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Reponse  的message 显示了真正的报错原因为当前租户设置了 auzre policy 阻止了 付费层更改</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Sentinel   更改付费层逻辑如下：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>{&quot;error&quot;:{&quot;code&quot;:&quot;AuthorizationFailed&quot;,&quot;message&quot;:&quot;The client &#39;Tommy.Ly@costacoffeecn.partner.onmschina.cn&#39; with object id &#39;bfe62d89-2c41-4672-a5d8-0a58ea211e8f&#39; does not have authorization to perform action &#39;Microsoft.OperationalInsights/workspaces/write&#39; over scope &#39;/subscriptions/78b6dc5e-f781-40d8-9c66-a115475d6a23/resourceGroups/cn3-sent-prd-rg-1/providers/Microsoft.OperationalInsights/workspaces/cn3-sent-prd-log-1&#39; or the scope is invalid. If access was recently granted, please refresh your credentials.&quot;}}</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>我在客户环境抓到的实际问题原因为客户权限不足：</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>这里主要讨论的是 当尝试进行付费层更改时的提示的这个报错。 根据测试发现，不论是由于权限不足 还是由于 azure policy 限制，当更改付费层失败时都会出现如下错误； 我们可以通过F12 抓到报错的具体原因。    这明显是前端ui 开发有问题，没有将真正的报错原因显示出来。</li>
+</ul>
+<ul>
+<li>如图 , 我们可以通过如下的api 获取真正的报错原因。（api 黄色部分依实际环境而有所改变）</li>
+</ul>
+<ul>
+<li>message&quot;: &quot;策略禁止使用资源“test0722-sentinel”。策略标识符:“[{\&quot;policyAssignment\&quot;:{\&quot;name\&quot;:\&quot;Disable-LogA-HighTier02\&quot;,\&quot;id\&quot;:\&quot;/providers/Microsoft.Management/managementGroups/PODVM/providers/Microsoft.Authorization/policyAssignments/a2c76d7b75394aa687f07b6d\&quot;},\&quot;policyDefinition\&quot;:{\&quot;name\&quot;:\&quot;Disable-LogA-HighTier02\&quot;,\&quot;id\&quot;:\&quot;/providers/Microsoft.Management/managementGroups/PODVM/providers/Microsoft.Authorization/policyDefinitions/9b220178-824d-4a29-908e-f1a5c274bb4a\&quot;,\&quot;version\&quot;:\&quot;1.0.0\&quot;}}]”。&quot;,</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/sentinel/billing-reduce-costs#set-or-change-pricing-tier" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/sentinel/billing-reduce-costs#set-or-change-pricing-tier</a></li>
+</ul>
+<ul>
+<li><a href="https://management.chinacloudapi.cn/subscriptions/dd1fd10a-7b1f-43c5-9bcc-e207cfec200f/resourceGroups/ad/providers/Microsoft.OperationalInsights/workspaces/test0722-sentinel?api-version=2023-09-01" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/dd1fd10a-7b1f-43c5-9bcc-e207cfec200f/resourceGroups/ad/providers/Microsoft.OperationalInsights/workspaces/test0722-sentinel?api-version=2023-09-01</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025-07-23</p>
+<p>Sentinel   更改付费层逻辑如下：</p>
+<p><a href="https://docs.azure.cn/zh-cn/sentinel/billing-reduce-costs#set-or-change-pricing-tier" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/sentinel/billing-reduce-costs#set-or-change-pricing-tier</a></p>
+<p>这里主要讨论的是 当尝试进行付费层更改时的提示的这个报错。 根据测试发现，不论是由于权限不足 还是由于 azure policy 限制，当更改付费层失败时都会出现如下错误； 我们可以通过F12 抓到报错的具体原因。    这明显是前端ui 开发有问题，没有将真正的报错原因显示出来。</p>
+<p>如图 , 我们可以通过如下的api 获取真正的报错原因。（api 黄色部分依实际环境而有所改变）</p>
+<p><a href="https://management.chinacloudapi.cn/subscriptions/dd1fd10a-7b1f-43c5-9bcc-e207cfec200f/resourceGroups/ad/providers/Microsoft.OperationalInsights/workspaces/test0722-sentinel?api-version=2023-09-01" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/dd1fd10a-7b1f-43c5-9bcc-e207cfec200f/resourceGroups/ad/providers/Microsoft.OperationalInsights/workspaces/test0722-sentinel?api-version=2023-09-01</a></p>
+<p>Reponse  的message 显示了真正的报错原因为当前租户设置了 auzre policy 阻止了 付费层更改</p>
+<p>message&quot;: &quot;策略禁止使用资源“test0722-sentinel”。策略标识符:“[{\&quot;policyAssignment\&quot;:{\&quot;name\&quot;:\&quot;Disable-LogA-HighTier02\&quot;,\&quot;id\&quot;:\&quot;/providers/Microsoft.Management/managementGroups/PODVM/providers/Microsoft.Authorization/policyAssignments/a2c76d7b75394aa687f07b6d\&quot;},\&quot;policyDefinition\&quot;:{\&quot;name\&quot;:\&quot;Disable-LogA-HighTier02\&quot;,\&quot;id\&quot;:\&quot;/providers/Microsoft.Management/managementGroups/PODVM/providers/Microsoft.Authorization/policyDefinitions/9b220178-824d-4a29-908e-f1a5c274bb4a\&quot;,\&quot;version\&quot;:\&quot;1.0.0\&quot;}}]”。&quot;,</p>
+<p>我在客户环境抓到的实际问题原因为客户权限不足：</p>
+<p>{&quot;error&quot;:{&quot;code&quot;:&quot;AuthorizationFailed&quot;,&quot;message&quot;:&quot;The client &#39;Tommy.Ly@costacoffeecn.partner.onmschina.cn&#39; with object id &#39;bfe62d89-2c41-4672-a5d8-0a58ea211e8f&#39; does not have authorization to perform action &#39;Microsoft.OperationalInsights/workspaces/write&#39; over scope &#39;/subscriptions/78b6dc5e-f781-40d8-9c66-a115475d6a23/resourceGroups/cn3-sent-prd-rg-1/providers/Microsoft.OperationalInsights/workspaces/cn3-sent-prd-log-1&#39; or the scope is invalid. If access was recently granted, please refresh your credentials.&quot;}}</p></article>

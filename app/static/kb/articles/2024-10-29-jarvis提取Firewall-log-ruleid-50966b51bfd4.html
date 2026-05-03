@@ -1,0 +1,175 @@
+<article class="kb-article" data-title="jarvis提取Firewall log ruleid"><h1>jarvis提取Firewall log ruleid</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: 查询-排查-工具</li>
+<li>最近修改: 2024-10-29 11:47:42</li>
+<li>JD 相关性: 售后排障; 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>可以提取Ruleid了. jarvis : <a href="https://jarvis-west.dc.ad.msft.net/EDB0F7C5" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/EDB0F7C5</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>可以提取Ruleid了. jarvis :  <a href="https://jarvis-west.dc.ad.msft.net/EDB0F7C5" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/EDB0F7C5</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>filter condition:</li>
+</ul>
+<ul>
+<li>client query:</li>
+</ul>
+<ul>
+<li>补充-20210421</li>
+</ul>
+<ul>
+<li>KQL Client query条件：</li>
+</ul>
+<ul>
+<li>source</li>
+</ul>
+<ul>
+<li>| extend pjson = parse_json(properties)</li>
+</ul>
+<ul>
+<li>| extend instanceIdp=pjson.instanceId</li>
+</ul>
+<ul>
+<li>| extend clientIpp=pjson.clientIp</li>
+</ul>
+<ul>
+<li>| extend requestUrip=pjson.requestUri</li>
+</ul>
+<ul>
+<li>|extend ruleSetTypep=pjson.ruleSetType</li>
+</ul>
+<ul>
+<li>|extend ruleSetVersionp=pjson.ruleSetVersion</li>
+</ul>
+<ul>
+<li>|extend ruleIdp=pjson.ruleId</li>
+</ul>
+<ul>
+<li>|extend messagep=pjson.message</li>
+</ul>
+<ul>
+<li>|extend actionp=tostring(pjson.action)</li>
+</ul>
+<ul>
+<li>|extend detailsp=pjson.details</li>
+</ul>
+<ul>
+<li>| project timeStamp,clientIpp,requestUrip,actionp,ruleIdp,pjson</li>
+</ul>
+<ul>
+<li>| where * contains &quot;Blocked&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>由于原properties中含有两个message字段并且details内容跨越多行含有很多转义字符，jarvis中暂时没想到好的方法处理, 所以将details字段舍弃了。先凑合用吧。</li>
+</ul>
+<ul>
+<li>| order by timeStamp asc</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>let instanceId = Regex.Match(properties, &quot;&quot;&quot;instanceId&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</li>
+</ul>
+<ul>
+<li>let clientIP = Regex.Match(properties, &quot;&quot;&quot;clientIP&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</li>
+</ul>
+<ul>
+<li>let clientPort = Regex.Match(properties, &quot;&quot;&quot;clientPort&quot;&quot;: (.*?)\,&quot;).Groups[1].Value</li>
+</ul>
+<ul>
+<li>let requestUri = Regex.Match(properties, &quot;&quot;&quot;requestUri&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</li>
+</ul>
+<ul>
+<li>let ruleSetType = Regex.Match(properties, &quot;&quot;&quot;ruleSetType&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</li>
+</ul>
+<ul>
+<li>let ruleSetVersion = Regex.Match(properties, &quot;&quot;&quot;ruleSetVersion&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</li>
+</ul>
+<ul>
+<li>let ruleId = Regex.Match(properties, &quot;&quot;&quot;ruleId&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</li>
+</ul>
+<ul>
+<li>let ruleGroup = Regex.Match(properties, &quot;&quot;&quot;ruleGroup&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</li>
+</ul>
+<ul>
+<li>let action = Regex.Match(properties, &quot;&quot;&quot;action&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</li>
+</ul>
+<ul>
+<li>let hostname= Regex.Match(properties, &quot;&quot;&quot;hostname&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</li>
+</ul>
+<ul>
+<li>let transactionId = Regex.Match(properties, &quot;&quot;&quot;transactionId&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</li>
+</ul>
+<ul>
+<li>let message1 = Regex.Match(properties, &quot;&quot;&quot;message&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</li>
+</ul>
+<ul>
+<li>Let message = Regex.Match(properties,&quot;&quot;&quot;message&quot;&quot;:&quot;&quot;(.*?)\&quot;&quot;&quot;).Group[1].Value</li>
+</ul>
+<ul>
+<li>Let action =  Regex.Match(properties,&quot;&quot;&quot;action&quot;&quot;:&quot;&quot;(.*?)\&quot;&quot;&quot;).Group[1].Value</li>
+</ul>
+<ul>
+<li>Let site =  Regex.Match(properties,&quot;&quot;&quot;site&quot;&quot;:&quot;&quot;(.*?)\&quot;&quot;&quot;).Group[1].Value</li>
+</ul>
+<ul>
+<li>select PreciseTimeStamp,instanceId, clientIP,clientPort, requestUri,ruleId, ruleGroup,message1, action, hostname, transactionId orderby PreciseTimeStamp</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>可以提取Ruleid了. jarvis :  <a href="https://jarvis-west.dc.ad.msft.net/EDB0F7C5" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/EDB0F7C5</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/DEE075D8" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/DEE075D8</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2019-12-09</p>
+<p>可以提取Ruleid了. jarvis :  <a href="https://jarvis-west.dc.ad.msft.net/EDB0F7C5" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/EDB0F7C5</a></p>
+<p>由于原properties中含有两个message字段并且details内容跨越多行含有很多转义字符，jarvis中暂时没想到好的方法处理, 所以将details字段舍弃了。先凑合用吧。</p>
+<p>filter condition:</p>
+<p>let instanceId = Regex.Match(properties, &quot;&quot;&quot;instanceId&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</p>
+<p>let clientIP = Regex.Match(properties, &quot;&quot;&quot;clientIP&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</p>
+<p>let clientPort = Regex.Match(properties, &quot;&quot;&quot;clientPort&quot;&quot;: (.*?)\,&quot;).Groups[1].Value</p>
+<p>let requestUri = Regex.Match(properties, &quot;&quot;&quot;requestUri&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</p>
+<p>let ruleSetType = Regex.Match(properties, &quot;&quot;&quot;ruleSetType&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</p>
+<p>let ruleSetVersion = Regex.Match(properties, &quot;&quot;&quot;ruleSetVersion&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</p>
+<p>let ruleId = Regex.Match(properties, &quot;&quot;&quot;ruleId&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</p>
+<p>let ruleGroup = Regex.Match(properties, &quot;&quot;&quot;ruleGroup&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</p>
+<p>let action = Regex.Match(properties, &quot;&quot;&quot;action&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</p>
+<p>let hostname= Regex.Match(properties, &quot;&quot;&quot;hostname&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</p>
+<p>let transactionId = Regex.Match(properties, &quot;&quot;&quot;transactionId&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</p>
+<p>let message1 = Regex.Match(properties, &quot;&quot;&quot;message&quot;&quot;: &quot;&quot;(.*?)\&quot;&quot;&quot;).Groups[1].Value</p>
+<p>Let message = Regex.Match(properties,&quot;&quot;&quot;message&quot;&quot;:&quot;&quot;(.*?)\&quot;&quot;&quot;).Group[1].Value</p>
+<p>Let action =  Regex.Match(properties,&quot;&quot;&quot;action&quot;&quot;:&quot;&quot;(.*?)\&quot;&quot;&quot;).Group[1].Value</p>
+<p>Let site =  Regex.Match(properties,&quot;&quot;&quot;site&quot;&quot;:&quot;&quot;(.*?)\&quot;&quot;&quot;).Group[1].Value</p>
+<p>client query:</p>
+<p>select PreciseTimeStamp,instanceId, clientIP,clientPort, requestUri,ruleId, ruleGroup,message1, action, hostname, transactionId orderby PreciseTimeStamp</p>
+<p>补充-20210421</p>
+<p>KQL Client query条件：</p>
+<p>source</p>
+<p>| extend pjson = parse_json(properties)</p>
+<p>| extend instanceIdp=pjson.instanceId</p>
+<p>| extend clientIpp=pjson.clientIp</p>
+<p>| extend requestUrip=pjson.requestUri</p>
+<p>|extend ruleSetTypep=pjson.ruleSetType</p>
+<p>|extend ruleSetVersionp=pjson.ruleSetVersion</p>
+<p>|extend ruleIdp=pjson.ruleId</p>
+<p>|extend messagep=pjson.message</p>
+<p>|extend actionp=tostring(pjson.action)</p>
+<p>|extend detailsp=pjson.details</p>
+<p>| project timeStamp,clientIpp,requestUrip,actionp,ruleIdp,pjson</p>
+<p>| order by timeStamp asc</p>
+<p>| where * contains &quot;Blocked&quot;</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/DEE075D8" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/DEE075D8</a></p></article>

@@ -1,0 +1,125 @@
+<article class="kb-article" data-title="使用 Azure 文件存储和 Azure AD DS 创建配置文件容器以及排错"><h1>使用 Azure 文件存储和 Azure AD DS 创建配置文件容器以及排错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2022-11-23 11:20:18</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Zhang Wenxin</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Zhang Wenxin</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang Wenxin</li>
+</ul>
+<ul>
+<li>8/17/2021</li>
+</ul>
+<ul>
+<li>请新建用户并向其授予权限，添加 Azure AD DS 管理员。使用AADDS作为WVD的域服务，节点池虚拟机加入到AADDS。</li>
+</ul>
+<ul>
+<li>需要为每个用户分配一个具有适当访问权限的角色。如选择“访问控制 (IAM)”。在“添加角色分配”选项卡中，从角色列表中选择适当的内置角色。 至少需要选择“存储文件数据 SMB 共享参与者”，帐户才能获得适当的权限。</li>
+</ul>
+<ul>
+<li>net use &lt;desired-drive-letter&gt;: \\&lt;storage-account-name&gt;.file.core.chinacloudapi.cn\&lt;share-name&gt; /user:azure\&lt;storage-account-name&gt; &lt;storage-account-key&gt;</li>
+</ul>
+<ul>
+<li>如：</li>
+</ul>
+<ul>
+<li>icacls &lt;mounted-drive-letter&gt;: /grant &lt;user-email&gt;:(M)</li>
+</ul>
+<ul>
+<li>icacls &lt;mounted-drive-letter&gt;: /grant &quot;Creator Owner&quot;:(OI)(CI)(IO)(M)</li>
+</ul>
+<ul>
+<li>icacls &lt;mounted-drive-letter&gt;: /remove &quot;Authenticated Users&quot;</li>
+</ul>
+<ul>
+<li>icacls &lt;mounted-drive-letter&gt;: /remove &quot;Builtin\Users&quot;</li>
+</ul>
+<ul>
+<li>可允许 Azure 虚拟桌面用户创建自己的配置文件容器，同时阻止其他用户访问其配置文件容器。</li>
+</ul>
+<ul>
+<li>再新建Multi-String Value名为 VHDLocations，设置文件共享的url</li>
+</ul>
+<ul>
+<li>重启虚拟机。</li>
+</ul>
+<ul>
+<li>接下来分配相应的用户应用程序组的权限（工作区包含该远程桌面应用程序组，该应用程序组已经绑定对应的主机池），以便用户可以登录访问会话主机。</li>
+</ul>
+<ul>
+<li>用户登录后，在共享的文件夹下会自动生成 用户的的配置文件夹，以及VHD文件：li</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在中国东2或中国北2创建和部署常规用途 v2 Azure 存储帐户，然后启用“Azure 文件存储的 Azure Active Directory 身份验证”。</li>
+</ul>
+<ul>
+<li>接下来，下载并安装 FSLogix 代理（如果池中有多个VM，需要对每个 VM 都进行安装。安装解压文件夹中的x64版）：</li>
+</ul>
+<ul>
+<li>C:\Program Files\FSLogix\Apps\frxtray.exe</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>本地管理员权限，RDP登录session host 虚拟机，登录 VM 后，以管理员身份运行命令提示符运行如下命令，先挂载Azure 共享，然后为挂载的文件设置NTFS权限。</li>
+</ul>
+<ul>
+<li>通过运行以下命令：</li>
+</ul>
+<ul>
+<li>设置权限（注该部分第一条命令需要使用在命令行下配置。），配置后效果如下：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>以管理员身份运行注册表编辑器 (RegEdit)。找到如下位置，如果没有Profiles请新建该key 。并新建DWORD (32-bit) Value名称为Enabled 值为1。</li>
+</ul>
+<ul>
+<li>排除FSlogix的错误可以通过日志登录会话主机查看</li>
+</ul>
+<ul>
+<li>也可以通过安装位置的frxtry查看详细的profile的信息，如：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://download.microsoft.com/download/3/a/f/3af0c274-2bf9-4916-a70b-f5556595fbf2/FSLogix_Apps_2.9.7838.44263.zip" target="_blank" rel="noopener">https://download.microsoft.com/download/3/a/f/3af0c274-2bf9-4916-a70b-f5556595fbf2/FSLogix_Apps_2.9.7838.44263.zip</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang Wenxin</p>
+<p>8/17/2021</p>
+<p>请新建用户并向其授予权限，添加 Azure AD DS 管理员。使用AADDS作为WVD的域服务，节点池虚拟机加入到AADDS。</p>
+<p>在中国东2或中国北2创建和部署常规用途 v2 Azure 存储帐户，然后启用“Azure 文件存储的 Azure Active Directory 身份验证”。</p>
+<p>需要为每个用户分配一个具有适当访问权限的角色。如选择“访问控制 (IAM)”。在“添加角色分配”选项卡中，从角色列表中选择适当的内置角色。 至少需要选择“存储文件数据 SMB 共享参与者”，帐户才能获得适当的权限。</p>
+<p>本地管理员权限，RDP登录session host 虚拟机，登录 VM 后，以管理员身份运行命令提示符运行如下命令，先挂载Azure 共享，然后为挂载的文件设置NTFS权限。</p>
+<p>net use &lt;desired-drive-letter&gt;: \\&lt;storage-account-name&gt;.file.core.chinacloudapi.cn\&lt;share-name&gt; /user:azure\&lt;storage-account-name&gt; &lt;storage-account-key&gt;</p>
+<p>如：</p>
+<p>通过运行以下命令：</p>
+<p>icacls &lt;mounted-drive-letter&gt;: /grant &lt;user-email&gt;:(M)</p>
+<p>icacls &lt;mounted-drive-letter&gt;: /grant &quot;Creator Owner&quot;:(OI)(CI)(IO)(M)</p>
+<p>icacls &lt;mounted-drive-letter&gt;: /remove &quot;Authenticated Users&quot;</p>
+<p>icacls &lt;mounted-drive-letter&gt;: /remove &quot;Builtin\Users&quot;</p>
+<p>可允许 Azure 虚拟桌面用户创建自己的配置文件容器，同时阻止其他用户访问其配置文件容器。</p>
+<p>设置权限（注该部分第一条命令需要使用在命令行下配置。），配置后效果如下：</p>
+<p>接下来，下载并安装 FSLogix 代理（如果池中有多个VM，需要对每个 VM 都进行安装。安装解压文件夹中的x64版）：</p>
+<p><a href="https://download.microsoft.com/download/3/a/f/3af0c274-2bf9-4916-a70b-f5556595fbf2/FSLogix_Apps_2.9.7838.44263.zip" target="_blank" rel="noopener">https://download.microsoft.com/download/3/a/f/3af0c274-2bf9-4916-a70b-f5556595fbf2/FSLogix_Apps_2.9.7838.44263.zip</a></p>
+<p>以管理员身份运行注册表编辑器 (RegEdit)。找到如下位置，如果没有Profiles请新建该key 。并新建DWORD (32-bit) Value名称为Enabled 值为1。</p>
+<p>再新建Multi-String Value名为 VHDLocations，设置文件共享的url</p>
+<p>重启虚拟机。</p>
+<p>接下来分配相应的用户应用程序组的权限（工作区包含该远程桌面应用程序组，该应用程序组已经绑定对应的主机池），以便用户可以登录访问会话主机。</p>
+<p>用户登录后，在共享的文件夹下会自动生成 用户的的配置文件夹，以及VHD文件：li</p>
+<p>排除FSlogix的错误可以通过日志登录会话主机查看</p>
+<p>也可以通过安装位置的frxtry查看详细的profile的信息，如：</p>
+<p>C:\Program Files\FSLogix\Apps\frxtray.exe</p></article>

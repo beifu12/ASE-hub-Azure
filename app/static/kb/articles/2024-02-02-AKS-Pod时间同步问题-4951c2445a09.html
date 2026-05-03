@@ -1,0 +1,54 @@
+<article class="kb-article" data-title="AKS Pod时间同步问题"><h1>AKS Pod时间同步问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-02-02 12:44:59</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2020022608199_[S500]提供AKS等Paas服务器的时间同步精度</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2020022608199_[S500]提供AKS等Paas服务器的时间同步精度</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_2020022608199_[S500]提供AKS等Paas服务器的时间同步精度</li>
+</ul>
+<ul>
+<li>CSS信息反馈：</li>
+</ul>
+<ul>
+<li>aks worker node时间精度的问题，是客户防火墙没有allow UDP导致时间不正确</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>根据以往工单确认信息，AKS本身未提供时间同步的功能， 目前AKS worker node默认与ntp.ubuntu.com进行时间同步：</li>
+</ul>
+<ul>
+<li>您反馈的pod之间时间不同步问题，您看是否是由于镜像的时间设置问题，另外查询互联网资源可以设置pod与node时间同步可能对此问题有帮助。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>如果要调整时间同步频率或者设置自己的ntp server可以参考Ubuntu设置方法，但是PG不建议设置自己的ntp server，防止worker node时间和master node不一致导致一些问题</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>具体设置参考资料供您参考： <a href="https://blog.csdn.net/u013201439/article/details/79436413" target="_blank" rel="noopener">https://blog.csdn.net/u013201439/article/details/79436413</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2020022608199_[S500]提供AKS等Paas服务器的时间同步精度</p>
+<p>根据以往工单确认信息，AKS本身未提供时间同步的功能， 目前AKS worker node默认与ntp.ubuntu.com进行时间同步：</p>
+<p>您反馈的pod之间时间不同步问题，您看是否是由于镜像的时间设置问题，另外查询互联网资源可以设置pod与node时间同步可能对此问题有帮助。</p>
+<p>具体设置参考资料供您参考： <a href="https://blog.csdn.net/u013201439/article/details/79436413" target="_blank" rel="noopener">https://blog.csdn.net/u013201439/article/details/79436413</a></p>
+<p>CSS信息反馈：</p>
+<p>aks worker node时间精度的问题，是客户防火墙没有allow UDP导致时间不正确</p>
+<p>如果要调整时间同步频率或者设置自己的ntp server可以参考Ubuntu设置方法，但是PG不建议设置自己的ntp server，防止worker node时间和master node不一致导致一些问题</p></article>

@@ -1,0 +1,103 @@
+<article class="kb-article" data-title="ER传输特性"><h1>ER传输特性</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-02-28 16:57:56</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Hi all，</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Hi all，</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi all，</li>
+</ul>
+<ul>
+<li>客户的环境是标准的ER专线配置，需求是从本地server172.30.2.98访问AzureVM 173.20.11.102</li>
+</ul>
+<ul>
+<li>而客户本地的server其实是能正常收到AzureVM的回包的。</li>
+</ul>
+<ul>
+<li>其中，139.219.131.116是ER GATEWAY的IP，10.203.128.1和10.203.128.2是MSEE的IP，也就是说NODE把自己伪装成了ER gateway在给MSEE回包。</li>
+</ul>
+<ul>
+<li>我们可以右键点下这种包，然后选Decode As，在弹出的框中的current里选择vxlan，点确定</li>
+</ul>
+<ul>
+<li>然后Wireshark就会对包进行解码，解出来的包正是AzureVM给本地Server的回包（需要wireshark版本在2.0以上）</li>
+</ul>
+<ul>
+<li>总结一下，ER的通信，本地发往Azure的包是经过On-Premise→ MSEE→ER Gateway→Node→Instance的次序传递的。</li>
+</ul>
+<ul>
+<li>但Azure发往本地的包则是Instance→Node→MSEE→On-premise，并不经过ER gateway</li>
+</ul>
+<ul>
+<li>在Node将包发往MSEE前，会打上如下的vxlan header，以将包伪装成是由ER Gateway发出</li>
+</ul>
+<ul>
+<li>Encap Type: VXLAN</li>
+</ul>
+<ul>
+<li>Encap Destination(s) :</li>
+</ul>
+<ul>
+<li>{ Src IP address=139.219.131.116, Dest IP address=10.203.128.1, MAC address=00-00-00-00-00-00, GRE key=4147 }</li>
+</ul>
+<ul>
+<li>{ Src IP address=139.219.131.116, Dest IP address=10.203.128.2, MAC address=00-00-00-00-00-00, GRE key=4147 }</li>
+</ul>
+<ul>
+<li>如有疑问，欢迎随时讨论，谢谢！</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>双方正常通信时，在VM的node上和ERgateway的两个instance上抓包，都只能看到172.30.2.98发往173.20.11.102的包，但无法看到回包</li>
+</ul>
+<ul>
+<li>于是我们请NW的同事在MSEE上做了抓包，能看到有正常的回包</li>
+</ul>
+<ul>
+<li>经排查，在NODE的抓包中看到有如下的UDP包：</li>
+</ul>
+<ul>
+<li>所以以后我们在ER上抓包时，从Azure发往本地的包要在VM的node上或MSEE上去抓。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>最近在处理一个case时了解到了一些ER相关的特性，总结如下：  <a href="http://intra.21vbluecloud.com/sites/Azure/WATS/Shared%20Documents/WATS_KB_Training%20-%20Linked%20Files/bbb%202.cap" target="_blank" rel="noopener">http://intra.21vbluecloud.com/sites/Azure/WATS/Shared%20Documents/WATS_KB_Training%20-%20Linked%20Files/bbb%202.cap</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi all，</p>
+<p>最近在处理一个case时了解到了一些ER相关的特性，总结如下：  <a href="http://intra.21vbluecloud.com/sites/Azure/WATS/Shared%20Documents/WATS_KB_Training%20-%20Linked%20Files/bbb%202.cap" target="_blank" rel="noopener">http://intra.21vbluecloud.com/sites/Azure/WATS/Shared%20Documents/WATS_KB_Training%20-%20Linked%20Files/bbb%202.cap</a></p>
+<p>客户的环境是标准的ER专线配置，需求是从本地server172.30.2.98访问AzureVM 173.20.11.102</p>
+<p>双方正常通信时，在VM的node上和ERgateway的两个instance上抓包，都只能看到172.30.2.98发往173.20.11.102的包，但无法看到回包</p>
+<p>而客户本地的server其实是能正常收到AzureVM的回包的。</p>
+<p>于是我们请NW的同事在MSEE上做了抓包，能看到有正常的回包</p>
+<p>经排查，在NODE的抓包中看到有如下的UDP包：</p>
+<p>其中，139.219.131.116是ER GATEWAY的IP，10.203.128.1和10.203.128.2是MSEE的IP，也就是说NODE把自己伪装成了ER gateway在给MSEE回包。</p>
+<p>我们可以右键点下这种包，然后选Decode As，在弹出的框中的current里选择vxlan，点确定</p>
+<p>然后Wireshark就会对包进行解码，解出来的包正是AzureVM给本地Server的回包（需要wireshark版本在2.0以上）</p>
+<p>总结一下，ER的通信，本地发往Azure的包是经过On-Premise→ MSEE→ER Gateway→Node→Instance的次序传递的。</p>
+<p>但Azure发往本地的包则是Instance→Node→MSEE→On-premise，并不经过ER gateway</p>
+<p>在Node将包发往MSEE前，会打上如下的vxlan header，以将包伪装成是由ER Gateway发出</p>
+<p>Encap Type: VXLAN</p>
+<p>Encap Destination(s) :</p>
+<p>{ Src IP address=139.219.131.116, Dest IP address=10.203.128.1, MAC address=00-00-00-00-00-00, GRE key=4147 }</p>
+<p>{ Src IP address=139.219.131.116, Dest IP address=10.203.128.2, MAC address=00-00-00-00-00-00, GRE key=4147 }</p>
+<p>所以以后我们在ER上抓包时，从Azure发往本地的包要在VM的node上或MSEE上去抓。</p>
+<p>如有疑问，欢迎随时讨论，谢谢！</p></article>

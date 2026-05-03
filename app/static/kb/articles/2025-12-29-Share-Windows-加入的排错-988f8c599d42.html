@@ -1,0 +1,262 @@
+<article class="kb-article" data-title="【Share】Windows 加入的排错"><h1>【Share】Windows 加入的排错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-29 14:12:06</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Windows 混合加入到Microsoft Entra ID 后，通过组策略自动注册到Intune的常见报错。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Windows 混合加入到Microsoft Entra ID 后，通过组策略自动注册到Intune的常见报错。</li>
+</ul>
+<ul>
+<li>如果可以看到event ID 为76的，那么需要根据具体的报错来进行下一步操作。</li>
+</ul>
+<ul>
+<li>无法获取设备的主刷新令牌（AzureAdPrt 为空）</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>Lv Lei</li>
+</ul>
+<ul>
+<li>自动注册的组策略并未成功下发到设备</li>
+</ul>
+<ul>
+<li>#以下截图为MDM 组策略成功下的报告截图#</li>
+</ul>
+<ul>
+<li>设备中安装有和中国供应商开发的密码管理器，发票财务和U盾等和金融密码相关的三方软件</li>
+</ul>
+<ul>
+<li>注1：如果仍希望使用对应的三方应用，可以在设备成功注册到Intune 后再重新安装对应的应用。</li>
+</ul>
+<ul>
+<li>当前我们已知与Intune注册冲突的密码管理器，发票财务和U盾等和金融密码相关的三方软件应用有以下5个。</li>
+</ul>
+<ul>
+<li>注2：以下只是当前我们已知的会影响Intune 注册的应用，不代表所有影响Intune 注册的应用。</li>
+</ul>
+<ul>
+<li>CFCA FOR UKEY CSP</li>
+</ul>
+<ul>
+<li>BJCA CSP 驱动 by BJCA</li>
+</ul>
+<ul>
+<li>Password agent published by海泰方圆</li>
+</ul>
+<ul>
+<li>财开心批量处理系统，published by 盟度知汇</li>
+</ul>
+<ul>
+<li>NISEC_SafeToolKit， published by 国家信息安全工程技术研究中心</li>
+</ul>
+<ul>
+<li>4.1 清理注册表</li>
+</ul>
+<ul>
+<li>目前主要有三种方法。</li>
+</ul>
+<ul>
+<li>$Search=&#39;DiscoveryServiceFullURL&#39;</li>
+</ul>
+<ul>
+<li>#列出#</li>
+</ul>
+<ul>
+<li>#删除#</li>
+</ul>
+<ul>
+<li>手动清理（此方法是Daisy 提供的）</li>
+</ul>
+<ul>
+<li>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Enrollments\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</li>
+</ul>
+<ul>
+<li>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Enrollments\Status\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</li>
+</ul>
+<ul>
+<li>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\EnterpriseResourceManager\Tracked\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</li>
+</ul>
+<ul>
+<li>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PolicyManager\AdmxInstalled\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</li>
+</ul>
+<ul>
+<li>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PolicyManager\Providers\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</li>
+</ul>
+<ul>
+<li>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Provisioning\OMADM\Accounts\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</li>
+</ul>
+<ul>
+<li>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Provisioning\OMADM\Sessions\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</li>
+</ul>
+<ul>
+<li>注3：对应标黄的ID为EnrollmentID， 您可以在日志Microsoft-Windows-DeviceManagement-Enterprise-Diagnostics-Provider/Admin中找到或在注册表HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Enrollments下遍寻所有的ID，找到哪个ID 有如下的信息（通常其他的ID 路径下的Key 比较少没，EnrollmentID 对应的那个路径，key 会比较多）。</li>
+</ul>
+<ul>
+<li>#在日志Microsoft-Windows-DeviceManagement-Enterprise-Diagnostics-Provider/Admin 搜索EnrollmentID#</li>
+</ul>
+<ul>
+<li>#在注册表HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Enrollments下找到对应的EnrollmentID#</li>
+</ul>
+<ul>
+<li>4.2 删除证书</li>
+</ul>
+<ul>
+<li>打开运行à certlm.mscàPersonal àCertificates à 删除颁发者是“Microsoft Intune MDM Device CA”的证书</li>
+</ul>
+<ul>
+<li>下载PSExec 工具，下载链接PsExec - Sysinternals | Microsoft Learn</li>
+</ul>
+<ul>
+<li>使用PSExec来以SYSTEM身份启动cmd 窗口。</li>
+</ul>
+<ul>
+<li>psexec /i /s cmd</li>
+</ul>
+<ul>
+<li>%windir%\system32\deviceenroller.exe /c /AutoEnrollMDM</li>
+</ul>
+<ul>
+<li>搜索并打开Active Directory Users  and Computers (或在运中输入dsa.msc)à Users à 找到对应的测试用户à 右键à PropertiesàAccount à 点击域名后缀的下拉箭头，更换后缀à OK</li>
+</ul>
+<ul>
+<li>注4：根据我们的测试和其他工单的处理情况，此操作不会影响本地AD。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>检查异常设备中的Applications and Services Logs &gt; Microsoft &gt; Windows &gt; DeviceManagement-Enterprise-Diagnostic-Provider &gt; Admin 日志看其中是否有事件ID 为75（自动注册成功）和76 （自动注册失败）的事件。</li>
+</ul>
+<ul>
+<li>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Provisioning\OMADM\Logger\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</li>
+</ul>
+<ul>
+<li>4.3  正常情况下，组策略在设备上下发成功后，使用对应的已同步到Microsoft Entra ID 的本地AD 账户登录到设备后，注册过程将在后台启动。如希望快速验证，可以使用如下的方法手动开始enrollment 进程。</li>
+</ul>
+<ul>
+<li>检查方法：使用本地AD 账户登录设备，并在cmd 中运行dsregcmd /status，在SSO State 部分，检查AzureAdPrt是否为Yes。</li>
+</ul>
+<ul>
+<li>最近遇到两起，因为本地AD域名与Microsoft Entra ID 中验证的自定义域名不一致的问题，单独拿出来说一下。</li>
+</ul>
+<ul>
+<li>比如本地AD域名为abc.local（如截图中红框所示位置）, 但在Microsoft Entra ID 中验证的域名为abc.cn，那么就有可能会导致无法获取到AzureAdPrt，进而无法成功注册到Intune。</li>
+</ul>
+<ul>
+<li>搜索并打开Active Directory Domains and Truest àProperties à 输入Microsoft Entra ID 中验证的自定义域名 àAdd àOK</li>
+</ul>
+<ul>
+<li>如果重启或注销后重新登录，等待一段时间后，设备仍无法自动注册到Intune，检查dsregcmd /status 输出中AzureAdPrt仍为No ，可以尝试以管理员权限打开cmd ,然后运行dsregcmd /leaveà运行完成后在Microsoft Entra ID 检查设备是否会被自动删除，如果没有，请手动删除对应的设备à 重启设备à手动运行Microsoft Entra Connect 同步周期或等待下一个自动同步周期à 等设备被同步到Microsoft Entra ID à 观察dsregcmd /status 输出中AzureAD PRT 是否能变为Yes, 设备能否注册到Intune。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如果都没有，请在设备中使用对应的域账户登录，并在以管理员权限运行的cmd 窗口中运行命令gpresult /h gpreport.html获取当前的组策略报告，打开生成的的gpreport.html，全部展开，并搜索MDM的组策略是否已经成功下发。如果没有看到对应的MDM 组策略或组策略下发失败，那么需要先解决组策略下发的问题，可以尝试通过命令gpupdate /force 在设备侧强制刷新组策略。</li>
+</ul>
+<ul>
+<li>通过脚本仅清理注册表中的DiscoveryServiceFullURL</li>
+</ul>
+<ul>
+<li>根据之前的经验还可以尝试以管理员权限运行如下的Powershell 命令查看并删除包含&#39;DiscoveryServiceFullURL&#39;的注册表键值。此方法不一定能彻底删除，如果通过此方法清理后仍有问题，仍建议手动清理或使用Github 脚本清理。</li>
+</ul>
+<ul>
+<li>Get-ChildItem &quot;HKLM:SOFTWARE\Microsoft\Enrollments&quot;| Where Property -like &quot;*$Search*&quot; | ft</li>
+</ul>
+<ul>
+<li>Get-ChildItem &quot;HKLM:SOFTWARE\Microsoft\Enrollments&quot;| Where Property -like &quot;*$Search*&quot; | Remove-Item -Confirm</li>
+</ul>
+<ul>
+<li>3）通过Github脚本批量清理注册表（目前我只在客户的测试环境中测试过，是可以的）</li>
+</ul>
+<ul>
+<li>在cmd窗口中，输入以下命令：</li>
+</ul>
+<ul>
+<li>这种情况下，可以在本地AD 中为在Microsoft Entra ID 中验证的自定义域名添加信任，然后找一个测试账户，将其UPN修改为在Microsoft Entra ID 中验证的自定义域名，之后可以登录自动同步周期（30分钟），或手动触发Microsoft Entra Connect增量同步(Powershell 命令Start-ADSyncSyncCycle -PolicyType Delta)，将修改同步到Microsoft Entra ID。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>设备注册到Intune 时报错800706BE\80010106或者在Microsoft-Windows-DeviceManagement-Enterprise-Diagnostics-Provider/Admin 日志中看到The remote procedure call failed (远程过程调用失败) ， Details 中显示0x800706be。 且设备application 日志中能看到有app crush （Event ID ：1000 或1001）的日志记录，那么大概率与系统内安装了和中国供应商开发的密码管理器，发票财务和U盾等和金融密码相关的三方软件占用了Intune设备注册所需的端口有关。建议您从系统中卸载相关的三方软件（可能需要卸载多个或多次卸载），然后重启，再尝试重新注册。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>设备之前曾尝试注册到Intune，那么建议清理注册表和证书然后再重新注册。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>常见的报错代码和解决方案，请参考官方文档： <a href="https://learn.microsoft.com/zh-cn/troubleshoot/mem/intune/device-enrollment/troubleshoot-windows-enrollment-errors" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/mem/intune/device-enrollment/troubleshoot-windows-enrollment-errors</a> 。</li>
+</ul>
+<ul>
+<li><a href="https://github.com/steve-prentice/powershell-scripts/blob/master/Remove-IntuneCurrentEnrollment.ps1" target="_blank" rel="noopener">https://github.com/steve-prentice/powershell-scripts/blob/master/Remove-IntuneCurrentEnrollment.ps1</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/29</p>
+<p>Reviewer</p>
+<p>Lv Lei</p>
+<p>Windows 混合加入到Microsoft Entra ID 后，通过组策略自动注册到Intune的常见报错。</p>
+<p>自动注册的组策略并未成功下发到设备</p>
+<p>检查异常设备中的Applications and Services Logs &gt; Microsoft &gt; Windows &gt; DeviceManagement-Enterprise-Diagnostic-Provider &gt; Admin 日志看其中是否有事件ID 为75（自动注册成功）和76 （自动注册失败）的事件。</p>
+<p>如果都没有，请在设备中使用对应的域账户登录，并在以管理员权限运行的cmd 窗口中运行命令gpresult /h gpreport.html获取当前的组策略报告，打开生成的的gpreport.html，全部展开，并搜索MDM的组策略是否已经成功下发。如果没有看到对应的MDM 组策略或组策略下发失败，那么需要先解决组策略下发的问题，可以尝试通过命令gpupdate /force 在设备侧强制刷新组策略。</p>
+<p>#以下截图为MDM 组策略成功下的报告截图#</p>
+<p>如果可以看到event ID 为76的，那么需要根据具体的报错来进行下一步操作。</p>
+<p>常见的报错代码和解决方案，请参考官方文档： <a href="https://learn.microsoft.com/zh-cn/troubleshoot/mem/intune/device-enrollment/troubleshoot-windows-enrollment-errors" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/mem/intune/device-enrollment/troubleshoot-windows-enrollment-errors</a> 。</p>
+<p>设备中安装有和中国供应商开发的密码管理器，发票财务和U盾等和金融密码相关的三方软件</p>
+<p>设备注册到Intune 时报错800706BE\80010106或者在Microsoft-Windows-DeviceManagement-Enterprise-Diagnostics-Provider/Admin 日志中看到The remote procedure call failed (远程过程调用失败) ， Details 中显示0x800706be。 且设备application 日志中能看到有app crush （Event ID ：1000 或1001）的日志记录，那么大概率与系统内安装了和中国供应商开发的密码管理器，发票财务和U盾等和金融密码相关的三方软件占用了Intune设备注册所需的端口有关。建议您从系统中卸载相关的三方软件（可能需要卸载多个或多次卸载），然后重启，再尝试重新注册。</p>
+<p>注1：如果仍希望使用对应的三方应用，可以在设备成功注册到Intune 后再重新安装对应的应用。</p>
+<p>当前我们已知与Intune注册冲突的密码管理器，发票财务和U盾等和金融密码相关的三方软件应用有以下5个。</p>
+<p>注2：以下只是当前我们已知的会影响Intune 注册的应用，不代表所有影响Intune 注册的应用。</p>
+<p>CFCA FOR UKEY CSP</p>
+<p>BJCA CSP 驱动 by BJCA</p>
+<p>Password agent published by海泰方圆</p>
+<p>财开心批量处理系统，published by 盟度知汇</p>
+<p>NISEC_SafeToolKit， published by 国家信息安全工程技术研究中心</p>
+<p>设备之前曾尝试注册到Intune，那么建议清理注册表和证书然后再重新注册。</p>
+<p>4.1 清理注册表</p>
+<p>目前主要有三种方法。</p>
+<p>通过脚本仅清理注册表中的DiscoveryServiceFullURL</p>
+<p>根据之前的经验还可以尝试以管理员权限运行如下的Powershell 命令查看并删除包含&#39;DiscoveryServiceFullURL&#39;的注册表键值。此方法不一定能彻底删除，如果通过此方法清理后仍有问题，仍建议手动清理或使用Github 脚本清理。</p>
+<p>$Search=&#39;DiscoveryServiceFullURL&#39;</p>
+<p>#列出#</p>
+<p>Get-ChildItem &quot;HKLM:SOFTWARE\Microsoft\Enrollments&quot;| Where Property -like &quot;*$Search*&quot; | ft</p>
+<p>#删除#</p>
+<p>Get-ChildItem &quot;HKLM:SOFTWARE\Microsoft\Enrollments&quot;| Where Property -like &quot;*$Search*&quot; | Remove-Item -Confirm</p>
+<p>手动清理（此方法是Daisy 提供的）</p>
+<p>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Enrollments\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</p>
+<p>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Enrollments\Status\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</p>
+<p>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\EnterpriseResourceManager\Tracked\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</p>
+<p>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PolicyManager\AdmxInstalled\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</p>
+<p>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PolicyManager\Providers\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</p>
+<p>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Provisioning\OMADM\Accounts\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</p>
+<p>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Provisioning\OMADM\Logger\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</p>
+<p>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Provisioning\OMADM\Sessions\B84D17ED-xxx-xxxx-xxxx-30E42EA5FDFE</p>
+<p>注3：对应标黄的ID为EnrollmentID， 您可以在日志Microsoft-Windows-DeviceManagement-Enterprise-Diagnostics-Provider/Admin中找到或在注册表HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Enrollments下遍寻所有的ID，找到哪个ID 有如下的信息（通常其他的ID 路径下的Key 比较少没，EnrollmentID 对应的那个路径，key 会比较多）。</p>
+<p>#在日志Microsoft-Windows-DeviceManagement-Enterprise-Diagnostics-Provider/Admin 搜索EnrollmentID#</p>
+<p>#在注册表HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Enrollments下找到对应的EnrollmentID#</p>
+<p>3）通过Github脚本批量清理注册表（目前我只在客户的测试环境中测试过，是可以的）</p>
+<p><a href="https://github.com/steve-prentice/powershell-scripts/blob/master/Remove-IntuneCurrentEnrollment.ps1" target="_blank" rel="noopener">https://github.com/steve-prentice/powershell-scripts/blob/master/Remove-IntuneCurrentEnrollment.ps1</a></p>
+<p>4.2 删除证书</p>
+<p>打开运行à certlm.mscàPersonal àCertificates à 删除颁发者是“Microsoft Intune MDM Device CA”的证书</p>
+<p>4.3  正常情况下，组策略在设备上下发成功后，使用对应的已同步到Microsoft Entra ID 的本地AD 账户登录到设备后，注册过程将在后台启动。如希望快速验证，可以使用如下的方法手动开始enrollment 进程。</p>
+<p>下载PSExec 工具，下载链接PsExec - Sysinternals | Microsoft Learn</p>
+<p>使用PSExec来以SYSTEM身份启动cmd 窗口。</p>
+<p>psexec /i /s cmd</p>
+<p>在cmd窗口中，输入以下命令：</p>
+<p>%windir%\system32\deviceenroller.exe /c /AutoEnrollMDM</p>
+<p>无法获取设备的主刷新令牌（AzureAdPrt 为空）</p>
+<p>检查方法：使用本地AD 账户登录设备，并在cmd 中运行dsregcmd /status，在SSO State 部分，检查AzureAdPrt是否为Yes。</p>
+<p>最近遇到两起，因为本地AD域名与Microsoft Entra ID 中验证的自定义域名不一致的问题，单独拿出来说一下。</p>
+<p>比如本地AD域名为abc.local（如截图中红框所示位置）, 但在Microsoft Entra ID 中验证的域名为abc.cn，那么就有可能会导致无法获取到AzureAdPrt，进而无法成功注册到Intune。</p>
+<p>这种情况下，可以在本地AD 中为在Microsoft Entra ID 中验证的自定义域名添加信任，然后找一个测试账户，将其UPN修改为在Microsoft Entra ID 中验证的自定义域名，之后可以登录自动同步周期（30分钟），或手动触发Microsoft Entra Connect增量同步(Powershell 命令Start-ADSyncSyncCycle -PolicyType Delta)，将修改同步到Microsoft Entra ID。</p>
+<p>搜索并打开Active Directory Domains and Truest àProperties à 输入Microsoft Entra ID 中验证的自定义域名 àAdd àOK</p>
+<p>搜索并打开Active Directory Users  and Computers (或在运中输入dsa.msc)à Users à 找到对应的测试用户à 右键à PropertiesàAccount à 点击域名后缀的下拉箭头，更换后缀à OK</p>
+<p>注4：根据我们的测试和其他工单的处理情况，此操作不会影响本地AD。</p>
+<p>如果重启或注销后重新登录，等待一段时间后，设备仍无法自动注册到Intune，检查dsregcmd /status 输出中AzureAdPrt仍为No ，可以尝试以管理员权限打开cmd ,然后运行dsregcmd /leaveà运行完成后在Microsoft Entra ID 检查设备是否会被自动删除，如果没有，请手动删除对应的设备à 重启设备à手动运行Microsoft Entra Connect 同步周期或等待下一个自动同步周期à 等设备被同步到Microsoft Entra ID à 观察dsregcmd /status 输出中AzureAD PRT 是否能变为Yes, 设备能否注册到Intune。</p></article>

@@ -1,0 +1,119 @@
+<article class="kb-article" data-title="Azure  da 网关和本地VPN设备Traffic Selectors不一致导致的无法建立协商"><h1>Azure  da 网关和本地VPN设备Traffic Selectors不一致导致的无法建立协商</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-07-07 14:22:06</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：VPN连接中断后，无法再次建立协商</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：VPN连接中断后，无法再次建立协商</li>
+</ul>
+<ul>
+<li>本地与azure vpn连接中断后，重新协商无法通过，两侧报错日志相同均为 “IPSEC_SEND_TS_MISMATCH”。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>xinyuefeng</li>
+</ul>
+<ul>
+<li>分享一个工单SR_2020051827544_[MS-LED]S2S VPN中断</li>
+</ul>
+<ul>
+<li>VpnGatewayPacketsInsightEventTable:</li>
+</ul>
+<ul>
+<li>1）TSI:0.0.0.0/0和TSR:0.0.0.0/0</li>
+</ul>
+<ul>
+<li>10.1.0.0/16 &lt;====&gt; 192.168.0.0/16</li>
+</ul>
+<ul>
+<li>10.1.0.0/16 &lt;====&gt; 172.16.0.0/16</li>
+</ul>
+<ul>
+<li>10.2.0.0/16 &lt;====&gt; 192.168.0.0/16</li>
+</ul>
+<ul>
+<li>10.2.0.0/16 &lt;====&gt; 172.16.0.0/16</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Vpn dashboard</li>
+</ul>
+<ul>
+<li>问题原因：由于Azure VPN 网关和本地VPN设备Traffic Selectors设置不一致导致的</li>
+</ul>
+<ul>
+<li>排查分析:</li>
+</ul>
+<ul>
+<li>“Azure VPN 网关Traffic Selectors 为TSI:0.0.0.0/0和TSR:0.0.0.0/0, 本地VPN设备Traffic Selectors为TSI:10.0.0.0/8和TSR:0.0.0.0/0”</li>
+</ul>
+<ul>
+<li>Azure VPN 网关支持两种Traffic Selectors，分别为</li>
+</ul>
+<ul>
+<li>2）All combinations of your on-premises network (local network gateway) prefixes to/from the Azure virtual network prefixes.例如本地地址空间为10.1.0.0/16 and 10.2.0.0/16, Azure 虚拟网络地址空间为192.168.0.0/16 and 172.16.0.0/16, 则Traffic Selectors 为</li>
+</ul>
+<ul>
+<li>当前本地VPN设备Traffic Selectors 为TSI:10.0.0.0/8和TSR:0.0.0.0/0 与以上两种均不匹配。</li>
+</ul>
+<ul>
+<li>当Azure VPN 网关协商创建QM Traffic Selectors TSI:0.0.0.0/0和TSR:0.0.0.0/0, 收到用户本地VPN 设备响应“Notify Message - Traffic Selectors Unacceptable”</li>
+</ul>
+<ul>
+<li>当Azure VPN 网关使用第2种  Traffic Selectors on-premises network (local network gateway) prefixes to/from the Azure virtual network prefixes 发送协商消息，收到本地VPN设备响应消息“Notify Message - No Additional SAs”</li>
+</ul>
+<ul>
+<li>当本地VPN设备主动发起Traffic Selector协商（TSI:10.0.0.0/8和TSR:0.0.0.0/0”），Azure VPN 网关接受协商请求协商成功。</li>
+</ul>
+<ul>
+<li>此工单中客户无法通过本地设备重置连接，因此通过Azure Portal 重置Azure VPN触发主备实例切换，在此过程中重新触发IKE/IPsec 协商，当本地VPN设备主动发起Traffic Selector协商时会重新建立IPsec 隧道成功。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>综合以上分析该问题是由于Azure VPN 网关和本地VPN设备Traffic Selectors设置不一致导致的。因此建议咨询Juniper 工程师尝试修改本地与Azure VPN IPsec 连接Traffic Selectors 设备。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/F79AE361" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/F79AE361</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/32438B19?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;BrkMooncake&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;91068fa8-f24d-4332-b469-3392561fb240&quot;},{&quot;query&quot;:&quot;//*[id=&#39;DeploymentId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;b6243f07400f4945adc4ca5d9a6abb53&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RoleInstance&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;IsPrimary&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RemoteIdentifier&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]&amp;globalStartTime=1589851503651&amp;globalEndTime=1589872260000&amp;pinGlobalTimeRange=true" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/32438B19?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;BrkMooncake&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;91068fa8-f24d-4332-b469-3392561fb240&quot;},{&quot;query&quot;:&quot;//*[id=&#39;DeploymentId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;b6243f07400f4945adc4ca5d9a6abb53&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RoleInstance&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;IsPrimary&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RemoteIdentifier&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]&amp;globalStartTime=1589851503651&amp;globalEndTime=1589872260000&amp;pinGlobalTimeRange=true</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>xinyuefeng</p>
+<p>分享一个工单SR_2020051827544_[MS-LED]S2S VPN中断</p>
+<p>VpnGatewayPacketsInsightEventTable:</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/F79AE361" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/F79AE361</a></p>
+<p>Vpn dashboard</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/32438B19?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;BrkMooncake&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;91068fa8-f24d-4332-b469-3392561fb240&quot;},{&quot;query&quot;:&quot;//*[id=&#39;DeploymentId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;b6243f07400f4945adc4ca5d9a6abb53&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RoleInstance&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;IsPrimary&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RemoteIdentifier&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]&amp;globalStartTime=1589851503651&amp;globalEndTime=1589872260000&amp;pinGlobalTimeRange=true" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/32438B19?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;BrkMooncake&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;91068fa8-f24d-4332-b469-3392561fb240&quot;},{&quot;query&quot;:&quot;//*[id=&#39;DeploymentId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;b6243f07400f4945adc4ca5d9a6abb53&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RoleInstance&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;IsPrimary&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;RemoteIdentifier&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]&amp;globalStartTime=1589851503651&amp;globalEndTime=1589872260000&amp;pinGlobalTimeRange=true</a></p>
+<p>问题现象：VPN连接中断后，无法再次建立协商</p>
+<p>问题原因：由于Azure VPN 网关和本地VPN设备Traffic Selectors设置不一致导致的</p>
+<p>排查分析:</p>
+<p>本地与azure vpn连接中断后，重新协商无法通过，两侧报错日志相同均为 “IPSEC_SEND_TS_MISMATCH”。</p>
+<p>“Azure VPN 网关Traffic Selectors 为TSI:0.0.0.0/0和TSR:0.0.0.0/0, 本地VPN设备Traffic Selectors为TSI:10.0.0.0/8和TSR:0.0.0.0/0”</p>
+<p>Azure VPN 网关支持两种Traffic Selectors，分别为</p>
+<p>1）TSI:0.0.0.0/0和TSR:0.0.0.0/0</p>
+<p>2）All combinations of your on-premises network (local network gateway) prefixes to/from the Azure virtual network prefixes.例如本地地址空间为10.1.0.0/16 and 10.2.0.0/16, Azure 虚拟网络地址空间为192.168.0.0/16 and 172.16.0.0/16, 则Traffic Selectors 为</p>
+<p>10.1.0.0/16 &lt;====&gt; 192.168.0.0/16</p>
+<p>10.1.0.0/16 &lt;====&gt; 172.16.0.0/16</p>
+<p>10.2.0.0/16 &lt;====&gt; 192.168.0.0/16</p>
+<p>10.2.0.0/16 &lt;====&gt; 172.16.0.0/16</p>
+<p>当前本地VPN设备Traffic Selectors 为TSI:10.0.0.0/8和TSR:0.0.0.0/0 与以上两种均不匹配。</p>
+<p>当Azure VPN 网关协商创建QM Traffic Selectors TSI:0.0.0.0/0和TSR:0.0.0.0/0, 收到用户本地VPN 设备响应“Notify Message - Traffic Selectors Unacceptable”</p>
+<p>当Azure VPN 网关使用第2种  Traffic Selectors on-premises network (local network gateway) prefixes to/from the Azure virtual network prefixes 发送协商消息，收到本地VPN设备响应消息“Notify Message - No Additional SAs”</p>
+<p>当本地VPN设备主动发起Traffic Selector协商（TSI:10.0.0.0/8和TSR:0.0.0.0/0”），Azure VPN 网关接受协商请求协商成功。</p>
+<p>此工单中客户无法通过本地设备重置连接，因此通过Azure Portal 重置Azure VPN触发主备实例切换，在此过程中重新触发IKE/IPsec 协商，当本地VPN设备主动发起Traffic Selector协商时会重新建立IPsec 隧道成功。</p>
+<p>综合以上分析该问题是由于Azure VPN 网关和本地VPN设备Traffic Selectors设置不一致导致的。因此建议咨询Juniper 工程师尝试修改本地与Azure VPN IPsec 连接Traffic Selectors 设备。</p></article>

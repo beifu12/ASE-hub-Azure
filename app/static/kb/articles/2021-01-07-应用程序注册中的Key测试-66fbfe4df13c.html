@@ -1,0 +1,135 @@
+<article class="kb-article" data-title="应用程序注册中的Key测试"><h1>应用程序注册中的Key测试</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-01-07 11:16:17</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>经过测试应用程序注册中的Key，可以保存任何形式的密钥字符串。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>经过测试应用程序注册中的Key，可以保存任何形式的密钥字符串。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>经过测试应用程序注册中的Key，可以保存任何形式的密钥字符串。</li>
+</ul>
+<ul>
+<li>如创建时指定密钥为123456</li>
+</ul>
+<ul>
+<li>$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($servicePrincipal.Secret)</li>
+</ul>
+<ul>
+<li>$pwddisplay = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)</li>
+</ul>
+<ul>
+<li>但上传证书到CDN中设置的key必须是44字符长度，可以使用如下方法生成随机的密钥，也可以随便写一个44字符的字符串。</li>
+</ul>
+<ul>
+<li>$aesManaged = New-Object &quot;System.Security.Cryptography.AesManaged&quot;</li>
+</ul>
+<ul>
+<li>#高级加密标准 (AES) 对称算法的管理类,提供的GenerateKey方法生成随机key。</li>
+</ul>
+<ul>
+<li>$aesManaged.GenerateKey()</li>
+</ul>
+<ul>
+<li>$aesManaged.Key</li>
+</ul>
+<ul>
+<li>#将随机key转换为Base64编码数据，长度44字符。</li>
+</ul>
+<ul>
+<li>$Password= [System.Convert]::ToBase64String($aesManaged.Key)</li>
+</ul>
+<ul>
+<li>$startDate = Get-Date</li>
+</ul>
+<ul>
+<li>$EndDate = $startDate.AddYears(2)</li>
+</ul>
+<ul>
+<li>$aadAppName = &quot;zhangapptest1&quot;</li>
+</ul>
+<ul>
+<li>#Create the 44-character key for CDN Vault</li>
+</ul>
+<ul>
+<li>$Password = &quot;aNqzYMkwfU3Bf+6VbF5idea8TA8D7gYPV51WI6+v4k80&quot;</li>
+</ul>
+<ul>
+<li>$SecureStringPassword = ConvertTo-SecureString -String $Password -AsPlainText -Force</li>
+</ul>
+<ul>
+<li>$servicePrincipal = New-AzureRMADServicePrincipal -DisplayName $aadAppName -Password $SecureStringPassword -EndDate $EndDate -StartDate $startDate</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如下是保存过程（分别使用Azure PowerShell，Azure CLI以及Azure Active Directory PowerShell，其中AAD PowerShell可以在已有的Service Principal中添加Key）：</li>
+</ul>
+<ul>
+<li>#Azure PowerShell</li>
+</ul>
+<ul>
+<li>#Azure CLI</li>
+</ul>
+<ul>
+<li>az ad sp create-for-rbac -n &quot;htpp://zhangapptest2&quot; --skip-assignment -p &quot;01234567890123456789012345678901234567891111&quot;</li>
+</ul>
+<ul>
+<li>#Azure Active Directory PowerShell</li>
+</ul>
+<ul>
+<li>Get-AzureADApplication -ObjectId &quot;3af79988-36c8-4e4f-af47-a8796eb69f2c&quot;</li>
+</ul>
+<ul>
+<li>New-AzureADApplicationPasswordCredential -ObjectId &quot;3af79988-36c8-4e4f-af47-a8796eb69f2c&quot; -Value &quot;ohnkXTgCqH682I8v4trXOc+a3d3W0uOUWMjbEwLxDos=&quot; -EndDate $EndDate -StartDate $startDate</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>将返回值$servicePrincipal.Secret转换为字符串查看，是我设置的密钥：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>$aadAppUrl = &quot;<a href="https://&quot;" target="_blank" rel="noopener">https://&quot;</a> + $aadAppName</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2018/12/23</p>
+<p>经过测试应用程序注册中的Key，可以保存任何形式的密钥字符串。</p>
+<p>如创建时指定密钥为123456</p>
+<p>将返回值$servicePrincipal.Secret转换为字符串查看，是我设置的密钥：</p>
+<p>$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($servicePrincipal.Secret)</p>
+<p>$pwddisplay = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)</p>
+<p>但上传证书到CDN中设置的key必须是44字符长度，可以使用如下方法生成随机的密钥，也可以随便写一个44字符的字符串。</p>
+<p>$aesManaged = New-Object &quot;System.Security.Cryptography.AesManaged&quot;</p>
+<p>#高级加密标准 (AES) 对称算法的管理类,提供的GenerateKey方法生成随机key。</p>
+<p>$aesManaged.GenerateKey()</p>
+<p>$aesManaged.Key</p>
+<p>#将随机key转换为Base64编码数据，长度44字符。</p>
+<p>$Password= [System.Convert]::ToBase64String($aesManaged.Key)</p>
+<p>如下是保存过程（分别使用Azure PowerShell，Azure CLI以及Azure Active Directory PowerShell，其中AAD PowerShell可以在已有的Service Principal中添加Key）：</p>
+<p>#Azure PowerShell</p>
+<p>$startDate = Get-Date</p>
+<p>$EndDate = $startDate.AddYears(2)</p>
+<p>$aadAppName = &quot;zhangapptest1&quot;</p>
+<p>#Create the 44-character key for CDN Vault</p>
+<p>$Password = &quot;aNqzYMkwfU3Bf+6VbF5idea8TA8D7gYPV51WI6+v4k80&quot;</p>
+<p>$aadAppUrl = &quot;<a href="https://&quot;" target="_blank" rel="noopener">https://&quot;</a> + $aadAppName</p>
+<p>$SecureStringPassword = ConvertTo-SecureString -String $Password -AsPlainText -Force</p>
+<p>$servicePrincipal = New-AzureRMADServicePrincipal -DisplayName $aadAppName -Password $SecureStringPassword -EndDate $EndDate -StartDate $startDate</p>
+<p>#Azure CLI</p>
+<p>az ad sp create-for-rbac -n &quot;htpp://zhangapptest2&quot; --skip-assignment -p &quot;01234567890123456789012345678901234567891111&quot;</p>
+<p>#Azure Active Directory PowerShell</p>
+<p>Get-AzureADApplication -ObjectId &quot;3af79988-36c8-4e4f-af47-a8796eb69f2c&quot;</p>
+<p>New-AzureADApplicationPasswordCredential -ObjectId &quot;3af79988-36c8-4e4f-af47-a8796eb69f2c&quot; -Value &quot;ohnkXTgCqH682I8v4trXOc+a3d3W0uOUWMjbEwLxDos=&quot; -EndDate $EndDate -StartDate $startDate</p></article>

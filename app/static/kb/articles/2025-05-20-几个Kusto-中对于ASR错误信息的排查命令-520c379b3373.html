@@ -1,0 +1,152 @@
+<article class="kb-article" data-title="几个Kusto 中对于ASR错误信息的排查命令"><h1>几个Kusto 中对于ASR错误信息的排查命令</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RecoveryService</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-05-20 11:04:20</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>| where Message contains &quot;GPM-ZIJIN-SQL&quot; and Message contains &quot;ErrorMessage&quot;</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>| where Message contains &quot;GPM-ZIJIN-SQL&quot; and Message contains &quot;ErrorMessage&quot;</li>
+</ul>
+<ul>
+<li>// ASR errors</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, p.affectedResourceName, p.timeOfOccurence, p.description, p.healthErrors</li>
+</ul>
+<ul>
+<li>| mv-expand errors = p_healthErrors</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, p_affectedResourceName, p_timeOfOccurence, p_description, errors.creationTime, errors.errorCode, errors.errorMessage</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang Wenxin</li>
+</ul>
+<ul>
+<li>//ASR Replication Events</li>
+</ul>
+<ul>
+<li>SRSShoeboxEvent</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt;= ago(1d)</li>
+</ul>
+<ul>
+<li>| where resourceId contains &quot;AGEM-ASR-VAULT保管库名称&quot; and resourceId contains &quot;5D24C88A-E104-419A-A9CD-B2563DED04D8订阅ID&quot;</li>
+</ul>
+<ul>
+<li>| where properties contains &quot;GEM-Itop-app-01复制项名称&quot;</li>
+</ul>
+<ul>
+<li>| top 10 by PreciseTimeStamp</li>
+</ul>
+<ul>
+<li>| project Time= PreciseTimeStamp, resourceId ,properties</li>
+</ul>
+<ul>
+<li>这里可以查找到2个信息</li>
+</ul>
+<ul>
+<li>和用户处报的错误信息</li>
+</ul>
+<ul>
+<li>数据复制错误信息可以参考如下</li>
+</ul>
+<ul>
+<li>SRSDataEvent</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt; datetime(2020-09-10 00:00:00.000)</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &lt; datetime(2020-09-11 00:00:00.000)</li>
+</ul>
+<ul>
+<li>| where SubscriptionId contains &quot;5d24c88a-e104-419a-a9cd-b2563ded04d8 订阅id&quot;</li>
+</ul>
+<ul>
+<li>| top 3 by PreciseTimeStamp</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP +8h, SubscriptionId, ActivityId, Message, ServiceName</li>
+</ul>
+<ul>
+<li>| where resourceId startswith &quot;/SUBSCRIPTIONS/5d24c88a-e104-419a-a9cd-b2563ded04d8&quot; // Insert your subscription id here</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt; datetime(2020-08-13 00:00:00.000)</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &lt; datetime(2020-09-14 00:00:00.000)</li>
+</ul>
+<ul>
+<li>| where properties contains &quot;ServerHealth&quot;</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, p = parsejson(properties)</li>
+</ul>
+<ul>
+<li>//| where p_affectedResourceName contains &quot;GPM-ZIJIN-MYSQL&quot;</li>
+</ul>
+<ul>
+<li>| order by PreciseTimeStamp desc</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在这里可以看到ASC中的 ASR replication Event</li>
+</ul>
+<ul>
+<li>cluster(&#39;asradxclusmc.chinanorth2.kusto.chinacloudapi.cn&#39;).database(&#39;ASRKustoDB&#39;).</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>另外后来和Xuzhou要的命令如下供参考也是查询 表SRSShoeboxEvent中字段properties的信息，实际使用中可能会漏掉一些信息：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang Wenxin</p>
+<p>//ASR Replication Events</p>
+<p>SRSShoeboxEvent</p>
+<p>| where PreciseTimeStamp &gt;= ago(1d)</p>
+<p>| where resourceId contains &quot;AGEM-ASR-VAULT保管库名称&quot; and resourceId contains &quot;5D24C88A-E104-419A-A9CD-B2563DED04D8订阅ID&quot;</p>
+<p>| where properties contains &quot;GEM-Itop-app-01复制项名称&quot;</p>
+<p>| top 10 by PreciseTimeStamp</p>
+<p>| project Time= PreciseTimeStamp, resourceId ,properties</p>
+<p>这里可以查找到2个信息</p>
+<p>在这里可以看到ASC中的 ASR replication Event</p>
+<p>和用户处报的错误信息</p>
+<p>数据复制错误信息可以参考如下</p>
+<p>SRSDataEvent</p>
+<p>| where PreciseTimeStamp &gt; datetime(2020-09-10 00:00:00.000)</p>
+<p>| where PreciseTimeStamp &lt; datetime(2020-09-11 00:00:00.000)</p>
+<p>| where SubscriptionId contains &quot;5d24c88a-e104-419a-a9cd-b2563ded04d8 订阅id&quot;</p>
+<p>| where Message contains &quot;GPM-ZIJIN-SQL&quot; and Message contains &quot;ErrorMessage&quot;</p>
+<p>| top 3 by PreciseTimeStamp</p>
+<p>| project TIMESTAMP +8h, SubscriptionId, ActivityId, Message, ServiceName</p>
+<p>另外后来和Xuzhou要的命令如下供参考也是查询 表SRSShoeboxEvent中字段properties的信息，实际使用中可能会漏掉一些信息：</p>
+<p>// ASR errors</p>
+<p>cluster(&#39;asradxclusmc.chinanorth2.kusto.chinacloudapi.cn&#39;).database(&#39;ASRKustoDB&#39;).</p>
+<p>| where resourceId startswith &quot;/SUBSCRIPTIONS/5d24c88a-e104-419a-a9cd-b2563ded04d8&quot; // Insert your subscription id here</p>
+<p>| where PreciseTimeStamp &gt; datetime(2020-08-13 00:00:00.000)</p>
+<p>| where PreciseTimeStamp &lt; datetime(2020-09-14 00:00:00.000)</p>
+<p>| where properties contains &quot;ServerHealth&quot;</p>
+<p>| project PreciseTimeStamp, p = parsejson(properties)</p>
+<p>| project PreciseTimeStamp, p.affectedResourceName, p.timeOfOccurence, p.description, p.healthErrors</p>
+<p>| mv-expand errors = p_healthErrors</p>
+<p>//| where p_affectedResourceName contains &quot;GPM-ZIJIN-MYSQL&quot;</p>
+<p>| project PreciseTimeStamp, p_affectedResourceName, p_timeOfOccurence, p_description, errors.creationTime, errors.errorCode, errors.errorMessage</p>
+<p>| order by PreciseTimeStamp desc</p></article>

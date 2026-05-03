@@ -1,0 +1,301 @@
+<article class="kb-article" data-title="使用服务账号访问AKS"><h1>使用服务账号访问AKS</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-09-09 13:48:37</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>AKS RBAC设置如下</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>AKS RBAC设置如下</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>AKS RBAC设置如下</li>
+</ul>
+<ul>
+<li>1、获取AKS信息</li>
+</ul>
+<ul>
+<li>#获取当前连接的K8S集群的集群名称</li>
+</ul>
+<ul>
+<li>#获取当前连接的K8S集群的API地址</li>
+</ul>
+<ul>
+<li>2、创建K8S RBAC</li>
+</ul>
+<ul>
+<li>echo &#39;&#39;&#39;</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: ServiceAccount</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: readonly</li>
+</ul>
+<ul>
+<li>namespace: kube-system</li>
+</ul>
+<ul>
+<li>---</li>
+</ul>
+<ul>
+<li>apiVersion: rbac.authorization.k8s.io/v1</li>
+</ul>
+<ul>
+<li>kind: ClusterRole</li>
+</ul>
+<ul>
+<li>name: custom-cluster-readonly</li>
+</ul>
+<ul>
+<li>rules:</li>
+</ul>
+<ul>
+<li>- apiGroups: [&quot;*&quot;]</li>
+</ul>
+<ul>
+<li>resources: [&quot;*&quot;]</li>
+</ul>
+<ul>
+<li>verbs: [&quot;get&quot;,&quot;list&quot;,&quot;watch&quot;]</li>
+</ul>
+<ul>
+<li>resources: [&quot;pods/exec&quot;]</li>
+</ul>
+<ul>
+<li>verbs: [&quot;get&quot;,&quot;list&quot;,&quot;wateh&quot;,&quot;create&quot;]</li>
+</ul>
+<ul>
+<li>kind: ClusterRoleBinding</li>
+</ul>
+<ul>
+<li>name: custom-clusterrolebingding-readonly</li>
+</ul>
+<ul>
+<li>subjects:</li>
+</ul>
+<ul>
+<li>- kind: ServiceAccount</li>
+</ul>
+<ul>
+<li>roleRef:</li>
+</ul>
+<ul>
+<li>apiGroup: rbac.authorization.k8s.io</li>
+</ul>
+<ul>
+<li>&#39;&#39;&#39;&gt; RBAC.yaml</li>
+</ul>
+<ul>
+<li>3、获取Token</li>
+</ul>
+<ul>
+<li>kind: Secret</li>
+</ul>
+<ul>
+<li>annotations:</li>
+</ul>
+<ul>
+<li>kubernetes.io/service-account.name: &quot;readonly&quot;</li>
+</ul>
+<ul>
+<li>type: kubernetes.io/service-account-token</li>
+</ul>
+<ul>
+<li>&#39;&#39;&#39; &gt; token.yaml</li>
+</ul>
+<ul>
+<li>4、生成kubeconfig 文件</li>
+</ul>
+<ul>
+<li>#打印token信息，这个等会产生kubeconfig文件的时候需要用到</li>
+</ul>
+<ul>
+<li>#生成ca.crt文件</li>
+</ul>
+<ul>
+<li>#这里的clustername和server地址就是文章一开始获取的clustername和api地址</li>
+</ul>
+<ul>
+<li># Or if tls not needed, replace --certificate-authority and --embed-certs with</li>
+</ul>
+<ul>
+<li>--embed-certs=true \</li>
+</ul>
+<ul>
+<li>--certificate-authority=ca.crt \</li>
+</ul>
+<ul>
+<li>--server=$apiserver \</li>
+</ul>
+<ul>
+<li>--kubeconfig=~/.kube/kudev-readonly-config</li>
+</ul>
+<ul>
+<li>#--token对应前面打印的token信息，可以使用$token 变量</li>
+</ul>
+<ul>
+<li>#这里的clustername就是文章一开始获取的clustername</li>
+</ul>
+<ul>
+<li>5、测试访问</li>
+</ul>
+<ul>
+<li>#测试</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#查看token创建是否成功</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>kubectl config get-contexts | grep &quot;*&quot; | awk &#39;{print $2}&#39;</li>
+</ul>
+<ul>
+<li>kubectl cluster-info | grep &quot;Kubernetes control plane&quot; | awk &#39;{print $NF}&#39;</li>
+</ul>
+<ul>
+<li>kubectl apply -f RBAC.yaml</li>
+</ul>
+<ul>
+<li>kubectl apply -f token.yaml</li>
+</ul>
+<ul>
+<li>kubectl describe serviceaccount -n kube-system readonly</li>
+</ul>
+<ul>
+<li>kubectl get secret -n kube-system readonly -o &quot;jsonpath={.data.token}&quot; | base64 -d</li>
+</ul>
+<ul>
+<li>kubectl get secret -n kube-system readonly -o &quot;jsonpath={.data[&#39;ca\.crt&#39;]}&quot; | base64 -d &gt; ca.crt</li>
+</ul>
+<ul>
+<li>kubectl config set-cluster $clustername \</li>
+</ul>
+<ul>
+<li>kubectl config set-credentials readonly --token=$token --kubeconfig=~/.kube/kudev-readonly-config</li>
+</ul>
+<ul>
+<li>kubectl config set-context readonly --cluster=$clustername --user=readonly --kubeconfig=~/.kube/kudev-readonly-config</li>
+</ul>
+<ul>
+<li>kubectl config use-context readonly --kubeconfig=~/.kube/kudev-readonly-config</li>
+</ul>
+<ul>
+<li>kubectl --kubeconfig=~/.kube/kudev-readonly-config get pods</li>
+</ul>
+<ul>
+<li>kubectl --kubeconfig=~/.kube/kudev-readonly-config  delete pods web-0</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>clustername=<code>kubectl config get-contexts | grep &quot;*&quot; | awk &#39;{print $2}&#39;</code></li>
+</ul>
+<ul>
+<li>apiserver=<code>kubectl cluster-info | grep &quot;Kubernetes control plane&quot; | awk &#39;{print $NF}&#39;</code></li>
+</ul>
+<ul>
+<li>token=<code>kubectl get secret -n kube-system readonly -o &quot;jsonpath={.data.token}&quot; | base64 -d</code></li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>#特别说明RBAC中包含了EXEC POD的权限，就是可以通过exec命今进入到pods中查看日志</li>
+</ul>
+<ul>
+<li>#注意配置文件位置如果不能正确指定在windows 中可以使用./.kube/kudev-readonly-config，测试时为了方便建议使用新的config 文件，不要修改默认的config</li>
+</ul>
+<ul>
+<li>#将dev-readonly-config文件设置为使用readonly</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>#检查yaml <a href="http://nodeca.github.io/js-yaml/" target="_blank" rel="noopener">http://nodeca.github.io/js-yaml/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/02/06</p>
+<p>AKS RBAC设置如下</p>
+<p>1、获取AKS信息</p>
+<p>#获取当前连接的K8S集群的集群名称</p>
+<p>kubectl config get-contexts | grep &quot;*&quot; | awk &#39;{print $2}&#39;</p>
+<p>clustername=<code>kubectl config get-contexts | grep &quot;*&quot; | awk &#39;{print $2}&#39;</code></p>
+<p>#获取当前连接的K8S集群的API地址</p>
+<p>kubectl cluster-info | grep &quot;Kubernetes control plane&quot; | awk &#39;{print $NF}&#39;</p>
+<p>apiserver=<code>kubectl cluster-info | grep &quot;Kubernetes control plane&quot; | awk &#39;{print $NF}&#39;</code></p>
+<p>2、创建K8S RBAC</p>
+<p>#特别说明RBAC中包含了EXEC POD的权限，就是可以通过exec命今进入到pods中查看日志</p>
+<p>echo &#39;&#39;&#39;</p>
+<p>apiVersion: v1</p>
+<p>kind: ServiceAccount</p>
+<p>metadata:</p>
+<p>name: readonly</p>
+<p>namespace: kube-system</p>
+<p>---</p>
+<p>apiVersion: rbac.authorization.k8s.io/v1</p>
+<p>kind: ClusterRole</p>
+<p>name: custom-cluster-readonly</p>
+<p>rules:</p>
+<ul>
+<li>apiGroups: [&quot;*&quot;]</li>
+</ul>
+<p>resources: [&quot;*&quot;]</p>
+<p>verbs: [&quot;get&quot;,&quot;list&quot;,&quot;watch&quot;]</p>
+<p>resources: [&quot;pods/exec&quot;]</p>
+<p>verbs: [&quot;get&quot;,&quot;list&quot;,&quot;wateh&quot;,&quot;create&quot;]</p>
+<p>kind: ClusterRoleBinding</p>
+<p>name: custom-clusterrolebingding-readonly</p>
+<p>subjects:</p>
+<ul>
+<li>kind: ServiceAccount</li>
+</ul>
+<p>roleRef:</p>
+<p>apiGroup: rbac.authorization.k8s.io</p>
+<p>&#39;&#39;&#39;&gt; RBAC.yaml</p>
+<p>kubectl apply -f RBAC.yaml</p>
+<p>#检查yaml <a href="http://nodeca.github.io/js-yaml/" target="_blank" rel="noopener">http://nodeca.github.io/js-yaml/</a></p>
+<p>3、获取Token</p>
+<p>kind: Secret</p>
+<p>annotations:</p>
+<p>kubernetes.io/service-account.name: &quot;readonly&quot;</p>
+<p>type: kubernetes.io/service-account-token</p>
+<p>&#39;&#39;&#39; &gt; token.yaml</p>
+<p>kubectl apply -f token.yaml</p>
+<p>#查看token创建是否成功</p>
+<p>kubectl describe serviceaccount -n kube-system readonly</p>
+<p>4、生成kubeconfig 文件</p>
+<p>#打印token信息，这个等会产生kubeconfig文件的时候需要用到</p>
+<p>kubectl get secret -n kube-system readonly -o &quot;jsonpath={.data.token}&quot; | base64 -d</p>
+<p>token=<code>kubectl get secret -n kube-system readonly -o &quot;jsonpath={.data.token}&quot; | base64 -d</code></p>
+<p>#生成ca.crt文件</p>
+<p>kubectl get secret -n kube-system readonly -o &quot;jsonpath={.data[&#39;ca\.crt&#39;]}&quot; | base64 -d &gt; ca.crt</p>
+<p>#这里的clustername和server地址就是文章一开始获取的clustername和api地址</p>
+<h1>Or if tls not needed, replace --certificate-authority and --embed-certs with</h1>
+<p>#注意配置文件位置如果不能正确指定在windows 中可以使用./.kube/kudev-readonly-config，测试时为了方便建议使用新的config 文件，不要修改默认的config</p>
+<p>kubectl config set-cluster $clustername \</p>
+<p>--embed-certs=true \</p>
+<p>--certificate-authority=ca.crt \</p>
+<p>--server=$apiserver \</p>
+<p>--kubeconfig=~/.kube/kudev-readonly-config</p>
+<p>#--token对应前面打印的token信息，可以使用$token 变量</p>
+<p>kubectl config set-credentials readonly --token=$token --kubeconfig=~/.kube/kudev-readonly-config</p>
+<p>#这里的clustername就是文章一开始获取的clustername</p>
+<p>kubectl config set-context readonly --cluster=$clustername --user=readonly --kubeconfig=~/.kube/kudev-readonly-config</p>
+<p>#将dev-readonly-config文件设置为使用readonly</p>
+<p>kubectl config use-context readonly --kubeconfig=~/.kube/kudev-readonly-config</p>
+<p>5、测试访问</p>
+<p>#测试</p>
+<p>kubectl --kubeconfig=~/.kube/kudev-readonly-config get pods</p>
+<p>kubectl --kubeconfig=~/.kube/kudev-readonly-config  delete pods web-0</p></article>

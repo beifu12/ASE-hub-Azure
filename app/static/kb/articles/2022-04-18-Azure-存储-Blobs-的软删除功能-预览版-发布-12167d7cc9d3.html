@@ -1,0 +1,146 @@
+<article class="kb-article" data-title="Azure 存储 Blobs 的软删除功能（预览版）发布"><h1>Azure 存储 Blobs 的软删除功能（预览版）发布</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: 平台信息</li>
+<li>最近修改: 2022-04-18 10:45:19</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-soft-delete" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-soft-delete</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-soft-delete" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-soft-delete</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>是否应该使用软删除？</li>
+</ul>
+<ul>
+<li>常见问题</li>
+</ul>
+<ul>
+<li>哪种存储类型可以使用软删除？</li>
+</ul>
+<ul>
+<li>目前，软删除仅适用于 blob（对象）存储。</li>
+</ul>
+<ul>
+<li>软删除是否适用于所有存储帐户类型？</li>
+</ul>
+<ul>
+<li>是的，软删除适用于 blob 存储帐户以及通用存储帐户中的 blob。 这同时适用于标准和高级帐户。 软删除不适用于托管磁盘。</li>
+</ul>
+<ul>
+<li>软删除是否适用于所有存储层？</li>
+</ul>
+<ul>
+<li>是的，软删除适用于所有存储层，包括热、冷和存档层。 但是，软删除对存档层中的 blob 不提供覆盖保护。</li>
+</ul>
+<ul>
+<li>高级存储帐户每个 blob 的快照上限为 100.软删除快照是否计入此限制？</li>
+</ul>
+<ul>
+<li>不，软删除快照不记入此限制。</li>
+</ul>
+<ul>
+<li>是否可以对现有存储帐户启用软删除？</li>
+</ul>
+<ul>
+<li>可以，对现有和新存储帐户均可配置软删除。</li>
+</ul>
+<ul>
+<li>如果在启用软删除的情况下删除整个帐户或容器，是否会保存所有相关 blob？</li>
+</ul>
+<ul>
+<li>不会，如果删除整个帐户或容器，将永久删除所有相关 blob。 若要了解如何防止意外删除存储帐户，请参阅 Azure 资源管理器文章锁定资源以防止意外更改。</li>
+</ul>
+<ul>
+<li>软删除数据属于存储帐户总容量的一部分。 有关跟踪和监视存储容量的详细信息，请参阅存储分析一文。</li>
+</ul>
+<ul>
+<li>如果关闭软删除，是否仍然能够访问软删除数据？</li>
+</ul>
+<ul>
+<li>可以，关闭软删除后，仍能访问和恢复未过期的软删除数据。</li>
+</ul>
+<ul>
+<li>能否读取和复制 blob 的软删除快照？</li>
+</ul>
+<ul>
+<li>可以，但必须首先对该 blob 调用撤销删除。</li>
+</ul>
+<ul>
+<li>软删除是否适用于所有 blob 类型？</li>
+</ul>
+<ul>
+<li>是的，软删除适用于块 Blob、追加 Blob 和页 Blob。</li>
+</ul>
+<ul>
+<li>软删除是否适用于虚拟机磁盘？</li>
+</ul>
+<ul>
+<li>软删除适用于高级和标准非托管磁盘。 软删除只能帮助恢复由“删除 Blob”、“放置 Blob”、“放置块列表”、“放置块”和“复制 Blob”删除的数据。 通过调用放置页覆盖的数据不可恢复。</li>
+</ul>
+<ul>
+<li>是否需要更改现有应用程序才能使用软删除？</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>能否查看已删除数据的容量指标？</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>如果应用程序或其他存储帐户用户可能意外修改或删除数据，则建议启用软删除。 作为数据保护策略的一部分，软删除可防止数据意外丢失。</li>
+</ul>
+<ul>
+<li>无论使用何种 API 版本，均可以使用软删除。 但是，若要列出和恢复软删除 blob 和 blob 快照，则需要使用 2017-07-29 版存储服务 REST API或更高版本。 一般情况下，无论是否使用此功能，我们通常均建议使用最新版本。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-soft-delete" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-soft-delete</a></li>
+</ul>
+<ul>
+<li><a href="https://www.azure.cn/blog/2018/04/13/Soft-delete-for-Azure-Storage-Blobs-now-in-public-preview" target="_blank" rel="noopener">https://www.azure.cn/blog/2018/04/13/Soft-delete-for-Azure-Storage-Blobs-now-in-public-preview</a></li>
+</ul>
+<ul>
+<li>来自 &lt;<a href="https://docs.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-soft-delete&gt;" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-soft-delete&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-soft-delete" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-soft-delete</a></p>
+<p><a href="https://www.azure.cn/blog/2018/04/13/Soft-delete-for-Azure-Storage-Blobs-now-in-public-preview" target="_blank" rel="noopener">https://www.azure.cn/blog/2018/04/13/Soft-delete-for-Azure-Storage-Blobs-now-in-public-preview</a></p>
+<p>是否应该使用软删除？</p>
+<p>如果应用程序或其他存储帐户用户可能意外修改或删除数据，则建议启用软删除。 作为数据保护策略的一部分，软删除可防止数据意外丢失。</p>
+<p>常见问题</p>
+<p>哪种存储类型可以使用软删除？</p>
+<p>目前，软删除仅适用于 blob（对象）存储。</p>
+<p>软删除是否适用于所有存储帐户类型？</p>
+<p>是的，软删除适用于 blob 存储帐户以及通用存储帐户中的 blob。 这同时适用于标准和高级帐户。 软删除不适用于托管磁盘。</p>
+<p>软删除是否适用于所有存储层？</p>
+<p>是的，软删除适用于所有存储层，包括热、冷和存档层。 但是，软删除对存档层中的 blob 不提供覆盖保护。</p>
+<p>高级存储帐户每个 blob 的快照上限为 100.软删除快照是否计入此限制？</p>
+<p>不，软删除快照不记入此限制。</p>
+<p>是否可以对现有存储帐户启用软删除？</p>
+<p>可以，对现有和新存储帐户均可配置软删除。</p>
+<p>如果在启用软删除的情况下删除整个帐户或容器，是否会保存所有相关 blob？</p>
+<p>不会，如果删除整个帐户或容器，将永久删除所有相关 blob。 若要了解如何防止意外删除存储帐户，请参阅 Azure 资源管理器文章锁定资源以防止意外更改。</p>
+<p>能否查看已删除数据的容量指标？</p>
+<p>软删除数据属于存储帐户总容量的一部分。 有关跟踪和监视存储容量的详细信息，请参阅存储分析一文。</p>
+<p>如果关闭软删除，是否仍然能够访问软删除数据？</p>
+<p>可以，关闭软删除后，仍能访问和恢复未过期的软删除数据。</p>
+<p>能否读取和复制 blob 的软删除快照？</p>
+<p>可以，但必须首先对该 blob 调用撤销删除。</p>
+<p>软删除是否适用于所有 blob 类型？</p>
+<p>是的，软删除适用于块 Blob、追加 Blob 和页 Blob。</p>
+<p>软删除是否适用于虚拟机磁盘？</p>
+<p>软删除适用于高级和标准非托管磁盘。 软删除只能帮助恢复由“删除 Blob”、“放置 Blob”、“放置块列表”、“放置块”和“复制 Blob”删除的数据。 通过调用放置页覆盖的数据不可恢复。</p>
+<p>是否需要更改现有应用程序才能使用软删除？</p>
+<p>无论使用何种 API 版本，均可以使用软删除。 但是，若要列出和恢复软删除 blob 和 blob 快照，则需要使用 2017-07-29 版存储服务 REST API或更高版本。 一般情况下，无论是否使用此功能，我们通常均建议使用最新版本。</p>
+<p>来自 &lt;<a href="https://docs.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-soft-delete&gt;" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-soft-delete&gt;</a></p></article>

@@ -1,0 +1,345 @@
+<article class="kb-article" data-title="DPM Synchronization issues"><h1>DPM Synchronization issues</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-04-02 10:39:29</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>This TSG was created to work around a known issue for DPM / MABS telemetry failure.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>This TSG was created to work around a known issue for DPM / MABS telemetry failure.</li>
+</ul>
+<ul>
+<li>Issue</li>
+</ul>
+<ul>
+<li>//This will show the failure</li>
+</ul>
+<ul>
+<li>CMGPSyncStatsEvent | where TIMESTAMP &gt;= ago(90d) //and ErrorCode &lt;&gt; &quot;OK&quot; and ErrorCode &lt;&gt; &quot;SyncSuccess&quot; and ErrorCode &lt;&gt; &quot;Nothing to sync in this window&quot; and ErrorCode &lt;&gt; &quot;Agent Version refresh thread Created&quot; | where ResourceId == &quot;XXX&quot; and ContainerId == &quot;XXX&quot; | project TIMESTAMP, EventName, ContainerType, ErrorCode, OperationType, SyncGroupName  | order by TIMESTAMP desc</li>
+</ul>
+<ul>
+<li>CMGPSyncStatsEvent | where TIMESTAMP &gt;= ago(90d) //and ErrorCode &lt;&gt; &quot;OK&quot; and ErrorCode &lt;&gt; &quot;SyncSuccess&quot; and ErrorCode &lt;&gt; &quot;Nothing to sync in this window&quot; and ErrorCode &lt;&gt; &quot;Agent Version refresh thread Created&quot; | where ResourceId == &quot;XXX&quot; and ContainerId == &quot;XXX&quot; | project TIMESTAMP, EventName, ContainerType, ErrorCode, OperationType, SyncGroupName | order by TIMESTAMP desc</li>
+</ul>
+<ul>
+<li>CMBMSSyncTEEWFStats |where CompanyId == &quot;5529118379336684454&quot; and ContainerId == &quot;46410&quot; | project TIMESTAMP, RequestId, TaskId, SubscriptionId, OperationName ,ErrorCode | order by TIMESTAMP desc</li>
+</ul>
+<ul>
+<li>TIMESTAMP EventName ContainerType ErrorCode OperationType SyncGroupName 2021-04-16 14:05:30.7878361 CMGPSyncStatsEvent DPMVenus SyncSuccess sync JobSyncGroup 2021-04-16 14:05:30.5492705 CMGPSyncStatsEvent DPMVenus OK getSyncObjectsOperationStatus JobSyncGroup 2021-04-16 13:37:22.8770049 CMGPSyncStatsEvent DPMVenus SyncSuccess sync DSPSDiskSyncGroup</li>
+</ul>
+<ul>
+<li>Example of a failure below.</li>
+</ul>
+<ul>
+<li>TIMESTAMP EventName ContainerType ErrorCode OperationType SyncGroupName 2021-04-16 13:50:12.2726643 CMGPSyncStatsEvent DPMVenus ErrorInGettingSyncDataFromMARSAgent sync DSPSDiskSyncGroup 2021-04-16 13:49:13.7993808 CMGPSyncStatsEvent DPMVenus BMSAgentRetryableError sync JobSyncGroup</li>
+</ul>
+<ul>
+<li>19D0       1808       06/12     04:42:41.822                 83            PSSyncProvider.cs(146)                                                         WARNING                 {ObjectType= DSPSDiskSyncGroup}{Operation = Sync} 19D0       1808       06/12     04:42:41.822                 83            PSSyncProvider.cs(146)                                                         WARNING              } 19D0       1808       06/12     04:42:41.822                 83            PSSyncProvider.cs(146)                                                         WARNING                                                FMBlock: Executing retry policy | Params: {CurrentAttempt = 1}{MaxAttempts = 5}{BackOffIntervalInSec = 6}{OperationCode = GatewayProviderSyncGroup}{Retry policy id = 1} 19D0       2BE0       06/12     04:42:48.793                 83            PSSyncProvider.cs(146)                                                         WARNING                                                FMBlock: FM exception caught | Params: {OperationCode = GatewayProviderSyncGroup}{OperationStartTime = 12/06/2020 04:42:48}{FMExceptionDetail = FMException: [ErrorCode:CloudTrUnknownExceptionError, DetailedCode:0, Source:None, Message:] 19D0       2BE0       06/12     04:42:48.793                 83            PSSyncProvider.cs(146)                                                         WARNING                 {ObjectType = AlertSyncGroup}{Operation = Sync} 19D0       2BE0       06/12     04:42:48.793                 83            PSSyncProvider.cs(146)                                                         WARNING              } 19D0       2BE0       06/12     04:42:48.793                 83            PSSyncProvider.cs(146)                                                         NORMAL                                                  FMBlock: No retry policy specified | Params: {ErrorCode = CloudTrUnknownExceptionError}</li>
+</ul>
+<ul>
+<li>The first value for tbl_AM_InstalledAgent is InstallID. This value is manually added. This mean you can generate a value based on another InstallID value but cannot be duplicated.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Manideep Gattu</li>
+</ul>
+<ul>
+<li>Nov 18, 2022</li>
+</ul>
+<ul>
+<li>Customer is not able to see some data sources which are being backup from MABS, DPM 2016 or 2019 on the Recovery Services Vault.</li>
+</ul>
+<ul>
+<li>We received some cases, where DPM Data sources appear to be mis matched on service side. As result data sources are not visible on the Recovery Services Vault due the negative impact this create on the gateway service which will upload telemetry data to the Recovery Services Vault every 30 minutes. Below the Service Name which can be found on the services.msc.</li>
+</ul>
+<ul>
+<li>We do fail on when BMSAgentObjectsResync call which is done for DSPSDiskSyncGroup, executed from Artifacts, from the default MARS Agent default path or other.</li>
+</ul>
+<ul>
+<li>This is part of BMS and it can fail if Data Source operation such as Data Source ID, PS, ObjectID or overall information about usedDiskSpace, allocatedSpace, storageEntity.totalspace, availableDiskSpace, diskcount also fails to be added on service side.</li>
+</ul>
+<ul>
+<li>In this case the PS1 files will try to get data from DPM. As we know every operation DPM does will store this on a SQL Database which means in order to pass this information which will be retrieved from the PS1 files, the data is missing from the DPM DB. As negative side effect this will fail.</li>
+</ul>
+<ul>
+<li>As work around we will need to perform an insert on the table tbl_AM_InstalledAgent which contains a dependence from tbl_AM_Server.</li>
+</ul>
+<ul>
+<li>Since the telemetry system after PS1 execution is trying to find Data source ID which depends on a Server ID on table tbl_AM_Server and dependency tbl_AM_InstalledAgent this will fail as explained above.</li>
+</ul>
+<ul>
+<li>Grabbed task Id from 07-06-2020 -&gt; 64f19102-9681-46ee-a873-c3113c35b123</li>
+</ul>
+<ul>
+<li>If we search by telemetry service from DPM Perspective it doesn’t tell me much: find /i &quot;MABTelemetryService&quot; DPMA*.* &gt; telemtry_dpm.txt</li>
+</ul>
+<ul>
+<li>C:\Users\tolopes\OneDrive - Microsoft\share\120060824003373\0e44d5db-59bc-4d23-8699-7e6b460c160c\CBENGINE&gt;find /i &quot;PSSyncProvider&quot; Gatewayprovider*.* &gt; PSSyncProvider.txt</li>
+</ul>
+<ul>
+<li>We fail for DSPSDiskSyncGroup and AlertSyncGroup</li>
+</ul>
+<ul>
+<li>2- Run this query: select * from tbl_am_server where ServerName like &#39;SERVER.contoso.com &#39;</li>
+</ul>
+<ul>
+<li>3- Run this query select * from  tbl_AM_InstalledAgent where serverid like &#39;SERVERID VALUE FROM PREVIOUS QUERY&#39;   I do expect for the first query to have some revelate data. So collect that details.</li>
+</ul>
+<ul>
+<li>I do expect for the second query do not return a value. I do also expect for the Agent not to be installed and visible on Management Tab and Agents.</li>
+</ul>
+<ul>
+<li>But please confirm.</li>
+</ul>
+<ul>
+<li>IF the scenario above confirms please do an insert on the DPM DB for table tbl_AM_InstalledAgent.</li>
+</ul>
+<ul>
+<li>Before any action please backup DPM DB.</li>
+</ul>
+<ul>
+<li>Also, be sure that you have or not a value on the field ClusterID on tbl_AM_Server. If you have you will need to add this value to tbl_AM_InstalledAgent otherwise the value goes NULL.</li>
+</ul>
+<ul>
+<li>The ClusterID and ServerID you will get from the query you executed above which will be then replaced on the insert statement.</li>
+</ul>
+<ul>
+<li>#Result</li>
+</ul>
+<ul>
+<li>ServerID: F7A9DA2A-7137-4AEE-B7C2-03386E2804E2</li>
+</ul>
+<ul>
+<li>ServerName: Server.domain.com</li>
+</ul>
+<ul>
+<li>ClusterID: NULL</li>
+</ul>
+<ul>
+<li>insert into tbl_AM_InstalledAgent values (&#39;9A83B947-0204-40D7-9027-27CC82DC1007&#39;,&#39;F7A9DA2A-7137-4AEE-B7C2-03386E2804E2&#39;,&#39;C82F9EE4-1DF9-449E-80B7-DCA93399874A&#39;,&#39;1&#39;,&#39;0&#39;,&#39;0&#39;,NULL,NULL,&#39;1&#39;,NULL,&#39;0&#39;,NULL,NULL,NULL,&#39;0.0.0.0&#39;,NULL,NULL,NULL,NULL)</li>
+</ul>
+<ul>
+<li>If the server is still visible from Management and Agents then change the &quot;Delete&quot; value from tbl_AM_InstalledAgent to 0 instead 1.</li>
+</ul>
+<ul>
+<li>Since you can have more than one value, meaning there can be same server ID on same table but with different InstallID you need to change the InstallID where this ServerID contains the &quot;Delete&quot; as 1 to 0. Example below:</li>
+</ul>
+<ul>
+<li>AzureBackupReportingData | where TIMESTAMP between (datetime(2021-05-15 17:30:19.4116315) .. 2d) and DeploymentName == &quot;ne-pod01&quot; | where operationName == &quot;ProtectedContainer&quot; | where properties contains &quot;2037933474198123108&quot; and properties contains &quot;dc01.contoso.emea&quot;</li>
+</ul>
+<ul>
+<li>Result example below</li>
+</ul>
+<ul>
+<li>{ &quot;ProtectedContainerUniqueId&quot;: &quot;northeurope;2037933474198123108;dc01.contoso.emea&quot;, &quot;ProtectedContainerFriendlyName&quot;: &quot;DC01.CONTOSO.EMEA&quot;, &quot;AgentVersion&quot;: &quot;2.0.9207.0&quot;, &quot;ProtectedContainerOSType&quot;: null, &quot;ProtectedContainerOSVersion&quot;: null, &quot;ProtectedContainerWorkloadType&quot;: &quot;Windows&quot;, &quot;ProtectedContainerName&quot;: &quot;dc01.contoso.emea&quot;, &quot;ProtectedContainerProtectionState&quot;: &quot;Unprotected&quot;, &quot;ProtectedContainerLocation&quot;: &quot;Cloud&quot;, &quot;ProtectedContainerType&quot;: &quot;Server&quot;, &quot;SchemaVersion&quot;: &quot;V2&quot;, &quot;State&quot;: &quot;Created&quot;, &quot;BackupManagementType&quot;: &quot;MAB&quot; }</li>
+</ul>
+<ul>
+<li>PS Entity is already existing as MAB Container Entity. Ignore Syncing DPM DS | Params: {ResourceId = 2789534569876749361}{Production Server Name = PSIVS2.psi.local}{Container Type = Windows}{provider Type = MAB}{Backup Engine Name = psi-mabs01.psi.local} PS Entity is already existing as MAB Container Entity. Ignore Syncing DPM DS | Params: {ResourceId = 2789534569876749361}{Production Server Name = PSIVS2.psi.local}{Container Type = Windows}{provider Type = MAB}{Backup Engine Name = psi-mabs01.psi.local}</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Kusto Queries</li>
+</ul>
+<ul>
+<li>//This might not show the failure. If so you can use the TraceLogMessage to verify more</li>
+</ul>
+<ul>
+<li>TraceLogMessage | where RequestId == &quot;64f19102-9681-46ee-a873-c3113c35b123&quot; | project TIMESTAMP, Message, FileNameLineNumber, Level</li>
+</ul>
+<ul>
+<li>Example if of a success sync using the first or second Kusto query.</li>
+</ul>
+<ul>
+<li>Logs Analyze you can do:</li>
+</ul>
+<ul>
+<li>If we search by cbengine logs we can see more but Kusto will reveal more. Example of a Gateway Provider 5 Log below:</li>
+</ul>
+<ul>
+<li>Problem #1 Verify the following</li>
+</ul>
+<ul>
+<li>1- Double check if the Protected Server is still on Management Tab and Agents.</li>
+</ul>
+<ul>
+<li>Insert statement since I do not have a ClusterID associate and we checked on tbl_AM_Server</li>
+</ul>
+<ul>
+<li>After 30 minutes verify if the issue was overcome and expect to see the server on DPM UI &gt; Management Tab &gt; Protection Agents &gt; Under the Unprotected computers.</li>
+</ul>
+<ul>
+<li>After 30 minutes verify if the issue was overcome.</li>
+</ul>
+<ul>
+<li>Problem #2 It can also happen not showing any error on Kusto or CBEngine Logs but still the data is not updated on the Portal. This can be due the fact of the protected server be still registered on the Portal as MARS which means MARS was used in the past on the protected server.</li>
+</ul>
+<ul>
+<li>You can quickly check this on Azure Portal &gt; Recovery Services Vault &gt; Backup Items. On Azure Backup Agent if there is any you can ask customer if this can be deleted from the portal.</li>
+</ul>
+<ul>
+<li>This can also be checked by going to Azure Portal &gt; Recovery Services Vault &gt; Backup Infrastructure. On Azure Backup Agent if there is any you can ask customer if this can be deleted from the portal.</li>
+</ul>
+<ul>
+<li>This can be check as well from Kusto:</li>
+</ul>
+<ul>
+<li>Another Kusto Query. You can comment the level if you need:</li>
+</ul>
+<ul>
+<li>TraceLogMessage | where TIMESTAMP between (datetime(2021-05-15 17:30:19.4116315) .. 2d) and DeploymentName == &quot;ne-pod01&quot; //and ErrorCode &lt;&gt; &quot;OK&quot; and ErrorCode &lt;&gt; &quot;SyncSuccess&quot; and ErrorCode &lt;&gt; &quot;Nothing to sync in this window&quot; and ErrorCode &lt;&gt; &quot;Agent Version refresh thread Created&quot; //|where ResourceId == &quot;2789534569876749361&quot; and ContainerId == &quot;1002290&quot; | where Level &lt;= 2 | where TaskId == &quot;424cc4a5-c4c8-4bdc-9da4-e45705594c01&quot; and ServiceName == &quot;BMS&quot; | where Message contains &quot;MAB&quot;</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Example for DPM, will be: C:\Program Files\Microsoft Azure Recovery Services Agent\bin\Artifacts\PowerShellScripts\DPM\</li>
+</ul>
+<ul>
+<li>Example for MABS, will be: C:\Program Files\Microsoft Azure Recovery Services Agent\bin\Artifacts\PowerShellScripts\DPMVenus\</li>
+</ul>
+<ul>
+<li>C:\Users\tolopes\OneDrive - Microsoft\share\120060824003373\0e44d5db-59bc-4d23-8699-7e6b460c160c\CBENGINE&gt;find /i &quot;GPPowershellScriptHrError&quot; . &gt; GPPowershellScriptHrError.txt</li>
+</ul>
+<ul>
+<li>11625 19D0    1808    06/10    14:11:43.012    83    SyncManager.cs(237)                NORMAL            starting Syncing for sync Group  | Params: {syncGroupName = DSPSDiskSyncGroup} 11626 19D0    1808    06/10    14:11:43.012    83    SyncManager.cs(248)                NORMAL            Fetching Sync data for sync Group from Agent | Params: {syncGroupName = DSPSDiskSyncGroup} 11627 19D0    1808    06/10    14:11:43.028    83    PSSyncProvider.cs(806)                WARNING            Cache for Object Type is not present. Adding it. | Params: {ObjectType = DataSource}{Provider = Microsoft.Internal.Client.SyncProvider.PSSyncProvider}   11628 19D0    1808    06/10    14:11:43.028    83    PSSyncProvider.cs(806)                WARNING            Cache for Object Type is not present. Adding it. | Params: {ObjectType = ProductionServer}{Provider = Microsoft.Internal.Client.SyncProvider.PSSyncProvider}   11629 19D0    1808    06/10    14:11:43.184    83    PowershellCommandletExecutor.cs(251)                NORMAL            ExecutePowershell : executing cmd  | Params: {cmd  = Set-ExecutionPolicy RemoteSigned -Scope Process -Force} 11630 19D0    1808    06/10    14:11:43.184    83    PowershellCommandletExecutor.cs(267)                NORMAL            Running as admin 11631 19D0    1808    06/10    14:11:43.247    83    PowershellCommandletExecutor.cs(94)                NORMAL            ExecutePowershellCommand : executing command  | Params: {name  = C:\Program Files\Microsoft Azure Recovery Services Agent\bin\Artifacts\PowerShellScripts\DPM\GetDPMProductionServers.ps1}</li>
+</ul>
+<ul>
+<li>11636 19D0    1808    06/10    14:11:50.309    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER} 11637 19D0    1808    06/10    14:11:50.309    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER1} 11638 19D0    1808    06/10    14:11:50.309    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER2} 11639 19D0    1808    06/10    14:11:50.325    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVE3} 11640 19D0    1808    06/10    14:11:50.325    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER4} 11641 19D0    1808    06/10    14:11:50.325    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER5} 11642 19D0    1808    06/10    14:11:50.325    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER6} 11643 19D0    1808    06/10    14:11:50.325    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER7} 11644 19D0    1808    06/10    14:11:50.341    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER8} 11652 19D0    1808    06/10    14:11:50.356    83    PSSyncProvider.cs(742)                NORMAL            GetChangedObjectsToSync succeeded. | Params: {ObjectType = ProductionServer}{CountOfPSObjects = 9}{CountOfObjectsForAdd = 9}{CountOfObjectsForUpdate = 0}{CountOfObjectsForDelete = 0} 11653 19D0    1808    06/10    14:11:52.153    83    PowershellCommandletExecutor.cs(94)</li>
+</ul>
+<ul>
+<li>NORMAL            ExecutePowershellCommand : executing command  | Params: {name  = C:\Program Files\Microsoft Azure Recovery Services Agent\bin\Artifacts\PowerShellScripts\DPM\GetDPMDataSources.ps1}</li>
+</ul>
+<ul>
+<li>11657 19D0    1808    06/10    14:11:58.419    83    PowershellCommandletExecutor.cs(486)                NORMAL            calling TraceMessages in exception handling</li>
+</ul>
+<ul>
+<li>11658 19D0    1808    06/10    14:11:58.419    83    PowershellCommandletExecutor.cs(489)</li>
+</ul>
+<ul>
+<li>FATAL            ExecutePowershell : Exception caught | Params: { type  = System.Management.Automation.CmdletInvocationException}{TargetObjects = Microsoft.Internal.EnterpriseStorage.Dls.UI.ObjectModel.OMCommon.ProductionServer[]} 11659 19D0    1808    06/10    14:11:58.434    83    PowershellExecutorHelper.cs(248)                NORMAL            getErrorException: found hresult property</li>
+</ul>
+<ul>
+<li>11660 19D0    1808    06/10    14:11:58.434    83    PowershellExecutorHelper.cs(251)                NORMAL            getErrorException: from exception.hresult</li>
+</ul>
+<ul>
+<li>11661 19D0    1808    06/10    14:11:58.434    83    PowershellExecutorHelper.cs(266)                FATAL            GetErrorException | Params: {Type = GPPowershellScriptHrError}{DetailedErrorCode = -2146233079}{Messsage = Production Server mis-match DSId :f310fc2a-b9d7-41be-abb9-0ddc76084a09 DSName : master DSType : SQL Server 2008 database PSName :server.contoso.com PSId: e7431df1-8a6c-482c-b314-495b80af22c3}{Stack  =    at System.Management.Automation.MshCommandRuntime.ThrowTerminatingError(ErrorRecord errorRecord)}</li>
+</ul>
+<ul>
+<li>**11662 19D0    1808    06/10    14:11:58.434    83    PowershellCommandletExecutor.cs(107)                FATAL            ExecutePowershellCommand : executing command failed |Backup Service Exception: System.InvalidOperationException: Production Server mis-match DSId :f310fc2a-b9d7-41be-abb9-0ddc76084a09 DSName : master DSType : SQL Server 2008 database PSName : server.contoso.com  PSId: e7431df1-8a6c-482c-b314-495b80af22c3</li>
+</ul>
+<ul>
+<li>11663 19D0    1808    06/10    14:11:58.434    83    PowershellCommandletExecutor.cs(107)                FATAL       at System.Management.Automation.MshCommandRuntime.ThrowTerminatingError(ErrorRecord errorRecord)</li>
+</ul>
+<ul>
+<li>WARNING                                               FMBlock: FM exception caught | Params: {OperationCode = GatewayProviderSyncGroup}{OperationStartTime = 12/06/2020 04:42:13}{FMExceptionDetail = FMException: [ErrorCode:GPPowershellScriptHrError, DetailedCode:-2146233079, Source:   at System.Management.Automation.MshCommandRuntime.ThrowTerminatingError(ErrorRecord errorRecord), Message:Production Server mis-match DSId :f310fc2a-b9d7-41be-abb9-0ddc76084a09 DSName : master DSType : SQL Server 2008 database PSName :server.contoso.com PSId: e7431df1-8a6c-482c-b314-495b80af22c3]</li>
+</ul>
+<ul>
+<li>select * from tbl_am_server where ServerName like &#39;SERVER.contoso.com &#39;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>update tbl_AM_InstalledAgent Set Deleted = &#39;0&#39; where InstallID = &#39;14ED4878-1199-4BD3-8C17-7A3C16CABDCC&#39;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>BUGs open for this which were not yet fixed:</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://msazure.visualstudio.com/One/_workitems/edit/1998934" target="_blank" rel="noopener">https://msazure.visualstudio.com/One/_workitems/edit/1998934</a></li>
+</ul>
+<ul>
+<li><a href="https://msecg.visualstudio.com/System" target="_blank" rel="noopener">https://msecg.visualstudio.com/System</a> Center/_workitems/edit/796791</li>
+</ul>
+<ul>
+<li>Categorize the case with BUG ID: <a href="https://msecg.visualstudio.com/System" target="_blank" rel="noopener">https://msecg.visualstudio.com/System</a> Center/_workitems/edit/796791</li>
+</ul>
+<ul>
+<li>Case example for the below scenario 2105130050000926.  <a href="https://portal.microsofticm.com/imp/v3/incidents/details/245885901/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/245885901/home</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Manideep Gattu</p>
+<p>Nov 18, 2022</p>
+<p>This TSG was created to work around a known issue for DPM / MABS telemetry failure.</p>
+<p>BUGs open for this which were not yet fixed:</p>
+<p><a href="https://msazure.visualstudio.com/One/_workitems/edit/1998934" target="_blank" rel="noopener">https://msazure.visualstudio.com/One/_workitems/edit/1998934</a></p>
+<p><a href="https://msecg.visualstudio.com/System" target="_blank" rel="noopener">https://msecg.visualstudio.com/System</a> Center/_workitems/edit/796791</p>
+<p>Categorize the case with BUG ID: <a href="https://msecg.visualstudio.com/System" target="_blank" rel="noopener">https://msecg.visualstudio.com/System</a> Center/_workitems/edit/796791</p>
+<p>Issue</p>
+<p>Customer is not able to see some data sources which are being backup from MABS, DPM 2016 or 2019 on the Recovery Services Vault.</p>
+<p>We received some cases, where DPM Data sources appear to be mis matched on service side. As result data sources are not visible on the Recovery Services Vault due the negative impact this create on the gateway service which will upload telemetry data to the Recovery Services Vault every 30 minutes. Below the Service Name which can be found on the services.msc.</p>
+<p>We do fail on when BMSAgentObjectsResync call which is done for DSPSDiskSyncGroup, executed from Artifacts, from the default MARS Agent default path or other.</p>
+<p>Example for DPM, will be: C:\Program Files\Microsoft Azure Recovery Services Agent\bin\Artifacts\PowerShellScripts\DPM\</p>
+<p>Example for MABS, will be: C:\Program Files\Microsoft Azure Recovery Services Agent\bin\Artifacts\PowerShellScripts\DPMVenus\</p>
+<p>This is part of BMS and it can fail if Data Source operation such as Data Source ID, PS, ObjectID or overall information about usedDiskSpace, allocatedSpace, storageEntity.totalspace, availableDiskSpace, diskcount also fails to be added on service side.</p>
+<p>In this case the PS1 files will try to get data from DPM. As we know every operation DPM does will store this on a SQL Database which means in order to pass this information which will be retrieved from the PS1 files, the data is missing from the DPM DB. As negative side effect this will fail.</p>
+<p>As work around we will need to perform an insert on the table tbl_AM_InstalledAgent which contains a dependence from tbl_AM_Server.</p>
+<p>Since the telemetry system after PS1 execution is trying to find Data source ID which depends on a Server ID on table tbl_AM_Server and dependency tbl_AM_InstalledAgent this will fail as explained above.</p>
+<p>Kusto Queries</p>
+<p>//This will show the failure</p>
+<p>CMGPSyncStatsEvent | where TIMESTAMP &gt;= ago(90d) //and ErrorCode &lt;&gt; &quot;OK&quot; and ErrorCode &lt;&gt; &quot;SyncSuccess&quot; and ErrorCode &lt;&gt; &quot;Nothing to sync in this window&quot; and ErrorCode &lt;&gt; &quot;Agent Version refresh thread Created&quot; | where ResourceId == &quot;XXX&quot; and ContainerId == &quot;XXX&quot; | project TIMESTAMP, EventName, ContainerType, ErrorCode, OperationType, SyncGroupName  | order by TIMESTAMP desc</p>
+<p>CMGPSyncStatsEvent | where TIMESTAMP &gt;= ago(90d) //and ErrorCode &lt;&gt; &quot;OK&quot; and ErrorCode &lt;&gt; &quot;SyncSuccess&quot; and ErrorCode &lt;&gt; &quot;Nothing to sync in this window&quot; and ErrorCode &lt;&gt; &quot;Agent Version refresh thread Created&quot; | where ResourceId == &quot;XXX&quot; and ContainerId == &quot;XXX&quot; | project TIMESTAMP, EventName, ContainerType, ErrorCode, OperationType, SyncGroupName | order by TIMESTAMP desc</p>
+<p>//This might not show the failure. If so you can use the TraceLogMessage to verify more</p>
+<p>CMBMSSyncTEEWFStats |where CompanyId == &quot;5529118379336684454&quot; and ContainerId == &quot;46410&quot; | project TIMESTAMP, RequestId, TaskId, SubscriptionId, OperationName ,ErrorCode | order by TIMESTAMP desc</p>
+<p>Grabbed task Id from 07-06-2020 -&gt; 64f19102-9681-46ee-a873-c3113c35b123</p>
+<p>TraceLogMessage | where RequestId == &quot;64f19102-9681-46ee-a873-c3113c35b123&quot; | project TIMESTAMP, Message, FileNameLineNumber, Level</p>
+<p>Example if of a success sync using the first or second Kusto query.</p>
+<p>TIMESTAMP EventName ContainerType ErrorCode OperationType SyncGroupName 2021-04-16 14:05:30.7878361 CMGPSyncStatsEvent DPMVenus SyncSuccess sync JobSyncGroup 2021-04-16 14:05:30.5492705 CMGPSyncStatsEvent DPMVenus OK getSyncObjectsOperationStatus JobSyncGroup 2021-04-16 13:37:22.8770049 CMGPSyncStatsEvent DPMVenus SyncSuccess sync DSPSDiskSyncGroup</p>
+<p>Example of a failure below.</p>
+<p>TIMESTAMP EventName ContainerType ErrorCode OperationType SyncGroupName 2021-04-16 13:50:12.2726643 CMGPSyncStatsEvent DPMVenus ErrorInGettingSyncDataFromMARSAgent sync DSPSDiskSyncGroup 2021-04-16 13:49:13.7993808 CMGPSyncStatsEvent DPMVenus BMSAgentRetryableError sync JobSyncGroup</p>
+<p>Logs Analyze you can do:</p>
+<p>If we search by telemetry service from DPM Perspective it doesn’t tell me much: find /i &quot;MABTelemetryService&quot; DPMA*.* &gt; telemtry_dpm.txt</p>
+<p>If we search by cbengine logs we can see more but Kusto will reveal more. Example of a Gateway Provider 5 Log below:</p>
+<p>C:\Users\tolopes\OneDrive - Microsoft\share\120060824003373\0e44d5db-59bc-4d23-8699-7e6b460c160c\CBENGINE&gt;find /i &quot;GPPowershellScriptHrError&quot; . &gt; GPPowershellScriptHrError.txt</p>
+<p>11625 19D0    1808    06/10    14:11:43.012    83    SyncManager.cs(237)                NORMAL            starting Syncing for sync Group  | Params: {syncGroupName = DSPSDiskSyncGroup} 11626 19D0    1808    06/10    14:11:43.012    83    SyncManager.cs(248)                NORMAL            Fetching Sync data for sync Group from Agent | Params: {syncGroupName = DSPSDiskSyncGroup} 11627 19D0    1808    06/10    14:11:43.028    83    PSSyncProvider.cs(806)                WARNING            Cache for Object Type is not present. Adding it. | Params: {ObjectType = DataSource}{Provider = Microsoft.Internal.Client.SyncProvider.PSSyncProvider}   11628 19D0    1808    06/10    14:11:43.028    83    PSSyncProvider.cs(806)                WARNING            Cache for Object Type is not present. Adding it. | Params: {ObjectType = ProductionServer}{Provider = Microsoft.Internal.Client.SyncProvider.PSSyncProvider}   11629 19D0    1808    06/10    14:11:43.184    83    PowershellCommandletExecutor.cs(251)                NORMAL            ExecutePowershell : executing cmd  | Params: {cmd  = Set-ExecutionPolicy RemoteSigned -Scope Process -Force} 11630 19D0    1808    06/10    14:11:43.184    83    PowershellCommandletExecutor.cs(267)                NORMAL            Running as admin 11631 19D0    1808    06/10    14:11:43.247    83    PowershellCommandletExecutor.cs(94)                NORMAL            ExecutePowershellCommand : executing command  | Params: {name  = C:\Program Files\Microsoft Azure Recovery Services Agent\bin\Artifacts\PowerShellScripts\DPM\GetDPMProductionServers.ps1}</p>
+<p>11636 19D0    1808    06/10    14:11:50.309    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER} 11637 19D0    1808    06/10    14:11:50.309    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER1} 11638 19D0    1808    06/10    14:11:50.309    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER2} 11639 19D0    1808    06/10    14:11:50.325    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVE3} 11640 19D0    1808    06/10    14:11:50.325    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER4} 11641 19D0    1808    06/10    14:11:50.325    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER5} 11642 19D0    1808    06/10    14:11:50.325    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER6} 11643 19D0    1808    06/10    14:11:50.325    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER7} 11644 19D0    1808    06/10    14:11:50.341    83    PSSyncProvider.cs(707)                NORMAL            New Object Added to Device. Adding for sync. | Params: {ObjectType = ProductionServer}{ObjectId =SERVER8} 11652 19D0    1808    06/10    14:11:50.356    83    PSSyncProvider.cs(742)                NORMAL            GetChangedObjectsToSync succeeded. | Params: {ObjectType = ProductionServer}{CountOfPSObjects = 9}{CountOfObjectsForAdd = 9}{CountOfObjectsForUpdate = 0}{CountOfObjectsForDelete = 0} 11653 19D0    1808    06/10    14:11:52.153    83    PowershellCommandletExecutor.cs(94)</p>
+<p>NORMAL            ExecutePowershellCommand : executing command  | Params: {name  = C:\Program Files\Microsoft Azure Recovery Services Agent\bin\Artifacts\PowerShellScripts\DPM\GetDPMDataSources.ps1}</p>
+<p>11657 19D0    1808    06/10    14:11:58.419    83    PowershellCommandletExecutor.cs(486)                NORMAL            calling TraceMessages in exception handling</p>
+<p>11658 19D0    1808    06/10    14:11:58.419    83    PowershellCommandletExecutor.cs(489)</p>
+<p>FATAL            ExecutePowershell : Exception caught | Params: { type  = System.Management.Automation.CmdletInvocationException}{TargetObjects = Microsoft.Internal.EnterpriseStorage.Dls.UI.ObjectModel.OMCommon.ProductionServer[]} 11659 19D0    1808    06/10    14:11:58.434    83    PowershellExecutorHelper.cs(248)                NORMAL            getErrorException: found hresult property</p>
+<p>11660 19D0    1808    06/10    14:11:58.434    83    PowershellExecutorHelper.cs(251)                NORMAL            getErrorException: from exception.hresult</p>
+<p>11661 19D0    1808    06/10    14:11:58.434    83    PowershellExecutorHelper.cs(266)                FATAL            GetErrorException | Params: {Type = GPPowershellScriptHrError}{DetailedErrorCode = -2146233079}{Messsage = Production Server mis-match DSId :f310fc2a-b9d7-41be-abb9-0ddc76084a09 DSName : master DSType : SQL Server 2008 database PSName :server.contoso.com PSId: e7431df1-8a6c-482c-b314-495b80af22c3}{Stack  =    at System.Management.Automation.MshCommandRuntime.ThrowTerminatingError(ErrorRecord errorRecord)}</p>
+<p>**11662 19D0    1808    06/10    14:11:58.434    83    PowershellCommandletExecutor.cs(107)                FATAL            ExecutePowershellCommand : executing command failed |Backup Service Exception: System.InvalidOperationException: Production Server mis-match DSId :f310fc2a-b9d7-41be-abb9-0ddc76084a09 DSName : master DSType : SQL Server 2008 database PSName : server.contoso.com  PSId: e7431df1-8a6c-482c-b314-495b80af22c3</p>
+<p>11663 19D0    1808    06/10    14:11:58.434    83    PowershellCommandletExecutor.cs(107)                FATAL       at System.Management.Automation.MshCommandRuntime.ThrowTerminatingError(ErrorRecord errorRecord)</p>
+<p>C:\Users\tolopes\OneDrive - Microsoft\share\120060824003373\0e44d5db-59bc-4d23-8699-7e6b460c160c\CBENGINE&gt;find /i &quot;PSSyncProvider&quot; Gatewayprovider*.* &gt; PSSyncProvider.txt</p>
+<p>We fail for DSPSDiskSyncGroup and AlertSyncGroup</p>
+<p>WARNING                                               FMBlock: FM exception caught | Params: {OperationCode = GatewayProviderSyncGroup}{OperationStartTime = 12/06/2020 04:42:13}{FMExceptionDetail = FMException: [ErrorCode:GPPowershellScriptHrError, DetailedCode:-2146233079, Source:   at System.Management.Automation.MshCommandRuntime.ThrowTerminatingError(ErrorRecord errorRecord), Message:Production Server mis-match DSId :f310fc2a-b9d7-41be-abb9-0ddc76084a09 DSName : master DSType : SQL Server 2008 database PSName :server.contoso.com PSId: e7431df1-8a6c-482c-b314-495b80af22c3]</p>
+<p>19D0       1808       06/12     04:42:41.822                 83            PSSyncProvider.cs(146)                                                         WARNING                 {ObjectType= DSPSDiskSyncGroup}{Operation = Sync} 19D0       1808       06/12     04:42:41.822                 83            PSSyncProvider.cs(146)                                                         WARNING              } 19D0       1808       06/12     04:42:41.822                 83            PSSyncProvider.cs(146)                                                         WARNING                                                FMBlock: Executing retry policy | Params: {CurrentAttempt = 1}{MaxAttempts = 5}{BackOffIntervalInSec = 6}{OperationCode = GatewayProviderSyncGroup}{Retry policy id = 1} 19D0       2BE0       06/12     04:42:48.793                 83            PSSyncProvider.cs(146)                                                         WARNING                                                FMBlock: FM exception caught | Params: {OperationCode = GatewayProviderSyncGroup}{OperationStartTime = 12/06/2020 04:42:48}{FMExceptionDetail = FMException: [ErrorCode:CloudTrUnknownExceptionError, DetailedCode:0, Source:None, Message:] 19D0       2BE0       06/12     04:42:48.793                 83            PSSyncProvider.cs(146)                                                         WARNING                 {ObjectType = AlertSyncGroup}{Operation = Sync} 19D0       2BE0       06/12     04:42:48.793                 83            PSSyncProvider.cs(146)                                                         WARNING              } 19D0       2BE0       06/12     04:42:48.793                 83            PSSyncProvider.cs(146)                                                         NORMAL                                                  FMBlock: No retry policy specified | Params: {ErrorCode = CloudTrUnknownExceptionError}</p>
+<p>Problem #1 Verify the following</p>
+<p>1- Double check if the Protected Server is still on Management Tab and Agents.</p>
+<p>2- Run this query: select * from tbl_am_server where ServerName like &#39;SERVER.contoso.com &#39;</p>
+<p>3- Run this query select * from  tbl_AM_InstalledAgent where serverid like &#39;SERVERID VALUE FROM PREVIOUS QUERY&#39;   I do expect for the first query to have some revelate data. So collect that details.</p>
+<p>I do expect for the second query do not return a value. I do also expect for the Agent not to be installed and visible on Management Tab and Agents.</p>
+<p>But please confirm.</p>
+<p>IF the scenario above confirms please do an insert on the DPM DB for table tbl_AM_InstalledAgent.</p>
+<p>Before any action please backup DPM DB.</p>
+<p>The first value for tbl_AM_InstalledAgent is InstallID. This value is manually added. This mean you can generate a value based on another InstallID value but cannot be duplicated.</p>
+<p>Also, be sure that you have or not a value on the field ClusterID on tbl_AM_Server. If you have you will need to add this value to tbl_AM_InstalledAgent otherwise the value goes NULL.</p>
+<p>The ClusterID and ServerID you will get from the query you executed above which will be then replaced on the insert statement.</p>
+<p>select * from tbl_am_server where ServerName like &#39;SERVER.contoso.com &#39;</p>
+<p>#Result</p>
+<p>ServerID: F7A9DA2A-7137-4AEE-B7C2-03386E2804E2</p>
+<p>ServerName: Server.domain.com</p>
+<p>ClusterID: NULL</p>
+<p>Insert statement since I do not have a ClusterID associate and we checked on tbl_AM_Server</p>
+<p>insert into tbl_AM_InstalledAgent values (&#39;9A83B947-0204-40D7-9027-27CC82DC1007&#39;,&#39;F7A9DA2A-7137-4AEE-B7C2-03386E2804E2&#39;,&#39;C82F9EE4-1DF9-449E-80B7-DCA93399874A&#39;,&#39;1&#39;,&#39;0&#39;,&#39;0&#39;,NULL,NULL,&#39;1&#39;,NULL,&#39;0&#39;,NULL,NULL,NULL,&#39;0.0.0.0&#39;,NULL,NULL,NULL,NULL)</p>
+<p>After 30 minutes verify if the issue was overcome and expect to see the server on DPM UI &gt; Management Tab &gt; Protection Agents &gt; Under the Unprotected computers.</p>
+<p>If the server is still visible from Management and Agents then change the &quot;Delete&quot; value from tbl_AM_InstalledAgent to 0 instead 1.</p>
+<p>Since you can have more than one value, meaning there can be same server ID on same table but with different InstallID you need to change the InstallID where this ServerID contains the &quot;Delete&quot; as 1 to 0. Example below:</p>
+<p>update tbl_AM_InstalledAgent Set Deleted = &#39;0&#39; where InstallID = &#39;14ED4878-1199-4BD3-8C17-7A3C16CABDCC&#39;</p>
+<p>After 30 minutes verify if the issue was overcome.</p>
+<p>Problem #2 It can also happen not showing any error on Kusto or CBEngine Logs but still the data is not updated on the Portal. This can be due the fact of the protected server be still registered on the Portal as MARS which means MARS was used in the past on the protected server.</p>
+<p>Case example for the below scenario 2105130050000926.  <a href="https://portal.microsofticm.com/imp/v3/incidents/details/245885901/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/245885901/home</a></p>
+<p>You can quickly check this on Azure Portal &gt; Recovery Services Vault &gt; Backup Items. On Azure Backup Agent if there is any you can ask customer if this can be deleted from the portal.</p>
+<p>This can also be checked by going to Azure Portal &gt; Recovery Services Vault &gt; Backup Infrastructure. On Azure Backup Agent if there is any you can ask customer if this can be deleted from the portal.</p>
+<p>This can be check as well from Kusto:</p>
+<p>AzureBackupReportingData | where TIMESTAMP between (datetime(2021-05-15 17:30:19.4116315) .. 2d) and DeploymentName == &quot;ne-pod01&quot; | where operationName == &quot;ProtectedContainer&quot; | where properties contains &quot;2037933474198123108&quot; and properties contains &quot;dc01.contoso.emea&quot;</p>
+<p>Result example below</p>
+<p>{ &quot;ProtectedContainerUniqueId&quot;: &quot;northeurope;2037933474198123108;dc01.contoso.emea&quot;, &quot;ProtectedContainerFriendlyName&quot;: &quot;DC01.CONTOSO.EMEA&quot;, &quot;AgentVersion&quot;: &quot;2.0.9207.0&quot;, &quot;ProtectedContainerOSType&quot;: null, &quot;ProtectedContainerOSVersion&quot;: null, &quot;ProtectedContainerWorkloadType&quot;: &quot;Windows&quot;, &quot;ProtectedContainerName&quot;: &quot;dc01.contoso.emea&quot;, &quot;ProtectedContainerProtectionState&quot;: &quot;Unprotected&quot;, &quot;ProtectedContainerLocation&quot;: &quot;Cloud&quot;, &quot;ProtectedContainerType&quot;: &quot;Server&quot;, &quot;SchemaVersion&quot;: &quot;V2&quot;, &quot;State&quot;: &quot;Created&quot;, &quot;BackupManagementType&quot;: &quot;MAB&quot; }</p>
+<p>Another Kusto Query. You can comment the level if you need:</p>
+<p>TraceLogMessage | where TIMESTAMP between (datetime(2021-05-15 17:30:19.4116315) .. 2d) and DeploymentName == &quot;ne-pod01&quot; //and ErrorCode &lt;&gt; &quot;OK&quot; and ErrorCode &lt;&gt; &quot;SyncSuccess&quot; and ErrorCode &lt;&gt; &quot;Nothing to sync in this window&quot; and ErrorCode &lt;&gt; &quot;Agent Version refresh thread Created&quot; //|where ResourceId == &quot;2789534569876749361&quot; and ContainerId == &quot;1002290&quot; | where Level &lt;= 2 | where TaskId == &quot;424cc4a5-c4c8-4bdc-9da4-e45705594c01&quot; and ServiceName == &quot;BMS&quot; | where Message contains &quot;MAB&quot;</p>
+<p>PS Entity is already existing as MAB Container Entity. Ignore Syncing DPM DS | Params: {ResourceId = 2789534569876749361}{Production Server Name = PSIVS2.psi.local}{Container Type = Windows}{provider Type = MAB}{Backup Engine Name = psi-mabs01.psi.local} PS Entity is already existing as MAB Container Entity. Ignore Syncing DPM DS | Params: {ResourceId = 2789534569876749361}{Production Server Name = PSIVS2.psi.local}{Container Type = Windows}{provider Type = MAB}{Backup Engine Name = psi-mabs01.psi.local}</p></article>

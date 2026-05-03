@@ -1,0 +1,173 @@
+<article class="kb-article" data-title="SSH 连接到 VMSS AKS Node节点"><h1>SSH 连接到 VMSS AKS Node节点</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: K8S</li>
+<li>最近修改: 2022-10-08 15:50:33</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>kaka</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>kaka</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>kaka</li>
+</ul>
+<ul>
+<li>配置基于虚拟机规模集的 AKS 群集以进行 SSH 访问</li>
+</ul>
+<ul>
+<li>若要配置基于虚拟机规模集的 SSH 访问权限，请找到群集的虚拟机规模集的名称，并将 SSH 公钥添加到该规模集。</li>
+</ul>
+<ul>
+<li>上面的示例将myResourceGroup中myAKSCluster的群集资源组的名称分配给CLUSTER_RESOURCE_GROUP。 然后，该示例使用CLUSTER_RESOURCE_GROUP列出规模集名称并将其分配给SCALE_SET_NAME。</li>
+</ul>
+<ul>
+<li>--resource-group $CLUSTER_RESOURCE_GROUP \</li>
+</ul>
+<ul>
+<li>--vmss-name $SCALE_SET_NAME \</li>
+</ul>
+<ul>
+<li>--name VMAccessForLinux \</li>
+</ul>
+<ul>
+<li>--publisher Microsoft.OSTCExtensions \</li>
+</ul>
+<ul>
+<li>--version 1.4 \</li>
+</ul>
+<ul>
+<li>--protected-settings &quot;{\&quot;username\&quot;:\&quot;azureuser\&quot;, \&quot;ssh_key\&quot;:\&quot;$(cat ~/.ssh/id_rsa.pub)\&quot;}&quot;</li>
+</ul>
+<ul>
+<li>--name $SCALE_SET_NAME</li>
+</ul>
+<ul>
+<li>建立 SSH 连接</li>
+</ul>
+<ul>
+<li>运行 debian 容器映像，并在其上附加一个终端会话。 可以使用此容器来与 AKS 群集中的任何节点建立 SSH 会话：</li>
+</ul>
+<ul>
+<li>终端会话连接到容器后，请使用 apt-get安装 SSH 客户端：</li>
+</ul>
+<ul>
+<li>apt-get update &amp;&amp; apt-get install openssh-client -y</li>
+</ul>
+<ul>
+<li>打开新的终端窗口，而不是连接到容器，将专用 SSH 密钥复制到帮助器中。 此私钥用于在 AKS 节点中创建 SSH。</li>
+</ul>
+<ul>
+<li>如果需要，请将 ~/.ssh/id_rsa 更改为 SSH 私钥的位置：</li>
+</ul>
+<ul>
+<li>返回到容器的终端会话，更新已复制 id_rsa 专用 SSH 密钥的权限，使其成为只读用户：</li>
+</ul>
+<ul>
+<li>chmod 0600 id_rsa</li>
+</ul>
+<ul>
+<li>创建与 AKS 节点的 SSH 连接。 同样，AKS 节点的默认用户名为 azureuser。 遵照提示继续建立连接，因为一开始就信任 SSH 密钥。 然后，系统会提供 AKS 节点的 bash 提示：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用如下命令查询到第一个实例的IP:</li>
+</ul>
+<ul>
+<li>az vmss nic list-vm-nics  --resource-group MC_myResourceGroupnew_myAKSCluster_chinaeast2   --vmss-name aks-nodepool1-38929146-vmss  --instance-id 0  |grep Ip</li>
+</ul>
+<ul>
+<li>使用命令查询：kubectl get nodes -o wide</li>
+</ul>
+<ul>
+<li>使用az aks show命令获取 aks 群集的资源组名称，然后使用az vmss list命令获取规模集的名称。</li>
+</ul>
+<ul>
+<li>若要将 SSH 密钥添加到虚拟机规模集中的节点，请使用az vmss extension set和az vmss update-实例命令。</li>
+</ul>
+<ul>
+<li>az vmss extension set  \</li>
+</ul>
+<ul>
+<li>az vmss update-instances --instance-ids &#39;*&#39; \</li>
+</ul>
+<ul>
+<li>上面的示例使用前面命令中的CLUSTER_RESOURCE_GROUP和SCALE_SET_NAME变量。 上面的示例还使用 ~/.ssh/id_rsa作为 ssh 公钥的位置。</li>
+</ul>
+<ul>
+<li>kubectl run --generator=run-pod/v1 -it --rm aks-ssh --image=debian</li>
+</ul>
+<ul>
+<li>az vm user update --resource-group myResourceGroup --name myVM \ --username myUsername --password myPassword</li>
+</ul>
+<ul>
+<li>kubectl cp ~/.ssh/id_rsa $(kubectl get pod -l run=aks-ssh -o jsonpath=&#39;{.items[0].metadata.name}&#39;):/id_rsa</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>CLUSTER_RESOURCE_GROUP=$(az aks show --resource-group myResourceGroupnew --name myAKSCluster --query nodeResourceGroup -o tsv) SCALE_SET_NAME=$(az vmss list --resource-group $CLUSTER_RESOURCE_GROUP --query [0].name -o tsv)</li>
+</ul>
+<ul>
+<li>CLUSTER_RESOURCE_GROUP=$(az aks show --resource-group myResourceGroup --name myAKSCluster --query nodeResourceGroup -o tsv)</li>
+</ul>
+<ul>
+<li>SCALE_SET_NAME=$(az vmss list --resource-group $CLUSTER_RESOURCE_GROUP --query [0].name -o tsv)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>若要与 AKS 节点建立 SSH 连接，请在 AKS 群集中运行帮助器 pod。 使用此帮助器 pod 可以通过 SSH 依次访问群集和其他 SSH 节点。 若要创建并使用此帮助器 pod，请完成以下步骤：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>From &lt;<a href="https://docs.azure.cn/zh-cn/virtual-machines/troubleshooting/troubleshoot-ssh-connection#reset-config&gt;" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/troubleshooting/troubleshoot-ssh-connection#reset-config&gt;</a></li>
+</ul>
+<ul>
+<li>参考链接：<a href="https://docs.microsoft.com/zh-cn/azure/aks/ssh" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/ssh</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>kaka</p>
+<p>使用如下命令查询到第一个实例的IP:</p>
+<p>az vmss nic list-vm-nics  --resource-group MC_myResourceGroupnew_myAKSCluster_chinaeast2   --vmss-name aks-nodepool1-38929146-vmss  --instance-id 0  |grep Ip</p>
+<p>使用命令查询：kubectl get nodes -o wide</p>
+<p>CLUSTER_RESOURCE_GROUP=$(az aks show --resource-group myResourceGroupnew --name myAKSCluster --query nodeResourceGroup -o tsv) SCALE_SET_NAME=$(az vmss list --resource-group $CLUSTER_RESOURCE_GROUP --query [0].name -o tsv)</p>
+<p>配置基于虚拟机规模集的 AKS 群集以进行 SSH 访问</p>
+<p>若要配置基于虚拟机规模集的 SSH 访问权限，请找到群集的虚拟机规模集的名称，并将 SSH 公钥添加到该规模集。</p>
+<p>使用az aks show命令获取 aks 群集的资源组名称，然后使用az vmss list命令获取规模集的名称。</p>
+<p>CLUSTER_RESOURCE_GROUP=$(az aks show --resource-group myResourceGroup --name myAKSCluster --query nodeResourceGroup -o tsv)</p>
+<p>SCALE_SET_NAME=$(az vmss list --resource-group $CLUSTER_RESOURCE_GROUP --query [0].name -o tsv)</p>
+<p>上面的示例将myResourceGroup中myAKSCluster的群集资源组的名称分配给CLUSTER_RESOURCE_GROUP。 然后，该示例使用CLUSTER_RESOURCE_GROUP列出规模集名称并将其分配给SCALE_SET_NAME。</p>
+<p>若要将 SSH 密钥添加到虚拟机规模集中的节点，请使用az vmss extension set和az vmss update-实例命令。</p>
+<p>az vmss extension set  \</p>
+<p>--resource-group $CLUSTER_RESOURCE_GROUP \</p>
+<p>--vmss-name $SCALE_SET_NAME \</p>
+<p>--name VMAccessForLinux \</p>
+<p>--publisher Microsoft.OSTCExtensions \</p>
+<p>--version 1.4 \</p>
+<p>--protected-settings &quot;{\&quot;username\&quot;:\&quot;azureuser\&quot;, \&quot;ssh_key\&quot;:\&quot;$(cat ~/.ssh/id_rsa.pub)\&quot;}&quot;</p>
+<p>az vmss update-instances --instance-ids &#39;*&#39; \</p>
+<p>--name $SCALE_SET_NAME</p>
+<p>上面的示例使用前面命令中的CLUSTER_RESOURCE_GROUP和SCALE_SET_NAME变量。 上面的示例还使用 ~/.ssh/id_rsa作为 ssh 公钥的位置。</p>
+<p>建立 SSH 连接</p>
+<p>若要与 AKS 节点建立 SSH 连接，请在 AKS 群集中运行帮助器 pod。 使用此帮助器 pod 可以通过 SSH 依次访问群集和其他 SSH 节点。 若要创建并使用此帮助器 pod，请完成以下步骤：</p>
+<p>运行 debian 容器映像，并在其上附加一个终端会话。 可以使用此容器来与 AKS 群集中的任何节点建立 SSH 会话：</p>
+<p>kubectl run --generator=run-pod/v1 -it --rm aks-ssh --image=debian</p>
+<p>终端会话连接到容器后，请使用 apt-get安装 SSH 客户端：</p>
+<p>apt-get update &amp;&amp; apt-get install openssh-client -y</p>
+<p>打开新的终端窗口，而不是连接到容器，将专用 SSH 密钥复制到帮助器中。 此私钥用于在 AKS 节点中创建 SSH。</p>
+<p>如果需要，请将 ~/.ssh/id_rsa 更改为 SSH 私钥的位置：</p>
+<p>az vm user update --resource-group myResourceGroup --name myVM \ --username myUsername --password myPassword</p>
+<p>From &lt;<a href="https://docs.azure.cn/zh-cn/virtual-machines/troubleshooting/troubleshoot-ssh-connection#reset-config&gt;" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/troubleshooting/troubleshoot-ssh-connection#reset-config&gt;</a></p>
+<p>kubectl cp ~/.ssh/id_rsa $(kubectl get pod -l run=aks-ssh -o jsonpath=&#39;{.items[0].metadata.name}&#39;):/id_rsa</p>
+<p>返回到容器的终端会话，更新已复制 id_rsa 专用 SSH 密钥的权限，使其成为只读用户：</p>
+<p>chmod 0600 id_rsa</p>
+<p>创建与 AKS 节点的 SSH 连接。 同样，AKS 节点的默认用户名为 azureuser。 遵照提示继续建立连接，因为一开始就信任 SSH 密钥。 然后，系统会提供 AKS 节点的 bash 提示：</p>
+<p>参考链接：<a href="https://docs.microsoft.com/zh-cn/azure/aks/ssh" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/ssh</a></p></article>

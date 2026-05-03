@@ -1,0 +1,187 @@
+<article class="kb-article" data-title="ASRDiagnosticTool"><h1>ASRDiagnosticTool</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-23 16:36:03</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Fuzhangliang</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Fuzhangliang</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Fuzhangliang</li>
+</ul>
+<ul>
+<li>在Vmware&amp;&amp;Physical环境中,  默认会安装ASRDiagnosticTool,  Migrate 和ASR的复制设备均有这个工具， 大家在复制设备上找一下，在D盘或者安装目录找下.  如果实在找不到，在连接</li>
+</ul>
+<ul>
+<li>在RA以及source VM上都可以运行</li>
+</ul>
+<ul>
+<li>搜集的日志在这里，搜集的日志很全面：</li>
+</ul>
+<ul>
+<li>===============================</li>
+</ul>
+<ul>
+<li>Prerequisites</li>
+</ul>
+<ul>
+<li>Before using the ASR Diagnostic Tool, ensure the following prerequisites are met:</li>
+</ul>
+<ul>
+<li>.NET Framework 4.6.2 is installed on the machine.</li>
+</ul>
+<ul>
+<li>Below steps(1,2) are applicable only if the ProcessServer version on the appliance is &lt; 9.62</li>
+</ul>
+<ul>
+<li>Step 1</li>
+</ul>
+<ul>
+<li>Follow the below steps, if ASRDiagnosticTool directory is not found under &lt;CacheDir&gt; on the appliance</li>
+</ul>
+<ul>
+<li>Copy it to the C:\ProgramData\Microsoft Azure\Tools and extract it. Make sure the extracted directory structure is like C:\ProgramData\Microsoft Azure\Tools\ASRDiagnosticTool</li>
+</ul>
+<ul>
+<li>Step 2</li>
+</ul>
+<ul>
+<li>Follow the below steps, if the CacheDir on the appliance is not the default &quot;E&quot; drive</li>
+</ul>
+<ul>
+<li>Step 3</li>
+</ul>
+<ul>
+<li>Usage</li>
+</ul>
+<ul>
+<li>To use the ASR Diagnostic Tool, execute it from the command line, specifying the path to the tool&#39;s executable file.</li>
+</ul>
+<ul>
+<li>Open command prompt in administration mode</li>
+</ul>
+<ul>
+<li>On the appliance</li>
+</ul>
+<ul>
+<li>If ProcessServer version &gt;= 9.62</li>
+</ul>
+<ul>
+<li>E:\ProgramData\Microsoft Azure\Tools\ASRDiagnosticTool\ASRDiagnosticTool.exe</li>
+</ul>
+<ul>
+<li>If ProcessServer version &lt; 9.62</li>
+</ul>
+<ul>
+<li>&lt;CacheDir&gt;\ASRDiagnosticTool\ASRDiagnosticTool.exe</li>
+</ul>
+<ul>
+<li>On the windows source agent</li>
+</ul>
+<ul>
+<li>&lt;AgentInstallDir&gt;\ASRDiagnosticTool\ASRDiagnosticTool.exe</li>
+</ul>
+<ul>
+<li>For example:</li>
+</ul>
+<ul>
+<li>Appliance :</li>
+</ul>
+<ul>
+<li>E:\ASRDiagnosticTool\ASRDiagnosticTool.exe</li>
+</ul>
+<ul>
+<li>Windows Source Agent:</li>
+</ul>
+<ul>
+<li>C:\Program Files (x86)\Microsoft Azure Site Recovery\agent\ASRDiagnosticTool\ASRDiagnosticTool.exe</li>
+</ul>
+<ul>
+<li>Refer the below link for more details</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Use ASRDiagnosticTool to collect the logs from the Appliance and Windows Source Agents. This tool is available from 9.57 release</li>
+</ul>
+<ul>
+<li>Sufficient free space is available on the C:\ drive to store the collected logs.</li>
+</ul>
+<ul>
+<li>Open &quot;&lt;ToolDir&gt;:\ASRDiagnosticTool\Config\ApplianceLogs.json&quot; file, search and replace all the instances of &quot;E:\&quot; with &quot;&lt;CacheDir&gt;\&quot;</li>
+</ul>
+<ul>
+<li>For example, open &quot;E:\ASRDiagnosticTool\Config\ApplianceLogs.json&quot; file and search and replace all the instances of &quot;E:\&quot; with &quot;M:\&quot;. Here &quot;M&quot; is the cache directory on the appliance.</li>
+</ul>
+<ul>
+<li>SDP Path The logs will be available in the ApplicationData folder, and the full path will be displayed in the application output.</li>
+</ul>
+<ul>
+<li>C:\Users\Administrator\AppData\Roaming\ASRDiagnosticLogs-WIN-BQF91C5S04Q-28-11-20-12-34.zip</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://aka.ms/ASRDiagnosticTool" target="_blank" rel="noopener">https://aka.ms/ASRDiagnosticTool</a> 下载也可以</li>
+</ul>
+<ul>
+<li>Download the ASRDiagnosticTool.zip file from <a href="https://aka.ms/ASRDiagnosticTool" target="_blank" rel="noopener">https://aka.ms/ASRDiagnosticTool</a> link</li>
+</ul>
+<ul>
+<li><a href="https://msazure.visualstudio.com/One/_git/InMage-Azure-SiteRecovery?path=/server/ASRDiagnosticTool/readme.md&amp;version=GBdevelop" target="_blank" rel="noopener">https://msazure.visualstudio.com/One/_git/InMage-Azure-SiteRecovery?path=/server/ASRDiagnosticTool/readme.md&amp;version=GBdevelop</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Fuzhangliang</p>
+<p>在Vmware&amp;&amp;Physical环境中,  默认会安装ASRDiagnosticTool,  Migrate 和ASR的复制设备均有这个工具， 大家在复制设备上找一下，在D盘或者安装目录找下.  如果实在找不到，在连接</p>
+<p><a href="https://aka.ms/ASRDiagnosticTool" target="_blank" rel="noopener">https://aka.ms/ASRDiagnosticTool</a> 下载也可以</p>
+<p>在RA以及source VM上都可以运行</p>
+<p>搜集的日志在这里，搜集的日志很全面：</p>
+<p>===============================</p>
+<p>Use ASRDiagnosticTool to collect the logs from the Appliance and Windows Source Agents. This tool is available from 9.57 release</p>
+<p>Prerequisites</p>
+<p>Before using the ASR Diagnostic Tool, ensure the following prerequisites are met:</p>
+<p>.NET Framework 4.6.2 is installed on the machine.</p>
+<p>Sufficient free space is available on the C:\ drive to store the collected logs.</p>
+<p>Below steps(1,2) are applicable only if the ProcessServer version on the appliance is &lt; 9.62</p>
+<p>Step 1</p>
+<p>Follow the below steps, if ASRDiagnosticTool directory is not found under &lt;CacheDir&gt; on the appliance</p>
+<p>Download the ASRDiagnosticTool.zip file from <a href="https://aka.ms/ASRDiagnosticTool" target="_blank" rel="noopener">https://aka.ms/ASRDiagnosticTool</a> link</p>
+<p>Copy it to the C:\ProgramData\Microsoft Azure\Tools and extract it. Make sure the extracted directory structure is like C:\ProgramData\Microsoft Azure\Tools\ASRDiagnosticTool</p>
+<p>Step 2</p>
+<p>Follow the below steps, if the CacheDir on the appliance is not the default &quot;E&quot; drive</p>
+<p>Open &quot;&lt;ToolDir&gt;:\ASRDiagnosticTool\Config\ApplianceLogs.json&quot; file, search and replace all the instances of &quot;E:\&quot; with &quot;&lt;CacheDir&gt;\&quot;</p>
+<p>For example, open &quot;E:\ASRDiagnosticTool\Config\ApplianceLogs.json&quot; file and search and replace all the instances of &quot;E:\&quot; with &quot;M:\&quot;. Here &quot;M&quot; is the cache directory on the appliance.</p>
+<p>Step 3</p>
+<p>Usage</p>
+<p>To use the ASR Diagnostic Tool, execute it from the command line, specifying the path to the tool&#39;s executable file.</p>
+<p>Open command prompt in administration mode</p>
+<p>On the appliance</p>
+<p>If ProcessServer version &gt;= 9.62</p>
+<p>E:\ProgramData\Microsoft Azure\Tools\ASRDiagnosticTool\ASRDiagnosticTool.exe</p>
+<p>If ProcessServer version &lt; 9.62</p>
+<p>&lt;CacheDir&gt;\ASRDiagnosticTool\ASRDiagnosticTool.exe</p>
+<p>On the windows source agent</p>
+<p>&lt;AgentInstallDir&gt;\ASRDiagnosticTool\ASRDiagnosticTool.exe</p>
+<p>For example:</p>
+<p>Appliance :</p>
+<p>E:\ASRDiagnosticTool\ASRDiagnosticTool.exe</p>
+<p>Windows Source Agent:</p>
+<p>C:\Program Files (x86)\Microsoft Azure Site Recovery\agent\ASRDiagnosticTool\ASRDiagnosticTool.exe</p>
+<p>SDP Path The logs will be available in the ApplicationData folder, and the full path will be displayed in the application output.</p>
+<p>C:\Users\Administrator\AppData\Roaming\ASRDiagnosticLogs-WIN-BQF91C5S04Q-28-11-20-12-34.zip</p>
+<p>Refer the below link for more details</p>
+<p><a href="https://msazure.visualstudio.com/One/_git/InMage-Azure-SiteRecovery?path=/server/ASRDiagnosticTool/readme.md&amp;version=GBdevelop" target="_blank" rel="noopener">https://msazure.visualstudio.com/One/_git/InMage-Azure-SiteRecovery?path=/server/ASRDiagnosticTool/readme.md&amp;version=GBdevelop</a></p></article>

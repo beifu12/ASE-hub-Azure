@@ -1,0 +1,73 @@
+<article class="kb-article" data-title="Waf customer rule -  Number type"><h1>Waf customer rule -  Number type</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-11-30 09:42:34</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>所以当我们使用数字4 作为 test-header的值 时，由于他小于5，所以命中规则，请求会被WAF阻止，得到403 Forbidden 响应。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>所以当我们使用数字4 作为 test-header的值 时，由于他小于5，所以命中规则，请求会被WAF阻止，得到403 Forbidden 响应。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考工单：SR_20211026128147_Number match type of  custome... - TrackingID#2111020040002300</li>
+</ul>
+<ul>
+<li>问题描述:用户希望了解WAF自定义规则中，Match tpye中的Number这个类型的含义及用法。</li>
+</ul>
+<ul>
+<li>以下面的规则为例：</li>
+</ul>
+<ul>
+<li>而使用数字5 时，不满足小于5的条件，所以请求会被放行，收到200 OK 返回码。</li>
+</ul>
+<ul>
+<li>需要注意的是，</li>
+</ul>
+<ul>
+<li>选择Match type为Number时，请确保要匹配的值为数字，例如上例中所使用的数字4 和5。</li>
+</ul>
+<ul>
+<li>如果匹配的值为字符 ，例如abc，请选用Match type String 。</li>
+</ul>
+<ul>
+<li>如果选择Number 类型，而实际使用的是非数字值，所有字符 会按数字0 的效果来匹配。</li>
+</ul>
+<ul>
+<li>还是以上面的规则为例，当使用&quot;test-header的值为非数字 的字母abc或符号*时，其均会按数字0的效果来匹配，0小于5，所以会命中规则，请求被阻止。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>该规则表示它会检查名为 test-header这个RequestHeader的值，如果这个值小于数字5，则请求会被Deny，否则放行。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Solution offer :Number表示WAF规则匹配的变量的数据类型为数字。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-11-16</p>
+<p>参考工单：SR_20211026128147_Number match type of  custome... - TrackingID#2111020040002300</p>
+<p>问题描述:用户希望了解WAF自定义规则中，Match tpye中的Number这个类型的含义及用法。</p>
+<p>Solution offer :Number表示WAF规则匹配的变量的数据类型为数字。</p>
+<p>以下面的规则为例：</p>
+<p>该规则表示它会检查名为 test-header这个RequestHeader的值，如果这个值小于数字5，则请求会被Deny，否则放行。</p>
+<p>所以当我们使用数字4 作为 test-header的值 时，由于他小于5，所以命中规则，请求会被WAF阻止，得到403 Forbidden 响应。</p>
+<p>而使用数字5 时，不满足小于5的条件，所以请求会被放行，收到200 OK 返回码。</p>
+<p>需要注意的是，</p>
+<p>选择Match type为Number时，请确保要匹配的值为数字，例如上例中所使用的数字4 和5。</p>
+<p>如果匹配的值为字符 ，例如abc，请选用Match type String 。</p>
+<p>如果选择Number 类型，而实际使用的是非数字值，所有字符 会按数字0 的效果来匹配。</p>
+<p>还是以上面的规则为例，当使用&quot;test-header的值为非数字 的字母abc或符号*时，其均会按数字0的效果来匹配，0小于5，所以会命中规则，请求被阻止。</p></article>

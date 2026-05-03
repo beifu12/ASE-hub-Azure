@@ -1,0 +1,156 @@
+<article class="kb-article" data-title="AKS 1.19+版本安装dashboard问题"><h1>AKS 1.19+版本安装dashboard问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-03-12 14:47:15</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Nancy</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Nancy</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Nancy</li>
+</ul>
+<ul>
+<li>测试结果：</li>
+</ul>
+<ul>
+<li>2)创建Service Account和Clusterrolebinding的yaml并应用：</li>
+</ul>
+<ul>
+<li>[root@111myimagevnetvm zhangnan]# cat adminuser.yaml</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: ServiceAccount</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: admin-user</li>
+</ul>
+<ul>
+<li>[root@111myimagevnetvm zhangnan]# kubectl apply -f adminuser.yaml</li>
+</ul>
+<ul>
+<li>[root@111myimagevnetvm zhangnan]# cat clusterrolebinding.yaml</li>
+</ul>
+<ul>
+<li>apiVersion: rbac.authorization.k8s.io/v1</li>
+</ul>
+<ul>
+<li>kind: ClusterRoleBinding</li>
+</ul>
+<ul>
+<li>roleRef:</li>
+</ul>
+<ul>
+<li>apiGroup: rbac.authorization.k8s.io</li>
+</ul>
+<ul>
+<li>kind: ClusterRole</li>
+</ul>
+<ul>
+<li>name: cluster-admin</li>
+</ul>
+<ul>
+<li>subjects:</li>
+</ul>
+<ul>
+<li>- kind: ServiceAccount</li>
+</ul>
+<ul>
+<li>[root@111myimagevnetvm zhangnan]# kubectl apply -f clusterrolebinding.yaml</li>
+</ul>
+<ul>
+<li>3)获取Bearer Token</li>
+</ul>
+<ul>
+<li>数据可以正常加载：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>官网提到从AKS 1.19+版本Azure将不再支持安装托管dashboard，官网链接：使用 Web 仪表板管理 Azure Kubernetes 服务群集 | Azure Docs</li>
+</ul>
+<ul>
+<li>若在低于1.19版本集群上已经启用dashboard，然后再对其升级到1.19，dashboard使用不会受到影响。</li>
+</ul>
+<ul>
+<li>若直接在新创建的1.19版本集群上启用dashboard会报错提示已经弃用。</li>
+</ul>
+<ul>
+<li>经测试，可按照如下步骤在新建AKS 1.19+上启用dashboard：</li>
+</ul>
+<ul>
+<li>1)部署dashboard UI：</li>
+</ul>
+<ul>
+<li>namespace: kubernetes-dashboard</li>
+</ul>
+<ul>
+<li>4)登录dashboard：</li>
+</ul>
+<ul>
+<li>Web UI (Dashboard) | Kubernetes</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath=&quot;{.secrets[0].name}&quot;) -o go-template=&quot;{{.data.token | base64decode}}&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml</a></li>
+</ul>
+<ul>
+<li>浏览器访问该URL并输入Token：<a href="http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/" target="_blank" rel="noopener">http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Nancy</p>
+<p>官网提到从AKS 1.19+版本Azure将不再支持安装托管dashboard，官网链接：使用 Web 仪表板管理 Azure Kubernetes 服务群集 | Azure Docs</p>
+<p>测试结果：</p>
+<p>若在低于1.19版本集群上已经启用dashboard，然后再对其升级到1.19，dashboard使用不会受到影响。</p>
+<p>若直接在新创建的1.19版本集群上启用dashboard会报错提示已经弃用。</p>
+<p>经测试，可按照如下步骤在新建AKS 1.19+上启用dashboard：</p>
+<p>1)部署dashboard UI：</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml</a></p>
+<p>2)创建Service Account和Clusterrolebinding的yaml并应用：</p>
+<p>[root@111myimagevnetvm zhangnan]# cat adminuser.yaml</p>
+<p>apiVersion: v1</p>
+<p>kind: ServiceAccount</p>
+<p>metadata:</p>
+<p>name: admin-user</p>
+<p>namespace: kubernetes-dashboard</p>
+<p>[root@111myimagevnetvm zhangnan]# kubectl apply -f adminuser.yaml</p>
+<p>[root@111myimagevnetvm zhangnan]# cat clusterrolebinding.yaml</p>
+<p>apiVersion: rbac.authorization.k8s.io/v1</p>
+<p>kind: ClusterRoleBinding</p>
+<p>roleRef:</p>
+<p>apiGroup: rbac.authorization.k8s.io</p>
+<p>kind: ClusterRole</p>
+<p>name: cluster-admin</p>
+<p>subjects:</p>
+<ul>
+<li>kind: ServiceAccount</li>
+</ul>
+<p>[root@111myimagevnetvm zhangnan]# kubectl apply -f clusterrolebinding.yaml</p>
+<p>3)获取Bearer Token</p>
+<p>kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath=&quot;{.secrets[0].name}&quot;) -o go-template=&quot;{{.data.token | base64decode}}&quot;</p>
+<p>4)登录dashboard：</p>
+<p>浏览器访问该URL并输入Token：<a href="http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/" target="_blank" rel="noopener">http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/</a></p>
+<p>数据可以正常加载：</p>
+<p>Web UI (Dashboard) | Kubernetes</p></article>

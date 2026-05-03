@@ -1,0 +1,204 @@
+<article class="kb-article" data-title="【Share】存储账户500报错，无法操作变更任何配置"><h1>【Share】存储账户500报错，无法操作变更任何配置</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-16 17:50:42</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>&quot;value&quot;: &quot;Failed&quot;,</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>&quot;value&quot;: &quot;Failed&quot;,</li>
+</ul>
+<ul>
+<li>&quot;localizedValue&quot;: &quot;Failed&quot;</li>
+</ul>
+<ul>
+<li>&quot;value&quot;: &quot;InternalServerError&quot;,</li>
+</ul>
+<ul>
+<li>&quot;localizedValue&quot;: &quot;Internal Server Error (HTTP Status Code: 500)&quot;</li>
+</ul>
+<ul>
+<li>&quot;statusCode&quot;: &quot;InternalServerError&quot;,</li>
+</ul>
+<ul>
+<li>&quot;statusMessage&quot;: &quot;{\&quot;error\&quot;:{\&quot;code\&quot;:\&quot;UnexpectedException\&quot;,\&quot;message\&quot;:\&quot;The server was unable to complete your request.\&quot;}}&quot;,</li>
+</ul>
+<ul>
+<li>&quot;responseBody&quot;: &quot;{\&quot;error\&quot;:{\&quot;code\&quot;:\&quot;UnexpectedException\&quot;,\&quot;message\&quot;:\&quot;The server was unable to complete your request.\&quot;}}&quot;,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>Zhang Wenxin</li>
+</ul>
+<ul>
+<li>活动日志参考：</li>
+</ul>
+<ul>
+<li>&quot;resourceId&quot;: &quot;/subscriptions/688ad3b4-29a1-4b75-b105-273418c6ed8b/resourceGroups/a210016-p0-mcncn3-rg-d2c-backup/providers/Microsoft.Storage/storageAccounts/a210016p1stmain&quot;,</li>
+</ul>
+<ul>
+<li>&quot;status&quot;: {</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;subStatus&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;submissionTimestamp&quot;: &quot;2025-12-09T06:35:24Z&quot;,</li>
+</ul>
+<ul>
+<li>&quot;subscriptionId&quot;: &quot;688ad3b4-29a1-4b75-b105-273418c6ed8b&quot;,</li>
+</ul>
+<ul>
+<li>&quot;tenantId&quot;: &quot;14614e83-7b16-41d0-8fca-11f12a5b5cec&quot;,</li>
+</ul>
+<ul>
+<li>&quot;properties&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;serviceRequestId&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;eventCategory&quot;: &quot;Administrative&quot;,</li>
+</ul>
+<ul>
+<li>&quot;entity&quot;: &quot;/subscriptions/688ad3b4-29a1-4b75-b105-273418c6ed8b/resourceGroups/a210016-p0-mcncn3-rg-d2c-backup/providers/Microsoft.Storage/storageAccounts/a210016p1stmain&quot;,</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;Microsoft.Storage/storageAccounts/write&quot;,</li>
+</ul>
+<ul>
+<li>&quot;hierarchy&quot;: &quot;14614e83-7b16-41d0-8fca-11f12a5b5cec/GM-root/GM-prod/GM-prod-landingzones/GM-prod-landingzones-intranet/GM-prod-landingzones-intranet-ets/688ad3b4-29a1-4b75-b105-273418c6ed8b&quot;</li>
+</ul>
+<ul>
+<li>最终定位到您的存储账户在之前有一个关联资源，“用户分配类型的托管标识”被删除。</li>
+</ul>
+<ul>
+<li>该资源缺失，导致存储账户丢失部分依赖资源，但是关联依然存在，所以会导致此问题发生，和迁移无关。</li>
+</ul>
+<ul>
+<li>$storage = Get-AzStorageAccount -ResourceGroupName &quot;资源组名称&quot; -Name &quot;存储账户名称&quot;</li>
+</ul>
+<ul>
+<li>if ($null -eq $storage.Identity -or $storage.Identity.Type -eq &quot;None&quot;) {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;此存储账户未启用托管身份&quot;</li>
+</ul>
+<ul>
+<li>} else {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;已启用托管身份，类型: $($storage.Identity.Type)&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li># 首先获取用户分配的标识ID</li>
+</ul>
+<ul>
+<li>$userAssignedIdentity = Get-AzUserAssignedIdentity -ResourceGroupName &quot;Your-Identity-RG&quot; -Name &quot;Your-User-Assigned-Identity&quot;</li>
+</ul>
+<ul>
+<li># 设置存储账户使用该用户分配标识</li>
+</ul>
+<ul>
+<li>-AssignIdentity `</li>
+</ul>
+<ul>
+<li>-IdentityType UserAssigned `</li>
+</ul>
+<ul>
+<li>-UserAssignedIdentityId $userAssignedIdentity.Id</li>
+</ul>
+<ul>
+<li>三、清空托管标识identity：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>工单参考：20251209386336，客户报告修改默认Blob层级报错，经会议上确认，修改任何配置都报错，提示、活动日志、Har File 皆无任何有效信息，问题升级到PG：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>经调查，客户绑定了用户托管标识，但是被删除，需要用命令去除标识然后才能操作存储账户（先前数据访问不受影响）</li>
+</ul>
+<ul>
+<li>相关命令参考：</li>
+</ul>
+<ul>
+<li>一、检查命令</li>
+</ul>
+<ul>
+<li>二、用户分配的托管标识与关联命令</li>
+</ul>
+<ul>
+<li>Set-AzStorageAccount -ResourceGroupName &quot;Henry-Infra&quot; -Name &quot;watsai&quot; `</li>
+</ul>
+<ul>
+<li>Set-AzStorageAccount -ResourceGroupName &quot;资源组名称&quot; -Name &quot;存储账户名称&quot; -Identity &quot;None&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Reviewer</p>
+<p>Zhang Wenxin</p>
+<p>工单参考：20251209386336，客户报告修改默认Blob层级报错，经会议上确认，修改任何配置都报错，提示、活动日志、Har File 皆无任何有效信息，问题升级到PG：</p>
+<p>经调查，客户绑定了用户托管标识，但是被删除，需要用命令去除标识然后才能操作存储账户（先前数据访问不受影响）</p>
+<p>活动日志参考：</p>
+<p>&quot;resourceId&quot;: &quot;/subscriptions/688ad3b4-29a1-4b75-b105-273418c6ed8b/resourceGroups/a210016-p0-mcncn3-rg-d2c-backup/providers/Microsoft.Storage/storageAccounts/a210016p1stmain&quot;,</p>
+<p>&quot;status&quot;: {</p>
+<p>&quot;value&quot;: &quot;Failed&quot;,</p>
+<p>&quot;localizedValue&quot;: &quot;Failed&quot;</p>
+<p>},</p>
+<p>&quot;subStatus&quot;: {</p>
+<p>&quot;value&quot;: &quot;InternalServerError&quot;,</p>
+<p>&quot;localizedValue&quot;: &quot;Internal Server Error (HTTP Status Code: 500)&quot;</p>
+<p>&quot;submissionTimestamp&quot;: &quot;2025-12-09T06:35:24Z&quot;,</p>
+<p>&quot;subscriptionId&quot;: &quot;688ad3b4-29a1-4b75-b105-273418c6ed8b&quot;,</p>
+<p>&quot;tenantId&quot;: &quot;14614e83-7b16-41d0-8fca-11f12a5b5cec&quot;,</p>
+<p>&quot;properties&quot;: {</p>
+<p>&quot;statusCode&quot;: &quot;InternalServerError&quot;,</p>
+<p>&quot;serviceRequestId&quot;: null,</p>
+<p>&quot;statusMessage&quot;: &quot;{\&quot;error\&quot;:{\&quot;code\&quot;:\&quot;UnexpectedException\&quot;,\&quot;message\&quot;:\&quot;The server was unable to complete your request.\&quot;}}&quot;,</p>
+<p>&quot;responseBody&quot;: &quot;{\&quot;error\&quot;:{\&quot;code\&quot;:\&quot;UnexpectedException\&quot;,\&quot;message\&quot;:\&quot;The server was unable to complete your request.\&quot;}}&quot;,</p>
+<p>&quot;eventCategory&quot;: &quot;Administrative&quot;,</p>
+<p>&quot;entity&quot;: &quot;/subscriptions/688ad3b4-29a1-4b75-b105-273418c6ed8b/resourceGroups/a210016-p0-mcncn3-rg-d2c-backup/providers/Microsoft.Storage/storageAccounts/a210016p1stmain&quot;,</p>
+<p>&quot;message&quot;: &quot;Microsoft.Storage/storageAccounts/write&quot;,</p>
+<p>&quot;hierarchy&quot;: &quot;14614e83-7b16-41d0-8fca-11f12a5b5cec/GM-root/GM-prod/GM-prod-landingzones/GM-prod-landingzones-intranet/GM-prod-landingzones-intranet-ets/688ad3b4-29a1-4b75-b105-273418c6ed8b&quot;</p>
+<p>相关命令参考：</p>
+<p>最终定位到您的存储账户在之前有一个关联资源，“用户分配类型的托管标识”被删除。</p>
+<p>该资源缺失，导致存储账户丢失部分依赖资源，但是关联依然存在，所以会导致此问题发生，和迁移无关。</p>
+<p>一、检查命令</p>
+<p>$storage = Get-AzStorageAccount -ResourceGroupName &quot;资源组名称&quot; -Name &quot;存储账户名称&quot;</p>
+<p>if ($null -eq $storage.Identity -or $storage.Identity.Type -eq &quot;None&quot;) {</p>
+<p>Write-Host &quot;此存储账户未启用托管身份&quot;</p>
+<p>} else {</p>
+<p>Write-Host &quot;已启用托管身份，类型: $($storage.Identity.Type)&quot;</p>
+<p>}</p>
+<p>二、用户分配的托管标识与关联命令</p>
+<h1>首先获取用户分配的标识ID</h1>
+<p>$userAssignedIdentity = Get-AzUserAssignedIdentity -ResourceGroupName &quot;Your-Identity-RG&quot; -Name &quot;Your-User-Assigned-Identity&quot;</p>
+<h1>设置存储账户使用该用户分配标识</h1>
+<p>Set-AzStorageAccount -ResourceGroupName &quot;Henry-Infra&quot; -Name &quot;watsai&quot; `</p>
+<p>-AssignIdentity `</p>
+<p>-IdentityType UserAssigned `</p>
+<p>-UserAssignedIdentityId $userAssignedIdentity.Id</p>
+<p>三、清空托管标识identity：</p>
+<p>Set-AzStorageAccount -ResourceGroupName &quot;资源组名称&quot; -Name &quot;存储账户名称&quot; -Identity &quot;None&quot;</p></article>

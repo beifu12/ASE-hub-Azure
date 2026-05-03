@@ -1,0 +1,86 @@
+<article class="kb-article" data-title="[Shared] 受信任Windows VM安装Hyper -V role"><h1>[Shared] 受信任Windows VM安装Hyper -V role</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-05 14:25:29</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Create</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Create</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Create</li>
+</ul>
+<ul>
+<li>参考case：SR_2024070530289</li>
+</ul>
+<ul>
+<li>找到安装Hyper -V role的先决条件：</li>
+</ul>
+<ul>
+<li>如果是受信任启动类型，再启用过程回报如下错误信息：</li>
+</ul>
+<ul>
+<li>同时依据文档描述信息进行操作，启用虚拟机监控程序可以解决此问题：</li>
+</ul>
+<ul>
+<li>bcdedit /set hypervisorlaunchtype auto</li>
+</ul>
+<ul>
+<li>Restart-Computer -Force</li>
+</ul>
+<ul>
+<li>启用之后，没有管理工具，操作不便，找到以下方式进行安装：</li>
+</ul>
+<ul>
+<li>安装管理工具：Install-WindowsFeature -Name Hyper-V  -IncludeManagementTools -Restart</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>因为安全类型只能由标准转移至受信任启动，参考文档中的方法进行测试验证：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>再执行之后，还是存在上述截图错误信息，后续尝试使用命令进行启用此服务：</li>
+</ul>
+<ul>
+<li>使用命令进行启用Hyper -V并安装管理工具：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>启用：Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-hyper-V -all</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/windows/troubleshoot-vm-by-use-nested-virtualization" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/windows/troubleshoot-vm-by-use-nested-virtualization</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/windows-server/virtualization/hyper-v/get-started/install-the-hyper-v-role-on-windows-server" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows-server/virtualization/hyper-v/get-started/install-the-hyper-v-role-on-windows-server</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Create</p>
+<p>2024-07-05</p>
+<p>参考case：SR_2024070530289</p>
+<p>找到安装Hyper -V role的先决条件：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/windows/troubleshoot-vm-by-use-nested-virtualization" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/windows/troubleshoot-vm-by-use-nested-virtualization</a></p>
+<p>因为安全类型只能由标准转移至受信任启动，参考文档中的方法进行测试验证：</p>
+<p>如果是受信任启动类型，再启用过程回报如下错误信息：</p>
+<p>同时依据文档描述信息进行操作，启用虚拟机监控程序可以解决此问题：</p>
+<p>bcdedit /set hypervisorlaunchtype auto</p>
+<p>Restart-Computer -Force</p>
+<p>再执行之后，还是存在上述截图错误信息，后续尝试使用命令进行启用此服务：</p>
+<p>使用命令进行启用Hyper -V并安装管理工具：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/windows-server/virtualization/hyper-v/get-started/install-the-hyper-v-role-on-windows-server" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows-server/virtualization/hyper-v/get-started/install-the-hyper-v-role-on-windows-server</a></p>
+<p>启用：Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-hyper-V -all</p>
+<p>启用之后，没有管理工具，操作不便，找到以下方式进行安装：</p>
+<p>安装管理工具：Install-WindowsFeature -Name Hyper-V  -IncludeManagementTools -Restart</p></article>

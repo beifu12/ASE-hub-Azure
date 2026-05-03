@@ -1,0 +1,74 @@
+<article class="kb-article" data-title="以保留磁盘的方式删除虚拟机并将磁盘挂载到其他虚拟机上进行修复"><h1>以保留磁盘的方式删除虚拟机并将磁盘挂载到其他虚拟机上进行修复</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-08-25 02:47:03</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>记录磁盘名称(在经典管理界面<a href="https://manage.windowsazure.cn虚拟机仪表板中下方位置)，删除原虚拟机A保留其磁盘" target="_blank" rel="noopener">https://manage.windowsazure.cn虚拟机仪表板中下方位置)，删除原虚拟机A保留其磁盘</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>记录磁盘名称(在经典管理界面<a href="https://manage.windowsazure.cn虚拟机仪表板中下方位置)，删除原虚拟机A保留其磁盘" target="_blank" rel="noopener">https://manage.windowsazure.cn虚拟机仪表板中下方位置)，删除原虚拟机A保留其磁盘</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>在原有云服务中新建虚拟机或使用已存在的虚拟机B</li>
+</ul>
+<ul>
+<li>将虚拟机A的磁盘当做数据盘挂载到B</li>
+</ul>
+<ul>
+<li>（在删除虚拟机A之后可能需要几分钟等待后台同步，如果看不到磁盘，可以刷新界面）</li>
+</ul>
+<ul>
+<li>3.1 选择附加---附加磁盘</li>
+</ul>
+<ul>
+<li>3.2 在列表中选择A的磁盘，不要启用缓存</li>
+</ul>
+<ul>
+<li>3.3 将附加的磁盘挂载到目录/tempmount</li>
+</ul>
+<ul>
+<li>Umount A的磁盘并从虚拟机B分离该磁盘：</li>
+</ul>
+<ul>
+<li>通过A的磁盘重新创建虚拟机：</li>
+</ul>
+<ul>
+<li>在创建时选择从“我的磁盘”开始创建</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>虚拟机创建完成之后，在使用SSH连接时由于启用了用户名密码验证，可以直接用root进行登录。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>进行配置的修复或者修改（具体结合实际情况操作）</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>记录磁盘名称(在经典管理界面<a href="https://manage.windowsazure.cn虚拟机仪表板中下方位置)，删除原虚拟机A保留其磁盘" target="_blank" rel="noopener">https://manage.windowsazure.cn虚拟机仪表板中下方位置)，删除原虚拟机A保留其磁盘</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>记录磁盘名称(在经典管理界面<a href="https://manage.windowsazure.cn虚拟机仪表板中下方位置)，删除原虚拟机A保留其磁盘" target="_blank" rel="noopener">https://manage.windowsazure.cn虚拟机仪表板中下方位置)，删除原虚拟机A保留其磁盘</a></p>
+<p>在原有云服务中新建虚拟机或使用已存在的虚拟机B</p>
+<p>将虚拟机A的磁盘当做数据盘挂载到B</p>
+<p>（在删除虚拟机A之后可能需要几分钟等待后台同步，如果看不到磁盘，可以刷新界面）</p>
+<p>3.1 选择附加---附加磁盘</p>
+<p>3.2 在列表中选择A的磁盘，不要启用缓存</p>
+<p>3.3 将附加的磁盘挂载到目录/tempmount</p>
+<p>进行配置的修复或者修改（具体结合实际情况操作）</p>
+<p>Umount A的磁盘并从虚拟机B分离该磁盘：</p>
+<p>通过A的磁盘重新创建虚拟机：</p>
+<p>在创建时选择从“我的磁盘”开始创建</p>
+<p>虚拟机创建完成之后，在使用SSH连接时由于启用了用户名密码验证，可以直接用root进行登录。</p></article>

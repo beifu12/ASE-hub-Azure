@@ -1,0 +1,89 @@
+<article class="kb-article" data-title="Azure 磁盘性能测试fio-linux"><h1>Azure 磁盘性能测试fio-linux</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Performance</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-20 10:18:07</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>通过tar包安装FIO测试linux IOPS</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>通过tar包安装FIO测试linux IOPS</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>通过tar包安装FIO测试linux IOPS</li>
+</ul>
+<ul>
+<li>目前fio的源有问题：(已经通过rpm安装了repoforge的源)</li>
+</ul>
+<ul>
+<li>yum install libaio-devel  gcc</li>
+</ul>
+<ul>
+<li>tar -zxvf fio-2.0.7.tar.gz</li>
+</ul>
+<ul>
+<li>cd fio-2.0.7</li>
+</ul>
+<ul>
+<li>make;make install</li>
+</ul>
+<ul>
+<li>y</li>
+</ul>
+<ul>
+<li>这样fio就可以使用了。</li>
+</ul>
+<ul>
+<li>mai</li>
+</ul>
+<ul>
+<li>附加磁盘测试结果iops为500左右</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>安装tar包命令，加用yum安装依赖包</li>
+</ul>
+<ul>
+<li>附加磁盘空磁盘用以下命令创建分区，格式化，挂载：</li>
+</ul>
+<ul>
+<li>用命令测试IOPS：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>fio -directory=/data -name=tempfile.dat -direct=1 -rw=randwrite -bs=8k -size=2G -numjobs=16 -time_based -runtime=10 -group_reporting</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>使用tar包安装的解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>wget <a href="http://brick.kernel.dk/snaps/fio-2.0.7.tar.gz" target="_blank" rel="noopener">http://brick.kernel.dk/snaps/fio-2.0.7.tar.gz</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>通过tar包安装FIO测试linux IOPS</p>
+<p>目前fio的源有问题：(已经通过rpm安装了repoforge的源)</p>
+<p>使用tar包安装的解决方案：</p>
+<p>wget <a href="http://brick.kernel.dk/snaps/fio-2.0.7.tar.gz" target="_blank" rel="noopener">http://brick.kernel.dk/snaps/fio-2.0.7.tar.gz</a></p>
+<p>yum install libaio-devel  gcc</p>
+<p>tar -zxvf fio-2.0.7.tar.gz</p>
+<p>cd fio-2.0.7</p>
+<p>make;make install</p>
+<p>安装tar包命令，加用yum安装依赖包</p>
+<p>y</p>
+<p>这样fio就可以使用了。</p>
+<p>附加磁盘空磁盘用以下命令创建分区，格式化，挂载：</p>
+<p>mai</p>
+<p>用命令测试IOPS：</p>
+<p>fio -directory=/data -name=tempfile.dat -direct=1 -rw=randwrite -bs=8k -size=2G -numjobs=16 -time_based -runtime=10 -group_reporting</p>
+<p>附加磁盘测试结果iops为500左右</p></article>

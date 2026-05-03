@@ -1,0 +1,154 @@
+<article class="kb-article" data-title="[Share]  NodePool UDR干扰Defneder及其它POD正常运行"><h1>[Share]  NodePool UDR干扰Defneder及其它POD正常运行</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-28 11:59:06</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题描述：用户ASK集群启用了Defender for container后其相关的publisher POD要么无法running要么running后也会重启；其它POD也有无法running的情况。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题描述：用户ASK集群启用了Defender for container后其相关的publisher POD要么无法running要么running后也会重启；其它POD也有无法running的情况。</li>
+</ul>
+<ul>
+<li>用户表示某特定user node上的Publisher POD始终无法稳定running。</li>
+</ul>
+<ul>
+<li>删除不通的coreDNS POD重建，其被分配到了其它节点上，实际POD IP也变了，再次测试连通性恢复正常。但Publisher相关POD仍然问题依旧。</li>
+</ul>
+<ul>
+<li>iptables-save &gt; &lt;node-name&gt;.txt   #Kubectl debug连接node无法操作iptables规则，会提示需要root权限。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025.7.24</li>
+</ul>
+<ul>
+<li>Tian Tian</li>
+</ul>
+<ul>
+<li>涉及工单：20250612357891</li>
+</ul>
+<ul>
+<li>用户表示删除对应node pool重建后问题依旧。</li>
+</ul>
+<ul>
+<li>收集集群全部POD -o wide信息，发现可能跟network policy相关的POD calico-kube-controllers其IP为10.244.2.x，且重启计数非0：该集群 POD CIDR为10.244.0.0/16.</li>
+</ul>
+<ul>
+<li>附：</li>
+</ul>
+<ul>
+<li>收集AKS Node iptables全部规则的方法：</li>
+</ul>
+<ul>
+<li>然后再通过az cli登录上azure</li>
+</ul>
+<ul>
+<li>再继续：</li>
+</ul>
+<ul>
+<li>chmod +x ./kubectl-node_shell</li>
+</ul>
+<ul>
+<li>sudo mv ./kubectl-node_shell /usr/local/bin/kubectl-node_shell</li>
+</ul>
+<ul>
+<li>然后找到名为kubectl-node_shell的bash文件，vi编辑它，将其中的docker.io替换为 dockerhub.azk8s.cn</li>
+</ul>
+<ul>
+<li>然后再kubecl get nodes获取集群的node</li>
+</ul>
+<ul>
+<li>然后再kubectl-node_shell &lt;node-name&gt;</li>
+</ul>
+<ul>
+<li>然后执行：sudo su –</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题排查：</li>
+</ul>
+<ul>
+<li>确认集群为Private集群，网络模型为CNI overlay。</li>
+</ul>
+<ul>
+<li>检查POD日志，显示有跟coreDNS service IP UDP 53 I/O time out。</li>
+</ul>
+<ul>
+<li>分别在Publisher POD所在Node， coreDNS POD中同时抓包，发现coreDNS POD回复的DNS query response不能到达Publisher POD所在的Node。</li>
+</ul>
+<ul>
+<li>排查集群各个Node的kubelet日志，发现每个Node在部署Publisher POD时，实际都有些问题，报cni plugin not initialized。</li>
+</ul>
+<ul>
+<li>进一步排查Node pool Subnet路由配置，其关联的UDR中包含如下三条路由：</li>
+</ul>
+<ul>
+<li>确认上述三条路由下一跳IP为其它AKS集群的Node IP，而不是本集群的。对于CNI overlay集群实际平台也不会为node pool subnet创建UDR。</li>
+</ul>
+<ul>
+<li>收集ASK Node kubelet log的方法：使用kubectl-node_shell连上node后执行：</li>
+</ul>
+<ul>
+<li>journalctl -u kubelet -o cat &gt; &lt;node-name&gt;-kubelet.log  #这个使用kubectl debug连接node后也可以执行</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>登录Publisher POD所在的Node，telnet coreDNS service IP 53，偶尔有遇到no route to host；telnet coreDNS POD IP，有到其中一个IP 53端口不通。</li>
+</ul>
+<ul>
+<li>排查集群各个Node的iptables规则，未见跟TCP\UDP 53端口相关规则有什么异常。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>问题解决：建议用户移除上述UDR中的三条路由，再次部署观察Defender publisher POD持续稳定运行。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>找一台Linux VM，安装好az cli <a href="https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?view=azure-cli-latest&amp;pivots=apt" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?view=azure-cli-latest&amp;pivots=apt</a> 和kubectl <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/" target="_blank" rel="noopener">https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/</a></li>
+</ul>
+<ul>
+<li>curl -LO <a href="https://github.com/kvaps/kubectl-node-shell/raw/master/kubectl-node_shell" target="_blank" rel="noopener">https://github.com/kvaps/kubectl-node-shell/raw/master/kubectl-node_shell</a>  #下载kubectl node shell工具，用来登录node</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025.7.24</p>
+<p>Tian Tian</p>
+<p>涉及工单：20250612357891</p>
+<p>问题描述：用户ASK集群启用了Defender for container后其相关的publisher POD要么无法running要么running后也会重启；其它POD也有无法running的情况。</p>
+<p>问题排查：</p>
+<p>确认集群为Private集群，网络模型为CNI overlay。</p>
+<p>用户表示某特定user node上的Publisher POD始终无法稳定running。</p>
+<p>用户表示删除对应node pool重建后问题依旧。</p>
+<p>检查POD日志，显示有跟coreDNS service IP UDP 53 I/O time out。</p>
+<p>登录Publisher POD所在的Node，telnet coreDNS service IP 53，偶尔有遇到no route to host；telnet coreDNS POD IP，有到其中一个IP 53端口不通。</p>
+<p>删除不通的coreDNS POD重建，其被分配到了其它节点上，实际POD IP也变了，再次测试连通性恢复正常。但Publisher相关POD仍然问题依旧。</p>
+<p>分别在Publisher POD所在Node， coreDNS POD中同时抓包，发现coreDNS POD回复的DNS query response不能到达Publisher POD所在的Node。</p>
+<p>排查集群各个Node的iptables规则，未见跟TCP\UDP 53端口相关规则有什么异常。</p>
+<p>排查集群各个Node的kubelet日志，发现每个Node在部署Publisher POD时，实际都有些问题，报cni plugin not initialized。</p>
+<p>收集集群全部POD -o wide信息，发现可能跟network policy相关的POD calico-kube-controllers其IP为10.244.2.x，且重启计数非0：该集群 POD CIDR为10.244.0.0/16.</p>
+<p>进一步排查Node pool Subnet路由配置，其关联的UDR中包含如下三条路由：</p>
+<p>确认上述三条路由下一跳IP为其它AKS集群的Node IP，而不是本集群的。对于CNI overlay集群实际平台也不会为node pool subnet创建UDR。</p>
+<p>问题解决：建议用户移除上述UDR中的三条路由，再次部署观察Defender publisher POD持续稳定运行。</p>
+<p>附：</p>
+<p>收集AKS Node iptables全部规则的方法：</p>
+<p>找一台Linux VM，安装好az cli <a href="https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?view=azure-cli-latest&amp;pivots=apt" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?view=azure-cli-latest&amp;pivots=apt</a> 和kubectl <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/" target="_blank" rel="noopener">https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/</a></p>
+<p>然后再通过az cli登录上azure</p>
+<p>再继续：</p>
+<p>curl -LO <a href="https://github.com/kvaps/kubectl-node-shell/raw/master/kubectl-node_shell" target="_blank" rel="noopener">https://github.com/kvaps/kubectl-node-shell/raw/master/kubectl-node_shell</a>  #下载kubectl node shell工具，用来登录node</p>
+<p>chmod +x ./kubectl-node_shell</p>
+<p>sudo mv ./kubectl-node_shell /usr/local/bin/kubectl-node_shell</p>
+<p>然后找到名为kubectl-node_shell的bash文件，vi编辑它，将其中的docker.io替换为 dockerhub.azk8s.cn</p>
+<p>然后再kubecl get nodes获取集群的node</p>
+<p>然后再kubectl-node_shell &lt;node-name&gt;</p>
+<p>然后执行：sudo su –</p>
+<p>iptables-save &gt; &lt;node-name&gt;.txt   #Kubectl debug连接node无法操作iptables规则，会提示需要root权限。</p>
+<p>收集ASK Node kubelet log的方法：使用kubectl-node_shell连上node后执行：</p>
+<p>journalctl -u kubelet -o cat &gt; &lt;node-name&gt;-kubelet.log  #这个使用kubectl debug连接node后也可以执行</p></article>

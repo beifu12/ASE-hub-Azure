@@ -1,0 +1,59 @@
+<article class="kb-article" data-title="AKS node中快速抓包"><h1>AKS node中快速抓包</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-05-19 17:03:26</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>登入到AKS VMSS的node上抓包，可能需要进行一些配置才可以进到VMSS的node上去，比较麻烦，或者使用nodeshell去登入到node上去，但是nodeshell的方式不能实时的显示抓包结果，因此，可以参考附件的yaml文件通过指定nodeName以及hostNetwork去快速到特定的node上去抓包 。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>登入到AKS VMSS的node上抓包，可能需要进行一些配置才可以进到VMSS的node上去，比较麻烦，或者使用nodeshell去登入到node上去，但是nodeshell的方式不能实时的显示抓包结果，因此，可以参考附件的yaml文件通过指定nodeName以及hostNetwork去快速到特定的node上去抓包 。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>可以看到登入到pod中，看到的网卡等跟node1是一模一样的</li>
+</ul>
+<ul>
+<li>Note:</li>
+</ul>
+<ul>
+<li>1.hostNetwork: true</li>
+</ul>
+<ul>
+<li>2.通过hostName来指定POD运行在特定的node上</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>登入到AKS VMSS的node上抓包，可能需要进行一些配置才可以进到VMSS的node上去，比较麻烦，或者使用nodeshell去登入到node上去，但是nodeshell的方式不能实时的显示抓包结果，因此，可以参考附件的yaml文件通过指定nodeName以及hostNetwork去快速到特定的node上去抓包 。</li>
+</ul>
+<ul>
+<li>可以在这里的任何一个网卡上进行抓包 ，相当于登入到node上去了。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>kubectl apply -f pod.yaml</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>3.在使用之前，建议跟客户确认下能否apply，以免产生其他的影响</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/05/19</p>
+<p>登入到AKS VMSS的node上抓包，可能需要进行一些配置才可以进到VMSS的node上去，比较麻烦，或者使用nodeshell去登入到node上去，但是nodeshell的方式不能实时的显示抓包结果，因此，可以参考附件的yaml文件通过指定nodeName以及hostNetwork去快速到特定的node上去抓包 。</p>
+<p>kubectl apply -f pod.yaml</p>
+<p>可以看到登入到pod中，看到的网卡等跟node1是一模一样的</p>
+<p>可以在这里的任何一个网卡上进行抓包 ，相当于登入到node上去了。</p>
+<p>Note:</p>
+<p>1.hostNetwork: true</p>
+<p>2.通过hostName来指定POD运行在特定的node上</p>
+<p>3.在使用之前，建议跟客户确认下能否apply，以免产生其他的影响</p></article>

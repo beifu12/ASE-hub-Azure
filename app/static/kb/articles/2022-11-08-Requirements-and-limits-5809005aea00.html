@@ -1,0 +1,786 @@
+<article class="kb-article" data-title="Requirements and limits"><h1>Requirements and limits</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Data Box POD</li>
+<li>最近修改: 2022-11-08 11:32:53</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Although copying via both SMB and NFS in parallel can work, we don&#39;t recommend doing that as it&#39;s prone to human error. Wait until your SMB data copy is complete before you start an NFS data copy.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Although copying via both SMB and NFS in parallel can work, we don&#39;t recommend doing that as it&#39;s prone to human error. Wait until your SMB data copy is complete before you start an NFS data copy.</li>
+</ul>
+<ul>
+<li>If the CreateTime or LastWriteTime field for a file exceeds the allowable size during an upload, “Fri, 31 Dec 9999 23:59:59” replaces the original date in the Azure file property. The file upload succeeds, and no error is raised.</li>
+</ul>
+<ul>
+<li>Cannot end with the forward slash (/).</li>
+</ul>
+<ul>
+<li>The number of path segments comprising the blob name cannot exceed 254. A path segment is the string between consecutive delimiter characters (for example, the forward slash &#39;/&#39;) that correspond to the name of a virtual directory.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Microsoft Stream</li>
+</ul>
+<ul>
+<li>Azure Data Box system requirements</li>
+</ul>
+<ul>
+<li>Supported operating systems for clients</li>
+</ul>
+<ul>
+<li>Here is a list of the supported operating systems for the data copy operation via the clients connected to your device.</li>
+</ul>
+<ul>
+<li>Operating system</li>
+</ul>
+<ul>
+<li>Versions</li>
+</ul>
+<ul>
+<li>Notes</li>
+</ul>
+<ul>
+<li>Windows Server</li>
+</ul>
+<ul>
+<li>2016 RS1 and later</li>
+</ul>
+<ul>
+<li>2019 RS5 and later</li>
+</ul>
+<ul>
+<li>With earlier editions of these operating systems, you can&#39;t use RoboCopy in Backup mode (robocopy /B) to copy files that contain Alternate Data Streams (ADS) or use Extended Attributes (EAs) in their Access Control Lists (ACLs).</li>
+</ul>
+<ul>
+<li>Windows</li>
+</ul>
+<ul>
+<li>7, 8, 10</li>
+</ul>
+<ul>
+<li>Linux</li>
+</ul>
+<ul>
+<li>SMB</li>
+</ul>
+<ul>
+<li>3.0 and 2.0</li>
+</ul>
+<ul>
+<li>NFS</li>
+</ul>
+<ul>
+<li>All versions up to and including 4.1</li>
+</ul>
+<ul>
+<li>For NFS shares, copying data into Data Box from an Advanced Interactive Executive (AIX) host using the IBM Database 2 (DB2) Export tool is not supported.</li>
+</ul>
+<ul>
+<li>Supported storage accounts for imports</li>
+</ul>
+<ul>
+<li>For import orders, following table shows the supported storage accounts.</li>
+</ul>
+<ul>
+<li>Storage account / Supported storage types</li>
+</ul>
+<ul>
+<li>Block blob</li>
+</ul>
+<ul>
+<li>Page blob1</li>
+</ul>
+<ul>
+<li>Azure files</li>
+</ul>
+<ul>
+<li>Supported access tiers</li>
+</ul>
+<ul>
+<li>Classic Standard</li>
+</ul>
+<ul>
+<li>Y</li>
+</ul>
+<ul>
+<li>General-purpose v1 Standard</li>
+</ul>
+<ul>
+<li>Hot, Cool</li>
+</ul>
+<ul>
+<li>General-purpose v1 Premium</li>
+</ul>
+<ul>
+<li>General-purpose v2 Standard2</li>
+</ul>
+<ul>
+<li>General-purpose v2 Premium</li>
+</ul>
+<ul>
+<li>Azure Premium FileStorage</li>
+</ul>
+<ul>
+<li>Blob storage Standard</li>
+</ul>
+<ul>
+<li>1 Data uploaded to page blobs must be 512 bytes aligned such as VHDs.</li>
+</ul>
+<ul>
+<li>2 Azure Data Lake Storage Gen2 (ADLS Gen2) is supported for imports but not for exports.</li>
+</ul>
+<ul>
+<li>Supported storage accounts for exports</li>
+</ul>
+<ul>
+<li>For export orders, following table shows the supported storage accounts.</li>
+</ul>
+<ul>
+<li>Page blob*</li>
+</ul>
+<ul>
+<li>General-purpose v2 Standard</li>
+</ul>
+<ul>
+<li>Block Blob storage Premium</li>
+</ul>
+<ul>
+<li>Page Blob storage Premium</li>
+</ul>
+<ul>
+<li>Caveats for storage accounts</li>
+</ul>
+<ul>
+<li>For General-purpose accounts:</li>
+</ul>
+<ul>
+<li>For import orders, Data Box does not support Queue, Table, and Disk storage types.</li>
+</ul>
+<ul>
+<li>For export orders, Data Box does not support Queue, Table, Disk, and Azure Data Lake Gen2 storage types.</li>
+</ul>
+<ul>
+<li>Data Box does not support append blobs for Blob Storage and Block Blob Storage accounts.</li>
+</ul>
+<ul>
+<li>Data uploaded to page blobs must be 512 bytes aligned such as VHDs.</li>
+</ul>
+<ul>
+<li>For exports:</li>
+</ul>
+<ul>
+<li>A maximum of 80 TB can be exported.</li>
+</ul>
+<ul>
+<li>File history and blob snapshots are not exported.</li>
+</ul>
+<ul>
+<li>Archive blobs are not supported for export. Rehydrate the blobs in archive tier before you export. For more information, see Rehydrate an archived blob to an online tier.</li>
+</ul>
+<ul>
+<li>Supported storage types</li>
+</ul>
+<ul>
+<li>Here is a list of the supported storage types for the Data Box device.</li>
+</ul>
+<ul>
+<li>File format</li>
+</ul>
+<ul>
+<li>Azure block blob</li>
+</ul>
+<ul>
+<li>Azure page blob</li>
+</ul>
+<ul>
+<li>The data should be 512 bytes aligned.</li>
+</ul>
+<ul>
+<li>Azure Files</li>
+</ul>
+<ul>
+<li>Supported web browsers</li>
+</ul>
+<ul>
+<li>Here is a list of web browsers supported for the local web UI.</li>
+</ul>
+<ul>
+<li>Browser</li>
+</ul>
+<ul>
+<li>Additional requirements/notes</li>
+</ul>
+<ul>
+<li>Google Chrome</li>
+</ul>
+<ul>
+<li>Latest version</li>
+</ul>
+<ul>
+<li>Tested with Chrome</li>
+</ul>
+<ul>
+<li>Microsoft Edge</li>
+</ul>
+<ul>
+<li>FireFox</li>
+</ul>
+<ul>
+<li>Tested with FireFox</li>
+</ul>
+<ul>
+<li>Internet Explorer</li>
+</ul>
+<ul>
+<li>Networking requirements</li>
+</ul>
+<ul>
+<li>Your datacenter needs to have high-speed network. We strongly recommend you have at least one 10-GbE connection. If a 10-GbE connection isn&#39;t available, you can use a 1-GbE data link to copy data, but the copy speeds are affected.</li>
+</ul>
+<ul>
+<li>Port requirements</li>
+</ul>
+<ul>
+<li>Port no.</li>
+</ul>
+<ul>
+<li>In or out</li>
+</ul>
+<ul>
+<li>Port scope</li>
+</ul>
+<ul>
+<li>Required</li>
+</ul>
+<ul>
+<li>TCP 80 (HTTP)</li>
+</ul>
+<ul>
+<li>In</li>
+</ul>
+<ul>
+<li>LAN</li>
+</ul>
+<ul>
+<li>Yes</li>
+</ul>
+<ul>
+<li>This port is used to connect to Data Box Blob storage REST APIs over HTTP. If not connecting to REST APIs, this automatically redirects to local web UI over 8443.</li>
+</ul>
+<ul>
+<li>TCP 443 (HTTPS)</li>
+</ul>
+<ul>
+<li>This port is used to connect to Data Box Blob storage REST APIs over HTTPS. If not connecting to REST APIs, this automatically redirects to local web UI over 8443.</li>
+</ul>
+<ul>
+<li>TCP 8443 (HTTPS-Alt)</li>
+</ul>
+<ul>
+<li>This is an alternative port for HTTPS and is used when connecting to local web UI for device management.</li>
+</ul>
+<ul>
+<li>TCP 445 (SMB)</li>
+</ul>
+<ul>
+<li>Out/In</li>
+</ul>
+<ul>
+<li>In some cases</li>
+</ul>
+<ul>
+<li>See notes</li>
+</ul>
+<ul>
+<li>This port is required only if you&#39;re connecting via SMB.</li>
+</ul>
+<ul>
+<li>TCP 2049 (NFS)</li>
+</ul>
+<ul>
+<li>This port is required only if you&#39;re connecting via NFS.</li>
+</ul>
+<ul>
+<li>TCP 111 (NFS)</li>
+</ul>
+<ul>
+<li>This port is used for rpcbind/port mapping and required only if you&#39;re connecting via NFS.</li>
+</ul>
+<ul>
+<li>Data Box limits</li>
+</ul>
+<ul>
+<li>Data Box can store a maximum of 500 million files for both import and export.</li>
+</ul>
+<ul>
+<li>Data Box supports a maximum of 512 containers or shares in the cloud. The top-level directories within the user share become containers or Azure file shares in the cloud.</li>
+</ul>
+<ul>
+<li>Data Box usage capacity may be less than 80 TiB because of ReFS metadata space consumption.</li>
+</ul>
+<ul>
+<li>Data Box supports a maximum of 10 client connections at a time on an NFS share.</li>
+</ul>
+<ul>
+<li>Data copy and upload caveats</li>
+</ul>
+<ul>
+<li>For import order</li>
+</ul>
+<ul>
+<li>Data Box caveats for an import order include:</li>
+</ul>
+<ul>
+<li>Containers, shares, and folders:</li>
+</ul>
+<ul>
+<li>Don&#39;t copy files directly to any of the precreated shares. You need to create a folder under the share and then copy files to that folder.</li>
+</ul>
+<ul>
+<li>A folder under the StorageAccount_BlockBlob and StorageAccount_PageBlob is a container. For instance, containers are created as StorageAccount_BlockBlob/container and StorageAccount_PageBlob/container.</li>
+</ul>
+<ul>
+<li>Each folder created directly under StorageAccount_AzFile is translated into an Azure File Share.</li>
+</ul>
+<ul>
+<li>Azure Blob Storage doesn&#39;t support directories. If you create a folder under the StorageAccount_BlockBlob folder, then virtual folders are created in the blob name. For Azure Files, the actual directory structure is maintained.</li>
+</ul>
+<ul>
+<li>Merging folder contents:</li>
+</ul>
+<ul>
+<li>Every file written into StorageAccount_BlockBlob and StorageAccount_PageBlob shares is uploaded as a block blob and page blob respectively.</li>
+</ul>
+<ul>
+<li>If a folder has the same name as an existing container, the folder&#39;s contents are merged with the container&#39;s contents. Files or blobs that aren&#39;t already in the cloud are added to the container. If a file or blob has the same name as a file or blob that&#39;s already in the container, the existing file or blob is overwritten.</li>
+</ul>
+<ul>
+<li>An upload to a blob in the Archive tier will fail if the container has an existing archived blob with the same name. While a blob is in the Archive tier, it can&#39;t be read or modified. If you need to overwrite a blob, make sure the blob isn&#39;t set to archive. For more information, see Archive access tier.</li>
+</ul>
+<ul>
+<li>Any empty directory hierarchy (without any files) created under StorageAccount_BlockBlob and StorageAccount_PageBlob folders isn&#39;t uploaded.</li>
+</ul>
+<ul>
+<li>Use different storage accounts for SMB and NFS.</li>
+</ul>
+<ul>
+<li>Don&#39;t copy the same data to the same end destination in Azure using both SMB and NFS. In these cases, the final outcome can&#39;t be determined.</li>
+</ul>
+<ul>
+<li>Upload management:</li>
+</ul>
+<ul>
+<li>File metadata and NTFS permissions can be preserved when the data is uploaded to Azure Files using guidance in Preserving file ACLs, attributes, and timestamps with Azure Data Box.</li>
+</ul>
+<ul>
+<li>The hierarchy of the files is maintained while uploading to the cloud for both blobs and Azure Files. For example, you copied a file at this path: &lt;container folder&gt;\A\B\C.txt. This file is uploaded to the same path in cloud.</li>
+</ul>
+<ul>
+<li>For export order</li>
+</ul>
+<ul>
+<li>Data Box caveats for an export order include:</li>
+</ul>
+<ul>
+<li>Data Box is a Windows-based device and doesn’t support case-sensitive file names. For example, you may have two different files in Azure with names that just differ in casing. Don&#39;t use Data Box to export such files as the files will be overwritten on the device.</li>
+</ul>
+<ul>
+<li>Data Box exports data to Windows-based system over SMB and is limited by SMB limitations for files and folders. Files and folders with unsupported names aren&#39;t exported.</li>
+</ul>
+<ul>
+<li>There is a 1:1 mapping from prefix to container.</li>
+</ul>
+<ul>
+<li>Maximum filename size is 1024 characters. Filenames that exceed this length aren&#39;t exported.</li>
+</ul>
+<ul>
+<li>Duplicate prefixes in the xml file (uploaded during order creation) are exported. Duplicate prefixes are not ignored.</li>
+</ul>
+<ul>
+<li>Page blobs and container names are case-sensitive. If the casing is mismatched, the blob and/or container will not be found.</li>
+</ul>
+<ul>
+<li>Azure storage account size limits</li>
+</ul>
+<ul>
+<li>Here are the limits on the size of the data that&#39;s copied into a storage account. Make sure the data you upload conforms to these limits. For the most up-to-date information on these limits, see Scalability and performance targets for Blob storage and Azure Files scalability and performance targets.</li>
+</ul>
+<ul>
+<li>Size of data copied into Azure storage account</li>
+</ul>
+<ul>
+<li>Default limit</li>
+</ul>
+<ul>
+<li>Block blob and page blob</li>
+</ul>
+<ul>
+<li>Maximum limit is the same as the Storage limit defined for Azure Subscription and it includes data from all the sources including Data Box.</li>
+</ul>
+<ul>
+<li>Data Box supports Azure Premium File Shares, which allow a total of 100 TiB for all shares in the storage account.</li>
+</ul>
+<ul>
+<li>All folders under StorageAccount_AzFile must follow this limit. For more information, see Create an Azure file share.</li>
+</ul>
+<ul>
+<li>Azure object size limits</li>
+</ul>
+<ul>
+<li>Here are the sizes of the Azure objects that can be written. Make sure that all the files that are uploaded conform to these limits.</li>
+</ul>
+<ul>
+<li>Azure object type</li>
+</ul>
+<ul>
+<li>~ 4.75 TiB</li>
+</ul>
+<ul>
+<li>Page blob</li>
+</ul>
+<ul>
+<li>4 TiB</li>
+</ul>
+<ul>
+<li>Every file uploaded in page blob format must be 512 bytes aligned (an integral multiple), else the upload fails.</li>
+</ul>
+<ul>
+<li>VHD and VHDX are 512 bytes aligned.</li>
+</ul>
+<ul>
+<li>1 TiB</li>
+</ul>
+<ul>
+<li>Managed disks</li>
+</ul>
+<ul>
+<li>For more information on size and limits, see:</li>
+</ul>
+<ul>
+<li>Scalability targets of Standard SSDs</li>
+</ul>
+<ul>
+<li>Scalability targets of Premium SSDs</li>
+</ul>
+<ul>
+<li>Scalability targets of Standard HDDs</li>
+</ul>
+<ul>
+<li>Pricing and billing of managed disks</li>
+</ul>
+<ul>
+<li>Azure block blob, page blob, and file naming conventions</li>
+</ul>
+<ul>
+<li>Entity</li>
+</ul>
+<ul>
+<li>Conventions</li>
+</ul>
+<ul>
+<li>Container names for block blob and page blob</li>
+</ul>
+<ul>
+<li>Must be a valid DNS name that is 3 to 63 characters long.</li>
+</ul>
+<ul>
+<li>Must start with a letter or number.</li>
+</ul>
+<ul>
+<li>Every hyphen (-) must be immediately preceded and followed by a letter or number.</li>
+</ul>
+<ul>
+<li>Consecutive hyphens aren&#39;t permitted in names.</li>
+</ul>
+<ul>
+<li>Share names for Azure files</li>
+</ul>
+<ul>
+<li>Same as above</li>
+</ul>
+<ul>
+<li>Directory and file names for Azure files</li>
+</ul>
+<ul>
+<li>Case-preserving, case-insensitive and must not exceed 255 characters in length.</li>
+</ul>
+<ul>
+<li>If provided, it will be automatically removed.</li>
+</ul>
+<ul>
+<li>Following characters aren&#39;t allowed: &quot; \ / : | &lt; &gt; * ?</li>
+</ul>
+<ul>
+<li>Reserved URL characters must be properly escaped.</li>
+</ul>
+<ul>
+<li>Following file names aren&#39;t allowed: LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, LPT9, COM1, COM2, COM3, COM4, COM5, COM6, COM7, COM8, COM9, PRN, AUX, NUL, CON, CLOCK$, dot character (.), and two dot characters (..).</li>
+</ul>
+<ul>
+<li>Blob names for block blob and page blob</li>
+</ul>
+<ul>
+<li>Blob names are case-sensitive and can contain any combination of characters.</li>
+</ul>
+<ul>
+<li>A blob name must be between 1 to 1,024 characters long.</li>
+</ul>
+<ul>
+<li>For more information, please visit the links below:</li>
+</ul>
+<ul>
+<li>Azure Data Box System Requirements</li>
+</ul>
+<ul>
+<li>Azure Data Box Blob Storage Requirements</li>
+</ul>
+<ul>
+<li>Azure Data Box Limits</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>The following table lists the ports that need to be opened in your firewall to allow for SMB or NFS traffic. In this table, In (inbound) refers to the direction from which incoming client requests access to your device. Out (or outbound) refers to the direction in which your Data Box device sends data externally, beyond the deployment. For example, data might be outbound to the Internet.</li>
+</ul>
+<ul>
+<li>If there are any errors when uploading data to Azure, an error log is created in the target storage account. The path to this error log is available when the upload is complete, and you can review the log to take corrective action. Don&#39;t delete data from the source without verifying the uploaded data.</li>
+</ul>
+<ul>
+<li>If you have duplicate tags in input files or tags referring to the same data, the Data Box export might skip or overwrite the files. The number of files and size of data that the Azure portal displays might differ from the actual size of data on the device.</li>
+</ul>
+<ul>
+<li>Maximum usable capacity is slightly less because of the space that copy logs and audit logs use. A minimum 100 GiB each is reserved for the copy log and audit log. For more information, see Audit logs for Azure Data Box, Azure Data Box Heavy.</li>
+</ul>
+<ul>
+<li>Illegal URL path characters aren&#39;t allowed. Code points like \uE000 aren&#39;t valid Unicode characters. Some ASCII or Unicode characters, like control characters (0x00 to 0x1F, \u0081, etc.), are also not allowed. For rules governing Unicode strings in HTTP/1.1 see RFC 2616, Section 2.2: Basic Rules and RFC 3987.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Supported file transfer protocols for clients</li>
+</ul>
+<ul>
+<li>Protocol</li>
+</ul>
+<ul>
+<li>Network File System (NFS) 3.0 protocol support in Azure Blob storage is not supported with Data Box.</li>
+</ul>
+<ul>
+<li>If you use both the SMB and NFS protocols for data copies, we recommend that you:</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>Can contain only lowercase letters, numbers, and the hyphen (-).</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>If you cannot sign in, check if cookies and JavaScript are enabled. To enable the UI access, add the device IP to Privacy Actions so that the device can access cookies.</li>
+</ul>
+<ul>
+<li>To improve performance during data uploads, we recommend that you enable large file shares on the storage account and increase share capacity to 100 TiB. Large file shares are only supported for storage accounts with locally redundant storage (LRS).</li>
+</ul>
+<ul>
+<li>Data Box supports large file shares (100 TiB) if enabled before creation of the Data Box order.</li>
+</ul>
+<ul>
+<li>If large file shares are not enabled before order creation, maximum file share size supported is 5 TiB.</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Microsoft Stream</p>
+<p>Azure Data Box system requirements</p>
+<p>Supported operating systems for clients</p>
+<p>Here is a list of the supported operating systems for the data copy operation via the clients connected to your device.</p>
+<p>Operating system</p>
+<p>Versions</p>
+<p>Notes</p>
+<p>Windows Server</p>
+<p>2016 RS1 and later</p>
+<p>2019 RS5 and later</p>
+<p>With earlier editions of these operating systems, you can&#39;t use RoboCopy in Backup mode (robocopy /B) to copy files that contain Alternate Data Streams (ADS) or use Extended Attributes (EAs) in their Access Control Lists (ACLs).</p>
+<p>Windows</p>
+<p>7, 8, 10</p>
+<p>Linux</p>
+<p>Supported file transfer protocols for clients</p>
+<p>Protocol</p>
+<p>SMB</p>
+<p>3.0 and 2.0</p>
+<p>NFS</p>
+<p>All versions up to and including 4.1</p>
+<p>For NFS shares, copying data into Data Box from an Advanced Interactive Executive (AIX) host using the IBM Database 2 (DB2) Export tool is not supported.</p>
+<p>Supported storage accounts for imports</p>
+<p>For import orders, following table shows the supported storage accounts.</p>
+<p>Storage account / Supported storage types</p>
+<p>Block blob</p>
+<p>Page blob1</p>
+<p>Azure files</p>
+<p>Supported access tiers</p>
+<p>Classic Standard</p>
+<p>Y</p>
+<p>General-purpose v1 Standard</p>
+<p>Hot, Cool</p>
+<p>General-purpose v1 Premium</p>
+<p>General-purpose v2 Standard2</p>
+<p>General-purpose v2 Premium</p>
+<p>Azure Premium FileStorage</p>
+<p>Blob storage Standard</p>
+<p>1 Data uploaded to page blobs must be 512 bytes aligned such as VHDs.</p>
+<p>2 Azure Data Lake Storage Gen2 (ADLS Gen2) is supported for imports but not for exports.</p>
+<p>Supported storage accounts for exports</p>
+<p>For export orders, following table shows the supported storage accounts.</p>
+<p>Page blob*</p>
+<p>General-purpose v2 Standard</p>
+<p>Block Blob storage Premium</p>
+<p>Page Blob storage Premium</p>
+<p>Caveats for storage accounts</p>
+<p>For General-purpose accounts:</p>
+<p>For import orders, Data Box does not support Queue, Table, and Disk storage types.</p>
+<p>For export orders, Data Box does not support Queue, Table, Disk, and Azure Data Lake Gen2 storage types.</p>
+<p>Data Box does not support append blobs for Blob Storage and Block Blob Storage accounts.</p>
+<p>Network File System (NFS) 3.0 protocol support in Azure Blob storage is not supported with Data Box.</p>
+<p>Data uploaded to page blobs must be 512 bytes aligned such as VHDs.</p>
+<p>For exports:</p>
+<p>A maximum of 80 TB can be exported.</p>
+<p>File history and blob snapshots are not exported.</p>
+<p>Archive blobs are not supported for export. Rehydrate the blobs in archive tier before you export. For more information, see Rehydrate an archived blob to an online tier.</p>
+<p>Supported storage types</p>
+<p>Here is a list of the supported storage types for the Data Box device.</p>
+<p>File format</p>
+<p>Azure block blob</p>
+<p>Azure page blob</p>
+<p>The data should be 512 bytes aligned.</p>
+<p>Azure Files</p>
+<p>Supported web browsers</p>
+<p>Here is a list of web browsers supported for the local web UI.</p>
+<p>Browser</p>
+<p>Additional requirements/notes</p>
+<p>Google Chrome</p>
+<p>Latest version</p>
+<p>Tested with Chrome</p>
+<p>Microsoft Edge</p>
+<p>FireFox</p>
+<p>Tested with FireFox</p>
+<p>Internet Explorer</p>
+<p>If you cannot sign in, check if cookies and JavaScript are enabled. To enable the UI access, add the device IP to Privacy Actions so that the device can access cookies.</p>
+<p>Networking requirements</p>
+<p>Your datacenter needs to have high-speed network. We strongly recommend you have at least one 10-GbE connection. If a 10-GbE connection isn&#39;t available, you can use a 1-GbE data link to copy data, but the copy speeds are affected.</p>
+<p>Port requirements</p>
+<p>The following table lists the ports that need to be opened in your firewall to allow for SMB or NFS traffic. In this table, In (inbound) refers to the direction from which incoming client requests access to your device. Out (or outbound) refers to the direction in which your Data Box device sends data externally, beyond the deployment. For example, data might be outbound to the Internet.</p>
+<p>Port no.</p>
+<p>In or out</p>
+<p>Port scope</p>
+<p>Required</p>
+<p>TCP 80 (HTTP)</p>
+<p>In</p>
+<p>LAN</p>
+<p>Yes</p>
+<p>This port is used to connect to Data Box Blob storage REST APIs over HTTP. If not connecting to REST APIs, this automatically redirects to local web UI over 8443.</p>
+<p>TCP 443 (HTTPS)</p>
+<p>This port is used to connect to Data Box Blob storage REST APIs over HTTPS. If not connecting to REST APIs, this automatically redirects to local web UI over 8443.</p>
+<p>TCP 8443 (HTTPS-Alt)</p>
+<p>This is an alternative port for HTTPS and is used when connecting to local web UI for device management.</p>
+<p>TCP 445 (SMB)</p>
+<p>Out/In</p>
+<p>In some cases</p>
+<p>See notes</p>
+<p>This port is required only if you&#39;re connecting via SMB.</p>
+<p>TCP 2049 (NFS)</p>
+<p>This port is required only if you&#39;re connecting via NFS.</p>
+<p>TCP 111 (NFS)</p>
+<p>This port is used for rpcbind/port mapping and required only if you&#39;re connecting via NFS.</p>
+<p>Data Box limits</p>
+<p>Data Box can store a maximum of 500 million files for both import and export.</p>
+<p>Data Box supports a maximum of 512 containers or shares in the cloud. The top-level directories within the user share become containers or Azure file shares in the cloud.</p>
+<p>Data Box usage capacity may be less than 80 TiB because of ReFS metadata space consumption.</p>
+<p>Data Box supports a maximum of 10 client connections at a time on an NFS share.</p>
+<p>Data copy and upload caveats</p>
+<p>For import order</p>
+<p>Data Box caveats for an import order include:</p>
+<p>Containers, shares, and folders:</p>
+<p>Don&#39;t copy files directly to any of the precreated shares. You need to create a folder under the share and then copy files to that folder.</p>
+<p>A folder under the StorageAccount_BlockBlob and StorageAccount_PageBlob is a container. For instance, containers are created as StorageAccount_BlockBlob/container and StorageAccount_PageBlob/container.</p>
+<p>Each folder created directly under StorageAccount_AzFile is translated into an Azure File Share.</p>
+<p>Azure Blob Storage doesn&#39;t support directories. If you create a folder under the StorageAccount_BlockBlob folder, then virtual folders are created in the blob name. For Azure Files, the actual directory structure is maintained.</p>
+<p>Merging folder contents:</p>
+<p>Every file written into StorageAccount_BlockBlob and StorageAccount_PageBlob shares is uploaded as a block blob and page blob respectively.</p>
+<p>If a folder has the same name as an existing container, the folder&#39;s contents are merged with the container&#39;s contents. Files or blobs that aren&#39;t already in the cloud are added to the container. If a file or blob has the same name as a file or blob that&#39;s already in the container, the existing file or blob is overwritten.</p>
+<p>An upload to a blob in the Archive tier will fail if the container has an existing archived blob with the same name. While a blob is in the Archive tier, it can&#39;t be read or modified. If you need to overwrite a blob, make sure the blob isn&#39;t set to archive. For more information, see Archive access tier.</p>
+<p>Any empty directory hierarchy (without any files) created under StorageAccount_BlockBlob and StorageAccount_PageBlob folders isn&#39;t uploaded.</p>
+<p>If you use both the SMB and NFS protocols for data copies, we recommend that you:</p>
+<p>Use different storage accounts for SMB and NFS.</p>
+<p>Don&#39;t copy the same data to the same end destination in Azure using both SMB and NFS. In these cases, the final outcome can&#39;t be determined.</p>
+<p>Although copying via both SMB and NFS in parallel can work, we don&#39;t recommend doing that as it&#39;s prone to human error. Wait until your SMB data copy is complete before you start an NFS data copy.</p>
+<p>Upload management:</p>
+<p>To improve performance during data uploads, we recommend that you enable large file shares on the storage account and increase share capacity to 100 TiB. Large file shares are only supported for storage accounts with locally redundant storage (LRS).</p>
+<p>If there are any errors when uploading data to Azure, an error log is created in the target storage account. The path to this error log is available when the upload is complete, and you can review the log to take corrective action. Don&#39;t delete data from the source without verifying the uploaded data.</p>
+<p>File metadata and NTFS permissions can be preserved when the data is uploaded to Azure Files using guidance in Preserving file ACLs, attributes, and timestamps with Azure Data Box.</p>
+<p>The hierarchy of the files is maintained while uploading to the cloud for both blobs and Azure Files. For example, you copied a file at this path: &lt;container folder&gt;\A\B\C.txt. This file is uploaded to the same path in cloud.</p>
+<p>If the CreateTime or LastWriteTime field for a file exceeds the allowable size during an upload, “Fri, 31 Dec 9999 23:59:59” replaces the original date in the Azure file property. The file upload succeeds, and no error is raised.</p>
+<p>For export order</p>
+<p>Data Box caveats for an export order include:</p>
+<p>Data Box is a Windows-based device and doesn’t support case-sensitive file names. For example, you may have two different files in Azure with names that just differ in casing. Don&#39;t use Data Box to export such files as the files will be overwritten on the device.</p>
+<p>If you have duplicate tags in input files or tags referring to the same data, the Data Box export might skip or overwrite the files. The number of files and size of data that the Azure portal displays might differ from the actual size of data on the device.</p>
+<p>Data Box exports data to Windows-based system over SMB and is limited by SMB limitations for files and folders. Files and folders with unsupported names aren&#39;t exported.</p>
+<p>There is a 1:1 mapping from prefix to container.</p>
+<p>Maximum filename size is 1024 characters. Filenames that exceed this length aren&#39;t exported.</p>
+<p>Duplicate prefixes in the xml file (uploaded during order creation) are exported. Duplicate prefixes are not ignored.</p>
+<p>Page blobs and container names are case-sensitive. If the casing is mismatched, the blob and/or container will not be found.</p>
+<p>Azure storage account size limits</p>
+<p>Here are the limits on the size of the data that&#39;s copied into a storage account. Make sure the data you upload conforms to these limits. For the most up-to-date information on these limits, see Scalability and performance targets for Blob storage and Azure Files scalability and performance targets.</p>
+<p>Size of data copied into Azure storage account</p>
+<p>Default limit</p>
+<p>Block blob and page blob</p>
+<p>Maximum limit is the same as the Storage limit defined for Azure Subscription and it includes data from all the sources including Data Box.</p>
+<p>Data Box supports large file shares (100 TiB) if enabled before creation of the Data Box order.</p>
+<p>If large file shares are not enabled before order creation, maximum file share size supported is 5 TiB.</p>
+<p>Data Box supports Azure Premium File Shares, which allow a total of 100 TiB for all shares in the storage account.</p>
+<p>Maximum usable capacity is slightly less because of the space that copy logs and audit logs use. A minimum 100 GiB each is reserved for the copy log and audit log. For more information, see Audit logs for Azure Data Box, Azure Data Box Heavy.</p>
+<p>All folders under StorageAccount_AzFile must follow this limit. For more information, see Create an Azure file share.</p>
+<p>Azure object size limits</p>
+<p>Here are the sizes of the Azure objects that can be written. Make sure that all the files that are uploaded conform to these limits.</p>
+<p>Azure object type</p>
+<p>~ 4.75 TiB</p>
+<p>Page blob</p>
+<p>4 TiB</p>
+<p>Every file uploaded in page blob format must be 512 bytes aligned (an integral multiple), else the upload fails.</p>
+<p>VHD and VHDX are 512 bytes aligned.</p>
+<p>1 TiB</p>
+<p>Managed disks</p>
+<p>For more information on size and limits, see:</p>
+<p>Scalability targets of Standard SSDs</p>
+<p>Scalability targets of Premium SSDs</p>
+<p>Scalability targets of Standard HDDs</p>
+<p>Pricing and billing of managed disks</p>
+<p>Azure block blob, page blob, and file naming conventions</p>
+<p>Entity</p>
+<p>Conventions</p>
+<p>Container names for block blob and page blob</p>
+<p>Must be a valid DNS name that is 3 to 63 characters long.</p>
+<p>Must start with a letter or number.</p>
+<p>Can contain only lowercase letters, numbers, and the hyphen (-).</p>
+<p>Every hyphen (-) must be immediately preceded and followed by a letter or number.</p>
+<p>Consecutive hyphens aren&#39;t permitted in names.</p>
+<p>Share names for Azure files</p>
+<p>Same as above</p>
+<p>Directory and file names for Azure files</p>
+<p>Case-preserving, case-insensitive and must not exceed 255 characters in length.</p>
+<p>Cannot end with the forward slash (/).</p>
+<p>If provided, it will be automatically removed.</p>
+<p>Following characters aren&#39;t allowed: &quot; \ / : | &lt; &gt; * ?</p>
+<p>Reserved URL characters must be properly escaped.</p>
+<p>Illegal URL path characters aren&#39;t allowed. Code points like \uE000 aren&#39;t valid Unicode characters. Some ASCII or Unicode characters, like control characters (0x00 to 0x1F, \u0081, etc.), are also not allowed. For rules governing Unicode strings in HTTP/1.1 see RFC 2616, Section 2.2: Basic Rules and RFC 3987.</p>
+<p>Following file names aren&#39;t allowed: LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, LPT9, COM1, COM2, COM3, COM4, COM5, COM6, COM7, COM8, COM9, PRN, AUX, NUL, CON, CLOCK$, dot character (.), and two dot characters (..).</p>
+<p>Blob names for block blob and page blob</p>
+<p>Blob names are case-sensitive and can contain any combination of characters.</p>
+<p>A blob name must be between 1 to 1,024 characters long.</p>
+<p>The number of path segments comprising the blob name cannot exceed 254. A path segment is the string between consecutive delimiter characters (for example, the forward slash &#39;/&#39;) that correspond to the name of a virtual directory.</p>
+<p>For more information, please visit the links below:</p>
+<p>Azure Data Box System Requirements</p>
+<p>Azure Data Box Blob Storage Requirements</p>
+<p>Azure Data Box Limits</p></article>

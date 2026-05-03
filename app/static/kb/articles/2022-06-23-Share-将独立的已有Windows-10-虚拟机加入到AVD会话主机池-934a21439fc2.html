@@ -1,0 +1,80 @@
+<article class="kb-article" data-title="【Share】将独立的已有Windows 10 虚拟机加入到AVD会话主机池"><h1>【Share】将独立的已有Windows 10 虚拟机加入到AVD会话主机池</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2022-06-23 22:27:24</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>创建一台Windows 10虚拟机，注意其需要在AADDS所能连接的虚拟网络中；</li>
+</ul>
+<ul>
+<li>将其加入AAD DS域；</li>
+</ul>
+<ul>
+<li>下载 Azure 虚拟桌面代理，运行安装程序。 当安装程序要求你提供注册令牌时，输入现有主机池的Registration key</li>
+</ul>
+<ul>
+<li>创建token：</li>
+</ul>
+<ul>
+<li>获取token：</li>
+</ul>
+<ul>
+<li>###获取完整的toke值：</li>
+</ul>
+<ul>
+<li>下载并安装 Azure 虚拟桌面代理引导加载程序</li>
+</ul>
+<ul>
+<li>重新启动新加入主机池的虚拟机。</li>
+</ul>
+<ul>
+<li>至于您前面提到的：“安装桌面会话主机 (RDSH) 角色。这个怎么安装？” 这个是针对Windows server OS的，而Windows10属于Windows Client，因此无需安装。</li>
+</ul>
+<ul>
+<li>最终测试结果是可以将该虚拟机加入到AVD的会话主机池中：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如何将一台Windows 10虚拟机加入到AVD会话主机池中，请参考如下步骤：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>##参考文档：<a href="https://docs.azure.cn/zh-cn//virtual-desktop/create-host-pools-powershell?tabs=azure-powershell#register-the-virtual-machines-to-the-windows-virtual-desktop-host-pool" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn//virtual-desktop/create-host-pools-powershell?tabs=azure-powershell#register-the-virtual-machines-to-the-windows-virtual-desktop-host-pool</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>2022-06-23</p>
+<p>如何将一台Windows 10虚拟机加入到AVD会话主机池中，请参考如下步骤：</p>
+<p>##参考文档：<a href="https://docs.azure.cn/zh-cn//virtual-desktop/create-host-pools-powershell?tabs=azure-powershell#register-the-virtual-machines-to-the-windows-virtual-desktop-host-pool" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn//virtual-desktop/create-host-pools-powershell?tabs=azure-powershell#register-the-virtual-machines-to-the-windows-virtual-desktop-host-pool</a></p>
+<p>创建一台Windows 10虚拟机，注意其需要在AADDS所能连接的虚拟网络中；</p>
+<p>将其加入AAD DS域；</p>
+<p>下载 Azure 虚拟桌面代理，运行安装程序。 当安装程序要求你提供注册令牌时，输入现有主机池的Registration key</p>
+<p>创建token：</p>
+<p>获取token：</p>
+<p>###获取完整的toke值：</p>
+<p>下载并安装 Azure 虚拟桌面代理引导加载程序</p>
+<p>重新启动新加入主机池的虚拟机。</p>
+<p>至于您前面提到的：“安装桌面会话主机 (RDSH) 角色。这个怎么安装？” 这个是针对Windows server OS的，而Windows10属于Windows Client，因此无需安装。</p>
+<p>最终测试结果是可以将该虚拟机加入到AVD的会话主机池中：</p></article>

@@ -1,0 +1,127 @@
+<article class="kb-article" data-title="P2S  client使用Radius实现用户名和密码认证"><h1>P2S  client使用Radius实现用户名和密码认证</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-26 11:06:23</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>P2S VPN借助Radius服务器可以实现用户名和密码认证，由于官方文档中没有Radius服务器的搭建，所以我测试了一下，仅供大家参考：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>P2S VPN借助Radius服务器可以实现用户名和密码认证，由于官方文档中没有Radius服务器的搭建，所以我测试了一下，仅供大家参考：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>P2S VPN借助Radius服务器可以实现用户名和密码认证，由于官方文档中没有Radius服务器的搭建，所以我测试了一下，仅供大家参考：</li>
+</ul>
+<ul>
+<li>在AzureVNet中新建一台Windows Server 2016 Datacenter 服务器，安装AD服务，然后新建一个用户组，这里名为P2SVPN，并且新建一个用户vpnuser01. 隶属于P2SVPN用户组。</li>
+</ul>
+<ul>
+<li>安装AD的过程，这里略去过程.</li>
+</ul>
+<ul>
+<li>安装NPS角色，一步一步默认安装即可</li>
+</ul>
+<ul>
+<li>配置NPS</li>
+</ul>
+<ul>
+<li>（1）在AD中注册NPS</li>
+</ul>
+<ul>
+<li>（2）新建radius客户端</li>
+</ul>
+<ul>
+<li>客户端的地址填写VPN Gateway的内网IP。一般VPNGateway的内网地址有两个，一般是GatewaySubnet的第四个或者第五个IP</li>
+</ul>
+<ul>
+<li>我的GatewaySubnet 是10.19.0.0/24。所以我新建了两个客户端。共享秘钥自己定义。</li>
+</ul>
+<ul>
+<li>（3）新建连接策略</li>
+</ul>
+<ul>
+<li>无IP筛选器，默认配置</li>
+</ul>
+<ul>
+<li>默认配置</li>
+</ul>
+<ul>
+<li>领域名称填写AD的域名，填不填无所谓拉</li>
+</ul>
+<ul>
+<li>然后完成即可。</li>
+</ul>
+<ul>
+<li>配置Azure网关的P2S VPN连接</li>
+</ul>
+<ul>
+<li>下载客户端，然后拨号，填写VPNUser01用户的密码，domain填写域名即可</li>
+</ul>
+<ul>
+<li>获得拨号池中的地址</li>
+</ul>
+<ul>
+<li>可以ping通虚拟网络中的机器</li>
+</ul>
+<ul>
+<li>借助AD功能，可以方便用户的管理。同时根据官方说明，Radius服务也可以不用结合AD使用，这时拨号的用户将使用系统的本地组和用户进行，这时也是可以的。</li>
+</ul>
+<ul>
+<li>本地用户也可以拨号</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>选择3（2）步骤新建的客户端</li>
+</ul>
+<ul>
+<li>选择身份验证协议EAP-MSCHAPv2</li>
+</ul>
+<ul>
+<li>添加第1步骤新建的组</li>
+</ul>
+<ul>
+<li>服务器IP地址请填写Radius服务器的地址。服务器秘钥请填写3（2）步骤中指定的共享秘钥即可。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>P2S 官方文档参考：<a href="https://docs.azure.cn/zh-cn/vpn-gateway/point-to-site-how-to-radius-ps" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/point-to-site-how-to-radius-ps</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>P2S VPN借助Radius服务器可以实现用户名和密码认证，由于官方文档中没有Radius服务器的搭建，所以我测试了一下，仅供大家参考：</p>
+<p>P2S 官方文档参考：<a href="https://docs.azure.cn/zh-cn/vpn-gateway/point-to-site-how-to-radius-ps" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/point-to-site-how-to-radius-ps</a></p>
+<p>在AzureVNet中新建一台Windows Server 2016 Datacenter 服务器，安装AD服务，然后新建一个用户组，这里名为P2SVPN，并且新建一个用户vpnuser01. 隶属于P2SVPN用户组。</p>
+<p>安装AD的过程，这里略去过程.</p>
+<p>安装NPS角色，一步一步默认安装即可</p>
+<p>配置NPS</p>
+<p>（1）在AD中注册NPS</p>
+<p>（2）新建radius客户端</p>
+<p>客户端的地址填写VPN Gateway的内网IP。一般VPNGateway的内网地址有两个，一般是GatewaySubnet的第四个或者第五个IP</p>
+<p>我的GatewaySubnet 是10.19.0.0/24。所以我新建了两个客户端。共享秘钥自己定义。</p>
+<p>（3）新建连接策略</p>
+<p>选择3（2）步骤新建的客户端</p>
+<p>选择身份验证协议EAP-MSCHAPv2</p>
+<p>添加第1步骤新建的组</p>
+<p>无IP筛选器，默认配置</p>
+<p>默认配置</p>
+<p>领域名称填写AD的域名，填不填无所谓拉</p>
+<p>然后完成即可。</p>
+<p>配置Azure网关的P2S VPN连接</p>
+<p>服务器IP地址请填写Radius服务器的地址。服务器秘钥请填写3（2）步骤中指定的共享秘钥即可。</p>
+<p>下载客户端，然后拨号，填写VPNUser01用户的密码，domain填写域名即可</p>
+<p>获得拨号池中的地址</p>
+<p>可以ping通虚拟网络中的机器</p>
+<p>借助AD功能，可以方便用户的管理。同时根据官方说明，Radius服务也可以不用结合AD使用，这时拨号的用户将使用系统的本地组和用户进行，这时也是可以的。</p>
+<p>本地用户也可以拨号</p></article>

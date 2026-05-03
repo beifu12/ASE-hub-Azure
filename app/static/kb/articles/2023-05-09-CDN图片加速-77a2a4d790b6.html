@@ -1,0 +1,100 @@
+<article class="kb-article" data-title="CDN图片加速"><h1>CDN图片加速</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-05-09 16:06:53</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>可参考工单 SR_2019091851827_[MS-LED]配置图片加速失败</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>可参考工单   SR_2019091851827_[MS-LED]配置图片加速失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>ZhangNan</li>
+</ul>
+<ul>
+<li>另外还需要把Container的访问级别设置为“容器”—匿名读取访问容器和blob。</li>
+</ul>
+<ul>
+<li>2019110460473_[TEC]如何使用CDN添加水印</li>
+</ul>
+<ul>
+<li>Fuzhangliang</li>
+</ul>
+<ul>
+<li>目前测试，可能只有部分供应商支持图片加速HTTPS回源</li>
+</ul>
+<ul>
+<li>Azure China CDN image processing | Azure Docs</li>
+</ul>
+<ul>
+<li>如果客户设置图片处理加速的https支持且使用了https回源，出于安全需求，源站要求支持TLS 1.2。可以使用第三方测试工具来测试源站是否支持  1.2 （比如openSSL工具）。</li>
+</ul>
+<ul>
+<li>参考工单：</li>
+</ul>
+<ul>
+<li>20211123133748</li>
+</ul>
+<ul>
+<li>[MS-LED]创建图片处理类型的CDN加速节点</li>
+</ul>
+<ul>
+<li>比如存储账号是：TLS 1.2</li>
+</ul>
+<ul>
+<li>可以访问图片</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>经过与产品组确认，加速目前只支持Http回源，如果客户源站是Https，可能会导致访问400报错。</li>
+</ul>
+<ul>
+<li>工单中客户的源站使用Azure存储账户并配置图片加速，根据上述，需要把存储账户的安全传输关闭，如果客户担心安全问题，可以开启存储账户防火墙设置固定IP访问，CDN节点IP段可与产品组进行确认，但是IP段很可能会变，存在风险，须告知客户。</li>
+</ul>
+<ul>
+<li>客户追问到“匿名读取访问容器和blob”是否会影响文件上传即写入存储账户的不安全问题。经过与Paas确认，Write操作必须要SAS或connection string，所以只影响读取。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>加速域名<a href="http://scrmstorage.lagardere-tr.cn/scrm-stg/image/logo/bdl.jpeg" target="_blank" rel="noopener">http://scrmstorage.lagardere-tr.cn/scrm-stg/image/logo/bdl.jpeg</a></li>
+</ul>
+<ul>
+<li>源站 <a href="https://ltrscrmstorage.blob.core.chinacloudapi.cn/scrm-stg/image/logo/bdl.jpeg" target="_blank" rel="noopener">https://ltrscrmstorage.blob.core.chinacloudapi.cn/scrm-stg/image/logo/bdl.jpeg</a></li>
+</ul>
+<ul>
+<li><a href="https://scrmstorage.lagardere-tr.cn/scrm-stg/image/logo/bdl.jpeg?basic=45r" target="_blank" rel="noopener">https://scrmstorage.lagardere-tr.cn/scrm-stg/image/logo/bdl.jpeg?basic=45r</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>ZhangNan</p>
+<p>经过与产品组确认，加速目前只支持Http回源，如果客户源站是Https，可能会导致访问400报错。</p>
+<p>可参考工单   SR_2019091851827_[MS-LED]配置图片加速失败</p>
+<p>工单中客户的源站使用Azure存储账户并配置图片加速，根据上述，需要把存储账户的安全传输关闭，如果客户担心安全问题，可以开启存储账户防火墙设置固定IP访问，CDN节点IP段可与产品组进行确认，但是IP段很可能会变，存在风险，须告知客户。</p>
+<p>另外还需要把Container的访问级别设置为“容器”—匿名读取访问容器和blob。</p>
+<p>客户追问到“匿名读取访问容器和blob”是否会影响文件上传即写入存储账户的不安全问题。经过与Paas确认，Write操作必须要SAS或connection string，所以只影响读取。</p>
+<p>2019110460473_[TEC]如何使用CDN添加水印</p>
+<p>Fuzhangliang</p>
+<p>目前测试，可能只有部分供应商支持图片加速HTTPS回源</p>
+<p>Azure China CDN image processing | Azure Docs</p>
+<p>如果客户设置图片处理加速的https支持且使用了https回源，出于安全需求，源站要求支持TLS 1.2。可以使用第三方测试工具来测试源站是否支持  1.2 （比如openSSL工具）。</p>
+<p>参考工单：</p>
+<p>20211123133748</p>
+<p>[MS-LED]创建图片处理类型的CDN加速节点</p>
+<p>比如存储账号是：TLS 1.2</p>
+<p>加速域名<a href="http://scrmstorage.lagardere-tr.cn/scrm-stg/image/logo/bdl.jpeg" target="_blank" rel="noopener">http://scrmstorage.lagardere-tr.cn/scrm-stg/image/logo/bdl.jpeg</a></p>
+<p>源站 <a href="https://ltrscrmstorage.blob.core.chinacloudapi.cn/scrm-stg/image/logo/bdl.jpeg" target="_blank" rel="noopener">https://ltrscrmstorage.blob.core.chinacloudapi.cn/scrm-stg/image/logo/bdl.jpeg</a></p>
+<p>可以访问图片</p>
+<p><a href="https://scrmstorage.lagardere-tr.cn/scrm-stg/image/logo/bdl.jpeg?basic=45r" target="_blank" rel="noopener">https://scrmstorage.lagardere-tr.cn/scrm-stg/image/logo/bdl.jpeg?basic=45r</a></p></article>

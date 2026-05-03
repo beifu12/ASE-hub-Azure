@@ -1,0 +1,519 @@
+<article class="kb-article" data-title="存储账号配置仅支持tls1.2以上协议后，如何确认不能使用tls1.0和1.1连接"><h1>存储账号配置仅支持tls1.2以上协议后，如何确认不能使用tls1.0和1.1连接</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-08-04 14:38:47</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Master-Key: 0CDD3402AC8336EA44CF504DE38FB565319E3B8E72161AA0508B0D4E65512CC57CDADC580210510ECC619B88D515293F</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Master-Key: 0CDD3402AC8336EA44CF504DE38FB565319E3B8E72161AA0508B0D4E65512CC57CDADC580210510ECC619B88D515293F</li>
+</ul>
+<ul>
+<li>Timeout   : 7200 (sec)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>当前存储账号配置仅支持tls1.2以上协议后，客户反馈还能使用tls1.0和1.1协议。</li>
+</ul>
+<ul>
+<li>可以是用过Qualys 网站进行测试的：</li>
+</ul>
+<ul>
+<li>SSL Server Test (Powered by Qualys SSL Labs)</li>
+</ul>
+<ul>
+<li>SSL Server Test This free online service performs a deep analysis of the configuration of any SSL web server on the public Internet. Please note that the information you submit here is used only to provide you the service. We don&#39;t use the domain names or the test results, and we never will.</li>
+</ul>
+<ul>
+<li>我测试也可以复现客户的问题：</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# openssl s_client -connect  stora11.blob.core.chinacloudapi.cn:443 -tls1</li>
+</ul>
+<ul>
+<li>CONNECTED(00000003)</li>
+</ul>
+<ul>
+<li>---</li>
+</ul>
+<ul>
+<li>no peer certificate available</li>
+</ul>
+<ul>
+<li>No client certificate CA names sent</li>
+</ul>
+<ul>
+<li>SSL handshake has read 0 bytes and written 7 bytes</li>
+</ul>
+<ul>
+<li>Verification: OK</li>
+</ul>
+<ul>
+<li>New, (NONE), Cipher is (NONE)</li>
+</ul>
+<ul>
+<li>Secure Renegotiation IS NOT supported</li>
+</ul>
+<ul>
+<li>Compression: NONE</li>
+</ul>
+<ul>
+<li>Expansion: NONE</li>
+</ul>
+<ul>
+<li>No ALPN negotiated</li>
+</ul>
+<ul>
+<li>Early data was not sent</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# openssl s_client -connect  stora11.blob.core.chinacloudapi.cn:443 -tls1_1</li>
+</ul>
+<ul>
+<li>Tls 1.2是可以成功建立连接的：</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# openssl s_client -connect  stora11.blob.core.chinacloudapi.cn:443 -tls1_2</li>
+</ul>
+<ul>
+<li>Certificate chain</li>
+</ul>
+<ul>
+<li>i:C = US, O = DigiCert Inc, CN = DigiCert Basic RSA CN CA G2</li>
+</ul>
+<ul>
+<li>1 s:C = US, O = DigiCert Inc, CN = DigiCert Basic RSA CN CA G2</li>
+</ul>
+<ul>
+<li>Server certificate</li>
+</ul>
+<ul>
+<li>-----BEGIN CERTIFICATE-----</li>
+</ul>
+<ul>
+<li>MIINRzCCDC+gAwIBAgIQBCL8zXFx9mdxiYuTVbMkrzANBgkqhkiG9w0BAQsFADBK</li>
+</ul>
+<ul>
+<li>MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMSQwIgYDVQQDExtE</li>
+</ul>
+<ul>
+<li>aWdpQ2VydCBCYXNpYyBSU0EgQ04gQ0EgRzIwHhcNMjUwNjIzMDAwMDAwWhcNMjUx</li>
+</ul>
+<ul>
+<li>MjIzMjM1OTU5WjB6MQswCQYDVQQGEwJDTjERMA8GA1UECBMIU2hhbmdoYWkxMTAv</li>
+</ul>
+<ul>
+<li>BgNVBAoTKFNoYW5naGFpIEJsdWUgQ2xvdWQgVGVjaG5vbG9neSBDby4sIEx0ZC4x</li>
+</ul>
+<ul>
+<li>JTAjBgNVBAMMHCouYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24wggEiMA0GCSqG</li>
+</ul>
+<ul>
+<li>SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDGoXyduIP2lvkLQlHl6kaXAPL740j7D48C</li>
+</ul>
+<ul>
+<li>fZALXQwWYMH10q6SjMNZ7dpgzllt2Na5KoKUvq05tW7ZLqXURd6Rh37BFxfNNwAJ</li>
+</ul>
+<ul>
+<li>2yleLG9xkW/Zm40Pzk2JoYDI6XmqU0ZsqlLTtnOOem5yxN4bN3JEbkB49uPT2qLL</li>
+</ul>
+<ul>
+<li>j6P5s3M0ubd+Y26CHyouejIuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CHyouejMuYmxvYi5j</li>
+</ul>
+<ul>
+<li>b3JlLmNoaW5hY2xvdWRhcGkuY26CHyouejQuYmxvYi5jb3JlLmNoaW5hY2xvdWRh</li>
+</ul>
+<ul>
+<li>cGkuY26CHyouejUuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CHyouejYuYmxv</li>
+</ul>
+<ul>
+<li>Yi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CHyouejcuYmxvYi5jb3JlLmNoaW5hY2xv</li>
+</ul>
+<ul>
+<li>dWRhcGkuY26CHyouejguYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CHyouejku</li>
+</ul>
+<ul>
+<li>YmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICouejEwLmJsb2IuY29yZS5jaGlu</li>
+</ul>
+<ul>
+<li>YWNsb3VkYXBpLmNugiAqLnoxMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jboIg</li>
+</ul>
+<ul>
+<li>Ki56MTIuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICouejEzLmJsb2IuY29y</li>
+</ul>
+<ul>
+<li>ZS5jaGluYWNsb3VkYXBpLmNugiAqLnoxNC5ibG9iLmNvcmUuY2hpbmFjbG91ZGFw</li>
+</ul>
+<ul>
+<li>aS5jboIgKi56MTUuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICouejE2LmJs</li>
+</ul>
+<ul>
+<li>b2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLnoxNy5ibG9iLmNvcmUuY2hpbmFj</li>
+</ul>
+<ul>
+<li>bG91ZGFwaS5jboIgKi56MTguYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICou</li>
+</ul>
+<ul>
+<li>ejE5LmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLnoyMC5ibG9iLmNvcmUu</li>
+</ul>
+<ul>
+<li>Y2hpbmFjbG91ZGFwaS5jboIgKi56MjEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGku</li>
+</ul>
+<ul>
+<li>Y26CICouejIyLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLnoyMy5ibG9i</li>
+</ul>
+<ul>
+<li>LmNvcmUuY2hpbmFjbG91ZGFwaS5jboIgKi56MjQuYmxvYi5jb3JlLmNoaW5hY2xv</li>
+</ul>
+<ul>
+<li>dWRhcGkuY26CICouejI1LmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLnoy</li>
+</ul>
+<ul>
+<li>Ni5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jboIgKi56MjcuYmxvYi5jb3JlLmNo</li>
+</ul>
+<ul>
+<li>aW5hY2xvdWRhcGkuY26CICouejI4LmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNu</li>
+</ul>
+<ul>
+<li>giAqLnoyOS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jboIgKi56MzAuYmxvYi5j</li>
+</ul>
+<ul>
+<li>b3JlLmNoaW5hY2xvdWRhcGkuY26CICouejMxLmJsb2IuY29yZS5jaGluYWNsb3Vk</li>
+</ul>
+<ul>
+<li>YXBpLmNugiAqLnozMi5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jboIgKi56MzMu</li>
+</ul>
+<ul>
+<li>YmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICouejM0LmJsb2IuY29yZS5jaGlu</li>
+</ul>
+<ul>
+<li>YWNsb3VkYXBpLmNugiAqLnozNS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jboIg</li>
+</ul>
+<ul>
+<li>Ki56MzYuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICouejM3LmJsb2IuY29y</li>
+</ul>
+<ul>
+<li>ZS5jaGluYWNsb3VkYXBpLmNugiAqLnozOC5ibG9iLmNvcmUuY2hpbmFjbG91ZGFw</li>
+</ul>
+<ul>
+<li>aS5jboIgKi56MzkuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICouejQwLmJs</li>
+</ul>
+<ul>
+<li>b2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLno0MS5ibG9iLmNvcmUuY2hpbmFj</li>
+</ul>
+<ul>
+<li>bG91ZGFwaS5jboIgKi56NDIuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICou</li>
+</ul>
+<ul>
+<li>ejQzLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLno0NC5ibG9iLmNvcmUu</li>
+</ul>
+<ul>
+<li>Y2hpbmFjbG91ZGFwaS5jboIgKi56NDUuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGku</li>
+</ul>
+<ul>
+<li>Y26CICouejQ2LmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLno0Ny5ibG9i</li>
+</ul>
+<ul>
+<li>LmNvcmUuY2hpbmFjbG91ZGFwaS5jboIgKi56NDguYmxvYi5jb3JlLmNoaW5hY2xv</li>
+</ul>
+<ul>
+<li>dWRhcGkuY26CICouejQ5LmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLno1</li>
+</ul>
+<ul>
+<li>MC5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbjA+BgNVHSAENzA1MDMGBmeBDAEC</li>
+</ul>
+<ul>
+<li>AjApMCcGCCsGAQUFBwIBFhtodHRwOi8vd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwDgYD</li>
+</ul>
+<ul>
+<li>VR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjBCBgNV</li>
+</ul>
+<ul>
+<li>HR8EOzA5MDegNaAzhjFodHRwOi8vY3JsLmRpZ2ljZXJ0LmNuL0RpZ2lDZXJ0QmFz</li>
+</ul>
+<ul>
+<li>aWNSU0FDTkNBRzIuY3JsMHYGCCsGAQUFBwEBBGowaDAjBggrBgEFBQcwAYYXaHR0</li>
+</ul>
+<ul>
+<li>cDovL29jc3AuZGlnaWNlcnQuY24wQQYIKwYBBQUHMAKGNWh0dHA6Ly9jYWNlcnRz</li>
+</ul>
+<ul>
+<li>LmRpZ2ljZXJ0LmNuL0RpZ2lDZXJ0QmFzaWNSU0FDTkNBRzIuY3J0MAwGA1UdEwEB</li>
+</ul>
+<ul>
+<li>/wQCMAAwggF+BgorBgEEAdZ5AgQCBIIBbgSCAWoBaAB3ABLxTjS9U3JMhAYZw48/</li>
+</ul>
+<ul>
+<li>ehP457Vih4icbTAFhOvlhiY6AAABl5ptZmwAAAQDAEgwRgIhAOS0hAFr+buWROri</li>
+</ul>
+<ul>
+<li>PvqEat+AAap3pcI3cji/deDVN0/iAiEA6o3lrzYOoZcXjHbWajyjB6L9f7l/pW3d</li>
+</ul>
+<ul>
+<li>Sf79oaqdG6EAdQDtPEvW6AbCpKIAV9vLJOI4Ad9RL+3EhsVwDyDdtz4/4AAAAZea</li>
+</ul>
+<ul>
+<li>bWaWAAAEAwBGMEQCIDgG+bm1nrKkqdLwVrnfZoKV3/rNXNIxqgnuCqb68fPpAiA6</li>
+</ul>
+<ul>
+<li>Q8IUwdK7Z207b7Ea4piktnevvGjZ2OHOO48OHPxq5AB2AKRCxQZJYGFUjw/U6pz7</li>
+</ul>
+<ul>
+<li>ei0mRU2HqX8v30VZ9idPOoRUAAABl5ptZq0AAAQDAEcwRQIgOzxbj/uRaPh/YRNP</li>
+</ul>
+<ul>
+<li>9fRpbqLo6lR56GiYnj9UZp2K+EICIQCiymdSmS1G1I9/9K3zaxAKCpLUZaWsfBB0</li>
+</ul>
+<ul>
+<li>GhGQFuEWhDANBgkqhkiG9w0BAQsFAAOCAQEAnllk4NN+/LlIr8mFX2tWj40uSZjl</li>
+</ul>
+<ul>
+<li>XwSqkJhypaIGN6YR2s0DtoFhxWAX1AsfkcG1ZEqgZW7Guw7W4/K9tL7SOCuHK4YZ</li>
+</ul>
+<ul>
+<li>mE7pWswV0jz2fjOahEvJCiBYvz9ML+uNuWYhyeY5Uuhux9h7JFuvRR82K4pCRusr</li>
+</ul>
+<ul>
+<li>y481gBMRj/2kmfjYuqLD0qk4eLn/LQ2ErYJSZnWY2R1QkC7IjjFymC+bdgKa0frl</li>
+</ul>
+<ul>
+<li>Jy7mjd9Tx641oOXvKFzv2AnFOkD3P6TUv+ipTEtOOkF/Ncuuj3byxEwWGsAbtwFd</li>
+</ul>
+<ul>
+<li>dKaPt87UQuBAyepS/Ayfxy8i7Alv21B51KDH4/Ok19AYfjtrwitojhdDDg==</li>
+</ul>
+<ul>
+<li>-----END CERTIFICATE-----</li>
+</ul>
+<ul>
+<li>Peer signing digest: SHA256</li>
+</ul>
+<ul>
+<li>Peer signature type: RSA-PSS</li>
+</ul>
+<ul>
+<li>Server Temp Key: ECDH, P-384, 384 bits</li>
+</ul>
+<ul>
+<li>SSL handshake has read 5231 bytes and written 389 bytes</li>
+</ul>
+<ul>
+<li>New, TLSv1.2, Cipher is ECDHE-RSA-AES256-GCM-SHA384</li>
+</ul>
+<ul>
+<li>Server public key is 2048 bit</li>
+</ul>
+<ul>
+<li>Secure Renegotiation IS supported</li>
+</ul>
+<ul>
+<li>SSL-Session:</li>
+</ul>
+<ul>
+<li>Cipher    : ECDHE-RSA-AES256-GCM-SHA384</li>
+</ul>
+<ul>
+<li>Session-ID: 072A0000CD7F19D9736100D31BF2DC369E9049CD1462031B1B951AC7B5E1E56F</li>
+</ul>
+<ul>
+<li>Session-ID-ctx:</li>
+</ul>
+<ul>
+<li>PSK identity: None</li>
+</ul>
+<ul>
+<li>PSK identity hint: None</li>
+</ul>
+<ul>
+<li>SRP username: None</li>
+</ul>
+<ul>
+<li>Start Time: 1754279198</li>
+</ul>
+<ul>
+<li>Extended master secret: yes</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Verify return code: 0 (ok)</li>
+</ul>
+<ul>
+<li>verify return:1</li>
+</ul>
+<ul>
+<li>0 s:C = CN, ST = Shanghai, O = &quot;Shanghai Blue Cloud Technology Co., Ltd.&quot;, CN = *.blob.core.chinacloudapi.cn</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>通过是用命令测试，这个协议是开启的，但是您如果发起request，是不能连接成功的。</li>
+</ul>
+<ul>
+<li>可以通过如下命令测试,Tls 1.0 和1.1都是不能建立连接的：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>140202532144448:error:141E70BF:SSL routines:tls_construct_client_hello:no protocols available:../ssl/statem/statem_clnt.c:1112:</li>
+</ul>
+<ul>
+<li>140125752956224:error:141E70BF:SSL routines:tls_construct_client_hello:no protocols available:../ssl/statem/statem_clnt.c:1112:</li>
+</ul>
+<ul>
+<li>depth=1 C = US, O = DigiCert Inc, CN = DigiCert Basic RSA CN CA G2</li>
+</ul>
+<ul>
+<li>depth=0 C = CN, ST = Shanghai, O = &quot;Shanghai Blue Cloud Technology Co., Ltd.&quot;, CN = *.blob.core.chinacloudapi.cn</li>
+</ul>
+<ul>
+<li>subject=C = CN, ST = Shanghai, O = &quot;Shanghai Blue Cloud Technology Co., Ltd.&quot;, CN = *.blob.core.chinacloudapi.cn</li>
+</ul>
+<ul>
+<li>issuer=C = US, O = DigiCert Inc, CN = DigiCert Basic RSA CN CA G2</li>
+</ul>
+<ul>
+<li>Protocol  : TLSv1.2</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>www.ssllabs.com</li>
+</ul>
+<ul>
+<li>depth=2 C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root CA</li>
+</ul>
+<ul>
+<li>i:C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root CA</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025-08-04</p>
+<p>当前存储账号配置仅支持tls1.2以上协议后，客户反馈还能使用tls1.0和1.1协议。</p>
+<p>可以是用过Qualys 网站进行测试的：</p>
+<p>SSL Server Test (Powered by Qualys SSL Labs)</p>
+<p>SSL Server Test This free online service performs a deep analysis of the configuration of any SSL web server on the public Internet. Please note that the information you submit here is used only to provide you the service. We don&#39;t use the domain names or the test results, and we never will.</p>
+<p>www.ssllabs.com</p>
+<p>我测试也可以复现客户的问题：</p>
+<p>通过是用命令测试，这个协议是开启的，但是您如果发起request，是不能连接成功的。</p>
+<p>可以通过如下命令测试,Tls 1.0 和1.1都是不能建立连接的：</p>
+<p>root@Ubuntu20:~# openssl s_client -connect  stora11.blob.core.chinacloudapi.cn:443 -tls1</p>
+<p>CONNECTED(00000003)</p>
+<p>140202532144448:error:141E70BF:SSL routines:tls_construct_client_hello:no protocols available:../ssl/statem/statem_clnt.c:1112:</p>
+<p>---</p>
+<p>no peer certificate available</p>
+<p>No client certificate CA names sent</p>
+<p>SSL handshake has read 0 bytes and written 7 bytes</p>
+<p>Verification: OK</p>
+<p>New, (NONE), Cipher is (NONE)</p>
+<p>Secure Renegotiation IS NOT supported</p>
+<p>Compression: NONE</p>
+<p>Expansion: NONE</p>
+<p>No ALPN negotiated</p>
+<p>Early data was not sent</p>
+<p>Verify return code: 0 (ok)</p>
+<p>root@Ubuntu20:~# openssl s_client -connect  stora11.blob.core.chinacloudapi.cn:443 -tls1_1</p>
+<p>140125752956224:error:141E70BF:SSL routines:tls_construct_client_hello:no protocols available:../ssl/statem/statem_clnt.c:1112:</p>
+<p>Tls 1.2是可以成功建立连接的：</p>
+<p>root@Ubuntu20:~# openssl s_client -connect  stora11.blob.core.chinacloudapi.cn:443 -tls1_2</p>
+<p>depth=2 C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root CA</p>
+<p>verify return:1</p>
+<p>depth=1 C = US, O = DigiCert Inc, CN = DigiCert Basic RSA CN CA G2</p>
+<p>depth=0 C = CN, ST = Shanghai, O = &quot;Shanghai Blue Cloud Technology Co., Ltd.&quot;, CN = *.blob.core.chinacloudapi.cn</p>
+<p>Certificate chain</p>
+<p>0 s:C = CN, ST = Shanghai, O = &quot;Shanghai Blue Cloud Technology Co., Ltd.&quot;, CN = *.blob.core.chinacloudapi.cn</p>
+<p>i:C = US, O = DigiCert Inc, CN = DigiCert Basic RSA CN CA G2</p>
+<p>1 s:C = US, O = DigiCert Inc, CN = DigiCert Basic RSA CN CA G2</p>
+<p>i:C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root CA</p>
+<p>Server certificate</p>
+<p>-----BEGIN CERTIFICATE-----</p>
+<p>MIINRzCCDC+gAwIBAgIQBCL8zXFx9mdxiYuTVbMkrzANBgkqhkiG9w0BAQsFADBK</p>
+<p>MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMSQwIgYDVQQDExtE</p>
+<p>aWdpQ2VydCBCYXNpYyBSU0EgQ04gQ0EgRzIwHhcNMjUwNjIzMDAwMDAwWhcNMjUx</p>
+<p>MjIzMjM1OTU5WjB6MQswCQYDVQQGEwJDTjERMA8GA1UECBMIU2hhbmdoYWkxMTAv</p>
+<p>BgNVBAoTKFNoYW5naGFpIEJsdWUgQ2xvdWQgVGVjaG5vbG9neSBDby4sIEx0ZC4x</p>
+<p>JTAjBgNVBAMMHCouYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY24wggEiMA0GCSqG</p>
+<p>SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDGoXyduIP2lvkLQlHl6kaXAPL740j7D48C</p>
+<p>fZALXQwWYMH10q6SjMNZ7dpgzllt2Na5KoKUvq05tW7ZLqXURd6Rh37BFxfNNwAJ</p>
+<p>2yleLG9xkW/Zm40Pzk2JoYDI6XmqU0ZsqlLTtnOOem5yxN4bN3JEbkB49uPT2qLL</p>
+<p>j6P5s3M0ubd+Y26CHyouejIuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CHyouejMuYmxvYi5j</p>
+<p>b3JlLmNoaW5hY2xvdWRhcGkuY26CHyouejQuYmxvYi5jb3JlLmNoaW5hY2xvdWRh</p>
+<p>cGkuY26CHyouejUuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CHyouejYuYmxv</p>
+<p>Yi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CHyouejcuYmxvYi5jb3JlLmNoaW5hY2xv</p>
+<p>dWRhcGkuY26CHyouejguYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CHyouejku</p>
+<p>YmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICouejEwLmJsb2IuY29yZS5jaGlu</p>
+<p>YWNsb3VkYXBpLmNugiAqLnoxMS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jboIg</p>
+<p>Ki56MTIuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICouejEzLmJsb2IuY29y</p>
+<p>ZS5jaGluYWNsb3VkYXBpLmNugiAqLnoxNC5ibG9iLmNvcmUuY2hpbmFjbG91ZGFw</p>
+<p>aS5jboIgKi56MTUuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICouejE2LmJs</p>
+<p>b2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLnoxNy5ibG9iLmNvcmUuY2hpbmFj</p>
+<p>bG91ZGFwaS5jboIgKi56MTguYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICou</p>
+<p>ejE5LmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLnoyMC5ibG9iLmNvcmUu</p>
+<p>Y2hpbmFjbG91ZGFwaS5jboIgKi56MjEuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGku</p>
+<p>Y26CICouejIyLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLnoyMy5ibG9i</p>
+<p>LmNvcmUuY2hpbmFjbG91ZGFwaS5jboIgKi56MjQuYmxvYi5jb3JlLmNoaW5hY2xv</p>
+<p>dWRhcGkuY26CICouejI1LmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLnoy</p>
+<p>Ni5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jboIgKi56MjcuYmxvYi5jb3JlLmNo</p>
+<p>aW5hY2xvdWRhcGkuY26CICouejI4LmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNu</p>
+<p>giAqLnoyOS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jboIgKi56MzAuYmxvYi5j</p>
+<p>b3JlLmNoaW5hY2xvdWRhcGkuY26CICouejMxLmJsb2IuY29yZS5jaGluYWNsb3Vk</p>
+<p>YXBpLmNugiAqLnozMi5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jboIgKi56MzMu</p>
+<p>YmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICouejM0LmJsb2IuY29yZS5jaGlu</p>
+<p>YWNsb3VkYXBpLmNugiAqLnozNS5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jboIg</p>
+<p>Ki56MzYuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICouejM3LmJsb2IuY29y</p>
+<p>ZS5jaGluYWNsb3VkYXBpLmNugiAqLnozOC5ibG9iLmNvcmUuY2hpbmFjbG91ZGFw</p>
+<p>aS5jboIgKi56MzkuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICouejQwLmJs</p>
+<p>b2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLno0MS5ibG9iLmNvcmUuY2hpbmFj</p>
+<p>bG91ZGFwaS5jboIgKi56NDIuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGkuY26CICou</p>
+<p>ejQzLmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLno0NC5ibG9iLmNvcmUu</p>
+<p>Y2hpbmFjbG91ZGFwaS5jboIgKi56NDUuYmxvYi5jb3JlLmNoaW5hY2xvdWRhcGku</p>
+<p>Y26CICouejQ2LmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLno0Ny5ibG9i</p>
+<p>LmNvcmUuY2hpbmFjbG91ZGFwaS5jboIgKi56NDguYmxvYi5jb3JlLmNoaW5hY2xv</p>
+<p>dWRhcGkuY26CICouejQ5LmJsb2IuY29yZS5jaGluYWNsb3VkYXBpLmNugiAqLno1</p>
+<p>MC5ibG9iLmNvcmUuY2hpbmFjbG91ZGFwaS5jbjA+BgNVHSAENzA1MDMGBmeBDAEC</p>
+<p>AjApMCcGCCsGAQUFBwIBFhtodHRwOi8vd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwDgYD</p>
+<p>VR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjBCBgNV</p>
+<p>HR8EOzA5MDegNaAzhjFodHRwOi8vY3JsLmRpZ2ljZXJ0LmNuL0RpZ2lDZXJ0QmFz</p>
+<p>aWNSU0FDTkNBRzIuY3JsMHYGCCsGAQUFBwEBBGowaDAjBggrBgEFBQcwAYYXaHR0</p>
+<p>cDovL29jc3AuZGlnaWNlcnQuY24wQQYIKwYBBQUHMAKGNWh0dHA6Ly9jYWNlcnRz</p>
+<p>LmRpZ2ljZXJ0LmNuL0RpZ2lDZXJ0QmFzaWNSU0FDTkNBRzIuY3J0MAwGA1UdEwEB</p>
+<p>/wQCMAAwggF+BgorBgEEAdZ5AgQCBIIBbgSCAWoBaAB3ABLxTjS9U3JMhAYZw48/</p>
+<p>ehP457Vih4icbTAFhOvlhiY6AAABl5ptZmwAAAQDAEgwRgIhAOS0hAFr+buWROri</p>
+<p>PvqEat+AAap3pcI3cji/deDVN0/iAiEA6o3lrzYOoZcXjHbWajyjB6L9f7l/pW3d</p>
+<p>Sf79oaqdG6EAdQDtPEvW6AbCpKIAV9vLJOI4Ad9RL+3EhsVwDyDdtz4/4AAAAZea</p>
+<p>bWaWAAAEAwBGMEQCIDgG+bm1nrKkqdLwVrnfZoKV3/rNXNIxqgnuCqb68fPpAiA6</p>
+<p>Q8IUwdK7Z207b7Ea4piktnevvGjZ2OHOO48OHPxq5AB2AKRCxQZJYGFUjw/U6pz7</p>
+<p>ei0mRU2HqX8v30VZ9idPOoRUAAABl5ptZq0AAAQDAEcwRQIgOzxbj/uRaPh/YRNP</p>
+<p>9fRpbqLo6lR56GiYnj9UZp2K+EICIQCiymdSmS1G1I9/9K3zaxAKCpLUZaWsfBB0</p>
+<p>GhGQFuEWhDANBgkqhkiG9w0BAQsFAAOCAQEAnllk4NN+/LlIr8mFX2tWj40uSZjl</p>
+<p>XwSqkJhypaIGN6YR2s0DtoFhxWAX1AsfkcG1ZEqgZW7Guw7W4/K9tL7SOCuHK4YZ</p>
+<p>mE7pWswV0jz2fjOahEvJCiBYvz9ML+uNuWYhyeY5Uuhux9h7JFuvRR82K4pCRusr</p>
+<p>y481gBMRj/2kmfjYuqLD0qk4eLn/LQ2ErYJSZnWY2R1QkC7IjjFymC+bdgKa0frl</p>
+<p>Jy7mjd9Tx641oOXvKFzv2AnFOkD3P6TUv+ipTEtOOkF/Ncuuj3byxEwWGsAbtwFd</p>
+<p>dKaPt87UQuBAyepS/Ayfxy8i7Alv21B51KDH4/Ok19AYfjtrwitojhdDDg==</p>
+<p>-----END CERTIFICATE-----</p>
+<p>subject=C = CN, ST = Shanghai, O = &quot;Shanghai Blue Cloud Technology Co., Ltd.&quot;, CN = *.blob.core.chinacloudapi.cn</p>
+<p>issuer=C = US, O = DigiCert Inc, CN = DigiCert Basic RSA CN CA G2</p>
+<p>Peer signing digest: SHA256</p>
+<p>Peer signature type: RSA-PSS</p>
+<p>Server Temp Key: ECDH, P-384, 384 bits</p>
+<p>SSL handshake has read 5231 bytes and written 389 bytes</p>
+<p>New, TLSv1.2, Cipher is ECDHE-RSA-AES256-GCM-SHA384</p>
+<p>Server public key is 2048 bit</p>
+<p>Secure Renegotiation IS supported</p>
+<p>SSL-Session:</p>
+<p>Protocol  : TLSv1.2</p>
+<p>Cipher    : ECDHE-RSA-AES256-GCM-SHA384</p>
+<p>Session-ID: 072A0000CD7F19D9736100D31BF2DC369E9049CD1462031B1B951AC7B5E1E56F</p>
+<p>Session-ID-ctx:</p>
+<p>Master-Key: 0CDD3402AC8336EA44CF504DE38FB565319E3B8E72161AA0508B0D4E65512CC57CDADC580210510ECC619B88D515293F</p>
+<p>PSK identity: None</p>
+<p>PSK identity hint: None</p>
+<p>SRP username: None</p>
+<p>Start Time: 1754279198</p>
+<p>Timeout   : 7200 (sec)</p>
+<p>Extended master secret: yes</p></article>

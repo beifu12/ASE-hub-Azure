@@ -1,0 +1,131 @@
+<article class="kb-article" data-title="非托管磁盘计费异常处理思路"><h1>非托管磁盘计费异常处理思路</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-07-22 12:28:59</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p><a href="https://in.21vbluecloud.com/sites/Azure/WATS/Shared%20Documents/WATS_KB_Training%20-%20Linked%20Files/非托管磁盘计费异常.docx" target="_blank" rel="noopener">https://in.21vbluecloud.com/sites/Azure/WATS/Shared%20Documents/WATS_KB_Training%20-%20Linked%20Files/非托管磁盘计费异常.docx</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li><a href="https://in.21vbluecloud.com/sites/Azure/WATS/Shared%20Documents/WATS_KB_Training%20-%20Linked%20Files/非托管磁盘计费异常.docx" target="_blank" rel="noopener">https://in.21vbluecloud.com/sites/Azure/WATS/Shared%20Documents/WATS_KB_Training%20-%20Linked%20Files/非托管磁盘计费异常.docx</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>从平台层面</li>
+</ul>
+<ul>
+<li>Guest OS层面</li>
+</ul>
+<ul>
+<li>手动执行Trim(执行完成之后问题环境可能不会保存)</li>
+</ul>
+<ul>
+<li>Windows</li>
+</ul>
+<ul>
+<li>.\Defrag.exe E: /L</li>
+</ul>
+<ul>
+<li>.\Defrag.exe E: /U /V</li>
+</ul>
+<ul>
+<li>Linux</li>
+</ul>
+<ul>
+<li>Fstrim -a -v(执行Trim)</li>
+</ul>
+<ul>
+<li>Mount -t ext4 -o discard /dev/mapper/vg_striped-lv_striped  /data01</li>
+</ul>
+<ul>
+<li>Node上抓日志，提供给PG分析</li>
+</ul>
+<ul>
+<li>wpr -start vstortrace.wprp!VStorWPP -filemode（必须使用system32下的wpr，和vstortrace.wprp）</li>
+</ul>
+<ul>
+<li>执行Trim操作</li>
+</ul>
+<ul>
+<li>wpr -stop mytrace.etl</li>
+</ul>
+<ul>
+<li>在2020101356683工单中PG提供的vstortrace.wprp文件</li>
+</ul>
+<ul>
+<li>参考</li>
+</ul>
+<ul>
+<li>工单：2020101356683</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>检查当前使用情况</li>
+</ul>
+<ul>
+<li>查看存储账户的Blob Capacity</li>
+</ul>
+<ul>
+<li>到资源管理器和磁盘管理处检查</li>
+</ul>
+<ul>
+<li>检查Trim状态（0为启用）</li>
+</ul>
+<ul>
+<li>执行完Trim后过一天查看Portal变化</li>
+</ul>
+<ul>
+<li>（wpr -start 的配置文件以及参数以抓包时PG提供为准）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用Powershell脚本</li>
+</ul>
+<ul>
+<li>使用非托管磁盘创建VM脚本</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://in.21vbluecloud.com/sites/Azure/WATS/Shared%20Documents/WATS_KB_Training%20-%20Linked%20Files/非托管磁盘计费异常.docx" target="_blank" rel="noopener">https://in.21vbluecloud.com/sites/Azure/WATS/Shared%20Documents/WATS_KB_Training%20-%20Linked%20Files/非托管磁盘计费异常.docx</a></li>
+</ul>
+<ul>
+<li>文档：<a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-billing-delete-unused-vhd-to-reduce-cost" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-billing-delete-unused-vhd-to-reduce-cost</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-05-08</p>
+<p><a href="https://in.21vbluecloud.com/sites/Azure/WATS/Shared%20Documents/WATS_KB_Training%20-%20Linked%20Files/非托管磁盘计费异常.docx" target="_blank" rel="noopener">https://in.21vbluecloud.com/sites/Azure/WATS/Shared%20Documents/WATS_KB_Training%20-%20Linked%20Files/非托管磁盘计费异常.docx</a></p>
+<p>检查当前使用情况</p>
+<p>从平台层面</p>
+<p>查看存储账户的Blob Capacity</p>
+<p>使用Powershell脚本</p>
+<p>Guest OS层面</p>
+<p>到资源管理器和磁盘管理处检查</p>
+<p>检查Trim状态（0为启用）</p>
+<p>手动执行Trim(执行完成之后问题环境可能不会保存)</p>
+<p>Windows</p>
+<p>.\Defrag.exe E: /L</p>
+<p>.\Defrag.exe E: /U /V</p>
+<p>Linux</p>
+<p>Fstrim -a -v(执行Trim)</p>
+<p>Mount -t ext4 -o discard /dev/mapper/vg_striped-lv_striped  /data01</p>
+<p>执行完Trim后过一天查看Portal变化</p>
+<p>Node上抓日志，提供给PG分析</p>
+<p>wpr -start vstortrace.wprp!VStorWPP -filemode（必须使用system32下的wpr，和vstortrace.wprp）</p>
+<p>执行Trim操作</p>
+<p>wpr -stop mytrace.etl</p>
+<p>（wpr -start 的配置文件以及参数以抓包时PG提供为准）</p>
+<p>在2020101356683工单中PG提供的vstortrace.wprp文件</p>
+<p>参考</p>
+<p>工单：2020101356683</p>
+<p>文档：<a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-billing-delete-unused-vhd-to-reduce-cost" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-billing-delete-unused-vhd-to-reduce-cost</a></p>
+<p>使用非托管磁盘创建VM脚本</p></article>

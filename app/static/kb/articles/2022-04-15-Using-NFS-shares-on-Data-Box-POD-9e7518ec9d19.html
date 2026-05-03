@@ -1,0 +1,105 @@
+<article class="kb-article" data-title="Using NFS shares on Data Box POD"><h1>Using NFS shares on Data Box POD</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Databox.one</li>
+<li>Section: Azure Databox</li>
+<li>最近修改: 2022-04-15 05:54:31</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>The NFS shares on a Data Box device have a naming convention based on the storage account(s) that data is being imported to or exported from and the type of data being imported or exported. The syntax for the UNC path to each share is shown below.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>The NFS shares on a Data Box device have a naming convention based on the storage account(s) that data is being imported to or exported from and the type of data being imported or exported. The syntax for the UNC path to each share is shown below.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>The NFS shares on a Data Box device have a naming convention based on the storage account(s) that data is being imported to or exported from and the type of data being imported or exported. The syntax for the UNC path to each share is shown below.</li>
+</ul>
+<ul>
+<li>Azure Block blob - //&lt;device IP address&gt;/&lt;storage account name&gt;_BlockBlob</li>
+</ul>
+<ul>
+<li>Azure Page blob - //&lt;device IP address&gt;/&lt;storage account name&gt;\_PageBlob</li>
+</ul>
+<ul>
+<li>Azure Files - //&lt;device IP address&gt;/&lt;storage account name&gt;_AzFile</li>
+</ul>
+<ul>
+<li>Azure Block blob (Archive) - //&lt;device IP address&gt;/&lt;storage account name&gt;_BlockBlobArchive</li>
+</ul>
+<ul>
+<li>If a Data Box device is being used to import to managed disks, the device will have additional shares with a naming convention based on the resource group selected during the ordering process and the type of managed disk that will be created upon data import. The syntax for these share names is shown below.</li>
+</ul>
+<ul>
+<li>Premium SSD - //&lt;DeviceIPAddress&gt;/&lt;ResourceGroupName_MDisk&gt;/PremiumSSD</li>
+</ul>
+<ul>
+<li>Standard HDD - //&lt;DeviceIPAddress&gt;/&lt;ResourceGroupName_MDisk&gt;/StandardHDD</li>
+</ul>
+<ul>
+<li>Standard SSD - //&lt;DeviceIPAddress&gt;/&lt;ResourceGroupName_MDisk&gt;/StandardSSD</li>
+</ul>
+<ul>
+<li>The basic steps to connect to an NFS share on the Data Box device from a Linux or Mac OS client are:</li>
+</ul>
+<ul>
+<li>In the local web UI on the device, go to the &quot;Connect and copy&quot; page. Under &quot;NFS settings&quot;, click &quot;NFS client access&quot;.</li>
+</ul>
+<ul>
+<li>Enter the IP address of the NFS client and click &quot;Add&quot;. You can configure access for up to 5 NFS clients / IP addresses by repeating this step. When all the IP addresses you want to add have been entered, click OK.</li>
+</ul>
+<ul>
+<li>For Linux clients, use the following command syntax to mount the NFS share: sudo mount &lt;Data Box device IP&gt;:/&lt;NFS share on Data Box device&gt; &lt;Path to the folder on local Linux computer&gt;</li>
+</ul>
+<ul>
+<li>For Mac clients, use the following command syntax to mount the NFS share: sudo mount -t nfs -o sec=sys,resvport 10.161.23.130:/Mystoracct_Blob /home/databoxubuntuhost/databox</li>
+</ul>
+<ul>
+<li>The recommended command line copy tool to use with Data Box from a Linux system is rsync.</li>
+</ul>
+<ul>
+<li>For more information on using NFS with a Data Box device, please see the links below.</li>
+</ul>
+<ul>
+<li>Copy data to Azure Data Box via NFS</li>
+</ul>
+<ul>
+<li>Copy data from Azure Data Box via NFS</li>
+</ul>
+<ul>
+<li>Microsoft Stream</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>The NFS shares on a Data Box device have a naming convention based on the storage account(s) that data is being imported to or exported from and the type of data being imported or exported. The syntax for the UNC path to each share is shown below.</p>
+<p>Azure Block blob - //&lt;device IP address&gt;/&lt;storage account name&gt;_BlockBlob</p>
+<p>Azure Page blob - //&lt;device IP address&gt;/&lt;storage account name&gt;\_PageBlob</p>
+<p>Azure Files - //&lt;device IP address&gt;/&lt;storage account name&gt;_AzFile</p>
+<p>Azure Block blob (Archive) - //&lt;device IP address&gt;/&lt;storage account name&gt;_BlockBlobArchive</p>
+<p>If a Data Box device is being used to import to managed disks, the device will have additional shares with a naming convention based on the resource group selected during the ordering process and the type of managed disk that will be created upon data import. The syntax for these share names is shown below.</p>
+<p>Premium SSD - //&lt;DeviceIPAddress&gt;/&lt;ResourceGroupName_MDisk&gt;/PremiumSSD</p>
+<p>Standard HDD - //&lt;DeviceIPAddress&gt;/&lt;ResourceGroupName_MDisk&gt;/StandardHDD</p>
+<p>Standard SSD - //&lt;DeviceIPAddress&gt;/&lt;ResourceGroupName_MDisk&gt;/StandardSSD</p>
+<p>The basic steps to connect to an NFS share on the Data Box device from a Linux or Mac OS client are:</p>
+<p>In the local web UI on the device, go to the &quot;Connect and copy&quot; page. Under &quot;NFS settings&quot;, click &quot;NFS client access&quot;.</p>
+<p>Enter the IP address of the NFS client and click &quot;Add&quot;. You can configure access for up to 5 NFS clients / IP addresses by repeating this step. When all the IP addresses you want to add have been entered, click OK.</p>
+<p>For Linux clients, use the following command syntax to mount the NFS share: sudo mount &lt;Data Box device IP&gt;:/&lt;NFS share on Data Box device&gt; &lt;Path to the folder on local Linux computer&gt;</p>
+<p>For Mac clients, use the following command syntax to mount the NFS share: sudo mount -t nfs -o sec=sys,resvport 10.161.23.130:/Mystoracct_Blob /home/databoxubuntuhost/databox</p>
+<p>The recommended command line copy tool to use with Data Box from a Linux system is rsync.</p>
+<p>For more information on using NFS with a Data Box device, please see the links below.</p>
+<p>Copy data to Azure Data Box via NFS</p>
+<p>Copy data from Azure Data Box via NFS</p>
+<p>Microsoft Stream</p></article>

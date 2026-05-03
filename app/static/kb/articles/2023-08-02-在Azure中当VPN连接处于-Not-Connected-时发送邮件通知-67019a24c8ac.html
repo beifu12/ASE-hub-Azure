@@ -1,0 +1,350 @@
+<article class="kb-article" data-title="在Azure中当VPN连接处于(Not Connected)时发送邮件通知"><h1>在Azure中当VPN连接处于(Not Connected)时发送邮件通知</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-08-02 16:36:31</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>应用场景：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>应用场景：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>应用场景：</li>
+</ul>
+<ul>
+<li>使用工具：</li>
+</ul>
+<ul>
+<li>关于工具的说明：</li>
+</ul>
+<ul>
+<li>创建Automation Accounts账户，并启用System assigned identity，通过在Azure AD</li>
+</ul>
+<ul>
+<li>Use Managed Identities as the recommended method for authenticating with Azure resources from the runbooks. Managed identity would be more secure than Runas account since it doesn’t require any credentials to be stored.</li>
+</ul>
+<ul>
+<li>创建过程中如果没有启用，创建完成后可以按如下方法启用：</li>
+</ul>
+<ul>
+<li>给这个Automation Accoun的System assigned Identity分配角色：</li>
+</ul>
+<ul>
+<li>#使用该Automation Account的System Managed Identity连接Azure账户</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud -Identity</li>
+</ul>
+<ul>
+<li>$AzureContext = Set-AzContext –SubscriptionId &quot;fbf2ac60-19f8-4f3a-8107-9c89caf51ef6&quot;</li>
+</ul>
+<ul>
+<li>$AzureContext</li>
+</ul>
+<ul>
+<li>#定义要监控的VPN连接所属的资源组，如果有多个请在下面数组中增加资源组名称</li>
+</ul>
+<ul>
+<li>$ResourceGroupNames = @(&quot;appgw-test-rg&quot;, &quot;test-aks-rg01&quot;)</li>
+</ul>
+<ul>
+<li>$statusResult = @{}</li>
+</ul>
+<ul>
+<li>foreach ($ResourceGroupName in $ResourceGroupNames) {</li>
+</ul>
+<ul>
+<li>#获取这个资源组中的所有VPN连接，并将其名称组合成列表</li>
+</ul>
+<ul>
+<li>$connections = Get-AzVirtualNetworkGatewayConnection -ResourceGroupName $ResourceGroupName</li>
+</ul>
+<ul>
+<li>$vpnConnections = foreach ($connection in $connections) {</li>
+</ul>
+<ul>
+<li>#如果有些VPN连接状态不需要监控，请将下面的NOVPN1和NOVPN2进行替换，如不止2个,请继续增加-and $connection.Name -ne &quot;xxx&quot;</li>
+</ul>
+<ul>
+<li>if ($connection.Name -ne &quot;to-classic-vpn&quot; -and $connection.Name -ne &quot;NOVPN2&quot;) {</li>
+</ul>
+<ul>
+<li>$connection.Name</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li># 依次获取每条VPN连接状态信息</li>
+</ul>
+<ul>
+<li>foreach ($connection in $vpnConnections) {</li>
+</ul>
+<ul>
+<li>$vpnConnectionStatus=(Get-AzVirtualNetworkGatewayConnection -ResourceGroupName $ResourceGroupName -Name $connection).ConnectionStatus</li>
+</ul>
+<ul>
+<li>Write-Host &quot;VPN connection $connection status: $vpnConnectionStatus&quot;</li>
+</ul>
+<ul>
+<li>$statusResult.Add($connection, $vpnConnectionStatus)</li>
+</ul>
+<ul>
+<li>$colum1 = @{Expression=&quot;Name&quot;;Width=25;Label=&quot;VPN Connection&quot;}</li>
+</ul>
+<ul>
+<li>$colum2 = @{Expression=&quot;Value&quot;;Label=&quot;Status&quot;}</li>
+</ul>
+<ul>
+<li>#$statusResult.GetEnumerator()  | Where-Object { $_.Name -like &quot;*ike*&quot; } | Format-Table $colum1,$colum2</li>
+</ul>
+<ul>
+<li>$body =($statusResult.GetEnumerator()  | Where-Object { $_.Value -eq &quot;NotConnected&quot; } | Format-Table $colum1,$colum2) | Out-String</li>
+</ul>
+<ul>
+<li>#如果找到了连接状态为NotConnected的VPN连接则发送邮件通知</li>
+</ul>
+<ul>
+<li>if ($body -eq $null) {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;There is no VPN connection in NotConnected status.&quot;</li>
+</ul>
+<ul>
+<li>} else {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;The variable is not null&quot;</li>
+</ul>
+<ul>
+<li># 设置电子邮箱详细信息</li>
+</ul>
+<ul>
+<li>$SmtpServer = &#39;smtp.qq.com&#39;</li>
+</ul>
+<ul>
+<li>$SmtpPort = 587</li>
+</ul>
+<ul>
+<li>#指定要调用的存储在Automation Account中的Credential</li>
+</ul>
+<ul>
+<li>$CredentialName = &quot;QQ-email&quot;</li>
+</ul>
+<ul>
+<li>$Credential = Get-AutomationPSCredential -Name $CredentialName</li>
+</ul>
+<ul>
+<li>$SmtpUsername = $Credential.UserName</li>
+</ul>
+<ul>
+<li>$SmtpPassword = $Credential.GetNetworkCredential().Password</li>
+</ul>
+<ul>
+<li>$EmailFrom = &#39;72848757367@qq.com&#39;</li>
+</ul>
+<ul>
+<li>#如果收件人只有一个请删除其它邮箱</li>
+</ul>
+<ul>
+<li>#$EmailTo = &#39;72848757367@qq.com&#39;, &#39;anotheremail@example.com&#39;, &#39;yetanotheremail@example.com&#39;</li>
+</ul>
+<ul>
+<li>$EmailTo = &#39;72848757367@qq.com&#39;</li>
+</ul>
+<ul>
+<li># 发送通知电子邮件</li>
+</ul>
+<ul>
+<li>$message = New-Object System.Net.Mail.MailMessage</li>
+</ul>
+<ul>
+<li>$message.From = $EmailFrom</li>
+</ul>
+<ul>
+<li>foreach ($recipient in $EmailTo) {</li>
+</ul>
+<ul>
+<li>$message.To.Add($recipient)</li>
+</ul>
+<ul>
+<li>$message.Subject = &#39;VPN Connection Status Not Connected&#39;</li>
+</ul>
+<ul>
+<li>$message.Body = $body</li>
+</ul>
+<ul>
+<li>$smtp = New-Object Net.Mail.SmtpClient($SmtpServer, $SmtpPort)</li>
+</ul>
+<ul>
+<li>$smtp.Credentials = New-Object System.Net.NetworkCredential($SmtpUsername, $SmtpPassword)</li>
+</ul>
+<ul>
+<li>$smtp.Send($message)</li>
+</ul>
+<ul>
+<li>选择”创建一个空白App“后会进入到如下界面，依次进行配置：</li>
+</ul>
+<ul>
+<li>收到的通知邮件示例：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>定期获取VPN connection状态，当有连接处于Not connected时发送邮件通知，即发现VPN隧道断开了。【本案例使用直接获取VPN connection的ConnectionStatus，即Portal中Connection所显示Status的值，非使用VPN connection Metrics进行监控】</li>
+</ul>
+<ul>
+<li>Azure Logic App</li>
+</ul>
+<ul>
+<li>Automation Account支持的最小时间粒度是1小时运行一次，如果需要更高频率地执行任务，需要借助其它工具，如Logic App。</li>
+</ul>
+<ul>
+<li>Automation Account和Logic App都在其Identity中开启System assigned identity，然后分别给它们分配，它们将要访问的目标资源的对应角色。本文中Automation Account 要使用其System assigned identity去访问要监控的VPN连接；Logic App要使用其System assigned identity去访问Automation Account （Runbook)。</li>
+</ul>
+<ul>
+<li>配置步骤：</li>
+</ul>
+<ul>
+<li>#使用hash表存储查询到的VPN连接结果</li>
+</ul>
+<ul>
+<li>#依次查询每个要监控的资源组</li>
+</ul>
+<ul>
+<li>#对查询到的结果进行格式化，修改hash表其表头名称，并打印出连接状态为NotConnected的连接</li>
+</ul>
+<ul>
+<li>配置Azure Logic App：</li>
+</ul>
+<ul>
+<li>同样在Logic App中启用System assigned Identity，并且给其分配对Automation Account的&quot;Automation Contributor&quot;角色。</li>
+</ul>
+<ul>
+<li>创建一个Logic App : 定义这个App要做的事情：每5分钟去执行一次指定的Automation Account中的指定的Runbook。</li>
+</ul>
+<ul>
+<li>Automation Account中也可以查看Runbook的执行情况，Logic App每5分钟去run runbook一次，记录是一一对应的：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Azure Automation Account +(Runbook) PowerShell</li>
+</ul>
+<ul>
+<li>PowerShell及其脚本中用到的模块，当前默认的Automation Account中提供的PowerShell 5.1已经安装的有，无需自己再安装。</li>
+</ul>
+<ul>
+<li>这里我授予对要监控的资源组的Reader角色，只是Get资源状态，Reader够用，如果要进行Scope更精细的分配角色，可以使用PowerShell指令New-AzRoleAssignment或者相应的az指令：</li>
+</ul>
+<ul>
+<li>在Automation Account中创建一个runbook，类型选择PowerShell，版本5.1即可:</li>
+</ul>
+<ul>
+<li>因为Automation Account无法像Azure monitor那样原生即可以像外部邮箱发邮件，所以这个方案要提供一个脚本可以连接的SMTP邮箱账户及其密码。为尽可能提高安全性，在部署PowerShell脚本（runbook)前需要将用来发送邮件通知的SMTP邮箱账户和密码信息以”Credentials&quot;的形式创建在Automation Account中，然后在脚本中进行调用，从而避免将账户名称及其密码，硬编码在脚本代码中：</li>
+</ul>
+<ul>
+<li>部署PowerShell脚本（Powered by OpenAI)：脚本可以获取某个订阅中多个资源组中多个VPN连接的状态，不需要监控的VPN连接也可以在脚本中进行排除。Get-AzVirtualNetworkGatewayConnection -ResourceGroupName这条指令有Bug，它一次性检索出的整个资源组中的VPN连接状态为空，SharedKey也为空，所以改为依次查询每条VPN连接：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Disable-AzContextAutosave -Scope Process | Out-Null</li>
+</ul>
+<ul>
+<li>$smtp.EnableSsl = $true</li>
+</ul>
+<ul>
+<li>可以在Logic app Overview界面查看其&quot;Status&quot;，它显示的是这一Logic APP的执行情况，不想其执行了可以选择“Disable&quot;:</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>应用场景：</p>
+<p>定期获取VPN connection状态，当有连接处于Not connected时发送邮件通知，即发现VPN隧道断开了。【本案例使用直接获取VPN connection的ConnectionStatus，即Portal中Connection所显示Status的值，非使用VPN connection Metrics进行监控】</p>
+<p>使用工具：</p>
+<p>Azure Automation Account +(Runbook) PowerShell</p>
+<p>Azure Logic App</p>
+<p>关于工具的说明：</p>
+<p>Automation Account支持的最小时间粒度是1小时运行一次，如果需要更高频率地执行任务，需要借助其它工具，如Logic App。</p>
+<p>Automation Account和Logic App都在其Identity中开启System assigned identity，然后分别给它们分配，它们将要访问的目标资源的对应角色。本文中Automation Account 要使用其System assigned identity去访问要监控的VPN连接；Logic App要使用其System assigned identity去访问Automation Account （Runbook)。</p>
+<p>PowerShell及其脚本中用到的模块，当前默认的Automation Account中提供的PowerShell 5.1已经安装的有，无需自己再安装。</p>
+<p>配置步骤：</p>
+<p>创建Automation Accounts账户，并启用System assigned identity，通过在Azure AD</p>
+<p>Use Managed Identities as the recommended method for authenticating with Azure resources from the runbooks. Managed identity would be more secure than Runas account since it doesn’t require any credentials to be stored.</p>
+<p>创建过程中如果没有启用，创建完成后可以按如下方法启用：</p>
+<p>给这个Automation Accoun的System assigned Identity分配角色：</p>
+<p>这里我授予对要监控的资源组的Reader角色，只是Get资源状态，Reader够用，如果要进行Scope更精细的分配角色，可以使用PowerShell指令New-AzRoleAssignment或者相应的az指令：</p>
+<p>在Automation Account中创建一个runbook，类型选择PowerShell，版本5.1即可:</p>
+<p>因为Automation Account无法像Azure monitor那样原生即可以像外部邮箱发邮件，所以这个方案要提供一个脚本可以连接的SMTP邮箱账户及其密码。为尽可能提高安全性，在部署PowerShell脚本（runbook)前需要将用来发送邮件通知的SMTP邮箱账户和密码信息以”Credentials&quot;的形式创建在Automation Account中，然后在脚本中进行调用，从而避免将账户名称及其密码，硬编码在脚本代码中：</p>
+<p>部署PowerShell脚本（Powered by OpenAI)：脚本可以获取某个订阅中多个资源组中多个VPN连接的状态，不需要监控的VPN连接也可以在脚本中进行排除。Get-AzVirtualNetworkGatewayConnection -ResourceGroupName这条指令有Bug，它一次性检索出的整个资源组中的VPN连接状态为空，SharedKey也为空，所以改为依次查询每条VPN连接：</p>
+<p>Disable-AzContextAutosave -Scope Process | Out-Null</p>
+<p>#使用该Automation Account的System Managed Identity连接Azure账户</p>
+<p>Connect-AzAccount -Environment AzureChinaCloud -Identity</p>
+<p>$AzureContext = Set-AzContext –SubscriptionId &quot;fbf2ac60-19f8-4f3a-8107-9c89caf51ef6&quot;</p>
+<p>$AzureContext</p>
+<p>#定义要监控的VPN连接所属的资源组，如果有多个请在下面数组中增加资源组名称</p>
+<p>$ResourceGroupNames = @(&quot;appgw-test-rg&quot;, &quot;test-aks-rg01&quot;)</p>
+<p>#使用hash表存储查询到的VPN连接结果</p>
+<p>$statusResult = @{}</p>
+<p>#依次查询每个要监控的资源组</p>
+<p>foreach ($ResourceGroupName in $ResourceGroupNames) {</p>
+<p>#获取这个资源组中的所有VPN连接，并将其名称组合成列表</p>
+<p>$connections = Get-AzVirtualNetworkGatewayConnection -ResourceGroupName $ResourceGroupName</p>
+<p>$vpnConnections = foreach ($connection in $connections) {</p>
+<p>#如果有些VPN连接状态不需要监控，请将下面的NOVPN1和NOVPN2进行替换，如不止2个,请继续增加-and $connection.Name -ne &quot;xxx&quot;</p>
+<p>if ($connection.Name -ne &quot;to-classic-vpn&quot; -and $connection.Name -ne &quot;NOVPN2&quot;) {</p>
+<p>$connection.Name</p>
+<p>}</p>
+<h1>依次获取每条VPN连接状态信息</h1>
+<p>foreach ($connection in $vpnConnections) {</p>
+<p>$vpnConnectionStatus=(Get-AzVirtualNetworkGatewayConnection -ResourceGroupName $ResourceGroupName -Name $connection).ConnectionStatus</p>
+<p>Write-Host &quot;VPN connection $connection status: $vpnConnectionStatus&quot;</p>
+<p>$statusResult.Add($connection, $vpnConnectionStatus)</p>
+<p>#对查询到的结果进行格式化，修改hash表其表头名称，并打印出连接状态为NotConnected的连接</p>
+<p>$colum1 = @{Expression=&quot;Name&quot;;Width=25;Label=&quot;VPN Connection&quot;}</p>
+<p>$colum2 = @{Expression=&quot;Value&quot;;Label=&quot;Status&quot;}</p>
+<p>#$statusResult.GetEnumerator()  | Where-Object { $_.Name -like &quot;*ike*&quot; } | Format-Table $colum1,$colum2</p>
+<p>$body =($statusResult.GetEnumerator()  | Where-Object { $_.Value -eq &quot;NotConnected&quot; } | Format-Table $colum1,$colum2) | Out-String</p>
+<p>#如果找到了连接状态为NotConnected的VPN连接则发送邮件通知</p>
+<p>if ($body -eq $null) {</p>
+<p>Write-Host &quot;There is no VPN connection in NotConnected status.&quot;</p>
+<p>} else {</p>
+<p>Write-Host &quot;The variable is not null&quot;</p>
+<h1>设置电子邮箱详细信息</h1>
+<p>$SmtpServer = &#39;smtp.qq.com&#39;</p>
+<p>$SmtpPort = 587</p>
+<p>#指定要调用的存储在Automation Account中的Credential</p>
+<p>$CredentialName = &quot;QQ-email&quot;</p>
+<p>$Credential = Get-AutomationPSCredential -Name $CredentialName</p>
+<p>$SmtpUsername = $Credential.UserName</p>
+<p>$SmtpPassword = $Credential.GetNetworkCredential().Password</p>
+<p>$EmailFrom = &#39;72848757367@qq.com&#39;</p>
+<p>#如果收件人只有一个请删除其它邮箱</p>
+<p>#$EmailTo = &#39;72848757367@qq.com&#39;, &#39;anotheremail@example.com&#39;, &#39;yetanotheremail@example.com&#39;</p>
+<p>$EmailTo = &#39;72848757367@qq.com&#39;</p>
+<h1>发送通知电子邮件</h1>
+<p>$message = New-Object System.Net.Mail.MailMessage</p>
+<p>$message.From = $EmailFrom</p>
+<p>foreach ($recipient in $EmailTo) {</p>
+<p>$message.To.Add($recipient)</p>
+<p>$message.Subject = &#39;VPN Connection Status Not Connected&#39;</p>
+<p>$message.Body = $body</p>
+<p>$smtp = New-Object Net.Mail.SmtpClient($SmtpServer, $SmtpPort)</p>
+<p>$smtp.EnableSsl = $true</p>
+<p>$smtp.Credentials = New-Object System.Net.NetworkCredential($SmtpUsername, $SmtpPassword)</p>
+<p>$smtp.Send($message)</p>
+<p>配置Azure Logic App：</p>
+<p>同样在Logic App中启用System assigned Identity，并且给其分配对Automation Account的&quot;Automation Contributor&quot;角色。</p>
+<p>创建一个Logic App : 定义这个App要做的事情：每5分钟去执行一次指定的Automation Account中的指定的Runbook。</p>
+<p>选择”创建一个空白App“后会进入到如下界面，依次进行配置：</p>
+<p>可以在Logic app Overview界面查看其&quot;Status&quot;，它显示的是这一Logic APP的执行情况，不想其执行了可以选择“Disable&quot;:</p>
+<p>Automation Account中也可以查看Runbook的执行情况，Logic App每5分钟去run runbook一次，记录是一一对应的：</p>
+<p>收到的通知邮件示例：</p></article>

@@ -1,0 +1,102 @@
+<article class="kb-article" data-title="RDP提示内部错误"><h1>RDP提示内部错误</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-07-05 11:04:35</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>RDP间断性无法连通，出现如下“内部错误”提示。</li>
+</ul>
+<ul>
+<li>RDP session过多导致RDP服务无法正常工作（根据近期几个case，均是受到密码词典攻击）</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20200513</li>
+</ul>
+<ul>
+<li>LuYitong</li>
+</ul>
+<ul>
+<li>20220216</li>
+</ul>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>配置NSG来限定访问源IP</li>
+</ul>
+<ul>
+<li>Restart-Service -Force -Name &quot;TermService&quot;</li>
+</ul>
+<ul>
+<li>OR</li>
+</ul>
+<ul>
+<li>Restart-Service -Force -DisplayName &quot;Remote Desktop Services&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>曾今出现过个别KB的更新会造成RDP连接问题，卸载补丁或安装最新补丁即可（可以对照系统内部事件日志排查，可能性较小）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>虚拟机代理正常的情况下可通过运行命令来执行重启RDP服务，以下为在powershell中重启RDP服务的命令</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：（针对原因1）</li>
+</ul>
+<ul>
+<li>比较推荐的解决方案有如下几种：</li>
+</ul>
+<ul>
+<li>或者，在访问源比较随机的情况下，您可以考虑一下是否可以在虚拟网络启用P2S VPN，以便您的用户在非办公室的场景也可以通过内网访问Azure虚拟网络中虚拟机的资源。</li>
+</ul>
+<ul>
+<li>备注：在不确定问题的情况下，建议申请Console查看日志或先执行下restart rdp service</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>其他RDP问题汇总：<a href="https://support.microsoft.com/en-us/help/2477176/troubleshoot-remote-desktop-disconnected-errors-in-windows-server-2008" target="_blank" rel="noopener">https://support.microsoft.com/en-us/help/2477176/troubleshoot-remote-desktop-disconnected-errors-in-windows-server-2008</a></li>
+</ul>
+<ul>
+<li>相关文档：<a href="https://docs.microsoft.com/zh-cn/azure/vpn-gateway/point-to-site-about" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/vpn-gateway/point-to-site-about</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20200513</p>
+<p>LuYitong</p>
+<p>20220216</p>
+<p>WangZhaoqing</p>
+<p>问题现象：</p>
+<p>RDP间断性无法连通，出现如下“内部错误”提示。</p>
+<p>问题原因：</p>
+<p>RDP session过多导致RDP服务无法正常工作（根据近期几个case，均是受到密码词典攻击）</p>
+<p>曾今出现过个别KB的更新会造成RDP连接问题，卸载补丁或安装最新补丁即可（可以对照系统内部事件日志排查，可能性较小）</p>
+<p>其他RDP问题汇总：<a href="https://support.microsoft.com/en-us/help/2477176/troubleshoot-remote-desktop-disconnected-errors-in-windows-server-2008" target="_blank" rel="noopener">https://support.microsoft.com/en-us/help/2477176/troubleshoot-remote-desktop-disconnected-errors-in-windows-server-2008</a></p>
+<p>解决方案：（针对原因1）</p>
+<p>比较推荐的解决方案有如下几种：</p>
+<p>配置NSG来限定访问源IP</p>
+<p>或者，在访问源比较随机的情况下，您可以考虑一下是否可以在虚拟网络启用P2S VPN，以便您的用户在非办公室的场景也可以通过内网访问Azure虚拟网络中虚拟机的资源。</p>
+<p>相关文档：<a href="https://docs.microsoft.com/zh-cn/azure/vpn-gateway/point-to-site-about" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/vpn-gateway/point-to-site-about</a></p>
+<p>备注：在不确定问题的情况下，建议申请Console查看日志或先执行下restart rdp service</p>
+<p>虚拟机代理正常的情况下可通过运行命令来执行重启RDP服务，以下为在powershell中重启RDP服务的命令</p>
+<p>Restart-Service -Force -Name &quot;TermService&quot;</p>
+<p>OR</p>
+<p>Restart-Service -Force -DisplayName &quot;Remote Desktop Services&quot;</p></article>

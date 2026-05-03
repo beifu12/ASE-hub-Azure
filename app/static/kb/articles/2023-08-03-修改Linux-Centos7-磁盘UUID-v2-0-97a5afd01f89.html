@@ -1,0 +1,168 @@
+<article class="kb-article" data-title="修改Linux Centos7 磁盘UUID v2.0"><h1>修改Linux Centos7 磁盘UUID v2.0</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-08-03 12:47:04</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>以上方式修改UUID失败，又想mount磁盘拷贝数据时，可参考以下方案。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>以上方式修改UUID失败，又想mount磁盘拷贝数据时，可参考以下方案。</li>
+</ul>
+<ul>
+<li>missing codepage or helper program, or other error</li>
+</ul>
+<ul>
+<li>re-running xfs_admin.  If you are unable to mount the filesystem, then use</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Jia Xiaolei</li>
+</ul>
+<ul>
+<li>Wang Zhaoqing</li>
+</ul>
+<ul>
+<li>[host-24-61-56-74 vda1]# uuidgen</li>
+</ul>
+<ul>
+<li>5dee2a7e-cae0-4807-8943-e13ca532dd53</li>
+</ul>
+<ul>
+<li>[host-24-61-56-74 vda1]# tune2fs /dev/vdb1 -U 5dee2a7e-cae0-4807-8943-e13ca532dd53</li>
+</ul>
+<ul>
+<li>tune2fs 1.42.9 (28-Dec-2013)</li>
+</ul>
+<ul>
+<li>[root@leocentos75 sharefile]# uuidgen</li>
+</ul>
+<ul>
+<li>093463fa-10c4-4aae-9fac-cad73083cf6d</li>
+</ul>
+<ul>
+<li>[root@leocentos75 sharefile]# tune2fs /dev/sdc2 -U 093463fa-10c4-4aae-9fac-cad73083cf6d</li>
+</ul>
+<ul>
+<li>tune2fs: Bad magic number in super-block while trying to open /dev/sdc2</li>
+</ul>
+<ul>
+<li>Couldn&#39;t find valid filesystem superblock.</li>
+</ul>
+<ul>
+<li>那么问题来了，是不是CentOS7系统（说成xfs文件系统更确切）不支持修改UUID呢？通过测试发现，如果文件系统为xfs的话，需要使用xfs_admin进行调整的，如下方所示：</li>
+</ul>
+<ul>
+<li>7114e890-8c95-414b-ad65-f3b2d42607e9</li>
+</ul>
+<ul>
+<li>[root@leocentos75 sharefile]# xfs_admin -U 7114e890-8c95-414b-ad65-f3b2d42607e9 /dev/sdc2</li>
+</ul>
+<ul>
+<li>writing all SBs</li>
+</ul>
+<ul>
+<li>[root@ruite03 ~]# mount   /dev/sdc2  /tmp/ruite02/</li>
+</ul>
+<ul>
+<li>mount: wrong fs type, bad option, bad superblock on /dev/sdc2,</li>
+</ul>
+<ul>
+<li>dmesg | tail or so.</li>
+</ul>
+<ul>
+<li>[root@ruite03 ~]# xfs_admin  -U  14465584-7f2b-4c22-a1c0-4d4869bb5b63    /dev/sdc2</li>
+</ul>
+<ul>
+<li>of the filesystem before doing this.</li>
+</ul>
+<ul>
+<li>此时只需要使用mount -o nouuid /dev/xxxx /xxxx 挂载即可</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Clearing log and setting UUID</li>
+</ul>
+<ul>
+<li>In some cases useful info is found in syslog - try</li>
+</ul>
+<ul>
+<li>ERROR: The filesystem has valuable metadata changes in a log which needs to</li>
+</ul>
+<ul>
+<li>be replayed.  Mount the filesystem to replay the log, and unmount it before</li>
+</ul>
+<ul>
+<li>the xfs_repair -L option to destroy the log and attempt a repair.</li>
+</ul>
+<ul>
+<li>Note that destroying the log may cause corruption -- please attempt a mount</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>但是最近发现如果是在Centos 7系统（默认OS disk文件系统为xfs）上上面这个命令就不好用了，会有如下报错：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>new UUID = 7114e890-8c95-414b-ad65-f3b2d42607e9</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>背景： 客户的某台Linux虚拟机A因意外修改了某些配置文件如ssh配置文件/etc/ssh/sshd_config导致无法登录了，客户又觉得联系我们从console修复太麻烦，就会想到将此虚拟机操作系统磁盘挂载到正常运行虚拟机B上进行修复。</li>
+</ul>
+<ul>
+<li>这里我们有一个已知问题就是，相同版本系统磁盘的UUID是一样的，直接挂载会报错，我们的解决方法就是手动修改下原虚拟机磁盘A的UUID。如下方所示：</li>
+</ul>
+<ul>
+<li>Linux虚拟机在挂载磁盘修复问题时有时会出现mount失败的问题会提示有superblock的问题不让挂载，如下所示：</li>
+</ul>
+<ul>
+<li>此问题很可能是由于UUID重复导致，这时通常会建议客户修改UUID再进行挂载，但是当磁盘为OS磁盘且文件系统内部本身存在一些问题时是无法修改UUID的，如下所示：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Jia Xiaolei</p>
+<p>2018-12-13</p>
+<p>Wang Zhaoqing</p>
+<p>2020-01-06</p>
+<p>背景： 客户的某台Linux虚拟机A因意外修改了某些配置文件如ssh配置文件/etc/ssh/sshd_config导致无法登录了，客户又觉得联系我们从console修复太麻烦，就会想到将此虚拟机操作系统磁盘挂载到正常运行虚拟机B上进行修复。</p>
+<p>这里我们有一个已知问题就是，相同版本系统磁盘的UUID是一样的，直接挂载会报错，我们的解决方法就是手动修改下原虚拟机磁盘A的UUID。如下方所示：</p>
+<p>[host-24-61-56-74 vda1]# uuidgen</p>
+<p>5dee2a7e-cae0-4807-8943-e13ca532dd53</p>
+<p>[host-24-61-56-74 vda1]# tune2fs /dev/vdb1 -U 5dee2a7e-cae0-4807-8943-e13ca532dd53</p>
+<p>tune2fs 1.42.9 (28-Dec-2013)</p>
+<p>但是最近发现如果是在Centos 7系统（默认OS disk文件系统为xfs）上上面这个命令就不好用了，会有如下报错：</p>
+<p>[root@leocentos75 sharefile]# uuidgen</p>
+<p>093463fa-10c4-4aae-9fac-cad73083cf6d</p>
+<p>[root@leocentos75 sharefile]# tune2fs /dev/sdc2 -U 093463fa-10c4-4aae-9fac-cad73083cf6d</p>
+<p>tune2fs: Bad magic number in super-block while trying to open /dev/sdc2</p>
+<p>Couldn&#39;t find valid filesystem superblock.</p>
+<p>那么问题来了，是不是CentOS7系统（说成xfs文件系统更确切）不支持修改UUID呢？通过测试发现，如果文件系统为xfs的话，需要使用xfs_admin进行调整的，如下方所示：</p>
+<p>7114e890-8c95-414b-ad65-f3b2d42607e9</p>
+<p>[root@leocentos75 sharefile]# xfs_admin -U 7114e890-8c95-414b-ad65-f3b2d42607e9 /dev/sdc2</p>
+<p>Clearing log and setting UUID</p>
+<p>writing all SBs</p>
+<p>new UUID = 7114e890-8c95-414b-ad65-f3b2d42607e9</p>
+<p>以上方式修改UUID失败，又想mount磁盘拷贝数据时，可参考以下方案。</p>
+<p>Linux虚拟机在挂载磁盘修复问题时有时会出现mount失败的问题会提示有superblock的问题不让挂载，如下所示：</p>
+<p>[root@ruite03 ~]# mount   /dev/sdc2  /tmp/ruite02/</p>
+<p>mount: wrong fs type, bad option, bad superblock on /dev/sdc2,</p>
+<p>missing codepage or helper program, or other error</p>
+<p>In some cases useful info is found in syslog - try</p>
+<p>dmesg | tail or so.</p>
+<p>此问题很可能是由于UUID重复导致，这时通常会建议客户修改UUID再进行挂载，但是当磁盘为OS磁盘且文件系统内部本身存在一些问题时是无法修改UUID的，如下所示：</p>
+<p>[root@ruite03 ~]# xfs_admin  -U  14465584-7f2b-4c22-a1c0-4d4869bb5b63    /dev/sdc2</p>
+<p>ERROR: The filesystem has valuable metadata changes in a log which needs to</p>
+<p>be replayed.  Mount the filesystem to replay the log, and unmount it before</p>
+<p>re-running xfs_admin.  If you are unable to mount the filesystem, then use</p>
+<p>the xfs_repair -L option to destroy the log and attempt a repair.</p>
+<p>Note that destroying the log may cause corruption -- please attempt a mount</p>
+<p>of the filesystem before doing this.</p>
+<p>此时只需要使用mount -o nouuid /dev/xxxx /xxxx 挂载即可</p></article>

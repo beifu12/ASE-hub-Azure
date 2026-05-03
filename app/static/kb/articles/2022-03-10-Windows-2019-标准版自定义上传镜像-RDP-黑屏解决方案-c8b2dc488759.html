@@ -1,0 +1,76 @@
+<article class="kb-article" data-title="Windows 2019 标准版自定义上传镜像 RDP 黑屏解决方案"><h1>Windows 2019 标准版自定义上传镜像 RDP 黑屏解决方案</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-03-10 16:44:23</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题描述：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>总结一下目前的情况，当前使用的是windows2019的standard版本，是自定义镜像。</li>
+</ul>
+<ul>
+<li>当前通过公网ip，或者同网段的虚拟机内网rdp连接都是比较正常的。</li>
+</ul>
+<ul>
+<li>但是通过您公司的vpn直接连接虚拟机的内网ip时，rdp反应慢，经常出现黑屏的情况。</li>
+</ul>
+<ul>
+<li>通过经验判断，这很可能是windows 2019 标准版系统内部的问题。</li>
+</ul>
+<ul>
+<li>Registry Path: HKLM\SOFTWARE\Microsoft\Terminal Server Client</li>
+</ul>
+<ul>
+<li>UseURCP REG_DWORD 0</li>
+</ul>
+<ul>
+<li>修改注册表，这个问题已经解决了。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>请网络同事排查，网络层面没有异常。</li>
+</ul>
+<ul>
+<li>索要系统日志进行排查，也没有发现明显的异常报错。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>已经建议您联系了windows team进行排查。</li>
+</ul>
+<ul>
+<li>经您反馈windows team 给出了如下解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022-3-10</p>
+<p>问题描述：</p>
+<p>总结一下目前的情况，当前使用的是windows2019的standard版本，是自定义镜像。</p>
+<p>当前通过公网ip，或者同网段的虚拟机内网rdp连接都是比较正常的。</p>
+<p>但是通过您公司的vpn直接连接虚拟机的内网ip时，rdp反应慢，经常出现黑屏的情况。</p>
+<p>请网络同事排查，网络层面没有异常。</p>
+<p>索要系统日志进行排查，也没有发现明显的异常报错。</p>
+<p>通过经验判断，这很可能是windows 2019 标准版系统内部的问题。</p>
+<p>已经建议您联系了windows team进行排查。</p>
+<p>经您反馈windows team 给出了如下解决方案：</p>
+<p>Registry Path: HKLM\SOFTWARE\Microsoft\Terminal Server Client</p>
+<p>UseURCP REG_DWORD 0</p>
+<p>修改注册表，这个问题已经解决了。</p></article>

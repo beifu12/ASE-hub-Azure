@@ -1,0 +1,146 @@
+<article class="kb-article" data-title="用于 VMware 到 Azure 生产部署的 Azure Site Recovery Deployment Planner 用户指南(有坑)"><h1>用于 VMware 到 Azure 生产部署的 Azure Site Recovery Deployment Planner 用户指南(有坑)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RecoveryService</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-10-12 14:35:48</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>昨天接到一个工单SR_2017121125490_无法配置ASR</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>昨天接到一个工单SR_2017121125490_无法配置ASR</li>
+</ul>
+<ul>
+<li>测试时，在 “示例 3：分析 VM 1 小时以快速测试工具” 时报错Virtualization platform is not specified. Specify the platform as &quot;Hyper-V&quot; or &quot;VMWare&quot;. 参数未添加。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi ALL</li>
+</ul>
+<ul>
+<li>客户问题：按照中国版网站做不出来，如下：</li>
+</ul>
+<ul>
+<li>查了一下global 的文档，发现在12月4号刚刚更新过，在示例中添加了 -Virtualization VMware 参数</li>
+</ul>
+<ul>
+<li>关于中文的文档,目前CSS-Vivan已经联系过文档组，会按照global尽快来更新。</li>
+</ul>
+<ul>
+<li>准备工作：</li>
+</ul>
+<ul>
+<li>1、登录到在其中安装了 VMware vSphere PowerCLI 的 VM。</li>
+</ul>
+<ul>
+<li>2、请以管理员模式启动 VMware vSphere PowerCLI 控制台</li>
+</ul>
+<ul>
+<li>Add-PSSnapin VMware.VimAutomation.Core</li>
+</ul>
+<ul>
+<li>Connect-VIServer -Server &lt;server name&gt; -User &lt;user name&gt; -Password &lt;password&gt;</li>
+</ul>
+<ul>
+<li>默认生产文件后如下：</li>
+</ul>
+<ul>
+<li>为了测试，因此保留一台机器，修改如下：</li>
+</ul>
+<ul>
+<li>开始分析</li>
+</ul>
+<ul>
+<li>创建要分析的 VM 的列表后，可在分析模式下运行该工具。 /？在分析模式下运行该工具所要提供的必需和可选参数列表。</li>
+</ul>
+<ul>
+<li>ASRDeploymentPlanner.exe -Operation StartProfiling /?</li>
+</ul>
+<ul>
+<li>1、分析 VM 30 分钟以快速测试工具</li>
+</ul>
+<ul>
+<li>.\ASRDeploymentPlanner.exe -Operation StartProfiling -Virtualization VMware -Directory &quot;E:\&quot; -Server 172.31.211.111 -VMListFile &quot;E:\ProfileVMList1.txt&quot; -NoOfMinutesToProfile 30 -User root</li>
+</ul>
+<ul>
+<li>2、示例 1：当分析数据位于本地驱动器上时，使用默认值生成报告</li>
+</ul>
+<ul>
+<li>.\ASRDeploymentPlanner.exe -Operation GenerateReport -Virtualization VMware -Server 172.31.211.111 -Directory “E:\” -VMListFile “E:\ProfileVMList.txt”</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>以下是我按照正确步骤总结如下：（跨过各种坑）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>3.确保启用脚本的执行策略。如果已禁用，请以管理员模式启动 VMware vSphere PowerCLI 控制台，并运行以下命令将它启用：</li>
+</ul>
+<ul>
+<li>Set-ExecutionPolicy –ExecutionPolicy AllSigned</li>
+</ul>
+<ul>
+<li>4、如果系统不将 Connect-VIServer 视为 cmdlet 的名称，则可能需要运行以下命令。</li>
+</ul>
+<ul>
+<li>5、要获取在 vCenter 服务器/vSphere ESXi 主机上的 VM 的所有名称并将列表存储在 .txt 文件中，请运行下面列出的两个命令。 将 ‹server name›、‹user name›、‹password› 和 ‹outputfile.txt› 替换为输入。</li>
+</ul>
+<ul>
+<li>Get-VM |  Select Name | Sort-Object -Property Name &gt;  “e:\outputfile.txt”</li>
+</ul>
+<ul>
+<li>输入完命令后，生产文件：</li>
+</ul>
+<ul>
+<li>6、在记事本中打开outputfile文件，另存为 ProfileVMList.txt。 此文件将用作命令行工具的 -VMListFile 参数的输入。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>按照官方文档<a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-deployment-planner" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-deployment-planner</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-vmware-deployment-planner-run" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-vmware-deployment-planner-run</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi ALL</p>
+<p>昨天接到一个工单SR_2017121125490_无法配置ASR</p>
+<p>客户问题：按照中国版网站做不出来，如下：</p>
+<p>按照官方文档<a href="https://docs.azure.cn/zh-cn/site-recovery/site-recovery-deployment-planner" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/site-recovery-deployment-planner</a></p>
+<p>测试时，在 “示例 3：分析 VM 1 小时以快速测试工具” 时报错Virtualization platform is not specified. Specify the platform as &quot;Hyper-V&quot; or &quot;VMWare&quot;. 参数未添加。</p>
+<p>解决方案：</p>
+<p>查了一下global 的文档，发现在12月4号刚刚更新过，在示例中添加了 -Virtualization VMware 参数</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-vmware-deployment-planner-run" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/site-recovery/site-recovery-vmware-deployment-planner-run</a></p>
+<p>关于中文的文档,目前CSS-Vivan已经联系过文档组，会按照global尽快来更新。</p>
+<p>以下是我按照正确步骤总结如下：（跨过各种坑）</p>
+<p>准备工作：</p>
+<p>1、登录到在其中安装了 VMware vSphere PowerCLI 的 VM。</p>
+<p>2、请以管理员模式启动 VMware vSphere PowerCLI 控制台</p>
+<p>3.确保启用脚本的执行策略。如果已禁用，请以管理员模式启动 VMware vSphere PowerCLI 控制台，并运行以下命令将它启用：</p>
+<p>Set-ExecutionPolicy –ExecutionPolicy AllSigned</p>
+<p>4、如果系统不将 Connect-VIServer 视为 cmdlet 的名称，则可能需要运行以下命令。</p>
+<p>Add-PSSnapin VMware.VimAutomation.Core</p>
+<p>5、要获取在 vCenter 服务器/vSphere ESXi 主机上的 VM 的所有名称并将列表存储在 .txt 文件中，请运行下面列出的两个命令。 将 ‹server name›、‹user name›、‹password› 和 ‹outputfile.txt› 替换为输入。</p>
+<p>Connect-VIServer -Server &lt;server name&gt; -User &lt;user name&gt; -Password &lt;password&gt;</p>
+<p>Get-VM |  Select Name | Sort-Object -Property Name &gt;  “e:\outputfile.txt”</p>
+<p>输入完命令后，生产文件：</p>
+<p>默认生产文件后如下：</p>
+<p>为了测试，因此保留一台机器，修改如下：</p>
+<p>6、在记事本中打开outputfile文件，另存为 ProfileVMList.txt。 此文件将用作命令行工具的 -VMListFile 参数的输入。</p>
+<p>开始分析</p>
+<p>创建要分析的 VM 的列表后，可在分析模式下运行该工具。 /？在分析模式下运行该工具所要提供的必需和可选参数列表。</p>
+<p>ASRDeploymentPlanner.exe -Operation StartProfiling /?</p>
+<p>1、分析 VM 30 分钟以快速测试工具</p>
+<p>.\ASRDeploymentPlanner.exe -Operation StartProfiling -Virtualization VMware -Directory &quot;E:\&quot; -Server 172.31.211.111 -VMListFile &quot;E:\ProfileVMList1.txt&quot; -NoOfMinutesToProfile 30 -User root</p>
+<p>2、示例 1：当分析数据位于本地驱动器上时，使用默认值生成报告</p>
+<p>.\ASRDeploymentPlanner.exe -Operation GenerateReport -Virtualization VMware -Server 172.31.211.111 -Directory “E:\” -VMListFile “E:\ProfileVMList.txt”</p></article>

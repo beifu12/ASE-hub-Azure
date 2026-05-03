@@ -1,0 +1,56 @@
+<article class="kb-article" data-title="【Share】配置MFA仅允许特定的验证方式"><h1>【Share】配置MFA仅允许特定的验证方式</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-02-15 17:17:44</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>#为启用每用户MFA的用户注册MFA时，无法选择其他MFA方式#</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>#为启用每用户MFA的用户注册MFA时，无法选择其他MFA方式#</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>注：设置会对每用户MFA和条件访问都生效。</li>
+</ul>
+<ul>
+<li>用户可以自行设置</li>
+</ul>
+<ul>
+<li>全局管理员可以设置整个AAD</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>登录门户àAzure Active Directory à 用户à 找到并点击自己的用户名à身份验证方法à访问面板配置文件àAdditional security verificationà修改默认认证方式，并添加验证手机，移除Authenticator app验证方式</li>
+</ul>
+<ul>
+<li>#修改默认验证方式为手机验证码，并移除Authenticator app验证方式#</li>
+</ul>
+<ul>
+<li>使用AAD 全局管理员账户登录à Azure Active Directory à 用户 à 每用户多重身份验证à服务设置à仅勾选“向电话发送的文本信息”，取消勾选其余选项à保存</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>工单20220814183211中客户想要配置仅允许MFA使用手机验证码方式登录，测试可以通过如下的方式设置MFA 仅可以使用选中的方式进行验证</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>工单20220814183211中客户想要配置仅允许MFA使用手机验证码方式登录，测试可以通过如下的方式设置MFA 仅可以使用选中的方式进行验证</p>
+<p>注：设置会对每用户MFA和条件访问都生效。</p>
+<p>用户可以自行设置</p>
+<p>登录门户àAzure Active Directory à 用户à 找到并点击自己的用户名à身份验证方法à访问面板配置文件àAdditional security verificationà修改默认认证方式，并添加验证手机，移除Authenticator app验证方式</p>
+<p>#修改默认验证方式为手机验证码，并移除Authenticator app验证方式#</p>
+<p>全局管理员可以设置整个AAD</p>
+<p>使用AAD 全局管理员账户登录à Azure Active Directory à 用户 à 每用户多重身份验证à服务设置à仅勾选“向电话发送的文本信息”，取消勾选其余选项à保存</p>
+<p>#为启用每用户MFA的用户注册MFA时，无法选择其他MFA方式#</p></article>

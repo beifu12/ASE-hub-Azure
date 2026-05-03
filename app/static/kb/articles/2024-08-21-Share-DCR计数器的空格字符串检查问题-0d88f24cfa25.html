@@ -1,0 +1,101 @@
+<article class="kb-article" data-title="【Share】DCR计数器的空格字符串检查问题"><h1>【Share】DCR计数器的空格字符串检查问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-21 18:10:28</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户在Azure China有两个订阅，他在配置虚拟机磁盘空间不足的警报的时候发现维度值Dimension无法选择具体的 盘符，例如C:\ D:\ 等。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户在Azure China有两个订阅，他在配置虚拟机磁盘空间不足的警报的时候发现维度值Dimension无法选择具体的 盘符，例如C:\ D:\ 等。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>分享案例：SR_20240805308314_Low disk space alert not appearing all the drive letter.</li>
+</ul>
+<ul>
+<li>Perf</li>
+</ul>
+<ul>
+<li>| summarize AggregatedValue = min(CounterValue) by bin(TimeGenerated, 10m), Computer, InstanceName</li>
+</ul>
+<ul>
+<li>从此处引出一个不容易被发现的坑：</li>
+</ul>
+<ul>
+<li>后续客户反馈，一个订阅添加之后成功了，但第二个订阅添加后仍然没生效，还是看不到具体的盘符。</li>
+</ul>
+<ul>
+<li>接下来我进行了测试，故意添加空格的计数器：</li>
+</ul>
+<ul>
+<li>点击添加后，发现我仍然能通过没加空格的计数器名称来搜索到尾巴有空格的计数器：（例如输入ABC，可以搜到ABCD）</li>
+</ul>
+<ul>
+<li>由于计数器页面没有删除按钮，于是我在数据源处删除了性能计数器，重新全部添加一遍：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过客户的查询语句，未在LAW中查询得到盘符的Free Space，只有默认加总百分比_Total</li>
+</ul>
+<ul>
+<li>| where ObjectName == &quot;LogicalDisk&quot; and CounterName == &quot;% Free Space&quot;</li>
+</ul>
+<ul>
+<li>进而检查DCR的指标配置的Counter，提供在数据源的Performance Counters里面手动添加 \LogicalDisk(*)\% Free Space 的方案，星号*才会将虚拟机的所有盘符/分区进行区分收集，不然默认的只有_Total的总百分比。</li>
+</ul>
+<ul>
+<li>问题原因：\LogicalDisk(*)\% Free Space 的计数器添加的时候尾部有空格，导致识别为字符串的一部分，此计数器未成功添加。在门户检查已添加的计数器还看不到尾巴的空格，只有后台ASC能看到JSON模版的双引号之内的尾部空格。</li>
+</ul>
+<ul>
+<li>通过客户反馈的信息、截图，以及会议上各方面的检查沟通，都没有发现不一样的问题。</li>
+</ul>
+<ul>
+<li>结果通过后台检查DCR的Counter，发现有问题的那个最后有空格：</li>
+</ul>
+<ul>
+<li>后台查看我测试的，的确是尾巴有空格，然后query查看也只有_Total，复现客户问题：</li>
+</ul>
+<ul>
+<li>注意正确添加没有空格的 \LogicalDisk(*)\% Free Space</li>
+</ul>
+<ul>
+<li>检查后台DCR的计数器，已经没有空格：</li>
+</ul>
+<ul>
+<li>检查日志，已经可以看到不同盘符：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>分享案例：SR_20240805308314_Low disk space alert not appearing all the drive letter.</p>
+<p>客户在Azure China有两个订阅，他在配置虚拟机磁盘空间不足的警报的时候发现维度值Dimension无法选择具体的 盘符，例如C:\ D:\ 等。</p>
+<p>通过客户的查询语句，未在LAW中查询得到盘符的Free Space，只有默认加总百分比_Total</p>
+<p>Perf</p>
+<p>| where ObjectName == &quot;LogicalDisk&quot; and CounterName == &quot;% Free Space&quot;</p>
+<p>| summarize AggregatedValue = min(CounterValue) by bin(TimeGenerated, 10m), Computer, InstanceName</p>
+<p>进而检查DCR的指标配置的Counter，提供在数据源的Performance Counters里面手动添加 \LogicalDisk(*)\% Free Space 的方案，星号*才会将虚拟机的所有盘符/分区进行区分收集，不然默认的只有_Total的总百分比。</p>
+<p>从此处引出一个不容易被发现的坑：</p>
+<p>后续客户反馈，一个订阅添加之后成功了，但第二个订阅添加后仍然没生效，还是看不到具体的盘符。</p>
+<p>问题原因：\LogicalDisk(*)\% Free Space 的计数器添加的时候尾部有空格，导致识别为字符串的一部分，此计数器未成功添加。在门户检查已添加的计数器还看不到尾巴的空格，只有后台ASC能看到JSON模版的双引号之内的尾部空格。</p>
+<p>通过客户反馈的信息、截图，以及会议上各方面的检查沟通，都没有发现不一样的问题。</p>
+<p>结果通过后台检查DCR的Counter，发现有问题的那个最后有空格：</p>
+<p>接下来我进行了测试，故意添加空格的计数器：</p>
+<p>点击添加后，发现我仍然能通过没加空格的计数器名称来搜索到尾巴有空格的计数器：（例如输入ABC，可以搜到ABCD）</p>
+<p>后台查看我测试的，的确是尾巴有空格，然后query查看也只有_Total，复现客户问题：</p>
+<p>由于计数器页面没有删除按钮，于是我在数据源处删除了性能计数器，重新全部添加一遍：</p>
+<p>注意正确添加没有空格的 \LogicalDisk(*)\% Free Space</p>
+<p>检查后台DCR的计数器，已经没有空格：</p>
+<p>检查日志，已经可以看到不同盘符：</p></article>

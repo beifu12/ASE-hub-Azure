@@ -1,0 +1,105 @@
+<article class="kb-article" data-title="6[Windows]Windows Server 2016 Nano server remote connect"><h1>6[Windows]Windows Server 2016 Nano server remote connect</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RDP_SSH</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-06-22 09:59:33</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>遇到的问题：客户使用Azure 中提供的Nano Server Image部署完成虚拟机后不知道用什么方法远程连接（Nano Server 没有UI界面无法使用RDP连接）</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>遇到的问题：客户使用Azure 中提供的Nano Server Image部署完成虚拟机后不知道用什么方法远程连接（Nano Server 没有UI界面无法使用RDP连接）</li>
+</ul>
+<ul>
+<li>测试连通性，如果不通等待片刻或者重启虚拟机：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Windows Server 2016 Nano server remote connect</li>
+</ul>
+<ul>
+<li>设置登陆的用户名，密码（创建虚拟机设置的用户名、密码）</li>
+</ul>
+<ul>
+<li>$cred = get-credential</li>
+</ul>
+<ul>
+<li>将Nano server IP地址添加到Client机器的TrustedHosts列表下（或者替代黄色标记为*）</li>
+</ul>
+<ul>
+<li>登陆</li>
+</ul>
+<ul>
+<li>Enter-Pssession -ComputerName &quot;42.159.83.225&quot; -port 5985 -Credential $cred</li>
+</ul>
+<ul>
+<li>退出登陆</li>
+</ul>
+<ul>
+<li>Exit-PSSession</li>
+</ul>
+<ul>
+<li>---------------------------------------------------------</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Console模式查询虚拟机的运行状态：</li>
+</ul>
+<ul>
+<li>额外的信息，也可以部署一个通常使用的Windows Server（例如使用门户中Windows Server 2012 Datacenter Image）按照通常的方法待所有功能配置、调试完成，将Windows UI界面删除这样也能起到一定瘦身作用，具体可以参考下面步骤测试：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>背景：客户希望使用一个轻量级的Windows Server 日常通过命令来管理</li>
+</ul>
+<ul>
+<li>使用Windows PowerShell工具远程登陆、管理，下面具体过程供参考</li>
+</ul>
+<ul>
+<li>在一台Windows客户端 运行管理员模式PowerShell，启用PSremoting</li>
+</ul>
+<ul>
+<li>Set-Item WSMan:\LocalHost\Client\TrustedHosts &quot;42.159.83.225&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>定位Nano server 虚拟机，在网络中添加nsg入站规则，开放5985端口（测试添加5986是不工作的）：</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Enable-PSRemoting</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>查询微软官网针对该系统的介绍信息：<a href="https://docs.microsoft.com/zh-cn/windows-server/get-started/getting-started-with-nano-server" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows-server/get-started/getting-started-with-nano-server</a></li>
+</ul>
+<ul>
+<li>后续更多管理工作可以参考：<a href="https://docs.microsoft.com/en-us/windows-server/get-started/manage-nano-server" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/windows-server/get-started/manage-nano-server</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Windows Server 2016 Nano server remote connect</p>
+<p>背景：客户希望使用一个轻量级的Windows Server 日常通过命令来管理</p>
+<p>遇到的问题：客户使用Azure 中提供的Nano Server Image部署完成虚拟机后不知道用什么方法远程连接（Nano Server 没有UI界面无法使用RDP连接）</p>
+<p>Console模式查询虚拟机的运行状态：</p>
+<p>查询微软官网针对该系统的介绍信息：<a href="https://docs.microsoft.com/zh-cn/windows-server/get-started/getting-started-with-nano-server" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows-server/get-started/getting-started-with-nano-server</a></p>
+<p>使用Windows PowerShell工具远程登陆、管理，下面具体过程供参考</p>
+<p>定位Nano server 虚拟机，在网络中添加nsg入站规则，开放5985端口（测试添加5986是不工作的）：</p>
+<p>测试连通性，如果不通等待片刻或者重启虚拟机：</p>
+<p>在一台Windows客户端 运行管理员模式PowerShell，启用PSremoting</p>
+<p>Enable-PSRemoting</p>
+<p>设置登陆的用户名，密码（创建虚拟机设置的用户名、密码）</p>
+<p>$cred = get-credential</p>
+<p>将Nano server IP地址添加到Client机器的TrustedHosts列表下（或者替代黄色标记为*）</p>
+<p>Set-Item WSMan:\LocalHost\Client\TrustedHosts &quot;42.159.83.225&quot;</p>
+<p>登陆</p>
+<p>Enter-Pssession -ComputerName &quot;42.159.83.225&quot; -port 5985 -Credential $cred</p>
+<p>退出登陆</p>
+<p>Exit-PSSession</p>
+<p>后续更多管理工作可以参考：<a href="https://docs.microsoft.com/en-us/windows-server/get-started/manage-nano-server" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/windows-server/get-started/manage-nano-server</a></p>
+<p>额外的信息，也可以部署一个通常使用的Windows Server（例如使用门户中Windows Server 2012 Datacenter Image）按照通常的方法待所有功能配置、调试完成，将Windows UI界面删除这样也能起到一定瘦身作用，具体可以参考下面步骤测试：</p>
+<p>---------------------------------------------------------</p></article>

@@ -1,0 +1,260 @@
+<article class="kb-article" data-title="【share】在已有对等互联的场景中添加新的VNET地址空间 Vnet Peer Sync"><h1>【share】在已有对等互联的场景中添加新的VNET地址空间 Vnet Peer Sync</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2023-08-17 10:58:06</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>2/22/2022</li>
+</ul>
+<ul>
+<li>测试环境：</li>
+</ul>
+<ul>
+<li>rg-n2-vnet   地址空间：10.100.0.0/16，10.110.0.0/16，10.120.0.0/16，10.130.0.0/16，10.140.0.0/16</li>
+</ul>
+<ul>
+<li>VirNet1 地址空间： 10.10.0.0/16，10.20.0.0/16</li>
+</ul>
+<ul>
+<li>对等互联配置情况：</li>
+</ul>
+<ul>
+<li>rg-n2-vnet 到VirNet1的对等互联名称为 to-1</li>
+</ul>
+<ul>
+<li>VirNet1 到rg-n2-vnet的对等互联名称为 to-rg-n2</li>
+</ul>
+<ul>
+<li>如下截图：</li>
+</ul>
+<ul>
+<li>=========</li>
+</ul>
+<ul>
+<li>if ((Get-AzProviderFeature -ProviderNamespace Microsoft.Network -ListAvailable | Where-Object featureName -eq &quot;AllowUpdateAddressSpaceInPeeredVnets&quot;).RegistrationState -eq &quot;NotRegistered&quot;) {</li>
+</ul>
+<ul>
+<li>Register-AzProviderFeature -ProviderNamespace Microsoft.Network -FeatureName AllowUpdateAddressSpaceInPeeredVnets</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>#这个功能注册时间等待时间较长，大概20分钟左右，没有注册时显示为NotRegistered，注册中显示Registering，注册完成显示为Registered。</li>
+</ul>
+<ul>
+<li>$rg1 = &quot;TestGroup&quot;</li>
+</ul>
+<ul>
+<li>$rg2 = &quot;RG-North2&quot;</li>
+</ul>
+<ul>
+<li>$vnethub = &quot;rg-n2-vnet&quot;</li>
+</ul>
+<ul>
+<li>$peeringhubname = &quot;to-1&quot;</li>
+</ul>
+<ul>
+<li>$vnetspok = &quot;VirNet1&quot;</li>
+</ul>
+<ul>
+<li>$peeringspokname = &quot;to-rg-n2&quot;</li>
+</ul>
+<ul>
+<li>$spokeVVnet = Get-AzVirtualNetwork -name $vnetspok -ResourceGroupName $rg1</li>
+</ul>
+<ul>
+<li>#添加地址段</li>
+</ul>
+<ul>
+<li>$newIpRange = &quot;10.21.0.0/16&quot;</li>
+</ul>
+<ul>
+<li>$spokeVVnet.AddressSpace.AddressPrefixes.Add($newIpRange)</li>
+</ul>
+<ul>
+<li>Sync-AzVirtualNetworkPeering -Name $peeringhubname -VirtualNetworkName $vnethub -ResourceGroupName $rg2</li>
+</ul>
+<ul>
+<li>Sync-AzVirtualNetworkPeering -Name  $peeringspokname -VirtualNetworkName $vnetspok -ResourceGroupName $rg1</li>
+</ul>
+<ul>
+<li>D:\Terminal&gt; Get-AzVirtualNetworkPeering -VirtualNetworkName $vnethub -ResourceGroupName $rg2 -Name $peeringhubname</li>
+</ul>
+<ul>
+<li>Name                             : to-1</li>
+</ul>
+<ul>
+<li>…</li>
+</ul>
+<ul>
+<li>ResourceGroupName                : RG-North2</li>
+</ul>
+<ul>
+<li>VirtualNetworkName               : rg-n2-vnet</li>
+</ul>
+<ul>
+<li>PeeringSyncLevel                 : LocalNotInSync</li>
+</ul>
+<ul>
+<li>PeeringState                     : Connected</li>
+</ul>
+<ul>
+<li>ProvisioningState                : Succeeded</li>
+</ul>
+<ul>
+<li>D:\Terminal&gt;  Get-AzVirtualNetworkPeering -VirtualNetworkName $vnetspok -ResourceGroupName $rg1 -Name $peeringspokname</li>
+</ul>
+<ul>
+<li>VirtualNetworkName               : VirNet1</li>
+</ul>
+<ul>
+<li>PeeringSyncLevel                 : RemoteNotInSync</li>
+</ul>
+<ul>
+<li>现已经同步了这个新的地址空间。</li>
+</ul>
+<ul>
+<li>经过之前在终端上使用持续ping测试的结果来看，该操作期间并没有任何丢包。</li>
+</ul>
+<ul>
+<li>$userManagedIdentity = New-AzUserAssignedIdentity -ResourceGroupName $rg  -Name &quot;armdepscript01&quot;</li>
+</ul>
+<ul>
+<li>$hubPeeringStatus = Get-AzVirtualNetworkPeering -Name $peeringhubname -VirtualNetworkName $vnethub  -ResourceGroupName  $rg2</li>
+</ul>
+<ul>
+<li>$spokePeeringStatus = Get-AzVirtualNetworkPeering -Name $peeringspokname -VirtualNetworkName $vnetspok  -ResourceGroupName  $rg1</li>
+</ul>
+<ul>
+<li>if (($hubPeeringStatus.PeeringSyncLevel -eq &#39;LocalNotInSync&#39;) -OR ($hubPeeringStatus.PeeringSyncLevel -eq &#39;RemoteNotInSync&#39;)) {</li>
+</ul>
+<ul>
+<li>$resultSpoke = Sync-AzVirtualNetworkPeering -Name $peeringspokname -VirtualNetworkName $vnetspok  -ResourceGroupName  $rg1</li>
+</ul>
+<ul>
+<li>if (($spokePeeringStatus.PeeringSyncLevel -eq &#39;LocalNotInSync&#39;) -OR ($spokePeeringStatus.PeeringSyncLevel -eq &#39;RemoteNotInSync&#39;)) {</li>
+</ul>
+<ul>
+<li>$resultHub = SSync-AzVirtualNetworkPeering -Name $peeringhubname  -VirtualNetworkName $vnethub  -ResourceGroupName  $rg2</li>
+</ul>
+<ul>
+<li>因为我测试只是增加的spoke的虚拟网络，如果遇到客户更新hub的虚拟网络地址空间时还需要注意hub中的每个对等互联都需要执行一下同步，要不对方始终不会有该新的网段路由。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>该方法是通过最新版本的Az powershell模块来注册一个对等互联feature，之后在不移除对等互联的场景下新增地址空间。</li>
+</ul>
+<ul>
+<li>如下脚本是在VirNet1（spoke)中新增地址空间：10.21.0.0/16，之后使用命令同步对等互联。</li>
+</ul>
+<ul>
+<li>参考脚本：</li>
+</ul>
+<ul>
+<li>#如上注册feature需要高于6.2以上的az模块版本才可以运行，因此执行该操作需要保证你的powershell Az模块是较新版本。我测试是7.2 。</li>
+</ul>
+<ul>
+<li>Get-AzVirtualNetworkPeering -VirtualNetworkName $vnethub -ResourceGroupName $rg2 -Name $peeringhubname</li>
+</ul>
+<ul>
+<li>Get-AzVirtualNetworkPeering -VirtualNetworkName $vnetspok -ResourceGroupName $rg1 -Name $peeringspokname</li>
+</ul>
+<ul>
+<li>Set-AzVirtualNetwork -VirtualNetwork $spokeVVnet</li>
+</ul>
+<ul>
+<li>未执行最后两条命令是这样的：</li>
+</ul>
+<ul>
+<li>执行后sync命令同步后状态会变为 FullyInSync，而检查网卡的有</li>
+</ul>
+<ul>
+<li>另外操作需要网络对等互联同步需要有管理标识并授权参与者权限。在以上的执行过程中我并没有使用也能执行成功，如果遇到执行报错可以根据报错信息提示使用如下命令添加权限。</li>
+</ul>
+<ul>
+<li>New-AzRoleAssignment -ObjectId $userManagedIdentity.PrincipalId -ResourceGroupName $rg   -RoleDefinitionName Contributor</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>2/22/2022</p>
+<p>该方法是通过最新版本的Az powershell模块来注册一个对等互联feature，之后在不移除对等互联的场景下新增地址空间。</p>
+<p>测试环境：</p>
+<p>rg-n2-vnet   地址空间：10.100.0.0/16，10.110.0.0/16，10.120.0.0/16，10.130.0.0/16，10.140.0.0/16</p>
+<p>VirNet1 地址空间： 10.10.0.0/16，10.20.0.0/16</p>
+<p>对等互联配置情况：</p>
+<p>rg-n2-vnet 到VirNet1的对等互联名称为 to-1</p>
+<p>VirNet1 到rg-n2-vnet的对等互联名称为 to-rg-n2</p>
+<p>如下截图：</p>
+<p>如下脚本是在VirNet1（spoke)中新增地址空间：10.21.0.0/16，之后使用命令同步对等互联。</p>
+<p>参考脚本：</p>
+<p>=========</p>
+<p>if ((Get-AzProviderFeature -ProviderNamespace Microsoft.Network -ListAvailable | Where-Object featureName -eq &quot;AllowUpdateAddressSpaceInPeeredVnets&quot;).RegistrationState -eq &quot;NotRegistered&quot;) {</p>
+<p>Register-AzProviderFeature -ProviderNamespace Microsoft.Network -FeatureName AllowUpdateAddressSpaceInPeeredVnets</p>
+<p>}</p>
+<p>#如上注册feature需要高于6.2以上的az模块版本才可以运行，因此执行该操作需要保证你的powershell Az模块是较新版本。我测试是7.2 。</p>
+<p>#这个功能注册时间等待时间较长，大概20分钟左右，没有注册时显示为NotRegistered，注册中显示Registering，注册完成显示为Registered。</p>
+<p>$rg1 = &quot;TestGroup&quot;</p>
+<p>$rg2 = &quot;RG-North2&quot;</p>
+<p>$vnethub = &quot;rg-n2-vnet&quot;</p>
+<p>$peeringhubname = &quot;to-1&quot;</p>
+<p>$vnetspok = &quot;VirNet1&quot;</p>
+<p>$peeringspokname = &quot;to-rg-n2&quot;</p>
+<p>Get-AzVirtualNetworkPeering -VirtualNetworkName $vnethub -ResourceGroupName $rg2 -Name $peeringhubname</p>
+<p>Get-AzVirtualNetworkPeering -VirtualNetworkName $vnetspok -ResourceGroupName $rg1 -Name $peeringspokname</p>
+<p>$spokeVVnet = Get-AzVirtualNetwork -name $vnetspok -ResourceGroupName $rg1</p>
+<p>#添加地址段</p>
+<p>$newIpRange = &quot;10.21.0.0/16&quot;</p>
+<p>$spokeVVnet.AddressSpace.AddressPrefixes.Add($newIpRange)</p>
+<p>Set-AzVirtualNetwork -VirtualNetwork $spokeVVnet</p>
+<p>Sync-AzVirtualNetworkPeering -Name $peeringhubname -VirtualNetworkName $vnethub -ResourceGroupName $rg2</p>
+<p>Sync-AzVirtualNetworkPeering -Name  $peeringspokname -VirtualNetworkName $vnetspok -ResourceGroupName $rg1</p>
+<p>未执行最后两条命令是这样的：</p>
+<p>D:\Terminal&gt; Get-AzVirtualNetworkPeering -VirtualNetworkName $vnethub -ResourceGroupName $rg2 -Name $peeringhubname</p>
+<p>Name                             : to-1</p>
+<p>…</p>
+<p>ResourceGroupName                : RG-North2</p>
+<p>VirtualNetworkName               : rg-n2-vnet</p>
+<p>PeeringSyncLevel                 : LocalNotInSync</p>
+<p>PeeringState                     : Connected</p>
+<p>ProvisioningState                : Succeeded</p>
+<p>D:\Terminal&gt;  Get-AzVirtualNetworkPeering -VirtualNetworkName $vnetspok -ResourceGroupName $rg1 -Name $peeringspokname</p>
+<p>VirtualNetworkName               : VirNet1</p>
+<p>PeeringSyncLevel                 : RemoteNotInSync</p>
+<p>执行后sync命令同步后状态会变为 FullyInSync，而检查网卡的有</p>
+<p>现已经同步了这个新的地址空间。</p>
+<p>经过之前在终端上使用持续ping测试的结果来看，该操作期间并没有任何丢包。</p>
+<p>另外操作需要网络对等互联同步需要有管理标识并授权参与者权限。在以上的执行过程中我并没有使用也能执行成功，如果遇到执行报错可以根据报错信息提示使用如下命令添加权限。</p>
+<p>$userManagedIdentity = New-AzUserAssignedIdentity -ResourceGroupName $rg  -Name &quot;armdepscript01&quot;</p>
+<p>New-AzRoleAssignment -ObjectId $userManagedIdentity.PrincipalId -ResourceGroupName $rg   -RoleDefinitionName Contributor</p>
+<p>$hubPeeringStatus = Get-AzVirtualNetworkPeering -Name $peeringhubname -VirtualNetworkName $vnethub  -ResourceGroupName  $rg2</p>
+<p>$spokePeeringStatus = Get-AzVirtualNetworkPeering -Name $peeringspokname -VirtualNetworkName $vnetspok  -ResourceGroupName  $rg1</p>
+<p>if (($hubPeeringStatus.PeeringSyncLevel -eq &#39;LocalNotInSync&#39;) -OR ($hubPeeringStatus.PeeringSyncLevel -eq &#39;RemoteNotInSync&#39;)) {</p>
+<p>$resultSpoke = Sync-AzVirtualNetworkPeering -Name $peeringspokname -VirtualNetworkName $vnetspok  -ResourceGroupName  $rg1</p>
+<p>if (($spokePeeringStatus.PeeringSyncLevel -eq &#39;LocalNotInSync&#39;) -OR ($spokePeeringStatus.PeeringSyncLevel -eq &#39;RemoteNotInSync&#39;)) {</p>
+<p>$resultHub = SSync-AzVirtualNetworkPeering -Name $peeringhubname  -VirtualNetworkName $vnethub  -ResourceGroupName  $rg2</p>
+<p>因为我测试只是增加的spoke的虚拟网络，如果遇到客户更新hub的虚拟网络地址空间时还需要注意hub中的每个对等互联都需要执行一下同步，要不对方始终不会有该新的网段路由。</p></article>

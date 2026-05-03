@@ -1,0 +1,107 @@
+<article class="kb-article" data-title="【share】AVD USB重定向案例和解决方案"><h1>【share】AVD USB重定向案例和解决方案</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-11-13 18:34:26</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>reviewer</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>reviewer</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>reviewer</li>
+</ul>
+<ul>
+<li>zhangwenxin</li>
+</ul>
+<ul>
+<li>问题：</li>
+</ul>
+<ul>
+<li>AVD USB重定向——识别到USB设备是以挂载文件共享的形式显示，不是以磁盘盘符的形式显示。</li>
+</ul>
+<ul>
+<li>Session host</li>
+</ul>
+<ul>
+<li>组策略设置</li>
+</ul>
+<ul>
+<li>Client</li>
+</ul>
+<ul>
+<li>Local Computer Policy : Computer Configuration &gt;  Administrative Templates &gt; Windows Components &gt; Remote Desktop Services &gt; Remote Desktop Connection Client &gt; RemoteFX USB Device Redirection,</li>
+</ul>
+<ul>
+<li>主机池-RDP属性为默认</li>
+</ul>
+<ul>
+<li>识别到的USB是以挂载文件共享的形式（图中 E）</li>
+</ul>
+<ul>
+<li>1.本地组策略-阻止安装于下列任何设备实例id相匹配的设备-开启，并填写了设备实例路径和实例id</li>
+</ul>
+<ul>
+<li>2.更新组策略（gpupdate），卸载usb设备对应的磁盘驱动器（在&quot;设备管理&quot;-磁盘驱动器 位置找到点击卸载），重启电脑（我测试当时重启了，这里我理解可以不用重启电脑，更新组策略就可以）。</li>
+</ul>
+<ul>
+<li>插入USB设备可以看到不在磁盘驱动器显示了，在其他设备显示。具体参考详见下图。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>已按照文档步骤正常设置。参考文档：通过远程桌面协议在 Windows 上配置 USB 重定向 | Azure Docs</li>
+</ul>
+<ul>
+<li>3. 连接AVD验证设备可以重定向成功。</li>
+</ul>
+<ul>
+<li>验证AVD可以成功识别到USB设备</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>注：组策略设置完后，使用命令更新组策略使其生效</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Local Computer Policy : Computer Configuration &gt; Administrative Templates &gt; Windows Components &gt; Remote Desktop Services &gt; Remote Desktop Session Host &gt; Device and Resource Redirection., then set toggle the switch for Do not allow supported Plug and Play device redirection to Disabled.</li>
+</ul>
+<ul>
+<li>Allow RDP redirection of other supported RemoteFX USB devices from this computer set to Enabled</li>
+</ul>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025-11-13</p>
+<p>reviewer</p>
+<p>zhangwenxin</p>
+<p>问题：</p>
+<p>AVD USB重定向——识别到USB设备是以挂载文件共享的形式显示，不是以磁盘盘符的形式显示。</p>
+<p>已按照文档步骤正常设置。参考文档：通过远程桌面协议在 Windows 上配置 USB 重定向 | Azure Docs</p>
+<p>Session host</p>
+<p>组策略设置</p>
+<p>Local Computer Policy : Computer Configuration &gt; Administrative Templates &gt; Windows Components &gt; Remote Desktop Services &gt; Remote Desktop Session Host &gt; Device and Resource Redirection., then set toggle the switch for Do not allow supported Plug and Play device redirection to Disabled.</p>
+<p>Client</p>
+<p>Local Computer Policy : Computer Configuration &gt;  Administrative Templates &gt; Windows Components &gt; Remote Desktop Services &gt; Remote Desktop Connection Client &gt; RemoteFX USB Device Redirection,</p>
+<p>Allow RDP redirection of other supported RemoteFX USB devices from this computer set to Enabled</p>
+<p>注：组策略设置完后，使用命令更新组策略使其生效</p>
+<p>主机池-RDP属性为默认</p>
+<p>识别到的USB是以挂载文件共享的形式（图中 E）</p>
+<p>解决方案：</p>
+<p>1.本地组策略-阻止安装于下列任何设备实例id相匹配的设备-开启，并填写了设备实例路径和实例id</p>
+<p>2.更新组策略（gpupdate），卸载usb设备对应的磁盘驱动器（在&quot;设备管理&quot;-磁盘驱动器 位置找到点击卸载），重启电脑（我测试当时重启了，这里我理解可以不用重启电脑，更新组策略就可以）。</p>
+<p>插入USB设备可以看到不在磁盘驱动器显示了，在其他设备显示。具体参考详见下图。</p>
+<p>3. 连接AVD验证设备可以重定向成功。</p>
+<p>验证AVD可以成功识别到USB设备</p></article>

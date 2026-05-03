@@ -1,0 +1,61 @@
+<article class="kb-article" data-title="AKS可以使用基于 ZRS 磁盘，支持区域冗余的PVC了"><h1>AKS可以使用基于 ZRS 磁盘，支持区域冗余的PVC了</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: Bug</li>
+<li>最近修改: 2024-01-16 16:59:56</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：SR_20240112273192_AKS Node pool是否支持跨AZ访问PVC</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：SR_20240112273192_AKS Node pool是否支持跨AZ访问PVC</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>使用以下yaml创建StandardSSD_ZRS的SC。</li>
+</ul>
+<ul>
+<li>2． 使用kubectl get sc找到刚刚创建的SC并记录。</li>
+</ul>
+<ul>
+<li>3．使用以下yaml创建PVC，注意storageClassName要填写之前创建的支持ZRS的SC。</li>
+</ul>
+<ul>
+<li>4．使用以下yaml创建一个pod，关联之前创建的PVC。</li>
+</ul>
+<ul>
+<li>6． 我的两个测试节点在不同的ZONE，测试将一个节点taint，再次创建新的POD。PVC可以在另一个节点上正常attach。</li>
+</ul>
+<ul>
+<li>测试中yaml文件参考文档：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>5． 之后，在门户上观察，发现ZRS的PVC磁盘创建出来了。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/azure-disk-csi#dynamically-create-azure-disks-pvs-by-using-the-built-in-storage-classes" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/azure-disk-csi#dynamically-create-azure-disks-pvs-by-using-the-built-in-storage-classes</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-01-16</p>
+<p>使用以下yaml创建StandardSSD_ZRS的SC。</p>
+<p>2． 使用kubectl get sc找到刚刚创建的SC并记录。</p>
+<p>3．使用以下yaml创建PVC，注意storageClassName要填写之前创建的支持ZRS的SC。</p>
+<p>4．使用以下yaml创建一个pod，关联之前创建的PVC。</p>
+<p>5． 之后，在门户上观察，发现ZRS的PVC磁盘创建出来了。</p>
+<p>6． 我的两个测试节点在不同的ZONE，测试将一个节点taint，再次创建新的POD。PVC可以在另一个节点上正常attach。</p>
+<p>测试中yaml文件参考文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/azure-disk-csi#dynamically-create-azure-disks-pvs-by-using-the-built-in-storage-classes" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/azure-disk-csi#dynamically-create-azure-disks-pvs-by-using-the-built-in-storage-classes</a></p>
+<p>参考工单：SR_20240112273192_AKS Node pool是否支持跨AZ访问PVC</p></article>

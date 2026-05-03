@@ -1,0 +1,145 @@
+<article class="kb-article" data-title="在AD DS（非AAD DS）环境下使用文件共享配置FSlogix"><h1>在AD DS（非AAD DS）环境下使用文件共享配置FSlogix</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2024-04-19 17:11:59</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Hi, All</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Hi, All</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi, All</li>
+</ul>
+<ul>
+<li>配置文件共享加入AD DS</li>
+</ul>
+<ul>
+<li>1）使用已同步到Azure AD 的同时有域控管理员权限的域账户登录到域控下的服务器，不一定要是会话主机</li>
+</ul>
+<ul>
+<li>2）下载并安装AzFilesHybrid 模块</li>
+</ul>
+<ul>
+<li>#会提示需要安装Az 2.8.0 和Az.storage 4.3.0 或更高版本，请允许#</li>
+</ul>
+<ul>
+<li>使用本地管理员权限登录，并对每台会话主机进行配置</li>
+</ul>
+<ul>
+<li>1）将文件共享挂载到每台会话主机上</li>
+</ul>
+<ul>
+<li>icacls &lt;mounted-drive-letter&gt;: /grant &lt;user-email&gt;:(M)</li>
+</ul>
+<ul>
+<li>icacls &lt;mounted-drive-letter&gt;: /grant &quot;Creator Owner&quot;:(OI)(CI)(IO)(M)</li>
+</ul>
+<ul>
+<li>icacls &lt;mounted-drive-letter&gt;: /remove &quot;Authenticated Users&quot;</li>
+</ul>
+<ul>
+<li>icacls &lt;mounted-drive-letter&gt;: /remove &quot;Builtin\Users&quot;</li>
+</ul>
+<ul>
+<li>#注册表情况#</li>
+</ul>
+<ul>
+<li>4）重启会话主机</li>
+</ul>
+<ul>
+<li>5）测试</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>最近处理了一个工单(20220811182837)，客户需要在AD DS（非AAD DS）环境下使用文件共享配置FSlogix，官方文档创建具有域控制器的 Azure 文件共享 - Azure | Azure Docs中部分地方写的不是特别不清楚，可能会踩坑，以下是我测试过程中的一些经验，供大家参考</li>
+</ul>
+<ul>
+<li>#通过门户验证#</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>3）将解压后的AzFilesHybrid文件夹复制到Powershell modules 路径下， 再使用管理员权限运行powershell 导入AzFilesHybrid 模块 （import-module AzFilesHybrid），会提示需要安装Az 2.8.0 和Az.storage 4.3.0 和AzureAD 模块，请允许。</li>
+</ul>
+<ul>
+<li>#Powershell Modules 默认路径#</li>
+</ul>
+<ul>
+<li>4）如果脚本运行过程中报错，在下次运行脚本前，需要从AD中删除创建的SamAccountName</li>
+</ul>
+<ul>
+<li>5）脚本运行没有任何“failed&quot;后，确认文件共享是否成功加入域控</li>
+</ul>
+<ul>
+<li>#使用Powershell 验证#</li>
+</ul>
+<ul>
+<li>可以直接使用门户上的将Azure File 挂载到windows 的脚本</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>注1：默认情况下，本地域控管理员账户是不会同步到Azure AD 的，可以通过调整Azure AD connect 的同步配置将本地域控管理员账户同步到Azure AD 上。更多请参考工单SR_20210720109673_无法同步windows domain controller admin 或附件中的share .</li>
+</ul>
+<ul>
+<li>注2：Az （包含Az.storage）也可以通过MSI 下载，并提前手动安装。但AzureActiveDirectory 模块，不建议离线安装，离线导入可能会报错。</li>
+</ul>
+<ul>
+<li>建议使用新账户进行测试，对于C:\Users下已有的用户，请删除（或重命名）C:\Users下对应的用户profile 文件然后再使用AVD测试。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档 <a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-id" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-id</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://learn.microsoft.com/zh-cn/azure/developer/terraform/get-started-windows-powershell?tabs=bash&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/developer/terraform/get-started-windows-powershell?tabs=bash&gt;</a></li>
+</ul>
+<ul>
+<li>2）通过cmd为文件共享配置NFS权限（官方文档直达链接： <a href="https://docs.azure.cn/zh-cn/virtual-desktop/create-file-share#configure-ntfs-permissions" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/create-file-share#configure-ntfs-permissions</a> ）</li>
+</ul>
+<ul>
+<li>3）下载并安装Fslogix（下载链接 <a href="https://aka.ms/fslogix-latest" target="_blank" rel="noopener">https://aka.ms/fslogix-latest</a> ）</li>
+</ul>
+<ul>
+<li>4）修改注册表（官方文档直达链接： <a href="https://docs.azure.cn/zh-cn/virtual-desktop/create-file-share#configure-fslogix-on-session-host-vms" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/create-file-share#configure-fslogix-on-session-host-vms</a> ）</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi, All</p>
+<p>最近处理了一个工单(20220811182837)，客户需要在AD DS（非AAD DS）环境下使用文件共享配置FSlogix，官方文档创建具有域控制器的 Azure 文件共享 - Azure | Azure Docs中部分地方写的不是特别不清楚，可能会踩坑，以下是我测试过程中的一些经验，供大家参考</p>
+<p>配置文件共享加入AD DS</p>
+<p>参考文档 <a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-id" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-id</a></p>
+<p>From &lt;<a href="https://learn.microsoft.com/zh-cn/azure/developer/terraform/get-started-windows-powershell?tabs=bash&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/developer/terraform/get-started-windows-powershell?tabs=bash&gt;</a></p>
+<p>1）使用已同步到Azure AD 的同时有域控管理员权限的域账户登录到域控下的服务器，不一定要是会话主机</p>
+<p>注1：默认情况下，本地域控管理员账户是不会同步到Azure AD 的，可以通过调整Azure AD connect 的同步配置将本地域控管理员账户同步到Azure AD 上。更多请参考工单SR_20210720109673_无法同步windows domain controller admin 或附件中的share .</p>
+<p>2）下载并安装AzFilesHybrid 模块</p>
+<p>3）将解压后的AzFilesHybrid文件夹复制到Powershell modules 路径下， 再使用管理员权限运行powershell 导入AzFilesHybrid 模块 （import-module AzFilesHybrid），会提示需要安装Az 2.8.0 和Az.storage 4.3.0 和AzureAD 模块，请允许。</p>
+<p>注2：Az （包含Az.storage）也可以通过MSI 下载，并提前手动安装。但AzureActiveDirectory 模块，不建议离线安装，离线导入可能会报错。</p>
+<p>#Powershell Modules 默认路径#</p>
+<p>#会提示需要安装Az 2.8.0 和Az.storage 4.3.0 或更高版本，请允许#</p>
+<p>4）如果脚本运行过程中报错，在下次运行脚本前，需要从AD中删除创建的SamAccountName</p>
+<p>5）脚本运行没有任何“failed&quot;后，确认文件共享是否成功加入域控</p>
+<p>#使用Powershell 验证#</p>
+<p>#通过门户验证#</p>
+<p>使用本地管理员权限登录，并对每台会话主机进行配置</p>
+<p>1）将文件共享挂载到每台会话主机上</p>
+<p>可以直接使用门户上的将Azure File 挂载到windows 的脚本</p>
+<p>2）通过cmd为文件共享配置NFS权限（官方文档直达链接： <a href="https://docs.azure.cn/zh-cn/virtual-desktop/create-file-share#configure-ntfs-permissions" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/create-file-share#configure-ntfs-permissions</a> ）</p>
+<p>icacls &lt;mounted-drive-letter&gt;: /grant &lt;user-email&gt;:(M)</p>
+<p>icacls &lt;mounted-drive-letter&gt;: /grant &quot;Creator Owner&quot;:(OI)(CI)(IO)(M)</p>
+<p>icacls &lt;mounted-drive-letter&gt;: /remove &quot;Authenticated Users&quot;</p>
+<p>icacls &lt;mounted-drive-letter&gt;: /remove &quot;Builtin\Users&quot;</p>
+<p>3）下载并安装Fslogix（下载链接 <a href="https://aka.ms/fslogix-latest" target="_blank" rel="noopener">https://aka.ms/fslogix-latest</a> ）</p>
+<p>4）修改注册表（官方文档直达链接： <a href="https://docs.azure.cn/zh-cn/virtual-desktop/create-file-share#configure-fslogix-on-session-host-vms" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/create-file-share#configure-fslogix-on-session-host-vms</a> ）</p>
+<p>#注册表情况#</p>
+<p>4）重启会话主机</p>
+<p>5）测试</p>
+<p>建议使用新账户进行测试，对于C:\Users下已有的用户，请删除（或重命名）C:\Users下对应的用户profile 文件然后再使用AVD测试。</p></article>

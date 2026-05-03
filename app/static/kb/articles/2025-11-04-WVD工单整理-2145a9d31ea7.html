@@ -1,0 +1,514 @@
+<article class="kb-article" data-title="WVD工单整理"><h1>WVD工单整理</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-11-04 17:52:24</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_20210730112378_[MS-LED]来宾用户客户端无法获取桌面资源--zhanglihong</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_20210730112378_[MS-LED]来宾用户客户端无法获取桌面资源--zhanglihong</li>
+</ul>
+<ul>
+<li>SR_20210810114417_连接主机失败，提示没有可用资源--luyitong</li>
+</ul>
+<ul>
+<li>客户端无法登录国内版账户？</li>
+</ul>
+<ul>
+<li>SR_20211027128325 _ 用镜像创建主机池虚拟机时，镜像中设定的时间无法被复制过去--wangyu</li>
+</ul>
+<ul>
+<li>web两账户都登录失败</li>
+</ul>
+<ul>
+<li>2、糟糕，我们无法连接到 &quot;SessionDesktop&quot;无法连接到网关，因为出现错误。如果这种情况持续发生，请向管理员或技术支持人员寻求帮助。</li>
+</ul>
+<ul>
+<li>SR_20210923122834 _ [MS-LED]虚拟桌面中，无法配置outlook,延时很高--jinjing</li>
+</ul>
+<ul>
+<li>拟桌面中，无法配置outlook, 延时很高</li>
+</ul>
+<ul>
+<li>尝试在虚拟机桌面中配置我的邮箱，同样无法配置</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>有关WVD所需要的相关网络要求:</li>
+</ul>
+<ul>
+<li>SR_20210721110238_[MS-LED]虚拟桌面的出站访问防火墙开放问题--zhangwenxin</li>
+</ul>
+<ul>
+<li>对于虚拟机为 Windows 虚拟桌面创建的 Azure 虚拟机必须能够访问入下Azure China 21Vianet的URL 链接</li>
+</ul>
+<ul>
+<li>网络连接示意图：</li>
+</ul>
+<ul>
+<li>WVD</li>
+</ul>
+<ul>
+<li>SR_20210729111786_Azure WVD 连接到本地网络上(或者USB设备)的打印机--songweiqin</li>
+</ul>
+<ul>
+<li>虚拟桌面不支持B2B用户</li>
+</ul>
+<ul>
+<li>Wvd 权限控制</li>
+</ul>
+<ul>
+<li>远程桌面服务主要的作用主要是控制管理windows操作系统，具体的使用特点您可以参考如下信息，以及微软的相关介绍。</li>
+</ul>
+<ul>
+<li>VDI利用 Windows 客户端为用户提供他们在 Windows 桌面体验中所预期的高性能、应用兼容性和顺手性。可以更灵活地自定义向用户发布的内容：</li>
+</ul>
+<ul>
+<li>RemoteApp：指定在虚拟化计算机上托管/运行的，但看上去如同本地应用程序一样在用户桌面上运行的各个应用程序。 应用有其自身的任务栏条目，并可调整大小以及在监视器之间移动。 非常适合用于在安全的远程环境中部署和管理关键应用程序，同时可让用户在其自己的桌面中工作以及自定义其桌面。</li>
+</ul>
+<ul>
+<li>对于成本效益至关重要的环境，以及当你希望在基于会话的虚拟化环境中部署完整桌面后能够扩大收益时，可以使用 MultiPoint 服务来实现最大价值。</li>
+</ul>
+<ul>
+<li>用户文件的隔离访问，您可以参考漫游配置文件</li>
+</ul>
+<ul>
+<li>应用的虚拟化隔离可以参考如Teams：</li>
+</ul>
+<ul>
+<li>对于WVD访问的许可权限设置可以参考：</li>
+</ul>
+<ul>
+<li>用户如需登录 远程桌面需要分配给相应的应用程序组如下桌面虚拟化用户的角色</li>
+</ul>
+<ul>
+<li>连接错误的日志如下：</li>
+</ul>
+<ul>
+<li>事实上是，HOSTPOOL内正常开启的VM是WVDTEST-1.njlab.cn，而不是WVDTEST-0.njlab.cn。</li>
+</ul>
+<ul>
+<li>不知道为什么会提示连接不到WVDTEST-0.njlab.cn</li>
+</ul>
+<ul>
+<li>注销用户：</li>
+</ul>
+<ul>
+<li>在会话未主动关闭情况下停止主机，则“活动会话”会一直保持：</li>
+</ul>
+<ul>
+<li>SR_20210825117476_[S500]如何改绑Personal类型的WVD给其他用户？如何获取到桌面端的WVD程序？---zhangwenxin/xiejiaxing</li>
+</ul>
+<ul>
+<li>【问题1】</li>
+</ul>
+<ul>
+<li>如何改绑Personal类型的WVD个其他用户？</li>
+</ul>
+<ul>
+<li>【问题2】如何获得桌面版的WVD程序，这样比浏览器访问性能好很多.</li>
+</ul>
+<ul>
+<li>SR_20210826117669 _ [MS-LED]虚拟桌面WVD问题咨询--zhangwenxin/lvfengnan</li>
+</ul>
+<ul>
+<li>文件传输怎么配置？web端登录好像不能直接对文件复制粘贴或拖拽</li>
+</ul>
+<ul>
+<li>应用程序检测机制是什么样的？需要把应用程序安装在特定目录才能被检测到吗？</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>2 外使用Web 客户端登录时，目前可以使用文件传送预览功能传递文件</li>
+</ul>
+<ul>
+<li>将一台普通虚拟机时间日期调整正确后做WVD镜像，再在主机池中用这个镜像创建主机池虚拟机，创建完后时间日期为初始化状态，并不是之前做的镜像中的时间日期</li>
+</ul>
+<ul>
+<li>协助客户在Azure ADDS中设置组策略时区重定向，客户登录到session host后可以获取客户端时区。</li>
+</ul>
+<ul>
+<li>为准备和自定义 Azure 虚拟桌面的 VHD 映像 - Azure | Azure Docs</li>
+</ul>
+<ul>
+<li>SR_20210728111518_[MS-LED]azure 虚拟桌面配置--songweiqin</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>Azure虚拟桌面配置使用AAD域</li>
+</ul>
+<ul>
+<li>主机池公用，负载均衡广度优先</li>
+</ul>
+<ul>
+<li>应用程序组分配两个AAD用户</li>
+</ul>
+<ul>
+<li>排出模式一个开一个关</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>当前环境不满足WVD要求</li>
+</ul>
+<ul>
+<li>虚拟机加入了Azure AD域</li>
+</ul>
+<ul>
+<li>SR_20210803113029_[MS-LED]虚拟桌面使用问题---liuwei</li>
+</ul>
+<ul>
+<li>·         2.创建主机池时候注意选择指定域或单位选择“是”输入您的AADDS域名：</li>
+</ul>
+<ul>
+<li>同时，在Azure 虚拟桌面配置ADFS单一登录文档：配置 Azure 虚拟桌面 AD FS 单一登录 - Azure | Azure Docs</li>
+</ul>
+<ul>
+<li>关于密码哈希同步的全球版官方文档：什么是与 Azure AD 的密码哈希同步？ | Microsoft Docs  使用 Azure AD Connect 同步实现密码哈希同步 | Microsoft Docs</li>
+</ul>
+<ul>
+<li>文中有提到，Azure AD Connect 将用户密码的哈希从本地 Active Directory 实例同步到基于云的 Azure AD 实例。Active Directory 域服务以实际用户密码的哈希值表示形式存储密码。 哈希值是单向数学函数（哈希算法）的计算结果。 没有任何方法可将单向函数的结果还原为纯文本版本的密码。</li>
+</ul>
+<ul>
+<li>为了排除软件的因素，尝试安装其他版本的Office，问题依旧</li>
+</ul>
+<ul>
+<li>在我们的测试环境（关联了公网IP的虚拟机）中进行了探测，未复现该问题</li>
+</ul>
+<ul>
+<li>将您的VM关联了公共IP后再次tcping未发现丢包</li>
+</ul>
+<ul>
+<li>SR_20210924123111_[MS-LED]部署虚拟桌面后，需要映射本地一个USB扫描仪，需要填写哪些ID--wangzhaoqing</li>
+</ul>
+<ul>
+<li>部署虚拟桌面后，需要映射本地一个USB扫描仪，需要填写哪些ID</li>
+</ul>
+<ul>
+<li>参考文档测试使用以下选项可以成功加载本地USB的扫描仪设备，无需填写设备ID</li>
+</ul>
+<ul>
+<li>SR_20210901118768_增加MSIX 应用包时遇到内部错误--xiejiaxing</li>
+</ul>
+<ul>
+<li>当我增加一个msix vhd的时候遇到如下错误:</li>
+</ul>
+<ul>
+<li>原因分析：</li>
+</ul>
+<ul>
+<li>msix包签名问题导致</li>
+</ul>
+<ul>
+<li>此问题您已经通过自签名证书解决了。</li>
+</ul>
+<ul>
+<li>对于发布到应用程序组的msix包看不到的问题，调查如下：</li>
+</ul>
+<ul>
+<li>由于azure虚拟桌面这个产品目前处于预览版，还没有GA，预计ETA为9/15（有可能推迟），当在公共预览版期间测试远程应用时，MSIX 应用附加远程应用可能会从源中消失。</li>
+</ul>
+<ul>
+<li>应用不会显示，因为在评估环境中使用的主机池正由生产环境中的 RD Broker 提供服务。 由于生产环境中的 RD Broker 未注册 MSIX 应用附加远程应用的存在，因此这些应用将不会出现在源中。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>SR_20210802112676_[MS-LED]WVD中可否对用户权限进行限制，设置对系统文件仅只读或不能查看---songweiqin</li>
+</ul>
+<ul>
+<li>只有在停止会话主机前从Portal上的对应会话主机“注销用户”或者从已登录的会话中“注销用户”或“关闭连接”才会真正释放用户和当前会话主机的绑定关系，否则无法再次分配，此时可以将会话主机恢复启动状态后再注销。</li>
+</ul>
+<ul>
+<li>个人主机池将host分派给用户时，portal会弹出提示“这个过程无法还原”，指派完成后无法直接在portal重新指派。</li>
+</ul>
+<ul>
+<li>1、糟糕，我们无法连接到 &quot;SessionDesktop&quot;登录失败。请检查你的用户名和密码，然后重试。</li>
+</ul>
+<ul>
+<li>排查步骤：</li>
+</ul>
+<ul>
+<li>SR_20210806113768_AVD是否支持纯本地AD的模式验证身份？--liuhuan</li>
+</ul>
+<ul>
+<li>Azure 虚拟桌面是否支持纯本地AD进行验证的模式？</li>
+</ul>
+<ul>
+<li>如果不支持，本地AD采用Azure AD Connect的方式连接Azure AD，不使用哈希同步用户名和密码，使用直通验证或者ADFS的方式是否支持？</li>
+</ul>
+<ul>
+<li>2． 当前中国区Azure AD 上不支持pass-through auth （直通身份验证），您已经通过微软内部渠道去申请内部测试。</li>
+</ul>
+<ul>
+<li>作为使直通身份验证正常工作的先决条件，需要使用 Azure AD Connect 从本地 Active Directory 将用户预配到 Azure AD。 直通身份验证不适用于仅限云的用户。</li>
+</ul>
+<ul>
+<li>为了同步密码，Azure AD Connect 同步将从本地 Active Directory 实例提取密码哈希。 同步到 Azure Active Directory 身份验证服务之前，已对密码哈希应用其他安全处理。 密码基于每个用户按时间顺序同步。</li>
+</ul>
+<ul>
+<li>ActivityId: f57ffdc5-3aee-4727-a095-9695299e0c25 Error: Could not get MSIX applications for Host Pool &#39;≤poolx≥&#39; from image &#39;≤\\gpsavdsacn2.file.core.chinacloudapi.cn\msixshare\gpstm.vhd≥&#39;. Check inner exception for details. (Code: 400)</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>对于中国区文档目前中列出的地址没有包括国家云的DNS信息， WindowsVirtualDesktop中国区的服务的地址 *.wvd.azure.cn 端口443</li>
+</ul>
+<ul>
+<li>北2 VM对 服务器123.150.95.146的443端口进行了探测，丢包率大概在10%左右。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>桌面：包含你安装和管理的各种应用程序，为用户提供完整的桌面体验。 对于依赖于使用这些计算机作为其主要工作站，或者当前正在使用瘦客户端（例如 MultiPoint 服务）的用户而言，此解决方案非常理想。</li>
+</ul>
+<ul>
+<li>如果您希望用户独占的远程访问虚拟机，建议您使用直接分配的方式。使用直接分配时，必须将用户分配到个人桌面主机池和特定的会话主机，然后他们才能连接到其个人桌面。 如果仅将用户分配到主机池而不分配会话主机，则他们将无法访问资源。</li>
+</ul>
+<ul>
+<li>文件管理可以通过设置文件共享，进行权限管理。</li>
+</ul>
+<ul>
+<li>[{&quot;Code&quot;:-2146233088,&quot;CodeSymbolic&quot;:&quot;ConnectionFailedUserHasValidSessionButRdshIsUnhealthy&quot;,&quot;Time&quot;:&quot;2021-08-10T07:18:35.8960000Z&quot;,&quot;Message&quot;:&quot;The service couldn&#39;t connect to the user ≤wvduser02@jini82.partner.onmschina.cn≥ because the session host ≤WVDTEST-0.njlab.cn≥ is unhealthy. Either resolve the session host state issue or remove the session record after you&#39;ve ended the user session. This will allow the service to connect the user to a healthy session host.&quot;,&quot;ServiceError&quot;:false,&quot;Source&quot;:&quot;RDBroker&quot;}]</li>
+</ul>
+<ul>
+<li>解决方案:</li>
+</ul>
+<ul>
+<li>在微软论坛找到以下链接，里面有一些workaround（工作原理是清除掉虚拟桌面代理配置信息后，再将主机加入到主机池，此时就可以分配用户了）</li>
+</ul>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<ul>
+<li>解决方案：</li>
+</ul>
+<ul>
+<li>1.建议您使用AAD普通用户重置一下密码之后加入到AAD DC 管理员组，用这个账号来创建主机池。</li>
+</ul>
+<ul>
+<li>4.最后关于使用的客户端问题，建议您下载最新的客户端，待主机成功创建并分配用户之后再进行登陆验证：</li>
+</ul>
+<ul>
+<li>3． 关于您提到的希望仅将本地用户通过Azure AD connect 同步到Azure AD, 但不希望将密码也同步到本地。经本地测试，可以通过修改同步规则的方法实现，</li>
+</ul>
+<ul>
+<li>也是提到此信息：必须部署 Azure AD Connect 以将用户同步到 Azure AD。 必须在联合模式下配置 Azure AD Connect。</li>
+</ul>
+<ul>
+<li>将虚拟机桌面所在的VM关联了公共IP后，使用Outlook 2013可以正常配置邮箱。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/safe-url-list#virtual-machines" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/safe-url-list#virtual-machines</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/network-connectivity" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/network-connectivity</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/customize-rdp-properties#default-rdp-file-properties" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/customize-rdp-properties#default-rdp-file-properties</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/overview</a></li>
+</ul>
+<ul>
+<li>具体信息可以参考：<a href="https://docs.microsoft.com/zh-cn/windows-server/remote/remote-desktop-services/welcome-to-rds" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows-server/remote/remote-desktop-services/welcome-to-rds</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/configure-host-pool-personal-desktop-assignment-type#configure-direct-assignment" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/configure-host-pool-personal-desktop-assignment-type#configure-direct-assignment</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/create-host-pools-user-profile" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/create-host-pools-user-profile</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/teams-on-avd" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/teams-on-avd</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/rbac" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/rbac</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/delegated-access-virtual-desktop" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/delegated-access-virtual-desktop</a></li>
+</ul>
+<ul>
+<li><a href="https://techcommunity.microsoft.com/t5/azure-virtual-desktop/re-assign-user-to-session-host-in-personal-pool-desktop/m-p/1444086" target="_blank" rel="noopener">https://techcommunity.microsoft.com/t5/azure-virtual-desktop/re-assign-user-to-session-host-in-personal-pool-desktop/m-p/1444086</a></li>
+</ul>
+<ul>
+<li>使用 Windows 桌面客户端进行连接： <a href="https://docs.azure.cn/zh-cn/virtual-desktop/user-documentation/connect-windows-7-10?toc=/virtual-desktop/toc.json&amp;bc=/virtual-desktop/breadcrumb/toc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/user-documentation/connect-windows-7-10?toc=/virtual-desktop/toc.json&amp;bc=/virtual-desktop/breadcrumb/toc.json</a></li>
+</ul>
+<ul>
+<li>1 客户端登陆：<a href="https://docs.azure.cn/zh-cn/virtual-desktop/user-documentation/connect-windows-7-10?toc=/virtual-desktop/toc.json&amp;bc=/virtual-desktop/breadcrumb/toc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/user-documentation/connect-windows-7-10?toc=/virtual-desktop/toc.json&amp;bc=/virtual-desktop/breadcrumb/toc.json</a> 客户端（操作系统运行也有要求，测试在server 系统无法使用，windows 10 正常）目前只能使用subscribe with URL</li>
+</ul>
+<ul>
+<li>该功能的更多说明详见：<a href="https://docs.microsoft.com/zh-cn/windows-server/remote/remote-desktop-services/clients/remote-desktop-web-client#transfer-files-with-the-web-client" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows-server/remote/remote-desktop-services/clients/remote-desktop-web-client#transfer-files-with-the-web-client</a></li>
+</ul>
+<ul>
+<li>3 发布程序：<a href="https://docs.azure.cn/zh-cn/virtual-desktop/publish-apps" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/publish-apps</a></li>
+</ul>
+<ul>
+<li>MSIX 应用附加: <a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-azure-portal</a></li>
+</ul>
+<ul>
+<li>1，    检查一下当前环境是否满足以下要求<a href="https://docs.microsoft.com/zh-cn/azure/virtual-desktop/overview#requirements" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-desktop/overview#requirements</a></li>
+</ul>
+<ul>
+<li>3.另外注意一下加域的Win10客户端使用子网与AADDS 使用的子网分开，这块官网中是有描述的：<a href="https://docs.azure.cn/zh-cn/active-directory-domain-services/join-windows-vm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-domain-services/join-windows-vm</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/user-documentation/connect-windows-7-10?toc=/virtual-desktop/toc.json&amp;bc=/virtual-desktop/breadcrumb/toc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/user-documentation/connect-windows-7-10?toc=/virtual-desktop/toc.json&amp;bc=/virtual-desktop/breadcrumb/toc.json</a></li>
+</ul>
+<ul>
+<li>1． 根据文档测试连接到Azure虚拟桌面资源时，访问此连接[  <a href="https://rdweb.wvd.azure.cn/arm/webclient" target="_blank" rel="noopener">https://rdweb.wvd.azure.cn/arm/webclient</a>  ] 是会跳转至<a href="https://login.partner.microsoftonline.cn/common/oauth2/v2.0/authorize" target="_blank" rel="noopener">https://login.partner.microsoftonline.cn/common/oauth2/v2.0/authorize</a> 这个地址进行用户验证。这个是Azure AD认证的URL的地址。同时，后续在使用Azure VD时，会为用户分配相应的应用组权限。这个分配的范围也是Azure AD 用户或用户组。</li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/configure-adfs-sso" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/configure-adfs-sso</a></li>
+</ul>
+<ul>
+<li>关于USB设备重定向可参考文档：<a href="https://docs.azure.cn/zh-cn/virtual-desktop/configure-device-redirections#usb-redirection" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/configure-device-redirections#usb-redirection</a></li>
+</ul>
+<ul>
+<li>参考文档： <a href="https://azure.microsoft.com/zh-cn/global-infrastructure/services/?products=virtual-desktop&amp;regions=china-non-regional,china-north,china-north-2,china-east,china-east-2" target="_blank" rel="noopener">https://azure.microsoft.com/zh-cn/global-infrastructure/services/?products=virtual-desktop&amp;regions=china-non-regional,china-north,china-north-2,china-east,china-east-2</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-azure-portal#publish-msix-apps-to-an-app-group" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-azure-portal#publish-msix-apps-to-an-app-group</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>有关WVD所需要的相关网络要求:</p>
+<p>SR_20210721110238_[MS-LED]虚拟桌面的出站访问防火墙开放问题--zhangwenxin</p>
+<p>对于虚拟机为 Windows 虚拟桌面创建的 Azure 虚拟机必须能够访问入下Azure China 21Vianet的URL 链接</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/safe-url-list#virtual-machines" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/safe-url-list#virtual-machines</a></p>
+<p>对于中国区文档目前中列出的地址没有包括国家云的DNS信息， WindowsVirtualDesktop中国区的服务的地址 *.wvd.azure.cn 端口443</p>
+<p>网络连接示意图：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/network-connectivity" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/network-connectivity</a></p>
+<p>WVD</p>
+<p>SR_20210729111786_Azure WVD 连接到本地网络上(或者USB设备)的打印机--songweiqin</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/customize-rdp-properties#default-rdp-file-properties" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/customize-rdp-properties#default-rdp-file-properties</a></p>
+<p>SR_20210730112378_[MS-LED]来宾用户客户端无法获取桌面资源--zhanglihong</p>
+<p>虚拟桌面不支持B2B用户</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/overview</a></p>
+<p>SR_20210802112676_[MS-LED]WVD中可否对用户权限进行限制，设置对系统文件仅只读或不能查看---songweiqin</p>
+<p>Wvd 权限控制</p>
+<p>远程桌面服务主要的作用主要是控制管理windows操作系统，具体的使用特点您可以参考如下信息，以及微软的相关介绍。</p>
+<p>VDI利用 Windows 客户端为用户提供他们在 Windows 桌面体验中所预期的高性能、应用兼容性和顺手性。可以更灵活地自定义向用户发布的内容：</p>
+<p>桌面：包含你安装和管理的各种应用程序，为用户提供完整的桌面体验。 对于依赖于使用这些计算机作为其主要工作站，或者当前正在使用瘦客户端（例如 MultiPoint 服务）的用户而言，此解决方案非常理想。</p>
+<p>RemoteApp：指定在虚拟化计算机上托管/运行的，但看上去如同本地应用程序一样在用户桌面上运行的各个应用程序。 应用有其自身的任务栏条目，并可调整大小以及在监视器之间移动。 非常适合用于在安全的远程环境中部署和管理关键应用程序，同时可让用户在其自己的桌面中工作以及自定义其桌面。</p>
+<p>对于成本效益至关重要的环境，以及当你希望在基于会话的虚拟化环境中部署完整桌面后能够扩大收益时，可以使用 MultiPoint 服务来实现最大价值。</p>
+<p>具体信息可以参考：<a href="https://docs.microsoft.com/zh-cn/windows-server/remote/remote-desktop-services/welcome-to-rds" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows-server/remote/remote-desktop-services/welcome-to-rds</a></p>
+<p>如果您希望用户独占的远程访问虚拟机，建议您使用直接分配的方式。使用直接分配时，必须将用户分配到个人桌面主机池和特定的会话主机，然后他们才能连接到其个人桌面。 如果仅将用户分配到主机池而不分配会话主机，则他们将无法访问资源。</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/configure-host-pool-personal-desktop-assignment-type#configure-direct-assignment" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/configure-host-pool-personal-desktop-assignment-type#configure-direct-assignment</a></p>
+<p>用户文件的隔离访问，您可以参考漫游配置文件</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/create-host-pools-user-profile" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/create-host-pools-user-profile</a></p>
+<p>应用的虚拟化隔离可以参考如Teams：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/teams-on-avd" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/teams-on-avd</a></p>
+<p>文件管理可以通过设置文件共享，进行权限管理。</p>
+<p>对于WVD访问的许可权限设置可以参考：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/rbac" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/rbac</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/delegated-access-virtual-desktop" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/delegated-access-virtual-desktop</a></p>
+<p>用户如需登录 远程桌面需要分配给相应的应用程序组如下桌面虚拟化用户的角色</p>
+<p>SR_20210810114417_连接主机失败，提示没有可用资源--luyitong</p>
+<p>连接错误的日志如下：</p>
+<p>[{&quot;Code&quot;:-2146233088,&quot;CodeSymbolic&quot;:&quot;ConnectionFailedUserHasValidSessionButRdshIsUnhealthy&quot;,&quot;Time&quot;:&quot;2021-08-10T07:18:35.8960000Z&quot;,&quot;Message&quot;:&quot;The service couldn&#39;t connect to the user ≤wvduser02@jini82.partner.onmschina.cn≥ because the session host ≤WVDTEST-0.njlab.cn≥ is unhealthy. Either resolve the session host state issue or remove the session record after you&#39;ve ended the user session. This will allow the service to connect the user to a healthy session host.&quot;,&quot;ServiceError&quot;:false,&quot;Source&quot;:&quot;RDBroker&quot;}]</p>
+<p>事实上是，HOSTPOOL内正常开启的VM是WVDTEST-1.njlab.cn，而不是WVDTEST-0.njlab.cn。</p>
+<p>不知道为什么会提示连接不到WVDTEST-0.njlab.cn</p>
+<p>解决方案:</p>
+<p>只有在停止会话主机前从Portal上的对应会话主机“注销用户”或者从已登录的会话中“注销用户”或“关闭连接”才会真正释放用户和当前会话主机的绑定关系，否则无法再次分配，此时可以将会话主机恢复启动状态后再注销。</p>
+<p>注销用户：</p>
+<p>在会话未主动关闭情况下停止主机，则“活动会话”会一直保持：</p>
+<p>SR_20210825117476_[S500]如何改绑Personal类型的WVD给其他用户？如何获取到桌面端的WVD程序？---zhangwenxin/xiejiaxing</p>
+<p>【问题1】</p>
+<p>如何改绑Personal类型的WVD个其他用户？</p>
+<p>个人主机池将host分派给用户时，portal会弹出提示“这个过程无法还原”，指派完成后无法直接在portal重新指派。</p>
+<p>在微软论坛找到以下链接，里面有一些workaround（工作原理是清除掉虚拟桌面代理配置信息后，再将主机加入到主机池，此时就可以分配用户了）</p>
+<p><a href="https://techcommunity.microsoft.com/t5/azure-virtual-desktop/re-assign-user-to-session-host-in-personal-pool-desktop/m-p/1444086" target="_blank" rel="noopener">https://techcommunity.microsoft.com/t5/azure-virtual-desktop/re-assign-user-to-session-host-in-personal-pool-desktop/m-p/1444086</a></p>
+<p>【问题2】如何获得桌面版的WVD程序，这样比浏览器访问性能好很多.</p>
+<p>使用 Windows 桌面客户端进行连接： <a href="https://docs.azure.cn/zh-cn/virtual-desktop/user-documentation/connect-windows-7-10?toc=/virtual-desktop/toc.json&amp;bc=/virtual-desktop/breadcrumb/toc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/user-documentation/connect-windows-7-10?toc=/virtual-desktop/toc.json&amp;bc=/virtual-desktop/breadcrumb/toc.json</a></p>
+<p>SR_20210826117669 _ [MS-LED]虚拟桌面WVD问题咨询--zhangwenxin/lvfengnan</p>
+<p>客户端无法登录国内版账户？</p>
+<p>文件传输怎么配置？web端登录好像不能直接对文件复制粘贴或拖拽</p>
+<p>应用程序检测机制是什么样的？需要把应用程序安装在特定目录才能被检测到吗？</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>1 客户端登陆：<a href="https://docs.azure.cn/zh-cn/virtual-desktop/user-documentation/connect-windows-7-10?toc=/virtual-desktop/toc.json&amp;bc=/virtual-desktop/breadcrumb/toc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/user-documentation/connect-windows-7-10?toc=/virtual-desktop/toc.json&amp;bc=/virtual-desktop/breadcrumb/toc.json</a> 客户端（操作系统运行也有要求，测试在server 系统无法使用，windows 10 正常）目前只能使用subscribe with URL</p>
+<p>2 外使用Web 客户端登录时，目前可以使用文件传送预览功能传递文件</p>
+<p>该功能的更多说明详见：<a href="https://docs.microsoft.com/zh-cn/windows-server/remote/remote-desktop-services/clients/remote-desktop-web-client#transfer-files-with-the-web-client" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows-server/remote/remote-desktop-services/clients/remote-desktop-web-client#transfer-files-with-the-web-client</a></p>
+<p>3 发布程序：<a href="https://docs.azure.cn/zh-cn/virtual-desktop/publish-apps" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/publish-apps</a></p>
+<p>MSIX 应用附加: <a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-azure-portal</a></p>
+<p>SR_20211027128325 _ 用镜像创建主机池虚拟机时，镜像中设定的时间无法被复制过去--wangyu</p>
+<p>将一台普通虚拟机时间日期调整正确后做WVD镜像，再在主机池中用这个镜像创建主机池虚拟机，创建完后时间日期为初始化状态，并不是之前做的镜像中的时间日期</p>
+<p>解决方案：</p>
+<p>协助客户在Azure ADDS中设置组策略时区重定向，客户登录到session host后可以获取客户端时区。</p>
+<p>为准备和自定义 Azure 虚拟桌面的 VHD 映像 - Azure | Azure Docs</p>
+<p>SR_20210728111518_[MS-LED]azure 虚拟桌面配置--songweiqin</p>
+<p>问题描述：</p>
+<p>=======</p>
+<p>Azure虚拟桌面配置使用AAD域</p>
+<p>主机池公用，负载均衡广度优先</p>
+<p>应用程序组分配两个AAD用户</p>
+<p>排出模式一个开一个关</p>
+<p>web两账户都登录失败</p>
+<p>1、糟糕，我们无法连接到 &quot;SessionDesktop&quot;登录失败。请检查你的用户名和密码，然后重试。</p>
+<p>2、糟糕，我们无法连接到 &quot;SessionDesktop&quot;无法连接到网关，因为出现错误。如果这种情况持续发生，请向管理员或技术支持人员寻求帮助。</p>
+<p>排查步骤：</p>
+<p>1，    检查一下当前环境是否满足以下要求<a href="https://docs.microsoft.com/zh-cn/azure/virtual-desktop/overview#requirements" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-desktop/overview#requirements</a></p>
+<p>问题原因：</p>
+<p>========</p>
+<p>当前环境不满足WVD要求</p>
+<p>虚拟机加入了Azure AD域</p>
+<p>SR_20210803113029_[MS-LED]虚拟桌面使用问题---liuwei</p>
+<p>1.建议您使用AAD普通用户重置一下密码之后加入到AAD DC 管理员组，用这个账号来创建主机池。</p>
+<p>·         2.创建主机池时候注意选择指定域或单位选择“是”输入您的AADDS域名：</p>
+<p>3.另外注意一下加域的Win10客户端使用子网与AADDS 使用的子网分开，这块官网中是有描述的：<a href="https://docs.azure.cn/zh-cn/active-directory-domain-services/join-windows-vm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-domain-services/join-windows-vm</a></p>
+<p>4.最后关于使用的客户端问题，建议您下载最新的客户端，待主机成功创建并分配用户之后再进行登陆验证：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/user-documentation/connect-windows-7-10?toc=/virtual-desktop/toc.json&amp;bc=/virtual-desktop/breadcrumb/toc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/user-documentation/connect-windows-7-10?toc=/virtual-desktop/toc.json&amp;bc=/virtual-desktop/breadcrumb/toc.json</a></p>
+<p>SR_20210806113768_AVD是否支持纯本地AD的模式验证身份？--liuhuan</p>
+<p>Azure 虚拟桌面是否支持纯本地AD进行验证的模式？</p>
+<p>如果不支持，本地AD采用Azure AD Connect的方式连接Azure AD，不使用哈希同步用户名和密码，使用直通验证或者ADFS的方式是否支持？</p>
+<p>1． 根据文档测试连接到Azure虚拟桌面资源时，访问此连接[  <a href="https://rdweb.wvd.azure.cn/arm/webclient" target="_blank" rel="noopener">https://rdweb.wvd.azure.cn/arm/webclient</a>  ] 是会跳转至<a href="https://login.partner.microsoftonline.cn/common/oauth2/v2.0/authorize" target="_blank" rel="noopener">https://login.partner.microsoftonline.cn/common/oauth2/v2.0/authorize</a> 这个地址进行用户验证。这个是Azure AD认证的URL的地址。同时，后续在使用Azure VD时，会为用户分配相应的应用组权限。这个分配的范围也是Azure AD 用户或用户组。</p>
+<p>2． 当前中国区Azure AD 上不支持pass-through auth （直通身份验证），您已经通过微软内部渠道去申请内部测试。</p>
+<p>3． 关于您提到的希望仅将本地用户通过Azure AD connect 同步到Azure AD, 但不希望将密码也同步到本地。经本地测试，可以通过修改同步规则的方法实现，</p>
+<p>作为使直通身份验证正常工作的先决条件，需要使用 Azure AD Connect 从本地 Active Directory 将用户预配到 Azure AD。 直通身份验证不适用于仅限云的用户。</p>
+<p>同时，在Azure 虚拟桌面配置ADFS单一登录文档：配置 Azure 虚拟桌面 AD FS 单一登录 - Azure | Azure Docs</p>
+<p>也是提到此信息：必须部署 Azure AD Connect 以将用户同步到 Azure AD。 必须在联合模式下配置 Azure AD Connect。</p>
+<p>关于密码哈希同步的全球版官方文档：什么是与 Azure AD 的密码哈希同步？ | Microsoft Docs  使用 Azure AD Connect 同步实现密码哈希同步 | Microsoft Docs</p>
+<p>文中有提到，Azure AD Connect 将用户密码的哈希从本地 Active Directory 实例同步到基于云的 Azure AD 实例。Active Directory 域服务以实际用户密码的哈希值表示形式存储密码。 哈希值是单向数学函数（哈希算法）的计算结果。 没有任何方法可将单向函数的结果还原为纯文本版本的密码。</p>
+<p>为了同步密码，Azure AD Connect 同步将从本地 Active Directory 实例提取密码哈希。 同步到 Azure Active Directory 身份验证服务之前，已对密码哈希应用其他安全处理。 密码基于每个用户按时间顺序同步。</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/configure-adfs-sso" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/configure-adfs-sso</a></p>
+<p>SR_20210923122834 _ [MS-LED]虚拟桌面中，无法配置outlook,延时很高--jinjing</p>
+<p>拟桌面中，无法配置outlook, 延时很高</p>
+<p>尝试在虚拟机桌面中配置我的邮箱，同样无法配置</p>
+<p>为了排除软件的因素，尝试安装其他版本的Office，问题依旧</p>
+<p>北2 VM对 服务器123.150.95.146的443端口进行了探测，丢包率大概在10%左右。</p>
+<p>在我们的测试环境（关联了公网IP的虚拟机）中进行了探测，未复现该问题</p>
+<p>将您的VM关联了公共IP后再次tcping未发现丢包</p>
+<p>将虚拟机桌面所在的VM关联了公共IP后，使用Outlook 2013可以正常配置邮箱。</p>
+<p>SR_20210924123111_[MS-LED]部署虚拟桌面后，需要映射本地一个USB扫描仪，需要填写哪些ID--wangzhaoqing</p>
+<p>部署虚拟桌面后，需要映射本地一个USB扫描仪，需要填写哪些ID</p>
+<p>关于USB设备重定向可参考文档：<a href="https://docs.azure.cn/zh-cn/virtual-desktop/configure-device-redirections#usb-redirection" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/configure-device-redirections#usb-redirection</a></p>
+<p>参考文档测试使用以下选项可以成功加载本地USB的扫描仪设备，无需填写设备ID</p>
+<p>SR_20210901118768_增加MSIX 应用包时遇到内部错误--xiejiaxing</p>
+<p>当我增加一个msix vhd的时候遇到如下错误:</p>
+<p>ActivityId: f57ffdc5-3aee-4727-a095-9695299e0c25 Error: Could not get MSIX applications for Host Pool &#39;≤poolx≥&#39; from image &#39;≤\\gpsavdsacn2.file.core.chinacloudapi.cn\msixshare\gpstm.vhd≥&#39;. Check inner exception for details. (Code: 400)</p>
+<p>原因分析：</p>
+<p>msix包签名问题导致</p>
+<p>此问题您已经通过自签名证书解决了。</p>
+<p>对于发布到应用程序组的msix包看不到的问题，调查如下：</p>
+<p>由于azure虚拟桌面这个产品目前处于预览版，还没有GA，预计ETA为9/15（有可能推迟），当在公共预览版期间测试远程应用时，MSIX 应用附加远程应用可能会从源中消失。</p>
+<p>应用不会显示，因为在评估环境中使用的主机池正由生产环境中的 RD Broker 提供服务。 由于生产环境中的 RD Broker 未注册 MSIX 应用附加远程应用的存在，因此这些应用将不会出现在源中。</p>
+<p>参考文档： <a href="https://azure.microsoft.com/zh-cn/global-infrastructure/services/?products=virtual-desktop&amp;regions=china-non-regional,china-north,china-north-2,china-east,china-east-2" target="_blank" rel="noopener">https://azure.microsoft.com/zh-cn/global-infrastructure/services/?products=virtual-desktop&amp;regions=china-non-regional,china-north,china-north-2,china-east,china-east-2</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-azure-portal#publish-msix-apps-to-an-app-group" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-azure-portal#publish-msix-apps-to-an-app-group</a></p></article>

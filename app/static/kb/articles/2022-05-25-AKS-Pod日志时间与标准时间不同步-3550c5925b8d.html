@@ -1,0 +1,122 @@
+<article class="kb-article" data-title="AKS Pod日志时间与标准时间不同步"><h1>AKS Pod日志时间与标准时间不同步</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-05-25 10:46:23</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Based on the information provided in the previous emails, if all pods have the same time as nodes, then the biggest possibility is that the time synchronization of the nodes is problematic.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Based on the information provided in the previous emails,  if all pods have the same time as nodes, then the biggest possibility is that the time synchronization of the nodes is problematic.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Lu Yitong</li>
+</ul>
+<ul>
+<li>工单：</li>
+</ul>
+<ul>
+<li>（相似工单：2021030583199 ）</li>
+</ul>
+<ul>
+<li>问题描述：POD内日志时间不正确</li>
+</ul>
+<ul>
+<li>问题原因：Pod时间跟随Node，主要是Node系统时间未同步正确</li>
+</ul>
+<ul>
+<li>Test whether the outbound network is normal</li>
+</ul>
+<ul>
+<li>e.g. curl baidu.com</li>
+</ul>
+<ul>
+<li>Local time (PTP) is used by default as below:</li>
+</ul>
+<ul>
+<li>cat /etc/chrony/chrony.conf (default is sync with local time.)</li>
+</ul>
+<ul>
+<li>Systemctl restart chronyd &amp; Systemctl status chronyd:</li>
+</ul>
+<ul>
+<li>if the time of the node returns normal. Please follow the steps above in other nodes.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Re: SR_20210820116592_[S500]The kubernetes logs of one of our pod was showing wrong timestamp values which was earlier than the actual timestamp by more than one minute.</li>
+</ul>
+<ul>
+<li>排查步骤：登录Node查看Node的系统时间</li>
+</ul>
+<ul>
+<li>Because that the clock in a container is the same as the host machine,  so please follow the steps below to check the time synchronization of nodes.</li>
+</ul>
+<ul>
+<li>If the outbound is abnormal, please troubleshooting it. If it is normal, please follow the steps below:</li>
+</ul>
+<ul>
+<li>Check clock and its settings with timedatectl</li>
+</ul>
+<ul>
+<li>Check whether the Timesyncd or Chrony time synchronization service is currently used</li>
+</ul>
+<ul>
+<li>I setup a new AKS cluster and checked that the Chronyd is used by default and it is normal.</li>
+</ul>
+<ul>
+<li>If chronyd is running, please check the availability if the sync sources and calibrate the time server:</li>
+</ul>
+<ul>
+<li>You can check if the chrony.config has been modified, if yes, please change it to default configuration as below:</li>
+</ul>
+<ul>
+<li>check the time of the nodes and pods again.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>SSH to one of nodes</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：检查chrony配置文件，检查outbound流量是否有限制，重启chrony服务。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/linux/time-sync#chrony" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/linux/time-sync#chrony</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Lu Yitong</p>
+<p>工单：</p>
+<p>Re: SR_20210820116592_[S500]The kubernetes logs of one of our pod was showing wrong timestamp values which was earlier than the actual timestamp by more than one minute.</p>
+<p>（相似工单：2021030583199 ）</p>
+<p>问题描述：POD内日志时间不正确</p>
+<p>排查步骤：登录Node查看Node的系统时间</p>
+<p>问题原因：Pod时间跟随Node，主要是Node系统时间未同步正确</p>
+<p>解决方案：检查chrony配置文件，检查outbound流量是否有限制，重启chrony服务。</p>
+<p>Based on the information provided in the previous emails,  if all pods have the same time as nodes, then the biggest possibility is that the time synchronization of the nodes is problematic.</p>
+<p>Because that the clock in a container is the same as the host machine,  so please follow the steps below to check the time synchronization of nodes.</p>
+<p>SSH to one of nodes</p>
+<p>Test whether the outbound network is normal</p>
+<p>e.g. curl baidu.com</p>
+<p>If the outbound is abnormal, please troubleshooting it. If it is normal, please follow the steps below:</p>
+<p>Check clock and its settings with timedatectl</p>
+<p>Check whether the Timesyncd or Chrony time synchronization service is currently used</p>
+<p>I setup a new AKS cluster and checked that the Chronyd is used by default and it is normal.</p>
+<p>If chronyd is running, please check the availability if the sync sources and calibrate the time server:</p>
+<p>Local time (PTP) is used by default as below:</p>
+<p>You can check if the chrony.config has been modified, if yes, please change it to default configuration as below:</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/linux/time-sync#chrony" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/linux/time-sync#chrony</a></p>
+<p>cat /etc/chrony/chrony.conf (default is sync with local time.)</p>
+<p>Systemctl restart chronyd &amp; Systemctl status chronyd:</p>
+<p>check the time of the nodes and pods again.</p>
+<p>if the time of the node returns normal. Please follow the steps above in other nodes.</p></article>

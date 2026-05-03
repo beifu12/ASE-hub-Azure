@@ -1,0 +1,131 @@
+<article class="kb-article" data-title="WindowsGuestAgentStatusUnavailable"><h1>WindowsGuestAgentStatusUnavailable</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-01-06 15:49:15</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Issue due to: VMAgentStatusCommunicationError</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Issue due to: VMAgentStatusCommunicationError</li>
+</ul>
+<ul>
+<li>Ignoring) Exception while fetching supported versions from HostGAPlugin: System.Net.WebException: Unable to connect to the remote server ---&gt; System.Net.Sockets.SocketException: No connection could be made because the target machine actively refused it 127.0.0.1:8888</li>
+</ul>
+<ul>
+<li>and it’s causing the error &quot;System.Net.Sockets.SocketException: No connection could be made because the target machine actively refused it 127.0.0.1:8888&quot;</li>
+</ul>
+<ul>
+<li>Root-cause of this issue is that some program is deleting files from VMSnapshot Extension installation path.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>上述文档中部分内部不全，具体请参考如下：</li>
+</ul>
+<ul>
+<li>Before you proceed, complete Step 1, 2 and 3</li>
+</ul>
+<ul>
+<li>Text to look for</li>
+</ul>
+<ul>
+<li>Where 127.0.0.1:8888 is anything other than 168.63.129.16:80  (host’s WireServer)</li>
+</ul>
+<ul>
+<li>Collect C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Config\machine.config</li>
+</ul>
+<ul>
+<li>&lt;system.net&gt;</li>
+</ul>
+<ul>
+<li>&lt;defaultProxy useDefaultCredentials=&quot;true&quot;&gt;</li>
+</ul>
+<ul>
+<li>&lt;/defaultProxy&gt;</li>
+</ul>
+<ul>
+<li>&lt;/system.net&gt;</li>
+</ul>
+<ul>
+<li>This is overriding the GuestAgent’s WebClient behavior to connect to Azure Storage / HostGAPlugin and correctly reports status.</li>
+</ul>
+<ul>
+<li>No plugin manifest file C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\&lt;ExtensionVersion&gt;\HandlerManifest.json found under the plugin folder</li>
+</ul>
+<ul>
+<li>Extract the contents from Microsoft.Azure.RecoveryServices.VMSnapshot_&lt;LatestVersion&gt;.zip from the path C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\&lt;LatestVersion&gt; with replace-files option. Extract files in the same path.</li>
+</ul>
+<ul>
+<li>REG ADD &quot;HKLM\SOFTWARE\Microsoft\BcdrAgent&quot; /v IsProviderInstalled /t REG_SZ /d False /f</li>
+</ul>
+<ul>
+<li>Ask customer to find-out which program (virus/anti-virus etc.) is deleting files from VMSnapshot Extension installation path, for this they can monitor the path C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot.</li>
+</ul>
+<ul>
+<li>For the operation to succeed, customer should remove/fix that program.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Cause 1: check the logs</li>
+</ul>
+<ul>
+<li>Log file</li>
+</ul>
+<ul>
+<li>Troubleshooting steps</li>
+</ul>
+<ul>
+<li>c:\windowsazure\logs\WaAppAgent.log</li>
+</ul>
+<ul>
+<li>Check if there’s a System.Web section with something like:</li>
+</ul>
+<ul>
+<li>Run the below command from elevated command prompt to enforce Extension reinstall and re-trigger the backup from the Azure portal.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Use the following table to locate some common/known errors and resolutions while analyzing VM Agent and Extensions Logs:</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>&lt;proxy proxyaddress=&quot;<a href="http://127.0.0.1:8888&quot;" target="_blank" rel="noopener">http://127.0.0.1:8888&quot;</a> usesystemdefault=&quot;True&quot;/&gt;</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>上述文档中部分内部不全，具体请参考如下：</p>
+<p>Issue due to: VMAgentStatusCommunicationError</p>
+<p>Before you proceed, complete Step 1, 2 and 3</p>
+<p>Cause 1: check the logs</p>
+<p>Use the following table to locate some common/known errors and resolutions while analyzing VM Agent and Extensions Logs:</p>
+<p>Log file</p>
+<p>Text to look for</p>
+<p>Troubleshooting steps</p>
+<p>c:\windowsazure\logs\WaAppAgent.log</p>
+<p>Ignoring) Exception while fetching supported versions from HostGAPlugin: System.Net.WebException: Unable to connect to the remote server ---&gt; System.Net.Sockets.SocketException: No connection could be made because the target machine actively refused it 127.0.0.1:8888</p>
+<p>Where 127.0.0.1:8888 is anything other than 168.63.129.16:80  (host’s WireServer)</p>
+<p>Collect C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Config\machine.config</p>
+<p>Check if there’s a System.Web section with something like:</p>
+<p>&lt;system.net&gt;</p>
+<p>&lt;defaultProxy useDefaultCredentials=&quot;true&quot;&gt;</p>
+<p>&lt;proxy proxyaddress=&quot;<a href="http://127.0.0.1:8888&quot;" target="_blank" rel="noopener">http://127.0.0.1:8888&quot;</a> usesystemdefault=&quot;True&quot;/&gt;</p>
+<p>&lt;/defaultProxy&gt;</p>
+<p>&lt;/system.net&gt;</p>
+<p>This is overriding the GuestAgent’s WebClient behavior to connect to Azure Storage / HostGAPlugin and correctly reports status.</p>
+<p>and it’s causing the error &quot;System.Net.Sockets.SocketException: No connection could be made because the target machine actively refused it 127.0.0.1:8888&quot;</p>
+<p>No plugin manifest file C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\&lt;ExtensionVersion&gt;\HandlerManifest.json found under the plugin folder</p>
+<p>Extract the contents from Microsoft.Azure.RecoveryServices.VMSnapshot_&lt;LatestVersion&gt;.zip from the path C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\&lt;LatestVersion&gt; with replace-files option. Extract files in the same path.</p>
+<p>Run the below command from elevated command prompt to enforce Extension reinstall and re-trigger the backup from the Azure portal.</p>
+<p>REG ADD &quot;HKLM\SOFTWARE\Microsoft\BcdrAgent&quot; /v IsProviderInstalled /t REG_SZ /d False /f</p>
+<p>Root-cause of this issue is that some program is deleting files from VMSnapshot Extension installation path.</p>
+<p>Ask customer to find-out which program (virus/anti-virus etc.) is deleting files from VMSnapshot Extension installation path, for this they can monitor the path C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot.</p>
+<p>For the operation to succeed, customer should remove/fix that program.</p></article>

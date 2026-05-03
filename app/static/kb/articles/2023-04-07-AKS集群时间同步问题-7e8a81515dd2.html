@@ -1,0 +1,80 @@
+<article class="kb-article" data-title="AKS集群时间同步问题"><h1>AKS集群时间同步问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-07 13:15:39</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>需求：aks节点的时间与PaaS Sql差1s导致应用异常，是否可以修改aks群集节点时间</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>需求：aks节点的时间与PaaS Sql差1s导致应用异常，是否可以修改aks群集节点时间</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_2021030583199_[MS-LED]AKS集群时间同步问题</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>订阅：8ed6f5fc-34aa-4e1f-9ce0-5b38fcc6f200</li>
+</ul>
+<ul>
+<li>资源组：cne2-lg-oms-prod-rg</li>
+</ul>
+<ul>
+<li>群集名称：cne2-lg-oms-prod-aks01</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>AKS本身未提供时间同步的功能， 目前AKS worker node默认与ntp.ubuntu.com进行时间同步，此时间同步正常即可保证aks正常服务；</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>AKS默认与internet的ubuntu时间服务器进行同步，为避免与master节点时间不同步，不建议修改群集节点时间</li>
+</ul>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<ul>
+<li>关于AKS与PaaS Sql时间相差1s的问题，经邀请PaaS Sql团队同事与您一起沟通，确认由于PaaS服务的时间无法修改，建议您在应用开发时，应该从应用层保证从单一服务器取得时间，从而确保应用层时间一致。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>From &lt;<a href="https://azul.21vbluecloud.com/Azul/_controls/emailbody/msgBody.aspx?id={64DC2DC4-379B-EB11-80F5-00155DC8F102}&amp;entityType=email&gt;" target="_blank" rel="noopener">https://azul.21vbluecloud.com/Azul/_controls/emailbody/msgBody.aspx?id={64DC2DC4-379B-EB11-80F5-00155DC8F102}&amp;entityType=email&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2021030583199_[MS-LED]AKS集群时间同步问题</p>
+<p>问题描述：</p>
+<p>==========</p>
+<p>订阅：8ed6f5fc-34aa-4e1f-9ce0-5b38fcc6f200</p>
+<p>资源组：cne2-lg-oms-prod-rg</p>
+<p>群集名称：cne2-lg-oms-prod-aks01</p>
+<p>需求：aks节点的时间与PaaS Sql差1s导致应用异常，是否可以修改aks群集节点时间</p>
+<p>问题原因：</p>
+<p>AKS默认与internet的ubuntu时间服务器进行同步，为避免与master节点时间不同步，不建议修改群集节点时间</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>AKS本身未提供时间同步的功能， 目前AKS worker node默认与ntp.ubuntu.com进行时间同步，此时间同步正常即可保证aks正常服务；</p>
+<p>关于AKS与PaaS Sql时间相差1s的问题，经邀请PaaS Sql团队同事与您一起沟通，确认由于PaaS服务的时间无法修改，建议您在应用开发时，应该从应用层保证从单一服务器取得时间，从而确保应用层时间一致。</p>
+<p>From &lt;<a href="https://azul.21vbluecloud.com/Azul/_controls/emailbody/msgBody.aspx?id={64DC2DC4-379B-EB11-80F5-00155DC8F102}&amp;entityType=email&gt;" target="_blank" rel="noopener">https://azul.21vbluecloud.com/Azul/_controls/emailbody/msgBody.aspx?id={64DC2DC4-379B-EB11-80F5-00155DC8F102}&amp;entityType=email&gt;</a></p></article>

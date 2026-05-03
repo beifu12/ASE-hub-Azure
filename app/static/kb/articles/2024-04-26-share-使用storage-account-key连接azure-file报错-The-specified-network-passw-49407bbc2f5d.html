@@ -1,0 +1,48 @@
+<article class="kb-article" data-title="【share】使用storage account key连接azure file报错“The specified network password is not correct”"><h1>【share】使用storage account key连接azure file报错“The specified network password is not correct”</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-04-26 17:39:51</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>今天接到一个单子，客户使用storage account key连接azure file报错“The specified network password is not correct”。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>今天接到一个单子，客户使用storage account key连接azure file报错“The specified network password is not correct”。</li>
+</ul>
+<ul>
+<li>3，根据如下文档描述，“如果删除了 NTLMv2，则无法使用存储帐户密钥装载 Azure 文件共享。”，修改回默认“最大兼容性”可以正常连接。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2，从ASC上看到存储账户file有如下配置，经过对比测试查询，客户是配置文件共享安全性为“最大安全性”导致此配置。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>1，经检查，key是正确的，可以通过storage explorer使用此key连接到存储并访问azure file。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/files/files-smb-protocol?tabs=azure-portal#smb-security-settings" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/files-smb-protocol?tabs=azure-portal#smb-security-settings</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>2024-04-26</p>
+<p>今天接到一个单子，客户使用storage account key连接azure file报错“The specified network password is not correct”。</p>
+<p>1，经检查，key是正确的，可以通过storage explorer使用此key连接到存储并访问azure file。</p>
+<p>2，从ASC上看到存储账户file有如下配置，经过对比测试查询，客户是配置文件共享安全性为“最大安全性”导致此配置。</p>
+<p>3，根据如下文档描述，“如果删除了 NTLMv2，则无法使用存储帐户密钥装载 Azure 文件共享。”，修改回默认“最大兼容性”可以正常连接。</p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/files/files-smb-protocol?tabs=azure-portal#smb-security-settings" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/files-smb-protocol?tabs=azure-portal#smb-security-settings</a></p></article>

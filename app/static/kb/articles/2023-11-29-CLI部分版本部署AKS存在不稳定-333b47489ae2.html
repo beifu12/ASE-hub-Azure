@@ -1,0 +1,574 @@
+<article class="kb-article" data-title="CLI部分版本部署AKS存在不稳定"><h1>CLI部分版本部署AKS存在不稳定</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-11-29 22:58:18</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>尝试让客户更换部署场景（Windows、Linux）均出现同样报错；</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>尝试让客户更换部署场景（Windows、Linux）均出现同样报错；</li>
+</ul>
+<ul>
+<li>尝试在我本地环境使用不指定APP ID及秘钥条件下进行部署，可以复现客户问题，报错一致；</li>
+</ul>
+<ul>
+<li>在centos7环境卸载了最新版本（2.0.1），先安装了2.0.78依然报错，然后卸载再安装了2.0.68后正常：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>客户错误信息：</li>
+</ul>
+<ul>
+<li>使用客户的相同Cli版本在我自己的客户端未能复现，可以成功部署；</li>
+</ul>
+<ul>
+<li>尝试卸载当前Cli版本并安装较低版本2.0.78，同样复现问题；</li>
+</ul>
+<ul>
+<li>尝试卸载当前Cli版本并安装较低版本2.0.68，可以成功部署；</li>
+</ul>
+<ul>
+<li>经测试的不稳定版本：2.078、2.1.0、2.2.0。</li>
+</ul>
+<ul>
+<li>[root@centos75 luyitong]# yum remove azure-cli</li>
+</ul>
+<ul>
+<li>Loaded plugins: fastestmirror, langpacks</li>
+</ul>
+<ul>
+<li>Resolving Dependencies</li>
+</ul>
+<ul>
+<li>---&gt; Package azure-cli.x86_64 0:2.0.78-1.el7 will be erased</li>
+</ul>
+<ul>
+<li>========================================================================================================================================</li>
+</ul>
+<ul>
+<li>Package                         Arch                         Version                            Repository                        Size</li>
+</ul>
+<ul>
+<li>Removing:</li>
+</ul>
+<ul>
+<li>azure-cli                       x86_64                       2.0.78-1.el7                       @azure-cli                       365 M</li>
+</ul>
+<ul>
+<li>Transaction Summary</li>
+</ul>
+<ul>
+<li>Remove  1 Package</li>
+</ul>
+<ul>
+<li>Installed size: 365 M</li>
+</ul>
+<ul>
+<li>Is this ok [y/N]: Y</li>
+</ul>
+<ul>
+<li>Downloading packages:</li>
+</ul>
+<ul>
+<li>Running transaction test</li>
+</ul>
+<ul>
+<li>Transaction test succeeded</li>
+</ul>
+<ul>
+<li>Running transaction</li>
+</ul>
+<ul>
+<li>Erasing    : azure-cli-2.0.78-1.el7.x86_64                                                                                        1/1</li>
+</ul>
+<ul>
+<li>Removed:</li>
+</ul>
+<ul>
+<li>azure-cli.x86_64 0:2.0.78-1.el7</li>
+</ul>
+<ul>
+<li>Complete!</li>
+</ul>
+<ul>
+<li>Loading mirror speeds from cached hostfile</li>
+</ul>
+<ul>
+<li>Package python-virtualenv-15.1.0-2.el7.noarch already installed and latest version</li>
+</ul>
+<ul>
+<li>Nothing to do</li>
+</ul>
+<ul>
+<li>Resolving packages.microsoft.com (packages.microsoft.com)... 13.75.127.55</li>
+</ul>
+<ul>
+<li>Connecting to packages.microsoft.com (packages.microsoft.com)|13.75.127.55|:443... connected.</li>
+</ul>
+<ul>
+<li>HTTP request sent, awaiting response... 200 OK</li>
+</ul>
+<ul>
+<li>Length: 28625720 (27M) [application/x-redhat-package-manager]</li>
+</ul>
+<ul>
+<li>Saving to: ‘azure-cli-2.0.68-1.el7.x86_64.rpm’</li>
+</ul>
+<ul>
+<li>100%[==============================================================================================&gt;] 28,625,720  19.2MB/s   in 1.4s</li>
+</ul>
+<ul>
+<li>2020-03-11 06:38:07 (19.2 MB/s) - ‘azure-cli-2.0.68-1.el7.x86_64.rpm’ saved [28625720/28625720]</li>
+</ul>
+<ul>
+<li>[root@centos75 luyitong]# rpm -ivh azure-cli-2.0.68-1.el7.x86_64.rpm</li>
+</ul>
+<ul>
+<li>Preparing...                          ################################# [100%]</li>
+</ul>
+<ul>
+<li>Updating / installing...</li>
+</ul>
+<ul>
+<li>1:azure-cli-2.0.68-1.el7           ################################# [100%]</li>
+</ul>
+<ul>
+<li>[root@centos75 luyitong]# az -v</li>
+</ul>
+<ul>
+<li>azure-cli                         2.0.68 *</li>
+</ul>
+<ul>
+<li>command-modules-nspkg               2.0.3</li>
+</ul>
+<ul>
+<li>core                              2.0.68 *</li>
+</ul>
+<ul>
+<li>nspkg                              3.0.4</li>
+</ul>
+<ul>
+<li>telemetry                          1.0.3 *</li>
+</ul>
+<ul>
+<li>Python location &#39;/bin/python2&#39;</li>
+</ul>
+<ul>
+<li>Extensions directory &#39;/root/.azure/cliextensions&#39;</li>
+</ul>
+<ul>
+<li>Python (Linux) 2.7.5 (default, Aug  7 2019, 00:51:29)</li>
+</ul>
+<ul>
+<li>[GCC 4.8.5 20150623 (Red Hat 4.8.5-39)]</li>
+</ul>
+<ul>
+<li>You have 3 updates available. Consider updating your CLI installation.</li>
+</ul>
+<ul>
+<li>[</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;cloudName&quot;: &quot;AzureChinaCloud&quot;,</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;5cbb692b-6a2e-4bb4-b5e2-eb812718ad13&quot;,</li>
+</ul>
+<ul>
+<li>&quot;isDefault&quot;: true,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Lu Yitong (SHULIANG)&quot;,</li>
+</ul>
+<ul>
+<li>&quot;tenantId&quot;: &quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;,</li>
+</ul>
+<ul>
+<li>&quot;user&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;luyitong@microsoftinternal.partner.onmschina.cn&quot;,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;user&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>&quot;aadProfile&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;addonProfiles&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;agentPoolProfiles&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;availabilityZones&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;count&quot;: 1,</li>
+</ul>
+<ul>
+<li>&quot;maxCount&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;maxPods&quot;: 110,</li>
+</ul>
+<ul>
+<li>&quot;minCount&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;nodepool1&quot;,</li>
+</ul>
+<ul>
+<li>&quot;orchestratorVersion&quot;: &quot;1.14.8&quot;,</li>
+</ul>
+<ul>
+<li>&quot;osDiskSizeGb&quot;: 100,</li>
+</ul>
+<ul>
+<li>&quot;osType&quot;: &quot;Linux&quot;,</li>
+</ul>
+<ul>
+<li>&quot;provisioningState&quot;: &quot;Succeeded&quot;,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;AvailabilitySet&quot;,</li>
+</ul>
+<ul>
+<li>&quot;vmSize&quot;: &quot;Standard_DS2_v2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;vnetSubnetId&quot;: null</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;apiServerAuthorizedIpRanges&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;dnsPrefix&quot;: &quot;myAKSClust-myResourceGroup2-5cbb69&quot;,</li>
+</ul>
+<ul>
+<li>&quot;fqdn&quot;: &quot;myaksclust-myresourcegroup2-5cbb69-a23dcfb0.hcp.chinaeast2.cx.prod.service.azk8s.cn&quot;,</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/5cbb692b-6a2e-4bb4-b5e2-eb812718ad13/resourcegroups/myResourceGroup2/providers/Microsoft.ContainerService/managed</li>
+</ul>
+<ul>
+<li>&quot;identity&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;kubernetesVersion&quot;: &quot;1.14.8&quot;,</li>
+</ul>
+<ul>
+<li>&quot;linuxProfile&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;adminUsername&quot;: &quot;azureuser&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ssh&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;publicKeys&quot;: [</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;location&quot;: &quot;chinaeast2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;maxAgentPools&quot;: 1,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;myAKSCluster2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;networkProfile&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;dnsServiceIp&quot;: &quot;10.0.0.10&quot;,</li>
+</ul>
+<ul>
+<li>&quot;dockerBridgeCidr&quot;: &quot;172.17.0.1/16&quot;,</li>
+</ul>
+<ul>
+<li>&quot;networkPlugin&quot;: &quot;kubenet&quot;,</li>
+</ul>
+<ul>
+<li>&quot;networkPolicy&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;podCidr&quot;: &quot;10.244.0.0/16&quot;,</li>
+</ul>
+<ul>
+<li>&quot;serviceCidr&quot;: &quot;10.0.0.0/16&quot;</li>
+</ul>
+<ul>
+<li>&quot;nodeResourceGroup&quot;: &quot;MC_myResourceGroup2_myAKSCluster2_chinaeast2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;resourceGroup&quot;: &quot;myResourceGroup2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;servicePrincipalProfile&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;clientId&quot;: &quot;056715ae-28d3-4886-a2ef-6dea3494360d&quot;,</li>
+</ul>
+<ul>
+<li>&quot;secret&quot;: null</li>
+</ul>
+<ul>
+<li>&quot;tags&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;Microsoft.ContainerService/ManagedClusters&quot;,</li>
+</ul>
+<ul>
+<li>&quot;windowsProfile&quot;: null</li>
+</ul>
+<ul>
+<li>安装完成。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题排查及复现过程：</li>
+</ul>
+<ul>
+<li>远程检查客户部署环境，默认订阅、APP ID及其他权限配置均正常；</li>
+</ul>
+<ul>
+<li>安装指定Cli版本并AKS部署步骤：（此处测试为不指定app id）</li>
+</ul>
+<ul>
+<li>--&gt; Running transaction check</li>
+</ul>
+<ul>
+<li>Running transaction check</li>
+</ul>
+<ul>
+<li>Verifying  : azure-cli-2.0.78-1.el7.x86_64                                                                                        1/1</li>
+</ul>
+<ul>
+<li>[root@centos75 luyitong]# yum install python2-virtualenv   （备注：如果安装Cli提示需要python2环境，请执行此步骤。此处已有环境）</li>
+</ul>
+<ul>
+<li>[root@centos75 luyitong]# az login</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>onenote链接：Azure CLI部分版本部署AKS存在不稳定</li>
+</ul>
+<ul>
+<li>问题描述：近期客户工单提到在使用 Azure Active Directory 与 Azure Kubernetes Service 集成部署时，遇到部署失败（提示credentials无效及App id在当前AAD租户下不存在）的情况，查看客户使用了最新版本的Azure Cli 2.1.0版本（看到3月10日刚刚更新到了2.2.0）。</li>
+</ul>
+<ul>
+<li>建议客户卸载当前的Azure Cli 2.1.0（目前最新版本2.2.0也会报错），并更换其他版本尝试，本次通过下载并安装指定版本Azure Cli 2.0.68，可以成功部署，并提供如下操作步骤。</li>
+</ul>
+<ul>
+<li>[root@centos75 luyitong]# az aks create --resource-group myResourceGroup2 --name myAKSCluster2  --node-count 1 --generate-ssh-keys （备注：此处可以使用之前文档中的命令创建）</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>&quot;keyData&quot;: &quot;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDU6fRSeNX9/zhMhxB12HQwxWY7Dx7roFBlqIBSwHvsKUOQ5PYjR2wUMSY08pvnw6KMP5r69R4YrLR9MDZWp+WqrXGnlW464PLXZ43Nt9hlc0TlE/xH7qHpXehxMB14JdPXWrRc6hpbjEJ+nXsexT1Xyn/+vsKsLSP3SRJAcbtRZEht51daxKLJRUffP8y8pXZbphyIeiGkUXJrBJjbkIsy</li>
+</ul>
+<ul>
+<li>&quot;loadBalancerSku&quot;: &quot;Basic&quot;,</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<ul>
+<li>--&gt; Finished Dependency Resolution</li>
+</ul>
+<ul>
+<li>Dependencies Resolved</li>
+</ul>
+<ul>
+<li>&quot;state&quot;: &quot;Enabled&quot;,</li>
+</ul>
+<ul>
+<li>&quot;enableAutoScaling&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;enablePodSecurityPolicy&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;enableRbac&quot;: true,</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Operation failed with status: &#39;Bad Request&#39;. Details: The credentials in ServicePrincipalProfile were invalid. Please see <a href="https://aka.ms/" target="_blank" rel="noopener">https://aka.ms/</a> -sp-help for more details. (Details: adal: Refresh request failed. Status Code = &#39;400&#39;. Response body: {&quot;error&quot;:&quot;unauthorized_client&quot;,&quot;error_description&quot;:&quot;AADSTS700016: Application with identifier &#39;538e1baa-a755-4b12-82da-17ff991d0e65&#39; was not found in the directory &#39;05958bb9-f8aa-4852-a20f-7ede79071ff8&#39;. This can happen if the application has not been installed by the administrator of the tenant or consented to by any user in the tenant. You may have sent your authentication request to the wrong tenant.\r\nTrace ID: 19500eda-f8e0-430b-8a84-f27156b81000\r\nCorrelation ID: 5dcb199f-3e3c-40a6-a825-11d2763a2ebb\r\nTimestamp: 2020-03-09 02:37:07Z&quot;,&quot;error_codes&quot;:[700016],&quot;timestamp&quot;:&quot;2020-03-09 02:37:07Z&quot;,&quot;trace_id&quot;:&quot;19500eda-f8e0-430b-8a84-f27156b81000&quot;,&quot;correlation_id&quot;:&quot;5dcb199f-3e3c-40a6-a825-11d2763a2ebb&quot;,&quot;error_uri&quot;:&quot;<a href="https://login.chinacloudapi.cn/error?code=700016&quot;})" target="_blank" rel="noopener">https://login.chinacloudapi.cn/error?code=700016&quot;})</a></li>
+</ul>
+<ul>
+<li>[root@centos75 luyitong]# wget <a href="https://packages.microsoft.com/yumrepos/azure-cli/azure-cli-2.0.68-1.el7.x86_64.rpm" target="_blank" rel="noopener">https://packages.microsoft.com/yumrepos/azure-cli/azure-cli-2.0.68-1.el7.x86_64.rpm</a> （备注：cli下载链接：<a href="https://packages.microsoft.com/yumrepos/azure-cli/" target="_blank" rel="noopener">https://packages.microsoft.com/yumrepos/azure-cli/</a> ）</li>
+</ul>
+<ul>
+<li>--2020-03-11 06:38:05--  <a href="https://packages.microsoft.com/yumrepos/azure-cli/azure-cli-2.0.68-1.el7.x86_64.rpm" target="_blank" rel="noopener">https://packages.microsoft.com/yumrepos/azure-cli/azure-cli-2.0.68-1.el7.x86_64.rpm</a></li>
+</ul>
+<ul>
+<li>Legal docs and information: aka.ms/AzureCliLegal</li>
+</ul>
+<ul>
+<li>To sign in, use a web browser to open the page <a href="https://microsoft.com/deviceloginchina" target="_blank" rel="noopener">https://microsoft.com/deviceloginchina</a> and enter the code EPWDNTRV8 to authenticate.</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020-05-15</p>
+<p>onenote链接：Azure CLI部分版本部署AKS存在不稳定</p>
+<p>问题描述：近期客户工单提到在使用 Azure Active Directory 与 Azure Kubernetes Service 集成部署时，遇到部署失败（提示credentials无效及App id在当前AAD租户下不存在）的情况，查看客户使用了最新版本的Azure Cli 2.1.0版本（看到3月10日刚刚更新到了2.2.0）。</p>
+<p>客户错误信息：</p>
+<p>Operation failed with status: &#39;Bad Request&#39;. Details: The credentials in ServicePrincipalProfile were invalid. Please see <a href="https://aka.ms/" target="_blank" rel="noopener">https://aka.ms/</a> -sp-help for more details. (Details: adal: Refresh request failed. Status Code = &#39;400&#39;. Response body: {&quot;error&quot;:&quot;unauthorized_client&quot;,&quot;error_description&quot;:&quot;AADSTS700016: Application with identifier &#39;538e1baa-a755-4b12-82da-17ff991d0e65&#39; was not found in the directory &#39;05958bb9-f8aa-4852-a20f-7ede79071ff8&#39;. This can happen if the application has not been installed by the administrator of the tenant or consented to by any user in the tenant. You may have sent your authentication request to the wrong tenant.\r\nTrace ID: 19500eda-f8e0-430b-8a84-f27156b81000\r\nCorrelation ID: 5dcb199f-3e3c-40a6-a825-11d2763a2ebb\r\nTimestamp: 2020-03-09 02:37:07Z&quot;,&quot;error_codes&quot;:[700016],&quot;timestamp&quot;:&quot;2020-03-09 02:37:07Z&quot;,&quot;trace_id&quot;:&quot;19500eda-f8e0-430b-8a84-f27156b81000&quot;,&quot;correlation_id&quot;:&quot;5dcb199f-3e3c-40a6-a825-11d2763a2ebb&quot;,&quot;error_uri&quot;:&quot;<a href="https://login.chinacloudapi.cn/error?code=700016&quot;})" target="_blank" rel="noopener">https://login.chinacloudapi.cn/error?code=700016&quot;})</a></p>
+<p>问题排查及复现过程：</p>
+<p>使用客户的相同Cli版本在我自己的客户端未能复现，可以成功部署；</p>
+<p>远程检查客户部署环境，默认订阅、APP ID及其他权限配置均正常；</p>
+<p>尝试让客户更换部署场景（Windows、Linux）均出现同样报错；</p>
+<p>尝试在我本地环境使用不指定APP ID及秘钥条件下进行部署，可以复现客户问题，报错一致；</p>
+<p>尝试卸载当前Cli版本并安装较低版本2.0.78，同样复现问题；</p>
+<p>尝试卸载当前Cli版本并安装较低版本2.0.68，可以成功部署；</p>
+<p>解决方案：</p>
+<p>经测试的不稳定版本：2.078、2.1.0、2.2.0。</p>
+<p>建议客户卸载当前的Azure Cli 2.1.0（目前最新版本2.2.0也会报错），并更换其他版本尝试，本次通过下载并安装指定版本Azure Cli 2.0.68，可以成功部署，并提供如下操作步骤。</p>
+<p>安装指定Cli版本并AKS部署步骤：（此处测试为不指定app id）</p>
+<p>在centos7环境卸载了最新版本（2.0.1），先安装了2.0.78依然报错，然后卸载再安装了2.0.68后正常：</p>
+<p>[root@centos75 luyitong]# yum remove azure-cli</p>
+<p>Loaded plugins: fastestmirror, langpacks</p>
+<p>Resolving Dependencies</p>
+<p>--&gt; Running transaction check</p>
+<p>---&gt; Package azure-cli.x86_64 0:2.0.78-1.el7 will be erased</p>
+<p>--&gt; Finished Dependency Resolution</p>
+<p>Dependencies Resolved</p>
+<p>========================================================================================================================================</p>
+<p>Package                         Arch                         Version                            Repository                        Size</p>
+<p>Removing:</p>
+<p>azure-cli                       x86_64                       2.0.78-1.el7                       @azure-cli                       365 M</p>
+<p>Transaction Summary</p>
+<p>Remove  1 Package</p>
+<p>Installed size: 365 M</p>
+<p>Is this ok [y/N]: Y</p>
+<p>Downloading packages:</p>
+<p>Running transaction check</p>
+<p>Running transaction test</p>
+<p>Transaction test succeeded</p>
+<p>Running transaction</p>
+<p>Erasing    : azure-cli-2.0.78-1.el7.x86_64                                                                                        1/1</p>
+<p>Verifying  : azure-cli-2.0.78-1.el7.x86_64                                                                                        1/1</p>
+<p>Removed:</p>
+<p>azure-cli.x86_64 0:2.0.78-1.el7</p>
+<p>Complete!</p>
+<p>[root@centos75 luyitong]# yum install python2-virtualenv   （备注：如果安装Cli提示需要python2环境，请执行此步骤。此处已有环境）</p>
+<p>Loading mirror speeds from cached hostfile</p>
+<p>Package python-virtualenv-15.1.0-2.el7.noarch already installed and latest version</p>
+<p>Nothing to do</p>
+<p>[root@centos75 luyitong]# wget <a href="https://packages.microsoft.com/yumrepos/azure-cli/azure-cli-2.0.68-1.el7.x86_64.rpm" target="_blank" rel="noopener">https://packages.microsoft.com/yumrepos/azure-cli/azure-cli-2.0.68-1.el7.x86_64.rpm</a> （备注：cli下载链接：<a href="https://packages.microsoft.com/yumrepos/azure-cli/" target="_blank" rel="noopener">https://packages.microsoft.com/yumrepos/azure-cli/</a> ）</p>
+<p>--2020-03-11 06:38:05--  <a href="https://packages.microsoft.com/yumrepos/azure-cli/azure-cli-2.0.68-1.el7.x86_64.rpm" target="_blank" rel="noopener">https://packages.microsoft.com/yumrepos/azure-cli/azure-cli-2.0.68-1.el7.x86_64.rpm</a></p>
+<p>Resolving packages.microsoft.com (packages.microsoft.com)... 13.75.127.55</p>
+<p>Connecting to packages.microsoft.com (packages.microsoft.com)|13.75.127.55|:443... connected.</p>
+<p>HTTP request sent, awaiting response... 200 OK</p>
+<p>Length: 28625720 (27M) [application/x-redhat-package-manager]</p>
+<p>Saving to: ‘azure-cli-2.0.68-1.el7.x86_64.rpm’</p>
+<p>100%[==============================================================================================&gt;] 28,625,720  19.2MB/s   in 1.4s</p>
+<p>2020-03-11 06:38:07 (19.2 MB/s) - ‘azure-cli-2.0.68-1.el7.x86_64.rpm’ saved [28625720/28625720]</p>
+<p>[root@centos75 luyitong]# rpm -ivh azure-cli-2.0.68-1.el7.x86_64.rpm</p>
+<p>Preparing...                          ################################# [100%]</p>
+<p>Updating / installing...</p>
+<p>1:azure-cli-2.0.68-1.el7           ################################# [100%]</p>
+<p>[root@centos75 luyitong]# az -v</p>
+<p>azure-cli                         2.0.68 *</p>
+<p>command-modules-nspkg               2.0.3</p>
+<p>core                              2.0.68 *</p>
+<p>nspkg                              3.0.4</p>
+<p>telemetry                          1.0.3 *</p>
+<p>Python location &#39;/bin/python2&#39;</p>
+<p>Extensions directory &#39;/root/.azure/cliextensions&#39;</p>
+<p>Python (Linux) 2.7.5 (default, Aug  7 2019, 00:51:29)</p>
+<p>[GCC 4.8.5 20150623 (Red Hat 4.8.5-39)]</p>
+<p>Legal docs and information: aka.ms/AzureCliLegal</p>
+<p>You have 3 updates available. Consider updating your CLI installation.</p>
+<p>[root@centos75 luyitong]# az login</p>
+<p>To sign in, use a web browser to open the page <a href="https://microsoft.com/deviceloginchina" target="_blank" rel="noopener">https://microsoft.com/deviceloginchina</a> and enter the code EPWDNTRV8 to authenticate.</p>
+<p>[</p>
+<p>{</p>
+<p>&quot;cloudName&quot;: &quot;AzureChinaCloud&quot;,</p>
+<p>&quot;id&quot;: &quot;5cbb692b-6a2e-4bb4-b5e2-eb812718ad13&quot;,</p>
+<p>&quot;isDefault&quot;: true,</p>
+<p>&quot;name&quot;: &quot;Lu Yitong (SHULIANG)&quot;,</p>
+<p>&quot;state&quot;: &quot;Enabled&quot;,</p>
+<p>&quot;tenantId&quot;: &quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;,</p>
+<p>&quot;user&quot;: {</p>
+<p>&quot;name&quot;: &quot;luyitong@microsoftinternal.partner.onmschina.cn&quot;,</p>
+<p>&quot;type&quot;: &quot;user&quot;</p>
+<p>}</p>
+<p>]</p>
+<p>[root@centos75 luyitong]# az aks create --resource-group myResourceGroup2 --name myAKSCluster2  --node-count 1 --generate-ssh-keys （备注：此处可以使用之前文档中的命令创建）</p>
+<p>&quot;aadProfile&quot;: null,</p>
+<p>&quot;addonProfiles&quot;: null,</p>
+<p>&quot;agentPoolProfiles&quot;: [</p>
+<p>&quot;availabilityZones&quot;: null,</p>
+<p>&quot;count&quot;: 1,</p>
+<p>&quot;enableAutoScaling&quot;: null,</p>
+<p>&quot;maxCount&quot;: null,</p>
+<p>&quot;maxPods&quot;: 110,</p>
+<p>&quot;minCount&quot;: null,</p>
+<p>&quot;name&quot;: &quot;nodepool1&quot;,</p>
+<p>&quot;orchestratorVersion&quot;: &quot;1.14.8&quot;,</p>
+<p>&quot;osDiskSizeGb&quot;: 100,</p>
+<p>&quot;osType&quot;: &quot;Linux&quot;,</p>
+<p>&quot;provisioningState&quot;: &quot;Succeeded&quot;,</p>
+<p>&quot;type&quot;: &quot;AvailabilitySet&quot;,</p>
+<p>&quot;vmSize&quot;: &quot;Standard_DS2_v2&quot;,</p>
+<p>&quot;vnetSubnetId&quot;: null</p>
+<p>],</p>
+<p>&quot;apiServerAuthorizedIpRanges&quot;: null,</p>
+<p>&quot;dnsPrefix&quot;: &quot;myAKSClust-myResourceGroup2-5cbb69&quot;,</p>
+<p>&quot;enablePodSecurityPolicy&quot;: null,</p>
+<p>&quot;enableRbac&quot;: true,</p>
+<p>&quot;fqdn&quot;: &quot;myaksclust-myresourcegroup2-5cbb69-a23dcfb0.hcp.chinaeast2.cx.prod.service.azk8s.cn&quot;,</p>
+<p>&quot;id&quot;: &quot;/subscriptions/5cbb692b-6a2e-4bb4-b5e2-eb812718ad13/resourcegroups/myResourceGroup2/providers/Microsoft.ContainerService/managed</p>
+<p>&quot;identity&quot;: null,</p>
+<p>&quot;kubernetesVersion&quot;: &quot;1.14.8&quot;,</p>
+<p>&quot;linuxProfile&quot;: {</p>
+<p>&quot;adminUsername&quot;: &quot;azureuser&quot;,</p>
+<p>&quot;ssh&quot;: {</p>
+<p>&quot;publicKeys&quot;: [</p>
+<p>&quot;keyData&quot;: &quot;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDU6fRSeNX9/zhMhxB12HQwxWY7Dx7roFBlqIBSwHvsKUOQ5PYjR2wUMSY08pvnw6KMP5r69R4YrLR9MDZWp+WqrXGnlW464PLXZ43Nt9hlc0TlE/xH7qHpXehxMB14JdPXWrRc6hpbjEJ+nXsexT1Xyn/+vsKsLSP3SRJAcbtRZEht51daxKLJRUffP8y8pXZbphyIeiGkUXJrBJjbkIsy</p>
+<p>},</p>
+<p>&quot;location&quot;: &quot;chinaeast2&quot;,</p>
+<p>&quot;maxAgentPools&quot;: 1,</p>
+<p>&quot;name&quot;: &quot;myAKSCluster2&quot;,</p>
+<p>&quot;networkProfile&quot;: {</p>
+<p>&quot;dnsServiceIp&quot;: &quot;10.0.0.10&quot;,</p>
+<p>&quot;dockerBridgeCidr&quot;: &quot;172.17.0.1/16&quot;,</p>
+<p>&quot;loadBalancerSku&quot;: &quot;Basic&quot;,</p>
+<p>&quot;networkPlugin&quot;: &quot;kubenet&quot;,</p>
+<p>&quot;networkPolicy&quot;: null,</p>
+<p>&quot;podCidr&quot;: &quot;10.244.0.0/16&quot;,</p>
+<p>&quot;serviceCidr&quot;: &quot;10.0.0.0/16&quot;</p>
+<p>&quot;nodeResourceGroup&quot;: &quot;MC_myResourceGroup2_myAKSCluster2_chinaeast2&quot;,</p>
+<p>&quot;resourceGroup&quot;: &quot;myResourceGroup2&quot;,</p>
+<p>&quot;servicePrincipalProfile&quot;: {</p>
+<p>&quot;clientId&quot;: &quot;056715ae-28d3-4886-a2ef-6dea3494360d&quot;,</p>
+<p>&quot;secret&quot;: null</p>
+<p>&quot;tags&quot;: null,</p>
+<p>&quot;type&quot;: &quot;Microsoft.ContainerService/ManagedClusters&quot;,</p>
+<p>&quot;windowsProfile&quot;: null</p>
+<p>安装完成。</p></article>

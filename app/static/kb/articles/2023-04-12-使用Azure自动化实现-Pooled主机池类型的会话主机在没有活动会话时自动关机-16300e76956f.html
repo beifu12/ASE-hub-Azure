@@ -1,0 +1,180 @@
+<article class="kb-article" data-title="使用Azure自动化实现 Pooled主机池类型的会话主机在没有活动会话时自动关机。"><h1>使用Azure自动化实现 Pooled主机池类型的会话主机在没有活动会话时自动关机。</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-12 17:56:49</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>经测试，可以使用Azure自动化实现Pooled主机池类型的会话主机在没有活动会话时自动关机。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>经测试，可以使用Azure自动化实现Pooled主机池类型的会话主机在没有活动会话时自动关机。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>经测试，可以使用Azure自动化实现Pooled主机池类型的会话主机在没有活动会话时自动关机。</li>
+</ul>
+<ul>
+<li>自动化账户登录，请您参考：</li>
+</ul>
+<ul>
+<li>获取主机池Session，请您参考：</li>
+</ul>
+<ul>
+<li>获取主机池Host信息，请您参考：</li>
+</ul>
+<ul>
+<li>注：请将黄色部分替换为您环境中的值，并在测试环境中充分测试后再用于生产环境。</li>
+</ul>
+<ul>
+<li>$cred = Get-AutomationPSCredential -Name &#39;zhanglihong&#39;</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Credential $cred -Environment azurechinacloud</li>
+</ul>
+<ul>
+<li>$HostPoolName = &quot;win10sharepool1&quot;</li>
+</ul>
+<ul>
+<li>$ResourceGroupName = &quot;wvd&quot;</li>
+</ul>
+<ul>
+<li>#obtain all sessionhosts in the hostpool</li>
+</ul>
+<ul>
+<li>$SessionHosts = Get-AzWvdSessionHost -HostPoolName $HostPoolName -ResourceGroupName $ResourceGroupName</li>
+</ul>
+<ul>
+<li>foreach($SessionHost in $SessionHosts)</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>#if the session count of the sessionhost is 0, stop the VM</li>
+</ul>
+<ul>
+<li>if ($SessionHost.Session -eq 0)</li>
+</ul>
+<ul>
+<li>Stop-AzVM -Id $SessionHost.ResourceId -Force;</li>
+</ul>
+<ul>
+<li>Write-Output &quot;Host“ $SessionHost.ResourceId “has no session, stopped successfully&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>#if the session count of the sessionhost &gt; 0</li>
+</ul>
+<ul>
+<li>if ($SessionHost.Session -gt 0)</li>
+</ul>
+<ul>
+<li>#obtain all the sessions of the sessionhost</li>
+</ul>
+<ul>
+<li>$UserSessions = Get-AzWvdUserSession -HostPoolName $HostPoolName -ResourceGroupName $ResourceGroupName -SessionHostName $SessionHost.Name.Split(&quot;/&quot;)[1]</li>
+</ul>
+<ul>
+<li>#if contains one Active session, do nothing; else stop the VM.</li>
+</ul>
+<ul>
+<li>if ($UserSessions.SessionState -contains &quot;Active&quot; )</li>
+</ul>
+<ul>
+<li>Write-Output &quot;Host“ $SessionHost.ResourceId “has active session&quot;</li>
+</ul>
+<ul>
+<li>else</li>
+</ul>
+<ul>
+<li>Write-Output &quot;Host“ $SessionHost.ResourceId “has no active session, stopped successfully&quot;</li>
+</ul>
+<ul>
+<li>Runbook运行环境：</li>
+</ul>
+<ul>
+<li>测试截图：</li>
+</ul>
+<ul>
+<li>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</li>
+</ul>
+<ul>
+<li>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</li>
+</ul>
+<ul>
+<li>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</li>
+</ul>
+<ul>
+<li>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>脚本的编写已经超出了Azure 的支持范围，但是为了您更好的体验，以下自动化脚本供您参考。</li>
+</ul>
+<ul>
+<li>Set-AzContext -SubscriptionId &quot;5a-1d78d16bc519&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/automation/create-run-as-account" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/create-run-as-account</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/powershell/module/az.desktopvirtualization/get-azwvdusersession?view=azps-7.5.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/az.desktopvirtualization/get-azwvdusersession?view=azps-7.5.0</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/powershell/module/az.desktopvirtualization/get-azwvdsessionhost?view=azps-7.5.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/az.desktopvirtualization/get-azwvdsessionhost?view=azps-7.5.0</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022-06-10</p>
+<p>经测试，可以使用Azure自动化实现Pooled主机池类型的会话主机在没有活动会话时自动关机。</p>
+<p>自动化账户登录，请您参考：</p>
+<p><a href="https://docs.azure.cn/zh-cn/automation/create-run-as-account" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/create-run-as-account</a></p>
+<p>获取主机池Session，请您参考：</p>
+<p><a href="https://docs.microsoft.com/en-us/powershell/module/az.desktopvirtualization/get-azwvdusersession?view=azps-7.5.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/az.desktopvirtualization/get-azwvdusersession?view=azps-7.5.0</a></p>
+<p>获取主机池Host信息，请您参考：</p>
+<p><a href="https://docs.microsoft.com/en-us/powershell/module/az.desktopvirtualization/get-azwvdsessionhost?view=azps-7.5.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/az.desktopvirtualization/get-azwvdsessionhost?view=azps-7.5.0</a></p>
+<p>脚本的编写已经超出了Azure 的支持范围，但是为了您更好的体验，以下自动化脚本供您参考。</p>
+<p>注：请将黄色部分替换为您环境中的值，并在测试环境中充分测试后再用于生产环境。</p>
+<p>$cred = Get-AutomationPSCredential -Name &#39;zhanglihong&#39;</p>
+<p>Connect-AzAccount -Credential $cred -Environment azurechinacloud</p>
+<p>Set-AzContext -SubscriptionId &quot;5a-1d78d16bc519&quot;</p>
+<p>$HostPoolName = &quot;win10sharepool1&quot;</p>
+<p>$ResourceGroupName = &quot;wvd&quot;</p>
+<p>#obtain all sessionhosts in the hostpool</p>
+<p>$SessionHosts = Get-AzWvdSessionHost -HostPoolName $HostPoolName -ResourceGroupName $ResourceGroupName</p>
+<p>foreach($SessionHost in $SessionHosts)</p>
+<p>{</p>
+<p>#if the session count of the sessionhost is 0, stop the VM</p>
+<p>if ($SessionHost.Session -eq 0)</p>
+<p>Stop-AzVM -Id $SessionHost.ResourceId -Force;</p>
+<p>Write-Output &quot;Host“ $SessionHost.ResourceId “has no session, stopped successfully&quot;</p>
+<p>}</p>
+<p>#if the session count of the sessionhost &gt; 0</p>
+<p>if ($SessionHost.Session -gt 0)</p>
+<p>#obtain all the sessions of the sessionhost</p>
+<p>$UserSessions = Get-AzWvdUserSession -HostPoolName $HostPoolName -ResourceGroupName $ResourceGroupName -SessionHostName $SessionHost.Name.Split(&quot;/&quot;)[1]</p>
+<p>#if contains one Active session, do nothing; else stop the VM.</p>
+<p>if ($UserSessions.SessionState -contains &quot;Active&quot; )</p>
+<p>Write-Output &quot;Host“ $SessionHost.ResourceId “has active session&quot;</p>
+<p>else</p>
+<p>Write-Output &quot;Host“ $SessionHost.ResourceId “has no active session, stopped successfully&quot;</p>
+<p>Runbook运行环境：</p>
+<p>测试截图：</p>
+<p>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</p>
+<p>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</p>
+<p>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</p>
+<p>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</p></article>

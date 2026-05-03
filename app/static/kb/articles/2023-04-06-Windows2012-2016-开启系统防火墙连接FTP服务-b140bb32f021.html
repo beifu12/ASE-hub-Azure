@@ -1,0 +1,58 @@
+<article class="kb-article" data-title="Windows2012/2016 开启系统防火墙连接FTP服务"><h1>Windows2012/2016 开启系统防火墙连接FTP服务</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-04-06 16:28:35</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>在虚拟机上执行以下命令，即可在开启系统防火墙的前提下，成功连接</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>在虚拟机上执行以下命令，即可在开启系统防火墙的前提下，成功连接</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>。</li>
+</ul>
+<ul>
+<li>1、sc sidtype</li>
+</ul>
+<ul>
+<li>svc unrestricted（将ftp服务的注册卸载）</li>
+</ul>
+<ul>
+<li>2、net stop ftpsvc &amp; net start ftpsvc（重启ftp服务）</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在虚拟机上执行以下命令，即可在开启系统防火墙的前提下，成功连接</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>3、netsh advfirewall firewall add rule name=&quot;FTP for IIS&quot; service=ftpsvc action=allow protocol=TCP dir=in（开启所有ftp端口监听）</li>
+</ul>
+<ul>
+<li>添加后访问ftp就能正常连接，上传下载文件，而且不用关闭防火墙，并且不用重启服务，修改ftp绑定的端口时，修改后也不用重启服务，及时就能用新端口访问。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>4、netsh advfirewall set global Statefulftp disable（使防火墙不拦截所有ftp服务的访问）</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>在虚拟机上执行以下命令，即可在开启系统防火墙的前提下，成功连接</p>
+<p>。</p>
+<p>1、sc sidtype</p>
+<p>svc unrestricted（将ftp服务的注册卸载）</p>
+<p>2、net stop ftpsvc &amp; net start ftpsvc（重启ftp服务）</p>
+<p>3、netsh advfirewall firewall add rule name=&quot;FTP for IIS&quot; service=ftpsvc action=allow protocol=TCP dir=in（开启所有ftp端口监听）</p>
+<p>4、netsh advfirewall set global Statefulftp disable（使防火墙不拦截所有ftp服务的访问）</p>
+<p>添加后访问ftp就能正常连接，上传下载文件，而且不用关闭防火墙，并且不用重启服务，修改ftp绑定的端口时，修改后也不用重启服务，及时就能用新端口访问。</p></article>

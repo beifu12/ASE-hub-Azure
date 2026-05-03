@@ -1,0 +1,174 @@
+<article class="kb-article" data-title="批量清理ObjectType为Unknown角色分配"><h1>批量清理ObjectType为Unknown角色分配</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: Kusto Jarvis常用命令</li>
+<li>最近修改: 2024-01-09 13:44:15</li>
+<li>JD 相关性: 自动化/命令工具; Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>出现ObjectType为Unknown，可能的原因如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>出现ObjectType为Unknown，可能的原因如下：</li>
+</ul>
+<ul>
+<li>$OBJTYPE = &quot;Unknown&quot;</li>
+</ul>
+<ul>
+<li>#Find and Export-to-CSV Azure RBAC Role Assignments of &#39;Unknown&#39; Type</li>
+</ul>
+<ul>
+<li>$raunknown = Get-AzRoleAssignment | Where-Object {$_.ObjectType.Equals($OBJTYPE)} | Export-Csv &quot;$FILEPATH\$SUBNAME-$FILENAME&quot; -NoTypeInformation</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zhanglihong</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>如果是原因2导致。</li>
+</ul>
+<ul>
+<li>#AuthN</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>$Subscriptions = Get-AzSubscription</li>
+</ul>
+<ul>
+<li>foreach ($sub in $Subscriptions)</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>Write-Output &quot;Processing &quot; $sub.Name</li>
+</ul>
+<ul>
+<li>$subname = $sub.Name</li>
+</ul>
+<ul>
+<li>#Common Variables</li>
+</ul>
+<ul>
+<li>$FILEPATH = &quot;C:\Temp&quot;</li>
+</ul>
+<ul>
+<li>$FILENAME = &quot;$subname-AzureRoleAssignmentsToRemove$subname.csv&quot;</li>
+</ul>
+<ul>
+<li>$SUBNAME = &quot;SUBSCRIPTIONNAME&quot;</li>
+</ul>
+<ul>
+<li>#Import-from-CSV and Remove each Azure Role Assignment</li>
+</ul>
+<ul>
+<li>$RASTOREMOVE = Import-CSV &quot;$FILEPATH\$SUBNAME-$FILENAME&quot;</li>
+</ul>
+<ul>
+<li>$RASTOREMOVE|ForEach-Object {</li>
+</ul>
+<ul>
+<li>$object = $_.ObjectId</li>
+</ul>
+<ul>
+<li>$roledef = $_.RoleDefinitionName</li>
+</ul>
+<ul>
+<li>$rolescope = $_.Scope</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</li>
+</ul>
+<ul>
+<li>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</li>
+</ul>
+<ul>
+<li>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</li>
+</ul>
+<ul>
+<li>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如果是原因1导致，您等待一些时间再查看下。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>我们在用powershell拉取权限控制时发现有许多unknow名称的权限，希望能清理</li>
+</ul>
+<ul>
+<li>针对于多订阅的情况，您可以参考以下脚本结合您的环境调整后批量清理，请您在测试环境中充分测试后再用于生产环境。</li>
+</ul>
+<ul>
+<li>Set-AzContext -SubscriptionName $sub.Name</li>
+</ul>
+<ul>
+<li>Remove-AzRoleAssignment -ObjectId $object -RoleDefinitionName $roledef -Scope $rolescope</li>
+</ul>
+<ul>
+<li>脚本免责声明：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting?tabs=bicep#azure-role-assignments" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting?tabs=bicep#azure-role-assignments</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zhanglihong</p>
+<p>问题描述：</p>
+<p>我们在用powershell拉取权限控制时发现有许多unknow名称的权限，希望能清理</p>
+<p>解决方法：</p>
+<p>出现ObjectType为Unknown，可能的原因如下：</p>
+<p>参考文档：</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting?tabs=bicep#azure-role-assignments" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/role-based-access-control/troubleshooting?tabs=bicep#azure-role-assignments</a></p>
+<p>如果是原因1导致，您等待一些时间再查看下。</p>
+<p>如果是原因2导致。</p>
+<p>针对于多订阅的情况，您可以参考以下脚本结合您的环境调整后批量清理，请您在测试环境中充分测试后再用于生产环境。</p>
+<p>#AuthN</p>
+<p>Connect-AzAccount -Environment AzureChinaCloud</p>
+<p>$Subscriptions = Get-AzSubscription</p>
+<p>foreach ($sub in $Subscriptions)</p>
+<p>{</p>
+<p>Set-AzContext -SubscriptionName $sub.Name</p>
+<p>Write-Output &quot;Processing &quot; $sub.Name</p>
+<p>$subname = $sub.Name</p>
+<p>#Common Variables</p>
+<p>$FILEPATH = &quot;C:\Temp&quot;</p>
+<p>$FILENAME = &quot;$subname-AzureRoleAssignmentsToRemove$subname.csv&quot;</p>
+<p>$SUBNAME = &quot;SUBSCRIPTIONNAME&quot;</p>
+<p>$OBJTYPE = &quot;Unknown&quot;</p>
+<p>#Find and Export-to-CSV Azure RBAC Role Assignments of &#39;Unknown&#39; Type</p>
+<p>$raunknown = Get-AzRoleAssignment | Where-Object {$_.ObjectType.Equals($OBJTYPE)} | Export-Csv &quot;$FILEPATH\$SUBNAME-$FILENAME&quot; -NoTypeInformation</p>
+<p>#Import-from-CSV and Remove each Azure Role Assignment</p>
+<p>$RASTOREMOVE = Import-CSV &quot;$FILEPATH\$SUBNAME-$FILENAME&quot;</p>
+<p>$RASTOREMOVE|ForEach-Object {</p>
+<p>$object = $_.ObjectId</p>
+<p>$roledef = $_.RoleDefinitionName</p>
+<p>$rolescope = $_.Scope</p>
+<p>Remove-AzRoleAssignment -ObjectId $object -RoleDefinitionName $roledef -Scope $rolescope</p>
+<p>}</p>
+<p>脚本免责声明：</p>
+<p>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</p>
+<p>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</p>
+<p>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</p>
+<p>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</p></article>

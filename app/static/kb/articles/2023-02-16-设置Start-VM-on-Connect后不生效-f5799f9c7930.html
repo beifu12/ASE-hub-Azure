@@ -1,0 +1,81 @@
+<article class="kb-article" data-title="设置Start VM on Connect后不生效"><h1>设置Start VM on Connect后不生效</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Microsoft Sentinel</li>
+<li>Section: Azure VD</li>
+<li>最近修改: 2023-02-16 11:53:02</li>
+<li>JD 相关性: Defender/Sentinel/安全</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错信息：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错信息：</li>
+</ul>
+<ul>
+<li>at Microsoft.RDInfra.RDBroker.AzureVMManager.AzureComputeApi.GetAzureVMAsync(String azureVMResourceId, String endpointId, CancellationToken cancellationToken).&quot;,&quot;ServiceError&quot;:&quot;False&quot;}</li>
+</ul>
+<ul>
+<li>如果客户的VM启动成功了，但是健康状态不正常，连接时，也会出现0x000008的报错。</li>
+</ul>
+<ul>
+<li>参考工单：SR_20221230206052_设置 Connect 上的 Start VM失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：客户反馈参考以下官方文档设置Start VM on Connect后不生效。</li>
+</ul>
+<ul>
+<li>发现客户的主机池所在的资源组名称中包含中文。</li>
+</ul>
+<ul>
+<li>at Microsoft.Azure.Management.Compute.VirtualMachinesOperations.InstanceViewWithHttpMessagesAsync(String resourceGroupName, String vmName, Dictionary`2 customHeaders, CancellationToken cancellationToken)\r\n</li>
+</ul>
+<ul>
+<li>搭建环境发现可以复现问题，客户调整环境后，问题解决。</li>
+</ul>
+<ul>
+<li>【share】</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题排查：</li>
+</ul>
+<ul>
+<li>根据客户截图中的资源ID，排查发现Kusto中有编码相关的提示。</li>
+</ul>
+<ul>
+<li>如果可以出现了0x30000046的报错，请首先检查下，客户门户上的 连接时启动VM是否设置争取。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：<a href="https://docs.azure.cn/en-us/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/en-us/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal</a></li>
+</ul>
+<ul>
+<li>{&quot;ActivityType&quot;:&quot;Connection&quot;,&quot;Source&quot;:&quot;RDBroker&quot;,&quot;Code&quot;:&quot;-2146233088&quot;,&quot;CodeSymbolic&quot;:&quot;ConnectionFailedPersonalDesktopFailedToBeStarted&quot;,&quot;Message&quot;:&quot;RunCommandForAzureVMAsync Session Host with /subscriptions/95d1d86a-9dd7-4a48-ba3b-3a446b8871da/resourceGroups/avd-prod-本工/providers/Microsoft.Compute/virtualMachines/bengong-E3D-0 operation GetVM failed due error Microsoft.Rest.Azure.CloudException: The request URI &#39;<a href="https://management.chinacloudapi.cn:443/subscriptions/95d1d86a-9dd7-4a48-ba3b-3a446b8871da/resourceGroups/avd-prod-%25E6%259C%25AC%25E5%25B7%25A5/providers/Microsoft.Compute/virtualMachines/bengong-E3D-0/instanceView?api-version=2021-07-01&#39;" target="_blank" rel="noopener">https://management.chinacloudapi.cn:443/subscriptions/95d1d86a-9dd7-4a48-ba3b-3a446b8871da/resourceGroups/avd-prod-%25E6%259C%25AC%25E5%25B7%25A5/providers/Microsoft.Compute/virtualMachines/bengong-E3D-0/instanceView?api-version=2021-07-01&#39;</a> is not valid, because it contains double encoding sequence &#39;%25&#39;.\r\n</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023-01-03</p>
+<p>问题描述：客户反馈参考以下官方文档设置Start VM on Connect后不生效。</p>
+<p>参考文档：<a href="https://docs.azure.cn/en-us/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/en-us/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal</a></p>
+<p>报错信息：</p>
+<p>问题排查：</p>
+<p>发现客户的主机池所在的资源组名称中包含中文。</p>
+<p>根据客户截图中的资源ID，排查发现Kusto中有编码相关的提示。</p>
+<p>{&quot;ActivityType&quot;:&quot;Connection&quot;,&quot;Source&quot;:&quot;RDBroker&quot;,&quot;Code&quot;:&quot;-2146233088&quot;,&quot;CodeSymbolic&quot;:&quot;ConnectionFailedPersonalDesktopFailedToBeStarted&quot;,&quot;Message&quot;:&quot;RunCommandForAzureVMAsync Session Host with /subscriptions/95d1d86a-9dd7-4a48-ba3b-3a446b8871da/resourceGroups/avd-prod-本工/providers/Microsoft.Compute/virtualMachines/bengong-E3D-0 operation GetVM failed due error Microsoft.Rest.Azure.CloudException: The request URI &#39;<a href="https://management.chinacloudapi.cn:443/subscriptions/95d1d86a-9dd7-4a48-ba3b-3a446b8871da/resourceGroups/avd-prod-%25E6%259C%25AC%25E5%25B7%25A5/providers/Microsoft.Compute/virtualMachines/bengong-E3D-0/instanceView?api-version=2021-07-01&#39;" target="_blank" rel="noopener">https://management.chinacloudapi.cn:443/subscriptions/95d1d86a-9dd7-4a48-ba3b-3a446b8871da/resourceGroups/avd-prod-%25E6%259C%25AC%25E5%25B7%25A5/providers/Microsoft.Compute/virtualMachines/bengong-E3D-0/instanceView?api-version=2021-07-01&#39;</a> is not valid, because it contains double encoding sequence &#39;%25&#39;.\r\n</p>
+<p>at Microsoft.Azure.Management.Compute.VirtualMachinesOperations.InstanceViewWithHttpMessagesAsync(String resourceGroupName, String vmName, Dictionary`2 customHeaders, CancellationToken cancellationToken)\r\n</p>
+<p>at Microsoft.RDInfra.RDBroker.AzureVMManager.AzureComputeApi.GetAzureVMAsync(String azureVMResourceId, String endpointId, CancellationToken cancellationToken).&quot;,&quot;ServiceError&quot;:&quot;False&quot;}</p>
+<p>搭建环境发现可以复现问题，客户调整环境后，问题解决。</p>
+<p>如果客户的VM启动成功了，但是健康状态不正常，连接时，也会出现0x000008的报错。</p>
+<p>【share】</p>
+<p>如果可以出现了0x30000046的报错，请首先检查下，客户门户上的 连接时启动VM是否设置争取。</p>
+<p>参考工单：SR_20221230206052_设置 Connect 上的 Start VM失败</p></article>

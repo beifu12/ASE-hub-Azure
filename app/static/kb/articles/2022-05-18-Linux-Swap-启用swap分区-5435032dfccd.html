@@ -1,0 +1,76 @@
+<article class="kb-article" data-title="[Linux][Swap]启用swap分区"><h1>[Linux][Swap]启用swap分区</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-05-18 14:52:46</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>对于CentOS虚机：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>对于CentOS虚机：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>对于CentOS虚机：</li>
+</ul>
+<ul>
+<li>vim /etc/waagent.conf</li>
+</ul>
+<ul>
+<li>ResourceDisk.SwapSizeMB=0 修改为 指定大小</li>
+</ul>
+<ul>
+<li>重启后生效</li>
+</ul>
+<ul>
+<li>对于Ubuntu虚机：</li>
+</ul>
+<ul>
+<li>fallocate -l 5g /mnt/swap5g</li>
+</ul>
+<ul>
+<li>chmod 600 /mnt/swap5g</li>
+</ul>
+<ul>
+<li>mkswap /mnt/swap5g</li>
+</ul>
+<ul>
+<li>swapon /mnt/swap5g</li>
+</ul>
+<ul>
+<li>cat /proc/swaps</li>
+</ul>
+<ul>
+<li>echo &quot;/mnt/swap5g  none  swap  sw  0 0&quot; &gt;&gt; /etc/fstab</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>ResourceDisk.EnableSwap=n 修改为 ResourceDisk.EnableSwap=y</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>对于CentOS虚机：</p>
+<p>vim /etc/waagent.conf</p>
+<p>ResourceDisk.EnableSwap=n 修改为 ResourceDisk.EnableSwap=y</p>
+<p>ResourceDisk.SwapSizeMB=0 修改为 指定大小</p>
+<p>重启后生效</p>
+<p>对于Ubuntu虚机：</p>
+<p>fallocate -l 5g /mnt/swap5g</p>
+<p>chmod 600 /mnt/swap5g</p>
+<p>mkswap /mnt/swap5g</p>
+<p>swapon /mnt/swap5g</p>
+<p>cat /proc/swaps</p>
+<p>echo &quot;/mnt/swap5g  none  swap  sw  0 0&quot; &gt;&gt; /etc/fstab</p></article>

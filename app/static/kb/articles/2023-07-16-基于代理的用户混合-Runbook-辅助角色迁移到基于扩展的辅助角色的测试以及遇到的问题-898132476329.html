@@ -1,0 +1,194 @@
+<article class="kb-article" data-title="基于代理的用户混合 Runbook 辅助角色迁移到基于扩展的辅助角色的测试以及遇到的问题"><h1>基于代理的用户混合 Runbook 辅助角色迁移到基于扩展的辅助角色的测试以及遇到的问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Automation</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-07-16 14:44:42</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>和大家分享一个case——SR_20230609234876_安装失败 - 混合工作角色拓展</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>和大家分享一个case——SR_20230609234876_安装失败 - 混合工作角色拓展</li>
+</ul>
+<ul>
+<li>经过测试，在v1和v2（hybrid worker extension正常，相关日志文件未见异常）共存的情况下，按照如下文档删除v1后，可以正常使用v2运行runbook。</li>
+</ul>
+<ul>
+<li>目前工单遇到：如果v1使用代理服务器访问公网，又在混合辅助角色添加虚拟机默认安装hybrid worker extension（v2）后，扩展状态会出现访问报错的问题，因为默认扩展是直接访问公网的，所以会看到访问异常。</li>
+</ul>
+<ul>
+<li>HybridWorkerExtension扩展抛出如下报错：</li>
+</ul>
+<ul>
+<li>System.Net.WebException: Unable to connect to the remote server ---&gt; System.Net.Sockets.SocketException: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 159.27.21.164:443 at System.Net.Sockets.Socket.InternalEndConnect</li>
+</ul>
+<ul>
+<li>注意报错中提到的地址159.27.21.164就是上面截图中第一步获取的automationhybridserviceurl解析的地址。</li>
+</ul>
+<ul>
+<li>注意如果扩展推送超时，看看是不是settings配置写得有问题，例如最后多加一个分号。</li>
+</ul>
+<ul>
+<li>6，在收集的SMA日志中也再次显示了如上到地址159.27.21.164:443访问异常。</li>
+</ul>
+<ul>
+<li>1）这是个产品的bug, 当前的版本里V2 还会从原来V1的 proxy setting中读取信息，如果V1被完全卸载，V2将无法正常工作</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Nancy</li>
+</ul>
+<ul>
+<li>由于hybrid worker v1（基于代理）将于2024年8月31号停用，后续会有越来越多的用户迁移到v2（基于扩展）。目前默认只能添加v2类型，大家如果之前没有v1环境，不方便测试。</li>
+</ul>
+<ul>
+<li>通知说明：将现有基于代理的混合辅助角色迁移到 Azure 自动化中基于扩展的辅助角色 | Azure Docs</li>
+</ul>
+<ul>
+<li>注意：</li>
+</ul>
+<ul>
+<li>1，需要卸载扩展，然后按照如下配置重新推送扩展。</li>
+</ul>
+<ul>
+<li>客户环境配置，代理服务器不需要账户密码。</li>
+</ul>
+<ul>
+<li>2，按照如上推送配置后，扩展状态成功，执行runbook仍然是成功的（此时v1和v2共存）。</li>
+</ul>
+<ul>
+<li>3，接着客户卸载v1，测试只有v2环境运行runbook发现是suspend状态，和我的环境（没有代理）测试结果不同。</li>
+</ul>
+<ul>
+<li>7，升级到产品组分析，回复如下：</li>
+</ul>
+<ul>
+<li>3）请手动增加v2使用的proxy ： New-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\HealthService\Parameters -Name &quot;Http Connection Proxy Url&quot; -Value &quot;10.119.110.100:8080&quot;</li>
+</ul>
+<ul>
+<li>红色为代理服务器地址。</li>
+</ul>
+<ul>
+<li>1，机器内部如下路径1：</li>
+</ul>
+<ul>
+<li>2，机器内部如下路径2：</li>
+</ul>
+<ul>
+<li>附上我的测试：</li>
+</ul>
+<ul>
+<li>我的环境：</li>
+</ul>
+<ul>
+<li>自动化账户相关的地址：</li>
+</ul>
+<ul>
+<li>执行runbook前hybrid worker service服务的网络total在82 B/sec。</li>
+</ul>
+<ul>
+<li>执行runbook后，hybrid worker service服务的网络total在435 B/sec。</li>
+</ul>
+<ul>
+<li>执行完成后又回归正常水平。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>默认在混合辅助角色添加虚拟机会安装扩展v2，v1和v2可以共存。由于v2会在系统内部起一个叫hybrid Worker Service，测试执行runbook会观察到该service流量突增，运行结束后回归正常。</li>
+</ul>
+<ul>
+<li>kusto后台报错：</li>
+</ul>
+<ul>
+<li>4，通过抓包以及代理服务器上日志显示，在只有v2环境时，到地址159.27.21.164都未走代理服务器。但是检查代理的配置确实已经推送成功了。</li>
+</ul>
+<ul>
+<li>5,    检查注册表：</li>
+</ul>
+<ul>
+<li>整个过程排查相关日志收集：</li>
+</ul>
+<ul>
+<li>C:\Windows\System32\winevt\Logs\Microsoft-SMA%4Operational.evtx</li>
+</ul>
+<ul>
+<li>C:\WindowsAzure\Logs\Plugins\Microsoft.Azure.Automation.HybridWorker.HybridWorkerForWindows\1.1.11\HybridWorkerExtensionHandler.*.log</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>3，或者通过如下脚本进行收集所需日志：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>2）这个bug的预计修复时间是八月底</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>删除操作：<a href="https://docs.azure.cn/zh-cn/automation/migrate-existing-agent-based-hybrid-worker-to-extension-based-workers?tabs=bicep-template%2Cwin-hrw#remove-agent-based-hybrid-worker" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/migrate-existing-agent-based-hybrid-worker-to-extension-based-workers?tabs=bicep-template%2Cwin-hrw#remove-agent-based-hybrid-worker</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/automation/extension-based-hybrid-runbook-worker-install?tabs=windows%2Cbicep-template#proxy-server-use" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/extension-based-hybrid-runbook-worker-install?tabs=windows%2Cbicep-template#proxy-server-use</a></li>
+</ul>
+<ul>
+<li>JobStatusChangeSuspendedByException:The Job state has changed to Suspended after an exception was encountered.  [accountId=2c6ca3e9-3b77-4be9-86d6-1a15b654ddd7][sandboxId=00000000-0000-0000-0000-000000000000][jobId=455ab59f-9db7-4d59-a608-f780dfea84ee][runbookName=AzureTag-MasterRunbook01][exception=Job was suspended as the job limit for a Hybrid Worker exceeded. Add more Hybrid Workers to the Hybrid Worker group to overcome this issue, see: <a href="https://aka.ms/HRW-polling-limit-exceed" target="_blank" rel="noopener">https://aka.ms/HRW-polling-limit-exceed</a></li>
+</ul>
+<ul>
+<li>网络排查日志查询路径：<a href="https://docs.azure.cn/zh-cn/automation/troubleshoot/extension-based-hybrid-runbook-worker#scenario-job-failed-to-start-as-the-hybrid-worker-was-not-available-when-the-scheduled-job-started" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/troubleshoot/extension-based-hybrid-runbook-worker#scenario-job-failed-to-start-as-the-hybrid-worker-was-not-available-when-the-scheduled-job-started</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/automation/troubleshoot/extension-based-hybrid-runbook-worker#general-checklist" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/troubleshoot/extension-based-hybrid-runbook-worker#general-checklist</a></li>
+</ul>
+<ul>
+<li>删除v1操作：<a href="https://docs.azure.cn/zh-cn/automation/migrate-existing-agent-based-hybrid-worker-to-extension-based-workers?tabs=bicep-template%2Cwin-hrw#remove-agent-based-hybrid-worker" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/migrate-existing-agent-based-hybrid-worker-to-extension-based-workers?tabs=bicep-template%2Cwin-hrw#remove-agent-based-hybrid-worker</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Nancy</p>
+<p>和大家分享一个case——SR_20230609234876_安装失败 - 混合工作角色拓展</p>
+<p>由于hybrid worker v1（基于代理）将于2024年8月31号停用，后续会有越来越多的用户迁移到v2（基于扩展）。目前默认只能添加v2类型，大家如果之前没有v1环境，不方便测试。</p>
+<p>通知说明：将现有基于代理的混合辅助角色迁移到 Azure 自动化中基于扩展的辅助角色 | Azure Docs</p>
+<p>默认在混合辅助角色添加虚拟机会安装扩展v2，v1和v2可以共存。由于v2会在系统内部起一个叫hybrid Worker Service，测试执行runbook会观察到该service流量突增，运行结束后回归正常。</p>
+<p>经过测试，在v1和v2（hybrid worker extension正常，相关日志文件未见异常）共存的情况下，按照如下文档删除v1后，可以正常使用v2运行runbook。</p>
+<p>删除操作：<a href="https://docs.azure.cn/zh-cn/automation/migrate-existing-agent-based-hybrid-worker-to-extension-based-workers?tabs=bicep-template%2Cwin-hrw#remove-agent-based-hybrid-worker" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/migrate-existing-agent-based-hybrid-worker-to-extension-based-workers?tabs=bicep-template%2Cwin-hrw#remove-agent-based-hybrid-worker</a></p>
+<p>注意：</p>
+<p>目前工单遇到：如果v1使用代理服务器访问公网，又在混合辅助角色添加虚拟机默认安装hybrid worker extension（v2）后，扩展状态会出现访问报错的问题，因为默认扩展是直接访问公网的，所以会看到访问异常。</p>
+<p>HybridWorkerExtension扩展抛出如下报错：</p>
+<p>System.Net.WebException: Unable to connect to the remote server ---&gt; System.Net.Sockets.SocketException: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond 159.27.21.164:443 at System.Net.Sockets.Socket.InternalEndConnect</p>
+<p>1，需要卸载扩展，然后按照如下配置重新推送扩展。</p>
+<p><a href="https://docs.azure.cn/zh-cn/automation/extension-based-hybrid-runbook-worker-install?tabs=windows%2Cbicep-template#proxy-server-use" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/extension-based-hybrid-runbook-worker-install?tabs=windows%2Cbicep-template#proxy-server-use</a></p>
+<p>注意报错中提到的地址159.27.21.164就是上面截图中第一步获取的automationhybridserviceurl解析的地址。</p>
+<p>客户环境配置，代理服务器不需要账户密码。</p>
+<p>注意如果扩展推送超时，看看是不是settings配置写得有问题，例如最后多加一个分号。</p>
+<p>2，按照如上推送配置后，扩展状态成功，执行runbook仍然是成功的（此时v1和v2共存）。</p>
+<p>3，接着客户卸载v1，测试只有v2环境运行runbook发现是suspend状态，和我的环境（没有代理）测试结果不同。</p>
+<p>kusto后台报错：</p>
+<p>JobStatusChangeSuspendedByException:The Job state has changed to Suspended after an exception was encountered.  [accountId=2c6ca3e9-3b77-4be9-86d6-1a15b654ddd7][sandboxId=00000000-0000-0000-0000-000000000000][jobId=455ab59f-9db7-4d59-a608-f780dfea84ee][runbookName=AzureTag-MasterRunbook01][exception=Job was suspended as the job limit for a Hybrid Worker exceeded. Add more Hybrid Workers to the Hybrid Worker group to overcome this issue, see: <a href="https://aka.ms/HRW-polling-limit-exceed" target="_blank" rel="noopener">https://aka.ms/HRW-polling-limit-exceed</a></p>
+<p>4，通过抓包以及代理服务器上日志显示，在只有v2环境时，到地址159.27.21.164都未走代理服务器。但是检查代理的配置确实已经推送成功了。</p>
+<p>5,    检查注册表：</p>
+<p>6，在收集的SMA日志中也再次显示了如上到地址159.27.21.164:443访问异常。</p>
+<p>7，升级到产品组分析，回复如下：</p>
+<p>1）这是个产品的bug, 当前的版本里V2 还会从原来V1的 proxy setting中读取信息，如果V1被完全卸载，V2将无法正常工作</p>
+<p>2）这个bug的预计修复时间是八月底</p>
+<p>3）请手动增加v2使用的proxy ： New-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\HealthService\Parameters -Name &quot;Http Connection Proxy Url&quot; -Value &quot;10.119.110.100:8080&quot;</p>
+<p>红色为代理服务器地址。</p>
+<p>整个过程排查相关日志收集：</p>
+<p>1，机器内部如下路径1：</p>
+<p>C:\Windows\System32\winevt\Logs\Microsoft-SMA%4Operational.evtx</p>
+<p>网络排查日志查询路径：<a href="https://docs.azure.cn/zh-cn/automation/troubleshoot/extension-based-hybrid-runbook-worker#scenario-job-failed-to-start-as-the-hybrid-worker-was-not-available-when-the-scheduled-job-started" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/troubleshoot/extension-based-hybrid-runbook-worker#scenario-job-failed-to-start-as-the-hybrid-worker-was-not-available-when-the-scheduled-job-started</a></p>
+<p>2，机器内部如下路径2：</p>
+<p>C:\WindowsAzure\Logs\Plugins\Microsoft.Azure.Automation.HybridWorker.HybridWorkerForWindows\1.1.11\HybridWorkerExtensionHandler.*.log</p>
+<p>3，或者通过如下脚本进行收集所需日志：</p>
+<p><a href="https://docs.azure.cn/zh-cn/automation/troubleshoot/extension-based-hybrid-runbook-worker#general-checklist" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/troubleshoot/extension-based-hybrid-runbook-worker#general-checklist</a></p>
+<p>附上我的测试：</p>
+<p>我的环境：</p>
+<p>删除v1操作：<a href="https://docs.azure.cn/zh-cn/automation/migrate-existing-agent-based-hybrid-worker-to-extension-based-workers?tabs=bicep-template%2Cwin-hrw#remove-agent-based-hybrid-worker" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/migrate-existing-agent-based-hybrid-worker-to-extension-based-workers?tabs=bicep-template%2Cwin-hrw#remove-agent-based-hybrid-worker</a></p>
+<p>自动化账户相关的地址：</p>
+<p>执行runbook前hybrid worker service服务的网络total在82 B/sec。</p>
+<p>执行runbook后，hybrid worker service服务的网络total在435 B/sec。</p>
+<p>执行完成后又回归正常水平。</p></article>

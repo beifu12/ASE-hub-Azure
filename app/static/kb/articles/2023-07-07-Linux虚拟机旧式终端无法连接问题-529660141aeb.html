@@ -1,0 +1,94 @@
+<article class="kb-article" data-title="Linux虚拟机旧式终端无法连接问题"><h1>Linux虚拟机旧式终端无法连接问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-07-07 16:57:17</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>使用SecureCRT或者Xshell连接Ubuntu 22.04的新建虚拟机时会提示Key exchange failed。实际虚拟机是用用户名密码创建的。</li>
+</ul>
+<ul>
+<li>在较新的Linux系统中为了系统的安全已经弃用了相关老版本的OpenSSH的一些加密算法。但是连接的终端之前使用密钥方式连接过其它VM，即使调整不使用密钥连接实际也无法连接SSH。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>解决方式：</li>
+</ul>
+<ul>
+<li>网上有一些方式是调整SecureCRT的密钥连接配置，但实际测试是无效的。</li>
+</ul>
+<ul>
+<li>清理之前已经连接的信息。重新安装更高版本的SecureCRT或者是Xshell，在新版本上重新添加新的连接。</li>
+</ul>
+<ul>
+<li>修改SSH_Config配置，在最后添加以下信息，作用是支持旧式的加密算法。</li>
+</ul>
+<ul>
+<li>针对SecureCRT部分</li>
+</ul>
+<ul>
+<li>-------------------------------------------</li>
+</ul>
+<ul>
+<li>Ciphers aes128-cbc,aes192-cbc,aes256-cbc,aes128-ctr,aes192-ctr,aes256-ctr,3des-cbc,arcfour128,arcfour256,arcfour,blowfish-cbc,cast128-cbc</li>
+</ul>
+<ul>
+<li>MACs hmac-md5,hmac-sha1, umac-64@openssh.com,hmac-ripemd160,hmac-sha1-96,hmac-md5-96</li>
+</ul>
+<ul>
+<li>KexAlgorithms diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group1-sha1, curve25519-sha256@libssh.org</li>
+</ul>
+<ul>
+<li>KexAlgorithms +diffie-hellman-group-exchange-sha256,diffie-hellman-group1-sha1</li>
+</ul>
+<ul>
+<li>---------------------------------------------</li>
+</ul>
+<ul>
+<li>添加后重启SSH服务即可</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>目前验证2种方式可以解决：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/7/7</p>
+<p>问题现象：</p>
+<p>使用SecureCRT或者Xshell连接Ubuntu 22.04的新建虚拟机时会提示Key exchange failed。实际虚拟机是用用户名密码创建的。</p>
+<p>问题原因：</p>
+<p>在较新的Linux系统中为了系统的安全已经弃用了相关老版本的OpenSSH的一些加密算法。但是连接的终端之前使用密钥方式连接过其它VM，即使调整不使用密钥连接实际也无法连接SSH。</p>
+<p>解决方式：</p>
+<p>网上有一些方式是调整SecureCRT的密钥连接配置，但实际测试是无效的。</p>
+<p>目前验证2种方式可以解决：</p>
+<p>清理之前已经连接的信息。重新安装更高版本的SecureCRT或者是Xshell，在新版本上重新添加新的连接。</p>
+<p>修改SSH_Config配置，在最后添加以下信息，作用是支持旧式的加密算法。</p>
+<p>针对SecureCRT部分</p>
+<p>-------------------------------------------</p>
+<p>Ciphers aes128-cbc,aes192-cbc,aes256-cbc,aes128-ctr,aes192-ctr,aes256-ctr,3des-cbc,arcfour128,arcfour256,arcfour,blowfish-cbc,cast128-cbc</p>
+<p>MACs hmac-md5,hmac-sha1, umac-64@openssh.com,hmac-ripemd160,hmac-sha1-96,hmac-md5-96</p>
+<p>KexAlgorithms diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group1-sha1, curve25519-sha256@libssh.org</p>
+<p>KexAlgorithms +diffie-hellman-group-exchange-sha256,diffie-hellman-group1-sha1</p>
+<p>---------------------------------------------</p>
+<p>添加后重启SSH服务即可</p></article>

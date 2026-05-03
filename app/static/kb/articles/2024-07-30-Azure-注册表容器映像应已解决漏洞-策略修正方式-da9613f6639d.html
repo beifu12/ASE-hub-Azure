@@ -1,0 +1,110 @@
+<article class="kb-article" data-title="“Azure 注册表容器映像应已解决漏洞”策略修正方式"><h1>“Azure 注册表容器映像应已解决漏洞”策略修正方式</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Microsoft Defender for Cloud(安全中心).one</li>
+<li>Section: Microsoft Defender for Cloud(安全中心)</li>
+<li>最近修改: 2024-07-30 15:04:44</li>
+<li>JD 相关性: Defender/Sentinel/安全; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>Case number： 20240716304819</li>
+</ul>
+<ul>
+<li>问题背景：</li>
+</ul>
+<ul>
+<li>如果用户仅在acr中通过ACR中镜像库内镜像右侧的删除按钮将被扫描出的镜像删除，但是defender的策略依然会扫描出被删除的镜像，并且tags为NA</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>如果只是在存储库中将镜像删除其实并未真正清除所有的镜像，因为defender的策略扫描的是存储库Manifest中的所有信息，如用户的存储库中可以看到镜像有4个，但是Manifest中标注有10个镜像。</li>
+</ul>
+<ul>
+<li>是可以找到defender中扫描到的镜像digest的</li>
+</ul>
+<ul>
+<li>看到有问题的映像是不包含Tags信息的。因为包含tags的镜像页面上是可以看到的，也可已通过页面操作删除。</li>
+</ul>
+<ul>
+<li>相关问题文档：删除映像资源 - Azure Container Registry | Azure Docs</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查看清单信息：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>因为在页面上无法看到存储库Manifest中的全部镜像信息，所以需要使用cli命令进行查询和清理。</li>
+</ul>
+<ul>
+<li>运行如下命令：</li>
+</ul>
+<ul>
+<li>az cloud set -n AzureChinaCloud</li>
+</ul>
+<ul>
+<li>az login</li>
+</ul>
+<ul>
+<li>az account set -s 订阅ID</li>
+</ul>
+<ul>
+<li>az acr manifest | Microsoft Learn</li>
+</ul>
+<ul>
+<li>示例命令：az acr manifest list test123.azurecr.cn/hello-world1</li>
+</ul>
+<ul>
+<li>对于没有tags的镜像可以通过命令进行删除。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>“Azure 注册表容器映像应已解决漏洞”策略会检查ACR中的所有镜像，列出应该进行修正的补丁。建议修正步骤是让客户上传已经修正的镜像，删除问题镜像。</li>
+</ul>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>WangZhaoqing</p>
+<p>Case number： 20240716304819</p>
+<p>问题背景：</p>
+<p>“Azure 注册表容器映像应已解决漏洞”策略会检查ACR中的所有镜像，列出应该进行修正的补丁。建议修正步骤是让客户上传已经修正的镜像，删除问题镜像。</p>
+<p>如果用户仅在acr中通过ACR中镜像库内镜像右侧的删除按钮将被扫描出的镜像删除，但是defender的策略依然会扫描出被删除的镜像，并且tags为NA</p>
+<p>问题原因：</p>
+<p>如果只是在存储库中将镜像删除其实并未真正清除所有的镜像，因为defender的策略扫描的是存储库Manifest中的所有信息，如用户的存储库中可以看到镜像有4个，但是Manifest中标注有10个镜像。</p>
+<p>解决方案：</p>
+<p>因为在页面上无法看到存储库Manifest中的全部镜像信息，所以需要使用cli命令进行查询和清理。</p>
+<p>运行如下命令：</p>
+<p>az cloud set -n AzureChinaCloud</p>
+<p>az login</p>
+<p>az account set -s 订阅ID</p>
+<p>查看清单信息：</p>
+<p>az acr manifest | Microsoft Learn</p>
+<p>示例命令：az acr manifest list test123.azurecr.cn/hello-world1</p>
+<p>是可以找到defender中扫描到的镜像digest的</p>
+<p>看到有问题的映像是不包含Tags信息的。因为包含tags的镜像页面上是可以看到的，也可已通过页面操作删除。</p>
+<p>对于没有tags的镜像可以通过命令进行删除。</p>
+<p>相关问题文档：删除映像资源 - Azure Container Registry | Azure Docs</p></article>

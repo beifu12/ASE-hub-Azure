@@ -1,0 +1,143 @@
+<article class="kb-article" data-title="Azure CDN Support TSG update 20190104"><h1>Azure CDN Support TSG update 20190104</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: CDN Operation Guideline</li>
+<li>最近修改: 2022-12-23 11:57:17</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>A：Azure CDN支持证书链，同时部分CDN Provider要求用户所上传的证书具有完整证书链，否则证书部署会失败。当前证书链部署失败后，客户不会收到相关通知，后续产品组会在CDN管理门户上添加通知功能。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>A：Azure CDN支持证书链，同时部分CDN Provider要求用户所上传的证书具有完整证书链，否则证书部署会失败。当前证书链部署失败后，客户不会收到相关通知，后续产品组会在CDN管理门户上添加通知功能。</li>
+</ul>
+<ul>
+<li>It’s a known synchronization issue and CDN product group is working on it.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>CDN FAQ</li>
+</ul>
+<ul>
+<li>Q：Azure CDN是否支持HTTP/2和HSTS（HTTP Strict Transport Security用于防劫持)</li>
+</ul>
+<ul>
+<li>A: 支持，但是需要联系CDN产品组进行线下配置；</li>
+</ul>
+<ul>
+<li>Q：Azure CDN的默认回源协议是什么？</li>
+</ul>
+<ul>
+<li>A：由于Azure CDN使用融合部署，目前没有统一的默认回源协议。如果源站设置了跳转，在访问加速域名时可能触发循环跳转，出现这种问题，请联系CDN产品组配置跟随协议回源；如需指定只有HTTP回源或者只有HTTPS回源，请同样联系产品组进行配置。</li>
+</ul>
+<ul>
+<li>Q：Https证书链</li>
+</ul>
+<ul>
+<li>Q：有关CDN 高级版定价层的变更</li>
+</ul>
+<ul>
+<li>Q：图片处理加速类型（Image processing acceleration type）的Https配置</li>
+</ul>
+<ul>
+<li>A：由于图片处理加速类型需要用到图片处理服务器，因此对此加速类型启用Https请联系产品组进行线下配置。</li>
+</ul>
+<ul>
+<li>CDN管理门户中CNAME 显示问题</li>
+</ul>
+<ul>
+<li>nslookup</li>
+</ul>
+<ul>
+<li>&gt; cdn.chinapex.com.cn</li>
+</ul>
+<ul>
+<li>非权威应答:</li>
+</ul>
+<ul>
+<li>名称:    zbsazu.v.bsgslb.cn</li>
+</ul>
+<ul>
+<li>Addresses:  222.186.172.110</li>
+</ul>
+<ul>
+<li>222.186.172.111</li>
+</ul>
+<ul>
+<li>……………………..</li>
+</ul>
+<ul>
+<li>Aliases:  cdn.chinapex.com.cn</li>
+</ul>
+<ul>
+<li>cdn.chinapex.com.cn.mcchcdn.com</li>
+</ul>
+<ul>
+<li>cdn.chinapex.com.cn.bsgslb.cn</li>
+</ul>
+<ul>
+<li>Chinese version:</li>
+</ul>
+<ul>
+<li>最近，我们收到了一些有关“更改CNAME记录”的工单，工单中客户反馈根据先前的平台通知更改了CNAME，但是在CDN管理平台-域名管理中，仍然显示更新之前的CNAME：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>我们注意到，客户在按照先前平台通知修改CNAME后，在CDN管理门户上仍显示mschcdn的问题我们与产品进行了确认，这是一个同步问题。请参考如下内容：</li>
+</ul>
+<ul>
+<li>Recently, we received some cases regarding “change CNAME record”, customers feedback that they changed the CNAME based on the previous Platform announcement, however the CDN management portal still shows the old ones.</li>
+</ul>
+<ul>
+<li>Actually the update operations have taken effect, we can check them with nslookup.</li>
+</ul>
+<ul>
+<li>实际上，客户的更改操作已经生效，我们可以使用nslookup进行确认。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>经产品组确认，这是一个已知的同步问题，产品组正在进行修复处理。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>A：目前Azure CDN 高级版定价层已经从Azure门户移除，暂时不可用。先前申请Azure代申请证书，且正在使用该证书服务的客户仍将以高级版定价层进行收费，请参考此文档<a href="https://www.azure.cn/zh-cn/pricing/details/cdn/" target="_blank" rel="noopener">https://www.azure.cn/zh-cn/pricing/details/cdn/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>CDN FAQ</p>
+<p>Q：Azure CDN是否支持HTTP/2和HSTS（HTTP Strict Transport Security用于防劫持)</p>
+<p>A: 支持，但是需要联系CDN产品组进行线下配置；</p>
+<p>Q：Azure CDN的默认回源协议是什么？</p>
+<p>A：由于Azure CDN使用融合部署，目前没有统一的默认回源协议。如果源站设置了跳转，在访问加速域名时可能触发循环跳转，出现这种问题，请联系CDN产品组配置跟随协议回源；如需指定只有HTTP回源或者只有HTTPS回源，请同样联系产品组进行配置。</p>
+<p>Q：Https证书链</p>
+<p>A：Azure CDN支持证书链，同时部分CDN Provider要求用户所上传的证书具有完整证书链，否则证书部署会失败。当前证书链部署失败后，客户不会收到相关通知，后续产品组会在CDN管理门户上添加通知功能。</p>
+<p>Q：有关CDN 高级版定价层的变更</p>
+<p>A：目前Azure CDN 高级版定价层已经从Azure门户移除，暂时不可用。先前申请Azure代申请证书，且正在使用该证书服务的客户仍将以高级版定价层进行收费，请参考此文档<a href="https://www.azure.cn/zh-cn/pricing/details/cdn/" target="_blank" rel="noopener">https://www.azure.cn/zh-cn/pricing/details/cdn/</a></p>
+<p>Q：图片处理加速类型（Image processing acceleration type）的Https配置</p>
+<p>A：由于图片处理加速类型需要用到图片处理服务器，因此对此加速类型启用Https请联系产品组进行线下配置。</p>
+<p>CDN管理门户中CNAME 显示问题</p>
+<p>我们注意到，客户在按照先前平台通知修改CNAME后，在CDN管理门户上仍显示mschcdn的问题我们与产品进行了确认，这是一个同步问题。请参考如下内容：</p>
+<p>Recently, we received some cases regarding “change CNAME record”, customers feedback that they changed the CNAME based on the previous Platform announcement, however the CDN management portal still shows the old ones.</p>
+<p>Actually the update operations have taken effect, we can check them with nslookup.</p>
+<p>nslookup</p>
+<p>&gt; cdn.chinapex.com.cn</p>
+<p>非权威应答:</p>
+<p>名称:    zbsazu.v.bsgslb.cn</p>
+<p>Addresses:  222.186.172.110</p>
+<p>222.186.172.111</p>
+<p>……………………..</p>
+<p>Aliases:  cdn.chinapex.com.cn</p>
+<p>cdn.chinapex.com.cn.mcchcdn.com</p>
+<p>cdn.chinapex.com.cn.bsgslb.cn</p>
+<p>It’s a known synchronization issue and CDN product group is working on it.</p>
+<p>Chinese version:</p>
+<p>最近，我们收到了一些有关“更改CNAME记录”的工单，工单中客户反馈根据先前的平台通知更改了CNAME，但是在CDN管理平台-域名管理中，仍然显示更新之前的CNAME：</p>
+<p>实际上，客户的更改操作已经生效，我们可以使用nslookup进行确认。</p>
+<p>经产品组确认，这是一个已知的同步问题，产品组正在进行修复处理。</p></article>

@@ -1,0 +1,191 @@
+<article class="kb-article" data-title="【share】SR_20240410287542_需要帮忙排查一下开启加速网络后，会出现网卡掉线中断服务的原因以及缓解的方法。"><h1>【share】SR_20240410287542_需要帮忙排查一下开启加速网络后，会出现网卡掉线中断服务的原因以及缓解的方法。</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-05-14 17:57:22</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>关联工单：20240320283832, 参考文档：Linux 和 FreeBSD VM 中加速网络的工作方式 | Azure Docs</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>关联工单：20240320283832, 参考文档：Linux 和 FreeBSD VM 中加速网络的工作方式 | Azure Docs</li>
+</ul>
+<ul>
+<li>&quot;e7ccfbf0-f97c-4b6b-8222-564017e2a4a3&quot;</li>
+</ul>
+<ul>
+<li>//| where Description contains &quot;7fbe38af-0ad8-401d-8d22-066d1b1727c9&quot;</li>
+</ul>
+<ul>
+<li>| where EventId != &quot;504&quot;</li>
+</ul>
+<ul>
+<li>//| where EventId == &#39;18514&#39; //系统内部重启 or EventId == &#39;18504&#39; //关机</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题：</li>
+</ul>
+<ul>
+<li>网络接口启用加速网络，平台维护导致网络中断</li>
+</ul>
+<ul>
+<li>思路：</li>
+</ul>
+<ul>
+<li>平台维护是否导致的VF接口是否切换为合成接口</li>
+</ul>
+<ul>
+<li>[</li>
+</ul>
+<ul>
+<li>];</li>
+</ul>
+<ul>
+<li>//| where PreciseTimeStamp &gt; ago(3d)</li>
+</ul>
+<ul>
+<li>//| where NodeId  == &quot;4d46bea5-40ef-4b45-9b01-fa680cd0e2f4&quot;</li>
+</ul>
+<ul>
+<li>| where NodeId in (NodeList)</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt;= datetime(2024-03-19T00:00:00Z) and PreciseTimeStamp &lt; datetime(2024-03-20T23:55:59Z)</li>
+</ul>
+<ul>
+<li>| where EventId != &quot;64&quot;</li>
+</ul>
+<ul>
+<li>| where EventId != &quot;505&quot;</li>
+</ul>
+<ul>
+<li>| where EventId != &quot;510&quot;</li>
+</ul>
+<ul>
+<li>| where EventId != &quot;146&quot;</li>
+</ul>
+<ul>
+<li>| where EventId != &quot;142&quot;</li>
+</ul>
+<ul>
+<li>| where EventId != &#39;512&#39;</li>
+</ul>
+<ul>
+<li>| where EventId != &#39;3095&#39;</li>
+</ul>
+<ul>
+<li>//| where ProviderName contains &quot;boot&quot; or ProviderName contains &quot;UpdateNotification&quot; or ProviderName contains &quot;OSHostPlugin&quot;</li>
+</ul>
+<ul>
+<li>//| where EventId == &#39;1&#39;</li>
+</ul>
+<ul>
+<li>//| where EventId == 17</li>
+</ul>
+<ul>
+<li>// | where memory 2004</li>
+</ul>
+<ul>
+<li>| project TimeCreated,LocalTime=PreciseTimeStamp +8h, EventId,NodeId, ProviderName, Description</li>
+</ul>
+<ul>
+<li>| order by TimeCreated</li>
+</ul>
+<ul>
+<li>切换过程是否导致网络中断</li>
+</ul>
+<ul>
+<li>VFP dashbord</li>
+</ul>
+<ul>
+<li>metric network in total/network out total</li>
+</ul>
+<ul>
+<li>CSS:HA( 时间限制：15d)</li>
+</ul>
+<ul>
+<li>结论</li>
+</ul>
+<ul>
+<li>没有方法来避免由于平台维护造成的VF接口重新配置造成的网络中断</li>
+</ul>
+<ul>
+<li>关闭加速网络，平台层面维护也可能会发生网络中断</li>
+</ul>
+<ul>
+<li>ICM：Incident-493706438 Details - IcM (microsofticm.com)</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>确认方式：</li>
+</ul>
+<ul>
+<li>抽系统日志（/var/log/syslog）</li>
+</ul>
+<ul>
+<li>Kusto</li>
+</ul>
+<ul>
+<li>网络确认发生中断，中断5秒----理论上不发生中断，出现中断也在意料之中，保证中断时间在SLA范围内</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>let NodeList = datatable(NodeId:string)</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>cluster(&#39;<a href="https://rdosmc.kusto.chinacloudapi.cn&#39;).database(&#39;rdos&#39;).WindowsEventTable" target="_blank" rel="noopener">https://rdosmc.kusto.chinacloudapi.cn&#39;).database(&#39;rdos&#39;).WindowsEventTable</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>关联工单：20240320283832, 参考文档：Linux 和 FreeBSD VM 中加速网络的工作方式 | Azure Docs</p>
+<p>问题：</p>
+<p>网络接口启用加速网络，平台维护导致网络中断</p>
+<p>思路：</p>
+<p>平台维护是否导致的VF接口是否切换为合成接口</p>
+<p>确认方式：</p>
+<p>抽系统日志（/var/log/syslog）</p>
+<p>Kusto</p>
+<p>let NodeList = datatable(NodeId:string)</p>
+<p>[</p>
+<p>&quot;e7ccfbf0-f97c-4b6b-8222-564017e2a4a3&quot;</p>
+<p>];</p>
+<p>cluster(&#39;<a href="https://rdosmc.kusto.chinacloudapi.cn&#39;).database(&#39;rdos&#39;).WindowsEventTable" target="_blank" rel="noopener">https://rdosmc.kusto.chinacloudapi.cn&#39;).database(&#39;rdos&#39;).WindowsEventTable</a></p>
+<p>//| where PreciseTimeStamp &gt; ago(3d)</p>
+<p>//| where NodeId  == &quot;4d46bea5-40ef-4b45-9b01-fa680cd0e2f4&quot;</p>
+<p>| where NodeId in (NodeList)</p>
+<p>| where PreciseTimeStamp &gt;= datetime(2024-03-19T00:00:00Z) and PreciseTimeStamp &lt; datetime(2024-03-20T23:55:59Z)</p>
+<p>//| where Description contains &quot;7fbe38af-0ad8-401d-8d22-066d1b1727c9&quot;</p>
+<p>| where EventId != &quot;64&quot;</p>
+<p>| where EventId != &quot;504&quot;</p>
+<p>| where EventId != &quot;505&quot;</p>
+<p>| where EventId != &quot;510&quot;</p>
+<p>| where EventId != &quot;146&quot;</p>
+<p>| where EventId != &quot;142&quot;</p>
+<p>| where EventId != &#39;512&#39;</p>
+<p>| where EventId != &#39;3095&#39;</p>
+<p>//| where EventId == &#39;18514&#39; //系统内部重启 or EventId == &#39;18504&#39; //关机</p>
+<p>//| where ProviderName contains &quot;boot&quot; or ProviderName contains &quot;UpdateNotification&quot; or ProviderName contains &quot;OSHostPlugin&quot;</p>
+<p>//| where EventId == &#39;1&#39;</p>
+<p>//| where EventId == 17</p>
+<p>// | where memory 2004</p>
+<p>| project TimeCreated,LocalTime=PreciseTimeStamp +8h, EventId,NodeId, ProviderName, Description</p>
+<p>| order by TimeCreated</p>
+<p>切换过程是否导致网络中断</p>
+<p>VFP dashbord</p>
+<p>metric network in total/network out total</p>
+<p>CSS:HA( 时间限制：15d)</p>
+<p>结论</p>
+<p>网络确认发生中断，中断5秒----理论上不发生中断，出现中断也在意料之中，保证中断时间在SLA范围内</p>
+<p>没有方法来避免由于平台维护造成的VF接口重新配置造成的网络中断</p>
+<p>关闭加速网络，平台层面维护也可能会发生网络中断</p>
+<p>ICM：Incident-493706438 Details - IcM (microsofticm.com)</p></article>

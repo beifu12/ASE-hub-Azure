@@ -1,0 +1,182 @@
+<article class="kb-article" data-title="【Share】PDB阻止AKS集群升级的验证以及解决方案"><h1>【Share】PDB阻止AKS集群升级的验证以及解决方案</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-02 16:04:24</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>此过程节点的Drain操作会一直尝试，经过30分钟，超过节点排除超时配置后，节点池升级失败，报错信息：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>此过程节点的Drain操作会一直尝试，经过30分钟，超过节点排除超时配置后，节点池升级失败，报错信息：</li>
+</ul>
+<ul>
+<li>节点池升级界面会有报错提示：</li>
+</ul>
+<ul>
+<li>补充，参考：SR_20240320283922_更新AKS ServicePrinciple 失败 | Drain node failed | Restricted by PDB</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Wang Yu</li>
+</ul>
+<ul>
+<li>测试结论小结：</li>
+</ul>
+<ul>
+<li>排出操作会持续尝试，如果在未超出节点排出时间前，将pdb更改为满足的条件，排出操作会正常完成，升级也可顺利完成；</li>
+</ul>
+<ul>
+<li>节点池升级完成后，原节点池中的节点会全部以新版本回到节点池中运行，升级过程中的缓冲节点会remove。</li>
+</ul>
+<ul>
+<li>测试环境：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>节点池中有1个节点，节点池版本和节点版本都是v1.27.9</li>
+</ul>
+<ul>
+<li>deployment中pod副本数定义为3：</li>
+</ul>
+<ul>
+<li>pdb定义最小可用pod副本为3：</li>
+</ul>
+<ul>
+<li>升级测试：</li>
+</ul>
+<ul>
+<li>在节点事件中可以看到pdb要求最小可用pod是3，阻住了Drain节点Eviction pod的操作：</li>
+</ul>
+<ul>
+<li>问题复现：</li>
+</ul>
+<ul>
+<li>活动日志中对应日志：</li>
+</ul>
+<ul>
+<li>此时节点池中旧节点恢复可调度状态，pdb阻止了pod驱逐，节点版本没有升级，仍然是v1.27.9：</li>
+</ul>
+<ul>
+<li>将节点池中pdb中的minAvailable改为0，让pod可部署在缓冲节点上。</li>
+</ul>
+<ul>
+<li>等待10分钟，回显更新操作完成。</li>
+</ul>
+<ul>
+<li>更新过程中会继续节点池升级操作，新建缓冲节点，并驱逐pod，将旧节点升级</li>
+</ul>
+<ul>
+<li>节点池状态成功</li>
+</ul>
+<ul>
+<li>如下，MIN AVAILABLE是3，ALLOWD DISRUPTIONS 是0。</li>
+</ul>
+<ul>
+<li>按照Pdb 中 MIN AVAILABLE 和ALLOWED DISRUPTIONS 的关系：</li>
+</ul>
+<ul>
+<li>当前healthy 的pod - MIN AVAILABLE  pod =ALLOWED DISRUPTIONS  的pod</li>
+</ul>
+<ul>
+<li>那么当前healthy的pod应该是3。</li>
+</ul>
+<ul>
+<li>而这个命名空间下一共有4个pod， 我理解是不是这个PDB只针对quickstart-es-default 的pod，这个要您看下这个PDB的yaml是怎么写的。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>升级过程中pdb阻住节点排出后，在超出节点排出时间后升级会失败，节点池状态变为failed，可在AKS集群活动日志中查看到报错日志；</li>
+</ul>
+<ul>
+<li>pdb阻住节点排除过程中，可查看节点或集群的event，可以看到pdb阻止排查的日志；</li>
+</ul>
+<ul>
+<li>在Portal上查看节点池的预配状态变为“失败”，而节点池版本是v1.28.5(目标版本):</li>
+</ul>
+<ul>
+<li>目前AKS集群控制平台的状态是成功的，节点池状态为失败，节点池的版本已经显示为目标版本，但实际节点由于pdb阻止没能完成drain pod过程也就没能完成node版本升级的步骤。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>节点池状态failed后，如不解决pdb限制，直接使用az resource update --ids命令更新，仍会报错pdb限制存在，无法更新节点池状态；</li>
+</ul>
+<ul>
+<li>节点池状态failed后，解决pdb限制后，使用az resource update --ids命令可以将节点池状态更新；</li>
+</ul>
+<ul>
+<li>kubectl edit pdb nginx-pdb</li>
+</ul>
+<ul>
+<li>使用命令更新AKS集群状态：</li>
+</ul>
+<ul>
+<li>az resource update --ids &#39;/subscriptions/b0f4d948-70b8-4c51-943a-119e7fc1983f/resourceGroups/AKS/providers/Microsoft.ContainerService/managedClusters/aksfree&#39;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Allowed disruptions = Total number of pods - minAvailable</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在Portal上将节点池从v1.27.9升级到v1.28.5，在升级界面可以看到有“节点排出超时”的设置：</li>
+</ul>
+<ul>
+<li>在升级过程中，节点池会先将老版本节点封锁(状态变为Ready,SchedulingDisabled)，并使用新版本在节点池中新添加缓冲节点。</li>
+</ul>
+<ul>
+<li>解决方法：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Wang Yu</p>
+<p>测试结论小结：</p>
+<p>升级过程中pdb阻住节点排出后，在超出节点排出时间后升级会失败，节点池状态变为failed，可在AKS集群活动日志中查看到报错日志；</p>
+<p>pdb阻住节点排除过程中，可查看节点或集群的event，可以看到pdb阻止排查的日志；</p>
+<p>排出操作会持续尝试，如果在未超出节点排出时间前，将pdb更改为满足的条件，排出操作会正常完成，升级也可顺利完成；</p>
+<p>节点池状态failed后，如不解决pdb限制，直接使用az resource update --ids命令更新，仍会报错pdb限制存在，无法更新节点池状态；</p>
+<p>节点池状态failed后，解决pdb限制后，使用az resource update --ids命令可以将节点池状态更新；</p>
+<p>节点池升级完成后，原节点池中的节点会全部以新版本回到节点池中运行，升级过程中的缓冲节点会remove。</p>
+<p>测试环境：</p>
+<p>========</p>
+<p>节点池中有1个节点，节点池版本和节点版本都是v1.27.9</p>
+<p>deployment中pod副本数定义为3：</p>
+<p>pdb定义最小可用pod副本为3：</p>
+<p>升级测试：</p>
+<p>在Portal上将节点池从v1.27.9升级到v1.28.5，在升级界面可以看到有“节点排出超时”的设置：</p>
+<p>在升级过程中，节点池会先将老版本节点封锁(状态变为Ready,SchedulingDisabled)，并使用新版本在节点池中新添加缓冲节点。</p>
+<p>在节点事件中可以看到pdb要求最小可用pod是3，阻住了Drain节点Eviction pod的操作：</p>
+<p>问题复现：</p>
+<p>此过程节点的Drain操作会一直尝试，经过30分钟，超过节点排除超时配置后，节点池升级失败，报错信息：</p>
+<p>活动日志中对应日志：</p>
+<p>此时节点池中旧节点恢复可调度状态，pdb阻止了pod驱逐，节点版本没有升级，仍然是v1.27.9：</p>
+<p>在Portal上查看节点池的预配状态变为“失败”，而节点池版本是v1.28.5(目标版本):</p>
+<p>节点池升级界面会有报错提示：</p>
+<p>解决方法：</p>
+<p>目前AKS集群控制平台的状态是成功的，节点池状态为失败，节点池的版本已经显示为目标版本，但实际节点由于pdb阻止没能完成drain pod过程也就没能完成node版本升级的步骤。</p>
+<p>将节点池中pdb中的minAvailable改为0，让pod可部署在缓冲节点上。</p>
+<p>kubectl edit pdb nginx-pdb</p>
+<p>使用命令更新AKS集群状态：</p>
+<p>az resource update --ids &#39;/subscriptions/b0f4d948-70b8-4c51-943a-119e7fc1983f/resourceGroups/AKS/providers/Microsoft.ContainerService/managedClusters/aksfree&#39;</p>
+<p>等待10分钟，回显更新操作完成。</p>
+<p>更新过程中会继续节点池升级操作，新建缓冲节点，并驱逐pod，将旧节点升级</p>
+<p>节点池状态成功</p>
+<p>补充，参考：SR_20240320283922_更新AKS ServicePrinciple 失败 | Drain node failed | Restricted by PDB</p>
+<p>如下，MIN AVAILABLE是3，ALLOWD DISRUPTIONS 是0。</p>
+<p>按照Pdb 中 MIN AVAILABLE 和ALLOWED DISRUPTIONS 的关系：</p>
+<p>当前healthy 的pod - MIN AVAILABLE  pod =ALLOWED DISRUPTIONS  的pod</p>
+<p>Allowed disruptions = Total number of pods - minAvailable</p>
+<p>那么当前healthy的pod应该是3。</p>
+<p>而这个命名空间下一共有4个pod， 我理解是不是这个PDB只针对quickstart-es-default 的pod，这个要您看下这个PDB的yaml是怎么写的。</p></article>

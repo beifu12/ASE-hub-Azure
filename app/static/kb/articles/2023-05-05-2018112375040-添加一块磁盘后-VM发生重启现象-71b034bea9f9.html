@@ -1,0 +1,99 @@
+<article class="kb-article" data-title="[2018112375040]添加一块磁盘后，VM发生重启现象"><h1>[2018112375040]添加一块磁盘后，VM发生重启现象</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-05-05 09:30:38</li>
+<li>JD 相关性: 售后排障; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户提供的信息：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户提供的信息：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>客户提供的信息：</li>
+</ul>
+<ul>
+<li>/subscriptions/7563cd1a-e8dc-45c6-95f2-bdd6a8c02f87/resourceGroups/dmo-rg-prod/providers/Microsoft.Compute/virtualMachines/dmo-vm-jenkins-prod</li>
+</ul>
+<ul>
+<li>时间点：13：06</li>
+</ul>
+<ul>
+<li>附加磁盘操作会有两条操作，实际比较复杂：</li>
+</ul>
+<ul>
+<li>2018-11-23T05:03:15.3937308Z CrpPirVMExtensionRepository: Try sending request with cached dsts token. ValidFrom: 11/22/2018 7:22:44 AM, ValidTo: 11/23/2018 7:22:44 AM Trace X:\bt\972056\repo\src\Shared\Lib\ResourceProvider.PreCommon\dSTS\DstsAuthenticationDelegatingHandler.cs 255 8 0 103 889480dd-d390-4b57-8357-d25384c2d62e 9900</li>
+</ul>
+<ul>
+<li>Line 39196: [2018/11/23, 05:03:18.051,  WARN, 00017932] Missing metadata for payload [03e0d2c2-f0b2-4a4d-8fb1-9d33caae5e73~6e08f82d-59a8-4138-8e9b-0f6dfb088c50.ccf.tmp], marking as ToBeRemoved</li>
+</ul>
+<ul>
+<li>Line 39199: [2018/11/23, 05:03:18.051,  WARN, 00017932] Missing metadata for payload [03e0d2c2-f0b2-4a4d-8fb1-9d33caae5e73~c7dea298-6686-4c40-a486-dfc05b1e9d66.certpack.tmp], marking as ToBeRemoved</li>
+</ul>
+<ul>
+<li>Line 39202: [2018/11/23, 05:03:18.051,  WARN, 00017932] Missing metadata for payload [d1bccc5d-8241-489d-b951-52b954460111.128.d1bccc5d-8241-489d-b951-52b954460111.130._dmo-vm-jenkins-prod.1.xml.tmp], marking as ToBeRemoved</li>
+</ul>
+<ul>
+<li>Line 39221: [2018/11/23, 05:03:18.109,  WARN, 00010160] Missing metadata for payload [03e0d2c2-f0b2-4a4d-8fb1-9d33caae5e73~c7dea298-6686-4c40-a486-dfc05b1e9d66.certpack.tmp], marking as ToBeRemoved</li>
+</ul>
+<ul>
+<li>Line 39255: [2018/11/23, 05:03:18.120,  WARN, 00010160] Missing metadata for payload [d1bccc5d-8241-489d-b951-52b954460111.128.d1bccc5d-8241-489d-b951-52b954460111.130._dmo-vm-jenkins-prod.1.xml.tmp], marking as ToBeRemoved</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>我们首先通过Kusto和ASC确认重启：</li>
+</ul>
+<ul>
+<li>客户提供的kernel log:  Nov 23 05:03:22 dmo-vm-jenkins-prod kernel: [13371668.595265] hv_utils: Shutdown request received - graceful shutdown initiated</li>
+</ul>
+<ul>
+<li>Jarvis查询操作日志和TenantSLA:</li>
+</ul>
+<ul>
+<li>通过截图中表，查到Operationid, 放在以下链接再次查询到如下信息： [Jarvis][Logs]通过activity ID查询具体的部署过程</li>
+</ul>
+<ul>
+<li>Rdagent Log:    RDAgentLog/Node Event log/Node All logs</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/8459150B" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/8459150B</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/2C28812D" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/2C28812D</a></li>
+</ul>
+<ul>
+<li>2018-11-23T05:03:15.3986102Z End: GET <a href="https://chinanorth.pir.compute.chinacloudapi.cn:10012/subscriptions/7563cd1a-e8dc-45c6-95f2-bdd6a8c02f87/Providers/Microsoft.Compute/Locations/chinanorth/Publishers/Microsoft.OSTCExtensions/ArtifactTypes/VMExtension/Types/VMAccessForLinux/Versions?api-version=2015-06-15&amp;$filter=startswith(name," target="_blank" rel="noopener">https://chinanorth.pir.compute.chinacloudapi.cn:10012/subscriptions/7563cd1a-e8dc-45c6-95f2-bdd6a8c02f87/Providers/Microsoft.Compute/Locations/chinanorth/Publishers/Microsoft.OSTCExtensions/ArtifactTypes/VMExtension/Types/VMAccessForLinux/Versions?api-version=2015-06-15&amp;$filter=startswith(name,</a> &#39;1.&#39;).  OngoingCallCount = 2 Call X:\bt\972056\repo\src\Shared\Lib\ResourceProvider.PreCommon\HTTP\ReliableHttpClient.cs 856 8 0 104 889480dd-d390-4b57-8357-d25384c2d62e 10896</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>客户提供的信息：</p>
+<p>/subscriptions/7563cd1a-e8dc-45c6-95f2-bdd6a8c02f87/resourceGroups/dmo-rg-prod/providers/Microsoft.Compute/virtualMachines/dmo-vm-jenkins-prod</p>
+<p>时间点：13：06</p>
+<p>我们首先通过Kusto和ASC确认重启：</p>
+<p>客户提供的kernel log:  Nov 23 05:03:22 dmo-vm-jenkins-prod kernel: [13371668.595265] hv_utils: Shutdown request received - graceful shutdown initiated</p>
+<p>Jarvis查询操作日志和TenantSLA:</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/8459150B" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/8459150B</a></p>
+<p>通过截图中表，查到Operationid, 放在以下链接再次查询到如下信息： [Jarvis][Logs]通过activity ID查询具体的部署过程</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/2C28812D" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/2C28812D</a></p>
+<p>附加磁盘操作会有两条操作，实际比较复杂：</p>
+<p>2018-11-23T05:03:15.3937308Z CrpPirVMExtensionRepository: Try sending request with cached dsts token. ValidFrom: 11/22/2018 7:22:44 AM, ValidTo: 11/23/2018 7:22:44 AM Trace X:\bt\972056\repo\src\Shared\Lib\ResourceProvider.PreCommon\dSTS\DstsAuthenticationDelegatingHandler.cs 255 8 0 103 889480dd-d390-4b57-8357-d25384c2d62e 9900</p>
+<p>2018-11-23T05:03:15.3986102Z End: GET <a href="https://chinanorth.pir.compute.chinacloudapi.cn:10012/subscriptions/7563cd1a-e8dc-45c6-95f2-bdd6a8c02f87/Providers/Microsoft.Compute/Locations/chinanorth/Publishers/Microsoft.OSTCExtensions/ArtifactTypes/VMExtension/Types/VMAccessForLinux/Versions?api-version=2015-06-15&amp;$filter=startswith(name," target="_blank" rel="noopener">https://chinanorth.pir.compute.chinacloudapi.cn:10012/subscriptions/7563cd1a-e8dc-45c6-95f2-bdd6a8c02f87/Providers/Microsoft.Compute/Locations/chinanorth/Publishers/Microsoft.OSTCExtensions/ArtifactTypes/VMExtension/Types/VMAccessForLinux/Versions?api-version=2015-06-15&amp;$filter=startswith(name,</a> &#39;1.&#39;).  OngoingCallCount = 2 Call X:\bt\972056\repo\src\Shared\Lib\ResourceProvider.PreCommon\HTTP\ReliableHttpClient.cs 856 8 0 104 889480dd-d390-4b57-8357-d25384c2d62e 10896</p>
+<p>Rdagent Log:    RDAgentLog/Node Event log/Node All logs</p>
+<p>Line 39196: [2018/11/23, 05:03:18.051,  WARN, 00017932] Missing metadata for payload [03e0d2c2-f0b2-4a4d-8fb1-9d33caae5e73~6e08f82d-59a8-4138-8e9b-0f6dfb088c50.ccf.tmp], marking as ToBeRemoved</p>
+<p>Line 39199: [2018/11/23, 05:03:18.051,  WARN, 00017932] Missing metadata for payload [03e0d2c2-f0b2-4a4d-8fb1-9d33caae5e73~c7dea298-6686-4c40-a486-dfc05b1e9d66.certpack.tmp], marking as ToBeRemoved</p>
+<p>Line 39202: [2018/11/23, 05:03:18.051,  WARN, 00017932] Missing metadata for payload [d1bccc5d-8241-489d-b951-52b954460111.128.d1bccc5d-8241-489d-b951-52b954460111.130._dmo-vm-jenkins-prod.1.xml.tmp], marking as ToBeRemoved</p>
+<p>Line 39221: [2018/11/23, 05:03:18.109,  WARN, 00010160] Missing metadata for payload [03e0d2c2-f0b2-4a4d-8fb1-9d33caae5e73~c7dea298-6686-4c40-a486-dfc05b1e9d66.certpack.tmp], marking as ToBeRemoved</p>
+<p>Line 39255: [2018/11/23, 05:03:18.120,  WARN, 00010160] Missing metadata for payload [d1bccc5d-8241-489d-b951-52b954460111.128.d1bccc5d-8241-489d-b951-52b954460111.130._dmo-vm-jenkins-prod.1.xml.tmp], marking as ToBeRemoved</p></article>

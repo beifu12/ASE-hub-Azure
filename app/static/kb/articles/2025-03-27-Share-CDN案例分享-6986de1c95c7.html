@@ -1,0 +1,282 @@
+<article class="kb-article" data-title="【Share】CDN案例分享"><h1>【Share】CDN案例分享</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2025-03-27 09:33:53</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>案例一 SR_20220701174915_更换证书，保存失败</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>案例一 SR_20220701174915_更换证书，保存失败</li>
+</ul>
+<ul>
+<li>下午好，我在Microsoft Azure CDN 管理中，先添加好了新的SSL 证书，再到域名管理中“HTTPS（客户提供证书）”，更换为新的证书，点击“保存”，会提示：保存失败。 一个或多个参数无效。 如果此问题无法修正，可以联系我们的客服人员。</li>
+</ul>
+<ul>
+<li>案例二 预加载失败</li>
+</ul>
+<ul>
+<li>加速域名提交预加载失败</li>
+</ul>
+<ul>
+<li>问题描述：上传证书的时候报错</li>
+</ul>
+<ul>
+<li>案例四 SR_20220629174444_cer证书上传失败</li>
+</ul>
+<ul>
+<li>问题描述：添加证书报错，发生不可预测的错误。 如果此问题无法修正，可以联系我们的客服人员。</li>
+</ul>
+<ul>
+<li>案例一 、SR_20220701174915_更换证书，保存失败</li>
+</ul>
+<ul>
+<li>类似案例  SR_20220624173563_存储帐户与 Azure CDN 集成后HTTPS无法访问，报错403</li>
+</ul>
+<ul>
+<li>报错内容 在门户上显示失败</li>
+</ul>
+<ul>
+<li>原因：由于目前Azure CDN China暂时不支持分协议预加载，如果源站不支持HTTP或者HTTPS回源，均会导致Preload失败</li>
+</ul>
+<ul>
+<li>问题原因 AAD应用程序密码过期导致无法去密钥保管库获取证书</li>
+</ul>
+<ul>
+<li>案例四 SR_20220602169121_无法创建证书</li>
+</ul>
+<ul>
+<li>操作或报错时间 未知，客户提交工单6/2</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>案例分析</li>
+</ul>
+<ul>
+<li>客户问题：</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>案例三 SR_20220422161486_[MS-LED]cdn的证书更换问题</li>
+</ul>
+<ul>
+<li>-----------------------------------</li>
+</ul>
+<ul>
+<li>需要收集的信息：</li>
+</ul>
+<ul>
+<li>订阅ID 2e98d7c3-5885-4a6d-a516-31c1569af9d7</li>
+</ul>
+<ul>
+<li>加速域名cdn.auroramall.com.cn</li>
+</ul>
+<ul>
+<li>操作的大致时间 7/1 16:00-16:20之间</li>
+</ul>
+<ul>
+<li>原因分析</li>
+</ul>
+<ul>
+<li>图片加速仅支持http回源</li>
+</ul>
+<ul>
+<li>需要收集的信息</li>
+</ul>
+<ul>
+<li>订阅ID  d7c01c81-b4dd-48e3-bdae-28039a7e8ffe</li>
+</ul>
+<ul>
+<li>加域域名  yang.zhenjiang.wats.xyz</li>
+</ul>
+<ul>
+<li>填写的内容</li>
+</ul>
+<ul>
+<li>操作时间 6/30 17:43左右</li>
+</ul>
+<ul>
+<li>信息收集：</li>
+</ul>
+<ul>
+<li>订阅ID  5f2dea78-4257-4407-9d0b-8bf7d01cea5e</li>
+</ul>
+<ul>
+<li>加速域名 ispace.uestcedu.com</li>
+</ul>
+<ul>
+<li>操作时间  4/22 09:00左右</li>
+</ul>
+<ul>
+<li>Jarivs表显示AAD应用程序密钥过期</li>
+</ul>
+<ul>
+<li>收集信息：</li>
+</ul>
+<ul>
+<li>订阅ID 5b40b5fe-49b6-4c2b-9473-ba197644c682</li>
+</ul>
+<ul>
+<li>问题原因：证书链顺序不正确</li>
+</ul>
+<ul>
+<li>-----BEGIN CERTIFICATE-----</li>
+</ul>
+<ul>
+<li>…..</li>
+</ul>
+<ul>
+<li>-----END CERTIFICATE-----</li>
+</ul>
+<ul>
+<li>…</li>
+</ul>
+<ul>
+<li>------------------------------------------</li>
+</ul>
+<ul>
+<li>Best Regards，</li>
+</ul>
+<ul>
+<li>Xiaojing</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查分析：</li>
+</ul>
+<ul>
+<li>Dashboard中没有客户相关报错及信息</li>
+</ul>
+<ul>
+<li>排查分析</li>
+</ul>
+<ul>
+<li>Dashboard上有操作记录，可以更精确操作时间，但是没有详细信息表明具体错误原因</li>
+</ul>
+<ul>
+<li>Dashboard中无操作失败记录</li>
+</ul>
+<ul>
+<li>Dashboard上没有创建失败记录</li>
+</ul>
+<ul>
+<li>查看jarvis ，提示证书链顺序有问题</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>subject=C = US, ST = California, L = Brea, O = &quot;DH Dental Business Services, LLC&quot;, CN = envistaco.com.cn  //leaf</li>
+</ul>
+<ul>
+<li>issuer=C = US, O = DigiCert Inc, CN = DigiCert TLS RSA SHA256 2020 CA1</li>
+</ul>
+<ul>
+<li>subject=C = US, O = DigiCert Inc, CN = DigiCert TLS RSA SHA256 2020 CA1    //intermediate 证书</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案</li>
+</ul>
+<ul>
+<li>解决方案：此次缓解方法变更了源站，使同时支持http和https回源。如果用户的加速域名启用了HTTPS，建议开启Http-&gt;Https请强制跳转，当用户使用Preload（Preload会同时发送Http和Https两种回源请求）时Azure CDN发送Http回源请求会被跳转成Https请求，避免因为源站不支持Http请求造成Preload失败。</li>
+</ul>
+<ul>
+<li>解决方案  新建一个AAD应用程序密码，然后更新至cdn管理门户配置处</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>查看<a href="https://jarvis-west.dc.ad.msft.net/28BFFB70表" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/28BFFB70表</a></li>
+</ul>
+<ul>
+<li>变更客户证书配置处回源协议为http。 注：此处是因为已确认客户源站存储支持http请求，如客户源站不支持http请求的话，可联系后台确认下是否有其它方案解决，如切换支持https回源的供应商。官方说明 <a href="https://docs.azure.cn/zh-cn/cdn/cdn-image-processing#%E9%99%90%E5%88%B6" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-image-processing#%E9%99%90%E5%88%B6</a></li>
+</ul>
+<ul>
+<li>查看<a href="https://jarvis-west.dc.ad.msft.net/28BFFB70表，看到有两条url（http和https），怀疑是不是和源站能接受的请求协议类型有关。" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/28BFFB70表，看到有两条url（http和https），怀疑是不是和源站能接受的请求协议类型有关。</a></li>
+</ul>
+<ul>
+<li>加速域名 www.envistaco.com.cn</li>
+</ul>
+<ul>
+<li>subject=C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root CA  //root 证书</li>
+</ul>
+<ul>
+<li>issuer=C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root CA</li>
+</ul>
+<ul>
+<li>解决方案：将中间证书放置中间，根证书放置最后。官方说明 <a href="https://docs.azure.cn/zh-cn/cdn/cdn-https-customer-supplied-cert#%E8%AF%81%E4%B9%A6%E8%AF%B4%E6%98%8E" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-https-customer-supplied-cert#%E8%AF%81%E4%B9%A6%E8%AF%B4%E6%98%8E</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>案例分析</p>
+<p>案例一 SR_20220701174915_更换证书，保存失败</p>
+<p>客户问题：</p>
+<p>下午好，我在Microsoft Azure CDN 管理中，先添加好了新的SSL 证书，再到域名管理中“HTTPS（客户提供证书）”，更换为新的证书，点击“保存”，会提示：保存失败。 一个或多个参数无效。 如果此问题无法修正，可以联系我们的客服人员。</p>
+<p>案例二 预加载失败</p>
+<p>问题描述：</p>
+<p>加速域名提交预加载失败</p>
+<p>案例三 SR_20220422161486_[MS-LED]cdn的证书更换问题</p>
+<p>问题描述：上传证书的时候报错</p>
+<p>案例四 SR_20220629174444_cer证书上传失败</p>
+<p>问题描述：添加证书报错，发生不可预测的错误。 如果此问题无法修正，可以联系我们的客服人员。</p>
+<p>-----------------------------------</p>
+<p>案例一 、SR_20220701174915_更换证书，保存失败</p>
+<p>需要收集的信息：</p>
+<p>订阅ID 2e98d7c3-5885-4a6d-a516-31c1569af9d7</p>
+<p>加速域名cdn.auroramall.com.cn</p>
+<p>操作的大致时间 7/1 16:00-16:20之间</p>
+<p>排查分析：</p>
+<p>Dashboard中没有客户相关报错及信息</p>
+<p>查看<a href="https://jarvis-west.dc.ad.msft.net/28BFFB70表" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/28BFFB70表</a></p>
+<p>原因分析</p>
+<p>图片加速仅支持http回源</p>
+<p>解决方案</p>
+<p>变更客户证书配置处回源协议为http。 注：此处是因为已确认客户源站存储支持http请求，如客户源站不支持http请求的话，可联系后台确认下是否有其它方案解决，如切换支持https回源的供应商。官方说明 <a href="https://docs.azure.cn/zh-cn/cdn/cdn-image-processing#%E9%99%90%E5%88%B6" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-image-processing#%E9%99%90%E5%88%B6</a></p>
+<p>类似案例  SR_20220624173563_存储帐户与 Azure CDN 集成后HTTPS无法访问，报错403</p>
+<p>需要收集的信息</p>
+<p>订阅ID  d7c01c81-b4dd-48e3-bdae-28039a7e8ffe</p>
+<p>加域域名  yang.zhenjiang.wats.xyz</p>
+<p>填写的内容</p>
+<p>报错内容 在门户上显示失败</p>
+<p>操作时间 6/30 17:43左右</p>
+<p>排查分析</p>
+<p>Dashboard上有操作记录，可以更精确操作时间，但是没有详细信息表明具体错误原因</p>
+<p>查看<a href="https://jarvis-west.dc.ad.msft.net/28BFFB70表，看到有两条url（http和https），怀疑是不是和源站能接受的请求协议类型有关。" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/28BFFB70表，看到有两条url（http和https），怀疑是不是和源站能接受的请求协议类型有关。</a></p>
+<p>原因：由于目前Azure CDN China暂时不支持分协议预加载，如果源站不支持HTTP或者HTTPS回源，均会导致Preload失败</p>
+<p>解决方案：此次缓解方法变更了源站，使同时支持http和https回源。如果用户的加速域名启用了HTTPS，建议开启Http-&gt;Https请强制跳转，当用户使用Preload（Preload会同时发送Http和Https两种回源请求）时Azure CDN发送Http回源请求会被跳转成Https请求，避免因为源站不支持Http请求造成Preload失败。</p>
+<p>信息收集：</p>
+<p>订阅ID  5f2dea78-4257-4407-9d0b-8bf7d01cea5e</p>
+<p>加速域名 ispace.uestcedu.com</p>
+<p>操作时间  4/22 09:00左右</p>
+<p>Dashboard中无操作失败记录</p>
+<p>Jarivs表显示AAD应用程序密钥过期</p>
+<p>问题原因 AAD应用程序密码过期导致无法去密钥保管库获取证书</p>
+<p>解决方案  新建一个AAD应用程序密码，然后更新至cdn管理门户配置处</p>
+<p>案例四 SR_20220602169121_无法创建证书</p>
+<p>收集信息：</p>
+<p>订阅ID 5b40b5fe-49b6-4c2b-9473-ba197644c682</p>
+<p>加速域名 www.envistaco.com.cn</p>
+<p>操作或报错时间 未知，客户提交工单6/2</p>
+<p>Dashboard上没有创建失败记录</p>
+<p>查看jarvis ，提示证书链顺序有问题</p>
+<p>问题原因：证书链顺序不正确</p>
+<p>subject=C = US, ST = California, L = Brea, O = &quot;DH Dental Business Services, LLC&quot;, CN = envistaco.com.cn  //leaf</p>
+<p>issuer=C = US, O = DigiCert Inc, CN = DigiCert TLS RSA SHA256 2020 CA1</p>
+<p>-----BEGIN CERTIFICATE-----</p>
+<p>…..</p>
+<p>-----END CERTIFICATE-----</p>
+<p>subject=C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root CA  //root 证书</p>
+<p>issuer=C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root CA</p>
+<p>subject=C = US, O = DigiCert Inc, CN = DigiCert TLS RSA SHA256 2020 CA1    //intermediate 证书</p>
+<p>…</p>
+<p>解决方案：将中间证书放置中间，根证书放置最后。官方说明 <a href="https://docs.azure.cn/zh-cn/cdn/cdn-https-customer-supplied-cert#%E8%AF%81%E4%B9%A6%E8%AF%B4%E6%98%8E" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-https-customer-supplied-cert#%E8%AF%81%E4%B9%A6%E8%AF%B4%E6%98%8E</a></p>
+<p>------------------------------------------</p>
+<p>Best Regards，</p>
+<p>Xiaojing</p></article>

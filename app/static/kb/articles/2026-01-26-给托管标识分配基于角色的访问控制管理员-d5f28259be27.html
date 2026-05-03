@@ -1,0 +1,90 @@
+<article class="kb-article" data-title="给托管标识分配基于角色的访问控制管理员"><h1>给托管标识分配基于角色的访问控制管理员</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-26 18:05:32</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>给用户分配 Assign contributor 失败 ：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>给用户分配 Assign contributor 失败 ：</li>
+</ul>
+<ul>
+<li>给用户分配 任何其他权限角色都失败 ：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>给托管标识分配基于角色的访问控制管理员</li>
+</ul>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>zuoteng</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>作为管理员，可能会收到多个请求，以授予对要委派给其他人的 Azure 资源的访问权限。 你可以为用户分配 所有者 或 用户访问管理员 角色，但这些角色是高特权角色。 本文介绍将 角色分配管理委派 给组织中的其他用户的更安全方法，但为这些角色分配添加限制。 例如，可以约束可分配的角色，或限制可向其分配角色的主体。</li>
+</ul>
+<ul>
+<li>本文测试的用户托管标识是否可以分配基于角色的访问控制管理员 ，并正常使用。</li>
+</ul>
+<ul>
+<li>创建了一个托管标识，并配置只能分配 Backup Reader and  Storage Blob Data Contributor:</li>
+</ul>
+<ul>
+<li>在azure vm使用 user MSI  登录az cli ：</li>
+</ul>
+<ul>
+<li>可以给用户成功分配 Backup Reader:</li>
+</ul>
+<ul>
+<li>In addition , use UMI miforaccess assign backup reader and Storage Blob Data Contributor  to another UMI also successful:</li>
+</ul>
+<ul>
+<li>另外一个user MSI  umi3:</li>
+</ul>
+<ul>
+<li>同样可以给托管标识成功分配 Backup Reader:</li>
+</ul>
+<ul>
+<li>同样可以给托管标识成功分配  Storage Blob Data Contributor</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/role-based-access-control/delegate-role-assignments-portal?tabs=template" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/role-based-access-control/delegate-role-assignments-portal?tabs=template</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>给托管标识分配基于角色的访问控制管理员</p>
+<p>2026/1/26</p>
+<p>Reviewer</p>
+<p>zuoteng</p>
+<p>参考文档：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/role-based-access-control/delegate-role-assignments-portal?tabs=template" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/role-based-access-control/delegate-role-assignments-portal?tabs=template</a></p>
+<p>作为管理员，可能会收到多个请求，以授予对要委派给其他人的 Azure 资源的访问权限。 你可以为用户分配 所有者 或 用户访问管理员 角色，但这些角色是高特权角色。 本文介绍将 角色分配管理委派 给组织中的其他用户的更安全方法，但为这些角色分配添加限制。 例如，可以约束可分配的角色，或限制可向其分配角色的主体。</p>
+<p>本文测试的用户托管标识是否可以分配基于角色的访问控制管理员 ，并正常使用。</p>
+<p>创建了一个托管标识，并配置只能分配 Backup Reader and  Storage Blob Data Contributor:</p>
+<p>在azure vm使用 user MSI  登录az cli ：</p>
+<p>可以给用户成功分配 Backup Reader:</p>
+<p>给用户分配 Assign contributor 失败 ：</p>
+<p>In addition , use UMI miforaccess assign backup reader and Storage Blob Data Contributor  to another UMI also successful:</p>
+<p>另外一个user MSI  umi3:</p>
+<p>同样可以给托管标识成功分配 Backup Reader:</p>
+<p>同样可以给托管标识成功分配  Storage Blob Data Contributor</p>
+<p>给用户分配 任何其他权限角色都失败 ：</p></article>

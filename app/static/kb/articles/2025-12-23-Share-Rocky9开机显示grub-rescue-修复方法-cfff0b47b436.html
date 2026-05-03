@@ -1,0 +1,144 @@
+<article class="kb-article" data-title="【Share】Rocky9开机显示grub rescue，修复方法"><h1>【Share】Rocky9开机显示grub rescue，修复方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-23 17:42:33</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>虚拟机启动后显示如下，无法SSH连接。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>虚拟机启动后显示如下，无法SSH连接。</li>
+</ul>
+<ul>
+<li>error: ../../grub-core/fs/fshelp.c:258:file &#39;/grub2/i386-pc/normal.mod&#39; not found.</li>
+</ul>
+<ul>
+<li>报错显示无法找到“/grub2/i386-pc/normal.mod”，因此需要先找到正确的路径。</li>
+</ul>
+<ul>
+<li>同时再找到报错中的/grub2/i386-pc/normal.mod的路径：boot/grub2/i386-pc/normal.mod</li>
+</ul>
+<ul>
+<li>参考工单：SR_20251203385311_服务器无法启动</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>Zuo Teng</li>
+</ul>
+<ul>
+<li>##问题</li>
+</ul>
+<ul>
+<li>Entering rescue mode...</li>
+</ul>
+<ul>
+<li>grub rescue&gt;</li>
+</ul>
+<ul>
+<li>##背景</li>
+</ul>
+<ul>
+<li>操作系统为Rocky Linux 9</li>
+</ul>
+<ul>
+<li>注意：在操作前，请对磁盘做快照进行备份</li>
+</ul>
+<ul>
+<li>可以看到数据都放在（hd0,msdos2)</li>
+</ul>
+<ul>
+<li>由于变量prefix和gurb2的实际路径不符，因此需要通过set设置新的变量，进入到grub。</li>
+</ul>
+<ul>
+<li>grub rescue&gt; set prefix=(hd0,msdos2)/boot/grub2</li>
+</ul>
+<ul>
+<li>grub rescue&gt; insmod normal</li>
+</ul>
+<ul>
+<li>grub rescue&gt; normal</li>
+</ul>
+<ul>
+<li>进入grub后，可以使用tab键进行补全。手动引导进入系统，注意要写完整路径。</li>
+</ul>
+<ul>
+<li>Rocky9中默认设置是让 GRUB 使用 BLS（引导加载程序规范）。在 BLS 中，菜单项不在 grub.cfg 中，而是作为单独的文件存在/boot/loader/entries/。</li>
+</ul>
+<ul>
+<li>boot没有单独分区，在boot/loader/entries路径下找到相应内核的配置文件，找到配置文件后在内核路径位置补充/boot</li>
+</ul>
+<ul>
+<li>重新生成配置文件</li>
+</ul>
+<ul>
+<li>grub2-mkconfig -o /boot/grub2/grub.cfg</li>
+</ul>
+<ul>
+<li>这样就可以启动成功了。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>##排查思路</li>
+</ul>
+<ul>
+<li>输入set，查看当前的变量</li>
+</ul>
+<ul>
+<li>其中,UUID可以在如下位置查看</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>输入ls命令，找到boot/</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>启动路径可以通过Tab键补齐。</li>
+</ul>
+<ul>
+<li>建议在测试环境中充分测试并用于生产环境。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/23</p>
+<p>Reviewer</p>
+<p>Zuo Teng</p>
+<p>##问题</p>
+<p>虚拟机启动后显示如下，无法SSH连接。</p>
+<p>error: ../../grub-core/fs/fshelp.c:258:file &#39;/grub2/i386-pc/normal.mod&#39; not found.</p>
+<p>Entering rescue mode...</p>
+<p>grub rescue&gt;</p>
+<p>##背景</p>
+<p>操作系统为Rocky Linux 9</p>
+<p>##排查思路</p>
+<p>报错显示无法找到“/grub2/i386-pc/normal.mod”，因此需要先找到正确的路径。</p>
+<p>注意：在操作前，请对磁盘做快照进行备份</p>
+<p>输入set，查看当前的变量</p>
+<p>输入ls命令，找到boot/</p>
+<p>可以看到数据都放在（hd0,msdos2)</p>
+<p>同时再找到报错中的/grub2/i386-pc/normal.mod的路径：boot/grub2/i386-pc/normal.mod</p>
+<p>由于变量prefix和gurb2的实际路径不符，因此需要通过set设置新的变量，进入到grub。</p>
+<p>grub rescue&gt; set prefix=(hd0,msdos2)/boot/grub2</p>
+<p>grub rescue&gt; insmod normal</p>
+<p>grub rescue&gt; normal</p>
+<p>进入grub后，可以使用tab键进行补全。手动引导进入系统，注意要写完整路径。</p>
+<p>其中,UUID可以在如下位置查看</p>
+<p>启动路径可以通过Tab键补齐。</p>
+<p>Rocky9中默认设置是让 GRUB 使用 BLS（引导加载程序规范）。在 BLS 中，菜单项不在 grub.cfg 中，而是作为单独的文件存在/boot/loader/entries/。</p>
+<p>boot没有单独分区，在boot/loader/entries路径下找到相应内核的配置文件，找到配置文件后在内核路径位置补充/boot</p>
+<p>重新生成配置文件</p>
+<p>grub2-mkconfig -o /boot/grub2/grub.cfg</p>
+<p>这样就可以启动成功了。</p>
+<p>建议在测试环境中充分测试并用于生产环境。</p>
+<p>参考工单：SR_20251203385311_服务器无法启动</p></article>

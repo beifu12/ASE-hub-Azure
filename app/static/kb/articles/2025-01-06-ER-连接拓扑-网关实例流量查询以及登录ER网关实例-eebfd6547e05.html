@@ -1,0 +1,761 @@
+<article class="kb-article" data-title="ER 连接拓扑、网关实例流量查询以及登录ER网关实例"><h1>ER 连接拓扑、网关实例流量查询以及登录ER网关实例</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2025-01-06 16:13:45</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>ARP type: ARPA, ARP Timeout 04:00:00</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>ARP type: ARPA, ARP Timeout 04:00:00</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2018年9月27日</li>
+</ul>
+<ul>
+<li>ER连接的架构如下图所示，ER网关有两个实例，均会转发流量</li>
+</ul>
+<ul>
+<li>ER网关与MSEE之间建立的BGP邻居地址为ER网关的内网IP地址。（Add by Zhanglihe）</li>
+</ul>
+<ul>
+<li>从客户的Dump circuit 信息中，可以获得MSEE和客户边缘设备以及ER网关连接的地址：</li>
+</ul>
+<ul>
+<li>Dump circuit information output :</li>
+</ul>
+<ul>
+<li>================================================================================================</li>
+</ul>
+<ul>
+<li>SUBSCRIPTION ID: 85e86fb6-e71d-4c3a-8e21-4064dd283e0a</li>
+</ul>
+<ul>
+<li>SERVICE KEY: 86bdeb36-4458-4f7d-a946-42924ade28fa</li>
+</ul>
+<ul>
+<li>CIRCUIT NAME: Expressroute-FWD</li>
+</ul>
+<ul>
+<li>CIRCUIT LOCATION: Shanghai</li>
+</ul>
+<ul>
+<li>GATEWAY MANAGER REGION: Global</li>
+</ul>
+<ul>
+<li>GATEWAY MANAGER REGION MONIKER: Global</li>
+</ul>
+<ul>
+<li>BANDWIDTH: 50</li>
+</ul>
+<ul>
+<li>BILLING TYPE: MeteredData</li>
+</ul>
+<ul>
+<li>ALLOW GLOBAL REACH: False</li>
+</ul>
+<ul>
+<li>PRIMARY DEVICE: sha03-06gmr-cis-1</li>
+</ul>
+<ul>
+<li>SECONDARY DEVICE: sha03-06gmr-cis-2</li>
+</ul>
+<ul>
+<li>SERVICE PROVIDER: Shanghai Telecom Ethernet</li>
+</ul>
+<ul>
+<li>SERVICE PROVIDER TAG(STAG): 42</li>
+</ul>
+<ul>
+<li>PROVISIONING STATE: Provisioned</li>
+</ul>
+<ul>
+<li>CIRCUIT CREATION TIME (UTC): 09/13/2018 07:57:26</li>
+</ul>
+<ul>
+<li>O365 SERVICES AUTHORIZED: False</li>
+</ul>
+<ul>
+<li>AUTHORIZATIONS: 0, USED: 0</li>
+</ul>
+<ul>
+<li>------------------------------------------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>VRF NAME: af73caa8bdfb41e59328c81a2bb20b2d, TYPE: Private</li>
+</ul>
+<ul>
+<li>PEER CREATION TIME (UTC): 09/16/2018 02:38:55</li>
+</ul>
+<ul>
+<li>PEER ASN: 65500</li>
+</ul>
+<ul>
+<li>IPv4: True, IPv6: False</li>
+</ul>
+<ul>
+<li>PEER IP: 10.22.2.241 , SUBNET: 10.22.2.240/30  //客户侧边缘设备的地址</li>
+</ul>
+<ul>
+<li>VLAN ID(CTAG): 1001</li>
+</ul>
+<ul>
+<li>DEVICE NAME: sha03-06gmr-cis-1 PA: 10.203.128.1</li>
+</ul>
+<ul>
+<li>PORT NAME: TenGigabitEthernet0/1/0, BW: 10000</li>
+</ul>
+<ul>
+<li>SUBINTERFACE NAME: TenGigabitEthernet0/1/0.421001, IP: 10.22.2.242 IPv6:</li>
+</ul>
+<ul>
+<li>TUNNEL NAME: tunnel1107200 IP: 10.22.227.132 KEY(MSEE): 4325 KEY(VFP): 4325 KEY(RNM): 2147487973 VNET NAME: FWDVN VNET ID: 6de13252-d47e-4042-abff-36a450c50513 ENCAP TYPE: Vxlan GWID: 80c19e65-2e43-42bc-8dd2-5559ccb07735 DIRECT TUNNEL: False   //MSEE与ER网关连接的接口地址</li>
+</ul>
+<ul>
+<li>VRF NAME: a29c32ed5b1b42858113db4a141af1c0, TYPE: Private</li>
+</ul>
+<ul>
+<li>PEER IP: 10.22.2.245 , SUBNET: 10.22.2.244/30</li>
+</ul>
+<ul>
+<li>DEVICE NAME: sha03-06gmr-cis-2 PA: 10.203.128.2</li>
+</ul>
+<ul>
+<li>SUBINTERFACE NAME: TenGigabitEthernet0/1/0.421001, IP: 10.22.2.246 IPv6:</li>
+</ul>
+<ul>
+<li>TUNNEL NAME: tunnel1107200 IP: 10.22.227.133 KEY(MSEE): 4325 KEY(VFP): 4325 KEY(RNM): 2147487973 VNET NAME: FWDVN VNET ID: 6de13252-d47e-4042-abff-36a450c50513 ENCAP TYPE: Vxlan GWID: 80c19e65-2e43-42bc-8dd2-5559ccb07735 DIRECT TUNNEL: False</li>
+</ul>
+<ul>
+<li>CustomerSubscriptionId: 85e86fb6-e71d-4c3a-8e21-4064dd283e0a</li>
+</ul>
+<ul>
+<li>---------------------------------------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>GatewayId: 80c19e65-2e43-42bc-8dd2-5559ccb07735</li>
+</ul>
+<ul>
+<li>GatewayName: ExpressroutGateway-FWD</li>
+</ul>
+<ul>
+<li>State: Provisioned</li>
+</ul>
+<ul>
+<li>VnetId: 6de13252-d47e-4042-abff-36a450c50513</li>
+</ul>
+<ul>
+<li>DeploymentId: dded90d48040415d801a4240e488492c</li>
+</ul>
+<ul>
+<li>Location: chinaeast</li>
+</ul>
+<ul>
+<li>GatewayType: Dedicated</li>
+</ul>
+<ul>
+<li>GatewaySize: Standard</li>
+</ul>
+<ul>
+<li>VIPAddress: 42.159.157.10</li>
+</ul>
+<ul>
+<li>LastEvent.Id: 23005</li>
+</ul>
+<ul>
+<li>LastEvent.Message: Successfully configured the gateway.</li>
+</ul>
+<ul>
+<li>LastEvent.Timestamp: 9/16/2018 8:17:30 AM</li>
+</ul>
+<ul>
+<li>登录JumpBox,结合部署ID和cluster信息，可以获得ER Gateway的Container和NodeID等信息</li>
+</ul>
+<ul>
+<li>PS D:\WalsLatestTools\rdtools\rd_cmt_stable.991231-0001\FcShell&gt;</li>
+</ul>
+<ul>
+<li>PS D:\WalsLatestTools\rdtools\rd_cmt_stable.991231-0001\FcShell&gt; $t=Get-Tenant -TenantName dded90d48040415d801a4240e488492c -Fabric $f</li>
+</ul>
+<ul>
+<li>Name                           RoleName                  State                TenantName</li>
+</ul>
+<ul>
+<li>----                           --------                  -----                ----------</li>
+</ul>
+<ul>
+<li>GatewayTenantWorker_IN_0       GatewayTenantWorker       RoleStateStarted     dded90d48040415d801a4240e488492c</li>
+</ul>
+<ul>
+<li>GatewayTenantWorker_IN_1       GatewayTenantWorker       RoleStateStarted     dded90d48040415d801a4240e488492c</li>
+</ul>
+<ul>
+<li>PS D:\WalsLatestTools\rdtools\rd_cmt_stable.991231-0001\FcShell&gt; $t.RoleInstances[0].Container</li>
+</ul>
+<ul>
+<li>Id                                    State                   LifecycleState          IPAddress         Node.Id</li>
+</ul>
+<ul>
+<li>--                                    -----                   --------------          ---------         -------</li>
+</ul>
+<ul>
+<li>dce4d555-19a0-4c12-a2c7-b4bdffc56980  ContainerStateStarted   Alive                   10.207.160.108    05707517-0000-0000-0000-008cfa50ac3a</li>
+</ul>
+<ul>
+<li>PS D:\WalsLatestTools\rdtools\rd_cmt_stable.991231-0001\FcShell&gt; $t.RoleInstances[1].Container</li>
+</ul>
+<ul>
+<li>61d99898-00bb-4ef8-aaf5-f666908e8310  ContainerStateStarted   Alive                   10.207.152.124    05711452-0000-0000-0000-008cfa50cf96</li>
+</ul>
+<ul>
+<li>获得Cluster 、Node、Container等信息之后，我们可以做两个事情：</li>
+</ul>
+<ul>
+<li>2、可以在Jit中申请登录gateway,填写Cluster 、Node、Container即可。</li>
+</ul>
+<ul>
+<li>实例0的地址信息：</li>
+</ul>
+<ul>
+<li>实例1的地址信息：</li>
+</ul>
+<ul>
+<li>在实例上，我们可以ping MSEE设备</li>
+</ul>
+<ul>
+<li>从这部分可以看出网关与MSEE之间的延迟很小，可以协助判断当专线出问题时，是否是ER网关与MSEE之间的问题。这一点也可以让网络组从MSEE上ping ER网关实例。</li>
+</ul>
+<ul>
+<li>ping实例0</li>
+</ul>
+<ul>
+<li>PS:这个要取决于客户宣告的路由，如果客户宣告了peer网段的ip，或者客户宣告的大网段包含了peer的ip，则可以ping通peer</li>
+</ul>
+<ul>
+<li>Routing info output :</li>
+</ul>
+<ul>
+<li>Routing Info For: CustomerSubscriptionId:85e86fb6-e71d-4c3a-8e21-4064dd283e0a, CircuitId:86bdeb36-4458-4f7d-a946-42924ade28fa, VrfName:af73caa8bdfb41e59328c81a2bb20b2d, VrfType:Private, DeviceName:sha03-06gmr-cis-1, VnetIds:6de13252-d47e-4042-abff-36a450c50513, SubInterfaceName:TenGigabitEthernet0/1/0.421001, BgpNeighborPeer:, BgpAzureNeighborPeer:, BgpNeighborPeerIpv6:, BgpAzureNeighborPeerIpv6:, AccessGroupName:, AccessGroupNamev6:, ProviderSubscriptionId:c9fe3ad9-c916-4b98-9d58-e67875955fbb</li>
+</ul>
+<ul>
+<li>Device Global Routing Info:</li>
+</ul>
+<ul>
+<li>i. NAT IP range:</li>
+</ul>
+<ul>
+<li>PartitionKey: &quot;0&quot;, RowKey: &quot;139.219.18.0_24&quot;, DeviceName: &quot;sha03-06gmr-cis-1&quot;, Subnet: &quot;139.219.18.0/24&quot;, AllocatedIps: &quot;139.219.18.0:Reserved0,139.219.18.255:Reserved1,139.219.18.1:2046516c-3d23-48c9-9413-8f58c6b82984,139.219.18.2:edc8c254-d461-4eba-8cd0-bd3ab6280862,139.219.18.5:764c6b3b-5cce-4f45-bcd9-6303964b4f52,139.219.18.6:63eff9c5-c246-481a-9735-6564ef23db14,139.219.18.7:e8e8a06f-02f0-4868-9442-32d379d9f710,139.219.18.8:9954a1c0-3802-4ca3-b2ff-8cba963c34fd,139.219.18.9:95ebd70b-e623-4dda-9977-1f8fe46b50c7,139.219.18.10:456a7e74-7622-440a-bbf5-afa3d2ffead2,139.219.18.12:a2af054f-c932-4dcc-baf9-a26612e260f8,139.219.18.13:72817877-bf9a-4a27-a6e2-dde479f63cdb,139.219.18.14:8634bc74-ec7a-46e5-9c71-1b0875e783fc,139.219.18.15:182de282-5ce3-4d8d-8ac4-7f80434a30a9,139.219.18.16:fafe43c6-f335-410f-9c64-caaf5a25119c,139.219.18.17:60c8fe87-d373-4c81-b31e-06b8f4e3b878,139.219.18.18:50ac3171-4aa8-446b-ac3a-9ca01234d5c5,139.219.18.19:4a62f8b1-897c-4b0b-94fc-ee2642902d33,139.219.18.3:0fec9a32-5eef-4be9-8c75-af24f3668d89,139.219.18.4:7a95c662-6196-4da5-952d-ca9f5ea180d8,139.219.18.11:5d4e80ff-806c-4d79-82c3-9c5549932c23,139.219.18.20:12c589c0-c471-4d7b-9900-344c9ac7a6e3&quot;, FreeCount: 234, NatIpBlockState: &quot;Valid&quot;, Region: &quot;China East&quot;, _rtable_BatchId: 00000000-0000-0000-0000-000000000000, _rtable_LockAcquisition: 9/26/2018 10:00:49 AM, _rtable_Operation: &quot;Replace&quot;, _rtable_RowLock: False, _rtable_Tombstone: False, _rtable_Version: 39, _rtable_ViewId: 6</li>
+</ul>
+<ul>
+<li>VRFs Routing Info:</li>
+</ul>
+<ul>
+<li>i. BGP Info:</li>
+</ul>
+<ul>
+<li>BGP router identifier 139.219.148.1, local AS number 12076</li>
+</ul>
+<ul>
+<li>BGP table version is 3353541, main routing table version 3353541</li>
+</ul>
+<ul>
+<li>26 network entries using 6656 bytes of memory</li>
+</ul>
+<ul>
+<li>34 path entries using 4624 bytes of memory</li>
+</ul>
+<ul>
+<li>949/631 BGP path/bestpath attribute entries using 273312 bytes of memory</li>
+</ul>
+<ul>
+<li>389 BGP AS-PATH entries using 21250 bytes of memory</li>
+</ul>
+<ul>
+<li>13 BGP community entries using 376 bytes of memory</li>
+</ul>
+<ul>
+<li>192 BGP extended community entries using 24946 bytes of memory</li>
+</ul>
+<ul>
+<li>0 BGP route-map cache entries using 0 bytes of memory</li>
+</ul>
+<ul>
+<li>0 BGP filter-list cache entries using 0 bytes of memory</li>
+</ul>
+<ul>
+<li>BGP using 331164 total bytes of memory</li>
+</ul>
+<ul>
+<li>BGP activity 923454/913127 prefixes, 1139090/1128549 paths, scan interval 60 secs</li>
+</ul>
+<ul>
+<li>Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd</li>
+</ul>
+<ul>
+<li>10.22.2.241     4        65500     703     707  3353541    0    0 02:25:02       18</li>
+</ul>
+<ul>
+<li>10.22.227.140   4        65515    6806    6567  3353541    0    0 4d03h           8</li>
+</ul>
+<ul>
+<li>10.22.227.141   4        65515    6815    6570  3353541    0    0 4d03h           8</li>
+</ul>
+<ul>
+<li>Routing Table: af73caa8bdfb41e59328c81a2bb20b2d</li>
+</ul>
+<ul>
+<li>Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP</li>
+</ul>
+<ul>
+<li>D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area</li>
+</ul>
+<ul>
+<li>N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2</li>
+</ul>
+<ul>
+<li>E1 - OSPF external type 1, E2 - OSPF external type 2</li>
+</ul>
+<ul>
+<li>i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2</li>
+</ul>
+<ul>
+<li>ia - IS-IS inter area, * - candidate default, U - per-user static route</li>
+</ul>
+<ul>
+<li>o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP</li>
+</ul>
+<ul>
+<li>a - application route</li>
+</ul>
+<ul>
+<li>+ - replicated route, % - next hop override, p - overrides from PfR</li>
+</ul>
+<ul>
+<li>Gateway of last resort is 10.22.2.241 to network 0.0.0.0</li>
+</ul>
+<ul>
+<li>B*    0.0.0.0/0 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>10.0.0.0/8 is variably subnetted, 28 subnets, 8 masks</li>
+</ul>
+<ul>
+<li>B        10.10.0.0/16 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>C        10.22.2.240/30 is directly connected, TenGigabitEthernet0/1/0.421001</li>
+</ul>
+<ul>
+<li>L        10.22.2.242/32 is directly connected, TenGigabitEthernet0/1/0.421001</li>
+</ul>
+<ul>
+<li>B        10.22.12.0/23 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.14.0/23 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.16.0/22 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.20.0/22 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.24.0/21 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.32.0/21 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.40.0/22 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.44.0/22 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.48.0/22 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.52.0/24 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.76.0/23 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.78.0/23 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.80.0/24 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.81.0/24 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.82.0/24 [20/0] via 10.22.2.241, 02:25:03</li>
+</ul>
+<ul>
+<li>B        10.22.224.0/24 [20/0] via 10.22.227.140, 4d03h</li>
+</ul>
+<ul>
+<li>B        10.22.225.0/24 [20/0] via 10.22.227.140, 4d03h</li>
+</ul>
+<ul>
+<li>B        10.22.226.0/24 [20/0] via 10.22.227.140, 4d03h</li>
+</ul>
+<ul>
+<li>B        10.22.227.0/24 [20/0] via 10.22.227.140, 4d03h</li>
+</ul>
+<ul>
+<li>C        10.22.227.128/27 is directly connected, Tunnel1107200</li>
+</ul>
+<ul>
+<li>L        10.22.227.132/32 is directly connected, Tunnel1107200</li>
+</ul>
+<ul>
+<li>B        10.22.228.0/24 [20/0] via 10.22.227.140, 4d03h</li>
+</ul>
+<ul>
+<li>B        10.22.229.0/24 [20/0] via 10.22.227.140, 4d03h</li>
+</ul>
+<ul>
+<li>B        10.22.242.0/24 [20/0] via 10.22.227.140, 4d03h</li>
+</ul>
+<ul>
+<li>B        10.22.243.0/24 [20/0] via 10.22.227.140, 4d03h</li>
+</ul>
+<ul>
+<li>ii. GetBgpPeering Info:</li>
+</ul>
+<ul>
+<li>BgpPeering for circuit: 86bdeb36-4458-4f7d-a946-42924ade28fa</li>
+</ul>
+<ul>
+<li>AzureAsn: 12076</li>
+</ul>
+<ul>
+<li>PeerAsn: 65500</li>
+</ul>
+<ul>
+<li>PeeringType: Private</li>
+</ul>
+<ul>
+<li>PrimaryAzurePort: STEXP-SHA03-06GMR-CIS-1-PRI-A</li>
+</ul>
+<ul>
+<li>PrimaryPeerSubnet: 10.22.2.240/30</li>
+</ul>
+<ul>
+<li>PrimaryPeerSubnetIpv6:</li>
+</ul>
+<ul>
+<li>SecondaryAzurePort: STEXP-SHA03-06GMR-CIS-2-SEC-A</li>
+</ul>
+<ul>
+<li>SecondaryPeerSubnet: 10.22.2.244/30</li>
+</ul>
+<ul>
+<li>SecondaryPeerSubnetIpv6:</li>
+</ul>
+<ul>
+<li>VlanId: 1001</li>
+</ul>
+<ul>
+<li>iii. NAT IP Info:</li>
+</ul>
+<ul>
+<li>NAT IP info supported only for public Vrf.</li>
+</ul>
+<ul>
+<li>iv. ARP Info:</li>
+</ul>
+<ul>
+<li>Internet  10.22.2.241           145   247e.1261.7460  ARPA   TenGigabitEthernet0/1/0.421001</li>
+</ul>
+<ul>
+<li>Internet  10.22.2.242             -   84b8.0284.3810  ARPA   TenGigabitEthernet0/1/0.421001</li>
+</ul>
+<ul>
+<li>v. Subinterface Info:</li>
+</ul>
+<ul>
+<li>Hardware is SPA-1X10GE-L-V2, address is 84b8.0284.3810 (bia 84b8.0284.3810)</li>
+</ul>
+<ul>
+<li>Description: MSEE to service provider 1001 link</li>
+</ul>
+<ul>
+<li>Internet address is 10.22.2.242/30</li>
+</ul>
+<ul>
+<li>MTU 1500 bytes, BW 10000000 Kbit/sec, DLY 10 usec,</li>
+</ul>
+<ul>
+<li>reliability 255/255, txload 1/255, rxload 2/255</li>
+</ul>
+<ul>
+<li>Encapsulation QinQ Virtual LAN, outer ID  42, inner ID 1001</li>
+</ul>
+<ul>
+<li>Keepalive not supported</li>
+</ul>
+<ul>
+<li>Last clearing of &quot;show interface&quot; counters never</li>
+</ul>
+<ul>
+<li>vi. Subinterface Access group Info:</li>
+</ul>
+<ul>
+<li>There is no access group info for this peering subinterface.</li>
+</ul>
+<ul>
+<li>-----------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>$f=Get-Fabric -CloudName sh2prdapp01</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>从Jarvis查到list  ER gateway的信息如下:</li>
+</ul>
+<ul>
+<li>从Jarvis 的Get Gateway信息中可以获得ER网关所在的Cluster</li>
+</ul>
+<ul>
+<li>1、根据Container信息查询实例的流量，使用VFPDash board</li>
+</ul>
+<ul>
+<li>登录之后，可以查看网关的信息，有两个实例，实例0和实例1，</li>
+</ul>
+<ul>
+<li>查看路由信息，ER网关是无法获得MSEE与客户边缘设备的BGP Peer地址的，也就是ER网关无法直接ping客户边缘设备</li>
+</ul>
+<ul>
+<li>注：关于ER网关实例的IP等信息，也可以从Jarvis Dump  routing信息获取</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>ping 10.22.227.133 -S 10.22.227.141 -n 100。</li>
+</ul>
+<ul>
+<li>Ping MSEE1</li>
+</ul>
+<ul>
+<li>Ping MSEE2</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>CIRCUIT SKU: Standard</li>
+</ul>
+<ul>
+<li>Protocol  Address          Age (min)  Hardware Addr   Type   Interface</li>
+</ul>
+<ul>
+<li>TenGigabitEthernet0/1/0.421001 is up, line protocol is up</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>CIRCUIT STATE: Enabled</li>
+</ul>
+<ul>
+<li>State: Enabled</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>NRP RESOURCE URI: <a href="https://chinaeast.network.chinacloudapi.cn/subscriptions/85e86fb6-e71d-4c3a-8e21-4064dd283e0a/resourceGroups/ERInfra/providers/Microsoft.Network/expressRouteCircuits/Expressroute-FWD" target="_blank" rel="noopener">https://chinaeast.network.chinacloudapi.cn/subscriptions/85e86fb6-e71d-4c3a-8e21-4064dd283e0a/resourceGroups/ERInfra/providers/Microsoft.Network/expressRouteCircuits/Expressroute-FWD</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/B98FA518?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;Cluster&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ContainerId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;22bade82-5d66-4d7e-a358-2cdbebebd223&quot;},{&quot;query&quot;:&quot;//*[id=&#39;MacAddress&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;NodeId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;VNetId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;VFPMDMMC&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/B98FA518?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;Cluster&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ContainerId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;22bade82-5d66-4d7e-a358-2cdbebebd223&quot;},{&quot;query&quot;:&quot;//*[id=&#39;MacAddress&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;NodeId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;VNetId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;VFPMDMMC&quot;}]%20</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2018年9月27日</p>
+<p>ER连接的架构如下图所示，ER网关有两个实例，均会转发流量</p>
+<p>ER网关与MSEE之间建立的BGP邻居地址为ER网关的内网IP地址。（Add by Zhanglihe）</p>
+<p>从客户的Dump circuit 信息中，可以获得MSEE和客户边缘设备以及ER网关连接的地址：</p>
+<p>Dump circuit information output :</p>
+<p>================================================================================================</p>
+<p>SUBSCRIPTION ID: 85e86fb6-e71d-4c3a-8e21-4064dd283e0a</p>
+<p>SERVICE KEY: 86bdeb36-4458-4f7d-a946-42924ade28fa</p>
+<p>CIRCUIT NAME: Expressroute-FWD</p>
+<p>CIRCUIT LOCATION: Shanghai</p>
+<p>GATEWAY MANAGER REGION: Global</p>
+<p>GATEWAY MANAGER REGION MONIKER: Global</p>
+<p>CIRCUIT SKU: Standard</p>
+<p>BANDWIDTH: 50</p>
+<p>BILLING TYPE: MeteredData</p>
+<p>ALLOW GLOBAL REACH: False</p>
+<p>PRIMARY DEVICE: sha03-06gmr-cis-1</p>
+<p>SECONDARY DEVICE: sha03-06gmr-cis-2</p>
+<p>SERVICE PROVIDER: Shanghai Telecom Ethernet</p>
+<p>SERVICE PROVIDER TAG(STAG): 42</p>
+<p>PROVISIONING STATE: Provisioned</p>
+<p>CIRCUIT STATE: Enabled</p>
+<p>NRP RESOURCE URI: <a href="https://chinaeast.network.chinacloudapi.cn/subscriptions/85e86fb6-e71d-4c3a-8e21-4064dd283e0a/resourceGroups/ERInfra/providers/Microsoft.Network/expressRouteCircuits/Expressroute-FWD" target="_blank" rel="noopener">https://chinaeast.network.chinacloudapi.cn/subscriptions/85e86fb6-e71d-4c3a-8e21-4064dd283e0a/resourceGroups/ERInfra/providers/Microsoft.Network/expressRouteCircuits/Expressroute-FWD</a></p>
+<p>CIRCUIT CREATION TIME (UTC): 09/13/2018 07:57:26</p>
+<p>O365 SERVICES AUTHORIZED: False</p>
+<p>AUTHORIZATIONS: 0, USED: 0</p>
+<p>------------------------------------------------------------------------------------------------</p>
+<p>VRF NAME: af73caa8bdfb41e59328c81a2bb20b2d, TYPE: Private</p>
+<p>PEER CREATION TIME (UTC): 09/16/2018 02:38:55</p>
+<p>PEER ASN: 65500</p>
+<p>IPv4: True, IPv6: False</p>
+<p>PEER IP: 10.22.2.241 , SUBNET: 10.22.2.240/30  //客户侧边缘设备的地址</p>
+<p>VLAN ID(CTAG): 1001</p>
+<p>DEVICE NAME: sha03-06gmr-cis-1 PA: 10.203.128.1</p>
+<p>PORT NAME: TenGigabitEthernet0/1/0, BW: 10000</p>
+<p>SUBINTERFACE NAME: TenGigabitEthernet0/1/0.421001, IP: 10.22.2.242 IPv6:</p>
+<p>TUNNEL NAME: tunnel1107200 IP: 10.22.227.132 KEY(MSEE): 4325 KEY(VFP): 4325 KEY(RNM): 2147487973 VNET NAME: FWDVN VNET ID: 6de13252-d47e-4042-abff-36a450c50513 ENCAP TYPE: Vxlan GWID: 80c19e65-2e43-42bc-8dd2-5559ccb07735 DIRECT TUNNEL: False   //MSEE与ER网关连接的接口地址</p>
+<p>VRF NAME: a29c32ed5b1b42858113db4a141af1c0, TYPE: Private</p>
+<p>PEER IP: 10.22.2.245 , SUBNET: 10.22.2.244/30</p>
+<p>DEVICE NAME: sha03-06gmr-cis-2 PA: 10.203.128.2</p>
+<p>SUBINTERFACE NAME: TenGigabitEthernet0/1/0.421001, IP: 10.22.2.246 IPv6:</p>
+<p>TUNNEL NAME: tunnel1107200 IP: 10.22.227.133 KEY(MSEE): 4325 KEY(VFP): 4325 KEY(RNM): 2147487973 VNET NAME: FWDVN VNET ID: 6de13252-d47e-4042-abff-36a450c50513 ENCAP TYPE: Vxlan GWID: 80c19e65-2e43-42bc-8dd2-5559ccb07735 DIRECT TUNNEL: False</p>
+<p>从Jarvis查到list  ER gateway的信息如下:</p>
+<p>CustomerSubscriptionId: 85e86fb6-e71d-4c3a-8e21-4064dd283e0a</p>
+<p>---------------------------------------------------------------------------------------------</p>
+<p>GatewayId: 80c19e65-2e43-42bc-8dd2-5559ccb07735</p>
+<p>GatewayName: ExpressroutGateway-FWD</p>
+<p>State: Provisioned</p>
+<p>VnetId: 6de13252-d47e-4042-abff-36a450c50513</p>
+<p>DeploymentId: dded90d48040415d801a4240e488492c</p>
+<p>Location: chinaeast</p>
+<p>GatewayType: Dedicated</p>
+<p>GatewaySize: Standard</p>
+<p>VIPAddress: 42.159.157.10</p>
+<p>LastEvent.Id: 23005</p>
+<p>LastEvent.Message: Successfully configured the gateway.</p>
+<p>LastEvent.Timestamp: 9/16/2018 8:17:30 AM</p>
+<p>从Jarvis 的Get Gateway信息中可以获得ER网关所在的Cluster</p>
+<p>登录JumpBox,结合部署ID和cluster信息，可以获得ER Gateway的Container和NodeID等信息</p>
+<p>PS D:\WalsLatestTools\rdtools\rd_cmt_stable.991231-0001\FcShell&gt;</p>
+<p>PS D:\WalsLatestTools\rdtools\rd_cmt_stable.991231-0001\FcShell&gt; $t=Get-Tenant -TenantName dded90d48040415d801a4240e488492c -Fabric $f</p>
+<p>Name                           RoleName                  State                TenantName</p>
+<p>----                           --------                  -----                ----------</p>
+<p>GatewayTenantWorker_IN_0       GatewayTenantWorker       RoleStateStarted     dded90d48040415d801a4240e488492c</p>
+<p>GatewayTenantWorker_IN_1       GatewayTenantWorker       RoleStateStarted     dded90d48040415d801a4240e488492c</p>
+<p>PS D:\WalsLatestTools\rdtools\rd_cmt_stable.991231-0001\FcShell&gt; $t.RoleInstances[0].Container</p>
+<p>Id                                    State                   LifecycleState          IPAddress         Node.Id</p>
+<p>--                                    -----                   --------------          ---------         -------</p>
+<p>dce4d555-19a0-4c12-a2c7-b4bdffc56980  ContainerStateStarted   Alive                   10.207.160.108    05707517-0000-0000-0000-008cfa50ac3a</p>
+<p>PS D:\WalsLatestTools\rdtools\rd_cmt_stable.991231-0001\FcShell&gt; $t.RoleInstances[1].Container</p>
+<p>61d99898-00bb-4ef8-aaf5-f666908e8310  ContainerStateStarted   Alive                   10.207.152.124    05711452-0000-0000-0000-008cfa50cf96</p>
+<p>获得Cluster 、Node、Container等信息之后，我们可以做两个事情：</p>
+<p>1、根据Container信息查询实例的流量，使用VFPDash board</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/B98FA518?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;Cluster&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ContainerId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;22bade82-5d66-4d7e-a358-2cdbebebd223&quot;},{&quot;query&quot;:&quot;//*[id=&#39;MacAddress&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;NodeId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;VNetId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;VFPMDMMC&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/B98FA518?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;Cluster&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ContainerId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;22bade82-5d66-4d7e-a358-2cdbebebd223&quot;},{&quot;query&quot;:&quot;//*[id=&#39;MacAddress&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;NodeId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;VNetId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;VFPMDMMC&quot;}]%20</a></p>
+<p>2、可以在Jit中申请登录gateway,填写Cluster 、Node、Container即可。</p>
+<p>登录之后，可以查看网关的信息，有两个实例，实例0和实例1，</p>
+<p>实例0的地址信息：</p>
+<p>实例1的地址信息：</p>
+<p>在实例上，我们可以ping MSEE设备</p>
+<p>ping 10.22.227.133 -S 10.22.227.141 -n 100。</p>
+<p>从这部分可以看出网关与MSEE之间的延迟很小，可以协助判断当专线出问题时，是否是ER网关与MSEE之间的问题。这一点也可以让网络组从MSEE上ping ER网关实例。</p>
+<p>Ping MSEE1</p>
+<p>Ping MSEE2</p>
+<p>ping实例0</p>
+<p>查看路由信息，ER网关是无法获得MSEE与客户边缘设备的BGP Peer地址的，也就是ER网关无法直接ping客户边缘设备</p>
+<p>PS:这个要取决于客户宣告的路由，如果客户宣告了peer网段的ip，或者客户宣告的大网段包含了peer的ip，则可以ping通peer</p>
+<p>注：关于ER网关实例的IP等信息，也可以从Jarvis Dump  routing信息获取</p>
+<p>Routing info output :</p>
+<p>Routing Info For: CustomerSubscriptionId:85e86fb6-e71d-4c3a-8e21-4064dd283e0a, CircuitId:86bdeb36-4458-4f7d-a946-42924ade28fa, VrfName:af73caa8bdfb41e59328c81a2bb20b2d, VrfType:Private, DeviceName:sha03-06gmr-cis-1, VnetIds:6de13252-d47e-4042-abff-36a450c50513, SubInterfaceName:TenGigabitEthernet0/1/0.421001, BgpNeighborPeer:, BgpAzureNeighborPeer:, BgpNeighborPeerIpv6:, BgpAzureNeighborPeerIpv6:, AccessGroupName:, AccessGroupNamev6:, ProviderSubscriptionId:c9fe3ad9-c916-4b98-9d58-e67875955fbb</p>
+<p>Device Global Routing Info:</p>
+<p>i. NAT IP range:</p>
+<p>PartitionKey: &quot;0&quot;, RowKey: &quot;139.219.18.0_24&quot;, DeviceName: &quot;sha03-06gmr-cis-1&quot;, Subnet: &quot;139.219.18.0/24&quot;, AllocatedIps: &quot;139.219.18.0:Reserved0,139.219.18.255:Reserved1,139.219.18.1:2046516c-3d23-48c9-9413-8f58c6b82984,139.219.18.2:edc8c254-d461-4eba-8cd0-bd3ab6280862,139.219.18.5:764c6b3b-5cce-4f45-bcd9-6303964b4f52,139.219.18.6:63eff9c5-c246-481a-9735-6564ef23db14,139.219.18.7:e8e8a06f-02f0-4868-9442-32d379d9f710,139.219.18.8:9954a1c0-3802-4ca3-b2ff-8cba963c34fd,139.219.18.9:95ebd70b-e623-4dda-9977-1f8fe46b50c7,139.219.18.10:456a7e74-7622-440a-bbf5-afa3d2ffead2,139.219.18.12:a2af054f-c932-4dcc-baf9-a26612e260f8,139.219.18.13:72817877-bf9a-4a27-a6e2-dde479f63cdb,139.219.18.14:8634bc74-ec7a-46e5-9c71-1b0875e783fc,139.219.18.15:182de282-5ce3-4d8d-8ac4-7f80434a30a9,139.219.18.16:fafe43c6-f335-410f-9c64-caaf5a25119c,139.219.18.17:60c8fe87-d373-4c81-b31e-06b8f4e3b878,139.219.18.18:50ac3171-4aa8-446b-ac3a-9ca01234d5c5,139.219.18.19:4a62f8b1-897c-4b0b-94fc-ee2642902d33,139.219.18.3:0fec9a32-5eef-4be9-8c75-af24f3668d89,139.219.18.4:7a95c662-6196-4da5-952d-ca9f5ea180d8,139.219.18.11:5d4e80ff-806c-4d79-82c3-9c5549932c23,139.219.18.20:12c589c0-c471-4d7b-9900-344c9ac7a6e3&quot;, FreeCount: 234, NatIpBlockState: &quot;Valid&quot;, Region: &quot;China East&quot;, _rtable_BatchId: 00000000-0000-0000-0000-000000000000, _rtable_LockAcquisition: 9/26/2018 10:00:49 AM, _rtable_Operation: &quot;Replace&quot;, _rtable_RowLock: False, _rtable_Tombstone: False, _rtable_Version: 39, _rtable_ViewId: 6</p>
+<p>VRFs Routing Info:</p>
+<p>i. BGP Info:</p>
+<p>BGP router identifier 139.219.148.1, local AS number 12076</p>
+<p>BGP table version is 3353541, main routing table version 3353541</p>
+<p>26 network entries using 6656 bytes of memory</p>
+<p>34 path entries using 4624 bytes of memory</p>
+<p>949/631 BGP path/bestpath attribute entries using 273312 bytes of memory</p>
+<p>389 BGP AS-PATH entries using 21250 bytes of memory</p>
+<p>13 BGP community entries using 376 bytes of memory</p>
+<p>192 BGP extended community entries using 24946 bytes of memory</p>
+<p>0 BGP route-map cache entries using 0 bytes of memory</p>
+<p>0 BGP filter-list cache entries using 0 bytes of memory</p>
+<p>BGP using 331164 total bytes of memory</p>
+<p>BGP activity 923454/913127 prefixes, 1139090/1128549 paths, scan interval 60 secs</p>
+<p>Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd</p>
+<p>10.22.2.241     4        65500     703     707  3353541    0    0 02:25:02       18</p>
+<p>10.22.227.140   4        65515    6806    6567  3353541    0    0 4d03h           8</p>
+<p>10.22.227.141   4        65515    6815    6570  3353541    0    0 4d03h           8</p>
+<p>Routing Table: af73caa8bdfb41e59328c81a2bb20b2d</p>
+<p>Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP</p>
+<p>D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area</p>
+<p>N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2</p>
+<p>E1 - OSPF external type 1, E2 - OSPF external type 2</p>
+<p>i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2</p>
+<p>ia - IS-IS inter area, * - candidate default, U - per-user static route</p>
+<p>o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP</p>
+<p>a - application route</p>
+<p>+ - replicated route, % - next hop override, p - overrides from PfR</p>
+<p>Gateway of last resort is 10.22.2.241 to network 0.0.0.0</p>
+<p>B*    0.0.0.0/0 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>10.0.0.0/8 is variably subnetted, 28 subnets, 8 masks</p>
+<p>B        10.10.0.0/16 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>C        10.22.2.240/30 is directly connected, TenGigabitEthernet0/1/0.421001</p>
+<p>L        10.22.2.242/32 is directly connected, TenGigabitEthernet0/1/0.421001</p>
+<p>B        10.22.12.0/23 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.14.0/23 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.16.0/22 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.20.0/22 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.24.0/21 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.32.0/21 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.40.0/22 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.44.0/22 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.48.0/22 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.52.0/24 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.76.0/23 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.78.0/23 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.80.0/24 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.81.0/24 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.82.0/24 [20/0] via 10.22.2.241, 02:25:03</p>
+<p>B        10.22.224.0/24 [20/0] via 10.22.227.140, 4d03h</p>
+<p>B        10.22.225.0/24 [20/0] via 10.22.227.140, 4d03h</p>
+<p>B        10.22.226.0/24 [20/0] via 10.22.227.140, 4d03h</p>
+<p>B        10.22.227.0/24 [20/0] via 10.22.227.140, 4d03h</p>
+<p>C        10.22.227.128/27 is directly connected, Tunnel1107200</p>
+<p>L        10.22.227.132/32 is directly connected, Tunnel1107200</p>
+<p>B        10.22.228.0/24 [20/0] via 10.22.227.140, 4d03h</p>
+<p>B        10.22.229.0/24 [20/0] via 10.22.227.140, 4d03h</p>
+<p>B        10.22.242.0/24 [20/0] via 10.22.227.140, 4d03h</p>
+<p>B        10.22.243.0/24 [20/0] via 10.22.227.140, 4d03h</p>
+<p>ii. GetBgpPeering Info:</p>
+<p>BgpPeering for circuit: 86bdeb36-4458-4f7d-a946-42924ade28fa</p>
+<p>AzureAsn: 12076</p>
+<p>PeerAsn: 65500</p>
+<p>PeeringType: Private</p>
+<p>PrimaryAzurePort: STEXP-SHA03-06GMR-CIS-1-PRI-A</p>
+<p>PrimaryPeerSubnet: 10.22.2.240/30</p>
+<p>PrimaryPeerSubnetIpv6:</p>
+<p>SecondaryAzurePort: STEXP-SHA03-06GMR-CIS-2-SEC-A</p>
+<p>SecondaryPeerSubnet: 10.22.2.244/30</p>
+<p>SecondaryPeerSubnetIpv6:</p>
+<p>VlanId: 1001</p>
+<p>State: Enabled</p>
+<p>iii. NAT IP Info:</p>
+<p>NAT IP info supported only for public Vrf.</p>
+<p>iv. ARP Info:</p>
+<p>Protocol  Address          Age (min)  Hardware Addr   Type   Interface</p>
+<p>Internet  10.22.2.241           145   247e.1261.7460  ARPA   TenGigabitEthernet0/1/0.421001</p>
+<p>Internet  10.22.2.242             -   84b8.0284.3810  ARPA   TenGigabitEthernet0/1/0.421001</p>
+<p>v. Subinterface Info:</p>
+<p>TenGigabitEthernet0/1/0.421001 is up, line protocol is up</p>
+<p>Hardware is SPA-1X10GE-L-V2, address is 84b8.0284.3810 (bia 84b8.0284.3810)</p>
+<p>Description: MSEE to service provider 1001 link</p>
+<p>Internet address is 10.22.2.242/30</p>
+<p>MTU 1500 bytes, BW 10000000 Kbit/sec, DLY 10 usec,</p>
+<p>reliability 255/255, txload 1/255, rxload 2/255</p>
+<p>Encapsulation QinQ Virtual LAN, outer ID  42, inner ID 1001</p>
+<p>ARP type: ARPA, ARP Timeout 04:00:00</p>
+<p>Keepalive not supported</p>
+<p>Last clearing of &quot;show interface&quot; counters never</p>
+<p>vi. Subinterface Access group Info:</p>
+<p>There is no access group info for this peering subinterface.</p>
+<p>-----------------------------------------------------------------</p>
+<p>$f=Get-Fabric -CloudName sh2prdapp01</p></article>

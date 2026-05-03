@@ -1,0 +1,214 @@
+<article class="kb-article" data-title="4. Prepare Data"><h1>4. Prepare Data</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Data Box Disk</li>
+<li>最近修改: 2022-07-06 15:23:35</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Depending on whether you are connected to a Windows or Linux client, the steps to unlock the disks are different.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Depending on whether you are connected to a Windows or Linux client, the steps to unlock the disks are different.</li>
+</ul>
+<ul>
+<li>所有容器、Blob 和文件名都应符合 Azure 命名约定。 如果不遵循这些规则，则无法将数据上传到Azure。</li>
+</ul>
+<ul>
+<li>将文件复制到“AzureFile”文件夹中的文件夹。AzureFile 文件夹中的子文件夹创建文件共享。 直接复制到 AzureFile 文件夹的文件都会失败，会作为块 Blob 上传。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>4. Prepare Data</li>
+</ul>
+<ul>
+<li>打开包装、连接和解锁</li>
+</ul>
+<ul>
+<li>下载工具链接</li>
+</ul>
+<ul>
+<li>Unpack your disks</li>
+</ul>
+<ul>
+<li>Perform the following steps to unpack your disks.</li>
+</ul>
+<ul>
+<li>2. If the shipping box is tampered or severely damaged, do not open the box. Contact Microsoft Support to help you assess whether the disks are in good working order and if they need to ship you a replacement.</li>
+</ul>
+<ul>
+<li>4. Save the box and packaging foam for return shipment of the disks</li>
+</ul>
+<ul>
+<li>Connect to disks and get the passkey</li>
+</ul>
+<ul>
+<li>Use the included cable to connect the disk to the client computer running a supported OS as stated in the prerequisites.</li>
+</ul>
+<ul>
+<li>Unlock disks on Windows client</li>
+</ul>
+<ul>
+<li>Perform the following steps to connect and unlock your disks.</li>
+</ul>
+<ul>
+<li>Download the Data Box Disk toolset corresponding to the Windows client. This toolset contains 3 tools: Data Box Disk Unlock tool, Data Box Disk Validation tool, and Data Box Disk Split Copy tool.</li>
+</ul>
+<ul>
+<li>In this procedure, you will use only the Data Box Disk Unlock tool. The other two tools will be used later.</li>
+</ul>
+<ul>
+<li>Download Data Box Disk toolset for Windows</li>
+</ul>
+<ul>
+<li>Extract the toolset on the same computer that you will use to copy the data.</li>
+</ul>
+<ul>
+<li>Once the disk is unlocked, you can view the contents of the disk.</li>
+</ul>
+<ul>
+<li>重启电脑再次接入，在如下位置不能直接输入密码，需要通过工具再次解锁（不知是否可以一次解锁）。</li>
+</ul>
+<ul>
+<li>此处不可以解压</li>
+</ul>
+<ul>
+<li>将需要作为块Blob 导入的数据复制到BlockBlob 文件夹中。 同样，将VHD/VHDX 等数据复制到PageBlob 文件夹并将数据复制到AzureFile 文件夹 。</li>
+</ul>
+<ul>
+<li>在Azure 存储帐户中，为BlockBlob 和PageBlob 文件夹下的每个子文件夹创建一个容器。BlockBlob 和PageBlob 文件夹下的所有文件将复制到 Azure 存储帐户下的默认容器 $root 中。 $root 容器中的所有文件始终作为块 Blob 上传。</li>
+</ul>
+<ul>
+<li>如果根目录中存在文件和文件夹，则必须先将它们移到另一个文件夹，然后开始复制数据。</li>
+</ul>
+<ul>
+<li>在两次运行之间请重置工具。 这可能是指使用3选择项重置</li>
+</ul>
+<ul>
+<li>执行2次校验生成的文件</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>The Data Box Disks are mailed in a small shipping Box. Open the box and remove its contents. Check that the box has 1 to 5 solid-state disks (SSDs) and a USB connecting cable per disk. Inspect the box for any evidence of tampering, or any other obvious damage.</li>
+</ul>
+<ul>
+<li>3. Verify that the box has a clear sleeve containing a shipping label (under the current label) for return shipment. If this label is lost or damaged, you can always download and print a new one from the Azure portal.</li>
+</ul>
+<ul>
+<li>In the Azure portal, navigate to your Data Box Disk Order. Search for it by navigating to General &gt; All resources, then select your Data Box Disk Order. Use the copy icon to copy the passkey. This passkey will be used to unlock the disks.</li>
+</ul>
+<ul>
+<li>In the Azure portal, navigate to your Data Box Disk Order. Search for it by navigating to General &gt; All resources, then select your Data Box Disk Order.</li>
+</ul>
+<ul>
+<li>(Optional) To verify the computer that you are using to unlock the disk meets the operating system requirements, run the system check command. A sample output is shown below.</li>
+</ul>
+<ul>
+<li>解锁后查看为NTFS分区</li>
+</ul>
+<ul>
+<li>使用验证工具验证磁盘上的数据时，会生成一个 error.xml 文件来记录任何错误。 该日志文件位于驱动器的 Drive:\DataBoxDiskImport\logs 文件夹中。</li>
+</ul>
+<ul>
+<li>验证拷贝数据</li>
+</ul>
+<ul>
+<li>Robocopy &lt;source&gt; &lt;destination&gt; * /MT:64 /E /R:1 /W:1 /NFL /NDL /FFT /Log:c:\RobocopyLog.txt</li>
+</ul>
+<ul>
+<li>验证数据</li>
+</ul>
+<ul>
+<li>运行DataBoxDiskValidation.cmd 以在驱动器的DataBoxDiskImport 文件夹中进行校验和验证。 此功能仅适用于Windows 环境。Linux 用户需要验证复制到磁盘的源数据是否符合先决条件。</li>
+</ul>
+<ul>
+<li>如果有一个包含小文件（几KB）的大型数据集，则校验和过程可能需要更长时间。 如果使用选项1 并跳过校验和创建，则需要在删除你拥有的任何数据副本之前，最好通过校验和独立验证Azure 中上传数据的数据完整性。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Open a Command Prompt window or run Windows PowerShell as administrator on the same computer.</li>
+</ul>
+<ul>
+<li>可以使用文件资源管理器中的拖放操作复制数据。 也可以使用与SMB 兼容的任何文件复制工具（例如Robocopy）复制数据。 可以使用以下Robocopy 命令启动多个复制作业：</li>
+</ul>
+<ul>
+<li>选择合适的选项。 建议你始终选择选项2 来验证文件并生成校验和。 根据具体的数据大小，此步骤可能需要一段时间。 在脚本完成后，退出命令窗口。 如果在验证和校验和生成过程中出现任何错误，则会向你发送通知并提供指向错误日志的链接。</li>
+</ul>
+<ul>
+<li>如果使用了多个磁盘，请对每个磁盘运行该命令。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Run DataBoxDiskUnlock.exe and supply the passkey you obtained in Connect to disks and get the passkey. The drive letter assigned to the disk is displayed. A sample output is shown below.</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/databox/data-box-disk-deploy-set-up" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/databox/data-box-disk-deploy-set-up</a></li>
+</ul>
+<ul>
+<li><a href="https://aka.ms/DiskToolsetWindowsDownload" target="_blank" rel="noopener">https://aka.ms/DiskToolsetWindowsDownload</a></li>
+</ul>
+<ul>
+<li><a href="https://aka.ms/databoxdisktoolswin" target="_blank" rel="noopener">https://aka.ms/databoxdisktoolswin</a></li>
+</ul>
+<ul>
+<li>限制： <a href="https://docs.azure.cn/zh-cn/databox/data-box-disk-limits" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/databox/data-box-disk-limits</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/databox/data-box-disk-deploy-copy-data" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/databox/data-box-disk-deploy-copy-data</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>4. Prepare Data</p>
+<p>打开包装、连接和解锁</p>
+<p><a href="https://docs.azure.cn/zh-cn/databox/data-box-disk-deploy-set-up" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/databox/data-box-disk-deploy-set-up</a></p>
+<p>下载工具链接</p>
+<p><a href="https://aka.ms/DiskToolsetWindowsDownload" target="_blank" rel="noopener">https://aka.ms/DiskToolsetWindowsDownload</a></p>
+<p><a href="https://aka.ms/databoxdisktoolswin" target="_blank" rel="noopener">https://aka.ms/databoxdisktoolswin</a></p>
+<p>Unpack your disks</p>
+<p>Perform the following steps to unpack your disks.</p>
+<p>The Data Box Disks are mailed in a small shipping Box. Open the box and remove its contents. Check that the box has 1 to 5 solid-state disks (SSDs) and a USB connecting cable per disk. Inspect the box for any evidence of tampering, or any other obvious damage.</p>
+<p>2. If the shipping box is tampered or severely damaged, do not open the box. Contact Microsoft Support to help you assess whether the disks are in good working order and if they need to ship you a replacement.</p>
+<p>3. Verify that the box has a clear sleeve containing a shipping label (under the current label) for return shipment. If this label is lost or damaged, you can always download and print a new one from the Azure portal.</p>
+<p>4. Save the box and packaging foam for return shipment of the disks</p>
+<p>Connect to disks and get the passkey</p>
+<p>Use the included cable to connect the disk to the client computer running a supported OS as stated in the prerequisites.</p>
+<p>In the Azure portal, navigate to your Data Box Disk Order. Search for it by navigating to General &gt; All resources, then select your Data Box Disk Order. Use the copy icon to copy the passkey. This passkey will be used to unlock the disks.</p>
+<p>Depending on whether you are connected to a Windows or Linux client, the steps to unlock the disks are different.</p>
+<p>Unlock disks on Windows client</p>
+<p>Perform the following steps to connect and unlock your disks.</p>
+<p>In the Azure portal, navigate to your Data Box Disk Order. Search for it by navigating to General &gt; All resources, then select your Data Box Disk Order.</p>
+<p>Download the Data Box Disk toolset corresponding to the Windows client. This toolset contains 3 tools: Data Box Disk Unlock tool, Data Box Disk Validation tool, and Data Box Disk Split Copy tool.</p>
+<p>In this procedure, you will use only the Data Box Disk Unlock tool. The other two tools will be used later.</p>
+<p>Download Data Box Disk toolset for Windows</p>
+<p>Extract the toolset on the same computer that you will use to copy the data.</p>
+<p>Open a Command Prompt window or run Windows PowerShell as administrator on the same computer.</p>
+<p>(Optional) To verify the computer that you are using to unlock the disk meets the operating system requirements, run the system check command. A sample output is shown below.</p>
+<p>Run DataBoxDiskUnlock.exe and supply the passkey you obtained in Connect to disks and get the passkey. The drive letter assigned to the disk is displayed. A sample output is shown below.</p>
+<p>Once the disk is unlocked, you can view the contents of the disk.</p>
+<p>解锁后查看为NTFS分区</p>
+<p>重启电脑再次接入，在如下位置不能直接输入密码，需要通过工具再次解锁（不知是否可以一次解锁）。</p>
+<p>此处不可以解压</p>
+<p>使用验证工具验证磁盘上的数据时，会生成一个 error.xml 文件来记录任何错误。 该日志文件位于驱动器的 Drive:\DataBoxDiskImport\logs 文件夹中。</p>
+<p>限制： <a href="https://docs.azure.cn/zh-cn/databox/data-box-disk-limits" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/databox/data-box-disk-limits</a></p>
+<p>所有容器、Blob 和文件名都应符合 Azure 命名约定。 如果不遵循这些规则，则无法将数据上传到Azure。</p>
+<p>验证拷贝数据</p>
+<p><a href="https://docs.azure.cn/zh-cn/databox/data-box-disk-deploy-copy-data" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/databox/data-box-disk-deploy-copy-data</a></p>
+<p>可以使用文件资源管理器中的拖放操作复制数据。 也可以使用与SMB 兼容的任何文件复制工具（例如Robocopy）复制数据。 可以使用以下Robocopy 命令启动多个复制作业：</p>
+<p>Robocopy &lt;source&gt; &lt;destination&gt; * /MT:64 /E /R:1 /W:1 /NFL /NDL /FFT /Log:c:\RobocopyLog.txt</p>
+<p>将需要作为块Blob 导入的数据复制到BlockBlob 文件夹中。 同样，将VHD/VHDX 等数据复制到PageBlob 文件夹并将数据复制到AzureFile 文件夹 。</p>
+<p>在Azure 存储帐户中，为BlockBlob 和PageBlob 文件夹下的每个子文件夹创建一个容器。BlockBlob 和PageBlob 文件夹下的所有文件将复制到 Azure 存储帐户下的默认容器 $root 中。 $root 容器中的所有文件始终作为块 Blob 上传。</p>
+<p>将文件复制到“AzureFile”文件夹中的文件夹。AzureFile 文件夹中的子文件夹创建文件共享。 直接复制到 AzureFile 文件夹的文件都会失败，会作为块 Blob 上传。</p>
+<p>如果根目录中存在文件和文件夹，则必须先将它们移到另一个文件夹，然后开始复制数据。</p>
+<p>验证数据</p>
+<p>运行DataBoxDiskValidation.cmd 以在驱动器的DataBoxDiskImport 文件夹中进行校验和验证。 此功能仅适用于Windows 环境。Linux 用户需要验证复制到磁盘的源数据是否符合先决条件。</p>
+<p>选择合适的选项。 建议你始终选择选项2 来验证文件并生成校验和。 根据具体的数据大小，此步骤可能需要一段时间。 在脚本完成后，退出命令窗口。 如果在验证和校验和生成过程中出现任何错误，则会向你发送通知并提供指向错误日志的链接。</p>
+<p>在两次运行之间请重置工具。 这可能是指使用3选择项重置</p>
+<p>如果有一个包含小文件（几KB）的大型数据集，则校验和过程可能需要更长时间。 如果使用选项1 并跳过校验和创建，则需要在删除你拥有的任何数据副本之前，最好通过校验和独立验证Azure 中上传数据的数据完整性。</p>
+<p>如果使用了多个磁盘，请对每个磁盘运行该命令。</p>
+<p>执行2次校验生成的文件</p></article>

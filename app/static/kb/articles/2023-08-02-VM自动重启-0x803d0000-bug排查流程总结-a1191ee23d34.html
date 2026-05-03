@@ -1,0 +1,127 @@
+<article class="kb-article" data-title="VM自动重启-0x803d0000 bug排查流程总结"><h1>VM自动重启-0x803d0000 bug排查流程总结</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-08-02 10:43:04</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>3、通过watsup未发现物理节点故障</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>3、通过watsup未发现物理节点故障</li>
+</ul>
+<ul>
+<li>4、MDS中查找NODE状态也没有发现异常</li>
+</ul>
+<ul>
+<li>微软CSS给出故障原因如下：（红色字体部分可以直接发给客户参考）</li>
+</ul>
+<ul>
+<li>[2017/02/06, 03:22:03.639,  INFO, 00012988] Work-Item: Id=11882e17-225e-4a46-9e1c-b2a095033672, Flags=00000000, CanQueue=1.                      Context={{ StopContainerEx:           Container=11882e17-225e-4a46-9e1c-b2a095033672      StopContainerTimeout=300000      StopRoleTimeout=0 }}</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2、ACIS中查找客户历史操作记录，发现很多updateRole</li>
+</ul>
+<ul>
+<li>5、MDS 中 使用SLA表发现客户很多虚拟机都有RoleStateChanged，</li>
+</ul>
+<ul>
+<li>但是只有客户上报虚拟机ms051和ms053出现：vm guest he intialization</li>
+</ul>
+<ul>
+<li>$f = Get-Fabric &lt;Cluster-Name&gt;;</li>
+</ul>
+<ul>
+<li>$n = Get-Node -Id &lt;Node ID&gt; -Fabric $f;</li>
+</ul>
+<ul>
+<li>搜索关键字：0x803d0000  并在收索的信息筛选找到 客户重启计算机名称，Container ID，启动时间，如：</li>
+</ul>
+<ul>
+<li>ms051</li>
+</ul>
+<ul>
+<li>Container ID: d7bfddf0-e8a7-4e83-8c13-25dead62abfd</li>
+</ul>
+<ul>
+<li>Last Started: 2/9/2017 8:14:40 AM</li>
+</ul>
+<ul>
+<li>##虚拟机日志</li>
+</ul>
+<ul>
+<li>Feb  6 03:22:04 localhost kernel: hv_utils: Shutdown request received - graceful shutdown initiated</li>
+</ul>
+<ul>
+<li>##物理主机日志</li>
+</ul>
+<ul>
+<li>[2017/02/06, 03:22:03.639,  WARN, 00012988] AgentEstablishCallerActivityId: Returning 0x803d0000 (WS_E_INVALID_FORMAT).</li>
+</ul>
+<ul>
+<li>历史工单号：2017020671025</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1、首先使用ACIS确认客户最后一次重启时间</li>
+</ul>
+<ul>
+<li>获取下载完成后，可以在jumnbox ，D:\temp\AzureEEETriage中看到最新的log压缩包</li>
+</ul>
+<ul>
+<li>复制log压缩包到本地计算机上，打开，解压后找到相关日志的日志</li>
+</ul>
+<ul>
+<li>7、如有以上信息，即可确认故障原因：</li>
+</ul>
+<ul>
+<li>rdagent log:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>6、登录jumnbox 在FcShell中执行以下命令获取Agent Logs:</li>
+</ul>
+<ul>
+<li>Get-NodeAgentDiagnostics -DiagnosticType AgentLogs -DestinationPath d:\temp\AzureEEETriage -Node $n;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>关于虚拟机yufabu-web，通过对平台的系统日志分析确定，在物理主机检测虚拟机响应状态的时候，没有检测到该虚拟机的正确状态，目前已经确定触发了平台的bug，开发团队正在对此进行修复中。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>1、首先使用ACIS确认客户最后一次重启时间</p>
+<p>2、ACIS中查找客户历史操作记录，发现很多updateRole</p>
+<p>3、通过watsup未发现物理节点故障</p>
+<p>4、MDS中查找NODE状态也没有发现异常</p>
+<p>5、MDS 中 使用SLA表发现客户很多虚拟机都有RoleStateChanged，</p>
+<p>但是只有客户上报虚拟机ms051和ms053出现：vm guest he intialization</p>
+<p>6、登录jumnbox 在FcShell中执行以下命令获取Agent Logs:</p>
+<p>$f = Get-Fabric &lt;Cluster-Name&gt;;</p>
+<p>$n = Get-Node -Id &lt;Node ID&gt; -Fabric $f;</p>
+<p>Get-NodeAgentDiagnostics -DiagnosticType AgentLogs -DestinationPath d:\temp\AzureEEETriage -Node $n;</p>
+<p>获取下载完成后，可以在jumnbox ，D:\temp\AzureEEETriage中看到最新的log压缩包</p>
+<p>复制log压缩包到本地计算机上，打开，解压后找到相关日志的日志</p>
+<p>搜索关键字：0x803d0000  并在收索的信息筛选找到 客户重启计算机名称，Container ID，启动时间，如：</p>
+<p>ms051</p>
+<p>Container ID: d7bfddf0-e8a7-4e83-8c13-25dead62abfd</p>
+<p>Last Started: 2/9/2017 8:14:40 AM</p>
+<p>7、如有以上信息，即可确认故障原因：</p>
+<p>微软CSS给出故障原因如下：（红色字体部分可以直接发给客户参考）</p>
+<p>关于虚拟机yufabu-web，通过对平台的系统日志分析确定，在物理主机检测虚拟机响应状态的时候，没有检测到该虚拟机的正确状态，目前已经确定触发了平台的bug，开发团队正在对此进行修复中。</p>
+<p>##虚拟机日志</p>
+<p>Feb  6 03:22:04 localhost kernel: hv_utils: Shutdown request received - graceful shutdown initiated</p>
+<p>##物理主机日志</p>
+<p>rdagent log:</p>
+<p>[2017/02/06, 03:22:03.639,  WARN, 00012988] AgentEstablishCallerActivityId: Returning 0x803d0000 (WS_E_INVALID_FORMAT).</p>
+<p>[2017/02/06, 03:22:03.639,  INFO, 00012988] Work-Item: Id=11882e17-225e-4a46-9e1c-b2a095033672, Flags=00000000, CanQueue=1.                      Context={{ StopContainerEx:           Container=11882e17-225e-4a46-9e1c-b2a095033672      StopContainerTimeout=300000      StopRoleTimeout=0 }}</p>
+<p>历史工单号：2017020671025</p></article>

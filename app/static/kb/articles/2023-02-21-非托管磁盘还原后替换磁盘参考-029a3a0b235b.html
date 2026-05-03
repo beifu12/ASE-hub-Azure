@@ -1,0 +1,107 @@
+<article class="kb-article" data-title="非托管磁盘还原后替换磁盘参考"><h1>非托管磁盘还原后替换磁盘参考</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-02-21 23:57:31</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>1）PowerShell恢复参考：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>1）PowerShell恢复参考：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>请替换黄色部分为您环境中的信息。</li>
+</ul>
+<ul>
+<li>$vm = Get-Azvm -ResourceGroupName ssdtest -Name zlhssdtest</li>
+</ul>
+<ul>
+<li>Update-Azvm -ResourceGroupName ssdtest -VM $vm</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>2）Azure Storage Explorer恢复参考：</li>
+</ul>
+<ul>
+<li>2．使用storage exploer登录到azure账户，基于还原磁盘vhd文件后，根据还原job的详细信息，找到对应的OS磁盘和数据磁盘的VHD文件，并记录位置。</li>
+</ul>
+<ul>
+<li>3．在Azure门户上，停止问题虚拟机。记录数据磁盘的URL,然后分离数据磁盘。</li>
+</ul>
+<ul>
+<li>4．在门户上找到问题虚拟机的os磁盘vhd文件，右键克隆，填写为需要的名字，克隆进行备份，备份完成后，</li>
+</ul>
+<ul>
+<li>选中原始的问题os磁盘vhd文件，右键中断租约，然后删除该vhd文件。</li>
+</ul>
+<ul>
+<li>5． 复制还原后的OS磁盘VHD文件到原始的容器中。</li>
+</ul>
+<ul>
+<li>6． 启动VM。</li>
+</ul>
+<ul>
+<li>7． 附加还原后的数据磁盘。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>到   虚拟机  -- 磁盘， 点开OS磁盘，根据位置的URL，确认 虚拟机磁盘文件所在的  存储账户 ，容器名称， 磁盘vhd文件名称。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>1）PowerShell恢复参考：</li>
+</ul>
+<ul>
+<li>参考脚本</li>
+</ul>
+<ul>
+<li>Set-AzVMOSDisk -VM $vm -VhdUri $uri</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>$uri = &quot;<a href="https://ssdtestdisks.blob.core.chinacloudapi.cn/vhds2/zlhssdtest20191112113800.vhd&quot;" target="_blank" rel="noopener">https://ssdtestdisks.blob.core.chinacloudapi.cn/vhds2/zlhssdtest20191112113800.vhd&quot;</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/powershell/module/az.compute/set-azvmosdisk?view=azps-9.3.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.compute/set-azvmosdisk?view=azps-9.3.0</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/powershell/module/az.compute/update-azvm?view=azps-9.4.0" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/module/az.compute/update-azvm?view=azps-9.4.0</a></li>
+</ul>
+<ul>
+<li>如: <a href="https://zlhadrgdisks.blob.core.chinacloudapi.cn/vhds/zlhdpm20200302201929.vhd" target="_blank" rel="noopener">https://zlhadrgdisks.blob.core.chinacloudapi.cn/vhds/zlhdpm20200302201929.vhd</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023-2-21</p>
+<p>1）PowerShell恢复参考：</p>
+<p>参考脚本</p>
+<p>请替换黄色部分为您环境中的信息。</p>
+<p>$vm = Get-Azvm -ResourceGroupName ssdtest -Name zlhssdtest</p>
+<p>$uri = &quot;<a href="https://ssdtestdisks.blob.core.chinacloudapi.cn/vhds2/zlhssdtest20191112113800.vhd&quot;" target="_blank" rel="noopener">https://ssdtestdisks.blob.core.chinacloudapi.cn/vhds2/zlhssdtest20191112113800.vhd&quot;</a></p>
+<p>Set-AzVMOSDisk -VM $vm -VhdUri $uri</p>
+<p>Update-Azvm -ResourceGroupName ssdtest -VM $vm</p>
+<p>参考文档：</p>
+<p><a href="https://learn.microsoft.com/en-us/powershell/module/az.compute/set-azvmosdisk?view=azps-9.3.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.compute/set-azvmosdisk?view=azps-9.3.0</a></p>
+<p><a href="https://learn.microsoft.com/zh-cn/powershell/module/az.compute/update-azvm?view=azps-9.4.0" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/module/az.compute/update-azvm?view=azps-9.4.0</a></p>
+<p>2）Azure Storage Explorer恢复参考：</p>
+<p>到   虚拟机  -- 磁盘， 点开OS磁盘，根据位置的URL，确认 虚拟机磁盘文件所在的  存储账户 ，容器名称， 磁盘vhd文件名称。</p>
+<p>如: <a href="https://zlhadrgdisks.blob.core.chinacloudapi.cn/vhds/zlhdpm20200302201929.vhd" target="_blank" rel="noopener">https://zlhadrgdisks.blob.core.chinacloudapi.cn/vhds/zlhdpm20200302201929.vhd</a></p>
+<p>2．使用storage exploer登录到azure账户，基于还原磁盘vhd文件后，根据还原job的详细信息，找到对应的OS磁盘和数据磁盘的VHD文件，并记录位置。</p>
+<p>3．在Azure门户上，停止问题虚拟机。记录数据磁盘的URL,然后分离数据磁盘。</p>
+<p>4．在门户上找到问题虚拟机的os磁盘vhd文件，右键克隆，填写为需要的名字，克隆进行备份，备份完成后，</p>
+<p>选中原始的问题os磁盘vhd文件，右键中断租约，然后删除该vhd文件。</p>
+<p>5． 复制还原后的OS磁盘VHD文件到原始的容器中。</p>
+<p>6． 启动VM。</p>
+<p>7． 附加还原后的数据磁盘。</p></article>

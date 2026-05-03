@@ -1,0 +1,115 @@
+<article class="kb-article" data-title="Windows虚拟机高级存储磁盘性能测试"><h1>Windows虚拟机高级存储磁盘性能测试</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Performance</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-16 10:57:23</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>为了加快文件处理，在进行文件拷贝时，Windows会尝试使用内核的文件缓存机制进行buffered IOs处理，这一方面无法正常反应物理存储的处理能力，同时也会收到操作系统的内存和Cache管理的影响。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>为了加快文件处理，在进行文件拷贝时，Windows会尝试使用内核的文件缓存机制进行buffered IOs处理，这一方面无法正常反应物理存储的处理能力，同时也会收到操作系统的内存和Cache管理的影响。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>测试Windows虚拟机以及高级存储磁盘的吞吐量</li>
+</ul>
+<ul>
+<li>在一台DS14虚拟机中附加3块P10磁盘，主机缓存为无</li>
+</ul>
+<ul>
+<li>data1与data2创建带区卷F盘（类似RAID0）data3为单块简单卷G盘</li>
+</ul>
+<ul>
+<li>文件拷贝，特别是Windows图形界面的拷贝过程并没有针对磁盘系统本省进行优化。为了达到磁盘系统的最佳性能，我们需要在存储系统中积累足够的IO请求来促使磁盘始终处于一个忙碌状态。</li>
+</ul>
+<ul>
+<li>当我们使用Windows文件拷贝引擎拷贝大文件时，缺省情况下，系统会发起8个1MB的异步IO请求。而在进行小文件拷贝时，除非通过多线程拷贝的方式，否则很难在存储系统中产生足够的IO积压。</li>
+</ul>
+<ul>
+<li>多数的文件拷贝操作是顺序操作。通常只有在一个文件拷贝完成后，才会处理下一个文件。这种顺序化的处理会导致文件拷贝的性能远远低于实际存储系统的处理能力。</li>
+</ul>
+<ul>
+<li>首先测试G盘P30 无读写缓存吞吐量193.93MB/s达到单块P30磁盘 200MB吞吐量的上限</li>
+</ul>
+<ul>
+<li>F盘，测试两块P30创建的带区卷（类似RAID0）吞吐量389.07MB/s达到两块P30 磁盘400MB吞吐量上限</li>
+</ul>
+<ul>
+<li>删除三块磁盘分区，重新创建3块P30磁盘的带区卷</li>
+</ul>
+<ul>
+<li>继续测试吞吐量469.58MB/s基本达到DS14虚拟机512MB/s吞吐量上限</li>
+</ul>
+<ul>
+<li>-------------------------------------------------</li>
+</ul>
+<ul>
+<li>以下无正文</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在Windows平台，用户常常选择通过文件管理器直接进行文件拷贝来观察磁盘性能。这种测试往往很容易进行。同时，在用户界面上也有图形化的吞吐量显示。然而，文件拷贝并不是一个测试存储性能的合理的方法：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>测试命令：c:\diskspd\amd64fre&gt;Diskspd.exe -b256K -d60 -h -L -o2 -t4 -r -w30 -c50G g:\io.dat</li>
+</ul>
+<ul>
+<li>测试命令c:\diskspd\amd64fre&gt;Diskspd.exe -b256K -d60 -h -L -o2 -t4 -r -w30 -c50G f:\io.dat</li>
+</ul>
+<ul>
+<li>测试命令c:\diskspd\amd64fre&gt;Diskspd.exe -b256K -d60 -h -L -o2 -t4 -r -w30 -c50G h:\io.dat</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>针对高级存储类型的性能介绍：<a href="https://www.azure.cn/documentation/articles/storage-premium-storage/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/storage-premium-storage/</a></li>
+</ul>
+<ul>
+<li>14系列虚拟机系能介绍：<a href="https://www.azure.cn/documentation/articles/virtual-machines-windows-sizes/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/virtual-machines-windows-sizes/</a></li>
+</ul>
+<ul>
+<li>在现实中，为了得到稳定的磁盘数据，通常建议使用DiskSPD或是IOMeter等工具，以下是我们使用DiskSPD工具的测试结果，有关该工具的下载及使用方法请参考：<a href="https://gallery.technet.microsoft.com/DiskSpd-a-robust-storage-6cd2f223" target="_blank" rel="noopener">https://gallery.technet.microsoft.com/DiskSpd-a-robust-storage-6cd2f223</a></li>
+</ul>
+<ul>
+<li>测试数据参考：<a href="https://www.azure.cn/documentation/articles/storage-premium-storage/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/storage-premium-storage/</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/disks-types#disk-type-comparison" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/disks-types#disk-type-comparison</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/premium-storage-performance" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/premium-storage-performance</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>测试Windows虚拟机以及高级存储磁盘的吞吐量</p>
+<p>针对高级存储类型的性能介绍：<a href="https://www.azure.cn/documentation/articles/storage-premium-storage/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/storage-premium-storage/</a></p>
+<p>14系列虚拟机系能介绍：<a href="https://www.azure.cn/documentation/articles/virtual-machines-windows-sizes/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/virtual-machines-windows-sizes/</a></p>
+<p>在一台DS14虚拟机中附加3块P10磁盘，主机缓存为无</p>
+<p>data1与data2创建带区卷F盘（类似RAID0）data3为单块简单卷G盘</p>
+<p>在Windows平台，用户常常选择通过文件管理器直接进行文件拷贝来观察磁盘性能。这种测试往往很容易进行。同时，在用户界面上也有图形化的吞吐量显示。然而，文件拷贝并不是一个测试存储性能的合理的方法：</p>
+<p>文件拷贝，特别是Windows图形界面的拷贝过程并没有针对磁盘系统本省进行优化。为了达到磁盘系统的最佳性能，我们需要在存储系统中积累足够的IO请求来促使磁盘始终处于一个忙碌状态。</p>
+<p>当我们使用Windows文件拷贝引擎拷贝大文件时，缺省情况下，系统会发起8个1MB的异步IO请求。而在进行小文件拷贝时，除非通过多线程拷贝的方式，否则很难在存储系统中产生足够的IO积压。</p>
+<p>多数的文件拷贝操作是顺序操作。通常只有在一个文件拷贝完成后，才会处理下一个文件。这种顺序化的处理会导致文件拷贝的性能远远低于实际存储系统的处理能力。</p>
+<p>为了加快文件处理，在进行文件拷贝时，Windows会尝试使用内核的文件缓存机制进行buffered IOs处理，这一方面无法正常反应物理存储的处理能力，同时也会收到操作系统的内存和Cache管理的影响。</p>
+<p>在现实中，为了得到稳定的磁盘数据，通常建议使用DiskSPD或是IOMeter等工具，以下是我们使用DiskSPD工具的测试结果，有关该工具的下载及使用方法请参考：<a href="https://gallery.technet.microsoft.com/DiskSpd-a-robust-storage-6cd2f223" target="_blank" rel="noopener">https://gallery.technet.microsoft.com/DiskSpd-a-robust-storage-6cd2f223</a></p>
+<p>首先测试G盘P30 无读写缓存吞吐量193.93MB/s达到单块P30磁盘 200MB吞吐量的上限</p>
+<p>测试数据参考：<a href="https://www.azure.cn/documentation/articles/storage-premium-storage/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/storage-premium-storage/</a></p>
+<p>测试命令：c:\diskspd\amd64fre&gt;Diskspd.exe -b256K -d60 -h -L -o2 -t4 -r -w30 -c50G g:\io.dat</p>
+<p>F盘，测试两块P30创建的带区卷（类似RAID0）吞吐量389.07MB/s达到两块P30 磁盘400MB吞吐量上限</p>
+<p>测试命令c:\diskspd\amd64fre&gt;Diskspd.exe -b256K -d60 -h -L -o2 -t4 -r -w30 -c50G f:\io.dat</p>
+<p>删除三块磁盘分区，重新创建3块P30磁盘的带区卷</p>
+<p>继续测试吞吐量469.58MB/s基本达到DS14虚拟机512MB/s吞吐量上限</p>
+<p>测试命令c:\diskspd\amd64fre&gt;Diskspd.exe -b256K -d60 -h -L -o2 -t4 -r -w30 -c50G h:\io.dat</p>
+<p>-------------------------------------------------</p>
+<p>以下无正文</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/disks-types#disk-type-comparison" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/disks-types#disk-type-comparison</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/premium-storage-performance" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/premium-storage-performance</a></p></article>

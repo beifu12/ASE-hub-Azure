@@ -1,0 +1,231 @@
+<article class="kb-article" data-title="Azure CDN Support TSG update 20191111"><h1>Azure CDN Support TSG update 20191111</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: CDN Operation Guideline</li>
+<li>最近修改: 2025-10-31 17:08:29</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Rename the scenario Node issue to Performance and access issue.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Rename the scenario Node issue to Performance and access issue.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi All,</li>
+</ul>
+<ul>
+<li>We’ve updated the IcM templates for Azure CDN China (effective from Nov 11st, 2019), please use the following templates later in the CDN related case handling.</li>
+</ul>
+<ul>
+<li>Template links</li>
+</ul>
+<ul>
+<li>For SEV 2</li>
+</ul>
+<ul>
+<li>It’s only used to handle Azure CDN China LSI, the new template is based on WASU’s SEV 2 template and added the following note:</li>
+</ul>
+<ul>
+<li>[Note]</li>
+</ul>
+<ul>
+<li>For Azure CDN China LSI, please contact CDN Dev team Azure China CDN Service - China/Gallatin /China CDN Engineering Team on-call.</li>
+</ul>
+<ul>
+<li>For SEV 3</li>
+</ul>
+<ul>
+<li>Changes are as below:</li>
+</ul>
+<ul>
+<li>Add the following notes.</li>
+</ul>
+<ul>
+<li>4. For Urgent single CRI during Non-working hours (UTC + 8 Mon - Fri 18:00 - 9:00, Sat, Sun), please collect the Business impact first, then call CDN Dev team Azure China CDN Service - China/Gallatin /China CDN Engineering Team on-call.</li>
+</ul>
+<ul>
+<li>Add the supported backend configuration list.</li>
+</ul>
+<ul>
+<li>NO.</li>
+</ul>
+<ul>
+<li>Configuration&amp;Requirement</li>
+</ul>
+<ul>
+<li>Description</li>
+</ul>
+<ul>
+<li>1</li>
+</ul>
+<ul>
+<li>CORS (Access-Control-Allow-Origin Header)</li>
+</ul>
+<ul>
+<li>2</li>
+</ul>
+<ul>
+<li>Redirection (HTTPS to HTTP)</li>
+</ul>
+<ul>
+<li>3</li>
+</ul>
+<ul>
+<li>HTTP/2</li>
+</ul>
+<ul>
+<li>HTTPS certificate needs to be deployed in advance.</li>
+</ul>
+<ul>
+<li>4</li>
+</ul>
+<ul>
+<li>HSTS (HTTP Strict Transport Security)</li>
+</ul>
+<ul>
+<li>5</li>
+</ul>
+<ul>
+<li>Gzip</li>
+</ul>
+<ul>
+<li>Support for specified suffixes.</li>
+</ul>
+<ul>
+<li>6</li>
+</ul>
+<ul>
+<li>Specified Cache rule/ back-to-source method</li>
+</ul>
+<ul>
+<li>7</li>
+</ul>
+<ul>
+<li>URI encryption(Anti hijacking)</li>
+</ul>
+<ul>
+<li>8</li>
+</ul>
+<ul>
+<li>Specified back-to-source port</li>
+</ul>
+<ul>
+<li>Supported ports: 8001, 8080, 8081, 8088, 8089, other ports need to be evaluated by PG.</li>
+</ul>
+<ul>
+<li>9</li>
+</ul>
+<ul>
+<li>Query &amp; Confirm CDN IP</li>
+</ul>
+<ul>
+<li>10</li>
+</ul>
+<ul>
+<li>IPv6</li>
+</ul>
+<ul>
+<li>Part of CDN providers support IPv6.</li>
+</ul>
+<ul>
+<li>11</li>
+</ul>
+<ul>
+<li>Range Gets</li>
+</ul>
+<ul>
+<li>Source need to support Range Gets.</li>
+</ul>
+<ul>
+<li>12</li>
+</ul>
+<ul>
+<li>Follow 301/302</li>
+</ul>
+<ul>
+<li>13</li>
+</ul>
+<ul>
+<li>Original Image Protection</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2. For Backend configuration, please check customer&#39;s requirements and providing the information accordingly.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>3. For Performance and access issue, support engineer needs to verify customer&#39;s issue before submitting a IcM ticket, and verify the solution provided by PG before forwarding it to customer.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>SEV 2 <a href="https://icm.ad.msft.net/imp/v3/incidents/create?tmpl=vJI343" target="_blank" rel="noopener">https://icm.ad.msft.net/imp/v3/incidents/create?tmpl=vJI343</a></li>
+</ul>
+<ul>
+<li>SEV 3 <a href="https://icm.ad.msft.net/imp/v3/incidents/create?tmpl=t271wQ" target="_blank" rel="noopener">https://icm.ad.msft.net/imp/v3/incidents/create?tmpl=t271wQ</a></li>
+</ul>
+<ul>
+<li>Supported fields: specify URI, extensive, wildcard. For example: www.a.com, *a.com,*</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi All,</p>
+<p>We’ve updated the IcM templates for Azure CDN China (effective from Nov 11st, 2019), please use the following templates later in the CDN related case handling.</p>
+<p>Template links</p>
+<p>SEV 2 <a href="https://icm.ad.msft.net/imp/v3/incidents/create?tmpl=vJI343" target="_blank" rel="noopener">https://icm.ad.msft.net/imp/v3/incidents/create?tmpl=vJI343</a></p>
+<p>SEV 3 <a href="https://icm.ad.msft.net/imp/v3/incidents/create?tmpl=t271wQ" target="_blank" rel="noopener">https://icm.ad.msft.net/imp/v3/incidents/create?tmpl=t271wQ</a></p>
+<p>For SEV 2</p>
+<p>It’s only used to handle Azure CDN China LSI, the new template is based on WASU’s SEV 2 template and added the following note:</p>
+<p>[Note]</p>
+<p>For Azure CDN China LSI, please contact CDN Dev team Azure China CDN Service - China/Gallatin /China CDN Engineering Team on-call.</p>
+<p>For SEV 3</p>
+<p>Changes are as below:</p>
+<p>Add the following notes.</p>
+<p>2. For Backend configuration, please check customer&#39;s requirements and providing the information accordingly.</p>
+<p>3. For Performance and access issue, support engineer needs to verify customer&#39;s issue before submitting a IcM ticket, and verify the solution provided by PG before forwarding it to customer.</p>
+<p>4. For Urgent single CRI during Non-working hours (UTC + 8 Mon - Fri 18:00 - 9:00, Sat, Sun), please collect the Business impact first, then call CDN Dev team Azure China CDN Service - China/Gallatin /China CDN Engineering Team on-call.</p>
+<p>Add the supported backend configuration list.</p>
+<p>NO.</p>
+<p>Configuration&amp;Requirement</p>
+<p>Description</p>
+<p>1</p>
+<p>CORS (Access-Control-Allow-Origin Header)</p>
+<p>Supported fields: specify URI, extensive, wildcard. For example: www.a.com, *a.com,*</p>
+<p>2</p>
+<p>Redirection (HTTPS to HTTP)</p>
+<p>3</p>
+<p>HTTP/2</p>
+<p>HTTPS certificate needs to be deployed in advance.</p>
+<p>4</p>
+<p>HSTS (HTTP Strict Transport Security)</p>
+<p>5</p>
+<p>Gzip</p>
+<p>Support for specified suffixes.</p>
+<p>6</p>
+<p>Specified Cache rule/ back-to-source method</p>
+<p>7</p>
+<p>URI encryption(Anti hijacking)</p>
+<p>8</p>
+<p>Specified back-to-source port</p>
+<p>Supported ports: 8001, 8080, 8081, 8088, 8089, other ports need to be evaluated by PG.</p>
+<p>9</p>
+<p>Query &amp; Confirm CDN IP</p>
+<p>10</p>
+<p>IPv6</p>
+<p>Part of CDN providers support IPv6.</p>
+<p>11</p>
+<p>Range Gets</p>
+<p>Source need to support Range Gets.</p>
+<p>12</p>
+<p>Follow 301/302</p>
+<p>13</p>
+<p>Original Image Protection</p>
+<p>Rename the scenario Node issue to Performance and access issue.</p></article>

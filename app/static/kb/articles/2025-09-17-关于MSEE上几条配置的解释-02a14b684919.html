@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="关于MSEE上几条配置的解释"><h1>关于MSEE上几条配置的解释</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-17 19:37:15</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20190724</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20190724</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20190724</li>
+</ul>
+<ul>
+<li>MSEE的配置中有如下三条</li>
+</ul>
+<ul>
+<li>as-overide :</li>
+</ul>
+<ul>
+<li>allowas-in 2</li>
+</ul>
+<ul>
+<li>如下图：</li>
+</ul>
+<ul>
+<li>这三条配置的意义如下：</li>
+</ul>
+<ul>
+<li>第一条是针对MSEE和ER GW之间的BGP Peer配置的：</li>
+</ul>
+<ul>
+<li>as-overide : 如果MSEE收到路由的AS包含65515，正常来说MSEE不会向其它AS为65515的Peer转发路由，配置了as-overide后，MSEE会把收到路由的AS中的65515改成其它AS，然后再发给其它AS为65515的Peer。</li>
+</ul>
+<ul>
+<li>第二条是针对MSEE和on-premise之间的BGP Peer配置的：</li>
+</ul>
+<ul>
+<li>allowas-in 2：如果客户侧的AS错误的写成了12076或65515，MSEE会收客户侧的路由；如果不配置这条，就不收客户侧的路由</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>remove-private-as</li>
+</ul>
+<ul>
+<li>remove-private-as：MSEE向on-premise宣告地址空间时，仅会向对端宣告AS 12076，会把ER GW的AS 65515 Remove掉</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考链接：<a href="http://blog.sina.com.cn/s/blog_4b5039210102e2zt.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_4b5039210102e2zt.html</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20190724</p>
+<p>MSEE的配置中有如下三条</p>
+<p>as-overide :</p>
+<p>remove-private-as</p>
+<p>allowas-in 2</p>
+<p>如下图：</p>
+<p>这三条配置的意义如下：</p>
+<p>第一条是针对MSEE和ER GW之间的BGP Peer配置的：</p>
+<p>as-overide : 如果MSEE收到路由的AS包含65515，正常来说MSEE不会向其它AS为65515的Peer转发路由，配置了as-overide后，MSEE会把收到路由的AS中的65515改成其它AS，然后再发给其它AS为65515的Peer。</p>
+<p>remove-private-as：MSEE向on-premise宣告地址空间时，仅会向对端宣告AS 12076，会把ER GW的AS 65515 Remove掉</p>
+<p>第二条是针对MSEE和on-premise之间的BGP Peer配置的：</p>
+<p>allowas-in 2：如果客户侧的AS错误的写成了12076或65515，MSEE会收客户侧的路由；如果不配置这条，就不收客户侧的路由</p>
+<p>参考链接：<a href="http://blog.sina.com.cn/s/blog_4b5039210102e2zt.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_4b5039210102e2zt.html</a></p></article>

@@ -1,0 +1,63 @@
+<article class="kb-article" data-title="[Windows][RDP][Remote Desktop Licensing] Remote Desktop Licensing服务过期后无法RDP"><h1>[Windows][RDP][Remote Desktop Licensing] Remote Desktop Licensing服务过期后无法RDP</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RDP_SSH</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-01-16 15:56:18</li>
+<li>JD 相关性: 售后排障; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>连接的时候报错信息：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>连接的时候报错信息：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>T.</li>
+</ul>
+<ul>
+<li>远程会话已断开，因为没有远程桌面许可证服务器可用于提供许可证</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>This is because the “Remote Desktop Licensing” feature has expired, you can use the following command to RDP to the VM:</li>
+</ul>
+<ul>
+<li>mstsc /v:IP:Port /admin</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>由于在Server中启用了Remote Desktop Licensing这个feature，在试用120天过期后，会导致常规的mstsc无法进入，可以使用下面的命令进入：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="http://woshub.com/rdp-connection-logs-forensics-windows/" target="_blank" rel="noopener">http://woshub.com/rdp-connection-logs-forensics-windows/</a></li>
+</ul>
+<ul>
+<li><a href="https://jingyan.baidu.com/article/95c9d20d743ae8ec4e7561d4.html" target="_blank" rel="noopener">https://jingyan.baidu.com/article/95c9d20d743ae8ec4e7561d4.html</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>连接的时候报错信息：</p>
+<p>T.</p>
+<p>远程会话已断开，因为没有远程桌面许可证服务器可用于提供许可证</p>
+<p>问题原因：</p>
+<p>由于在Server中启用了Remote Desktop Licensing这个feature，在试用120天过期后，会导致常规的mstsc无法进入，可以使用下面的命令进入：</p>
+<p>This is because the “Remote Desktop Licensing” feature has expired, you can use the following command to RDP to the VM:</p>
+<p>解决方法：</p>
+<p>mstsc /v:IP:Port /admin</p>
+<p><a href="http://woshub.com/rdp-connection-logs-forensics-windows/" target="_blank" rel="noopener">http://woshub.com/rdp-connection-logs-forensics-windows/</a></p>
+<p><a href="https://jingyan.baidu.com/article/95c9d20d743ae8ec4e7561d4.html" target="_blank" rel="noopener">https://jingyan.baidu.com/article/95c9d20d743ae8ec4e7561d4.html</a></p></article>

@@ -1,0 +1,131 @@
+<article class="kb-article" data-title="Share | Windows 虚拟机不能在Portal安装AMD GPU Extension，可以通过手动对驱动进行安装"><h1>Share | Windows 虚拟机不能在Portal安装AMD GPU Extension，可以通过手动对驱动进行安装</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-11-30 16:54:12</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>&quot;status&quot;: &quot;Failed&quot;,</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>&quot;status&quot;: &quot;Failed&quot;,</li>
+</ul>
+<ul>
+<li>&quot;error&quot;: {</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>1. 创建一台Nv4as v4 Windows 11 VM</li>
+</ul>
+<ul>
+<li>3. 点击“Add”按钮，在新页面搜索“AMD GPU Driver Extension”</li>
+</ul>
+<ul>
+<li>4. 点击AMD GPU Driver Extension，点击下一步，最后点击Create</li>
+</ul>
+<ul>
+<li>5. 出现错误</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;ArtifactNotFound&quot;,</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;The VM extension with publisher &#39;Microsoft.HpcCompute&#39; and type &#39;AmdGpuDriverWindows&#39; could not be found.&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>通过测试可以复现此问题</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>点击驱动文件.exe安装驱动：</li>
+</ul>
+<ul>
+<li>安装完成后，重启虚拟机</li>
+</ul>
+<ul>
+<li>###</li>
+</ul>
+<ul>
+<li>446226555</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2. 在Portal上，找到VM的“Extensions + Applications”菜单，点击进入新页面</li>
+</ul>
+<ul>
+<li>排查步骤：</li>
+</ul>
+<ul>
+<li>4，验证驱动安装情况：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<ul>
+<li>我们已将此问题反馈后线团队进行修复。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>通过测试，可以手动安装AMD的驱动，详细步骤可参考此文档：<a href="https://learn.microsoft.com/en-us/azure/virtual-machines/windows/n-series-amd-driver-setup#nvv4-series" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/virtual-machines/windows/n-series-amd-driver-setup#nvv4-series</a></li>
+</ul>
+<ul>
+<li>登录虚拟机，下载驱动文件：<a href="https://download.microsoft.com/download/4/1/2/412559d0-4de5-4fb1-aa27-eaa3873e1f81/AMD-Azure-NVv4-Driver-22Q2.exe" target="_blank" rel="noopener">https://download.microsoft.com/download/4/1/2/412559d0-4de5-4fb1-aa27-eaa3873e1f81/AMD-Azure-NVv4-Driver-22Q2.exe</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Jia.Xiaolei</p>
+<p>问题描述：</p>
+<p>=======</p>
+<p>1. 创建一台Nv4as v4 Windows 11 VM</p>
+<p>2. 在Portal上，找到VM的“Extensions + Applications”菜单，点击进入新页面</p>
+<p>3. 点击“Add”按钮，在新页面搜索“AMD GPU Driver Extension”</p>
+<p>4. 点击AMD GPU Driver Extension，点击下一步，最后点击Create</p>
+<p>5. 出现错误</p>
+<p>{</p>
+<p>&quot;status&quot;: &quot;Failed&quot;,</p>
+<p>&quot;error&quot;: {</p>
+<p>&quot;code&quot;: &quot;ArtifactNotFound&quot;,</p>
+<p>&quot;message&quot;: &quot;The VM extension with publisher &#39;Microsoft.HpcCompute&#39; and type &#39;AmdGpuDriverWindows&#39; could not be found.&quot;</p>
+<p>}</p>
+<p>排查步骤：</p>
+<p>通过测试可以复现此问题</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>通过测试，可以手动安装AMD的驱动，详细步骤可参考此文档：<a href="https://learn.microsoft.com/en-us/azure/virtual-machines/windows/n-series-amd-driver-setup#nvv4-series" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/virtual-machines/windows/n-series-amd-driver-setup#nvv4-series</a></p>
+<p>登录虚拟机，下载驱动文件：<a href="https://download.microsoft.com/download/4/1/2/412559d0-4de5-4fb1-aa27-eaa3873e1f81/AMD-Azure-NVv4-Driver-22Q2.exe" target="_blank" rel="noopener">https://download.microsoft.com/download/4/1/2/412559d0-4de5-4fb1-aa27-eaa3873e1f81/AMD-Azure-NVv4-Driver-22Q2.exe</a></p>
+<p>点击驱动文件.exe安装驱动：</p>
+<p>安装完成后，重启虚拟机</p>
+<p>4，验证驱动安装情况：</p>
+<p>###</p>
+<p>我们已将此问题反馈后线团队进行修复。</p>
+<p>446226555</p></article>

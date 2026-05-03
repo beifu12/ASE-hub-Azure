@@ -1,0 +1,97 @@
+<article class="kb-article" data-title="Azure Firewall Policy Kusto过去记录查询"><h1>Azure Firewall Policy Kusto过去记录查询</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AzureFW</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-20 15:46:35</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>这个记录可以保存90天，超出范围的无法提供</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>这个记录可以保存90天，超出范围的无法提供</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025.10.20</li>
+</ul>
+<ul>
+<li>我们可以采取以下方式：</li>
+</ul>
+<ul>
+<li>| where CustomerSubscriptionId == &quot;32c3461a-4917-4339-9ecb-4d1df8548b6b&quot;  #客户的订阅ID</li>
+</ul>
+<ul>
+<li>| where ResourceGroupName == &quot;Customer resource group name&quot; #客户的资源组名称</li>
+</ul>
+<ul>
+<li>| where ResourceName == &quot;Azure firewall policy name&quot; # 客户的Firewall policy名称</li>
+</ul>
+<ul>
+<li>| where env_time &gt; datetime(&quot;2025-09-09 00:00:00&quot; ) and env_time &lt; datetime(&#39;2025-09-19 23:30:00&#39;)  #这里为客户进行修改的时间戳， 不同于正常时间戳，这里使用env_time.</li>
+</ul>
+<ul>
+<li>| project env_time,properties, CustomerSubscriptionId, ResourceName  #筛选table</li>
+</ul>
+<ul>
+<li>输出结果如下：</li>
+</ul>
+<ul>
+<li>这里有几点需要注意：</li>
+</ul>
+<ul>
+<li>由于输出有字符限制，因此同一个时间的操作，并不一定会只在同一行出现，比如：</li>
+</ul>
+<ul>
+<li>从这里开始，就可以看到客户进行的操作，虽然基本在同一时间执行，但是我们可以看到里面的输出内容是具有连贯性的, 我们将rule导出的时候，一定切记要将内容复制完整。</li>
+</ul>
+<ul>
+<li>rule在执行输出的时候，依旧是遵循rule本身的执行优先级进行分别操作，DNAT rule &gt; Application rule &gt; network rule。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>大家好，Azure Firewall policy有些时候，我们无法在ASC上读取，而且客户如果近期防火墙做过操作，没有操作之前的policy记录的话，客户也是无法回滚，客户会开单要求我们帮助查询。</li>
+</ul>
+<ul>
+<li>以下为大家提供出对应的查询方式，以便大家之后进行使用。</li>
+</ul>
+<ul>
+<li>Azure Firewall Policy的运作方式跟其他资源有所不同，并不是直接走NRP， 而是ARM -&gt;NFVRP-&gt; COSMOS DB</li>
+</ul>
+<ul>
+<li>因此，我们从ARM/NRP的常规方式查询，是无法读取到修改的内容的。</li>
+</ul>
+<ul>
+<li>cluster(&#39;aznwchinamc.chinanorth2&#39;).database(&#39;NfvRpMds&#39;).ResourceTable   # 这个查询firewall policy的cluster/database</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025.10.20</p>
+<p>大家好，Azure Firewall policy有些时候，我们无法在ASC上读取，而且客户如果近期防火墙做过操作，没有操作之前的policy记录的话，客户也是无法回滚，客户会开单要求我们帮助查询。</p>
+<p>以下为大家提供出对应的查询方式，以便大家之后进行使用。</p>
+<p>Azure Firewall Policy的运作方式跟其他资源有所不同，并不是直接走NRP， 而是ARM -&gt;NFVRP-&gt; COSMOS DB</p>
+<p>因此，我们从ARM/NRP的常规方式查询，是无法读取到修改的内容的。</p>
+<p>我们可以采取以下方式：</p>
+<p>cluster(&#39;aznwchinamc.chinanorth2&#39;).database(&#39;NfvRpMds&#39;).ResourceTable   # 这个查询firewall policy的cluster/database</p>
+<p>| where CustomerSubscriptionId == &quot;32c3461a-4917-4339-9ecb-4d1df8548b6b&quot;  #客户的订阅ID</p>
+<p>| where ResourceGroupName == &quot;Customer resource group name&quot; #客户的资源组名称</p>
+<p>| where ResourceName == &quot;Azure firewall policy name&quot; # 客户的Firewall policy名称</p>
+<p>| where env_time &gt; datetime(&quot;2025-09-09 00:00:00&quot; ) and env_time &lt; datetime(&#39;2025-09-19 23:30:00&#39;)  #这里为客户进行修改的时间戳， 不同于正常时间戳，这里使用env_time.</p>
+<p>| project env_time,properties, CustomerSubscriptionId, ResourceName  #筛选table</p>
+<p>输出结果如下：</p>
+<p>这里有几点需要注意：</p>
+<p>由于输出有字符限制，因此同一个时间的操作，并不一定会只在同一行出现，比如：</p>
+<p>从这里开始，就可以看到客户进行的操作，虽然基本在同一时间执行，但是我们可以看到里面的输出内容是具有连贯性的, 我们将rule导出的时候，一定切记要将内容复制完整。</p>
+<p>rule在执行输出的时候，依旧是遵循rule本身的执行优先级进行分别操作，DNAT rule &gt; Application rule &gt; network rule。</p>
+<p>这个记录可以保存90天，超出范围的无法提供</p></article>

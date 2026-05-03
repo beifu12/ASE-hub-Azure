@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="使用run commmanc退域和加域"><h1>使用run commmanc退域和加域</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-03-23 14:07:28</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Zhang Lihong</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<ul>
+<li>$password = ConvertTo-SecureString &quot;xxx&quot; -AsPlainText -Force</li>
+</ul>
+<ul>
+<li>$Cred = New-Object System.Management.Automation.PSCredential (&quot;domainadminname &quot;, $password)</li>
+</ul>
+<ul>
+<li>参考截图：</li>
+</ul>
+<ul>
+<li>如提示重启，请再门户上重启。</li>
+</ul>
+<ul>
+<li>$Cred = New-Object System.Management.Automation.PSCredential (&quot;domainadminname&quot;, $password)</li>
+</ul>
+<ul>
+<li>Add-Computer -DomainName &quot;domainname&quot; -Credential $Cred</li>
+</ul>
+<ul>
+<li>Run command功能参考：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>1．使用run command功能，运行退域脚本。</li>
+</ul>
+<ul>
+<li>参考脚本，请将黄色部分替换为您环境中的值。</li>
+</ul>
+<ul>
+<li>Remove-Computer -Credential $Cred -force</li>
+</ul>
+<ul>
+<li>2．使用run command功能，运行加域脚本。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/run-command" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/run-command</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang Lihong</p>
+<p>1．使用run command功能，运行退域脚本。</p>
+<p>参考脚本，请将黄色部分替换为您环境中的值。</p>
+<p>$password = ConvertTo-SecureString &quot;xxx&quot; -AsPlainText -Force</p>
+<p>$Cred = New-Object System.Management.Automation.PSCredential (&quot;domainadminname &quot;, $password)</p>
+<p>Remove-Computer -Credential $Cred -force</p>
+<p>参考截图：</p>
+<p>如提示重启，请再门户上重启。</p>
+<p>2．使用run command功能，运行加域脚本。</p>
+<p>$Cred = New-Object System.Management.Automation.PSCredential (&quot;domainadminname&quot;, $password)</p>
+<p>Add-Computer -DomainName &quot;domainname&quot; -Credential $Cred</p>
+<p>Run command功能参考：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/run-command" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/run-command</a></p></article>

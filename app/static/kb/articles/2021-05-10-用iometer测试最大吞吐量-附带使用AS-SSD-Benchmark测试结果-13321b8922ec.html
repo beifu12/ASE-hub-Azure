@@ -1,0 +1,162 @@
+<article class="kb-article" data-title="用iometer测试最大吞吐量 （附带使用AS SSD Benchmark测试结果）"><h1>用iometer测试最大吞吐量 （附带使用AS SSD Benchmark测试结果）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-05-10 11:36:54</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20200825</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20200825</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20200825</li>
+</ul>
+<ul>
+<li>Johnny Lee</li>
+</ul>
+<ul>
+<li>我这里用iometer按照文档做了如下测试，请您按照这个方法测试一下：</li>
+</ul>
+<ul>
+<li>注意测试最大吞吐量是请选择64K的请求：</li>
+</ul>
+<ul>
+<li>Step2  右键以管理员运行名为IOMeter.exe的文件</li>
+</ul>
+<ul>
+<li>Part 2  使用IOMeter测试磁盘性能</li>
+</ul>
+<ul>
+<li>Step1  选择对应的磁盘，更改队列深度为128 （注：为了实现最大吞吐量，队列深度必须为 128）</li>
+</ul>
+<ul>
+<li>Step2 新建最大读取IOPS访问规范</li>
+</ul>
+<ul>
+<li>选择“Access Specification” -- New</li>
+</ul>
+<ul>
+<li>Write64：</li>
+</ul>
+<ul>
+<li>点击OK，会在“Global Access Specification”中看到新建的“write64”，选中，点击Add将其添加到左侧“Assigned Access Specification”列表中</li>
+</ul>
+<ul>
+<li>选择“Results Display”，更新频率可设置为1s ，点击绿色旗帜“Start tests” ，会让选择保存结果的位置，选择“Save”，开始测试</li>
+</ul>
+<ul>
+<li>其他不变，测试结果如下：</li>
+</ul>
+<ul>
+<li>==================================================================</li>
+</ul>
+<ul>
+<li>AS SSD Benchmark测试结果： read和write应该是分别测试的</li>
+</ul>
+<ul>
+<li>通过我这里对2T的P40测试，用as ssd 也可以测试出大概250MB/s(读写单独算)的结果，我是新建的虚拟机，没有任何负载：</li>
+</ul>
+<ul>
+<li>我们的官方承诺值是以64K数据包为基准测试的，所以还是要推荐客户使用官方工具。</li>
+</ul>
+<ul>
+<li>以下是我这里测试4096G的 P50磁盘效果：</li>
+</ul>
+<ul>
+<li>也可以达到250MB/s 左右。(读写单独算)</li>
+</ul>
+<ul>
+<li>=====================</li>
+</ul>
+<ul>
+<li>对storage pool镜像卷的测试：</li>
+</ul>
+<ul>
+<li>2块盘1个2T 一个4T 创建了镜像卷后，就是2T：</li>
+</ul>
+<ul>
+<li>AS SSD Benchmark：</li>
+</ul>
+<ul>
+<li>Iometer：</li>
+</ul>
+<ul>
+<li>读比较快：</li>
+</ul>
+<ul>
+<li>写比较慢：</li>
+</ul>
+<ul>
+<li>对简单卷的测试：</li>
+</ul>
+<ul>
+<li>读写基本一致：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>进入访问规范编辑页面，确认IO大小为64， 随机占比100%，读100% (此三个参数的值来自后面官方文档中相应方案的设置)</li>
+</ul>
+<ul>
+<li>Step3 设置更新频率及查看结果</li>
+</ul>
+<ul>
+<li>查看“Total I/O per Second” 项，即为最大write 吞吐量值（250MB/s）</li>
+</ul>
+<ul>
+<li>通过网上查看as ssd参数的查看，实际上就应该以第一项为准，但是这个并没有以64K的数据包为基准测试，如下截图是网上找到的翻译截图</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>同样随机读的只需要修改访问规则</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Step1  进入网站<a href="http://www.iometer.org/下载IOMeter工具，" target="_blank" rel="noopener">http://www.iometer.org/下载IOMeter工具，</a> 保存，解压后会看到两个.exe文件,如下图：</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20200825</p>
+<p>Johnny Lee</p>
+<p>我这里用iometer按照文档做了如下测试，请您按照这个方法测试一下：</p>
+<p>注意测试最大吞吐量是请选择64K的请求：</p>
+<p>Step1  进入网站<a href="http://www.iometer.org/下载IOMeter工具，" target="_blank" rel="noopener">http://www.iometer.org/下载IOMeter工具，</a> 保存，解压后会看到两个.exe文件,如下图：</p>
+<p>Step2  右键以管理员运行名为IOMeter.exe的文件</p>
+<p>Part 2  使用IOMeter测试磁盘性能</p>
+<p>Step1  选择对应的磁盘，更改队列深度为128 （注：为了实现最大吞吐量，队列深度必须为 128）</p>
+<p>Step2 新建最大读取IOPS访问规范</p>
+<p>选择“Access Specification” -- New</p>
+<p>进入访问规范编辑页面，确认IO大小为64， 随机占比100%，读100% (此三个参数的值来自后面官方文档中相应方案的设置)</p>
+<p>Write64：</p>
+<p>点击OK，会在“Global Access Specification”中看到新建的“write64”，选中，点击Add将其添加到左侧“Assigned Access Specification”列表中</p>
+<p>Step3 设置更新频率及查看结果</p>
+<p>选择“Results Display”，更新频率可设置为1s ，点击绿色旗帜“Start tests” ，会让选择保存结果的位置，选择“Save”，开始测试</p>
+<p>查看“Total I/O per Second” 项，即为最大write 吞吐量值（250MB/s）</p>
+<p>同样随机读的只需要修改访问规则</p>
+<p>其他不变，测试结果如下：</p>
+<p>==================================================================</p>
+<p>AS SSD Benchmark测试结果： read和write应该是分别测试的</p>
+<p>通过我这里对2T的P40测试，用as ssd 也可以测试出大概250MB/s(读写单独算)的结果，我是新建的虚拟机，没有任何负载：</p>
+<p>通过网上查看as ssd参数的查看，实际上就应该以第一项为准，但是这个并没有以64K的数据包为基准测试，如下截图是网上找到的翻译截图</p>
+<p>我们的官方承诺值是以64K数据包为基准测试的，所以还是要推荐客户使用官方工具。</p>
+<p>以下是我这里测试4096G的 P50磁盘效果：</p>
+<p>也可以达到250MB/s 左右。(读写单独算)</p>
+<p>=====================</p>
+<p>对storage pool镜像卷的测试：</p>
+<p>2块盘1个2T 一个4T 创建了镜像卷后，就是2T：</p>
+<p>AS SSD Benchmark：</p>
+<p>Iometer：</p>
+<p>读比较快：</p>
+<p>写比较慢：</p>
+<p>对简单卷的测试：</p>
+<p>读写基本一致：</p></article>

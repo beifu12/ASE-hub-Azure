@@ -1,0 +1,77 @@
+<article class="kb-article" data-title="【Share】移动ISP拦截导致CDN报HTTP 404"><h1>【Share】移动ISP拦截导致CDN报HTTP 404</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2025-05-28 16:10:18</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Xing Xiangjia</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Xing Xiangjia</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Xing Xiangjia</li>
+</ul>
+<ul>
+<li>May 28, 2025</li>
+</ul>
+<ul>
+<li>工单问题：</li>
+</ul>
+<ul>
+<li>URL:</li>
+</ul>
+<ul>
+<li>扬州移动用户解析的CDN节点地理位置在徐州。</li>
+</ul>
+<ul>
+<li>扬州移动的信安系统识别到域名有敏感内容，就把CDN域名解析到的江苏徐州的CDN节点的IP段拉黑了，导致扬州移动访问到这个IP段都不行。</li>
+</ul>
+<ul>
+<li>小结：</li>
+</ul>
+<ul>
+<li>如果大家碰到CDN报HTTP 404，并且后台查不到404日志的话，留意一下是不是被ISP拦截了。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>但是21v、CDN PG和CDN供应商都查询不到任何对应的404日志，排查陷入僵局。PG切换CDN供应商之后，问题恢复了。</li>
+</ul>
+<ul>
+<li>后来经过PG和供应商确认，问题原因如下：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>最近处理了工单20250522354556。客户报障扬州移动用户访问Azure CDN域名会报HTTP状态码404</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>CDN节点查不到日志的原因是这部分请求被ISP拦截了，压根就没有到达CDN节点。</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://ka-resource.vchangyi.com/kaboos/wxapp/chaofandashi/v4.3.1/love_landing_bottom_new.png" target="_blank" rel="noopener">https://ka-resource.vchangyi.com/kaboos/wxapp/chaofandashi/v4.3.1/love_landing_bottom_new.png</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Xing Xiangjia</p>
+<p>May 28, 2025</p>
+<p>工单问题：</p>
+<p>最近处理了工单20250522354556。客户报障扬州移动用户访问Azure CDN域名会报HTTP状态码404</p>
+<p>URL:</p>
+<p><a href="https://ka-resource.vchangyi.com/kaboos/wxapp/chaofandashi/v4.3.1/love_landing_bottom_new.png" target="_blank" rel="noopener">https://ka-resource.vchangyi.com/kaboos/wxapp/chaofandashi/v4.3.1/love_landing_bottom_new.png</a></p>
+<p>但是21v、CDN PG和CDN供应商都查询不到任何对应的404日志，排查陷入僵局。PG切换CDN供应商之后，问题恢复了。</p>
+<p>后来经过PG和供应商确认，问题原因如下：</p>
+<p>扬州移动用户解析的CDN节点地理位置在徐州。</p>
+<p>扬州移动的信安系统识别到域名有敏感内容，就把CDN域名解析到的江苏徐州的CDN节点的IP段拉黑了，导致扬州移动访问到这个IP段都不行。</p>
+<p>小结：</p>
+<p>如果大家碰到CDN报HTTP 404，并且后台查不到404日志的话，留意一下是不是被ISP拦截了。</p>
+<p>CDN节点查不到日志的原因是这部分请求被ISP拦截了，压根就没有到达CDN节点。</p></article>

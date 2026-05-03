@@ -1,0 +1,340 @@
+<article class="kb-article" data-title="BCMProtGetSaSUriAsyncError"><h1>BCMProtGetSaSUriAsyncError</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-02-17 14:31:53</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>What is the customer facing symptom for this failure?</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>What is the customer facing symptom for this failure?</li>
+</ul>
+<ul>
+<li>Backup failure with ErrorCode BCMProtGetSaSUriAsyncError</li>
+</ul>
+<ul>
+<li>| where Message contains &quot;UserErrorProtCMKAKVAuthFailure&quot;</li>
+</ul>
+<ul>
+<li>| where EventCode == 5020</li>
+</ul>
+<ul>
+<li>Incident 271853625 : [Waiting on CSS]CRITSIT | [IAASVM],[BACKUPFAIL],[ONLINE] | [arnoel] | [Backup failed with GA issue after migrating to new tenant | Error code I am seeing &quot;BCMProtGetSaSUriAsyncError&quot;]</li>
+</ul>
+<ul>
+<li>ErrorCode GuestAgentSnapshotTaskStatusError</li>
+</ul>
+<ul>
+<li>ErrorCode GuestAgentSnapshotTaskStatusError for Windows VM</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Cause 1: Insufficient permissions for the Recovery services vault to access Azure Key Vault</li>
+</ul>
+<ul>
+<li>If below query results in some rows as output :</li>
+</ul>
+<ul>
+<li>Plain Text</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt; ago(20d)</li>
+</ul>
+<ul>
+<li>| where TaskId == &quot;&lt;TaskId&gt;&quot;</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, ServiceName, FileNameLineNumber, Message, Level = Level + 1, TaskId</li>
+</ul>
+<ul>
+<li>Follow below documentation to provide KeyVault having Customer Managed Key (CMK) access to the RecoveryService Vault</li>
+</ul>
+<ul>
+<li>Encryption of backup data using customer-managed keys</li>
+</ul>
+<ul>
+<li>Customer Ready Content</li>
+</ul>
+<ul>
+<li>Cause 2: The Subscription is migrated to new tenant</li>
+</ul>
+<ul>
+<li>Step1</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt; ago(60d)</li>
+</ul>
+<ul>
+<li>| where StampName == &quot;eus-pod01-rrp1&quot;</li>
+</ul>
+<ul>
+<li>| where Message contains &quot;&lt;SubscriptionId&gt;&quot;</li>
+</ul>
+<ul>
+<li>| where Message contains &quot;ShouldRunTEE = True&quot;</li>
+</ul>
+<ul>
+<li>| project TaskId</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt; ago(21d)</li>
+</ul>
+<ul>
+<li>| where TaskId in (&lt;TaskID from above query’s output&gt;)</li>
+</ul>
+<ul>
+<li>| where Message contains &quot;tenant&quot;</li>
+</ul>
+<ul>
+<li>Search for tenantID in the Message We might trace similar to:</li>
+</ul>
+<ul>
+<li>d4p1:Properties&quot;{\r\n &quot;tenantId&quot;: &quot;08c69f21-c435-402b-bbdc-8de5ae0bb3e2&quot;,\r\n &quot;locationPlacementId&quot;: &quot;Public_2014-09-01&quot;,\r\n &quot;quotaId&quot;: &quot;EnterpriseAgreement_2014-09-01&quot;,\r\n &quot;registeredFeatures&quot;: []\r\n}&quot;&lt;/d4p1:Properties&gt; Ignore any message starting with “Returning stamp details from cache”</li>
+</ul>
+<ul>
+<li>Step2: Search in Backup TaskID traces for the tenant ID</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt; ago(24d)</li>
+</ul>
+<ul>
+<li>| where StampName == &quot;eus-pod01-coord1&quot;</li>
+</ul>
+<ul>
+<li>Here the tenant ID printed will be different:</li>
+</ul>
+<ul>
+<li>PrintLongDebugTraces | …. name&quot;:&quot;MicrosoftMonitoringAgent&quot;,&quot;type&quot;:&quot;Microsoft.Compute/virtualMachines/extensions&quot;,&quot;location&quot;:&quot;eastus&quot;,&quot;tags&quot;:null}],&quot;identity&quot;:{&quot;principalId&quot;:&quot;af4754e1-f436-4b47-9dc9-2bc8efd8eee4&quot;,&quot;tenantId&quot;:&quot;39cc8f4f-7ada-4a2a-9685-c30a4321498c&quot;,&quot;type&quot;:&quot;SystemAssigned&quot;,&quot;userAssignedIdentities&quot;:null},&quot;zones&quot;:null,&quot;extendedLocation&quot;:null,&quot;id&quot;:&quot;/subscriptions/89af3a44-c714-4dd6-8c60-7c9953cd4210/resourceGroups/rg-use-n}</li>
+</ul>
+<ul>
+<li>Step3: Confirm from the Customer that they have done tenant migration. This is vey important, as this is a user triggered operation</li>
+</ul>
+<ul>
+<li>Navigate to &#39;Vault&#39; -&gt; Identity -&gt; System Assigned -&gt; Change status to &#39;Off&#39; and Save.</li>
+</ul>
+<ul>
+<li>Navigate to &#39;Vault&#39; -&gt; Identity -&gt; System Assigned -&gt; Change status to &#39;ON&#39; and Save.</li>
+</ul>
+<ul>
+<li>Step 3: Regrant Azure Key Vault permission to Vault System Assigned MSI:</li>
+</ul>
+<ul>
+<li>Navigate to Key Vault hosting the CMK and re-grant permissions (GET,LIST, WRAP and UNWRAP Key) to the system assigned MSI of the Vault. Detailed steps listed in this article</li>
+</ul>
+<ul>
+<li>Step 4: Save and Re-apply CMK with the same settings</li>
+</ul>
+<ul>
+<li>Navigate to &#39;Vault&#39; -&gt; Properties -&gt; Encryption Settings -&gt; just &#39;Save&#39; the existing settings to reapply the CMK.</li>
+</ul>
+<ul>
+<li>Step 1: Remove the User Assigned Identity from RS Vault</li>
+</ul>
+<ul>
+<li>Navigate to &#39;Vault&#39; -&gt; Identity -&gt; User Assigned -&gt; Remove the identity used under CMK settings.</li>
+</ul>
+<ul>
+<li>Step 2: Re-add the same User Assigned Identity to RS Vault</li>
+</ul>
+<ul>
+<li>Navigate to &#39;Vault&#39; -&gt; Identity -&gt; User Assigned -&gt; Add the identity used under CMK settings.</li>
+</ul>
+<ul>
+<li>Step 3: Save and Re-apply CMK with the same settings</li>
+</ul>
+<ul>
+<li>CSI incident for which this TSG is created</li>
+</ul>
+<ul>
+<li>If Extension was manually uninstalled (although it is never advisable to do that)</li>
+</ul>
+<ul>
+<li>Please try below steps to manually install back the VMSnapshot extension. If it does not work, please reach-out to Guest-Agent team to get help on manual re-installation.</li>
+</ul>
+<ul>
+<li>From a working VM, copy the installer .zip file from path C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot&lt;LatestVersion&gt;</li>
+</ul>
+<ul>
+<li>Copy it to affected VM at path C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot&lt;LatestVersion&gt;</li>
+</ul>
+<ul>
+<li>Unzip the .zip file contents (with replace all option) at same folder (C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot&lt;LatestVersion&gt;)</li>
+</ul>
+<ul>
+<li>Open command prompt (as admin) and run below commands</li>
+</ul>
+<ul>
+<li>- REG ADD &quot;HKLM\SOFTWARE\Microsoft\BcdrAgent&quot; /v IsProviderInstalled /t REG_SZ /d False /f</li>
+</ul>
+<ul>
+<li>- cd C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\1.0.71.0</li>
+</ul>
+<ul>
+<li>- IaaSBcdrExtension.exe install</li>
+</ul>
+<ul>
+<li>And copy it to affected VM at path C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot&lt;LatestVersion&gt;</li>
+</ul>
+<ul>
+<li>REG ADD &quot;HKLM\SOFTWARE\Microsoft\BcdrAgent&quot; /v IsProviderInstalled /t REG_SZ /d False /f</li>
+</ul>
+<ul>
+<li>cd C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\1.0.71.0</li>
+</ul>
+<ul>
+<li>IaaSBcdrExtension.exe install</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>union cluster(&#39;mabprod1&#39;).database(&#39;MABKustoProd1&#39;).TraceLogMessage, cluster(&#39;mabprodweu&#39;).database(&#39;MABKustoProd&#39;).TraceLogMessage, cluster(&#39;mabprodwus&#39;).database(&#39;MABKustoProd&#39;).TraceLogMessage</li>
+</ul>
+<ul>
+<li>To Check if Subscription of customer has undergone Tenant Migration:</li>
+</ul>
+<ul>
+<li>EventLog</li>
+</ul>
+<ul>
+<li>TraceLogMessage</li>
+</ul>
+<ul>
+<li>Step 5: Validate if the CMK Update succeeds in the Jobs page.</li>
+</ul>
+<ul>
+<li>Step 6: After the previous step is complete, re-trigger the backups and check if it succeeds.</li>
+</ul>
+<ul>
+<li>Step 4: Validate if the CMK Update succeeds in the Jobs page.</li>
+</ul>
+<ul>
+<li>Step 5: After the previous step is complete, re-trigger the backups and check if it succeeds.</li>
+</ul>
+<ul>
+<li>Trigger backup from Portal</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>How to verify if the failure is caused by this specific root cause?</li>
+</ul>
+<ul>
+<li>Root cause 3: VMSnapshot Extension may have been manually uninstalled</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>What is the workaround?</li>
+</ul>
+<ul>
+<li>If the Subscription (with Recovery service vault, the data source protected say IaaS VM, and key vault used for CMK) are all migrated to new tenant, then the backups on CMK enabled vault might fail with the error BCMProtGetSaSUriAsyncError.</li>
+</ul>
+<ul>
+<li>What is the workaround? To resolve this issue, follow the steps listed below on each of the impacted vaults</li>
+</ul>
+<ul>
+<li>Solution 1: If the System Assigned Identity is used in Recovery Services Vault</li>
+</ul>
+<ul>
+<li>Step 1: Disable the Vault System Assigned MSI</li>
+</ul>
+<ul>
+<li>Step 2: Re-enable the Vault System Assigned MSI</li>
+</ul>
+<ul>
+<li>Solution 2: If the user Assigned Identity is used in Recovery Services Vault:</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://mabprodwus.kusto.windows.net/MABKustoProd" target="_blank" rel="noopener">https://mabprodwus.kusto.windows.net/MABKustoProd</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>What is the customer facing symptom for this failure?</p>
+<p>Backup failure with ErrorCode BCMProtGetSaSUriAsyncError</p>
+<p>Cause 1: Insufficient permissions for the Recovery services vault to access Azure Key Vault</p>
+<p>How to verify if the failure is caused by this specific root cause?</p>
+<p>If below query results in some rows as output :</p>
+<p>Plain Text</p>
+<p>union cluster(&#39;mabprod1&#39;).database(&#39;MABKustoProd1&#39;).TraceLogMessage, cluster(&#39;mabprodweu&#39;).database(&#39;MABKustoProd&#39;).TraceLogMessage, cluster(&#39;mabprodwus&#39;).database(&#39;MABKustoProd&#39;).TraceLogMessage</p>
+<p>| where TIMESTAMP &gt; ago(20d)</p>
+<p>| where TaskId == &quot;&lt;TaskId&gt;&quot;</p>
+<p>| project PreciseTimeStamp, ServiceName, FileNameLineNumber, Message, Level = Level + 1, TaskId</p>
+<p>| where Message contains &quot;UserErrorProtCMKAKVAuthFailure&quot;</p>
+<p>What is the workaround?</p>
+<p>Follow below documentation to provide KeyVault having Customer Managed Key (CMK) access to the RecoveryService Vault</p>
+<p>Encryption of backup data using customer-managed keys</p>
+<p>Customer Ready Content</p>
+<p>Cause 2: The Subscription is migrated to new tenant</p>
+<p>If the Subscription (with Recovery service vault, the data source protected say IaaS VM, and key vault used for CMK) are all migrated to new tenant, then the backups on CMK enabled vault might fail with the error BCMProtGetSaSUriAsyncError.</p>
+<p>To Check if Subscription of customer has undergone Tenant Migration:</p>
+<p>Step1</p>
+<p>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://mabprodwus.kusto.windows.net/MABKustoProd" target="_blank" rel="noopener">https://mabprodwus.kusto.windows.net/MABKustoProd</a></p>
+<p>EventLog</p>
+<p>| where TIMESTAMP &gt; ago(60d)</p>
+<p>| where StampName == &quot;eus-pod01-rrp1&quot;</p>
+<p>| where EventCode == 5020</p>
+<p>| where Message contains &quot;&lt;SubscriptionId&gt;&quot;</p>
+<p>| where Message contains &quot;ShouldRunTEE = True&quot;</p>
+<p>| project TaskId</p>
+<p>TraceLogMessage</p>
+<p>| where TIMESTAMP &gt; ago(21d)</p>
+<p>| where TaskId in (&lt;TaskID from above query’s output&gt;)</p>
+<p>| where Message contains &quot;tenant&quot;</p>
+<p>Search for tenantID in the Message We might trace similar to:</p>
+<p>d4p1:Properties&quot;{\r\n &quot;tenantId&quot;: &quot;08c69f21-c435-402b-bbdc-8de5ae0bb3e2&quot;,\r\n &quot;locationPlacementId&quot;: &quot;Public_2014-09-01&quot;,\r\n &quot;quotaId&quot;: &quot;EnterpriseAgreement_2014-09-01&quot;,\r\n &quot;registeredFeatures&quot;: []\r\n}&quot;&lt;/d4p1:Properties&gt; Ignore any message starting with “Returning stamp details from cache”</p>
+<p>Step2: Search in Backup TaskID traces for the tenant ID</p>
+<p>| where TIMESTAMP &gt; ago(24d)</p>
+<p>| where StampName == &quot;eus-pod01-coord1&quot;</p>
+<p>Here the tenant ID printed will be different:</p>
+<p>PrintLongDebugTraces | …. name&quot;:&quot;MicrosoftMonitoringAgent&quot;,&quot;type&quot;:&quot;Microsoft.Compute/virtualMachines/extensions&quot;,&quot;location&quot;:&quot;eastus&quot;,&quot;tags&quot;:null}],&quot;identity&quot;:{&quot;principalId&quot;:&quot;af4754e1-f436-4b47-9dc9-2bc8efd8eee4&quot;,&quot;tenantId&quot;:&quot;39cc8f4f-7ada-4a2a-9685-c30a4321498c&quot;,&quot;type&quot;:&quot;SystemAssigned&quot;,&quot;userAssignedIdentities&quot;:null},&quot;zones&quot;:null,&quot;extendedLocation&quot;:null,&quot;id&quot;:&quot;/subscriptions/89af3a44-c714-4dd6-8c60-7c9953cd4210/resourceGroups/rg-use-n}</p>
+<p>Step3: Confirm from the Customer that they have done tenant migration. This is vey important, as this is a user triggered operation</p>
+<p>What is the workaround? To resolve this issue, follow the steps listed below on each of the impacted vaults</p>
+<p>Solution 1: If the System Assigned Identity is used in Recovery Services Vault</p>
+<p>Step 1: Disable the Vault System Assigned MSI</p>
+<p>Navigate to &#39;Vault&#39; -&gt; Identity -&gt; System Assigned -&gt; Change status to &#39;Off&#39; and Save.</p>
+<p>Step 2: Re-enable the Vault System Assigned MSI</p>
+<p>Navigate to &#39;Vault&#39; -&gt; Identity -&gt; System Assigned -&gt; Change status to &#39;ON&#39; and Save.</p>
+<p>Step 3: Regrant Azure Key Vault permission to Vault System Assigned MSI:</p>
+<p>Navigate to Key Vault hosting the CMK and re-grant permissions (GET,LIST, WRAP and UNWRAP Key) to the system assigned MSI of the Vault. Detailed steps listed in this article</p>
+<p>Step 4: Save and Re-apply CMK with the same settings</p>
+<p>Navigate to &#39;Vault&#39; -&gt; Properties -&gt; Encryption Settings -&gt; just &#39;Save&#39; the existing settings to reapply the CMK.</p>
+<p>Step 5: Validate if the CMK Update succeeds in the Jobs page.</p>
+<p>Step 6: After the previous step is complete, re-trigger the backups and check if it succeeds.</p>
+<p>Solution 2: If the user Assigned Identity is used in Recovery Services Vault:</p>
+<p>Step 1: Remove the User Assigned Identity from RS Vault</p>
+<p>Navigate to &#39;Vault&#39; -&gt; Identity -&gt; User Assigned -&gt; Remove the identity used under CMK settings.</p>
+<p>Step 2: Re-add the same User Assigned Identity to RS Vault</p>
+<p>Navigate to &#39;Vault&#39; -&gt; Identity -&gt; User Assigned -&gt; Add the identity used under CMK settings.</p>
+<p>Step 3: Save and Re-apply CMK with the same settings</p>
+<p>Step 4: Validate if the CMK Update succeeds in the Jobs page.</p>
+<p>Step 5: After the previous step is complete, re-trigger the backups and check if it succeeds.</p>
+<p>Root cause 3: VMSnapshot Extension may have been manually uninstalled</p>
+<p>CSI incident for which this TSG is created</p>
+<p>Incident 271853625 : [Waiting on CSS]CRITSIT | [IAASVM],[BACKUPFAIL],[ONLINE] | [arnoel] | [Backup failed with GA issue after migrating to new tenant | Error code I am seeing &quot;BCMProtGetSaSUriAsyncError&quot;]</p>
+<p>ErrorCode GuestAgentSnapshotTaskStatusError</p>
+<p>ErrorCode GuestAgentSnapshotTaskStatusError for Windows VM</p>
+<p>If Extension was manually uninstalled (although it is never advisable to do that)</p>
+<p>Please try below steps to manually install back the VMSnapshot extension. If it does not work, please reach-out to Guest-Agent team to get help on manual re-installation.</p>
+<p>From a working VM, copy the installer .zip file from path C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot&lt;LatestVersion&gt;</p>
+<p>Copy it to affected VM at path C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot&lt;LatestVersion&gt;</p>
+<p>Unzip the .zip file contents (with replace all option) at same folder (C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot&lt;LatestVersion&gt;)</p>
+<p>Open command prompt (as admin) and run below commands</p>
+<ul>
+<li>REG ADD &quot;HKLM\SOFTWARE\Microsoft\BcdrAgent&quot; /v IsProviderInstalled /t REG_SZ /d False /f</li>
+</ul>
+<ul>
+<li>cd C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\1.0.71.0</li>
+</ul>
+<ul>
+<li>IaaSBcdrExtension.exe install</li>
+</ul>
+<p>Trigger backup from Portal</p>
+<p>And copy it to affected VM at path C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot&lt;LatestVersion&gt;</p>
+<p>REG ADD &quot;HKLM\SOFTWARE\Microsoft\BcdrAgent&quot; /v IsProviderInstalled /t REG_SZ /d False /f</p>
+<p>cd C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\1.0.71.0</p>
+<p>IaaSBcdrExtension.exe install</p></article>

@@ -1,0 +1,122 @@
+<article class="kb-article" data-title="Log Analytics监视Backup 服务状态并配置Alert警报通知"><h1>Log Analytics监视Backup 服务状态并配置Alert警报通知</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-20 14:06:17</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>产品组已经修复了备份数据写入Log A的功能。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>产品组已经修复了备份数据写入Log A的功能。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>AzureDiagnostics</li>
+</ul>
+<ul>
+<li>| where Category == &quot;CoreAzureBackup&quot;</li>
+</ul>
+<ul>
+<li>//Get all Backup Items</li>
+</ul>
+<ul>
+<li>| where OperationName == &quot;BackupItem&quot;</li>
+</ul>
+<ul>
+<li>//Get distinct Backup Items</li>
+</ul>
+<ul>
+<li>| distinct  BackupItemUniqueId_s, BackupItemFriendlyName_s</li>
+</ul>
+<ul>
+<li>| join kind=leftouter</li>
+</ul>
+<ul>
+<li>(AzureDiagnostics</li>
+</ul>
+<ul>
+<li>| where Category == &quot;AddonAzureBackupStorage&quot;</li>
+</ul>
+<ul>
+<li>| where OperationName == &quot;StorageAssociation&quot;</li>
+</ul>
+<ul>
+<li>//Get latest record for each Backup Item</li>
+</ul>
+<ul>
+<li>| summarize arg_max(TimeGenerated, *) by BackupItemUniqueId_s</li>
+</ul>
+<ul>
+<li>| extend StorageConsumedInGBs = todouble(StorageConsumedInMBs_s)/1024</li>
+</ul>
+<ul>
+<li>| extend Date = format_datetime(TimeGenerated+8h, &#39;yyyy-MM-dd&#39;)</li>
+</ul>
+<ul>
+<li>| project Date, BackupItemUniqueId_s, StorageConsumedInGBs)</li>
+</ul>
+<ul>
+<li>on BackupItemUniqueId_s</li>
+</ul>
+<ul>
+<li>| project Date, BackupItemUniqueId_s, BackupItemFriendlyName_s, StorageConsumedInGBs</li>
+</ul>
+<ul>
+<li>| sort by StorageConsumedInGBs desc</li>
+</ul>
+<ul>
+<li>| render timechart</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>请您按下图配置vault，确认备份任务发生并等待8小时后，使用以下查询语句。</li>
+</ul>
+<ul>
+<li>后续备份任务不需要等这么久，一般任务完成10分钟后就可以进行查询了。</li>
+</ul>
+<ul>
+<li>查询结果如下，由于只有一天的数据，只生成了一个数据点。如果数据够多的话可以看到用量趋势图。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>产品组已经修复了备份数据写入Log A的功能。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/backup/backup-azure-monitoring-use-azuremonitor" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/backup/backup-azure-monitoring-use-azuremonitor</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>产品组已经修复了备份数据写入Log A的功能。</p>
+<p>请您按下图配置vault，确认备份任务发生并等待8小时后，使用以下查询语句。</p>
+<p>后续备份任务不需要等这么久，一般任务完成10分钟后就可以进行查询了。</p>
+<p>AzureDiagnostics</p>
+<p>| where Category == &quot;CoreAzureBackup&quot;</p>
+<p>//Get all Backup Items</p>
+<p>| where OperationName == &quot;BackupItem&quot;</p>
+<p>//Get distinct Backup Items</p>
+<p>| distinct  BackupItemUniqueId_s, BackupItemFriendlyName_s</p>
+<p>| join kind=leftouter</p>
+<p>(AzureDiagnostics</p>
+<p>| where Category == &quot;AddonAzureBackupStorage&quot;</p>
+<p>| where OperationName == &quot;StorageAssociation&quot;</p>
+<p>//Get latest record for each Backup Item</p>
+<p>| summarize arg_max(TimeGenerated, *) by BackupItemUniqueId_s</p>
+<p>| extend StorageConsumedInGBs = todouble(StorageConsumedInMBs_s)/1024</p>
+<p>| extend Date = format_datetime(TimeGenerated+8h, &#39;yyyy-MM-dd&#39;)</p>
+<p>| project Date, BackupItemUniqueId_s, StorageConsumedInGBs)</p>
+<p>on BackupItemUniqueId_s</p>
+<p>| project Date, BackupItemUniqueId_s, BackupItemFriendlyName_s, StorageConsumedInGBs</p>
+<p>| sort by StorageConsumedInGBs desc</p>
+<p>| render timechart</p>
+<p>查询结果如下，由于只有一天的数据，只生成了一个数据点。如果数据够多的话可以看到用量趋势图。</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/backup/backup-azure-monitoring-use-azuremonitor" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/backup/backup-azure-monitoring-use-azuremonitor</a></p></article>

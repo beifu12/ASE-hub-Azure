@@ -1,0 +1,87 @@
+<article class="kb-article" data-title="Windows  update 日志收取"><h1>Windows  update 日志收取</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows OS related issue</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-29 10:29:05</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>收集日志后看到如下报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>收集日志后看到如下报错：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>8/19</li>
+</ul>
+<ul>
+<li>案例：</li>
+</ul>
+<ul>
+<li>问题：</li>
+</ul>
+<ul>
+<li>Windows Update 不能使用.</li>
+</ul>
+<ul>
+<li>环境信息：</li>
+</ul>
+<ul>
+<li>Vm 资源id :   /subscriptions/f6f142dd-0d66-4fa8-a521-33873c3d1aea/resourceGroups/AutosolCloudAPIResourceGroup/providers/Microsoft.Compute/virtualMachines/PlantwebSiteServer</li>
+</ul>
+<ul>
+<li>Vm 系统版本：   Windows Server 2019 Datacenter</li>
+</ul>
+<ul>
+<li>网络信息：</li>
+</ul>
+<ul>
+<li>后台看到 网络安全组配置没有特殊的，可以理解为出入站没有block 的网络。</li>
+</ul>
+<ul>
+<li>网卡配置了dns  server  ， 指向了内网</li>
+</ul>
+<ul>
+<li>Windows Server Update Services (WSUS) ：设置 WSUS 服务器，该服务器从 Microsoft 批量下载更新。 然后，各个设备连接到服务器，从那里安装其更新。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>会在桌面生成一个WindowsUpdate.log 的日志：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在powershell 下运行 Get-WindowsUpdateLog， 收取windows 更新日志。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档： Windows 更新日志文件 | Microsoft Learn [learn.microsoft.com]</li>
+</ul>
+<ul>
+<li>因此客户需要做的就是打通 他的vm 到  <a href="http://usgdcecpinfap17.emrsn.org:8530" target="_blank" rel="noopener">http://usgdcecpinfap17.emrsn.org:8530</a>   的网络。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>8/19</p>
+<p>在powershell 下运行 Get-WindowsUpdateLog， 收取windows 更新日志。</p>
+<p>会在桌面生成一个WindowsUpdate.log 的日志：</p>
+<p>参考文档： Windows 更新日志文件 | Microsoft Learn [learn.microsoft.com]</p>
+<p>案例：</p>
+<p>问题：</p>
+<p>Windows Update 不能使用.</p>
+<p>环境信息：</p>
+<p>Vm 资源id :   /subscriptions/f6f142dd-0d66-4fa8-a521-33873c3d1aea/resourceGroups/AutosolCloudAPIResourceGroup/providers/Microsoft.Compute/virtualMachines/PlantwebSiteServer</p>
+<p>Vm 系统版本：   Windows Server 2019 Datacenter</p>
+<p>网络信息：</p>
+<p>后台看到 网络安全组配置没有特殊的，可以理解为出入站没有block 的网络。</p>
+<p>网卡配置了dns  server  ， 指向了内网</p>
+<p>收集日志后看到如下报错：</p>
+<p>Windows Server Update Services (WSUS) ：设置 WSUS 服务器，该服务器从 Microsoft 批量下载更新。 然后，各个设备连接到服务器，从那里安装其更新。</p>
+<p>因此客户需要做的就是打通 他的vm 到  <a href="http://usgdcecpinfap17.emrsn.org:8530" target="_blank" rel="noopener">http://usgdcecpinfap17.emrsn.org:8530</a>   的网络。</p></article>

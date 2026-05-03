@@ -1,0 +1,207 @@
+<article class="kb-article" data-title="【share】Mac os 基于证书认证的P2S VPN 地址池的配置方法"><h1>【share】Mac os 基于证书认证的P2S VPN 地址池的配置方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-22 15:38:34</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>humingyue</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>humingyue</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>humingyue</li>
+</ul>
+<ul>
+<li>关联工单号：20251015377398</li>
+</ul>
+<ul>
+<li>测试参考如下：</li>
+</ul>
+<ul>
+<li>首先配置VPN gateway 并配置P2S 地址池19.10.0.0/24并开启证书认证：</li>
+</ul>
+<ul>
+<li>$rg           = &quot;miyaeast2&quot;</li>
+</ul>
+<ul>
+<li>$location     = &quot;china east2&quot;</li>
+</ul>
+<ul>
+<li>$VNetName     = &quot;HK-gw-vnet&quot;</li>
+</ul>
+<ul>
+<li>$AppSubName   = &quot;default&quot;</li>
+</ul>
+<ul>
+<li>$GWSubName    = &quot;GatewaySubnet&quot;</li>
+</ul>
+<ul>
+<li>$VNetPrefix   = &quot;10.3.0.0/16&quot;</li>
+</ul>
+<ul>
+<li>$AppSubPrefix = &quot;10.3.0.0/24&quot;</li>
+</ul>
+<ul>
+<li>$GWSubPrefix  = &quot;10.3.1.0/24&quot;</li>
+</ul>
+<ul>
+<li>$GWName       = &quot;gw&quot;</li>
+</ul>
+<ul>
+<li>$GWIPName     = &quot;gwIP1&quot;</li>
+</ul>
+<ul>
+<li>$GWIPconf     = &quot;gwipconf1&quot;</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -EnvironmentName AzureChinaCloud</li>
+</ul>
+<ul>
+<li>#Select-AzSubscription -SubscriptionName &lt;YourSubscriptionName&gt;</li>
+</ul>
+<ul>
+<li>$appsub = New-AzVirtualNetworkSubnetConfig -Name $AppSubName -AddressPrefix $AppSubPrefix</li>
+</ul>
+<ul>
+<li>$gwsub = New-AzVirtualNetworkSubnetConfig -Name $GWSubName -AddressPrefix $GWSubPrefix</li>
+</ul>
+<ul>
+<li>$vnet     = Get-AzVirtualNetwork -Name $VNetName -ResourceGroupName $RG</li>
+</ul>
+<ul>
+<li>$subnet   = Get-AzVirtualNetworkSubnetConfig -Name &quot;GatewaySubnet&quot; -VirtualNetwork $vnet</li>
+</ul>
+<ul>
+<li>$gwipconf = New-AzVirtualNetworkGatewayIpConfig -Name $GWIPconf -Subnet $subnet -PublicIpAddress $gwpip</li>
+</ul>
+<ul>
+<li>$gw = Get-AzVirtualNetworkGateway -Name $GWName -ResourceGroupName $RG</li>
+</ul>
+<ul>
+<li>$member1 = New-AzVirtualNetworkGatewayPolicyGroupMember -Name &quot;member1&quot; -AttributeType &quot;CertificateGroupId&quot; -AttributeValue &quot;marketing.contoso.com&quot;</li>
+</ul>
+<ul>
+<li>$member2 = New-AzVirtualNetworkGatewayPolicyGroupMember -Name &quot;member2&quot; -AttributeType &quot;CertificateGroupId&quot; -AttributeValue &quot;sale.contoso.com&quot;</li>
+</ul>
+<ul>
+<li>$policyGroup1 = New-AzVirtualNetworkGatewayPolicyGroup -Name &quot;policyGroup1&quot; -Priority 0 -DefaultPolicyGroup -PolicyMember $member1</li>
+</ul>
+<ul>
+<li>$policyGroup2 = New-AzVirtualNetworkGatewayPolicyGroup -Name &quot;policyGroup2&quot; -Priority 10 -PolicyMember $member2</li>
+</ul>
+<ul>
+<li>$vngconnectionConfig1 = New-AzVpnClientConnectionConfiguration -Name &quot;config1&quot; -VirtualNetworkGatewayPolicyGroup $policyGroup1 -VpnClientAddressPool &quot;19.10.1.0/24&quot;</li>
+</ul>
+<ul>
+<li>$vngconnectionConfig2 = New-AzVpnClientConnectionConfiguration -Name &quot;config2&quot; -VirtualNetworkGatewayPolicyGroup $policyGroup2 -VpnClientAddressPool &quot;19.10.2.0/24&quot;</li>
+</ul>
+<ul>
+<li>$gw = Set-AzVirtualNetworkGateway -VirtualNetworkGateway $gw -VirtualNetworkGatewayPolicyGroup $policyGroup1, $policyGroup2 -ClientConnectionConfiguration $vngconnectionConfig1, $vngconnectionConfig2</li>
+</ul>
+<ul>
+<li>3， 下载VPN 客户端文件，解压后获取到这个vpnsettings.xml 的文件，可以看到对应的IP地址池的划分</li>
+</ul>
+<ul>
+<li>将服务器地址，远程ID 填入VPN gateway 的域名，选择相应的证书进行连接。 连接后获取的IP 地址就是对应的pool 的地址。</li>
+</ul>
+<ul>
+<li>Mac OS 版本需要是10.11及以上版本：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>现在非常肯定的是使用AAD 身份验证时是必须使用openvpn 协议且要用Azure VPN 客户端。 也非常肯定的是因为法规原因，中国区现在用不了Azure VPN 客户端。</li>
+</ul>
+<ul>
+<li>参考：配置 P2S Azure VPN 客户端 - Microsoft Entra ID 身份验证 - macOS | Microsoft Learn</li>
+</ul>
+<ul>
+<li>针对您的MacOS客户端，我们当前考虑测试基于IKEV2协议和证书验证的方式并尝试使用P2S VPN 用户组的和IP 地址池的功能。这里将做一下调研再给您进一步反馈。</li>
+</ul>
+<ul>
+<li>点到站点 (P2S) VPN 网关配置为使用 IKEv2 和证书身份验证，则可以使用 macOS 操作系统中的本机 VPN 客户端连接到虚拟网络。这里测试了在使用IKEv2 +证书的情况下同时配置地址池的方法：</li>
+</ul>
+<ul>
+<li>4， 根据文档提供的方法配置 P2S VPN 客户端 - 证书身份验证 - macOS 本机客户端 - Azure VPN Gateway | Microsoft Learn， 使用MacOS 自带的VPN 客户端。 安装根证书和客户端证书，并全部信任它们。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>2， 根据为 P2S VPN 配置用户组和 IP 地址池 - PowerShell - Azure VPN Gateway | Azure Docs 的要求创建了相应的证书并上传了根证书到VPN gateway</li>
+</ul>
+<ul>
+<li>使用如下AZ powershell 命令行完成用户组和地址池的创建并更新网关：</li>
+</ul>
+<ul>
+<li>New-AzResourceGroup -Name $rg -Location $location</li>
+</ul>
+<ul>
+<li>New-AzVirtualNetwork -Name $VNetName -ResourceGroupName $RG -Location $Location -AddressPrefix $VNetPrefix -Subnet $appsub,$gwsub</li>
+</ul>
+<ul>
+<li>New-AzVirtualNetworkGateway -Name $GWName -ResourceGroupName $RG -Location $Location -IpConfigurations $gwipconf -GatewayType Vpn -VpnType RouteBased -VpnGatewayGeneration Generation2 -GatewaySku VpnGw2AZ</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Configure VPN clients for P2S OpenVPN protocol connections: Microsoft Entra authentication: macOS: Preview - Azure Virtual WAN | Azure Docs</li>
+</ul>
+<ul>
+<li>$gwpip    = New-AzPublicIpAddress -Name &quot;gwIP1&quot; -ResourceGroupName $RG -Location $Location -AllocationMethod Static -Sku Standard</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025-10-22</p>
+<p>humingyue</p>
+<p>关联工单号：20251015377398</p>
+<p>现在非常肯定的是使用AAD 身份验证时是必须使用openvpn 协议且要用Azure VPN 客户端。 也非常肯定的是因为法规原因，中国区现在用不了Azure VPN 客户端。</p>
+<p>参考：配置 P2S Azure VPN 客户端 - Microsoft Entra ID 身份验证 - macOS | Microsoft Learn</p>
+<p>Configure VPN clients for P2S OpenVPN protocol connections: Microsoft Entra authentication: macOS: Preview - Azure Virtual WAN | Azure Docs</p>
+<p>针对您的MacOS客户端，我们当前考虑测试基于IKEV2协议和证书验证的方式并尝试使用P2S VPN 用户组的和IP 地址池的功能。这里将做一下调研再给您进一步反馈。</p>
+<p>点到站点 (P2S) VPN 网关配置为使用 IKEv2 和证书身份验证，则可以使用 macOS 操作系统中的本机 VPN 客户端连接到虚拟网络。这里测试了在使用IKEv2 +证书的情况下同时配置地址池的方法：</p>
+<p>测试参考如下：</p>
+<p>首先配置VPN gateway 并配置P2S 地址池19.10.0.0/24并开启证书认证：</p>
+<p>2， 根据为 P2S VPN 配置用户组和 IP 地址池 - PowerShell - Azure VPN Gateway | Azure Docs 的要求创建了相应的证书并上传了根证书到VPN gateway</p>
+<p>使用如下AZ powershell 命令行完成用户组和地址池的创建并更新网关：</p>
+<p>$rg           = &quot;miyaeast2&quot;</p>
+<p>$location     = &quot;china east2&quot;</p>
+<p>$VNetName     = &quot;HK-gw-vnet&quot;</p>
+<p>$AppSubName   = &quot;default&quot;</p>
+<p>$GWSubName    = &quot;GatewaySubnet&quot;</p>
+<p>$VNetPrefix   = &quot;10.3.0.0/16&quot;</p>
+<p>$AppSubPrefix = &quot;10.3.0.0/24&quot;</p>
+<p>$GWSubPrefix  = &quot;10.3.1.0/24&quot;</p>
+<p>$GWName       = &quot;gw&quot;</p>
+<p>$GWIPName     = &quot;gwIP1&quot;</p>
+<p>$GWIPconf     = &quot;gwipconf1&quot;</p>
+<p>Connect-AzAccount -EnvironmentName AzureChinaCloud</p>
+<p>#Select-AzSubscription -SubscriptionName &lt;YourSubscriptionName&gt;</p>
+<p>New-AzResourceGroup -Name $rg -Location $location</p>
+<p>$appsub = New-AzVirtualNetworkSubnetConfig -Name $AppSubName -AddressPrefix $AppSubPrefix</p>
+<p>$gwsub = New-AzVirtualNetworkSubnetConfig -Name $GWSubName -AddressPrefix $GWSubPrefix</p>
+<p>New-AzVirtualNetwork -Name $VNetName -ResourceGroupName $RG -Location $Location -AddressPrefix $VNetPrefix -Subnet $appsub,$gwsub</p>
+<p>$gwpip    = New-AzPublicIpAddress -Name &quot;gwIP1&quot; -ResourceGroupName $RG -Location $Location -AllocationMethod Static -Sku Standard</p>
+<p>$vnet     = Get-AzVirtualNetwork -Name $VNetName -ResourceGroupName $RG</p>
+<p>$subnet   = Get-AzVirtualNetworkSubnetConfig -Name &quot;GatewaySubnet&quot; -VirtualNetwork $vnet</p>
+<p>$gwipconf = New-AzVirtualNetworkGatewayIpConfig -Name $GWIPconf -Subnet $subnet -PublicIpAddress $gwpip</p>
+<p>New-AzVirtualNetworkGateway -Name $GWName -ResourceGroupName $RG -Location $Location -IpConfigurations $gwipconf -GatewayType Vpn -VpnType RouteBased -VpnGatewayGeneration Generation2 -GatewaySku VpnGw2AZ</p>
+<p>$gw = Get-AzVirtualNetworkGateway -Name $GWName -ResourceGroupName $RG</p>
+<p>$member1 = New-AzVirtualNetworkGatewayPolicyGroupMember -Name &quot;member1&quot; -AttributeType &quot;CertificateGroupId&quot; -AttributeValue &quot;marketing.contoso.com&quot;</p>
+<p>$member2 = New-AzVirtualNetworkGatewayPolicyGroupMember -Name &quot;member2&quot; -AttributeType &quot;CertificateGroupId&quot; -AttributeValue &quot;sale.contoso.com&quot;</p>
+<p>$policyGroup1 = New-AzVirtualNetworkGatewayPolicyGroup -Name &quot;policyGroup1&quot; -Priority 0 -DefaultPolicyGroup -PolicyMember $member1</p>
+<p>$policyGroup2 = New-AzVirtualNetworkGatewayPolicyGroup -Name &quot;policyGroup2&quot; -Priority 10 -PolicyMember $member2</p>
+<p>$vngconnectionConfig1 = New-AzVpnClientConnectionConfiguration -Name &quot;config1&quot; -VirtualNetworkGatewayPolicyGroup $policyGroup1 -VpnClientAddressPool &quot;19.10.1.0/24&quot;</p>
+<p>$vngconnectionConfig2 = New-AzVpnClientConnectionConfiguration -Name &quot;config2&quot; -VirtualNetworkGatewayPolicyGroup $policyGroup2 -VpnClientAddressPool &quot;19.10.2.0/24&quot;</p>
+<p>$gw = Set-AzVirtualNetworkGateway -VirtualNetworkGateway $gw -VirtualNetworkGatewayPolicyGroup $policyGroup1, $policyGroup2 -ClientConnectionConfiguration $vngconnectionConfig1, $vngconnectionConfig2</p>
+<p>3， 下载VPN 客户端文件，解压后获取到这个vpnsettings.xml 的文件，可以看到对应的IP地址池的划分</p>
+<p>4， 根据文档提供的方法配置 P2S VPN 客户端 - 证书身份验证 - macOS 本机客户端 - Azure VPN Gateway | Microsoft Learn， 使用MacOS 自带的VPN 客户端。 安装根证书和客户端证书，并全部信任它们。</p>
+<p>将服务器地址，远程ID 填入VPN gateway 的域名，选择相应的证书进行连接。 连接后获取的IP 地址就是对应的pool 的地址。</p>
+<p>Mac OS 版本需要是10.11及以上版本：</p></article>

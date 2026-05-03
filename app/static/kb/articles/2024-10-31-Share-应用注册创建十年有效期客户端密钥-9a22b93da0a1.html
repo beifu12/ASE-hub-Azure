@@ -1,0 +1,52 @@
+<article class="kb-article" data-title="【Share】应用注册创建十年有效期客户端密钥"><h1>【Share】应用注册创建十年有效期客户端密钥</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-10-31 14:50:42</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Feng Nanrui</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Feng Nanrui</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Feng Nanrui</li>
+</ul>
+<ul>
+<li>Install-Module AzureAD -Force</li>
+</ul>
+<ul>
+<li>Import-Module  AzureAD</li>
+</ul>
+<ul>
+<li>Connect-AzureAD -AzureEnvironmentName AzureChinaCloud</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>突破Portal限制，创建十年有效期的客户端密钥</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>New-AzureADApplicationPasswordCredential -ObjectId ad43de94-a2a1-xxxxxxx   -CustomKeyIdentifier &quot;Long time key&quot; -StartDate (Get-Date) -EndDate (Get-Date).AddYears(10)</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Feng Nanrui</p>
+<p>2024/10/31</p>
+<p>突破Portal限制，创建十年有效期的客户端密钥</p>
+<p>Install-Module AzureAD -Force</p>
+<p>Import-Module  AzureAD</p>
+<p>Connect-AzureAD -AzureEnvironmentName AzureChinaCloud</p>
+<p>New-AzureADApplicationPasswordCredential -ObjectId ad43de94-a2a1-xxxxxxx   -CustomKeyIdentifier &quot;Long time key&quot; -StartDate (Get-Date) -EndDate (Get-Date).AddYears(10)</p></article>

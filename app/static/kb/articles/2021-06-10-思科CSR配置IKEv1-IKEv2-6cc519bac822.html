@@ -1,0 +1,243 @@
+<article class="kb-article" data-title="思科CSR配置IKEv1 &amp; IKEv2"><h1>思科CSR配置IKEv1 &amp; IKEv2</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-06-10 11:49:54</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>IKEv1</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>IKEv1</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>IKEv1</li>
+</ul>
+<ul>
+<li>permit ip 10.2.3.0 0.0.0.255 10.1.0.0 0.0.255.255</li>
+</ul>
+<ul>
+<li>permit ip 10.2.3.0 0.0.0.255 192.168.254.0 0.0.0.255</li>
+</ul>
+<ul>
+<li>crypto isakmp policy 10</li>
+</ul>
+<ul>
+<li>encryption 256-aes</li>
+</ul>
+<ul>
+<li>hash sha</li>
+</ul>
+<ul>
+<li>authentication pre-share</li>
+</ul>
+<ul>
+<li>group 2</li>
+</ul>
+<ul>
+<li>lifetime 28800</li>
+</ul>
+<ul>
+<li>crypto isakmp key 0 123 address 40.73.23.126</li>
+</ul>
+<ul>
+<li>crypto ipsec transform-set prase2 esp-256-aes esp-sha-hmac</li>
+</ul>
+<ul>
+<li>crypto map IKEv1 10 ipsec-isakmp</li>
+</ul>
+<ul>
+<li>match address vpn</li>
+</ul>
+<ul>
+<li>set transform-set prase2</li>
+</ul>
+<ul>
+<li>set peer 40.73.23.126</li>
+</ul>
+<ul>
+<li>set security-association lifetime seconds 27000</li>
+</ul>
+<ul>
+<li>set security-association lifetime kilobytes 102400000</li>
+</ul>
+<ul>
+<li>! set security-association idle-time 28000</li>
+</ul>
+<ul>
+<li>interface gigabitEthernet 1</li>
+</ul>
+<ul>
+<li>crypto map IKEv1</li>
+</ul>
+<ul>
+<li>show crypto map</li>
+</ul>
+<ul>
+<li>show crypto isakmp sa</li>
+</ul>
+<ul>
+<li>show crypto ipsec sa</li>
+</ul>
+<ul>
+<li>IKEv2</li>
+</ul>
+<ul>
+<li>crypto ikev2 proposal IKEv2-Proposal</li>
+</ul>
+<ul>
+<li>encryption aes-cbc-256</li>
+</ul>
+<ul>
+<li>integrity sha1</li>
+</ul>
+<ul>
+<li>crypto ikev2 policy IKEv2-Policy</li>
+</ul>
+<ul>
+<li>proposal IKEv2-Proposal</li>
+</ul>
+<ul>
+<li>crypto ikev2 profile IKEv2-Profile</li>
+</ul>
+<ul>
+<li>match identity remote address 40.73.23.126 255.255.255.255</li>
+</ul>
+<ul>
+<li>identity local fqdn csr1000v.chinaeast2.cloudapp.chinacloudapi.cn</li>
+</ul>
+<ul>
+<li>authentication remote pre-share key 123</li>
+</ul>
+<ul>
+<li>authentication local pre-share key 123</li>
+</ul>
+<ul>
+<li>crypto ipsec transform-set Trans1 esp-aes 256 esp-sha-hmac</li>
+</ul>
+<ul>
+<li>mode tunnel</li>
+</ul>
+<ul>
+<li>crypto map Crypto-Map 10 ipsec-isakmp</li>
+</ul>
+<ul>
+<li>set transform-set Trans1</li>
+</ul>
+<ul>
+<li>set ikev2-profile IKEv2-Profile</li>
+</ul>
+<ul>
+<li>interface GigabitEthernet1</li>
+</ul>
+<ul>
+<li>crypto map Crypto-Map</li>
+</ul>
+<ul>
+<li>VNET_N2:</li>
+</ul>
+<ul>
+<li>Address Space:10.1.0.0/16</li>
+</ul>
+<ul>
+<li>P2S VPN Address Space:192.168.254.0/16</li>
+</ul>
+<ul>
+<li>VPN GW IP:40.73.23.126</li>
+</ul>
+<ul>
+<li>VNET_E2:</li>
+</ul>
+<ul>
+<li>Address Space:10.2.0.0/16</li>
+</ul>
+<ul>
+<li>CSR_Sub:10.2.3.0/24</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>match address VPN-Traffic</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>ip access-list extended vpn</li>
+</ul>
+<ul>
+<li>ip access-list extended VPN-Traffic</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：<a href="https://zhuanlan.zhihu.com/p/151766428" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/151766428</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.vmware.com/cn/VMware-NSX-Data-Center-for-vSphere/6.4/com.vmware.nsx.admin.doc/GUID-DC95B7E5-73E9-40DD-89CC-53AB1B462A98.html" target="_blank" rel="noopener">https://docs.vmware.com/cn/VMware-NSX-Data-Center-for-vSphere/6.4/com.vmware.nsx.admin.doc/GUID-DC95B7E5-73E9-40DD-89CC-53AB1B462A98.html</a></li>
+</ul>
+<ul>
+<li><a href="https://blog.csdn.net/weixin_49303084/article/details/107814681" target="_blank" rel="noopener">https://blog.csdn.net/weixin_49303084/article/details/107814681</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-04-22</p>
+<p>IKEv1</p>
+<p>ip access-list extended vpn</p>
+<p>permit ip 10.2.3.0 0.0.0.255 10.1.0.0 0.0.255.255</p>
+<p>permit ip 10.2.3.0 0.0.0.255 192.168.254.0 0.0.0.255</p>
+<p>crypto isakmp policy 10</p>
+<p>encryption 256-aes</p>
+<p>hash sha</p>
+<p>authentication pre-share</p>
+<p>group 2</p>
+<p>lifetime 28800</p>
+<p>crypto isakmp key 0 123 address 40.73.23.126</p>
+<p>crypto ipsec transform-set prase2 esp-256-aes esp-sha-hmac</p>
+<p>crypto map IKEv1 10 ipsec-isakmp</p>
+<p>match address vpn</p>
+<p>set transform-set prase2</p>
+<p>set peer 40.73.23.126</p>
+<p>set security-association lifetime seconds 27000</p>
+<p>set security-association lifetime kilobytes 102400000</p>
+<p>! set security-association idle-time 28000</p>
+<p>interface gigabitEthernet 1</p>
+<p>crypto map IKEv1</p>
+<p>show crypto map</p>
+<p>show crypto isakmp sa</p>
+<p>show crypto ipsec sa</p>
+<p>IKEv2</p>
+<p>ip access-list extended VPN-Traffic</p>
+<p>crypto ikev2 proposal IKEv2-Proposal</p>
+<p>encryption aes-cbc-256</p>
+<p>integrity sha1</p>
+<p>crypto ikev2 policy IKEv2-Policy</p>
+<p>proposal IKEv2-Proposal</p>
+<p>crypto ikev2 profile IKEv2-Profile</p>
+<p>match identity remote address 40.73.23.126 255.255.255.255</p>
+<p>identity local fqdn csr1000v.chinaeast2.cloudapp.chinacloudapi.cn</p>
+<p>authentication remote pre-share key 123</p>
+<p>authentication local pre-share key 123</p>
+<p>crypto ipsec transform-set Trans1 esp-aes 256 esp-sha-hmac</p>
+<p>mode tunnel</p>
+<p>crypto map Crypto-Map 10 ipsec-isakmp</p>
+<p>set transform-set Trans1</p>
+<p>set ikev2-profile IKEv2-Profile</p>
+<p>match address VPN-Traffic</p>
+<p>interface GigabitEthernet1</p>
+<p>crypto map Crypto-Map</p>
+<p>VNET_N2:</p>
+<p>Address Space:10.1.0.0/16</p>
+<p>P2S VPN Address Space:192.168.254.0/16</p>
+<p>VPN GW IP:40.73.23.126</p>
+<p>VNET_E2:</p>
+<p>Address Space:10.2.0.0/16</p>
+<p>CSR_Sub:10.2.3.0/24</p>
+<p>参考文档：<a href="https://zhuanlan.zhihu.com/p/151766428" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/151766428</a></p>
+<p><a href="https://docs.vmware.com/cn/VMware-NSX-Data-Center-for-vSphere/6.4/com.vmware.nsx.admin.doc/GUID-DC95B7E5-73E9-40DD-89CC-53AB1B462A98.html" target="_blank" rel="noopener">https://docs.vmware.com/cn/VMware-NSX-Data-Center-for-vSphere/6.4/com.vmware.nsx.admin.doc/GUID-DC95B7E5-73E9-40DD-89CC-53AB1B462A98.html</a></p>
+<p><a href="https://blog.csdn.net/weixin_49303084/article/details/107814681" target="_blank" rel="noopener">https://blog.csdn.net/weixin_49303084/article/details/107814681</a></p></article>

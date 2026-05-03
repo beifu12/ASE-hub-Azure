@@ -1,0 +1,753 @@
+<article class="kb-article" data-title="Update [Process]Recover deleted stroage account case"><h1>Update [Process]Recover deleted stroage account case</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2023-11-01 17:35:36</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>NOTE: Please inform the customer in your initial response email that Azure Support will try to recover the Container/Account/Blob on best effort basis and cannot guarantee the recovery.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>NOTE: Please inform the customer in your initial response email that Azure Support will try to recover the Container/Account/Blob on best effort basis and cannot guarantee the recovery.</li>
+</ul>
+<ul>
+<li>Pending blob 3ae64c73-601c-4278-86af-043ddbc06a3b is due for deletion. Configured soft delete retention: 4.00:00:00, current pending blob age: 4.05:43:04.2404652, retention extention for subscription 74c15957-7570-416c-96c0-d410228045f9:</li>
+</ul>
+<ul>
+<li>Note: If you cannot find the DiskRPResourceLifecycleEvent table, please delete the endpoint and re-connect.</li>
+</ul>
+<ul>
+<li>Please inform the customer on your initial response that Support will try to recover the Container/Account on best effort basis but cannot guarantee the recovery.</li>
+</ul>
+<ul>
+<li>运行垃圾回收器的时间因许多因素而异，例如存储规模单元上的工作负载、可用存储空间数等。平均而言，存储帐户的垃圾回收发生在删除后 14 天。但是，无法保证此时间进行还原。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Note：Please be noted that the Storage account restore is available for Customer in Mooncake. Please let engineer be aware of that and guide Cx to restore storage account by themselves.</li>
+</ul>
+<ul>
+<li>Storage account deleted within 14 days can be restored.</li>
+</ul>
+<ul>
+<li>Notes:</li>
+</ul>
+<ul>
+<li>Meanwhile, according to the talking offline, I learned that the longest retention of hard deleted status is around 4 days. That means the longest retention is around 8 days ( 4(soft deleted) + 4(hard deleted) ) for the deleted disk which has been created over 10 days.</li>
+</ul>
+<ul>
+<li>The following list shows the latest support matrix for Azure Storage resource recovery in Mooncake, feel free to let me know if you have any questions regarding the recovery.</li>
+</ul>
+<ul>
+<li>Support matrix:</li>
+</ul>
+<ul>
+<li>NO.</li>
+</ul>
+<ul>
+<li>Scenario</li>
+</ul>
+<ul>
+<li>Requirements</li>
+</ul>
+<ul>
+<li>Escalation process</li>
+</ul>
+<ul>
+<li>Who can perform the recovery</li>
+</ul>
+<ul>
+<li>1</li>
+</ul>
+<ul>
+<li>Managed disk(SoftDelete status)</li>
+</ul>
+<ul>
+<li>-Before garbage collection(GC).</li>
+</ul>
+<ul>
+<li>-Managed disk should be in soft delete status.</li>
+</ul>
+<ul>
+<li>Subscription Id:</li>
+</ul>
+<ul>
+<li>Source RG Name:</li>
+</ul>
+<ul>
+<li>Source Disk Name:</li>
+</ul>
+<ul>
+<li>Target RG Name: (Please create the RG first if it does not exist)</li>
+</ul>
+<ul>
+<li>Target Disk Name:</li>
+</ul>
+<ul>
+<li>Deletion time:</li>
+</ul>
+<ul>
+<li>All recovery customer requests should be escalated to CSS first, and CSS will determine whether the further escalation is required.</li>
+</ul>
+<ul>
+<li>CSS: Mooncake VM POD members</li>
+</ul>
+<ul>
+<li>Managed disk(HardDelete status)</li>
+</ul>
+<ul>
+<li>-Before GC.</li>
+</ul>
+<ul>
+<li>-Be sure to confirm the disclaimer as below with customer first.</li>
+</ul>
+<ul>
+<li>PG: Xstore-Table Server</li>
+</ul>
+<ul>
+<li>2</li>
+</ul>
+<ul>
+<li>Storage account(Classic and ARM)</li>
+</ul>
+<ul>
+<li>-Do not recreate the storage account with the same name.</li>
+</ul>
+<ul>
+<li>Storage account name:</li>
+</ul>
+<ul>
+<li>Region:</li>
+</ul>
+<ul>
+<li>3</li>
+</ul>
+<ul>
+<li>Container in Storage account</li>
+</ul>
+<ul>
+<li>*Note1</li>
+</ul>
+<ul>
+<li>-In GRS or RA-GRS storage accounts.</li>
+</ul>
+<ul>
+<li>-Do not recreate the container with the same name.</li>
+</ul>
+<ul>
+<li>PG: Xstore-Location service</li>
+</ul>
+<ul>
+<li>4</li>
+</ul>
+<ul>
+<li>Single blob/Unmanaged disk</li>
+</ul>
+<ul>
+<li>-A new blob with the same name has not been created.</li>
+</ul>
+<ul>
+<li>-Deleted less than a week for Standard.</li>
+</ul>
+<ul>
+<li>-Deleted less than 3 days for Premium.</li>
+</ul>
+<ul>
+<li>Deleted blob/disk name:</li>
+</ul>
+<ul>
+<li>存储账号中 Single blob 在开启软删除的情况下用户是可以自己恢复的。涉及到存储账号还原的可参考最后的“Azure 存储 服务的数据还原方案”说明</li>
+</ul>
+<ul>
+<li>NOTE: Please DO NOT share the SoftDelete/HardDelete information with customer.</li>
+</ul>
+<ul>
+<li>Note1：Container in Storage account. During the container recovery, please do not share SAS Token to anybody until required and make sure sharing in private communication.</li>
+</ul>
+<ul>
+<li>Note:</li>
+</ul>
+<ul>
+<li>Gather the SAS Token and store it securely. Do not share it with anybody until required</li>
+</ul>
+<ul>
+<li>Once the case escalated to CSS, only share the SAS Token in a private communication with case owner. Do not send it to other audience, such as pod alias.</li>
+</ul>
+<ul>
+<li>Do not include the SAS Token in the ICM details.</li>
+</ul>
+<ul>
+<li>Suggest customer to refresh the storage account key only after confirming the recovery completion.</li>
+</ul>
+<ul>
+<li>Disclaimer:</li>
+</ul>
+<ul>
+<li>If the support engineer queries to the deleted managed disk is in HardDelete state, please confirm the following disclaimer with customer before escalating to CSS:</li>
+</ul>
+<ul>
+<li>中文版</li>
+</ul>
+<ul>
+<li>English version</li>
+</ul>
+<ul>
+<li>磁盘恢复过程可能会持续几天，您是否可以接受？</li>
+</ul>
+<ul>
+<li>我们不能保证磁盘可以100%被恢复，您是否可以接受？</li>
+</ul>
+<ul>
+<li>如果您对上述事项的回复为“是”，请以邮件形式提供商业影响，我们将联系Azure产品团队尝试磁盘恢复操作。</li>
+</ul>
+<ul>
+<li>Thanks for contacting Azure support! For your disk recovery request, we need you to understand and confirm the following considerations first:</li>
+</ul>
+<ul>
+<li>The disk recovery may last for several days. Can you accept it?</li>
+</ul>
+<ul>
+<li>Recovery of the disk is not guaranteed, it’s a best-effort attempt. Can you accept it?</li>
+</ul>
+<ul>
+<li>If your response to the above is “Yes”, please provide a business impact by email and we will contact the Azure produce team to try a disk recovery operation.</li>
+</ul>
+<ul>
+<li>When customer triggers deletion on managed disk: If the managed disk is not created more than 10 days prior to the deletion, it will be hard deleted:</li>
+</ul>
+<ul>
+<li>Disk apaas-node0045_disk1 will be hard deleted.</li>
+</ul>
+<ul>
+<li>If the managed disk is created more that 10 days prior to the deletion, it will be soft deleted and the retention is 4 days. After the retention period has been exceeded it will be hard deleted.</li>
+</ul>
+<ul>
+<li>Disk apaas-node0043_disk1 will be soft deleted.</li>
+</ul>
+<ul>
+<li>….</li>
+</ul>
+<ul>
+<li>DiskRPResourceLifecycleEvent</li>
+</ul>
+<ul>
+<li>| where MonitoringApplication == &quot;DiskRP-chinaeast_Monitoring&quot; //-- Set the Region &lt;DiskRP-&lt;Region&gt;_Monitoring&gt;</li>
+</ul>
+<ul>
+<li>| where subscriptionId == &quot;f24ef1a3-8134-4c70-91be-2ff3f45ac657&quot; //-- Select the Subscription ID</li>
+</ul>
+<ul>
+<li>| where resourceName == &quot;almondcentos-kefu2&quot; //-- &lt;Name of the disk. If you don’t have the name of the disk, you could skip this line.&gt;</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt;= (datetime(2021-03-18)) //-- Choose a time shortly before the disk deletion</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, resourceGroupName, resourceName, pseudosubscriptionId, blobUrl, diskEvent, RPTenant</li>
+</ul>
+<ul>
+<li>PreciseTimeStamp</li>
+</ul>
+<ul>
+<li>resourceGroupName</li>
+</ul>
+<ul>
+<li>resourceName</li>
+</ul>
+<ul>
+<li>pseudosubscriptionId</li>
+</ul>
+<ul>
+<li>blobUrl</li>
+</ul>
+<ul>
+<li>diskEvent</li>
+</ul>
+<ul>
+<li>RPTenant</li>
+</ul>
+<ul>
+<li>2021-03-19 05:37:15.6468157</li>
+</ul>
+<ul>
+<li>ALMOND</li>
+</ul>
+<ul>
+<li>almondcentos-kefu2</li>
+</ul>
+<ul>
+<li>2c33cfab-be92-4c60-ad86-ace4d3ab7d6d</li>
+</ul>
+<ul>
+<li>Detach</li>
+</ul>
+<ul>
+<li>DiskRP-chinaeast</li>
+</ul>
+<ul>
+<li>2021-03-19 05:37:41.8447101</li>
+</ul>
+<ul>
+<li>ToBeDeleted</li>
+</ul>
+<ul>
+<li>2021-03-19 05:37:41.8798434</li>
+</ul>
+<ul>
+<li>Delete</li>
+</ul>
+<ul>
+<li>2021-03-19 05:37:41.9115554</li>
+</ul>
+<ul>
+<li>2021-03-19 05:37:42.1092360</li>
+</ul>
+<ul>
+<li>SoftDelete</li>
+</ul>
+<ul>
+<li>2021-03-19 05:37:42.1145310</li>
+</ul>
+<ul>
+<li>2021-03-19 05:37:42.1445721</li>
+</ul>
+<ul>
+<li>Azure Support Center:</li>
+</ul>
+<ul>
+<li>Best regards,</li>
+</ul>
+<ul>
+<li>-----------------------------------------------------------</li>
+</ul>
+<ul>
+<li>Topic title, Support matrix for Azure Storage resource recovery in Mooncake</li>
+</ul>
+<ul>
+<li>Dear all,</li>
+</ul>
+<ul>
+<li>The following table is the latest support matrix for Azure Storage resource recovery in Mooncake, feel free to let me know if you have any questions regarding the recovery.</li>
+</ul>
+<ul>
+<li>Recovery is only possible if the customer has deleted a container or storage account or blob and is not garbage collected. It can generally take &quot;anytime from deletion&quot; to 15 days for the Storage service to perform garbage collection so it is not definite that the storage objects can be recovered with an SLA.</li>
+</ul>
+<ul>
+<li>Please inform the customer in your initial response email that Microsoft Support will try to recover the Container/Account/Blob on best effort basis and can not guarantee the recovery.</li>
+</ul>
+<ul>
+<li>Case handling</li>
+</ul>
+<ul>
+<li>CSS</li>
+</ul>
+<ul>
+<li>Storage account</li>
+</ul>
+<ul>
+<li>Container</li>
+</ul>
+<ul>
+<li>===================================</li>
+</ul>
+<ul>
+<li>General</li>
+</ul>
+<ul>
+<li>Please note that it is impossible to recover Data at the blob level. Recovery is only possible if the deleted resources meet the requirements in the supported scenarios, and have not been removed by garbage collection. It can generally take &quot;anytime from deletion&quot; to 15 days for the Storage service to perform garbage collection so it is not definite that the storage accounts can be recovered.</li>
+</ul>
+<ul>
+<li>For supported Storage Account Restore (Both ARM and ASM), escalate to CSS</li>
+</ul>
+<ul>
+<li>For supported Blob container (Both ASM and ARM), escalate to WASU</li>
+</ul>
+<ul>
+<li>Supported scenarios</li>
+</ul>
+<ul>
+<li>The following resources can be restored with NO guarantee if have not been removed by the garbage collector:</li>
+</ul>
+<ul>
+<li>Storage accounts</li>
+</ul>
+<ul>
+<li>Blob containers</li>
+</ul>
+<ul>
+<li>In GRS or RA-GRS storage accounts AND have not been recreated with the same name</li>
+</ul>
+<ul>
+<li>VM Disks:</li>
+</ul>
+<ul>
+<li>Only Unmanaged disks (VHD files) deleted along with the storage accounts or containers (which in above Supported Scenarios) can be restored.</li>
+</ul>
+<ul>
+<li>Unsupported scenarios:</li>
+</ul>
+<ul>
+<li>Restoring LRS Blob container.</li>
+</ul>
+<ul>
+<li>Restoring a Blob container that has been recreated with the same name</li>
+</ul>
+<ul>
+<li>Restoring Queue.</li>
+</ul>
+<ul>
+<li>Restoring individual blob file in the storage account.</li>
+</ul>
+<ul>
+<li>Restoring partial data in the storage account, such as files inside of an unmanaged disk (VHD file).</li>
+</ul>
+<ul>
+<li>Restoring partial data in Table or Queue.</li>
+</ul>
+<ul>
+<li>Restoring Managed Disks/Snapshots/Images.</li>
+</ul>
+<ul>
+<li>Process for WATS:</li>
+</ul>
+<ul>
+<li>It’s highly recommended to warn the customers not to re-create the account, as re-creating accounts may, in some cases, cause the original account to no longer be recoverable. If the customer has already re-created the account, they will need to delete it first before recovery can be attempted.</li>
+</ul>
+<ul>
+<li>Ask the below information to verity if the recovery is in supported scenarios</li>
+</ul>
+<ul>
+<li>Object to restore:</li>
+</ul>
+<ul>
+<li>Has the Storage account or Blob Container been recreated with same name after deletion?</li>
+</ul>
+<ul>
+<li>Storage account type (ARM/ASM):</li>
+</ul>
+<ul>
+<li>Storage account replication type (GRS or GA-GRS):</li>
+</ul>
+<ul>
+<li>VM disk type(if requesting restore VM):</li>
+</ul>
+<ul>
+<li>If the recover request is not supported, just deliver the information and do not need to escalate to CSS and WASU.</li>
+</ul>
+<ul>
+<li>If restore request is supported, then collect below information.</li>
+</ul>
+<ul>
+<li>Sub ID:</li>
+</ul>
+<ul>
+<li>Blob container name (if requesting to restore container):</li>
+</ul>
+<ul>
+<li>Delete time:</li>
+</ul>
+<ul>
+<li>For supported Storage Account Restore (Both ARM and ASM), escalate to CSS with information collected in step 5.</li>
+</ul>
+<ul>
+<li>For supported Blob container (Both ASM and ARM), escalate to WASU with information collected in step 5.</li>
+</ul>
+<ul>
+<li>The above process has been confirmed with CxP and be awared by WASU.</li>
+</ul>
+<ul>
+<li>For the Severity when involving WASU, you can raise Sev 3 or Sev 2, severity depends on the customer urgency and customer business impact.</li>
+</ul>
+<ul>
+<li>Hope it help, please let me know if there is any further question.</li>
+</ul>
+<ul>
+<li>Azure 存储 服务的数据还原方案</li>
+</ul>
+<ul>
+<li>背景知识</li>
+</ul>
+<ul>
+<li>删除存储帐户或 blob 容器后，它将排队等待回收和回收。然后，系统可以释放空间以供重复使用。如果垃圾回收器尚未运行且存储空间尚未清理，则可能会还原已删除的存储帐户或 blob 容器。</li>
+</ul>
+<ul>
+<li>数据还原方案</li>
+</ul>
+<ul>
+<li>如果垃圾回收器尚未收集以下资源，则可以还原这些资源：</li>
+</ul>
+<ul>
+<li>存储帐户</li>
+</ul>
+<ul>
+<li>异地冗余存储、区域冗余存储或读取访问异地冗余存储中的 Blob 容器</li>
+</ul>
+<ul>
+<li>还原需要新的共享访问签名 （SAS） 令牌。</li>
+</ul>
+<ul>
+<li>备注</li>
+</ul>
+<ul>
+<li>不支持在本地冗余存储中还原 Blob 容器。</li>
+</ul>
+<ul>
+<li>Azure 仅支持存储帐户级别或 Blob 容器级别还原。因此，不支持以下数据还原方案：</li>
+</ul>
+<ul>
+<li>还原队列</li>
+</ul>
+<ul>
+<li>还原存储帐户中的 Blob 数据（单个 Blob）</li>
+</ul>
+<ul>
+<li>还原存储帐户中的部分数据，如 Blob 内的文件</li>
+</ul>
+<ul>
+<li>还原表或队列中的部分数据</li>
+</ul>
+<ul>
+<li>lakshmi.mandaleeka@microsoft.com</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>感谢您联系Azure技术支持！对于您的磁盘恢复请求，我们需要您首先了解和确认以下注意事项：</li>
+</ul>
+<ul>
+<li>Managed disk deletion logic:</li>
+</ul>
+<ul>
+<li>You can check the status of deleted managed disk with Kusto or ASC:</li>
+</ul>
+<ul>
+<li>Kusto:</li>
+</ul>
+<ul>
+<li>Jarvis：</li>
+</ul>
+<ul>
+<li>以下关于托管磁盘的描述不准确，托管磁盘删除恢复问题，查看| MCVKB | Soft delete managed disk recovery</li>
+</ul>
+<ul>
+<li>After testing and confirming with CxP, we settled down the Storage Account recovery process as below which also align with global azure support. Please check and let me know if there is any further question.</li>
+</ul>
+<ul>
+<li>和CSS工程师确认了一下 刚才说的删除恢复StorageAccount来恢复VHD 是不work的。必须是StorageAccount和VHD一起删除的情况才能恢复</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>SoftDelete policy is Enabled for the subscription 496a3f5c-e9c1-4f75-8720-49ac90713821. Disk creation time:8/13/2021 9:49:17 AM +00:00. Max creation date to qualify for soft delete:8/13/2021 9:43:36 AM +00:00. Deleted disk account Type:Premium_LRS, DiskEncryptionSetId:</li>
+</ul>
+<ul>
+<li>SoftDelete policy is Enabled for the subscription 496a3f5c-e9c1-4f75-8720-49ac90713821. Disk creation time:8/13/2021 9:43:09 AM +00:00. Max creation date to qualify for soft delete:8/13/2021 9:43:36 AM +00:00. Deleted disk account Type:Premium_LRS, DiskEncryptionSetId:</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://disksmc.chinaeast2.kusto.chinacloudapi.cn/Disks" target="_blank" rel="noopener">https://disksmc.chinaeast2.kusto.chinacloudapi.cn/Disks</a></li>
+</ul>
+<ul>
+<li><a href="https://md-ssd-j2hfzc25mk2b.blob.core.chinacloudapi.cn/lc4vjq4jx2l3/abcd" target="_blank" rel="noopener">https://md-ssd-j2hfzc25mk2b.blob.core.chinacloudapi.cn/lc4vjq4jx2l3/abcd</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://docs.microsoft.com/zh-cn/troubleshoot/azure/geneforal/data-restore-storage&gt;" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/troubleshoot/azure/geneforal/data-restore-storage&gt;</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/troubleshoot/azure/general/data-restore-storage" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/troubleshoot/azure/general/data-restore-storage</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>2021/08/27</p>
+<p>Note：Please be noted that the Storage account restore is available for Customer in Mooncake. Please let engineer be aware of that and guide Cx to restore storage account by themselves.</p>
+<p>Storage account deleted within 14 days can be restored.</p>
+<p>Notes:</p>
+<p>Meanwhile, according to the talking offline, I learned that the longest retention of hard deleted status is around 4 days. That means the longest retention is around 8 days ( 4(soft deleted) + 4(hard deleted) ) for the deleted disk which has been created over 10 days.</p>
+<p>The following list shows the latest support matrix for Azure Storage resource recovery in Mooncake, feel free to let me know if you have any questions regarding the recovery.</p>
+<p>NOTE: Please inform the customer in your initial response email that Azure Support will try to recover the Container/Account/Blob on best effort basis and cannot guarantee the recovery.</p>
+<p>Support matrix:</p>
+<p>NO.</p>
+<p>Scenario</p>
+<p>Requirements</p>
+<p>Escalation process</p>
+<p>Who can perform the recovery</p>
+<p>1</p>
+<p>Managed disk(SoftDelete status)</p>
+<p>-Before garbage collection(GC).</p>
+<p>-Managed disk should be in soft delete status.</p>
+<p>Subscription Id:</p>
+<p>Source RG Name:</p>
+<p>Source Disk Name:</p>
+<p>Target RG Name: (Please create the RG first if it does not exist)</p>
+<p>Target Disk Name:</p>
+<p>Deletion time:</p>
+<p>All recovery customer requests should be escalated to CSS first, and CSS will determine whether the further escalation is required.</p>
+<p>CSS: Mooncake VM POD members</p>
+<p>Managed disk(HardDelete status)</p>
+<p>-Before GC.</p>
+<p>-Be sure to confirm the disclaimer as below with customer first.</p>
+<p>PG: Xstore-Table Server</p>
+<p>2</p>
+<p>Storage account(Classic and ARM)</p>
+<p>-Do not recreate the storage account with the same name.</p>
+<p>Storage account name:</p>
+<p>Region:</p>
+<p>3</p>
+<p>Container in Storage account</p>
+<p>*Note1</p>
+<p>-In GRS or RA-GRS storage accounts.</p>
+<p>-Do not recreate the container with the same name.</p>
+<p>PG: Xstore-Location service</p>
+<p>4</p>
+<p>Single blob/Unmanaged disk</p>
+<p>-A new blob with the same name has not been created.</p>
+<p>-Deleted less than a week for Standard.</p>
+<p>-Deleted less than 3 days for Premium.</p>
+<p>Deleted blob/disk name:</p>
+<p>存储账号中 Single blob 在开启软删除的情况下用户是可以自己恢复的。涉及到存储账号还原的可参考最后的“Azure 存储 服务的数据还原方案”说明</p>
+<p>NOTE: Please DO NOT share the SoftDelete/HardDelete information with customer.</p>
+<p>Note1：Container in Storage account. During the container recovery, please do not share SAS Token to anybody until required and make sure sharing in private communication.</p>
+<p>Note:</p>
+<p>Gather the SAS Token and store it securely. Do not share it with anybody until required</p>
+<p>Once the case escalated to CSS, only share the SAS Token in a private communication with case owner. Do not send it to other audience, such as pod alias.</p>
+<p>Do not include the SAS Token in the ICM details.</p>
+<p>Suggest customer to refresh the storage account key only after confirming the recovery completion.</p>
+<p>Disclaimer:</p>
+<p>If the support engineer queries to the deleted managed disk is in HardDelete state, please confirm the following disclaimer with customer before escalating to CSS:</p>
+<p>中文版</p>
+<p>English version</p>
+<p>感谢您联系Azure技术支持！对于您的磁盘恢复请求，我们需要您首先了解和确认以下注意事项：</p>
+<p>磁盘恢复过程可能会持续几天，您是否可以接受？</p>
+<p>我们不能保证磁盘可以100%被恢复，您是否可以接受？</p>
+<p>如果您对上述事项的回复为“是”，请以邮件形式提供商业影响，我们将联系Azure产品团队尝试磁盘恢复操作。</p>
+<p>Thanks for contacting Azure support! For your disk recovery request, we need you to understand and confirm the following considerations first:</p>
+<p>The disk recovery may last for several days. Can you accept it?</p>
+<p>Recovery of the disk is not guaranteed, it’s a best-effort attempt. Can you accept it?</p>
+<p>If your response to the above is “Yes”, please provide a business impact by email and we will contact the Azure produce team to try a disk recovery operation.</p>
+<p>Managed disk deletion logic:</p>
+<p>When customer triggers deletion on managed disk: If the managed disk is not created more than 10 days prior to the deletion, it will be hard deleted:</p>
+<p>SoftDelete policy is Enabled for the subscription 496a3f5c-e9c1-4f75-8720-49ac90713821. Disk creation time:8/13/2021 9:49:17 AM +00:00. Max creation date to qualify for soft delete:8/13/2021 9:43:36 AM +00:00. Deleted disk account Type:Premium_LRS, DiskEncryptionSetId:</p>
+<p>Disk apaas-node0045_disk1 will be hard deleted.</p>
+<p>If the managed disk is created more that 10 days prior to the deletion, it will be soft deleted and the retention is 4 days. After the retention period has been exceeded it will be hard deleted.</p>
+<p>SoftDelete policy is Enabled for the subscription 496a3f5c-e9c1-4f75-8720-49ac90713821. Disk creation time:8/13/2021 9:43:09 AM +00:00. Max creation date to qualify for soft delete:8/13/2021 9:43:36 AM +00:00. Deleted disk account Type:Premium_LRS, DiskEncryptionSetId:</p>
+<p>Disk apaas-node0043_disk1 will be soft deleted.</p>
+<p>….</p>
+<p>Pending blob 3ae64c73-601c-4278-86af-043ddbc06a3b is due for deletion. Configured soft delete retention: 4.00:00:00, current pending blob age: 4.05:43:04.2404652, retention extention for subscription 74c15957-7570-416c-96c0-d410228045f9:</p>
+<p>You can check the status of deleted managed disk with Kusto or ASC:</p>
+<p>Kusto:</p>
+<p>Note: If you cannot find the DiskRPResourceLifecycleEvent table, please delete the endpoint and re-connect.</p>
+<p>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://disksmc.chinaeast2.kusto.chinacloudapi.cn/Disks" target="_blank" rel="noopener">https://disksmc.chinaeast2.kusto.chinacloudapi.cn/Disks</a></p>
+<p>DiskRPResourceLifecycleEvent</p>
+<p>| where MonitoringApplication == &quot;DiskRP-chinaeast_Monitoring&quot; //-- Set the Region &lt;DiskRP-&lt;Region&gt;_Monitoring&gt;</p>
+<p>| where subscriptionId == &quot;f24ef1a3-8134-4c70-91be-2ff3f45ac657&quot; //-- Select the Subscription ID</p>
+<p>| where resourceName == &quot;almondcentos-kefu2&quot; //-- &lt;Name of the disk. If you don’t have the name of the disk, you could skip this line.&gt;</p>
+<p>| where PreciseTimeStamp &gt;= (datetime(2021-03-18)) //-- Choose a time shortly before the disk deletion</p>
+<p>| project PreciseTimeStamp, resourceGroupName, resourceName, pseudosubscriptionId, blobUrl, diskEvent, RPTenant</p>
+<p>PreciseTimeStamp</p>
+<p>resourceGroupName</p>
+<p>resourceName</p>
+<p>pseudosubscriptionId</p>
+<p>blobUrl</p>
+<p>diskEvent</p>
+<p>RPTenant</p>
+<p>2021-03-19 05:37:15.6468157</p>
+<p>ALMOND</p>
+<p>almondcentos-kefu2</p>
+<p>2c33cfab-be92-4c60-ad86-ace4d3ab7d6d</p>
+<p><a href="https://md-ssd-j2hfzc25mk2b.blob.core.chinacloudapi.cn/lc4vjq4jx2l3/abcd" target="_blank" rel="noopener">https://md-ssd-j2hfzc25mk2b.blob.core.chinacloudapi.cn/lc4vjq4jx2l3/abcd</a></p>
+<p>Detach</p>
+<p>DiskRP-chinaeast</p>
+<p>2021-03-19 05:37:41.8447101</p>
+<p>ToBeDeleted</p>
+<p>2021-03-19 05:37:41.8798434</p>
+<p>Delete</p>
+<p>2021-03-19 05:37:41.9115554</p>
+<p>2021-03-19 05:37:42.1092360</p>
+<p>SoftDelete</p>
+<p>2021-03-19 05:37:42.1145310</p>
+<p>2021-03-19 05:37:42.1445721</p>
+<p>Jarvis：</p>
+<p>Azure Support Center:</p>
+<p>Best regards,</p>
+<p>-----------------------------------------------------------</p>
+<p>Topic title, Support matrix for Azure Storage resource recovery in Mooncake</p>
+<p>Dear all,</p>
+<p>The following table is the latest support matrix for Azure Storage resource recovery in Mooncake, feel free to let me know if you have any questions regarding the recovery.</p>
+<p>Recovery is only possible if the customer has deleted a container or storage account or blob and is not garbage collected. It can generally take &quot;anytime from deletion&quot; to 15 days for the Storage service to perform garbage collection so it is not definite that the storage objects can be recovered with an SLA.</p>
+<p>Please inform the customer in your initial response email that Microsoft Support will try to recover the Container/Account/Blob on best effort basis and can not guarantee the recovery.</p>
+<p>Case handling</p>
+<p>CSS</p>
+<p>Storage account</p>
+<p>Container</p>
+<p>===================================</p>
+<p>以下关于托管磁盘的描述不准确，托管磁盘删除恢复问题，查看| MCVKB | Soft delete managed disk recovery</p>
+<p>After testing and confirming with CxP, we settled down the Storage Account recovery process as below which also align with global azure support. Please check and let me know if there is any further question.</p>
+<p>General</p>
+<p>Please note that it is impossible to recover Data at the blob level. Recovery is only possible if the deleted resources meet the requirements in the supported scenarios, and have not been removed by garbage collection. It can generally take &quot;anytime from deletion&quot; to 15 days for the Storage service to perform garbage collection so it is not definite that the storage accounts can be recovered.</p>
+<p>For supported Storage Account Restore (Both ARM and ASM), escalate to CSS</p>
+<p>For supported Blob container (Both ASM and ARM), escalate to WASU</p>
+<p>Supported scenarios</p>
+<p>The following resources can be restored with NO guarantee if have not been removed by the garbage collector:</p>
+<p>Storage accounts</p>
+<p>Blob containers</p>
+<p>In GRS or RA-GRS storage accounts AND have not been recreated with the same name</p>
+<p>VM Disks:</p>
+<p>Only Unmanaged disks (VHD files) deleted along with the storage accounts or containers (which in above Supported Scenarios) can be restored.</p>
+<p>Unsupported scenarios:</p>
+<p>Restoring LRS Blob container.</p>
+<p>Restoring a Blob container that has been recreated with the same name</p>
+<p>Restoring Queue.</p>
+<p>Restoring individual blob file in the storage account.</p>
+<p>Restoring partial data in the storage account, such as files inside of an unmanaged disk (VHD file).</p>
+<p>Restoring partial data in Table or Queue.</p>
+<p>Restoring Managed Disks/Snapshots/Images.</p>
+<p>Process for WATS:</p>
+<p>Please inform the customer on your initial response that Support will try to recover the Container/Account on best effort basis but cannot guarantee the recovery.</p>
+<p>It’s highly recommended to warn the customers not to re-create the account, as re-creating accounts may, in some cases, cause the original account to no longer be recoverable. If the customer has already re-created the account, they will need to delete it first before recovery can be attempted.</p>
+<p>Ask the below information to verity if the recovery is in supported scenarios</p>
+<p>Object to restore:</p>
+<p>Has the Storage account or Blob Container been recreated with same name after deletion?</p>
+<p>Storage account type (ARM/ASM):</p>
+<p>Storage account replication type (GRS or GA-GRS):</p>
+<p>VM disk type(if requesting restore VM):</p>
+<p>If the recover request is not supported, just deliver the information and do not need to escalate to CSS and WASU.</p>
+<p>If restore request is supported, then collect below information.</p>
+<p>Sub ID:</p>
+<p>Blob container name (if requesting to restore container):</p>
+<p>Delete time:</p>
+<p>For supported Storage Account Restore (Both ARM and ASM), escalate to CSS with information collected in step 5.</p>
+<p>For supported Blob container (Both ASM and ARM), escalate to WASU with information collected in step 5.</p>
+<p>The above process has been confirmed with CxP and be awared by WASU.</p>
+<p>For the Severity when involving WASU, you can raise Sev 3 or Sev 2, severity depends on the customer urgency and customer business impact.</p>
+<p>Hope it help, please let me know if there is any further question.</p>
+<p>和CSS工程师确认了一下 刚才说的删除恢复StorageAccount来恢复VHD 是不work的。必须是StorageAccount和VHD一起删除的情况才能恢复</p>
+<p>Azure 存储 服务的数据还原方案</p>
+<p>2021/11/18</p>
+<p>From &lt;<a href="https://docs.microsoft.com/zh-cn/troubleshoot/azure/geneforal/data-restore-storage&gt;" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/troubleshoot/azure/geneforal/data-restore-storage&gt;</a></p>
+<p>背景知识</p>
+<p>删除存储帐户或 blob 容器后，它将排队等待回收和回收。然后，系统可以释放空间以供重复使用。如果垃圾回收器尚未运行且存储空间尚未清理，则可能会还原已删除的存储帐户或 blob 容器。</p>
+<p>运行垃圾回收器的时间因许多因素而异，例如存储规模单元上的工作负载、可用存储空间数等。平均而言，存储帐户的垃圾回收发生在删除后 14 天。但是，无法保证此时间进行还原。</p>
+<p>数据还原方案</p>
+<p>如果垃圾回收器尚未收集以下资源，则可以还原这些资源：</p>
+<p>存储帐户</p>
+<p>异地冗余存储、区域冗余存储或读取访问异地冗余存储中的 Blob 容器</p>
+<p>还原需要新的共享访问签名 （SAS） 令牌。</p>
+<p>备注</p>
+<p>不支持在本地冗余存储中还原 Blob 容器。</p>
+<p>Azure 仅支持存储帐户级别或 Blob 容器级别还原。因此，不支持以下数据还原方案：</p>
+<p>还原队列</p>
+<p>还原存储帐户中的 Blob 数据（单个 Blob）</p>
+<p>还原存储帐户中的部分数据，如 Blob 内的文件</p>
+<p>还原表或队列中的部分数据</p>
+<p><a href="https://docs.microsoft.com/en-us/troubleshoot/azure/general/data-restore-storage" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/troubleshoot/azure/general/data-restore-storage</a></p>
+<p>lakshmi.mandaleeka@microsoft.com</p></article>

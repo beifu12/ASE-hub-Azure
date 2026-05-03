@@ -1,0 +1,170 @@
+<article class="kb-article" data-title="AKS support TSG update 2022/02/21"><h1>AKS support TSG update 2022/02/21</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: AKS Operation guideline</li>
+<li>最近修改: 2022-02-21 09:53:20</li>
+<li>JD 相关性: 交付流程/客户支持; AKS/容器; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Confirmed with PG on supporting this kind of issue#</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Confirmed with PG on supporting this kind of issue#</li>
+</ul>
+<ul>
+<li>Docker Hub is a 3rd party registry owned by Docker, so we have no control over their registry. We can help guide customers to setting their pulls to be authenticated, or working with ACR. Most other issues, such as fixing/redesigning their CI/CD pipeline, would be out of scope.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>I have done some sorting and summarize for the notification of docker hub. Please be aware of this and if anything unclear, please contact me.</li>
+</ul>
+<ul>
+<li>We can sync this at next triage meeting.</li>
+</ul>
+<ul>
+<li>Overview#</li>
+</ul>
+<ul>
+<li>On 24th August 2020, Docker announced that they would begin rate limiting container pull requests from Docker Hub for anonymous and free authenticated users. To give Azure customers time to adjust to this change, Microsoft initiated a partner agreement with Docker not to throttle requests from IP addresses that originate from Azure. This agreement will end on June 30, 2022.</li>
+</ul>
+<ul>
+<li>On 19th January 2022,  we/AKS team have sent out a reminder email to all customers.</li>
+</ul>
+<ul>
+<li>And the notifications Mooncake customers have received:</li>
+</ul>
+<ul>
+<li>Notification from Docker(Opensource):</li>
+</ul>
+<ul>
+<li>Customers /Scenarios  will be effected#</li>
+</ul>
+<ul>
+<li>If customers are pulling images from Docker Hub anonymously, or using a free account, they may be impacted. When using a free account, image pulls will be rate-limited by IP</li>
+</ul>
+<ul>
+<li>If your environments on Azure have dependencies on images from Docker Hub, you may be affected. For example, if you:</li>
+</ul>
+<ul>
+<li>• Run nginx or any other image without a registry URL (for example, nginx:1).</li>
+</ul>
+<ul>
+<li>• Build container images that pull directly from Docker Hub (for example, FROM alpine).</li>
+</ul>
+<ul>
+<li>• Use Helm to install charts that pull images from Docker Hub.</li>
+</ul>
+<ul>
+<li>Rate Limit#</li>
+</ul>
+<ul>
+<li>User Type</li>
+</ul>
+<ul>
+<li>Rate Limit</li>
+</ul>
+<ul>
+<li>Limiting Factor</li>
+</ul>
+<ul>
+<li>Anonymous</li>
+</ul>
+<ul>
+<li>100 pulls/6 hours</li>
+</ul>
+<ul>
+<li>Docker Free Account</li>
+</ul>
+<ul>
+<li>200 pulls/6 hours</li>
+</ul>
+<ul>
+<li>Docker Account based</li>
+</ul>
+<ul>
+<li>Docker Paid Account</li>
+</ul>
+<ul>
+<li>5000 pulls per 24 hours</li>
+</ul>
+<ul>
+<li>If the customer is pulling anonymously, they can sign up for a Docker account and begin authenticating their image pulls.  This should be relatively easy and free.</li>
+</ul>
+<ul>
+<li>If they are still getting throttled after authenticating their image pulls, they have a few paid options.</li>
+</ul>
+<ul>
+<li>They can sign up for a paid Docker account. This will greatly increase their rate-limit starting at $5/month. Docker Pricing</li>
+</ul>
+<ul>
+<li>They can import the public images into an Azure Container Registry, and pull the images from there. This would be the best option for customers already using ACR. Import Images into an ACR.</li>
+</ul>
+<ul>
+<li>System Pods in aks managed by azure platform are not created from docker hub, no worries about this.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>If you cannot handle this, please first check with topic owner.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>IP based</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Solutions#</li>
+</ul>
+<ul>
+<li>If a customer is being affected by throttling on image pulls, there are multiple possible solutions the customer can use depending on their use-case.</li>
+</ul>
+<ul>
+<li>They can also run their own image registry. This would have the highest operational burden, and would be out of the scope of Azure Support. We should only suggest this solution if the customer is very set against anything with a fee. Deploy a registry server</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://www.docker.com/increase-rate-limits" target="_blank" rel="noopener">https://www.docker.com/increase-rate-limits</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>I have done some sorting and summarize for the notification of docker hub. Please be aware of this and if anything unclear, please contact me.</p>
+<p>We can sync this at next triage meeting.</p>
+<p>Overview#</p>
+<p>On 24th August 2020, Docker announced that they would begin rate limiting container pull requests from Docker Hub for anonymous and free authenticated users. To give Azure customers time to adjust to this change, Microsoft initiated a partner agreement with Docker not to throttle requests from IP addresses that originate from Azure. This agreement will end on June 30, 2022.</p>
+<p>On 19th January 2022,  we/AKS team have sent out a reminder email to all customers.</p>
+<p>And the notifications Mooncake customers have received:</p>
+<p>Notification from Docker(Opensource):</p>
+<p><a href="https://www.docker.com/increase-rate-limits" target="_blank" rel="noopener">https://www.docker.com/increase-rate-limits</a></p>
+<p>Customers /Scenarios  will be effected#</p>
+<p>If customers are pulling images from Docker Hub anonymously, or using a free account, they may be impacted. When using a free account, image pulls will be rate-limited by IP</p>
+<p>If your environments on Azure have dependencies on images from Docker Hub, you may be affected. For example, if you:</p>
+<p>• Run nginx or any other image without a registry URL (for example, nginx:1).</p>
+<p>• Build container images that pull directly from Docker Hub (for example, FROM alpine).</p>
+<p>• Use Helm to install charts that pull images from Docker Hub.</p>
+<p>Rate Limit#</p>
+<p>User Type</p>
+<p>Rate Limit</p>
+<p>Limiting Factor</p>
+<p>Anonymous</p>
+<p>100 pulls/6 hours</p>
+<p>IP based</p>
+<p>Docker Free Account</p>
+<p>200 pulls/6 hours</p>
+<p>Docker Account based</p>
+<p>Docker Paid Account</p>
+<p>5000 pulls per 24 hours</p>
+<p>Solutions#</p>
+<p>If a customer is being affected by throttling on image pulls, there are multiple possible solutions the customer can use depending on their use-case.</p>
+<p>If the customer is pulling anonymously, they can sign up for a Docker account and begin authenticating their image pulls.  This should be relatively easy and free.</p>
+<p>If they are still getting throttled after authenticating their image pulls, they have a few paid options.</p>
+<p>They can sign up for a paid Docker account. This will greatly increase their rate-limit starting at $5/month. Docker Pricing</p>
+<p>They can import the public images into an Azure Container Registry, and pull the images from there. This would be the best option for customers already using ACR. Import Images into an ACR.</p>
+<p>They can also run their own image registry. This would have the highest operational burden, and would be out of the scope of Azure Support. We should only suggest this solution if the customer is very set against anything with a fee. Deploy a registry server</p>
+<p>Confirmed with PG on supporting this kind of issue#</p>
+<p>System Pods in aks managed by azure platform are not created from docker hub, no worries about this.</p>
+<p>Docker Hub is a 3rd party registry owned by Docker, so we have no control over their registry. We can help guide customers to setting their pulls to be authenticated, or working with ACR. Most other issues, such as fixing/redesigning their CI/CD pipeline, would be out of scope.</p>
+<p>If you cannot handle this, please first check with topic owner.</p></article>

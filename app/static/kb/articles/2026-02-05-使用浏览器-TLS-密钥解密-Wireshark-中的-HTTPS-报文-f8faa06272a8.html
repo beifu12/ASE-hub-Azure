@@ -1,0 +1,111 @@
+<article class="kb-article" data-title="使用浏览器 TLS 密钥解密 Wireshark 中的 HTTPS 报文"><h1>使用浏览器 TLS 密钥解密 Wireshark 中的 HTTPS 报文</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Net Perf analysis</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-02-05 17:01:12</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>在处理 Web 交互相关问题时，我们通常会通过 Wireshark 抓包来分析请求与响应过程。但当前大多数访问都基于 HTTPS，抓到的报文内容会被 TLS 加密，Wireshark 默认只能看到 TLS Application Data，无法直接查看其中的 HTTP 明文内容，从而限制了进一步的分析和排查。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>在处理 Web 交互相关问题时，我们通常会通过 Wireshark 抓包来分析请求与响应过程。但当前大多数访问都基于 HTTPS，抓到的报文内容会被 TLS 加密，Wireshark 默认只能看到 TLS Application Data，无法直接查看其中的 HTTP 明文内容，从而限制了进一步的分析和排查。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>下面提供一种方法：使用浏览器生成的 TLS 密钥文件，在 Wireshark 中解密 HTTPS 报文。</li>
+</ul>
+<ul>
+<li>在该浏览器窗口中访问目标站点，复现问题场景。</li>
+</ul>
+<ul>
+<li>示例：</li>
+</ul>
+<ul>
+<li>我们在wireshark中做如下配置：</li>
+</ul>
+<ul>
+<li>1）打开 Wireshark → Edit → Preferences</li>
+</ul>
+<ul>
+<li>4）点击Apply或OK</li>
+</ul>
+<ul>
+<li>完成上述配置后，原先显示为 TLS Application Data 的数据包中，将可以看到解密后的 HTTP 明文内容。</li>
+</ul>
+<ul>
+<li>【注意事项】</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在处理 Web 交互相关问题时，我们通常会通过 Wireshark 抓包来分析请求与响应过程。但当前大多数访问都基于 HTTPS，抓到的报文内容会被 TLS 加密，Wireshark 默认只能看到 TLS Application Data，无法直接查看其中的 HTTP 明文内容，从而限制了进一步的分析和排查。</li>
+</ul>
+<ul>
+<li>【操作步骤】</li>
+</ul>
+<ul>
+<li>步骤一：通过浏览器生成 TLS 密钥日志</li>
+</ul>
+<ul>
+<li>此时浏览器会自动生成 TLS 密钥日志文件（例如：D:\sslkeylog.txt）。</li>
+</ul>
+<ul>
+<li>查看D盘，已经生成了这个文件</li>
+</ul>
+<ul>
+<li>步骤二：使用 Wireshark 抓包并配置TLS解密</li>
+</ul>
+<ul>
+<li>与此同时，我们可以在wireshark上开始抓包，在未解密前，HTTPS 流量通常只会显示为：TLS Application Data，无法看到具体的 HTTP 请求与响应内容。</li>
+</ul>
+<ul>
+<li>3）设置 (Pre)-Master-Secret log filename：D:\sslkeylog.txt</li>
+</ul>
+<ul>
+<li>密钥日志文件需与抓包时间段一致，否则无法解密对应流量。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用提供的 PowerShell 脚本（分别对应 Chrome 和 Edge）。</li>
+</ul>
+<ul>
+<li>在 PowerShell 中运行脚本后，会自动启动浏览器窗口。</li>
+</ul>
+<ul>
+<li>必须使用通过脚本启动的浏览器窗口访问目标站点，普通浏览器进程不会生成密钥日志。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>2）Protocols → TLS</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026/2/5</p>
+<p>在处理 Web 交互相关问题时，我们通常会通过 Wireshark 抓包来分析请求与响应过程。但当前大多数访问都基于 HTTPS，抓到的报文内容会被 TLS 加密，Wireshark 默认只能看到 TLS Application Data，无法直接查看其中的 HTTP 明文内容，从而限制了进一步的分析和排查。</p>
+<p>下面提供一种方法：使用浏览器生成的 TLS 密钥文件，在 Wireshark 中解密 HTTPS 报文。</p>
+<p>【操作步骤】</p>
+<p>步骤一：通过浏览器生成 TLS 密钥日志</p>
+<p>使用提供的 PowerShell 脚本（分别对应 Chrome 和 Edge）。</p>
+<p>在 PowerShell 中运行脚本后，会自动启动浏览器窗口。</p>
+<p>在该浏览器窗口中访问目标站点，复现问题场景。</p>
+<p>此时浏览器会自动生成 TLS 密钥日志文件（例如：D:\sslkeylog.txt）。</p>
+<p>示例：</p>
+<p>查看D盘，已经生成了这个文件</p>
+<p>步骤二：使用 Wireshark 抓包并配置TLS解密</p>
+<p>与此同时，我们可以在wireshark上开始抓包，在未解密前，HTTPS 流量通常只会显示为：TLS Application Data，无法看到具体的 HTTP 请求与响应内容。</p>
+<p>我们在wireshark中做如下配置：</p>
+<p>1）打开 Wireshark → Edit → Preferences</p>
+<p>2）Protocols → TLS</p>
+<p>3）设置 (Pre)-Master-Secret log filename：D:\sslkeylog.txt</p>
+<p>4）点击Apply或OK</p>
+<p>完成上述配置后，原先显示为 TLS Application Data 的数据包中，将可以看到解密后的 HTTP 明文内容。</p>
+<p>【注意事项】</p>
+<p>必须使用通过脚本启动的浏览器窗口访问目标站点，普通浏览器进程不会生成密钥日志。</p>
+<p>密钥日志文件需与抓包时间段一致，否则无法解密对应流量。</p></article>

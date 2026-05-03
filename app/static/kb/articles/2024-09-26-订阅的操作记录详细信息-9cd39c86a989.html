@@ -1,0 +1,86 @@
+<article class="kb-article" data-title="订阅的操作记录详细信息"><h1>订阅的操作记录详细信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-09-26 17:40:50</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>| project TIMESTAMP, PreciseTimeStamp,ActivityId,Deployment,TaskName,operationName,targetUri,httpStatusCode,errorMessage,targetResourceType,additionalProperties</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>| project TIMESTAMP, PreciseTimeStamp,ActivityId,Deployment,TaskName,operationName,targetUri,httpStatusCode,errorMessage,targetResourceType,additionalProperties</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>| where TIMESTAMP &gt;= datetime(2022-04-21T00:00:00Z) and TIMESTAMP &lt; datetime(2022-05-04T23:59:59Z)</li>
+</ul>
+<ul>
+<li>//| where TIMESTAMP &gt;= ago(1d)</li>
+</ul>
+<ul>
+<li>| where subscriptionId == &quot;e8cf3b33-f3a9-4a93-96dd-8b869fb55a83&quot;</li>
+</ul>
+<ul>
+<li>| where * contains &quot;bsh-d-fs-ipaas-rsv&quot;</li>
+</ul>
+<ul>
+<li>| where httpMethod != &quot;GET&quot;</li>
+</ul>
+<ul>
+<li>//| where correlationId == &quot;d90c4163-bf7c-4089-874c-f3e998254753&quot;</li>
+</ul>
+<ul>
+<li>//| where Deployment == &quot;8b96f4cf06dc4a688adb11c1919bb98e&quot;</li>
+</ul>
+<ul>
+<li>| where ActivityId == &quot;524b6c02-04ce-44d1-a67d-30ee790e2f20&quot;</li>
+</ul>
+<ul>
+<li>| where message contains &quot;/subscriptions/e8cf3b33-f3a9-4a93-96dd-8b869fb55a83/resourceGroups/bsh-d-fs-ipaas-rg/providers/Microsoft.RecoveryServices/vaults/bsh-d-fs-ipaas-rsv&quot;</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP,PreciseTimeStamp,Deployment,operationName,message,exception,additionalProperties</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>//查询问题发生时间段的操作记录</li>
+</ul>
+<ul>
+<li>cluster(&#39;armmcadx.chinaeast2.kusto.chinacloudapi.cn&#39;).database(&#39;armmc&#39;).HttpIncomingRequests</li>
+</ul>
+<ul>
+<li>//根据ActivityId查询详细的messages输出</li>
+</ul>
+<ul>
+<li>cluster(&#39;armmcadx.chinaeast2.kusto.chinacloudapi.cn&#39;).database(&#39;armmc&#39;).Traces</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022-05-05</p>
+<p>//查询问题发生时间段的操作记录</p>
+<p>cluster(&#39;armmcadx.chinaeast2.kusto.chinacloudapi.cn&#39;).database(&#39;armmc&#39;).HttpIncomingRequests</p>
+<p>| where TIMESTAMP &gt;= datetime(2022-04-21T00:00:00Z) and TIMESTAMP &lt; datetime(2022-05-04T23:59:59Z)</p>
+<p>//| where TIMESTAMP &gt;= ago(1d)</p>
+<p>| where subscriptionId == &quot;e8cf3b33-f3a9-4a93-96dd-8b869fb55a83&quot;</p>
+<p>| where * contains &quot;bsh-d-fs-ipaas-rsv&quot;</p>
+<p>| where httpMethod != &quot;GET&quot;</p>
+<p>| project TIMESTAMP, PreciseTimeStamp,ActivityId,Deployment,TaskName,operationName,targetUri,httpStatusCode,errorMessage,targetResourceType,additionalProperties</p>
+<p>//根据ActivityId查询详细的messages输出</p>
+<p>cluster(&#39;armmcadx.chinaeast2.kusto.chinacloudapi.cn&#39;).database(&#39;armmc&#39;).Traces</p>
+<p>//| where correlationId == &quot;d90c4163-bf7c-4089-874c-f3e998254753&quot;</p>
+<p>//| where Deployment == &quot;8b96f4cf06dc4a688adb11c1919bb98e&quot;</p>
+<p>| where ActivityId == &quot;524b6c02-04ce-44d1-a67d-30ee790e2f20&quot;</p>
+<p>| where message contains &quot;/subscriptions/e8cf3b33-f3a9-4a93-96dd-8b869fb55a83/resourceGroups/bsh-d-fs-ipaas-rg/providers/Microsoft.RecoveryServices/vaults/bsh-d-fs-ipaas-rsv&quot;</p>
+<p>| project TIMESTAMP,PreciseTimeStamp,Deployment,operationName,message,exception,additionalProperties</p></article>

@@ -1,0 +1,112 @@
+<article class="kb-article" data-title="Using the Split Copy Tool"><h1>Using the Split Copy Tool</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Data Box Disk</li>
+<li>最近修改: 2022-04-07 06:39:44</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Split and copy data to disks</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Split and copy data to disks</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Split and copy data to disks</li>
+</ul>
+<ul>
+<li>This optional procedure may be used when you are using multiple disks and have a large dataset that needs to be split and copied across all the disks. The Data Box Split Copy tool helps split and copy the data on a Windows computer.</li>
+</ul>
+<ul>
+<li>Take the following steps to spit and copy the data</li>
+</ul>
+<ul>
+<li>On your Windows computer, ensure that you have the Data Box Split Copy tool downloaded and extracted in a local folder.</li>
+</ul>
+<ul>
+<li>Open File Explorer. Make a note of the data source drive and drive letters assigned to Data Box Disk.</li>
+</ul>
+<ul>
+<li>Identify the source data to copy</li>
+</ul>
+<ul>
+<li>Go to the folder where the software is extracted. Locate the SampleConfig.json file in that folder. This is a read-only file that you can modify and save.</li>
+</ul>
+<ul>
+<li>Modify the SampleConfig.json file.</li>
+</ul>
+<ul>
+<li>Provide a job name.</li>
+</ul>
+<ul>
+<li>Supply a source path</li>
+</ul>
+<ul>
+<li>Enter the drive letters corresponding to the target disks</li>
+</ul>
+<ul>
+<li>Open a Command Prompt window.</li>
+</ul>
+<ul>
+<li>Run the DataBoxDiskSplitCopy.exe</li>
+</ul>
+<ul>
+<li>Enter to continue the script.</li>
+</ul>
+<ul>
+<li>When the dataset is split and copied, the summary of the Split Copy tool for the copy session is presented.</li>
+</ul>
+<ul>
+<li>If the copy session fails, then to recover and resume, use the following command:</li>
+</ul>
+<ul>
+<li>DataBoxDiskSplitCopy.exe PrepImport /config:&lt;configFile.json&gt; /ResumeSession</li>
+</ul>
+<ul>
+<li>For detailed and updated information of this product, refer to: Split and copy data to disks</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Provide a path for the log files.</li>
+</ul>
+<ul>
+<li>To validate the file format, go to JSONlint. Save the file as ConfigFile.json.</li>
+</ul>
+<ul>
+<li>Verify that the data is split across the target disks.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Split and copy data to disks</p>
+<p>This optional procedure may be used when you are using multiple disks and have a large dataset that needs to be split and copied across all the disks. The Data Box Split Copy tool helps split and copy the data on a Windows computer.</p>
+<p>Take the following steps to spit and copy the data</p>
+<p>On your Windows computer, ensure that you have the Data Box Split Copy tool downloaded and extracted in a local folder.</p>
+<p>Open File Explorer. Make a note of the data source drive and drive letters assigned to Data Box Disk.</p>
+<p>Identify the source data to copy</p>
+<p>Go to the folder where the software is extracted. Locate the SampleConfig.json file in that folder. This is a read-only file that you can modify and save.</p>
+<p>Modify the SampleConfig.json file.</p>
+<p>Provide a job name.</p>
+<p>Supply a source path</p>
+<p>Enter the drive letters corresponding to the target disks</p>
+<p>Provide a path for the log files.</p>
+<p>To validate the file format, go to JSONlint. Save the file as ConfigFile.json.</p>
+<p>Open a Command Prompt window.</p>
+<p>Run the DataBoxDiskSplitCopy.exe</p>
+<p>Enter to continue the script.</p>
+<p>When the dataset is split and copied, the summary of the Split Copy tool for the copy session is presented.</p>
+<p>Verify that the data is split across the target disks.</p>
+<p>If the copy session fails, then to recover and resume, use the following command:</p>
+<p>DataBoxDiskSplitCopy.exe PrepImport /config:&lt;configFile.json&gt; /ResumeSession</p>
+<p>For detailed and updated information of this product, refer to: Split and copy data to disks</p></article>

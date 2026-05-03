@@ -1,0 +1,186 @@
+<article class="kb-article" data-title="Docker与ACR间测试"><h1>Docker与ACR间测试</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: ACR</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-10-08 15:26:03</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Unable to find image &#39;ubuntu:latest&#39; locally</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Unable to find image &#39;ubuntu:latest&#39; locally</li>
+</ul>
+<ul>
+<li>Digest: sha256:b88f8848e9a1a4e4558ba7cfc4acc5879e1d0e7ac06401409062ad2627e6fb58</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>一：前提</li>
+</ul>
+<ul>
+<li>2）还必须在本地安装 Docker。 Docker 提供的包可在任何 Mac、Windows 或 Linux 系统上轻松配置 Docker。</li>
+</ul>
+<ul>
+<li>安装docker并测试：</li>
+</ul>
+<ul>
+<li>[root@centos76xin zhangnan]# service docker status</li>
+</ul>
+<ul>
+<li>Redirecting to /bin/systemctl status docker.service</li>
+</ul>
+<ul>
+<li>● docker.service - Docker Application Container Engine</li>
+</ul>
+<ul>
+<li>Active: active (running) since Thu 2019-10-17 07:25:18 UTC; 2h 8min ago</li>
+</ul>
+<ul>
+<li>Main PID: 10843 (dockerd-current)</li>
+</ul>
+<ul>
+<li>Tasks: 49</li>
+</ul>
+<ul>
+<li>[root@centos76xin zhangnan]#  docker run -it ubuntu bash</li>
+</ul>
+<ul>
+<li>Trying to pull repository docker.io/library/ubuntu ...</li>
+</ul>
+<ul>
+<li>latest: Pulling from docker.io/library/ubuntu</li>
+</ul>
+<ul>
+<li>5667fdb72017: Pull complete</li>
+</ul>
+<ul>
+<li>d83811f270d5: Pull complete</li>
+</ul>
+<ul>
+<li>ee671aafb583: Pull complete</li>
+</ul>
+<ul>
+<li>7fc152dfb3a6: Pull complete</li>
+</ul>
+<ul>
+<li>Status: Downloaded newer image for docker.io/ubuntu:latest</li>
+</ul>
+<ul>
+<li>二：登录到Azure账户以及容器注册表</li>
+</ul>
+<ul>
+<li>三：pull和push镜像</li>
+</ul>
+<ul>
+<li>docker pull hello-world                          //从docker.io仓库拉镜像到本地</li>
+</ul>
+<ul>
+<li>------------------------------</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>docker login : 登陆到一个Docker镜像仓库，如果未指定镜像仓库地址，默认为官方仓库 Docker Hub</li>
+</ul>
+<ul>
+<li>docker logout : 登出一个Docker镜像仓库，如果未指定镜像仓库地址，默认为官方仓库 Docker Hub</li>
+</ul>
+<ul>
+<li>docker tag hello-world &lt;acrLoginServer&gt;/hello-world:v1            //将映像推送到注册表之前，必须使用 ACR 登录服务器的完全限定的名称进行标记</li>
+</ul>
+<ul>
+<li>docker push &lt;acrLoginServer&gt;/hello-world:v1            //推送镜像到ACR</li>
+</ul>
+<ul>
+<li>docker run &lt;acrLoginServer&gt;/hello-world:v1     //使用 docker run从容器注册表拉取并运行 hello-world:v1 容器映像：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>1）要求运行 Azure CLI（建议使用 2.0.55 或更高版本）。 运行 az --version 即可查找版本。 如果需要进行安装或升级，请参阅安装 Azure CLI。</li>
+</ul>
+<ul>
+<li>测试docker命令：</li>
+</ul>
+<ul>
+<li>az cloud set -n AzureChinaCloud</li>
+</ul>
+<ul>
+<li>az login -u zhangnan@microsoftinternal.partner.onmschina.cn -p xxx</li>
+</ul>
+<ul>
+<li>az account set --subscription 57e04838-4957-440a-a88d-41d73c5154c0</li>
+</ul>
+<ul>
+<li>az acr create --resource-group myResourceGroup --name tangyuan --sku Basic</li>
+</ul>
+<ul>
+<li>az acr login --name tangyuan  或者 docker login tangyuan.azurecr.cn   //两条命令都能实现登录ACR的功能</li>
+</ul>
+<ul>
+<li>示例：本地没有任何image，想要在本地运行一个容器，可以使用docker run命令，然后先从acr拉取映像下载到本地，然后用该image运行一个container。</li>
+</ul>
+<ul>
+<li>az acr repository list --name &lt;acrName&gt; --output table   //列出注册表中的存储库</li>
+</ul>
+<ul>
+<li>az acr repository show-tags --name &lt;acrName&gt; --repository hello-world --output table  //列出hello-world 存储库中的标记</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Loaded: loaded (/usr/lib/systemd/system/docker.service; disabled; vendor preset: disabled)</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Docker命令大全：<a href="https://www.runoob.com/docker/docker-command-manual.html" target="_blank" rel="noopener">https://www.runoob.com/docker/docker-command-manual.html</a></li>
+</ul>
+<ul>
+<li>Docs: <a href="http://docs.docker.com" target="_blank" rel="noopener">http://docs.docker.com</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>一：前提</p>
+<p>1）要求运行 Azure CLI（建议使用 2.0.55 或更高版本）。 运行 az --version 即可查找版本。 如果需要进行安装或升级，请参阅安装 Azure CLI。</p>
+<p>2）还必须在本地安装 Docker。 Docker 提供的包可在任何 Mac、Windows 或 Linux 系统上轻松配置 Docker。</p>
+<p>Docker命令大全：<a href="https://www.runoob.com/docker/docker-command-manual.html" target="_blank" rel="noopener">https://www.runoob.com/docker/docker-command-manual.html</a></p>
+<p>安装docker并测试：</p>
+<p>[root@centos76xin zhangnan]# service docker status</p>
+<p>Redirecting to /bin/systemctl status docker.service</p>
+<p>● docker.service - Docker Application Container Engine</p>
+<p>Loaded: loaded (/usr/lib/systemd/system/docker.service; disabled; vendor preset: disabled)</p>
+<p>Active: active (running) since Thu 2019-10-17 07:25:18 UTC; 2h 8min ago</p>
+<p>Docs: <a href="http://docs.docker.com" target="_blank" rel="noopener">http://docs.docker.com</a></p>
+<p>Main PID: 10843 (dockerd-current)</p>
+<p>Tasks: 49</p>
+<p>[root@centos76xin zhangnan]#  docker run -it ubuntu bash</p>
+<p>Unable to find image &#39;ubuntu:latest&#39; locally</p>
+<p>Trying to pull repository docker.io/library/ubuntu ...</p>
+<p>latest: Pulling from docker.io/library/ubuntu</p>
+<p>5667fdb72017: Pull complete</p>
+<p>d83811f270d5: Pull complete</p>
+<p>ee671aafb583: Pull complete</p>
+<p>7fc152dfb3a6: Pull complete</p>
+<p>Digest: sha256:b88f8848e9a1a4e4558ba7cfc4acc5879e1d0e7ac06401409062ad2627e6fb58</p>
+<p>Status: Downloaded newer image for docker.io/ubuntu:latest</p>
+<p>测试docker命令：</p>
+<p>二：登录到Azure账户以及容器注册表</p>
+<p>az cloud set -n AzureChinaCloud</p>
+<p>az login -u zhangnan@microsoftinternal.partner.onmschina.cn -p xxx</p>
+<p>az account set --subscription 57e04838-4957-440a-a88d-41d73c5154c0</p>
+<p>az acr create --resource-group myResourceGroup --name tangyuan --sku Basic</p>
+<p>az acr login --name tangyuan  或者 docker login tangyuan.azurecr.cn   //两条命令都能实现登录ACR的功能</p>
+<p>docker login : 登陆到一个Docker镜像仓库，如果未指定镜像仓库地址，默认为官方仓库 Docker Hub</p>
+<p>docker logout : 登出一个Docker镜像仓库，如果未指定镜像仓库地址，默认为官方仓库 Docker Hub</p>
+<p>三：pull和push镜像</p>
+<p>docker pull hello-world                          //从docker.io仓库拉镜像到本地</p>
+<p>------------------------------</p>
+<p>docker tag hello-world &lt;acrLoginServer&gt;/hello-world:v1            //将映像推送到注册表之前，必须使用 ACR 登录服务器的完全限定的名称进行标记</p>
+<p>docker push &lt;acrLoginServer&gt;/hello-world:v1            //推送镜像到ACR</p>
+<p>docker run &lt;acrLoginServer&gt;/hello-world:v1     //使用 docker run从容器注册表拉取并运行 hello-world:v1 容器映像：</p>
+<p>示例：本地没有任何image，想要在本地运行一个容器，可以使用docker run命令，然后先从acr拉取映像下载到本地，然后用该image运行一个container。</p>
+<p>az acr repository list --name &lt;acrName&gt; --output table   //列出注册表中的存储库</p>
+<p>az acr repository show-tags --name &lt;acrName&gt; --repository hello-world --output table  //列出hello-world 存储库中的标记</p></article>

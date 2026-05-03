@@ -1,0 +1,51 @@
+<article class="kb-article" data-title="Share | Expand data disk without downtime"><h1>Share | Expand data disk without downtime</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-03 14:37:31</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<ul>
+<li>有两点需要提醒大家：</li>
+</ul>
+<ul>
+<li>1，对于在线扩容的数据磁盘的大小有一个4TiB的限制，即不能从一个4TiB 以下的一个大小直接在线扩容到4TiB以上。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2，通过测试，对于某些操作系统，在Azure portal上扩容后，操作系统中能直接显示扩容后的大小，如Ubuntu 22.04; 但是还有的操作系统，比如SUSE 12 ，在portal 扩容后，操作系统中查看并没有生效，还需要重启操作系统。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>当前Azure支持对数据磁盘进行不停机在线扩容大小的功能，详见：<a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/expand-os-disk#expand-without-downtime" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/expand-os-disk#expand-without-downtime</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Jia.Xiaolei</p>
+<p>当前Azure支持对数据磁盘进行不停机在线扩容大小的功能，详见：<a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/expand-os-disk#expand-without-downtime" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/expand-os-disk#expand-without-downtime</a></p>
+<p>有两点需要提醒大家：</p>
+<p>1，对于在线扩容的数据磁盘的大小有一个4TiB的限制，即不能从一个4TiB 以下的一个大小直接在线扩容到4TiB以上。</p>
+<p>2，通过测试，对于某些操作系统，在Azure portal上扩容后，操作系统中能直接显示扩容后的大小，如Ubuntu 22.04; 但是还有的操作系统，比如SUSE 12 ，在portal 扩容后，操作系统中查看并没有生效，还需要重启操作系统。</p></article>

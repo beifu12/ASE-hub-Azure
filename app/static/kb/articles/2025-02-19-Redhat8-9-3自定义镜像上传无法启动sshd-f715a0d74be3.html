@@ -1,0 +1,107 @@
+<article class="kb-article" data-title="Redhat8，9.3自定义镜像上传无法启动sshd"><h1>Redhat8，9.3自定义镜像上传无法启动sshd</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-02-19 09:47:48</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>自定义镜像上传后系统内部openssh无法启动，串行控制台可以看到系统启动但无法进入</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>Case id: 20241218330932</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>Cloud-init配置导致</li>
+</ul>
+<ul>
+<li>本地重新按照文档准备镜像，同时修改cloud-init配置。</li>
+</ul>
+<ul>
+<li>Rhel8：</li>
+</ul>
+<ul>
+<li>Rhel9.3：</li>
+</ul>
+<ul>
+<li>Rhel9.5 解决了这个问题，不需要改动任何东西</li>
+</ul>
+<ul>
+<li>注释掉：</li>
+</ul>
+<ul>
+<li>[Unit]</li>
+</ul>
+<ul>
+<li>systemctl daemon-reload</li>
+</ul>
+<ul>
+<li>systemclt restart sshd</li>
+</ul>
+<ul>
+<li>操作完毕后再参考文档继续执行第17步。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>ConditionPathExists=!/run/systemd/generator.early/multi-user.target.wants/cloud-init.target</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法：</li>
+</ul>
+<ul>
+<li>vi /etc/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf</li>
+</ul>
+<ul>
+<li>vi /usr/lib/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/redhat-create-upload-vhd?tabs=rhel89hv" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/redhat-create-upload-vhd?tabs=rhel89hv</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>WangZhaoqing</p>
+<p>Case id: 20241218330932</p>
+<p>问题现象：</p>
+<p>自定义镜像上传后系统内部openssh无法启动，串行控制台可以看到系统启动但无法进入</p>
+<p>问题原因：</p>
+<p>Cloud-init配置导致</p>
+<p>解决方法：</p>
+<p>本地重新按照文档准备镜像，同时修改cloud-init配置。</p>
+<p>Rhel8：</p>
+<p>vi /etc/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf</p>
+<p>Rhel9.3：</p>
+<p>vi /usr/lib/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf</p>
+<p>Rhel9.5 解决了这个问题，不需要改动任何东西</p>
+<p>注释掉：</p>
+<p>[Unit]</p>
+<p>ConditionPathExists=!/run/systemd/generator.early/multi-user.target.wants/cloud-init.target</p>
+<p>systemctl daemon-reload</p>
+<p>systemclt restart sshd</p>
+<p>操作完毕后再参考文档继续执行第17步。</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/redhat-create-upload-vhd?tabs=rhel89hv" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/redhat-create-upload-vhd?tabs=rhel89hv</a></p></article>

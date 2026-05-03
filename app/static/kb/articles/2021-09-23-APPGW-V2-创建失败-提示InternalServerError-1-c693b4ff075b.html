@@ -1,0 +1,67 @@
+<article class="kb-article" data-title="APPGW V2 创建失败，提示InternalServerError"><h1>APPGW V2 创建失败，提示InternalServerError</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-09-23 17:24:25</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>119110621001474/NET/BMW CHINA AUTOMOTIVE TRADING LTD./SR_2019110661215_[TEC]failed to create application gateway V2</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>119110621001474/NET/BMW CHINA AUTOMOTIVE TRADING LTD./SR_2019110661215_[TEC]failed to create application gateway V2</li>
+</ul>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>用户多次创建v2的应用程序网关报错，为InternalServerError</li>
+</ul>
+<ul>
+<li>报错内容：</li>
+</ul>
+<ul>
+<li>{ &quot;id&quot;: &quot;/subscriptions/f09aa8b1-0c1b-4608-8af1-58e06b882a36/resourceGroups/UC-UAT/providers/Microsoft.Resources/deployments/Microsoft.ApplicationGateway-20191106225440/operations/41E33C3B71EF15A8&quot;, &quot;operationId&quot;: &quot;41E33C3B71EF15A8&quot;, &quot;properties&quot;: { &quot;provisioningOperation&quot;: &quot;Create&quot;, &quot;provisioningState&quot;: &quot;Failed&quot;, &quot;timestamp&quot;: &quot;2019-11-06T15:13:07.0159718Z&quot;, &quot;duration&quot;: &quot;PT14M34.0912204S&quot;, &quot;trackingId&quot;: &quot;8dabe15f-d41b-4a51-9775-f90696acad72&quot;, &quot;statusCode&quot;: &quot;Conflict&quot;, &quot;statusMessage&quot;: { &quot;status&quot;: &quot;Failed&quot;, &quot;error&quot;: { &quot;code&quot;: &quot;ResourceDeploymentFailure&quot;, &quot;message&quot;: &quot;资源操作完成时的终端预配状态为“Failed”。&quot;, &quot;details&quot;: [ { &quot;code&quot;: &quot;InternalServerError&quot;, &quot;message&quot;: &quot;发生错误。&quot;, &quot;details&quot;: [] } ] } }, &quot;targetResource&quot;: { &quot;id&quot;: &quot;/subscriptions/f09aa8b1-0c1b-4608-8af1-58e06b882a36/resourceGroups/UC-UAT/providers/Microsoft.Network/applicationGateways/uc-paas-agw-uat&quot;, &quot;resourceType&quot;: &quot;Microsoft.Network/applicationGateways&quot;, &quot;resourceName&quot;: &quot;uc-paas-agw-uat&quot; } }}</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>HeShaobo</li>
+</ul>
+<ul>
+<li>相关工单：</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>根据排查最终用户应用程序网关部署虚拟网络VNET-bmwFGProd-116设置自定义DNS服务器10.6.156.4, 10.6.156.5，DNS服务器位于本地数据中心，通过ExpressRoute线路通信。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>SKU V2应用程序网关在创建过程中需要通过&quot;nfvmcmainbjs.blob.core.chinacloudapi.cn&quot;下载网关实例镜像文件，查询创建失败日志，域名&quot;nfvmcmainbjs.blob.core.chinacloudapi.cn&quot;解析失败导致创建超时失败。建议在本地DNS服务器中增加配置（例如配置递归查询），使DNS服务器可以成功解析域名&quot;nfvmcmainbjs.blob.core.chinacloudapi.cn&quot;。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>HeShaobo</p>
+<p>相关工单：</p>
+<p>119110621001474/NET/BMW CHINA AUTOMOTIVE TRADING LTD./SR_2019110661215_[TEC]failed to create application gateway V2</p>
+<p>问题现象：</p>
+<p>用户多次创建v2的应用程序网关报错，为InternalServerError</p>
+<p>报错内容：</p>
+<p>{ &quot;id&quot;: &quot;/subscriptions/f09aa8b1-0c1b-4608-8af1-58e06b882a36/resourceGroups/UC-UAT/providers/Microsoft.Resources/deployments/Microsoft.ApplicationGateway-20191106225440/operations/41E33C3B71EF15A8&quot;, &quot;operationId&quot;: &quot;41E33C3B71EF15A8&quot;, &quot;properties&quot;: { &quot;provisioningOperation&quot;: &quot;Create&quot;, &quot;provisioningState&quot;: &quot;Failed&quot;, &quot;timestamp&quot;: &quot;2019-11-06T15:13:07.0159718Z&quot;, &quot;duration&quot;: &quot;PT14M34.0912204S&quot;, &quot;trackingId&quot;: &quot;8dabe15f-d41b-4a51-9775-f90696acad72&quot;, &quot;statusCode&quot;: &quot;Conflict&quot;, &quot;statusMessage&quot;: { &quot;status&quot;: &quot;Failed&quot;, &quot;error&quot;: { &quot;code&quot;: &quot;ResourceDeploymentFailure&quot;, &quot;message&quot;: &quot;资源操作完成时的终端预配状态为“Failed”。&quot;, &quot;details&quot;: [ { &quot;code&quot;: &quot;InternalServerError&quot;, &quot;message&quot;: &quot;发生错误。&quot;, &quot;details&quot;: [] } ] } }, &quot;targetResource&quot;: { &quot;id&quot;: &quot;/subscriptions/f09aa8b1-0c1b-4608-8af1-58e06b882a36/resourceGroups/UC-UAT/providers/Microsoft.Network/applicationGateways/uc-paas-agw-uat&quot;, &quot;resourceType&quot;: &quot;Microsoft.Network/applicationGateways&quot;, &quot;resourceName&quot;: &quot;uc-paas-agw-uat&quot; } }}</p>
+<p>问题原因：</p>
+<p>根据排查最终用户应用程序网关部署虚拟网络VNET-bmwFGProd-116设置自定义DNS服务器10.6.156.4, 10.6.156.5，DNS服务器位于本地数据中心，通过ExpressRoute线路通信。</p>
+<p>解决方案：</p>
+<p>SKU V2应用程序网关在创建过程中需要通过&quot;nfvmcmainbjs.blob.core.chinacloudapi.cn&quot;下载网关实例镜像文件，查询创建失败日志，域名&quot;nfvmcmainbjs.blob.core.chinacloudapi.cn&quot;解析失败导致创建超时失败。建议在本地DNS服务器中增加配置（例如配置递归查询），使DNS服务器可以成功解析域名&quot;nfvmcmainbjs.blob.core.chinacloudapi.cn&quot;。</p></article>

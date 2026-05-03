@@ -1,0 +1,61 @@
+<article class="kb-article" data-title="Not Verfified的自定义域中的账户同步到Azure AD，是否可以使用本地密码登录"><h1>Not Verfified的自定义域中的账户同步到Azure AD，是否可以使用本地密码登录</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-02-23 13:03:35</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题：</li>
+</ul>
+<ul>
+<li>本地为sx@evazhang.xyz ，同步到azure后，会变为sx@abc.partner.onmschina.cn</li>
+</ul>
+<ul>
+<li>用户在配置AAD Connect同步时，看到有以下提示，认为是不能使用本地密码登陆的。</li>
+</ul>
+<ul>
+<li>提示有一定的误导，请大家知悉。</li>
+</ul>
+<ul>
+<li>参考工单：SR_20211125134217_Enterprise AD同步Azure AD问题咨询</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如果在Azure AD中添加的自定义域名为未验证，本地同步到Azure上的账户的后缀会变为Azure AD域名的后缀。例如，</li>
+</ul>
+<ul>
+<li>这种情况下，sx@abc.partner.onmschina.cn是否能够用本地的密码登陆Azure Portal。</li>
+</ul>
+<ul>
+<li>但是，经搭建环境测试验证，是可以使用本地密码登录的，说明密码的哈希也是同步上来的。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/12/01</p>
+<p>问题：</p>
+<p>如果在Azure AD中添加的自定义域名为未验证，本地同步到Azure上的账户的后缀会变为Azure AD域名的后缀。例如，</p>
+<p>本地为sx@evazhang.xyz ，同步到azure后，会变为sx@abc.partner.onmschina.cn</p>
+<p>这种情况下，sx@abc.partner.onmschina.cn是否能够用本地的密码登陆Azure Portal。</p>
+<p>用户在配置AAD Connect同步时，看到有以下提示，认为是不能使用本地密码登陆的。</p>
+<p>但是，经搭建环境测试验证，是可以使用本地密码登录的，说明密码的哈希也是同步上来的。</p>
+<p>提示有一定的误导，请大家知悉。</p>
+<p>参考工单：SR_20211125134217_Enterprise AD同步Azure AD问题咨询</p></article>

@@ -1,0 +1,83 @@
+<article class="kb-article" data-title="APPGW自定义DNS导致的探测状态unknown"><h1>APPGW自定义DNS导致的探测状态unknown</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-10-08 16:18:04</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>APPGW网关探测状态不定期变为unknown状态</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>APPGW网关探测状态不定期变为unknown状态</li>
+</ul>
+<ul>
+<li>119111821000328/NET/&lt;Covestro Polymers (China) Co., Ltd.&gt;/SR_2019111863347 _ [MS-LED]APP GW v2 show &quot;unknown&quot; status in backend health</li>
+</ul>
+<ul>
+<li>应用程序网关通过最终用户自定义DNS解析证书吊销列表（CRL）失败或者应用程序网关实例连接证书吊销列表（CRL）失败。</li>
+</ul>
+<ul>
+<li>如果后端池显示Unknown状态复现，请在虚拟网络中虚拟机测试解析和连接CRL分发站点URL是否成功；</li>
+</ul>
+<ul>
+<li>SSL Policy errors: RemoteCertificateChainErrors</li>
+</ul>
+<ul>
+<li>Certificate Status Information: unable to get certificate CRL</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20191127</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=====================</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>Certificate Status: RevocationStatusUnk</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>请查询当前应用程序网关SSL证书CRL分发站点URL信息；</li>
+</ul>
+<ul>
+<li>从后台日志查看，在2019/11/18 14:30~16:07 应用程序网关COVC-DCJ-UAT-APPGW 报错如下：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>同时建议在自定义DNS服务器进行抓包，通过抓包分析自定义DNS服务器域名解析情况。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/EC681F11" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/EC681F11</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20191127</p>
+<p>问题描述：</p>
+<p>=====================</p>
+<p>APPGW网关探测状态不定期变为unknown状态</p>
+<p>119111821000328/NET/&lt;Covestro Polymers (China) Co., Ltd.&gt;/SR_2019111863347 _ [MS-LED]APP GW v2 show &quot;unknown&quot; status in backend health</p>
+<p>问题原因：</p>
+<p>应用程序网关通过最终用户自定义DNS解析证书吊销列表（CRL）失败或者应用程序网关实例连接证书吊销列表（CRL）失败。</p>
+<p>请查询当前应用程序网关SSL证书CRL分发站点URL信息；</p>
+<p>如果后端池显示Unknown状态复现，请在虚拟网络中虚拟机测试解析和连接CRL分发站点URL是否成功；</p>
+<p>同时建议在自定义DNS服务器进行抓包，通过抓包分析自定义DNS服务器域名解析情况。</p>
+<p>从后台日志查看，在2019/11/18 14:30~16:07 应用程序网关COVC-DCJ-UAT-APPGW 报错如下：</p>
+<p>SSL Policy errors: RemoteCertificateChainErrors</p>
+<p>Certificate Status: RevocationStatusUnk</p>
+<p>Certificate Status Information: unable to get certificate CRL</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/EC681F11" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/EC681F11</a></p></article>

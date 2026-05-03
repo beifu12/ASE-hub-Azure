@@ -1,0 +1,674 @@
+<article class="kb-article" data-title="[ARM-WAF-modsecurity.conf]APPGW实例 WAF 规则 modsecurity.conf"><h1>[ARM-WAF-modsecurity.conf]APPGW实例 WAF 规则 modsecurity.conf</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-09-16 14:02:44</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SecRule REQBODY_ERROR &quot;!@eq 0&quot; \</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SecRule REQBODY_ERROR &quot;!@eq 0&quot; \</li>
+</ul>
+<ul>
+<li>#SecRule MULTIPART_STRICT_ERROR &quot;!@eq 0&quot; \</li>
+</ul>
+<ul>
+<li>#msg:&#39;Multipart request body failed strict validation: \</li>
+</ul>
+<ul>
+<li>#PE %{REQBODY_PROCESSOR_ERROR}, \</li>
+</ul>
+<ul>
+<li># Some internal errors will set flags in TX and we will need to look for these.</li>
+</ul>
+<ul>
+<li>&quot;id:&#39;200005&#39;,phase:2,t:none,deny,msg:&#39;ModSecurity internal error flagged: %{MATCHED_VAR_NAME}&#39;&quot;</li>
+</ul>
+<ul>
+<li># and data leakage issues.</li>
+</ul>
+<ul>
+<li># trigger a server error (determined by a 5xx or 4xx, excluding 404,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20190719</li>
+</ul>
+<ul>
+<li>以下modsecurity.conf来自启用WAF的APPGW实例（不含CRS部分）</li>
+</ul>
+<ul>
+<li># based on modsecurity.conf-recommended</li>
+</ul>
+<ul>
+<li># -- Rule engine initialization ----------------------------------------------</li>
+</ul>
+<ul>
+<li># only to start with, because that minimises the chances of post-installation</li>
+</ul>
+<ul>
+<li># disruption.</li>
+</ul>
+<ul>
+<li>#</li>
+</ul>
+<ul>
+<li>SecRuleEngine DetectionOnly</li>
+</ul>
+<ul>
+<li># -- Request body handling ---------------------------------------------------</li>
+</ul>
+<ul>
+<li># Allow ModSecurity to access request bodies. If you don&#39;t, ModSecurity</li>
+</ul>
+<ul>
+<li># won&#39;t be able to see any POST parameters, which opens a large security</li>
+</ul>
+<ul>
+<li># hole for attackers to exploit.</li>
+</ul>
+<ul>
+<li>SecRequestBodyAccess On</li>
+</ul>
+<ul>
+<li># Initiate XML Processor in case of xml content-type</li>
+</ul>
+<ul>
+<li>SecRule REQUEST_HEADERS:Content-Type &quot;text/xml&quot; \</li>
+</ul>
+<ul>
+<li># Initiate JSON Processor in case of JSON content-type; change accordingly</li>
+</ul>
+<ul>
+<li># if your application does not use &#39;application/json&#39;</li>
+</ul>
+<ul>
+<li>SecRule REQUEST_HEADERS:Content-Type &quot;application/json&quot; \</li>
+</ul>
+<ul>
+<li># Maximum request body size we will accept for buffering. If you support</li>
+</ul>
+<ul>
+<li># file uploads then the value given on the first line has to be as large</li>
+</ul>
+<ul>
+<li># as the largest file you are willing to accept. The second value refers</li>
+</ul>
+<ul>
+<li># to the size of data, with files excluded. You want to keep that value as</li>
+</ul>
+<ul>
+<li># low as practical.</li>
+</ul>
+<ul>
+<li>SecRequestBodyLimit 104857600</li>
+</ul>
+<ul>
+<li>SecRequestBodyNoFilesLimit 131072</li>
+</ul>
+<ul>
+<li># Store up to 128 KB of request body data in memory. When the multipart</li>
+</ul>
+<ul>
+<li># parser reachers this limit, it will start using your hard disk for</li>
+</ul>
+<ul>
+<li># storage. That is slow, but unavoidable.</li>
+</ul>
+<ul>
+<li>SecRequestBodyInMemoryLimit 131072</li>
+</ul>
+<ul>
+<li># What do do if the request body size is above our configured limit.</li>
+</ul>
+<ul>
+<li># Keep in mind that this setting will automatically be set to ProcessPartial</li>
+</ul>
+<ul>
+<li># when SecRuleEngine is set to DetectionOnly mode in order to minimize</li>
+</ul>
+<ul>
+<li># disruptions when initially deploying ModSecurity.</li>
+</ul>
+<ul>
+<li>SecRequestBodyLimitAction Reject</li>
+</ul>
+<ul>
+<li># As a rule of thumb, when failing to process a request body</li>
+</ul>
+<ul>
+<li># you should reject the request (when deployed in blocking mode)</li>
+</ul>
+<ul>
+<li># By default be strict with what we accept in the multipart/form-data</li>
+</ul>
+<ul>
+<li># request body. If the rule below proves to be too strict for your</li>
+</ul>
+<ul>
+<li># environment consider changing it to detection-only. You are encouraged</li>
+</ul>
+<ul>
+<li># _not_ to remove it altogether.</li>
+</ul>
+<ul>
+<li>### Removed because this is the same as 920140 in CRS3 and 960914 in CRS2.</li>
+</ul>
+<ul>
+<li>### Verified for each of the cases that can trigger this, that ModSec&#39;s variables still get set correctly, so for example SQL injection is still detected.</li>
+</ul>
+<ul>
+<li>#BQ %{MULTIPART_BOUNDARY_QUOTED}, \</li>
+</ul>
+<ul>
+<li>#BW %{MULTIPART_BOUNDARY_WHITESPACE}, \</li>
+</ul>
+<ul>
+<li>#DB %{MULTIPART_DATA_BEFORE}, \</li>
+</ul>
+<ul>
+<li>#DA %{MULTIPART_DATA_AFTER}, \</li>
+</ul>
+<ul>
+<li>#HF %{MULTIPART_HEADER_FOLDING}, \</li>
+</ul>
+<ul>
+<li>#LF %{MULTIPART_LF_LINE}, \</li>
+</ul>
+<ul>
+<li>#SM %{MULTIPART_MISSING_SEMICOLON}, \</li>
+</ul>
+<ul>
+<li>#IQ %{MULTIPART_INVALID_QUOTING}, \</li>
+</ul>
+<ul>
+<li>#IP %{MULTIPART_INVALID_PART}, \</li>
+</ul>
+<ul>
+<li>#IH %{MULTIPART_INVALID_HEADER_FOLDING}, \</li>
+</ul>
+<ul>
+<li>#FL %{MULTIPART_FILE_LIMIT_EXCEEDED}&#39;&quot;</li>
+</ul>
+<ul>
+<li># Did we see anything that might be a boundary?</li>
+</ul>
+<ul>
+<li>SecRule MULTIPART_UNMATCHED_BOUNDARY &quot;!@eq 0&quot; \</li>
+</ul>
+<ul>
+<li># PCRE Tuning</li>
+</ul>
+<ul>
+<li># We want to avoid a potential RegEx DoS condition</li>
+</ul>
+<ul>
+<li># SecPcreMatchLimit was chosen by triggering a catastrophic backtracking input (spaces to rule 921160), and lowering the value. There was a breaking point at 4000 where the request went from 14 sec to 0.2 sec.</li>
+</ul>
+<ul>
+<li>SecPcreMatchLimit 4000</li>
+</ul>
+<ul>
+<li># SecPcreMatchLimitRecursion was chosen by writing a test program that uses pcre_exec directly, and increasing input size and match_limit_recursion incrementally for the regex of rule 959073, until a stack overflow occured</li>
+</ul>
+<ul>
+<li>SecPcreMatchLimitRecursion 1900</li>
+</ul>
+<ul>
+<li># MSC_PCRE_LIMITS_EXCEEDED: PCRE match limits were exceeded.</li>
+</ul>
+<ul>
+<li>SecRule TX:/^MSC_/ &quot;!@streq 0&quot; \</li>
+</ul>
+<ul>
+<li># -- Response body handling --------------------------------------------------</li>
+</ul>
+<ul>
+<li># Allow ModSecurity to access response bodies.</li>
+</ul>
+<ul>
+<li># Do keep in mind that enabling this directive does increases both</li>
+</ul>
+<ul>
+<li># memory consumption and response latency.</li>
+</ul>
+<ul>
+<li>#SecResponseBodyAccess On</li>
+</ul>
+<ul>
+<li># Which response MIME types do you want to inspect? You should adjust the</li>
+</ul>
+<ul>
+<li># configuration below to catch documents but avoid static files</li>
+</ul>
+<ul>
+<li># (e.g., images and archives).</li>
+</ul>
+<ul>
+<li>SecResponseBodyMimeType text/plain text/html text/xml</li>
+</ul>
+<ul>
+<li># Buffer response bodies of up to 512 KB in length.</li>
+</ul>
+<ul>
+<li>SecResponseBodyLimit 524288</li>
+</ul>
+<ul>
+<li># What happens when we encounter a response body larger than the configured</li>
+</ul>
+<ul>
+<li># limit? By default, we process what we have and let the rest through.</li>
+</ul>
+<ul>
+<li># That&#39;s somewhat less secure, but does not break any legitimate pages.</li>
+</ul>
+<ul>
+<li>SecResponseBodyLimitAction ProcessPartial</li>
+</ul>
+<ul>
+<li># Required as a WA because of bug in interaction between IIS and ModSec</li>
+</ul>
+<ul>
+<li>SecStreamInBodyInspection On</li>
+</ul>
+<ul>
+<li># -- Filesystem configuration ------------------------------------------------</li>
+</ul>
+<ul>
+<li># The location where ModSecurity stores temporary files (for example, when</li>
+</ul>
+<ul>
+<li># it needs to handle a file upload that is larger than the configured limit).</li>
+</ul>
+<ul>
+<li># This default setting is chosen due to all systems have /tmp available however,</li>
+</ul>
+<ul>
+<li># this is less than ideal. It is recommended that you specify a location that&#39;s private.</li>
+</ul>
+<ul>
+<li>SecTmpDir D:\AppgwwafTemp\</li>
+</ul>
+<ul>
+<li># The location where ModSecurity will keep its persistent data.  This default setting</li>
+</ul>
+<ul>
+<li># is chosen due to all systems have /tmp available however, it</li>
+</ul>
+<ul>
+<li># too should be updated to a place that other users can&#39;t access.</li>
+</ul>
+<ul>
+<li>SecDataDir D:\AppgwwafTemp\</li>
+</ul>
+<ul>
+<li># -- File uploads handling configuration -------------------------------------</li>
+</ul>
+<ul>
+<li># The location where ModSecurity stores intercepted uploaded files. This</li>
+</ul>
+<ul>
+<li># location must be private to ModSecurity. You don&#39;t want other users on</li>
+</ul>
+<ul>
+<li># the server to access the files, do you?</li>
+</ul>
+<ul>
+<li>SecUploadDir D:\AppgwwafTemp</li>
+</ul>
+<ul>
+<li># By default, only keep the files that were determined to be unusual</li>
+</ul>
+<ul>
+<li># in some way (by an external inspection script). For this to work you</li>
+</ul>
+<ul>
+<li># will also need at least one file inspection rule.</li>
+</ul>
+<ul>
+<li>SecUploadKeepFiles Off</li>
+</ul>
+<ul>
+<li># Uploaded files are by default created with permissions that do not allow</li>
+</ul>
+<ul>
+<li># any other user to access them. You may need to relax that if you want to</li>
+</ul>
+<ul>
+<li># interface ModSecurity to an external program (e.g., an anti-virus).</li>
+</ul>
+<ul>
+<li>SecUploadFileMode 0600</li>
+</ul>
+<ul>
+<li># level response status codes).</li>
+</ul>
+<ul>
+<li>SecAuditEngine Off</li>
+</ul>
+<ul>
+<li># -- Miscellaneous -----------------------------------------------------------</li>
+</ul>
+<ul>
+<li># Use the most commonly used application/x-www-form-urlencoded parameter</li>
+</ul>
+<ul>
+<li># separator. There&#39;s probably only one application somewhere that uses</li>
+</ul>
+<ul>
+<li># something else so don&#39;t expect to change this value.</li>
+</ul>
+<ul>
+<li>SecArgumentSeparator &amp;</li>
+</ul>
+<ul>
+<li># Settle on version 0 (zero) cookies, as that is what most applications</li>
+</ul>
+<ul>
+<li># use. Using an incorrect cookie version may open your installation to</li>
+</ul>
+<ul>
+<li># evasion attacks (against the rules that examine named cookies).</li>
+</ul>
+<ul>
+<li>SecCookieFormat 0</li>
+</ul>
+<ul>
+<li># Specify your Unicode Code Point.</li>
+</ul>
+<ul>
+<li># This mapping is used by the t:urlDecodeUni transformation function</li>
+</ul>
+<ul>
+<li># to properly map encoded data to your language. Properly setting</li>
+</ul>
+<ul>
+<li># these directives helps to reduce false positives and negatives.</li>
+</ul>
+<ul>
+<li>#SecUnicodeCodePage 20127</li>
+</ul>
+<ul>
+<li>SecUnicodeMapFile unicode.mapping 20127</li>
+</ul>
+<ul>
+<li># Improve the quality of ModSecurity by sharing information about your</li>
+</ul>
+<ul>
+<li># current ModSecurity version and dependencies versions.</li>
+</ul>
+<ul>
+<li># The following information will be shared: ModSecurity version,</li>
+</ul>
+<ul>
+<li># Web Server version, APR version, PCRE version, Lua version, Libxml2</li>
+</ul>
+<ul>
+<li># version, Anonymous unique id for host.</li>
+</ul>
+<ul>
+<li>SecStatusEngine Off</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li># Verify that we&#39;ve correctly processed the request body.</li>
+</ul>
+<ul>
+<li># or log a high-severity alert (when deployed in detection-only mode).</li>
+</ul>
+<ul>
+<li>&quot;id:&#39;200002&#39;, phase:2,t:none,log,deny,status:400,msg:&#39;Failed to parse request body.&#39;,logdata:&#39;%{reqbody_error_msg}&#39;,severity:2&quot;</li>
+</ul>
+<ul>
+<li>#&quot;id:&#39;200003&#39;,phase:2,t:none,log,deny,status:400, \</li>
+</ul>
+<ul>
+<li>&quot;id:&#39;200004&#39;,phase:2,t:none,log,deny,msg:&#39;Multipart parser detected a possible unmatched boundary.&#39;&quot;</li>
+</ul>
+<ul>
+<li># -- Debug log configuration -------------------------------------------------</li>
+</ul>
+<ul>
+<li># The default debug log configuration is to duplicate the error, warning</li>
+</ul>
+<ul>
+<li># and notice messages from the error log.</li>
+</ul>
+<ul>
+<li>SecDebugLog D:\AppgwwafTemp\debug.log</li>
+</ul>
+<ul>
+<li>SecDebugLogLevel 0</li>
+</ul>
+<ul>
+<li># -- Audit log configuration -------------------------------------------------</li>
+</ul>
+<ul>
+<li># Log the transactions that are marked by a rule, as well as those that</li>
+</ul>
+<ul>
+<li>SecAuditLogRelevantStatus &quot;^(?:5|4(?!04))&quot;</li>
+</ul>
+<ul>
+<li># Log everything we know about a transaction.</li>
+</ul>
+<ul>
+<li>SecAuditLogParts ABIJDEFHZ</li>
+</ul>
+<ul>
+<li># Use a single file for logging. This is much easier to look at, but</li>
+</ul>
+<ul>
+<li># assumes that you will use the audit log only ocassionally.</li>
+</ul>
+<ul>
+<li>SecAuditLogType Serial</li>
+</ul>
+<ul>
+<li>SecAuditLog D:\AppgwwafTemp\log\modsec_audit.log</li>
+</ul>
+<ul>
+<li># Specify the path for concurrent audit logging.</li>
+</ul>
+<ul>
+<li>SecAuditLogStorageDir D:\AppgwwafTemp\log\</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>&quot;id:&#39;200000&#39;,phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=XML&quot;</li>
+</ul>
+<ul>
+<li>&quot;id:&#39;200001&#39;,phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=JSON&quot;</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li># Enable ModSecurity, attaching it to every transaction. Use detection</li>
+</ul>
+<ul>
+<li># Enable XML request body parser.</li>
+</ul>
+<ul>
+<li># Enable JSON request body parser.</li>
+</ul>
+<ul>
+<li># All of these are prefixed with &quot;MSC_&quot;.  The following flags currently exist:</li>
+</ul>
+<ul>
+<li># You should have this directive enabled in order to identify errors</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li># <a href="https://github.com/SpiderLabs/ModSecurity/issues/538" target="_blank" rel="noopener">https://github.com/SpiderLabs/ModSecurity/issues/538</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20190719</p>
+<p>以下modsecurity.conf来自启用WAF的APPGW实例（不含CRS部分）</p>
+<h1>based on modsecurity.conf-recommended</h1>
+<h1>-- Rule engine initialization ----------------------------------------------</h1>
+<h1>Enable ModSecurity, attaching it to every transaction. Use detection</h1>
+<h1>only to start with, because that minimises the chances of post-installation</h1>
+<h1>disruption.</h1>
+<p>#</p>
+<p>SecRuleEngine DetectionOnly</p>
+<h1>-- Request body handling ---------------------------------------------------</h1>
+<h1>Allow ModSecurity to access request bodies. If you don&#39;t, ModSecurity</h1>
+<h1>won&#39;t be able to see any POST parameters, which opens a large security</h1>
+<h1>hole for attackers to exploit.</h1>
+<p>SecRequestBodyAccess On</p>
+<h1>Enable XML request body parser.</h1>
+<h1>Initiate XML Processor in case of xml content-type</h1>
+<p>SecRule REQUEST_HEADERS:Content-Type &quot;text/xml&quot; \</p>
+<p>&quot;id:&#39;200000&#39;,phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=XML&quot;</p>
+<h1>Enable JSON request body parser.</h1>
+<h1>Initiate JSON Processor in case of JSON content-type; change accordingly</h1>
+<h1>if your application does not use &#39;application/json&#39;</h1>
+<p>SecRule REQUEST_HEADERS:Content-Type &quot;application/json&quot; \</p>
+<p>&quot;id:&#39;200001&#39;,phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=JSON&quot;</p>
+<h1>Maximum request body size we will accept for buffering. If you support</h1>
+<h1>file uploads then the value given on the first line has to be as large</h1>
+<h1>as the largest file you are willing to accept. The second value refers</h1>
+<h1>to the size of data, with files excluded. You want to keep that value as</h1>
+<h1>low as practical.</h1>
+<p>SecRequestBodyLimit 104857600</p>
+<p>SecRequestBodyNoFilesLimit 131072</p>
+<h1>Store up to 128 KB of request body data in memory. When the multipart</h1>
+<h1>parser reachers this limit, it will start using your hard disk for</h1>
+<h1>storage. That is slow, but unavoidable.</h1>
+<p>SecRequestBodyInMemoryLimit 131072</p>
+<h1>What do do if the request body size is above our configured limit.</h1>
+<h1>Keep in mind that this setting will automatically be set to ProcessPartial</h1>
+<h1>when SecRuleEngine is set to DetectionOnly mode in order to minimize</h1>
+<h1>disruptions when initially deploying ModSecurity.</h1>
+<p>SecRequestBodyLimitAction Reject</p>
+<h1>Verify that we&#39;ve correctly processed the request body.</h1>
+<h1>As a rule of thumb, when failing to process a request body</h1>
+<h1>you should reject the request (when deployed in blocking mode)</h1>
+<h1>or log a high-severity alert (when deployed in detection-only mode).</h1>
+<p>SecRule REQBODY_ERROR &quot;!@eq 0&quot; \</p>
+<p>&quot;id:&#39;200002&#39;, phase:2,t:none,log,deny,status:400,msg:&#39;Failed to parse request body.&#39;,logdata:&#39;%{reqbody_error_msg}&#39;,severity:2&quot;</p>
+<h1>By default be strict with what we accept in the multipart/form-data</h1>
+<h1>request body. If the rule below proves to be too strict for your</h1>
+<h1>environment consider changing it to detection-only. You are encouraged</h1>
+<h1>_not_ to remove it altogether.</h1>
+<h3>Removed because this is the same as 920140 in CRS3 and 960914 in CRS2.</h3>
+<h3>Verified for each of the cases that can trigger this, that ModSec&#39;s variables still get set correctly, so for example SQL injection is still detected.</h3>
+<p>#SecRule MULTIPART_STRICT_ERROR &quot;!@eq 0&quot; \</p>
+<p>#&quot;id:&#39;200003&#39;,phase:2,t:none,log,deny,status:400, \</p>
+<p>#msg:&#39;Multipart request body failed strict validation: \</p>
+<p>#PE %{REQBODY_PROCESSOR_ERROR}, \</p>
+<p>#BQ %{MULTIPART_BOUNDARY_QUOTED}, \</p>
+<p>#BW %{MULTIPART_BOUNDARY_WHITESPACE}, \</p>
+<p>#DB %{MULTIPART_DATA_BEFORE}, \</p>
+<p>#DA %{MULTIPART_DATA_AFTER}, \</p>
+<p>#HF %{MULTIPART_HEADER_FOLDING}, \</p>
+<p>#LF %{MULTIPART_LF_LINE}, \</p>
+<p>#SM %{MULTIPART_MISSING_SEMICOLON}, \</p>
+<p>#IQ %{MULTIPART_INVALID_QUOTING}, \</p>
+<p>#IP %{MULTIPART_INVALID_PART}, \</p>
+<p>#IH %{MULTIPART_INVALID_HEADER_FOLDING}, \</p>
+<p>#FL %{MULTIPART_FILE_LIMIT_EXCEEDED}&#39;&quot;</p>
+<h1>Did we see anything that might be a boundary?</h1>
+<p>SecRule MULTIPART_UNMATCHED_BOUNDARY &quot;!@eq 0&quot; \</p>
+<p>&quot;id:&#39;200004&#39;,phase:2,t:none,log,deny,msg:&#39;Multipart parser detected a possible unmatched boundary.&#39;&quot;</p>
+<h1>PCRE Tuning</h1>
+<h1>We want to avoid a potential RegEx DoS condition</h1>
+<h1>SecPcreMatchLimit was chosen by triggering a catastrophic backtracking input (spaces to rule 921160), and lowering the value. There was a breaking point at 4000 where the request went from 14 sec to 0.2 sec.</h1>
+<p>SecPcreMatchLimit 4000</p>
+<h1>SecPcreMatchLimitRecursion was chosen by writing a test program that uses pcre_exec directly, and increasing input size and match_limit_recursion incrementally for the regex of rule 959073, until a stack overflow occured</h1>
+<p>SecPcreMatchLimitRecursion 1900</p>
+<h1>Some internal errors will set flags in TX and we will need to look for these.</h1>
+<h1>All of these are prefixed with &quot;MSC_&quot;.  The following flags currently exist:</h1>
+<h1>MSC_PCRE_LIMITS_EXCEEDED: PCRE match limits were exceeded.</h1>
+<p>SecRule TX:/^MSC_/ &quot;!@streq 0&quot; \</p>
+<p>&quot;id:&#39;200005&#39;,phase:2,t:none,deny,msg:&#39;ModSecurity internal error flagged: %{MATCHED_VAR_NAME}&#39;&quot;</p>
+<h1>-- Response body handling --------------------------------------------------</h1>
+<h1>Allow ModSecurity to access response bodies.</h1>
+<h1>You should have this directive enabled in order to identify errors</h1>
+<h1>and data leakage issues.</h1>
+<h1>Do keep in mind that enabling this directive does increases both</h1>
+<h1>memory consumption and response latency.</h1>
+<p>#SecResponseBodyAccess On</p>
+<h1>Which response MIME types do you want to inspect? You should adjust the</h1>
+<h1>configuration below to catch documents but avoid static files</h1>
+<h1>(e.g., images and archives).</h1>
+<p>SecResponseBodyMimeType text/plain text/html text/xml</p>
+<h1>Buffer response bodies of up to 512 KB in length.</h1>
+<p>SecResponseBodyLimit 524288</p>
+<h1>What happens when we encounter a response body larger than the configured</h1>
+<h1>limit? By default, we process what we have and let the rest through.</h1>
+<h1>That&#39;s somewhat less secure, but does not break any legitimate pages.</h1>
+<p>SecResponseBodyLimitAction ProcessPartial</p>
+<h1>Required as a WA because of bug in interaction between IIS and ModSec</h1>
+<h1><a href="https://github.com/SpiderLabs/ModSecurity/issues/538" target="_blank" rel="noopener">https://github.com/SpiderLabs/ModSecurity/issues/538</a></h1>
+<p>SecStreamInBodyInspection On</p>
+<h1>-- Filesystem configuration ------------------------------------------------</h1>
+<h1>The location where ModSecurity stores temporary files (for example, when</h1>
+<h1>it needs to handle a file upload that is larger than the configured limit).</h1>
+<h1>This default setting is chosen due to all systems have /tmp available however,</h1>
+<h1>this is less than ideal. It is recommended that you specify a location that&#39;s private.</h1>
+<p>SecTmpDir D:\AppgwwafTemp\</p>
+<h1>The location where ModSecurity will keep its persistent data.  This default setting</h1>
+<h1>is chosen due to all systems have /tmp available however, it</h1>
+<h1>too should be updated to a place that other users can&#39;t access.</h1>
+<p>SecDataDir D:\AppgwwafTemp\</p>
+<h1>-- File uploads handling configuration -------------------------------------</h1>
+<h1>The location where ModSecurity stores intercepted uploaded files. This</h1>
+<h1>location must be private to ModSecurity. You don&#39;t want other users on</h1>
+<h1>the server to access the files, do you?</h1>
+<p>SecUploadDir D:\AppgwwafTemp</p>
+<h1>By default, only keep the files that were determined to be unusual</h1>
+<h1>in some way (by an external inspection script). For this to work you</h1>
+<h1>will also need at least one file inspection rule.</h1>
+<p>SecUploadKeepFiles Off</p>
+<h1>Uploaded files are by default created with permissions that do not allow</h1>
+<h1>any other user to access them. You may need to relax that if you want to</h1>
+<h1>interface ModSecurity to an external program (e.g., an anti-virus).</h1>
+<p>SecUploadFileMode 0600</p>
+<h1>-- Debug log configuration -------------------------------------------------</h1>
+<h1>The default debug log configuration is to duplicate the error, warning</h1>
+<h1>and notice messages from the error log.</h1>
+<p>SecDebugLog D:\AppgwwafTemp\debug.log</p>
+<p>SecDebugLogLevel 0</p>
+<h1>-- Audit log configuration -------------------------------------------------</h1>
+<h1>Log the transactions that are marked by a rule, as well as those that</h1>
+<h1>trigger a server error (determined by a 5xx or 4xx, excluding 404,</h1>
+<h1>level response status codes).</h1>
+<p>SecAuditEngine Off</p>
+<p>SecAuditLogRelevantStatus &quot;^(?:5|4(?!04))&quot;</p>
+<h1>Log everything we know about a transaction.</h1>
+<p>SecAuditLogParts ABIJDEFHZ</p>
+<h1>Use a single file for logging. This is much easier to look at, but</h1>
+<h1>assumes that you will use the audit log only ocassionally.</h1>
+<p>SecAuditLogType Serial</p>
+<p>SecAuditLog D:\AppgwwafTemp\log\modsec_audit.log</p>
+<h1>Specify the path for concurrent audit logging.</h1>
+<p>SecAuditLogStorageDir D:\AppgwwafTemp\log\</p>
+<h1>-- Miscellaneous -----------------------------------------------------------</h1>
+<h1>Use the most commonly used application/x-www-form-urlencoded parameter</h1>
+<h1>separator. There&#39;s probably only one application somewhere that uses</h1>
+<h1>something else so don&#39;t expect to change this value.</h1>
+<p>SecArgumentSeparator &amp;</p>
+<h1>Settle on version 0 (zero) cookies, as that is what most applications</h1>
+<h1>use. Using an incorrect cookie version may open your installation to</h1>
+<h1>evasion attacks (against the rules that examine named cookies).</h1>
+<p>SecCookieFormat 0</p>
+<h1>Specify your Unicode Code Point.</h1>
+<h1>This mapping is used by the t:urlDecodeUni transformation function</h1>
+<h1>to properly map encoded data to your language. Properly setting</h1>
+<h1>these directives helps to reduce false positives and negatives.</h1>
+<p>#SecUnicodeCodePage 20127</p>
+<p>SecUnicodeMapFile unicode.mapping 20127</p>
+<h1>Improve the quality of ModSecurity by sharing information about your</h1>
+<h1>current ModSecurity version and dependencies versions.</h1>
+<h1>The following information will be shared: ModSecurity version,</h1>
+<h1>Web Server version, APR version, PCRE version, Lua version, Libxml2</h1>
+<h1>version, Anonymous unique id for host.</h1>
+<p>SecStatusEngine Off</p></article>

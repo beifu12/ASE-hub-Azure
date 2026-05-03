@@ -1,0 +1,122 @@
+<article class="kb-article" data-title="Linux TSG"><h1>Linux TSG</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: PODA</li>
+<li>最近修改: 2024-10-29 09:57:21</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Linux TSG</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Linux TSG</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Linux TSG</li>
+</ul>
+<ul>
+<li>Endorsed Distributions are versions of Linux who Microsoft has partnered with a vendor to make available in Azure.</li>
+</ul>
+<ul>
+<li>Each endorsed distribution, when the VM is spun up, has a stamp on the hard drive that indicates the vendor.</li>
+</ul>
+<ul>
+<li>You can see this stamp or tag in our tooling.</li>
+</ul>
+<ul>
+<li>How do I tell if this version of Linux is an endorsed distribution?</li>
+</ul>
+<ul>
+<li>You need to use the BillingContext tag and look for the vendor name.</li>
+</ul>
+<ul>
+<li>In ACIS:</li>
+</ul>
+<ul>
+<li>Navigate to ACIS.</li>
+</ul>
+<ul>
+<li>Enter the Deployment ID from step #1.</li>
+</ul>
+<ul>
+<li>Find the appropriate RoleInstance you are investigating.</li>
+</ul>
+<ul>
+<li>Find the setting for BillingContext for the role instance. Use FIND and search for &quot;Linux.&quot;</li>
+</ul>
+<ul>
+<li>Note the Billing Context will be in one of two forms:  &lt;BillingContext&gt;BillingContext&gt; | &lt;VMSize&gt;</li>
+</ul>
+<ul>
+<li>When you find that BillingContext.</li>
+</ul>
+<ul>
+<li>In MDS:</li>
+</ul>
+<ul>
+<li>The BillingContext is part of UsageResouceKind. Look for the tag: BillingContext=Windows_IaaS</li>
+</ul>
+<ul>
+<li>In FCClient:</li>
+</ul>
+<ul>
+<li>BillingContext is in GetTenantDeploymentProgress. Look for the tag: BillingContext=Windows_IaaS</li>
+</ul>
+<ul>
+<li>Linux_IaaS_Software_SUSE_Support</li>
+</ul>
+<ul>
+<li>Linux_IaaS_SUSE</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Example: Linux_IaaS_SUSE. If the vendor name (Open Logic, Canonical, Oracle) is listed, then it is an Endorsed Distribution.</li>
+</ul>
+<ul>
+<li>Get the DeploymentID for the deployment that contains the VM in question. This is available in Azure Portal.</li>
+</ul>
+<ul>
+<li>Check with Patrick the various billing tags for Premium images</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Select Group: Deployment Management and Operation: Get Deployment by Deployment ID (TSQ).</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Here is the list: <a href="http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-endorsed-distributions/." target="_blank" rel="noopener">http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-endorsed-distributions/.</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Linux TSG</p>
+<p>Endorsed Distributions are versions of Linux who Microsoft has partnered with a vendor to make available in Azure.</p>
+<p>Here is the list: <a href="http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-endorsed-distributions/." target="_blank" rel="noopener">http://azure.microsoft.com/en-us/documentation/articles/virtual-machines-linux-endorsed-distributions/.</a></p>
+<p>Each endorsed distribution, when the VM is spun up, has a stamp on the hard drive that indicates the vendor.</p>
+<p>You can see this stamp or tag in our tooling.</p>
+<p>How do I tell if this version of Linux is an endorsed distribution?</p>
+<p>You need to use the BillingContext tag and look for the vendor name.</p>
+<p>Example: Linux_IaaS_SUSE. If the vendor name (Open Logic, Canonical, Oracle) is listed, then it is an Endorsed Distribution.</p>
+<p>In ACIS:</p>
+<p>Get the DeploymentID for the deployment that contains the VM in question. This is available in Azure Portal.</p>
+<p>Navigate to ACIS.</p>
+<p>Select Group: Deployment Management and Operation: Get Deployment by Deployment ID (TSQ).</p>
+<p>Enter the Deployment ID from step #1.</p>
+<p>Find the appropriate RoleInstance you are investigating.</p>
+<p>Find the setting for BillingContext for the role instance. Use FIND and search for &quot;Linux.&quot;</p>
+<p>Note the Billing Context will be in one of two forms:  &lt;BillingContext&gt;BillingContext&gt; | &lt;VMSize&gt;</p>
+<p>When you find that BillingContext.</p>
+<p>In MDS:</p>
+<p>The BillingContext is part of UsageResouceKind. Look for the tag: BillingContext=Windows_IaaS</p>
+<p>In FCClient:</p>
+<p>BillingContext is in GetTenantDeploymentProgress. Look for the tag: BillingContext=Windows_IaaS</p>
+<p>Check with Patrick the various billing tags for Premium images</p>
+<p>Linux_IaaS_Software_SUSE_Support</p>
+<p>Linux_IaaS_SUSE</p></article>

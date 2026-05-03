@@ -1,0 +1,194 @@
+<article class="kb-article" data-title="修改vnet DNS后重启VM vnet DNS 依然未生效 （windows core中查看DNS设置）"><h1>修改vnet DNS后重启VM vnet DNS 依然未生效 （windows core中查看DNS设置）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DNS</li>
+<li>Section: DNS</li>
+<li>最近修改: 2026-03-05 16:40:39</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Ma Xiao</li>
+</ul>
+<ul>
+<li>客户修改了vnet上面的DNS配置，并且网卡也是继承了vnet的DNS设置</li>
+</ul>
+<ul>
+<li>客户表示部分VM重启之后DNS配置并不生效，仍然是之前的DNS配置：</li>
+</ul>
+<ul>
+<li>即使get了网卡设置也只能看到DNS服务器地址而不能判断是否是手动配置：</li>
+</ul>
+<ul>
+<li>这种情况就需要从注册表中获取信息了，指令和结果如下：</li>
+</ul>
+<ul>
+<li>Where-Object { $_.NameServer } |</li>
+</ul>
+<ul>
+<li>ForEach-Object { $_.NameServer }</li>
+</ul>
+<ul>
+<li>可以很明显的看到，如果客户手动在网卡上配置了DNS服务器地址就会返回结果，如果没有手动配置使用了自动获取的情况就不会有任何结果返回：</li>
+</ul>
+<ul>
+<li>这种情况，可以让客户使用管理员账户跑以下指令来删除手动配置的DNS就没问题了：</li>
+</ul>
+<ul>
+<li>1. 主要配置文件</li>
+</ul>
+<ul>
+<li>路径</li>
+</ul>
+<ul>
+<li>说明</li>
+</ul>
+<ul>
+<li>/etc/resolv.conf</li>
+</ul>
+<ul>
+<li>主配置文件（系统解析器）</li>
+</ul>
+<ul>
+<li>/etc/sysconfig/network-scripts/ifcfg-*</li>
+</ul>
+<ul>
+<li>CentOS/RHEL 网卡配置</li>
+</ul>
+<ul>
+<li>/etc/network/interfaces</li>
+</ul>
+<ul>
+<li>Debian/Ubuntu 网络接口配置</li>
+</ul>
+<ul>
+<li>2. NetworkManager</li>
+</ul>
+<ul>
+<li>/etc/NetworkManager/system-connections/</li>
+</ul>
+<ul>
+<li>NetworkManager 连接配置</li>
+</ul>
+<ul>
+<li>~/.config/networkmanager/</li>
+</ul>
+<ul>
+<li>用户 NetworkManager 配置</li>
+</ul>
+<ul>
+<li>3. DHCP 客户端</li>
+</ul>
+<ul>
+<li>/etc/dhcp/dhclient.conf</li>
+</ul>
+<ul>
+<li>DHCP 客户端全局配置</li>
+</ul>
+<ul>
+<li>/etc/dhcp/dhcpd.conf</li>
+</ul>
+<ul>
+<li>DHCP 服务端配置</li>
+</ul>
+<ul>
+<li>5. 静态 Hosts</li>
+</ul>
+<ul>
+<li>/etc/hosts</li>
+</ul>
+<ul>
+<li>静态主机名映射</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>这种情况通常是客户自己网卡手动配置了DNS导致的，普通的windows系统可以直接在网络设置里进行查看和调整：</li>
+</ul>
+<ul>
+<li>但是对于windows core等无图形界面的系统就没有办法直接查看和配置了：</li>
+</ul>
+<ul>
+<li>对于linux机器的情况，直接查看以下几个位置的文件是否有配置DNS就可以了：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Get-ItemProperty &quot;HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\*&quot; |</li>
+</ul>
+<ul>
+<li>Set-DnsClientServerAddress -InterfaceAlias &quot;网卡名&quot; -ResetServerAddresses</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>4. systemd-resolved</li>
+</ul>
+<ul>
+<li>/run/systemd/resolve/resolv.conf</li>
+</ul>
+<ul>
+<li>systemd-resolved 生成的链接</li>
+</ul>
+<ul>
+<li>/etc/systemd/resolved.conf</li>
+</ul>
+<ul>
+<li>systemd-resolved 全局配置</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Ma Xiao</p>
+<p>客户修改了vnet上面的DNS配置，并且网卡也是继承了vnet的DNS设置</p>
+<p>客户表示部分VM重启之后DNS配置并不生效，仍然是之前的DNS配置：</p>
+<p>这种情况通常是客户自己网卡手动配置了DNS导致的，普通的windows系统可以直接在网络设置里进行查看和调整：</p>
+<p>但是对于windows core等无图形界面的系统就没有办法直接查看和配置了：</p>
+<p>即使get了网卡设置也只能看到DNS服务器地址而不能判断是否是手动配置：</p>
+<p>这种情况就需要从注册表中获取信息了，指令和结果如下：</p>
+<p>Get-ItemProperty &quot;HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\*&quot; |</p>
+<p>Where-Object { $_.NameServer } |</p>
+<p>ForEach-Object { $_.NameServer }</p>
+<p>可以很明显的看到，如果客户手动在网卡上配置了DNS服务器地址就会返回结果，如果没有手动配置使用了自动获取的情况就不会有任何结果返回：</p>
+<p>这种情况，可以让客户使用管理员账户跑以下指令来删除手动配置的DNS就没问题了：</p>
+<p>Set-DnsClientServerAddress -InterfaceAlias &quot;网卡名&quot; -ResetServerAddresses</p>
+<p>对于linux机器的情况，直接查看以下几个位置的文件是否有配置DNS就可以了：</p>
+<p>1. 主要配置文件</p>
+<p>路径</p>
+<p>说明</p>
+<p>/etc/resolv.conf</p>
+<p>主配置文件（系统解析器）</p>
+<p>/etc/sysconfig/network-scripts/ifcfg-*</p>
+<p>CentOS/RHEL 网卡配置</p>
+<p>/etc/network/interfaces</p>
+<p>Debian/Ubuntu 网络接口配置</p>
+<p>2. NetworkManager</p>
+<p>/etc/NetworkManager/system-connections/</p>
+<p>NetworkManager 连接配置</p>
+<p>~/.config/networkmanager/</p>
+<p>用户 NetworkManager 配置</p>
+<p>3. DHCP 客户端</p>
+<p>/etc/dhcp/dhclient.conf</p>
+<p>DHCP 客户端全局配置</p>
+<p>/etc/dhcp/dhcpd.conf</p>
+<p>DHCP 服务端配置</p>
+<p>4. systemd-resolved</p>
+<p>/run/systemd/resolve/resolv.conf</p>
+<p>systemd-resolved 生成的链接</p>
+<p>/etc/systemd/resolved.conf</p>
+<p>systemd-resolved 全局配置</p>
+<p>5. 静态 Hosts</p>
+<p>/etc/hosts</p>
+<p>静态主机名映射</p></article>

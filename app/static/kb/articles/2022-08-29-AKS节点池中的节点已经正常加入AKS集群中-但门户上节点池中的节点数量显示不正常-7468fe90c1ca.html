@@ -1,0 +1,89 @@
+<article class="kb-article" data-title="AKS节点池中的节点已经正常加入AKS集群中，但门户上节点池中的节点数量显示不正常"><h1>AKS节点池中的节点已经正常加入AKS集群中，但门户上节点池中的节点数量显示不正常</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-08-29 17:37:00</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Zhang Lihong</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>客户的AKS节点都已经正常加入到了AKS集群中，但节点池中的节点数量显示不正常。</li>
+</ul>
+<ul>
+<li>如下：</li>
+</ul>
+<ul>
+<li>客户的节点池中有3个节点，且都是ready的，但门户上只显示1个是就绪的。</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>产品组反馈，由于这是by design的设计，improvement可能需要更长的时间。这个问题是由于从后台看到用节点池中3个nodes中有2个nodes的label与系统默认值不同导致的，具体如下：</li>
+</ul>
+<ul>
+<li>其默认值应为agentpool=np0001（对于其中一个问题节点）。</li>
+</ul>
+<ul>
+<li>由于Agentpool label第一次创建时会由系统正确定义默认值，产品组认为该标签可能是之后被手动覆盖。</li>
+</ul>
+<ul>
+<li>#关于修改节点label的方式：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>请按照文档检查节点池的label， 如果现象与产品组描述一致，请将节点池label改回默认值。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>修改节点（非节点池）的label是需要连接aks使用kubectl 命令修改。请参考我在测试环境的测试结果：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<ul>
+<li>#请尝试使用这种方式，将所有节点的标签修改恢复为默认值：agentpool = 节点池名。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>节点池label请参考文档：<a href="https://docs.microsoft.com/en-us/azure/aks/use-labels。" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/use-labels。</a></li>
+</ul>
+<ul>
+<li>有关kubectl  label命令，请参考k8s的开源文档：<a href="https://jamesdefabia.github.io/docs/user-guide/kubectl/kubectl_label/" target="_blank" rel="noopener">https://jamesdefabia.github.io/docs/user-guide/kubectl/kubectl_label/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang Lihong</p>
+<p>问题描述：</p>
+<p>客户的AKS节点都已经正常加入到了AKS集群中，但节点池中的节点数量显示不正常。</p>
+<p>如下：</p>
+<p>客户的节点池中有3个节点，且都是ready的，但门户上只显示1个是就绪的。</p>
+<p>问题原因：</p>
+<p>产品组反馈，由于这是by design的设计，improvement可能需要更长的时间。这个问题是由于从后台看到用节点池中3个nodes中有2个nodes的label与系统默认值不同导致的，具体如下：</p>
+<p>其默认值应为agentpool=np0001（对于其中一个问题节点）。</p>
+<p>由于Agentpool label第一次创建时会由系统正确定义默认值，产品组认为该标签可能是之后被手动覆盖。</p>
+<p>解决方案：</p>
+<p>请按照文档检查节点池的label， 如果现象与产品组描述一致，请将节点池label改回默认值。</p>
+<p>节点池label请参考文档：<a href="https://docs.microsoft.com/en-us/azure/aks/use-labels。" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/use-labels。</a></p>
+<p>#关于修改节点label的方式：</p>
+<p>修改节点（非节点池）的label是需要连接aks使用kubectl 命令修改。请参考我在测试环境的测试结果：</p>
+<p>#请尝试使用这种方式，将所有节点的标签修改恢复为默认值：agentpool = 节点池名。</p>
+<p>有关kubectl  label命令，请参考k8s的开源文档：<a href="https://jamesdefabia.github.io/docs/user-guide/kubectl/kubectl_label/" target="_blank" rel="noopener">https://jamesdefabia.github.io/docs/user-guide/kubectl/kubectl_label/</a></p></article>

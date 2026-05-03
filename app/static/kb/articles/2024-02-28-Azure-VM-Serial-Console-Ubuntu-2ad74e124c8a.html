@@ -1,0 +1,72 @@
+<article class="kb-article" data-title="Azure VM Serial Console --Ubuntu"><h1>Azure VM Serial Console --Ubuntu</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-02-28 17:30:26</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>zuoxiaojing</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>zuoxiaojing</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zuoxiaojing</li>
+</ul>
+<ul>
+<li>今天测试通过门户串行控制台进入Ubuntu 22.04单用户模式，是可以。以下测试，供大家参考：</li>
+</ul>
+<ul>
+<li>文档适用于 GRUB 和单用户模式的 Azure 串行控制台 - Virtual Machines | Microsoft Learn提到Ubuntu是可以进入单用户的，但是测试发现，无论linux后添加single还是init=/bin/bash，机器都不会进入单用户模式。</li>
+</ul>
+<ul>
+<li>重启后，长按Esc进入Grub界面</li>
+</ul>
+<ul>
+<li>按e进入以下编辑模式</li>
+</ul>
+<ul>
+<li>在两处linux ro后添加single，</li>
+</ul>
+<ul>
+<li>按Ctrl+X启动，会进入救援模式，继续按Enter进入维护模式</li>
+</ul>
+<ul>
+<li>++++++++++++++++++++++++++++</li>
+</ul>
+<ul>
+<li>将两处linux后ro更改为rw init=/bin/bash （场景:使用 GRUB 在 Ubuntu 中调用 bash）</li>
+</ul>
+<ul>
+<li>Ctrl+X启动会进入如下页面</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>进一步查看，是由于Ubuntu中有两处Linux，往常，linux开头的都是一行。经测试，需要两处都改才能生效。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zuoxiaojing</p>
+<p>今天测试通过门户串行控制台进入Ubuntu 22.04单用户模式，是可以。以下测试，供大家参考：</p>
+<p>文档适用于 GRUB 和单用户模式的 Azure 串行控制台 - Virtual Machines | Microsoft Learn提到Ubuntu是可以进入单用户的，但是测试发现，无论linux后添加single还是init=/bin/bash，机器都不会进入单用户模式。</p>
+<p>进一步查看，是由于Ubuntu中有两处Linux，往常，linux开头的都是一行。经测试，需要两处都改才能生效。</p>
+<p>重启后，长按Esc进入Grub界面</p>
+<p>按e进入以下编辑模式</p>
+<p>在两处linux ro后添加single，</p>
+<p>按Ctrl+X启动，会进入救援模式，继续按Enter进入维护模式</p>
+<p>++++++++++++++++++++++++++++</p>
+<p>将两处linux后ro更改为rw init=/bin/bash （场景:使用 GRUB 在 Ubuntu 中调用 bash）</p>
+<p>Ctrl+X启动会进入如下页面</p></article>

@@ -1,0 +1,154 @@
+<article class="kb-article" data-title="P2SVPN 基于AAD认证 增加MFA和登陆频率1小时策略生效问题"><h1>P2SVPN 基于AAD认证 增加MFA和登陆频率1小时策略生效问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-02-14 14:18:43</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>故障：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>故障：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>P2SVPN使用AAD条件访问设定1小时间隔 断开重连VPN不认证的问题.  Case ID：20230106206939</li>
+</ul>
+<ul>
+<li>该case由于每间隔1小时要做断开反复调整策略做效果测试. 所以导致测试时间成本比较高. 后面有小伙伴遇到类似该问题，可用于借鉴参考.</li>
+</ul>
+<ul>
+<li>环境：</li>
+</ul>
+<ul>
+<li>P2SVPN+AAD+MFA+条件访问(登陆频率)</li>
+</ul>
+<ul>
+<li>登陆频率1小时不生效，VPN断开重连不触发MFA重认证对话框.</li>
+</ul>
+<ul>
+<li>过程：</li>
+</ul>
+<ul>
+<li>同时需要注意一个问题，即便单位AAD没有8小时令牌策略，AAD也会有默认1小时策略，也就是说即便没有配置也有默认1小时策略，文档说明如下：</li>
+</ul>
+<ul>
+<li>同时文档说明，默认AAD令牌策略与条件访问设定策略不冲突，且是累加关系，见下图：</li>
+</ul>
+<ul>
+<li>2．连接AAD环境：Connect-AzureAD -AzureEnvironmentName AzureChinaCloud</li>
+</ul>
+<ul>
+<li>3．获取当前AAD策略：Get-AzureADPolicy</li>
+</ul>
+<ul>
+<li>4．创建名为displayName-value-1，时长为10分钟的令牌策略(最低十分钟，已不能再低)</li>
+</ul>
+<ul>
+<li>$policy = New-AzureADPolicy -Definition @(&#39;{&quot;TokenLifetimePolicy&quot;:{&quot;Version&quot;:1,&quot;AccessTokenLifetime&quot;:&quot;00:10:00&quot;}}&#39;) -DisplayName &quot;displayName-value-1&quot; -IsOrganizationDefault $false -Type &quot;TokenLifetimePolicy&quot;</li>
+</ul>
+<ul>
+<li>7．设定变量，关联AzureVPN服务主体的 ObjectId</li>
+</ul>
+<ul>
+<li>$sp1 = Get-AzureADServicePrincipal -SearchString &quot;Azure VPN&quot;</li>
+</ul>
+<ul>
+<li>$sp1.ObjectId</li>
+</ul>
+<ul>
+<li>8．令牌策略与Azure VPN关联.</li>
+</ul>
+<ul>
+<li>Add-AzureADServicePrincipalPolicy -Id $sp1.ObjectId -RefObjectId $policy.Id</li>
+</ul>
+<ul>
+<li>测试效果：</li>
+</ul>
+<ul>
+<li>登陆日志：</li>
+</ul>
+<ul>
+<li>官网文档参考链接：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过测试环境复现了客户的问题，但在测试期间还发现额外的问题，虽然客户1小时间隔不好用，但间隔2小时左右断开重连VPN会触发重认证对话框. 我这边分别测试 2 3 4 5 小时VPN断开重连都不会触发重认证. 后怀疑单位的AAD策略可能有额外设定，咨询CSS后查询发现公司的timetoken策略设定是8小时. 如下截图：由于该策略被设置成全局默认策略，所以未做额外修改.</li>
+</ul>
+<ul>
+<li>由于客户环境没有配置但存在默认令牌策略+客户自定义的条件访问，也就导致实际1小时登陆频率表面看起来未能生效，也就验证了客户反馈2-3小时左右断开才弹出重认证的问题</li>
+</ul>
+<ul>
+<li>通过创建定义timetoken策略为10分钟+用户设定1小时登陆频率，通过客户测试验证，均能在1小时-1小时10分左右登陆触发VPN重认证对话框.</li>
+</ul>
+<ul>
+<li>5．检查能否正常获取的新增策略的ObjectId，后面关联AzureVPN要用到</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>通过查阅文档及CSS协助，使用AAD Powershell创建自定义的令牌策略并关联到Azure VPN服务主体，这样就不使用系统设定的8小时策略来继续帮客户做测试.</li>
+</ul>
+<ul>
+<li>自定义timetoken策略语句命令如下：</li>
+</ul>
+<ul>
+<li>安装AAD Powershell. 语句：Install-Module -Name AzureADPreview</li>
+</ul>
+<ul>
+<li>Get-AzureADPolicy -Id $policy.Id</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案:</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>访问令牌生存期 → <a href="https://docs.azure.cn/zh-cn/active-directory/develop/access-tokens#access-token-lifetime" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/develop/access-tokens#access-token-lifetime</a></li>
+</ul>
+<ul>
+<li>自定义登陆策略 → <a href="https://docs.azure.cn/zh-cn/active-directory/develop/configure-token-lifetimes#create-a-policy-for-web-sign-in" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/develop/configure-token-lifetimes#create-a-policy-for-web-sign-in</a></li>
+</ul>
+<ul>
+<li>AAD默认策略 → <a href="https://docs.azure.cn/zh-cn/active-directory/develop/active-directory-configurable-token-lifetimes#access-id-and-saml2-token-lifetime-policy-properties" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/develop/active-directory-configurable-token-lifetimes#access-id-and-saml2-token-lifetime-policy-properties</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>P2SVPN使用AAD条件访问设定1小时间隔 断开重连VPN不认证的问题.  Case ID：20230106206939</p>
+<p>该case由于每间隔1小时要做断开反复调整策略做效果测试. 所以导致测试时间成本比较高. 后面有小伙伴遇到类似该问题，可用于借鉴参考.</p>
+<p>环境：</p>
+<p>P2SVPN+AAD+MFA+条件访问(登陆频率)</p>
+<p>故障：</p>
+<p>登陆频率1小时不生效，VPN断开重连不触发MFA重认证对话框.</p>
+<p>过程：</p>
+<p>通过测试环境复现了客户的问题，但在测试期间还发现额外的问题，虽然客户1小时间隔不好用，但间隔2小时左右断开重连VPN会触发重认证对话框. 我这边分别测试 2 3 4 5 小时VPN断开重连都不会触发重认证. 后怀疑单位的AAD策略可能有额外设定，咨询CSS后查询发现公司的timetoken策略设定是8小时. 如下截图：由于该策略被设置成全局默认策略，所以未做额外修改.</p>
+<p>通过查阅文档及CSS协助，使用AAD Powershell创建自定义的令牌策略并关联到Azure VPN服务主体，这样就不使用系统设定的8小时策略来继续帮客户做测试.</p>
+<p>同时需要注意一个问题，即便单位AAD没有8小时令牌策略，AAD也会有默认1小时策略，也就是说即便没有配置也有默认1小时策略，文档说明如下：</p>
+<p>同时文档说明，默认AAD令牌策略与条件访问设定策略不冲突，且是累加关系，见下图：</p>
+<p>由于客户环境没有配置但存在默认令牌策略+客户自定义的条件访问，也就导致实际1小时登陆频率表面看起来未能生效，也就验证了客户反馈2-3小时左右断开才弹出重认证的问题</p>
+<p>解决方案:</p>
+<p>通过创建定义timetoken策略为10分钟+用户设定1小时登陆频率，通过客户测试验证，均能在1小时-1小时10分左右登陆触发VPN重认证对话框.</p>
+<p>自定义timetoken策略语句命令如下：</p>
+<p>安装AAD Powershell. 语句：Install-Module -Name AzureADPreview</p>
+<p>2．连接AAD环境：Connect-AzureAD -AzureEnvironmentName AzureChinaCloud</p>
+<p>3．获取当前AAD策略：Get-AzureADPolicy</p>
+<p>4．创建名为displayName-value-1，时长为10分钟的令牌策略(最低十分钟，已不能再低)</p>
+<p>$policy = New-AzureADPolicy -Definition @(&#39;{&quot;TokenLifetimePolicy&quot;:{&quot;Version&quot;:1,&quot;AccessTokenLifetime&quot;:&quot;00:10:00&quot;}}&#39;) -DisplayName &quot;displayName-value-1&quot; -IsOrganizationDefault $false -Type &quot;TokenLifetimePolicy&quot;</p>
+<p>5．检查能否正常获取的新增策略的ObjectId，后面关联AzureVPN要用到</p>
+<p>Get-AzureADPolicy -Id $policy.Id</p>
+<p>7．设定变量，关联AzureVPN服务主体的 ObjectId</p>
+<p>$sp1 = Get-AzureADServicePrincipal -SearchString &quot;Azure VPN&quot;</p>
+<p>$sp1.ObjectId</p>
+<p>8．令牌策略与Azure VPN关联.</p>
+<p>Add-AzureADServicePrincipalPolicy -Id $sp1.ObjectId -RefObjectId $policy.Id</p>
+<p>测试效果：</p>
+<p>登陆日志：</p>
+<p>官网文档参考链接：</p>
+<p>访问令牌生存期 → <a href="https://docs.azure.cn/zh-cn/active-directory/develop/access-tokens#access-token-lifetime" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/develop/access-tokens#access-token-lifetime</a></p>
+<p>自定义登陆策略 → <a href="https://docs.azure.cn/zh-cn/active-directory/develop/configure-token-lifetimes#create-a-policy-for-web-sign-in" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/develop/configure-token-lifetimes#create-a-policy-for-web-sign-in</a></p>
+<p>AAD默认策略 → <a href="https://docs.azure.cn/zh-cn/active-directory/develop/active-directory-configurable-token-lifetimes#access-id-and-saml2-token-lifetime-policy-properties" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/develop/active-directory-configurable-token-lifetimes#access-id-and-saml2-token-lifetime-policy-properties</a></p></article>

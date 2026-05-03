@@ -1,0 +1,59 @@
+<article class="kb-article" data-title="固定正在使用的IP"><h1>固定正在使用的IP</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Cloud Service</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-08-17 09:35:42</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>首先下载安装azure powershell，下载地址：<a href="http://go.microsoft.com/?linkid=9811175&amp;clcid=0x804（链接不稳定，如果网页打开失败，刷新几次即可）" target="_blank" rel="noopener">http://go.microsoft.com/?linkid=9811175&amp;clcid=0x804（链接不稳定，如果网页打开失败，刷新几次即可）</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>首先下载安装azure powershell，下载地址：<a href="http://go.microsoft.com/?linkid=9811175&amp;clcid=0x804（链接不稳定，如果网页打开失败，刷新几次即可）" target="_blank" rel="noopener">http://go.microsoft.com/?linkid=9811175&amp;clcid=0x804（链接不稳定，如果网页打开失败，刷新几次即可）</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>导入订阅：</li>
+</ul>
+<ul>
+<li>执行Select-AzureSubscription -SubscriptionName &lt;订阅名称&gt;，设置默认的订阅:</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>执行命令Get-AzurePublishSettingsFile -Environment &quot;AzureChinaCloud&quot;，通过打开的页面下载您的Windows Azure Subscription的发布配置</li>
+</ul>
+<ul>
+<li>在PowerShell中执行Import-AzurePublishSettingsFile -PublishSettingsFile &lt;发布配置文件本地存放路径&gt;</li>
+</ul>
+<ul>
+<li>使用下面的命令固定当前IP：</li>
+</ul>
+<ul>
+<li>New-AzureReservedIP -ServiceName asmorkart1 -ReservedIPName asmorkart1RIP -Location &quot;China East&quot;</li>
+</ul>
+<ul>
+<li>固定完成后，使用命令查看是否固定成功（您可以将此命令的输出结果提供给我，我帮您确认一下是否固定成功：Get-AzureDeployment -ServiceName asmorkart1</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>首先下载安装azure powershell，下载地址：<a href="http://go.microsoft.com/?linkid=9811175&amp;clcid=0x804（链接不稳定，如果网页打开失败，刷新几次即可）" target="_blank" rel="noopener">http://go.microsoft.com/?linkid=9811175&amp;clcid=0x804（链接不稳定，如果网页打开失败，刷新几次即可）</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>首先下载安装azure powershell，下载地址：<a href="http://go.microsoft.com/?linkid=9811175&amp;clcid=0x804（链接不稳定，如果网页打开失败，刷新几次即可）" target="_blank" rel="noopener">http://go.microsoft.com/?linkid=9811175&amp;clcid=0x804（链接不稳定，如果网页打开失败，刷新几次即可）</a></p>
+<p>导入订阅：</p>
+<p>执行命令Get-AzurePublishSettingsFile -Environment &quot;AzureChinaCloud&quot;，通过打开的页面下载您的Windows Azure Subscription的发布配置</p>
+<p>在PowerShell中执行Import-AzurePublishSettingsFile -PublishSettingsFile &lt;发布配置文件本地存放路径&gt;</p>
+<p>执行Select-AzureSubscription -SubscriptionName &lt;订阅名称&gt;，设置默认的订阅:</p>
+<p>使用下面的命令固定当前IP：</p>
+<p>New-AzureReservedIP -ServiceName asmorkart1 -ReservedIPName asmorkart1RIP -Location &quot;China East&quot;</p>
+<p>固定完成后，使用命令查看是否固定成功（您可以将此命令的输出结果提供给我，我帮您确认一下是否固定成功：Get-AzureDeployment -ServiceName asmorkart1</p></article>

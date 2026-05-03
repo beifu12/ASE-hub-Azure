@@ -1,0 +1,61 @@
+<article class="kb-article" data-title="[Share] AKS 删除关联资源后无法启动"><h1>[Share] AKS 删除关联资源后无法启动</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-10-24 17:45:17</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>启动AKS将报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>启动AKS将报错：</li>
+</ul>
+<ul>
+<li>根据报错提示，访问了以下连接：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>禁用对 Kubernetes 群集的监视 - Azure Monitor | Microsoft Learn</li>
+</ul>
+<ul>
+<li>大概5-10分钟执行完成：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在做测试的时候发现把LOGA删除后，AKS集群启动失败：</li>
+</ul>
+<ul>
+<li>AKS配置了logA：</li>
+</ul>
+<ul>
+<li>删除诊断设置：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用命令尝试更新AKS集群：</li>
+</ul>
+<ul>
+<li>az aks update --resource-group AKS --name TangxinAKS</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/10/24</p>
+<p>在做测试的时候发现把LOGA删除后，AKS集群启动失败：</p>
+<p>AKS配置了logA：</p>
+<p>启动AKS将报错：</p>
+<p>删除诊断设置：</p>
+<p>使用命令尝试更新AKS集群：</p>
+<p>az aks update --resource-group AKS --name TangxinAKS</p>
+<p>根据报错提示，访问了以下连接：</p>
+<p>禁用对 Kubernetes 群集的监视 - Azure Monitor | Microsoft Learn</p>
+<p>大概5-10分钟执行完成：</p></article>

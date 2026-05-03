@@ -1,0 +1,123 @@
+<article class="kb-article" data-title="为 Azure 文件共享启用 AD DS 身份验证"><h1>为 Azure 文件共享启用 AD DS 身份验证</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-01-19 19:25:37</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>下载并解压缩 AzFilesHybrid zip文件，运行 .\CopyToPSPath.ps1 并导入文件中模块</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>下载并解压缩 AzFilesHybrid zip文件，运行 .\CopyToPSPath.ps1 并导入文件中模块</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>下载并解压缩 AzFilesHybrid zip文件，运行 .\CopyToPSPath.ps1 并导入文件中模块</li>
+</ul>
+<ul>
+<li>Import-Module -Name AzFilesHybrid</li>
+</ul>
+<ul>
+<li>#Define parameters</li>
+</ul>
+<ul>
+<li>$ResourceGroupName = &quot;zhangwx&quot;</li>
+</ul>
+<ul>
+<li>$StorageAccountName = &quot;zhangsa&quot;</li>
+</ul>
+<ul>
+<li># Register the target storage account with your active directory environment</li>
+</ul>
+<ul>
+<li>Join-AzStorageAccountForAuth `</li>
+</ul>
+<ul>
+<li>-ResourceGroupName $ResourceGroupName `</li>
+</ul>
+<ul>
+<li>-StorageAccountName $StorageAccountName `</li>
+</ul>
+<ul>
+<li>-DomainAccountType &quot;ComputerAccount&quot;</li>
+</ul>
+<ul>
+<li>加入后可以在计算机中看到该设备</li>
+</ul>
+<ul>
+<li>Storage File Data SMB Share Reader,</li>
+</ul>
+<ul>
+<li>Storage File Data SMB Share Contributor,</li>
+</ul>
+<ul>
+<li>Storage File Data SMB Share Elevated Contributor</li>
+</ul>
+<ul>
+<li>使用的用户为本地的用户且同步到AAD。</li>
+</ul>
+<ul>
+<li>参考：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>登录Portal查看存储账号，在设置中验证已经启用本地目录的Identity-based验证</li>
+</ul>
+<ul>
+<li>验证使用没有设置权限的账号登录则直接报错。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>PowerShell登录Azure(须具有存储帐户所有者或参与者 Azure 角色权限。)</li>
+</ul>
+<ul>
+<li>设置存储账号名称以及存储账号所在资源组。执行命令将存储服务加入到本地DS</li>
+</ul>
+<ul>
+<li>接下来为文件共享设置角色，该角色根据命令提示有三种</li>
+</ul>
+<ul>
+<li>使用设置权限的账户登录本地成员机，验证端口后，即可成功挂载（注意不要使用管理员运行命令窗口）</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-enable#option-one-recommended-use-azfileshybrid-powershell-module" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-enable#option-one-recommended-use-azfileshybrid-powershell-module</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-assign-permissions" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-assign-permissions</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/04/27</p>
+<p>下载并解压缩 AzFilesHybrid zip文件，运行 .\CopyToPSPath.ps1 并导入文件中模块</p>
+<p>Import-Module -Name AzFilesHybrid</p>
+<p>PowerShell登录Azure(须具有存储帐户所有者或参与者 Azure 角色权限。)</p>
+<p>设置存储账号名称以及存储账号所在资源组。执行命令将存储服务加入到本地DS</p>
+<p>#Define parameters</p>
+<p>$ResourceGroupName = &quot;zhangwx&quot;</p>
+<p>$StorageAccountName = &quot;zhangsa&quot;</p>
+<h1>Register the target storage account with your active directory environment</h1>
+<p>Join-AzStorageAccountForAuth `</p>
+<p>-ResourceGroupName $ResourceGroupName `</p>
+<p>-StorageAccountName $StorageAccountName `</p>
+<p>-DomainAccountType &quot;ComputerAccount&quot;</p>
+<p>加入后可以在计算机中看到该设备</p>
+<p>登录Portal查看存储账号，在设置中验证已经启用本地目录的Identity-based验证</p>
+<p>接下来为文件共享设置角色，该角色根据命令提示有三种</p>
+<p>Storage File Data SMB Share Reader,</p>
+<p>Storage File Data SMB Share Contributor,</p>
+<p>Storage File Data SMB Share Elevated Contributor</p>
+<p>使用的用户为本地的用户且同步到AAD。</p>
+<p>使用设置权限的账户登录本地成员机，验证端口后，即可成功挂载（注意不要使用管理员运行命令窗口）</p>
+<p>验证使用没有设置权限的账号登录则直接报错。</p>
+<p>参考：</p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-enable#option-one-recommended-use-azfileshybrid-powershell-module" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-enable#option-one-recommended-use-azfileshybrid-powershell-module</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-assign-permissions" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-assign-permissions</a></p></article>

@@ -1,0 +1,112 @@
+<article class="kb-article" data-title="[Share] powershell 创建AFD 解决portal创建时出现的密钥保管库报错"><h1>[Share] powershell 创建AFD 解决portal创建时出现的密钥保管库报错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AFD</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-03-12 16:04:55</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>通过Portal创建AFD，会遇到一个密钥保管库权限错误：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>通过Portal创建AFD，会遇到一个密钥保管库权限错误：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Define 变量:</li>
+</ul>
+<ul>
+<li>$SUBSCRIPTION_ID=&quot;YOUR SUBSCRIPTION_ID &quot;</li>
+</ul>
+<ul>
+<li>$RESOURCE_GROUP=&quot;AKS&quot;</li>
+</ul>
+<ul>
+<li>$LOCATION=&quot;chinanorth3&quot;</li>
+</ul>
+<ul>
+<li>$USER_ASSIGNED_ID_NAME=&quot;afd-user-mi&quot;</li>
+</ul>
+<ul>
+<li>$KEYVAULT_NAME=&quot;AKSkey&quot;</li>
+</ul>
+<ul>
+<li>$AFD_PROFILE_NAME=&quot;afd-profile-01&quot;</li>
+</ul>
+<ul>
+<li># identity create</li>
+</ul>
+<ul>
+<li>$USER_ASSIGNED_ID_RESOURCE_ID=(az identity show --name $USER_ASSIGNED_ID_NAME --resource-group $RESOURCE_GROUP --query id --output tsv)</li>
+</ul>
+<ul>
+<li>$USER_ASSIGNED_ID_CLIENT_ID=(az identity show --name $USER_ASSIGNED_ID_NAME --resource-group $RESOURCE_GROUP --query clientId --output tsv)</li>
+</ul>
+<ul>
+<li>echo &quot;Resource ID: $USER_ASSIGNED_ID_RESOURCE_ID&quot;</li>
+</ul>
+<ul>
+<li># get keyvault policy</li>
+</ul>
+<ul>
+<li># create AFD</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过Portal创建AFD，会遇到一个密钥保管库权限错误：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>可以使用powershell来先分配用户托管标识符权限，然后再创建：</li>
+</ul>
+<ul>
+<li>az identity create --name $USER_ASSIGNED_ID_NAME --resource-group $RESOURCE_GROUP --location $LOCATION --subscription $SUBSCRIPTION_ID</li>
+</ul>
+<ul>
+<li>az identity show --name $USER_ASSIGNED_ID_NAME --resource-group $RESOURCE_GROUP --query id --output tsv</li>
+</ul>
+<ul>
+<li>az keyvault set-policy --name $KEYVAULT_NAME --resource-group $RESOURCE_GROUP --object-id $USER_ASSIGNED_ID_CLIENT_ID --certificate-permissions get list --secret-permissions get list --key-permissions get list</li>
+</ul>
+<ul>
+<li>az afd profile create --profile-name Afd2 --resource-group $RESOURCE_GROUP --sku Standard_AzureFrontDoor --identity-type UserAssigned --user-assigned-identities &quot;$USER_ASSIGNED_ID_RESOURCE_ID&quot;</li>
+</ul>
+<ul>
+<li>快速入门：使用 Azure CLI 创建 Azure Front Door | Microsoft Learn</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026/03/12</p>
+<p>通过Portal创建AFD，会遇到一个密钥保管库权限错误：</p>
+<p>可以使用powershell来先分配用户托管标识符权限，然后再创建：</p>
+<p>Define 变量:</p>
+<p>$SUBSCRIPTION_ID=&quot;YOUR SUBSCRIPTION_ID &quot;</p>
+<p>$RESOURCE_GROUP=&quot;AKS&quot;</p>
+<p>$LOCATION=&quot;chinanorth3&quot;</p>
+<p>$USER_ASSIGNED_ID_NAME=&quot;afd-user-mi&quot;</p>
+<p>$KEYVAULT_NAME=&quot;AKSkey&quot;</p>
+<p>$AFD_PROFILE_NAME=&quot;afd-profile-01&quot;</p>
+<h1>identity create</h1>
+<p>az identity create --name $USER_ASSIGNED_ID_NAME --resource-group $RESOURCE_GROUP --location $LOCATION --subscription $SUBSCRIPTION_ID</p>
+<p>az identity show --name $USER_ASSIGNED_ID_NAME --resource-group $RESOURCE_GROUP --query id --output tsv</p>
+<p>$USER_ASSIGNED_ID_RESOURCE_ID=(az identity show --name $USER_ASSIGNED_ID_NAME --resource-group $RESOURCE_GROUP --query id --output tsv)</p>
+<p>$USER_ASSIGNED_ID_CLIENT_ID=(az identity show --name $USER_ASSIGNED_ID_NAME --resource-group $RESOURCE_GROUP --query clientId --output tsv)</p>
+<p>echo &quot;Resource ID: $USER_ASSIGNED_ID_RESOURCE_ID&quot;</p>
+<h1>get keyvault policy</h1>
+<p>az keyvault set-policy --name $KEYVAULT_NAME --resource-group $RESOURCE_GROUP --object-id $USER_ASSIGNED_ID_CLIENT_ID --certificate-permissions get list --secret-permissions get list --key-permissions get list</p>
+<h1>create AFD</h1>
+<p>az afd profile create --profile-name Afd2 --resource-group $RESOURCE_GROUP --sku Standard_AzureFrontDoor --identity-type UserAssigned --user-assigned-identities &quot;$USER_ASSIGNED_ID_RESOURCE_ID&quot;</p>
+<p>参考文档：</p>
+<p>快速入门：使用 Azure CLI 创建 Azure Front Door | Microsoft Learn</p></article>

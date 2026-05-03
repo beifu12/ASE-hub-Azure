@@ -1,0 +1,150 @@
+<article class="kb-article" data-title="使用helm 安装arm 认证类型workloadIdentity 的 AGIC"><h1>使用helm 安装arm 认证类型workloadIdentity 的 AGIC</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-02-28 17:39:17</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>5创建 federated-credential ， 需要的参数有：名称是agic-controller-sa-ingress-azure的service account以及联合先前已经授权的MI的名称和资源组（标黄的部分）：az identity federated-credential create --name federatedIdentityName --identity-name userAssignedIdentityName --resource-group resourceGroupName --...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>5创建 federated-credential  ， 需要的参数有：名称是agic-controller-sa-ingress-azure的service account以及联合先前已经授权的MI的名称和资源组（标黄的部分）：az identity federated-credential create --name federatedIdentityName --identity-name userAssignedIdentityName --resource-group resourceGroupName --issuer ${AKS_OIDC_ISSUER} --subject system:serviceaccount:${SERVICE_ACCOUNT_NAMESPACE}:${SERVICE_ACCOUNT_NAME} --audience api://AzureADTokenExchange</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>使用helm 安装arm 认证类型workloadIdentity 的 AGIC</li>
+</ul>
+<ul>
+<li>--resource-group &quot;${RESOURCE_GROUP}&quot; \</li>
+</ul>
+<ul>
+<li>--name &quot;${CLUSTER_NAME}&quot; \</li>
+</ul>
+<ul>
+<li>创建Manage indentity 并复制MI的所有信息到记事本中后续需要使用： az identity create --name &quot;userAssignedIdentityName&quot; --resource-group &quot;resourceGroupName&quot; --location &quot;location&quot;</li>
+</ul>
+<ul>
+<li>示例： az identity create --name agicv1 -g aks --location chinanorth2</li>
+</ul>
+<ul>
+<li>对  MI的principalID 在启用AGIC的APPGW上添加contributor 的权限： az role assignment create --assignee $principalId --role $role --scope $AppGatewayID</li>
+</ul>
+<ul>
+<li>示例：az role assignment create --assignee c8c0564d-166c-4922-93fa-b655bb02dcca --role contributor --scope /subscriptions/d02ead13-610a-4745-b4bc-a38c9869741c/resourceGroups/appgw/providers/Microsoft.Network/applicationGateways/v2</li>
+</ul>
+<ul>
+<li>对MI授予标识对应用程序网关资源组的 读取 访问权限： az role assignment create --role $role --assignee $principalId --scope $AppGatewayResourceGroupID</li>
+</ul>
+<ul>
+<li>示例：az role assignment create --assignee c8c0564d-166c-4922-93fa-b655bb02dcca --role reader  --scope /subscriptions/d02ead13-610a-4745-b4bc-a38c9869741c/resourceGroups/appgw</li>
+</ul>
+<ul>
+<li>对MI授予APPGW所在虚拟网络的网络参与者权限： az role assignment create --role $role --assignee $principalId --scope $appgw.Vnet</li>
+</ul>
+<ul>
+<li>示例：az role assignment create --assignee c8c0564d-166c-4922-93fa-b655bb02dcca --role &quot;network contributor&quot;  --scope /subscriptions/d02ead13-610a-4745-b4bc-a38c9869741c/resourceGroups/aks/providers/Microsoft.Network/virtualNetworks/aks-net</li>
+</ul>
+<ul>
+<li>对MI授权APPGW当前使用的MI的Managed Identity Operator权限：</li>
+</ul>
+<ul>
+<li>示例：az role assignment create   --role &quot;Managed Identity Operator&quot;   --assignee  872a4121-2ca5-4fd1-bbfe-89ae6fac436b  --scope /subscriptions/d02ead13-610a-4745-b4bc-a38c9869741c/resourcegroups/appgw/providers/Microsoft.ManagedIdentity/userAssignedIdentities/appgwMI</li>
+</ul>
+<ul>
+<li>4   全部修改完毕后，使用helm 安装AGIC，名称是 agic-controller， 会在AKS中创建agic-controller命名开头的service account，如果使用其它的名称，对应的service account名称也要发生变化</li>
+</ul>
+<ul>
+<li>helm install agic-controller oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure --version 1.7.5 -f helm-config.yaml</li>
+</ul>
+<ul>
+<li>示例：</li>
+</ul>
+<ul>
+<li>6  创建一个clusterrole并对AGIC控制器Pod使用的serviceaccount进行授予集群RBAC相关的权限</li>
+</ul>
+<ul>
+<li>使用附件的文件创建一个 名称是agic-controller-sa-ingress-azure的cluster Role：      kubectl apply -f   agciclusterrole.yaml</li>
+</ul>
+<ul>
+<li>然后创建一个cluster rolebinding 将 service account和cluster role绑定：</li>
+</ul>
+<ul>
+<li>serviceaccount 需要指定安装时ingress控制器所在的名称空间</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>AGIC的安装文档有了更新，不过文档中提供的步骤中有些权限是缺少的，进一步测试了使用helm安装arm 认证类型workloadIdentity 的 AGIC 步骤如下：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>AKS集群需要启用workload-identity，如果创建时未启用，需要使用Azure CLI 执行启用的操作</li>
+</ul>
+<ul>
+<li>az aks update \</li>
+</ul>
+<ul>
+<li>az identity federated-credential create --name agicv1 --identity-name agicv1--resource-group aks  --issuer ${AKS_OIDC_ISSUER} --subject system:serviceaccount:default:agic-controller-sa-ingress-azure --audience api://AzureADTokenExchange</li>
+</ul>
+<ul>
+<li>kubectl create clusterrolebinding agic-controller-sa-ingress-azure --clusterrole=agic-controller-sa-ingress-azure --serviceaccount=default:agic-controller-sa-ingress-azure</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>export AKS_OIDC_ISSUER=&quot;$(az aks show --name kk  --resource-group aks  --query &quot;oidcIssuerProfile.issuerUrl&quot; -o tsv)&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>--enable-oidc-issuer \</li>
+</ul>
+<ul>
+<li>--enable-workload-identity</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>2   接下来几个步骤会创建一个用户manage indentity 并授予对APPGW的权限以及建立联合的indentity credential，相关的文档： <a href="https://learn.microsoft.com/lt-lt/azure/aks/workload-identity-migrate-from-pod-identity" target="_blank" rel="noopener">https://learn.microsoft.com/lt-lt/azure/aks/workload-identity-migrate-from-pod-identity</a></li>
+</ul>
+<ul>
+<li>3  下载helm-config ： <a href="https://docs.azure.cn/zh-cn/application-gateway/ingress-controller-install-existing" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/ingress-controller-install-existing</a></li>
+</ul>
+<ul>
+<li>wget <a href="https://raw.githubusercontent.com/Azure/application-gateway-kubernetes-ingress/master/docs/examples/sample-helm-config.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/application-gateway-kubernetes-ingress/master/docs/examples/sample-helm-config.yaml</a> -O helm-config.yaml</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>使用helm 安装arm 认证类型workloadIdentity 的 AGIC</p>
+<p>2025/01/18</p>
+<p>AGIC的安装文档有了更新，不过文档中提供的步骤中有些权限是缺少的，进一步测试了使用helm安装arm 认证类型workloadIdentity 的 AGIC 步骤如下：</p>
+<p>AKS集群需要启用workload-identity，如果创建时未启用，需要使用Azure CLI 执行启用的操作</p>
+<p>az aks update \</p>
+<p>--resource-group &quot;${RESOURCE_GROUP}&quot; \</p>
+<p>--name &quot;${CLUSTER_NAME}&quot; \</p>
+<p>--enable-oidc-issuer \</p>
+<p>--enable-workload-identity</p>
+<p>2   接下来几个步骤会创建一个用户manage indentity 并授予对APPGW的权限以及建立联合的indentity credential，相关的文档： <a href="https://learn.microsoft.com/lt-lt/azure/aks/workload-identity-migrate-from-pod-identity" target="_blank" rel="noopener">https://learn.microsoft.com/lt-lt/azure/aks/workload-identity-migrate-from-pod-identity</a></p>
+<p>创建Manage indentity 并复制MI的所有信息到记事本中后续需要使用： az identity create --name &quot;userAssignedIdentityName&quot; --resource-group &quot;resourceGroupName&quot; --location &quot;location&quot;</p>
+<p>示例： az identity create --name agicv1 -g aks --location chinanorth2</p>
+<p>对  MI的principalID 在启用AGIC的APPGW上添加contributor 的权限： az role assignment create --assignee $principalId --role $role --scope $AppGatewayID</p>
+<p>示例：az role assignment create --assignee c8c0564d-166c-4922-93fa-b655bb02dcca --role contributor --scope /subscriptions/d02ead13-610a-4745-b4bc-a38c9869741c/resourceGroups/appgw/providers/Microsoft.Network/applicationGateways/v2</p>
+<p>对MI授予标识对应用程序网关资源组的 读取 访问权限： az role assignment create --role $role --assignee $principalId --scope $AppGatewayResourceGroupID</p>
+<p>示例：az role assignment create --assignee c8c0564d-166c-4922-93fa-b655bb02dcca --role reader  --scope /subscriptions/d02ead13-610a-4745-b4bc-a38c9869741c/resourceGroups/appgw</p>
+<p>对MI授予APPGW所在虚拟网络的网络参与者权限： az role assignment create --role $role --assignee $principalId --scope $appgw.Vnet</p>
+<p>示例：az role assignment create --assignee c8c0564d-166c-4922-93fa-b655bb02dcca --role &quot;network contributor&quot;  --scope /subscriptions/d02ead13-610a-4745-b4bc-a38c9869741c/resourceGroups/aks/providers/Microsoft.Network/virtualNetworks/aks-net</p>
+<p>对MI授权APPGW当前使用的MI的Managed Identity Operator权限：</p>
+<p>示例：az role assignment create   --role &quot;Managed Identity Operator&quot;   --assignee  872a4121-2ca5-4fd1-bbfe-89ae6fac436b  --scope /subscriptions/d02ead13-610a-4745-b4bc-a38c9869741c/resourcegroups/appgw/providers/Microsoft.ManagedIdentity/userAssignedIdentities/appgwMI</p>
+<p>3  下载helm-config ： <a href="https://docs.azure.cn/zh-cn/application-gateway/ingress-controller-install-existing" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/ingress-controller-install-existing</a></p>
+<p>wget <a href="https://raw.githubusercontent.com/Azure/application-gateway-kubernetes-ingress/master/docs/examples/sample-helm-config.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/application-gateway-kubernetes-ingress/master/docs/examples/sample-helm-config.yaml</a> -O helm-config.yaml</p>
+<p>4   全部修改完毕后，使用helm 安装AGIC，名称是 agic-controller， 会在AKS中创建agic-controller命名开头的service account，如果使用其它的名称，对应的service account名称也要发生变化</p>
+<p>helm install agic-controller oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure --version 1.7.5 -f helm-config.yaml</p>
+<p>5创建 federated-credential  ， 需要的参数有：名称是agic-controller-sa-ingress-azure的service account以及联合先前已经授权的MI的名称和资源组（标黄的部分）：az identity federated-credential create --name federatedIdentityName --identity-name userAssignedIdentityName --resource-group resourceGroupName --issuer ${AKS_OIDC_ISSUER} --subject system:serviceaccount:${SERVICE_ACCOUNT_NAMESPACE}:${SERVICE_ACCOUNT_NAME} --audience api://AzureADTokenExchange</p>
+<p>示例：</p>
+<p>export AKS_OIDC_ISSUER=&quot;$(az aks show --name kk  --resource-group aks  --query &quot;oidcIssuerProfile.issuerUrl&quot; -o tsv)&quot;</p>
+<p>az identity federated-credential create --name agicv1 --identity-name agicv1--resource-group aks  --issuer ${AKS_OIDC_ISSUER} --subject system:serviceaccount:default:agic-controller-sa-ingress-azure --audience api://AzureADTokenExchange</p>
+<p>6  创建一个clusterrole并对AGIC控制器Pod使用的serviceaccount进行授予集群RBAC相关的权限</p>
+<p>使用附件的文件创建一个 名称是agic-controller-sa-ingress-azure的cluster Role：      kubectl apply -f   agciclusterrole.yaml</p>
+<p>然后创建一个cluster rolebinding 将 service account和cluster role绑定：</p>
+<p>serviceaccount 需要指定安装时ingress控制器所在的名称空间</p>
+<p>kubectl create clusterrolebinding agic-controller-sa-ingress-azure --clusterrole=agic-controller-sa-ingress-azure --serviceaccount=default:agic-controller-sa-ingress-azure</p></article>

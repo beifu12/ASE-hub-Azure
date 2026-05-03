@@ -1,0 +1,77 @@
+<article class="kb-article" data-title="Loga 查询AKS usage vmss usage"><h1>Loga 查询AKS usage vmss usage</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Log Analiytics</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-23 14:06:58</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Johnny lee</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Johnny lee</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny lee</li>
+</ul>
+<ul>
+<li>过去90天 container表中按vmss实例计费的引入量（GB）：</li>
+</ul>
+<ul>
+<li>注意标黄的下划线不能省略：</li>
+</ul>
+<ul>
+<li>| where TimeGenerated &gt; startofday(ago(90d))</li>
+</ul>
+<ul>
+<li>| where _IsBillable == true</li>
+</ul>
+<ul>
+<li>| summarize IngestedGB = sum(_BilledSize) / 1000 by Computer</li>
+</ul>
+<ul>
+<li>| sort by IngestedGB desc</li>
+</ul>
+<ul>
+<li>| render piechart</li>
+</ul>
+<ul>
+<li>占比：</li>
+</ul>
+<ul>
+<li>按资源ID占比：</li>
+</ul>
+<ul>
+<li>| summarize IngestedGB = sum(_BilledSize) / 1000 by _ResourceId</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>ContainerLog</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Johnny lee</p>
+<p>2024-7-23</p>
+<p>过去90天 container表中按vmss实例计费的引入量（GB）：</p>
+<p>注意标黄的下划线不能省略：</p>
+<p>ContainerLog</p>
+<p>| where TimeGenerated &gt; startofday(ago(90d))</p>
+<p>| where _IsBillable == true</p>
+<p>| summarize IngestedGB = sum(_BilledSize) / 1000 by Computer</p>
+<p>| sort by IngestedGB desc</p>
+<p>| render piechart</p>
+<p>占比：</p>
+<p>按资源ID占比：</p>
+<p>| summarize IngestedGB = sum(_BilledSize) / 1000 by _ResourceId</p></article>

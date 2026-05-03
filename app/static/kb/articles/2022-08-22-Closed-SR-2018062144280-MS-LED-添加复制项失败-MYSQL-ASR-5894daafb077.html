@@ -1,0 +1,137 @@
+<article class="kb-article" data-title="[Closed]SR_2018062144280_[MS-LED]添加复制项失败 MYSQL ASR"><h1>[Closed]SR_2018062144280_[MS-LED]添加复制项失败 MYSQL ASR</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RecoveryService</li>
+<li>Section: ASR</li>
+<li>最近修改: 2022-08-22 14:33:09</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2018/3/13日之前被保护的虚拟机batcore (172.16.16.77)的复制状态正常，2018/3/22克隆了该虚拟机为corelistener(172.16.16.77)，并在随后的时间里对其进行了配置，2018/4/17日为了保护该虚拟机，将其注册到配置服务器。随后发现batcore在Azure中的保护状态不正常，于2017/4/27日禁用了复制。2016/6/21日再次为batcore启用复制后，复制状态依旧不正常，复制进度卡在50%左右，于是禁用复制。2018/6/22日尝试为coreliste...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2018/3/13日之前被保护的虚拟机batcore (172.16.16.77)的复制状态正常，2018/3/22克隆了该虚拟机为corelistener(172.16.16.77)，并在随后的时间里对其进行了配置，2018/4/17日为了保护该虚拟机，将其注册到配置服务器。随后发现batcore在Azure中的保护状态不正常，于2017/4/27日禁用了复制。2016/6/21日再次为batcore启用复制后，复制状态依旧不正常，复制进度卡在50%左右，于是禁用复制。2018/6/22日尝试为corelistener启用复制后，该虚拟机的复制进度一致卡在0%。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1.       清理这两台虚拟机现有的信息和环境</li>
+</ul>
+<ul>
+<li>1）  在Azure ASR中，禁用两台虚拟机的复制。</li>
+</ul>
+<ul>
+<li>在门户中的ASR vault下，转到“受保护的项” &gt; “复制的项”，右键单击计算机，再单击“禁用复制”。在“禁用复制”页中，选择禁用复制并删除(推荐) 。</li>
+</ul>
+<ul>
+<li>mysql  -hlocalhost -uroot  -p</li>
+</ul>
+<ul>
+<li>mysql&gt; use svsdb1;</li>
+</ul>
+<ul>
+<li>mysql&gt; select id as hostid, name, ipaddress, ostype as operatingsystem, from_unixtime(lasthostupdatetime) as heartbeat from hosts where name!=&#39;InMageProfiler&#39;\G;</li>
+</ul>
+<ul>
+<li>语法：Unregister-ASRComponent.pl -IPAddress &lt;IP_ADDRESS_OF_MACHINE_TO_UNREGISTER&gt; -Component &lt;Source/ PS / MT&gt;</li>
+</ul>
+<ul>
+<li>例如，若需要取消虚拟机&quot;OnPrem-VM01&quot; （ 10.0.0.4）的注册，则运行</li>
+</ul>
+<ul>
+<li>perl Unregister-ASRComponent.pl -IPAddress 10.0.0.4 -Component Source</li>
+</ul>
+<ul>
+<li>3）  删除两台虚拟机上的mobility Agent.</li>
+</ul>
+<ul>
+<li>以 root 用户身份在 Linux 服务器上登录。</li>
+</ul>
+<ul>
+<li>uninstall.sh -Y</li>
+</ul>
+<ul>
+<li>2.       重新为两台虚拟机启用复制。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>我们后台的排查如下：</li>
+</ul>
+<ul>
+<li>由于早于90天的数据无法查询，从现有日志中看到对batcore和corelistener的信息记录有重复或冲突，如两个虚拟机的NIC一致，或者batcore记录到了corelistener的IP等。在配置服务器上的CBEngine.errlog记录两台虚拟机在使用同一个ID在与配置服务器通信，并发生冲突，导致复制信息无法正确获取。进一步查看，发现该ID d1e57c5d-6e39-434a-897a-12d4abc7c7c5 实际上是由Mobility Service Agent生成的AgentGeneratedId。该ID在安装agent的时候生成。考虑到corelistener是在batcore配置了ASR后克隆的虚拟机，因此，两台虚拟机可能使用了同一个ID，导致复制异常。</li>
+</ul>
+<ul>
+<li>2）  在配置服务器上，检查两台虚拟机信息是否正确：</li>
+</ul>
+<ul>
+<li>注意查看batcore和corelistener的信息是否正确。若不正确，请按下面步骤进行清理:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>以管理员身份打开mysql的命令行，执行命令查看所有注册的虚拟机的信息：(C:\programdata\asr\home\svsystems\etc\amethyst.conf里找密码)</li>
+</ul>
+<ul>
+<li>在命令行中切换到C:\home\svsystems\bin（根据安装情况，盘符可能不同）。</li>
+</ul>
+<ul>
+<li>运行命令注销</li>
+</ul>
+<ul>
+<li>在终端中转到 /user/local/ASR，请运行以下命令卸载移动服务：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>2018/3/13日之前被保护的虚拟机batcore (172.16.16.77)的复制状态正常，2018/3/22克隆了该虚拟机为corelistener(172.16.16.77)，并在随后的时间里对其进行了配置，2018/4/17日为了保护该虚拟机，将其注册到配置服务器。随后发现batcore在Azure中的保护状态不正常，于2017/4/27日禁用了复制。2016/6/21日再次为batcore启用复制后，复制状态依旧不正常，复制进度卡在50%左右，于是禁用复制。2018/6/22日尝试为corelistener启用复制后，该虚拟机的复制进度一致卡在0%。</li>
+</ul>
+<ul>
+<li>基于此，我们的建议如下清理现有的复制环境后，重新为每个虚拟机安装Mobility Service Agent ，生成新的ID，再启用复制保护虚拟机。</li>
+</ul>
+<ul>
+<li>将配置服务器注册到新的保管库</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考链接：<a href="https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx" target="_blank" rel="noopener">https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx</a></li>
+</ul>
+<ul>
+<li>参考链接：<a href="https://docs.azure.cn/zh-cn/site-recovery/vmware-azure-install-mobility-service#uninstall-mobility-service-on-a-linux-computer" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/vmware-azure-install-mobility-service#uninstall-mobility-service-on-a-linux-computer</a></li>
+</ul>
+<ul>
+<li><a href="https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx" target="_blank" rel="noopener">https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-manage-configuration-server" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-manage-configuration-server</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2018/3/13日之前被保护的虚拟机batcore (172.16.16.77)的复制状态正常，2018/3/22克隆了该虚拟机为corelistener(172.16.16.77)，并在随后的时间里对其进行了配置，2018/4/17日为了保护该虚拟机，将其注册到配置服务器。随后发现batcore在Azure中的保护状态不正常，于2017/4/27日禁用了复制。2016/6/21日再次为batcore启用复制后，复制状态依旧不正常，复制进度卡在50%左右，于是禁用复制。2018/6/22日尝试为corelistener启用复制后，该虚拟机的复制进度一致卡在0%。</p>
+<p>我们后台的排查如下：</p>
+<p>由于早于90天的数据无法查询，从现有日志中看到对batcore和corelistener的信息记录有重复或冲突，如两个虚拟机的NIC一致，或者batcore记录到了corelistener的IP等。在配置服务器上的CBEngine.errlog记录两台虚拟机在使用同一个ID在与配置服务器通信，并发生冲突，导致复制信息无法正确获取。进一步查看，发现该ID d1e57c5d-6e39-434a-897a-12d4abc7c7c5 实际上是由Mobility Service Agent生成的AgentGeneratedId。该ID在安装agent的时候生成。考虑到corelistener是在batcore配置了ASR后克隆的虚拟机，因此，两台虚拟机可能使用了同一个ID，导致复制异常。</p>
+<p>基于此，我们的建议如下清理现有的复制环境后，重新为每个虚拟机安装Mobility Service Agent ，生成新的ID，再启用复制保护虚拟机。</p>
+<p>1.       清理这两台虚拟机现有的信息和环境</p>
+<p>1）  在Azure ASR中，禁用两台虚拟机的复制。</p>
+<p>在门户中的ASR vault下，转到“受保护的项” &gt; “复制的项”，右键单击计算机，再单击“禁用复制”。在“禁用复制”页中，选择禁用复制并删除(推荐) 。</p>
+<p>2）  在配置服务器上，检查两台虚拟机信息是否正确：</p>
+<p>参考链接：<a href="https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx" target="_blank" rel="noopener">https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx</a></p>
+<p>mysql  -hlocalhost -uroot  -p</p>
+<p>以管理员身份打开mysql的命令行，执行命令查看所有注册的虚拟机的信息：(C:\programdata\asr\home\svsystems\etc\amethyst.conf里找密码)</p>
+<p>mysql&gt; use svsdb1;</p>
+<p>mysql&gt; select id as hostid, name, ipaddress, ostype as operatingsystem, from_unixtime(lasthostupdatetime) as heartbeat from hosts where name!=&#39;InMageProfiler&#39;\G;</p>
+<p>注意查看batcore和corelistener的信息是否正确。若不正确，请按下面步骤进行清理:</p>
+<p>在命令行中切换到C:\home\svsystems\bin（根据安装情况，盘符可能不同）。</p>
+<p>运行命令注销</p>
+<p>语法：Unregister-ASRComponent.pl -IPAddress &lt;IP_ADDRESS_OF_MACHINE_TO_UNREGISTER&gt; -Component &lt;Source/ PS / MT&gt;</p>
+<p>例如，若需要取消虚拟机&quot;OnPrem-VM01&quot; （ 10.0.0.4）的注册，则运行</p>
+<p>perl Unregister-ASRComponent.pl -IPAddress 10.0.0.4 -Component Source</p>
+<p>3）  删除两台虚拟机上的mobility Agent.</p>
+<p>参考链接：<a href="https://docs.azure.cn/zh-cn/site-recovery/vmware-azure-install-mobility-service#uninstall-mobility-service-on-a-linux-computer" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/vmware-azure-install-mobility-service#uninstall-mobility-service-on-a-linux-computer</a></p>
+<p>以 root 用户身份在 Linux 服务器上登录。</p>
+<p>在终端中转到 /user/local/ASR，请运行以下命令卸载移动服务：</p>
+<p>uninstall.sh -Y</p>
+<p><a href="https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx" target="_blank" rel="noopener">https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx</a></p>
+<p>2.       重新为两台虚拟机启用复制。</p>
+<p>将配置服务器注册到新的保管库</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-manage-configuration-server" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-manage-configuration-server</a></p></article>

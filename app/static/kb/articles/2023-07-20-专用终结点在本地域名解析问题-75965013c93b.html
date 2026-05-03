@@ -1,0 +1,72 @@
+<article class="kb-article" data-title="专用终结点在本地域名解析问题"><h1>专用终结点在本地域名解析问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DNS</li>
+<li>Section: New Section 1</li>
+<li>最近修改: 2023-07-20 09:19:35</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20210713</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20210713</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20210713</li>
+</ul>
+<ul>
+<li>测试到两种解决办法。 以存储账户示例：</li>
+</ul>
+<ul>
+<li>存储账户域名：mywsw.blob.core.chinacloudapi.cn</li>
+</ul>
+<ul>
+<li>默认解析结果：</li>
+</ul>
+<ul>
+<li>1 第一种方法是修改本地主机的host文件，将mywsw.blob.core.chinacloudapi.cn 解析为10.0.8.4 ,本地客户端较多的情况下不方便管理</li>
+</ul>
+<ul>
+<li>2  在本地DNS服务器上配置zone ，名称是privatelink.blob.core.chinacloudapi.cn ，然后在区域数据库中添加对应的A记录。以Linux 系统中bind 举例：</li>
+</ul>
+<ul>
+<li>修改主配置文件，添加zone：</li>
+</ul>
+<ul>
+<li>在DNS服务器的数据库中添加对应的A记录：</li>
+</ul>
+<ul>
+<li>解析结果：</li>
+</ul>
+<ul>
+<li>需要注意的是，要求本地DNS服务器可以解析公共域名，并且到解析到对应的privatelink的Cname记录</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>目前很多PAAS服务都提供了专用终结点的功能，客户在本地可以通过ER，VPN等访问专用终结点的私有IP，遇到的比较多的问题是如何将访问的域名在本地解析为专用终结点的私有IP。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20210713</p>
+<p>目前很多PAAS服务都提供了专用终结点的功能，客户在本地可以通过ER，VPN等访问专用终结点的私有IP，遇到的比较多的问题是如何将访问的域名在本地解析为专用终结点的私有IP。</p>
+<p>测试到两种解决办法。 以存储账户示例：</p>
+<p>存储账户域名：mywsw.blob.core.chinacloudapi.cn</p>
+<p>默认解析结果：</p>
+<p>1 第一种方法是修改本地主机的host文件，将mywsw.blob.core.chinacloudapi.cn 解析为10.0.8.4 ,本地客户端较多的情况下不方便管理</p>
+<p>2  在本地DNS服务器上配置zone ，名称是privatelink.blob.core.chinacloudapi.cn ，然后在区域数据库中添加对应的A记录。以Linux 系统中bind 举例：</p>
+<p>修改主配置文件，添加zone：</p>
+<p>在DNS服务器的数据库中添加对应的A记录：</p>
+<p>解析结果：</p>
+<p>需要注意的是，要求本地DNS服务器可以解析公共域名，并且到解析到对应的privatelink的Cname记录</p></article>

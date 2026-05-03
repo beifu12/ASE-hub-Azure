@@ -1,0 +1,376 @@
+<article class="kb-article" data-title="使用基于Istio addon 的istio APIs 接入流量"><h1>使用基于Istio addon 的istio APIs 接入流量</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-27 16:59:44</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>作为知名的服务网格产品，istio具有强大的流量管理功能，而Istio addon具有和原生istio类似的功能，istio除了支持原生K8S Gateway API发布流量外(参考Onenote：使用基于istio addon 的K8S gateway API 接入流量)，同时也支持自身的istio APIs接入流量，istio APIs同样具有强大的功能，如针对 HTTP/gRPC/WebSocket 和 TCP 流量的负载均衡, 支持灰度发布，流量管理等等。下面演示如何使用基于Istio addon 的ist...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>作为知名的服务网格产品，istio具有强大的流量管理功能，而Istio addon具有和原生istio类似的功能，istio除了支持原生K8S Gateway API发布流量外(参考Onenote：使用基于istio addon 的K8S gateway API 接入流量)，同时也支持自身的istio APIs接入流量，istio APIs同样具有强大的功能，如针对 HTTP/gRPC/WebSocket 和 TCP 流量的负载均衡, 支持灰度发布，流量管理等等。下面演示如何使用基于Istio addon 的istio APIs在AKS中发布应用。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>作为知名的服务网格产品，istio具有强大的流量管理功能，而Istio addon具有和原生istio类似的功能，istio除了支持原生K8S Gateway API发布流量外(参考Onenote：使用基于istio addon 的K8S gateway API 接入流量)，同时也支持自身的istio APIs接入流量，istio APIs同样具有强大的功能，如针对 HTTP/gRPC/WebSocket 和 TCP 流量的负载均衡, 支持灰度发布，流量管理等等。下面演示如何使用基于Istio addon 的istio APIs在AKS中发布应用。</li>
+</ul>
+<ul>
+<li>1、安装istio addon并启用istio 入口网关(istio ingressgateway)</li>
+</ul>
+<ul>
+<li>#这里使用CN3区域示例.选择与现有AKS 版本兼容的addon版本</li>
+</ul>
+<ul>
+<li>(2) 在现有集群中安装Istio addon</li>
+</ul>
+<ul>
+<li>(3) 启用external入口网关istio ingressgateway</li>
+</ul>
+<ul>
+<li>2、使用基于Istio addon 的istio APIs发布服务</li>
+</ul>
+<ul>
+<li>（1）部署后端的应用</li>
+</ul>
+<ul>
+<li>因为已经添加了标签，因此应用pod会被istio 控制层面自动注入sidecar代理</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: ServiceAccount</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: httpbin</li>
+</ul>
+<ul>
+<li>---</li>
+</ul>
+<ul>
+<li>kind: Service</li>
+</ul>
+<ul>
+<li>labels:</li>
+</ul>
+<ul>
+<li>app: httpbin</li>
+</ul>
+<ul>
+<li>service: httpbin</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>ports:</li>
+</ul>
+<ul>
+<li>- name: http</li>
+</ul>
+<ul>
+<li>port: 8000</li>
+</ul>
+<ul>
+<li>targetPort: 8080</li>
+</ul>
+<ul>
+<li>selector:</li>
+</ul>
+<ul>
+<li>apiVersion: apps/v1</li>
+</ul>
+<ul>
+<li>kind: Deployment</li>
+</ul>
+<ul>
+<li>replicas: 1</li>
+</ul>
+<ul>
+<li>matchLabels:</li>
+</ul>
+<ul>
+<li>version: v1</li>
+</ul>
+<ul>
+<li>template:</li>
+</ul>
+<ul>
+<li>serviceAccountName: httpbin</li>
+</ul>
+<ul>
+<li>containers:</li>
+</ul>
+<ul>
+<li>- image: fuzlreg.azurecr.cn/mccutchen/go-httpbin:v2.15.0</li>
+</ul>
+<ul>
+<li>imagePullPolicy: IfNotPresent</li>
+</ul>
+<ul>
+<li>- containerPort: 8080</li>
+</ul>
+<ul>
+<li>（2） 定义istio Gateway 以及Virtual Service接入流量</li>
+</ul>
+<ul>
+<li>Istio VirtualServicede 定义和K8s Gateway API HTTProute的定义差不多，定义了流量的转发方式</li>
+</ul>
+<ul>
+<li>#这里使用HTTPS接入流量，首先使用证书创建secret，创建到aks-istio-ingress名称空间中，对于AKS来说，还支持将证书部署到KeyVault中，但这里采用直接部署证书</li>
+</ul>
+<ul>
+<li>#创建istio gateway 和Virtual Service</li>
+</ul>
+<ul>
+<li>apiVersion: networking.istio.io/v1beta1</li>
+</ul>
+<ul>
+<li>kind: Gateway</li>
+</ul>
+<ul>
+<li>name: httpbin-gateway</li>
+</ul>
+<ul>
+<li>istio: aks-istio-ingressgateway-external  #表明使用istio ingress gateway</li>
+</ul>
+<ul>
+<li>servers:</li>
+</ul>
+<ul>
+<li>- port:</li>
+</ul>
+<ul>
+<li>number: 443</li>
+</ul>
+<ul>
+<li>name: https</li>
+</ul>
+<ul>
+<li>tls:</li>
+</ul>
+<ul>
+<li>mode: SIMPLE</li>
+</ul>
+<ul>
+<li>credentialName: httpbin-credential #使用创建的secret</li>
+</ul>
+<ul>
+<li>hosts:</li>
+</ul>
+<ul>
+<li>- fuzlistioapi.azurecn.cn</li>
+</ul>
+<ul>
+<li>kind: VirtualService</li>
+</ul>
+<ul>
+<li>- &quot;fuzlistioapi.azurecn.cn&quot;</li>
+</ul>
+<ul>
+<li>gateways:</li>
+</ul>
+<ul>
+<li>- httpbin-gateway  #指明使用上面创建的ingressgateway</li>
+</ul>
+<ul>
+<li>http:</li>
+</ul>
+<ul>
+<li>- route:</li>
+</ul>
+<ul>
+<li>- destination:</li>
+</ul>
+<ul>
+<li>host: httpbin   #指明后端使用的Service</li>
+</ul>
+<ul>
+<li>port:</li>
+</ul>
+<ul>
+<li>number: 8000</li>
+</ul>
+<ul>
+<li>流量的方向为：</li>
+</ul>
+<ul>
+<li>Client-&gt; ingress Gateway 前端的Loadbalancer serice（163.228.228.44  ）-&gt; istio ingress gateway Pod -&gt; 后端Service</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>(1) 添加Az  AKS  extension ,并查看istio mesh add-on版本</li>
+</ul>
+<ul>
+<li># 查看istio addon生成的ns以及Pod能正常运行</li>
+</ul>
+<ul>
+<li>确认ingressgateway pod已经正常运行</li>
+</ul>
+<ul>
+<li>将域名fuzlistioapi.azurecn.cn解析到163.228.228.44，测试访问情况，确认访问正常，证书加载正常。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az extension add --name aks-preview</li>
+</ul>
+<ul>
+<li>az extension update --name aks-preview</li>
+</ul>
+<ul>
+<li>az aks mesh get-revisions --location &lt;location&gt; -o table</li>
+</ul>
+<ul>
+<li>az aks mesh enable -g aks20260127  -n aks0127 --revision asm-1-27</li>
+</ul>
+<ul>
+<li>az aks show -g aks20260127  -n aks0127   --query &#39;serviceMeshProfile.mode&#39;</li>
+</ul>
+<ul>
+<li>kubectl get pods -n aks-istio-system</li>
+</ul>
+<ul>
+<li>az aks mesh enable-ingress-gateway --resource-group aks20260127  --name aks0127 --ingress-gateway-type external</li>
+</ul>
+<ul>
+<li>az aks show -g aks20260127  -n aks0127   --query &#39;serviceMeshProfile.istio.components&#39;</li>
+</ul>
+<ul>
+<li>这里我们把应用发布在default名称空间，因此需要执行下面的打标签命令</li>
+</ul>
+<ul>
+<li>kubectl label namespace default istio.io/rev=asm-1-27</li>
+</ul>
+<ul>
+<li>kubectl create -n aks-istio-ingress  secret tls httpbin-credential   --key=./privkey.pem  --cert=./fullchain.pem</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>下面的yaml文件定义了一个httpbin的Service以及httpbin的deployment，Service的服务端口为8000，这里使用了自己registry的镜像</li>
+</ul>
+<ul>
+<li>Istio Gateway和K8S Gateway的定义格式基本上差不多，其作用是定义了前端侦听的端口和TLS配置等等</li>
+</ul>
+<ul>
+<li>protocol: HTTPS</li>
+</ul>
+<ul>
+<li>查看创建的Gateway 以及Virtual Service，从aks-istio-ingress名称空间可以看出，gateway pod前端的Service 163.228.228.44  的443端口已经正常的provision了</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>因为这里使用的是istio APIs, 因此我们需要提前在应用所在的ns上打上标签istio.io/rev=asm-X-Y（istio addon的具体版本）， 这样istio控制平面才能给应用注入sidecar代理。这里是与原生istio不同的地方，原生istio的标签 istio-injection=enabled 不起作用</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026/01/27</p>
+<p>作为知名的服务网格产品，istio具有强大的流量管理功能，而Istio addon具有和原生istio类似的功能，istio除了支持原生K8S Gateway API发布流量外(参考Onenote：使用基于istio addon 的K8S gateway API 接入流量)，同时也支持自身的istio APIs接入流量，istio APIs同样具有强大的功能，如针对 HTTP/gRPC/WebSocket 和 TCP 流量的负载均衡, 支持灰度发布，流量管理等等。下面演示如何使用基于Istio addon 的istio APIs在AKS中发布应用。</p>
+<p>1、安装istio addon并启用istio 入口网关(istio ingressgateway)</p>
+<p>(1) 添加Az  AKS  extension ,并查看istio mesh add-on版本</p>
+<p>az extension add --name aks-preview</p>
+<p>az extension update --name aks-preview</p>
+<p>az aks mesh get-revisions --location &lt;location&gt; -o table</p>
+<p>#这里使用CN3区域示例.选择与现有AKS 版本兼容的addon版本</p>
+<p>(2) 在现有集群中安装Istio addon</p>
+<p>az aks mesh enable -g aks20260127  -n aks0127 --revision asm-1-27</p>
+<p>az aks show -g aks20260127  -n aks0127   --query &#39;serviceMeshProfile.mode&#39;</p>
+<h1>查看istio addon生成的ns以及Pod能正常运行</h1>
+<p>kubectl get pods -n aks-istio-system</p>
+<p>(3) 启用external入口网关istio ingressgateway</p>
+<p>az aks mesh enable-ingress-gateway --resource-group aks20260127  --name aks0127 --ingress-gateway-type external</p>
+<p>az aks show -g aks20260127  -n aks0127   --query &#39;serviceMeshProfile.istio.components&#39;</p>
+<p>确认ingressgateway pod已经正常运行</p>
+<p>2、使用基于Istio addon 的istio APIs发布服务</p>
+<p>（1）部署后端的应用</p>
+<p>因为这里使用的是istio APIs, 因此我们需要提前在应用所在的ns上打上标签istio.io/rev=asm-X-Y（istio addon的具体版本）， 这样istio控制平面才能给应用注入sidecar代理。这里是与原生istio不同的地方，原生istio的标签 istio-injection=enabled 不起作用</p>
+<p>这里我们把应用发布在default名称空间，因此需要执行下面的打标签命令</p>
+<p>kubectl label namespace default istio.io/rev=asm-1-27</p>
+<p>下面的yaml文件定义了一个httpbin的Service以及httpbin的deployment，Service的服务端口为8000，这里使用了自己registry的镜像</p>
+<p>因为已经添加了标签，因此应用pod会被istio 控制层面自动注入sidecar代理</p>
+<p>apiVersion: v1</p>
+<p>kind: ServiceAccount</p>
+<p>metadata:</p>
+<p>name: httpbin</p>
+<p>---</p>
+<p>kind: Service</p>
+<p>labels:</p>
+<p>app: httpbin</p>
+<p>service: httpbin</p>
+<p>spec:</p>
+<p>ports:</p>
+<ul>
+<li>name: http</li>
+</ul>
+<p>port: 8000</p>
+<p>targetPort: 8080</p>
+<p>selector:</p>
+<p>apiVersion: apps/v1</p>
+<p>kind: Deployment</p>
+<p>replicas: 1</p>
+<p>matchLabels:</p>
+<p>version: v1</p>
+<p>template:</p>
+<p>serviceAccountName: httpbin</p>
+<p>containers:</p>
+<ul>
+<li>image: fuzlreg.azurecr.cn/mccutchen/go-httpbin:v2.15.0</li>
+</ul>
+<p>imagePullPolicy: IfNotPresent</p>
+<ul>
+<li>containerPort: 8080</li>
+</ul>
+<p>（2） 定义istio Gateway 以及Virtual Service接入流量</p>
+<p>Istio Gateway和K8S Gateway的定义格式基本上差不多，其作用是定义了前端侦听的端口和TLS配置等等</p>
+<p>Istio VirtualServicede 定义和K8s Gateway API HTTProute的定义差不多，定义了流量的转发方式</p>
+<p>#这里使用HTTPS接入流量，首先使用证书创建secret，创建到aks-istio-ingress名称空间中，对于AKS来说，还支持将证书部署到KeyVault中，但这里采用直接部署证书</p>
+<p>kubectl create -n aks-istio-ingress  secret tls httpbin-credential   --key=./privkey.pem  --cert=./fullchain.pem</p>
+<p>#创建istio gateway 和Virtual Service</p>
+<p>apiVersion: networking.istio.io/v1beta1</p>
+<p>kind: Gateway</p>
+<p>name: httpbin-gateway</p>
+<p>istio: aks-istio-ingressgateway-external  #表明使用istio ingress gateway</p>
+<p>servers:</p>
+<ul>
+<li>port:</li>
+</ul>
+<p>number: 443</p>
+<p>name: https</p>
+<p>protocol: HTTPS</p>
+<p>tls:</p>
+<p>mode: SIMPLE</p>
+<p>credentialName: httpbin-credential #使用创建的secret</p>
+<p>hosts:</p>
+<ul>
+<li>fuzlistioapi.azurecn.cn</li>
+</ul>
+<p>kind: VirtualService</p>
+<ul>
+<li>&quot;fuzlistioapi.azurecn.cn&quot;</li>
+</ul>
+<p>gateways:</p>
+<ul>
+<li>httpbin-gateway  #指明使用上面创建的ingressgateway</li>
+</ul>
+<p>http:</p>
+<ul>
+<li>route:</li>
+</ul>
+<ul>
+<li>destination:</li>
+</ul>
+<p>host: httpbin   #指明后端使用的Service</p>
+<p>port:</p>
+<p>number: 8000</p>
+<p>查看创建的Gateway 以及Virtual Service，从aks-istio-ingress名称空间可以看出，gateway pod前端的Service 163.228.228.44  的443端口已经正常的provision了</p>
+<p>将域名fuzlistioapi.azurecn.cn解析到163.228.228.44，测试访问情况，确认访问正常，证书加载正常。</p>
+<p>流量的方向为：</p>
+<p>Client-&gt; ingress Gateway 前端的Loadbalancer serice（163.228.228.44  ）-&gt; istio ingress gateway Pod -&gt; 后端Service</p></article>

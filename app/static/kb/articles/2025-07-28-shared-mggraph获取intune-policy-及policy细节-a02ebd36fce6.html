@@ -1,0 +1,1002 @@
+<article class="kb-article" data-title="【shared】mggraph获取intune policy 及policy细节"><h1>【shared】mggraph获取intune policy 及policy细节</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-28 15:42:15</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Connect-MgGraph -ClientSecretCredential $credential -TenantId $tenantId -Environment China -NoWelcome -Verbose -ErrorAction Stop</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Connect-MgGraph -ClientSecretCredential $credential -TenantId $tenantId -Environment China -NoWelcome -Verbose -ErrorAction Stop</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>&lt;#</li>
+</ul>
+<ul>
+<li>.SYNOPSIS</li>
+</ul>
+<ul>
+<li>.DESCRIPTION</li>
+</ul>
+<ul>
+<li>Exports CA Policy to HTML Format for auditing/historical purposes.</li>
+</ul>
+<ul>
+<li>#&gt;</li>
+</ul>
+<ul>
+<li># ExportLocation</li>
+</ul>
+<ul>
+<li>$ExportLocation = &quot;C:\scripts\CAPolicy.html&quot;</li>
+</ul>
+<ul>
+<li># Test Graph Module</li>
+</ul>
+<ul>
+<li>$GraphModule = Get-Module &quot;Microsoft.Graph&quot; -ListAvailable</li>
+</ul>
+<ul>
+<li>If ($null -eq $GraphModule) {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Microsoft.Graph Module not installed&quot; -ForegroundColor Yellow</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Use: Install-Module -Name Microsoft.Graph&quot; -ForegroundColor Yellow</li>
+</ul>
+<ul>
+<li>break</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li># Connect-MgGraph</li>
+</ul>
+<ul>
+<li>$clientId = &quot;6670bbaa-4772-456d-850d-10f42bfc0a2d&quot;</li>
+</ul>
+<ul>
+<li>$clientSecret = &quot;KVkD_g9P95BWr01bFPT_wb.wG9Q1YTrlj~&quot;</li>
+</ul>
+<ul>
+<li>$tenantId = &quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;</li>
+</ul>
+<ul>
+<li>$securePassword = ConvertTo-SecureString $clientSecret -AsPlainText -Force</li>
+</ul>
+<ul>
+<li>$credential = New-Object System.Management.Automation.PSCredential($clientId, $securePassword)</li>
+</ul>
+<ul>
+<li># Collect CA Policy</li>
+</ul>
+<ul>
+<li>$CAPolicy = Get-MgIdentityConditionalAccessPolicy -All</li>
+</ul>
+<ul>
+<li>if (-not $CAPolicy) {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;No CA policies found. Stopping script.&quot; -ForegroundColor Red</li>
+</ul>
+<ul>
+<li>return</li>
+</ul>
+<ul>
+<li># Tenant Informations</li>
+</ul>
+<ul>
+<li>#$TenantData = Get-MgOrganization</li>
+</ul>
+<ul>
+<li>$TenantName = &quot;microsoftinternal&quot;</li>
+</ul>
+<ul>
+<li>$date = Get-Date</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Exporting: CA Policy&quot; -ForegroundColor Cyan</li>
+</ul>
+<ul>
+<li>$CAExport = [PSCustomObject]@()</li>
+</ul>
+<ul>
+<li>$AdUsers = @()</li>
+</ul>
+<ul>
+<li>$Apps = @()</li>
+</ul>
+<ul>
+<li># Extract Values</li>
+</ul>
+<ul>
+<li>Write-host &quot;Extracting: CA Policy Data&quot; -ForegroundColor Cyan</li>
+</ul>
+<ul>
+<li>foreach ( $Policy in $CAPolicy) {</li>
+</ul>
+<ul>
+<li>### Conditions ###</li>
+</ul>
+<ul>
+<li>$IncludeUG = $null</li>
+</ul>
+<ul>
+<li>$IncludeUG = $Policy.Conditions.Users.IncludeUsers</li>
+</ul>
+<ul>
+<li>$IncludeUG += $Policy.Conditions.Users.IncludeGroups</li>
+</ul>
+<ul>
+<li>$IncludeUG += $Policy.Conditions.Users.IncludeRoles</li>
+</ul>
+<ul>
+<li>$ExcludeUG = $null</li>
+</ul>
+<ul>
+<li>$ExcludeUG = $Policy.Conditions.Users.ExcludeUsers</li>
+</ul>
+<ul>
+<li>$ExcludeUG += $Policy.Conditions.Users.ExcludeGroups</li>
+</ul>
+<ul>
+<li>$ExcludeUG += $Policy.Conditions.Users.ExcludeRoles</li>
+</ul>
+<ul>
+<li>$Apps += $Policy.Conditions.Applications.IncludeApplications</li>
+</ul>
+<ul>
+<li>$Apps += $Policy.Conditions.Applications.ExcludeApplications</li>
+</ul>
+<ul>
+<li>$AdUsers += $ExcludeUG</li>
+</ul>
+<ul>
+<li>$AdUsers += $IncludeUG</li>
+</ul>
+<ul>
+<li>$InclLocation = $null</li>
+</ul>
+<ul>
+<li>$ExclLocation = $null</li>
+</ul>
+<ul>
+<li>$InclLocation = $Policy.Conditions.Locations.includelocations</li>
+</ul>
+<ul>
+<li>$ExclLocation = $Policy.Conditions.Locations.Excludelocations</li>
+</ul>
+<ul>
+<li>$InclPlat = $null</li>
+</ul>
+<ul>
+<li>$ExclPlat = $null</li>
+</ul>
+<ul>
+<li>$InclPlat = $Policy.Conditions.Platforms.IncludePlatforms</li>
+</ul>
+<ul>
+<li>$ExclPlat = $Policy.Conditions.Platforms.ExcludePlatforms</li>
+</ul>
+<ul>
+<li>$InclDev = $null</li>
+</ul>
+<ul>
+<li>$ExclDev = $null</li>
+</ul>
+<ul>
+<li>$InclDev = $Policy.Conditions.Devices.IncludeDevices</li>
+</ul>
+<ul>
+<li>$ExclDev = $Policy.Conditions.Devices.ExcludeDevices</li>
+</ul>
+<ul>
+<li>$devFilters = $null</li>
+</ul>
+<ul>
+<li>$devFilters = $Policy.Conditions.Devices.DeviceFilter.Rule</li>
+</ul>
+<ul>
+<li>$CAExport += New-Object PSObject -Property @{</li>
+</ul>
+<ul>
+<li>### Users ###</li>
+</ul>
+<ul>
+<li>### Cloud apps or actions ###</li>
+</ul>
+<ul>
+<li>&#39;Cloud apps or actions&#39;                             = &quot;&quot;;</li>
+</ul>
+<ul>
+<li>### Grant Controls ###</li>
+</ul>
+<ul>
+<li>### Session Controls ###</li>
+</ul>
+<ul>
+<li>ApplicationEnforcedRestrictionsAdditionalProperties = $Policy.SessionControls.ApplicationEnforcedRestrictions.AdditionalProperties</li>
+</ul>
+<ul>
+<li># Swith user/group Guid to display names</li>
+</ul>
+<ul>
+<li>Write-host &quot;Converting: Entra ID Guids&quot; -ForegroundColor Cyan</li>
+</ul>
+<ul>
+<li># Filter out Objects</li>
+</ul>
+<ul>
+<li>$cajson = $CAExport | ConvertTo-Json -Depth 4</li>
+</ul>
+<ul>
+<li>$ADsearch = $AdUsers | Where-Object { $_ -ne &#39;All&#39; -and $_ -ne &#39;GuestsOrExternalUsers&#39; -and $_ -ne &#39;None&#39; }</li>
+</ul>
+<ul>
+<li>$AdNames = @{}</li>
+</ul>
+<ul>
+<li>$obj = $_.Id</li>
+</ul>
+<ul>
+<li>#$disp = $_.displayName</li>
+</ul>
+<ul>
+<li>$disp = $_.AdditionalProperties.displayName</li>
+</ul>
+<ul>
+<li>$AdNames.$obj = $disp</li>
+</ul>
+<ul>
+<li>$cajson = $cajson -replace &quot;$obj&quot;, &quot;$disp&quot;</li>
+</ul>
+<ul>
+<li>$CAExport = $cajson | ConvertFrom-Json</li>
+</ul>
+<ul>
+<li># Switch Apps Guid with Display names</li>
+</ul>
+<ul>
+<li>$allApps = Get-MgServicePrincipal -All</li>
+</ul>
+<ul>
+<li>$allApps | Where-Object { $_.AppId -in $Apps } | ForEach-Object {</li>
+</ul>
+<ul>
+<li>$obj = $_.AppId</li>
+</ul>
+<ul>
+<li>$disp = $_.DisplayName</li>
+</ul>
+<ul>
+<li># Switch named location Guid for Display Names</li>
+</ul>
+<ul>
+<li># Switch Roles Guid to Names</li>
+</ul>
+<ul>
+<li>#Get-MgDirectoryRole | ForEach-Object{</li>
+</ul>
+<ul>
+<li># Export Setup</li>
+</ul>
+<ul>
+<li>Write-host &quot;Pivoting: CA to Export Format&quot; -ForegroundColor Cyan</li>
+</ul>
+<ul>
+<li>$pivot = @()</li>
+</ul>
+<ul>
+<li>$rowItem = New-Object PSObject</li>
+</ul>
+<ul>
+<li>$rowitem | Add-Member -type NoteProperty -Name &#39;CA Item&#39; -Value &quot;row1&quot;</li>
+</ul>
+<ul>
+<li>$Pcount = 1</li>
+</ul>
+<ul>
+<li>foreach ($CA in $CAExport) {</li>
+</ul>
+<ul>
+<li>$rowitem | Add-Member -type NoteProperty -Name &quot;Policy $pcount&quot; -Value &quot;row1&quot;</li>
+</ul>
+<ul>
+<li>#$ca.Name</li>
+</ul>
+<ul>
+<li>$pcount += 1</li>
+</ul>
+<ul>
+<li>$pivot += $rowItem</li>
+</ul>
+<ul>
+<li># Add Data to Report</li>
+</ul>
+<ul>
+<li>$Rows = $CAExport | Get-Member | Where-Object { $_.MemberType -eq &quot;NoteProperty&quot; }</li>
+</ul>
+<ul>
+<li>$Rows | ForEach-Object {</li>
+</ul>
+<ul>
+<li>$rowname = $_.Name</li>
+</ul>
+<ul>
+<li>$rowitem | Add-Member -type NoteProperty -Name &#39;CA Item&#39; -Value $_.Name</li>
+</ul>
+<ul>
+<li>$ca | Get-Member | Where-Object { $_.MemberType -eq &quot;NoteProperty&quot; } | ForEach-Object {</li>
+</ul>
+<ul>
+<li>$a = $_.name</li>
+</ul>
+<ul>
+<li>$b = $ca.$a</li>
+</ul>
+<ul>
+<li>if ($a -eq $rowname) {</li>
+</ul>
+<ul>
+<li>$rowitem | Add-Member -type NoteProperty -Name &quot;Policy $pcount&quot; -Value $b</li>
+</ul>
+<ul>
+<li># Column Sorting Order</li>
+</ul>
+<ul>
+<li>$sort = &quot;Name&quot;, &quot;PolicyID&quot;, &quot;Status&quot;, &quot;Users&quot;, &quot;UsersInclude&quot;, &quot;UsersExclude&quot;, &quot;Cloud apps or actions&quot;, &quot;ApplicationsIncluded&quot;, &quot;ApplicationsExcluded&quot;, `</li>
+</ul>
+<ul>
+<li>&quot;userActions&quot;, &quot;AuthContext&quot;, &quot;Conditions&quot;, &quot;UserRisk&quot;, &quot;SignInRisk&quot;, &quot;PlatformsInclude&quot;, &quot;PlatformsExclude&quot;, &quot;LocationsIncluded&quot;, `</li>
+</ul>
+<ul>
+<li>&quot;LocationsExcluded&quot;, &quot;ClientApps&quot;, &quot;Devices&quot;, &quot;DevicesIncluded&quot;, &quot;DevicesExcluded&quot;, &quot;DeviceFilters&quot;, `</li>
+</ul>
+<ul>
+<li>&quot;GrantControls&quot;, &quot;BuiltInControls&quot;, &quot;TermsOfUse&quot;, &quot;CustomControls&quot;, &quot;GrantOperator&quot;, `</li>
+</ul>
+<ul>
+<li>&quot;SignInFrequencyType&quot;, &quot;SignInFrequencyValue&quot;, &quot;SignInFrequencyAdditionalProperties&quot;</li>
+</ul>
+<ul>
+<li># Debug</li>
+</ul>
+<ul>
+<li>#$pivot | Sort-Object $sort | Out-GridView</li>
+</ul>
+<ul>
+<li># HTML Export</li>
+</ul>
+<ul>
+<li>Write-host &quot;Saving to File: HTML in $ExportLocation&quot; -ForegroundColor Cyan</li>
+</ul>
+<ul>
+<li>&lt;script&gt;</li>
+</ul>
+<ul>
+<li>$(document).ready(function(){</li>
+</ul>
+<ul>
+<li>$(&quot;tr&quot;).click(function(){</li>
+</ul>
+<ul>
+<li>$(this).addClass(&quot;selected&quot;);</li>
+</ul>
+<ul>
+<li>} else {</li>
+</ul>
+<ul>
+<li>$(this).removeClass(&quot;selected&quot;);</li>
+</ul>
+<ul>
+<li>});</li>
+</ul>
+<ul>
+<li>$(&quot;th&quot;).click(function(){</li>
+</ul>
+<ul>
+<li>$(this).addClass(&quot;colselected&quot;);</li>
+</ul>
+<ul>
+<li>$(this).removeClass(&quot;colselected&quot;);</li>
+</ul>
+<ul>
+<li>&lt;/script&gt;&#39;</li>
+</ul>
+<ul>
+<li>$jquery&lt;style&gt;</li>
+</ul>
+<ul>
+<li>.title{</li>
+</ul>
+<ul>
+<li>display: block;</li>
+</ul>
+<ul>
+<li>font-size: 2em;</li>
+</ul>
+<ul>
+<li>margin-block-start: 0.67em;</li>
+</ul>
+<ul>
+<li>margin-block-end: 0.67em;</li>
+</ul>
+<ul>
+<li>margin-inline-start: 0px;</li>
+</ul>
+<ul>
+<li>margin-inline-end: 0px;</li>
+</ul>
+<ul>
+<li>font-weight: bold;</li>
+</ul>
+<ul>
+<li>font-family: Segoe UI;</li>
+</ul>
+<ul>
+<li>table{</li>
+</ul>
+<ul>
+<li>border-collapse: collapse;</li>
+</ul>
+<ul>
+<li>margin: 25px 0;</li>
+</ul>
+<ul>
+<li>font-size: 0.9em;</li>
+</ul>
+<ul>
+<li>min-width: 400px;</li>
+</ul>
+<ul>
+<li>box-shadow: 0 0 20px rgba(0, 0, 0, 0.15) ;</li>
+</ul>
+<ul>
+<li>text-align: center;</li>
+</ul>
+<ul>
+<li>thead tr {</li>
+</ul>
+<ul>
+<li>background-color: #009879;</li>
+</ul>
+<ul>
+<li>color: #ffffff;</li>
+</ul>
+<ul>
+<li>text-align: left;</li>
+</ul>
+<ul>
+<li>th, td {</li>
+</ul>
+<ul>
+<li>min-width: 250px;</li>
+</ul>
+<ul>
+<li>padding: 12px 15px;</li>
+</ul>
+<ul>
+<li>border: 1px solid lightgray;</li>
+</ul>
+<ul>
+<li>vertical-align: top;</li>
+</ul>
+<ul>
+<li>td {</li>
+</ul>
+<ul>
+<li>tbody tr {</li>
+</ul>
+<ul>
+<li>border-bottom: 1px solid #dddddd;</li>
+</ul>
+<ul>
+<li>tbody tr:nth-of-type(even) {</li>
+</ul>
+<ul>
+<li>background-color: #f3f3f3;</li>
+</ul>
+<ul>
+<li>tbody tr:nth-of-type(5), tbody tr:nth-of-type(8), body tr:nth-of-type(13), tbody tr:nth-of-type(24), tbody tr:nth-of-type(29){</li>
+</ul>
+<ul>
+<li>background-color: #36c;</li>
+</ul>
+<ul>
+<li>text-aling:left !important</li>
+</ul>
+<ul>
+<li>tbody tr:last-of-type {</li>
+</ul>
+<ul>
+<li>border-bottom: 2px solid #009879;</li>
+</ul>
+<ul>
+<li>tr:hover{</li>
+</ul>
+<ul>
+<li>background-color: #ffea76!important;</li>
+</ul>
+<ul>
+<li>.selected:not(th){</li>
+</ul>
+<ul>
+<li>background-color:#ffea76!important;</li>
+</ul>
+<ul>
+<li>th{</li>
+</ul>
+<ul>
+<li>background-color:white !important;</li>
+</ul>
+<ul>
+<li>.colselected {</li>
+</ul>
+<ul>
+<li>background-color: rgb(93, 236, 213)!important;</li>
+</ul>
+<ul>
+<li>table tr th:first-child,table tr td:first-child {</li>
+</ul>
+<ul>
+<li>position: sticky;</li>
+</ul>
+<ul>
+<li>inset-inline-start: 0;</li>
+</ul>
+<ul>
+<li>background-color: #36c!important;</li>
+</ul>
+<ul>
+<li>Color: #fff;</li>
+</ul>
+<ul>
+<li>font-weight: bolder;</li>
+</ul>
+<ul>
+<li>&lt;/style&gt;&lt;/head&gt;&lt;body&gt; &lt;div class=&#39;Title&#39;&gt;CA Export: $Tenantname - $Date &lt;/div&gt;&quot;</li>
+</ul>
+<ul>
+<li>Write-host &quot;Launching: Web Browser&quot; -ForegroundColor Cyan</li>
+</ul>
+<ul>
+<li>$Launch = $ExportLocation</li>
+</ul>
+<ul>
+<li>$HTML += $pivot  | Where-Object { $_.&quot;CA Item&quot; -ne &#39;row1&#39; } | Sort-object { $sort.IndexOf($_.&quot;CA Item&quot;) } | convertto-html -Fragment</li>
+</ul>
+<ul>
+<li>$HTML | Out-File $Launch</li>
+</ul>
+<ul>
+<li>start-process $Launch</li>
+</ul>
+<ul>
+<li>disconnect-mggraph</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>if(!$(this).hasClass(&quot;selected&quot;)){</li>
+</ul>
+<ul>
+<li>if(!$(this).hasClass(&quot;colselected&quot;)){</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Conditional Access Export Utility with Microsoft Graph PowerShell (MgGraph).</li>
+</ul>
+<ul>
+<li>Get-MgDirectoryObjectById -ids $ADsearch | ForEach-Object {</li>
+</ul>
+<ul>
+<li>Get-MgIdentityConditionalAccessNamedLocation | ForEach-Object {</li>
+</ul>
+<ul>
+<li>Get-MgDirectoryRoleTemplate | ForEach-Object {</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Users                                               = &quot;&quot;</li>
+</ul>
+<ul>
+<li>Name                                                = $Policy.DisplayName;</li>
+</ul>
+<ul>
+<li>PolicyID                                            = $Policy.ID</li>
+</ul>
+<ul>
+<li>Status                                              = $Policy.State;</li>
+</ul>
+<ul>
+<li>UsersInclude                                        = ($IncludeUG -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>UsersExclude                                        = ($ExcludeUG -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>ApplicationsIncluded                                = ($Policy.Conditions.Applications.IncludeApplications -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>ApplicationsExcluded                                = ($Policy.Conditions.Applications.ExcludeApplications -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>userActions                                         = ($Policy.Conditions.Applications.IncludeUserActions -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>AuthContext                                         = ($Policy.Conditions.Applications.IncludeAuthenticationContextClassReferences -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>Conditions                                          = &quot;&quot;;</li>
+</ul>
+<ul>
+<li>UserRisk                                            = ($Policy.Conditions.UserRiskLevels -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>SignInRisk                                          = ($Policy.Conditions.SignInRiskLevels -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>PlatformsInclude                                    = ($InclPlat -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>PlatformsExclude                                    = ($ExclPlat -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>LocationsIncluded                                   = ($InclLocation -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>LocationsExcluded                                   = ($ExclLocation -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>ClientApps                                          = ($Policy.Conditions.ClientAppTypes -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>DevicesIncluded                                     = ($InclDev -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>DevicesExcluded                                     = ($ExclDev -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>DeviceFilters                                       = ($devFilters -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>GrantControls                                       = &quot;&quot;;</li>
+</ul>
+<ul>
+<li>BuiltInControls                                     = $($Policy.GrantControls.BuiltInControls -join &quot;, <code>r</code>n&quot;);</li>
+</ul>
+<ul>
+<li>TermsOfUse                                          = $($Policy.GrantControls.TermsOfUse)</li>
+</ul>
+<ul>
+<li>CustomControls                                      = $($Policy.GrantControls.CustomAuthenticationFactors)</li>
+</ul>
+<ul>
+<li>GrantOperator                                       = $Policy.GrantControls.Operator</li>
+</ul>
+<ul>
+<li>SessionControls                                     = &quot;&quot;</li>
+</ul>
+<ul>
+<li>SessionControlsAdditionalProperties                 = $Policy.SessionControls.AdditionalProperties</li>
+</ul>
+<ul>
+<li>ApplicationEnforcedRestrictionsIsEnabled            = $Policy.SessionControls.ApplicationEnforcedRestrictions.IsEnabled</li>
+</ul>
+<ul>
+<li>CloudAppSecurityType                                = $Policy.SessionControls.CloudAppSecurity.CloudAppSecurityType</li>
+</ul>
+<ul>
+<li>CloudAppSecurityIsEnabled                           = $Policy.SessionControls.CloudAppSecurity.IsEnabled</li>
+</ul>
+<ul>
+<li>CloudAppSecurityAdditionalProperties                = $Policy.SessionControls.CloudAppSecurity.AdditionalProperties</li>
+</ul>
+<ul>
+<li>DisableResilienceDefaults                           = $Policy.SessionControls.DisableResilienceDefaults</li>
+</ul>
+<ul>
+<li>PersistentBrowserIsEnabled                          = $Policy.SessionControls.PersistentBrowser.IsEnabled</li>
+</ul>
+<ul>
+<li>PersistentBrowserMode                               = $Policy.SessionControls.PersistentBrowser.Mode</li>
+</ul>
+<ul>
+<li>PersistentBrowserAdditionalProperties               = $Policy.SessionControls.PersistentBrowser.AdditionalProperties</li>
+</ul>
+<ul>
+<li>SignInFrequencyAuthenticationType                   = $Policy.SessionControls.SignInFrequency.AuthenticationType</li>
+</ul>
+<ul>
+<li>SignInFrequencyInterval                             = $Policy.SessionControls.SignInFrequency.FrequencyInterval</li>
+</ul>
+<ul>
+<li>SignInFrequencyIsEnabled                            = $Policy.SessionControls.SignInFrequency.IsEnabled</li>
+</ul>
+<ul>
+<li>SignInFrequencyType                                 = $Policy.SessionControls.SignInFrequency.Type</li>
+</ul>
+<ul>
+<li>SignInFrequencyValue                                = $Policy.SessionControls.SignInFrequency.Value</li>
+</ul>
+<ul>
+<li>SignInFrequencyAdditionalProperties                 = $Policy.SessionControls.SignInFrequency.AdditionalProperties</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>&quot;SessionControls&quot;, &quot;SessionControlsAdditionalProperties&quot;, &quot;ApplicationEnforcedRestrictionsIsEnabled&quot;, &quot;ApplicationEnforcedRestrictionsAdditionalProperties&quot;, `</li>
+</ul>
+<ul>
+<li>&quot;CloudAppSecurityType&quot;, &quot;CloudAppSecurityIsEnabled&quot;, &quot;CloudAppSecurityAdditionalProperties&quot;, &quot;DisableResilienceDefaults&quot;, &quot;PersistentBrowserIsEnabled&quot;, `</li>
+</ul>
+<ul>
+<li>&quot;PersistentBrowserMode&quot;, &quot;PersistentBrowserAdditionalProperties&quot;, &quot;SignInFrequencyAuthenticationType&quot;, &quot;SignInFrequencyInterval&quot;, &quot;SignInFrequencyIsEnabled&quot;, `</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.identity.signins/get-mgidentityconditionalaccesspolicy?view=graph-powershell-1.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.identity.signins/get-mgidentityconditionalaccesspolicy?view=graph-powershell-1.0</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.directoryobjects/get-mgdirectoryobjectbyid?view=graph-powershell-1.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.directoryobjects/get-mgdirectoryobjectbyid?view=graph-powershell-1.0</a></li>
+</ul>
+<ul>
+<li>$jquery = &#39;&lt;script src=&quot;<a href="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js&quot;&gt;&lt;/script&gt;" target="_blank" rel="noopener">https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js&quot;&gt;&lt;/script&gt;</a></li>
+</ul>
+<ul>
+<li>$html = &quot;&lt;html&gt;&lt;head&gt;&lt;base href=&#39;<a href="https://docs.microsoft.com/&#39;" target="_blank" rel="noopener">https://docs.microsoft.com/&#39;</a> target=&#39;_blank&#39;&gt;</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/7/24</p>
+<p><a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.identity.signins/get-mgidentityconditionalaccesspolicy?view=graph-powershell-1.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.identity.signins/get-mgidentityconditionalaccesspolicy?view=graph-powershell-1.0</a></p>
+<p><a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.directoryobjects/get-mgdirectoryobjectbyid?view=graph-powershell-1.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.directoryobjects/get-mgdirectoryobjectbyid?view=graph-powershell-1.0</a></p>
+<p>&lt;#</p>
+<p>.SYNOPSIS</p>
+<p>Conditional Access Export Utility with Microsoft Graph PowerShell (MgGraph).</p>
+<p>.DESCRIPTION</p>
+<p>Exports CA Policy to HTML Format for auditing/historical purposes.</p>
+<p>#&gt;</p>
+<h1>ExportLocation</h1>
+<p>$ExportLocation = &quot;C:\scripts\CAPolicy.html&quot;</p>
+<h1>Test Graph Module</h1>
+<p>$GraphModule = Get-Module &quot;Microsoft.Graph&quot; -ListAvailable</p>
+<p>If ($null -eq $GraphModule) {</p>
+<p>Write-Host &quot;Microsoft.Graph Module not installed&quot; -ForegroundColor Yellow</p>
+<p>Write-Host &quot;Use: Install-Module -Name Microsoft.Graph&quot; -ForegroundColor Yellow</p>
+<p>break</p>
+<p>}</p>
+<h1>Connect-MgGraph</h1>
+<p>$clientId = &quot;6670bbaa-4772-456d-850d-10f42bfc0a2d&quot;</p>
+<p>$clientSecret = &quot;KVkD_g9P95BWr01bFPT_wb.wG9Q1YTrlj~&quot;</p>
+<p>$tenantId = &quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;</p>
+<p>$securePassword = ConvertTo-SecureString $clientSecret -AsPlainText -Force</p>
+<p>$credential = New-Object System.Management.Automation.PSCredential($clientId, $securePassword)</p>
+<p>Connect-MgGraph -ClientSecretCredential $credential -TenantId $tenantId -Environment China -NoWelcome -Verbose -ErrorAction Stop</p>
+<h1>Collect CA Policy</h1>
+<p>$CAPolicy = Get-MgIdentityConditionalAccessPolicy -All</p>
+<p>if (-not $CAPolicy) {</p>
+<p>Write-Host &quot;No CA policies found. Stopping script.&quot; -ForegroundColor Red</p>
+<p>return</p>
+<h1>Tenant Informations</h1>
+<p>#$TenantData = Get-MgOrganization</p>
+<p>$TenantName = &quot;microsoftinternal&quot;</p>
+<p>$date = Get-Date</p>
+<p>Write-Host &quot;Exporting: CA Policy&quot; -ForegroundColor Cyan</p>
+<p>$CAExport = [PSCustomObject]@()</p>
+<p>$AdUsers = @()</p>
+<p>$Apps = @()</p>
+<h1>Extract Values</h1>
+<p>Write-host &quot;Extracting: CA Policy Data&quot; -ForegroundColor Cyan</p>
+<p>foreach ( $Policy in $CAPolicy) {</p>
+<h3>Conditions ###</h3>
+<p>$IncludeUG = $null</p>
+<p>$IncludeUG = $Policy.Conditions.Users.IncludeUsers</p>
+<p>$IncludeUG += $Policy.Conditions.Users.IncludeGroups</p>
+<p>$IncludeUG += $Policy.Conditions.Users.IncludeRoles</p>
+<p>$ExcludeUG = $null</p>
+<p>$ExcludeUG = $Policy.Conditions.Users.ExcludeUsers</p>
+<p>$ExcludeUG += $Policy.Conditions.Users.ExcludeGroups</p>
+<p>$ExcludeUG += $Policy.Conditions.Users.ExcludeRoles</p>
+<p>$Apps += $Policy.Conditions.Applications.IncludeApplications</p>
+<p>$Apps += $Policy.Conditions.Applications.ExcludeApplications</p>
+<p>$AdUsers += $ExcludeUG</p>
+<p>$AdUsers += $IncludeUG</p>
+<p>$InclLocation = $null</p>
+<p>$ExclLocation = $null</p>
+<p>$InclLocation = $Policy.Conditions.Locations.includelocations</p>
+<p>$ExclLocation = $Policy.Conditions.Locations.Excludelocations</p>
+<p>$InclPlat = $null</p>
+<p>$ExclPlat = $null</p>
+<p>$InclPlat = $Policy.Conditions.Platforms.IncludePlatforms</p>
+<p>$ExclPlat = $Policy.Conditions.Platforms.ExcludePlatforms</p>
+<p>$InclDev = $null</p>
+<p>$ExclDev = $null</p>
+<p>$InclDev = $Policy.Conditions.Devices.IncludeDevices</p>
+<p>$ExclDev = $Policy.Conditions.Devices.ExcludeDevices</p>
+<p>$devFilters = $null</p>
+<p>$devFilters = $Policy.Conditions.Devices.DeviceFilter.Rule</p>
+<p>$CAExport += New-Object PSObject -Property @{</p>
+<h3>Users ###</h3>
+<p>Users                                               = &quot;&quot;</p>
+<p>Name                                                = $Policy.DisplayName;</p>
+<p>PolicyID                                            = $Policy.ID</p>
+<p>Status                                              = $Policy.State;</p>
+<p>UsersInclude                                        = ($IncludeUG -join &quot;, <code>r</code>n&quot;);</p>
+<p>UsersExclude                                        = ($ExcludeUG -join &quot;, <code>r</code>n&quot;);</p>
+<h3>Cloud apps or actions ###</h3>
+<p>&#39;Cloud apps or actions&#39;                             = &quot;&quot;;</p>
+<p>ApplicationsIncluded                                = ($Policy.Conditions.Applications.IncludeApplications -join &quot;, <code>r</code>n&quot;);</p>
+<p>ApplicationsExcluded                                = ($Policy.Conditions.Applications.ExcludeApplications -join &quot;, <code>r</code>n&quot;);</p>
+<p>userActions                                         = ($Policy.Conditions.Applications.IncludeUserActions -join &quot;, <code>r</code>n&quot;);</p>
+<p>AuthContext                                         = ($Policy.Conditions.Applications.IncludeAuthenticationContextClassReferences -join &quot;, <code>r</code>n&quot;);</p>
+<p>Conditions                                          = &quot;&quot;;</p>
+<p>UserRisk                                            = ($Policy.Conditions.UserRiskLevels -join &quot;, <code>r</code>n&quot;);</p>
+<p>SignInRisk                                          = ($Policy.Conditions.SignInRiskLevels -join &quot;, <code>r</code>n&quot;);</p>
+<p>PlatformsInclude                                    = ($InclPlat -join &quot;, <code>r</code>n&quot;);</p>
+<p>PlatformsExclude                                    = ($ExclPlat -join &quot;, <code>r</code>n&quot;);</p>
+<p>LocationsIncluded                                   = ($InclLocation -join &quot;, <code>r</code>n&quot;);</p>
+<p>LocationsExcluded                                   = ($ExclLocation -join &quot;, <code>r</code>n&quot;);</p>
+<p>ClientApps                                          = ($Policy.Conditions.ClientAppTypes -join &quot;, <code>r</code>n&quot;);</p>
+<p>DevicesIncluded                                     = ($InclDev -join &quot;, <code>r</code>n&quot;);</p>
+<p>DevicesExcluded                                     = ($ExclDev -join &quot;, <code>r</code>n&quot;);</p>
+<p>DeviceFilters                                       = ($devFilters -join &quot;, <code>r</code>n&quot;);</p>
+<h3>Grant Controls ###</h3>
+<p>GrantControls                                       = &quot;&quot;;</p>
+<p>BuiltInControls                                     = $($Policy.GrantControls.BuiltInControls -join &quot;, <code>r</code>n&quot;);</p>
+<p>TermsOfUse                                          = $($Policy.GrantControls.TermsOfUse)</p>
+<p>CustomControls                                      = $($Policy.GrantControls.CustomAuthenticationFactors)</p>
+<p>GrantOperator                                       = $Policy.GrantControls.Operator</p>
+<h3>Session Controls ###</h3>
+<p>SessionControls                                     = &quot;&quot;</p>
+<p>SessionControlsAdditionalProperties                 = $Policy.SessionControls.AdditionalProperties</p>
+<p>ApplicationEnforcedRestrictionsIsEnabled            = $Policy.SessionControls.ApplicationEnforcedRestrictions.IsEnabled</p>
+<p>ApplicationEnforcedRestrictionsAdditionalProperties = $Policy.SessionControls.ApplicationEnforcedRestrictions.AdditionalProperties</p>
+<p>CloudAppSecurityType                                = $Policy.SessionControls.CloudAppSecurity.CloudAppSecurityType</p>
+<p>CloudAppSecurityIsEnabled                           = $Policy.SessionControls.CloudAppSecurity.IsEnabled</p>
+<p>CloudAppSecurityAdditionalProperties                = $Policy.SessionControls.CloudAppSecurity.AdditionalProperties</p>
+<p>DisableResilienceDefaults                           = $Policy.SessionControls.DisableResilienceDefaults</p>
+<p>PersistentBrowserIsEnabled                          = $Policy.SessionControls.PersistentBrowser.IsEnabled</p>
+<p>PersistentBrowserMode                               = $Policy.SessionControls.PersistentBrowser.Mode</p>
+<p>PersistentBrowserAdditionalProperties               = $Policy.SessionControls.PersistentBrowser.AdditionalProperties</p>
+<p>SignInFrequencyAuthenticationType                   = $Policy.SessionControls.SignInFrequency.AuthenticationType</p>
+<p>SignInFrequencyInterval                             = $Policy.SessionControls.SignInFrequency.FrequencyInterval</p>
+<p>SignInFrequencyIsEnabled                            = $Policy.SessionControls.SignInFrequency.IsEnabled</p>
+<p>SignInFrequencyType                                 = $Policy.SessionControls.SignInFrequency.Type</p>
+<p>SignInFrequencyValue                                = $Policy.SessionControls.SignInFrequency.Value</p>
+<p>SignInFrequencyAdditionalProperties                 = $Policy.SessionControls.SignInFrequency.AdditionalProperties</p>
+<h1>Swith user/group Guid to display names</h1>
+<p>Write-host &quot;Converting: Entra ID Guids&quot; -ForegroundColor Cyan</p>
+<h1>Filter out Objects</h1>
+<p>$cajson = $CAExport | ConvertTo-Json -Depth 4</p>
+<p>$ADsearch = $AdUsers | Where-Object { $_ -ne &#39;All&#39; -and $_ -ne &#39;GuestsOrExternalUsers&#39; -and $_ -ne &#39;None&#39; }</p>
+<p>$AdNames = @{}</p>
+<p>Get-MgDirectoryObjectById -ids $ADsearch | ForEach-Object {</p>
+<p>$obj = $_.Id</p>
+<p>#$disp = $_.displayName</p>
+<p>$disp = $_.AdditionalProperties.displayName</p>
+<p>$AdNames.$obj = $disp</p>
+<p>$cajson = $cajson -replace &quot;$obj&quot;, &quot;$disp&quot;</p>
+<p>$CAExport = $cajson | ConvertFrom-Json</p>
+<h1>Switch Apps Guid with Display names</h1>
+<p>$allApps = Get-MgServicePrincipal -All</p>
+<p>$allApps | Where-Object { $_.AppId -in $Apps } | ForEach-Object {</p>
+<p>$obj = $_.AppId</p>
+<p>$disp = $_.DisplayName</p>
+<h1>Switch named location Guid for Display Names</h1>
+<p>Get-MgIdentityConditionalAccessNamedLocation | ForEach-Object {</p>
+<h1>Switch Roles Guid to Names</h1>
+<p>#Get-MgDirectoryRole | ForEach-Object{</p>
+<p>Get-MgDirectoryRoleTemplate | ForEach-Object {</p>
+<h1>Export Setup</h1>
+<p>Write-host &quot;Pivoting: CA to Export Format&quot; -ForegroundColor Cyan</p>
+<p>$pivot = @()</p>
+<p>$rowItem = New-Object PSObject</p>
+<p>$rowitem | Add-Member -type NoteProperty -Name &#39;CA Item&#39; -Value &quot;row1&quot;</p>
+<p>$Pcount = 1</p>
+<p>foreach ($CA in $CAExport) {</p>
+<p>$rowitem | Add-Member -type NoteProperty -Name &quot;Policy $pcount&quot; -Value &quot;row1&quot;</p>
+<p>#$ca.Name</p>
+<p>$pcount += 1</p>
+<p>$pivot += $rowItem</p>
+<h1>Add Data to Report</h1>
+<p>$Rows = $CAExport | Get-Member | Where-Object { $_.MemberType -eq &quot;NoteProperty&quot; }</p>
+<p>$Rows | ForEach-Object {</p>
+<p>$rowname = $_.Name</p>
+<p>$rowitem | Add-Member -type NoteProperty -Name &#39;CA Item&#39; -Value $_.Name</p>
+<p>$ca | Get-Member | Where-Object { $_.MemberType -eq &quot;NoteProperty&quot; } | ForEach-Object {</p>
+<p>$a = $_.name</p>
+<p>$b = $ca.$a</p>
+<p>if ($a -eq $rowname) {</p>
+<p>$rowitem | Add-Member -type NoteProperty -Name &quot;Policy $pcount&quot; -Value $b</p>
+<h1>Column Sorting Order</h1>
+<p>$sort = &quot;Name&quot;, &quot;PolicyID&quot;, &quot;Status&quot;, &quot;Users&quot;, &quot;UsersInclude&quot;, &quot;UsersExclude&quot;, &quot;Cloud apps or actions&quot;, &quot;ApplicationsIncluded&quot;, &quot;ApplicationsExcluded&quot;, `</p>
+<p>&quot;userActions&quot;, &quot;AuthContext&quot;, &quot;Conditions&quot;, &quot;UserRisk&quot;, &quot;SignInRisk&quot;, &quot;PlatformsInclude&quot;, &quot;PlatformsExclude&quot;, &quot;LocationsIncluded&quot;, `</p>
+<p>&quot;LocationsExcluded&quot;, &quot;ClientApps&quot;, &quot;Devices&quot;, &quot;DevicesIncluded&quot;, &quot;DevicesExcluded&quot;, &quot;DeviceFilters&quot;, `</p>
+<p>&quot;GrantControls&quot;, &quot;BuiltInControls&quot;, &quot;TermsOfUse&quot;, &quot;CustomControls&quot;, &quot;GrantOperator&quot;, `</p>
+<p>&quot;SessionControls&quot;, &quot;SessionControlsAdditionalProperties&quot;, &quot;ApplicationEnforcedRestrictionsIsEnabled&quot;, &quot;ApplicationEnforcedRestrictionsAdditionalProperties&quot;, `</p>
+<p>&quot;CloudAppSecurityType&quot;, &quot;CloudAppSecurityIsEnabled&quot;, &quot;CloudAppSecurityAdditionalProperties&quot;, &quot;DisableResilienceDefaults&quot;, &quot;PersistentBrowserIsEnabled&quot;, `</p>
+<p>&quot;PersistentBrowserMode&quot;, &quot;PersistentBrowserAdditionalProperties&quot;, &quot;SignInFrequencyAuthenticationType&quot;, &quot;SignInFrequencyInterval&quot;, &quot;SignInFrequencyIsEnabled&quot;, `</p>
+<p>&quot;SignInFrequencyType&quot;, &quot;SignInFrequencyValue&quot;, &quot;SignInFrequencyAdditionalProperties&quot;</p>
+<h1>Debug</h1>
+<p>#$pivot | Sort-Object $sort | Out-GridView</p>
+<h1>HTML Export</h1>
+<p>Write-host &quot;Saving to File: HTML in $ExportLocation&quot; -ForegroundColor Cyan</p>
+<p>$jquery = &#39;&lt;script src=&quot;<a href="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js&quot;&gt;&lt;/script&gt;" target="_blank" rel="noopener">https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js&quot;&gt;&lt;/script&gt;</a></p>
+<p>&lt;script&gt;</p>
+<p>$(document).ready(function(){</p>
+<p>$(&quot;tr&quot;).click(function(){</p>
+<p>if(!$(this).hasClass(&quot;selected&quot;)){</p>
+<p>$(this).addClass(&quot;selected&quot;);</p>
+<p>} else {</p>
+<p>$(this).removeClass(&quot;selected&quot;);</p>
+<p>});</p>
+<p>$(&quot;th&quot;).click(function(){</p>
+<p>if(!$(this).hasClass(&quot;colselected&quot;)){</p>
+<p>$(this).addClass(&quot;colselected&quot;);</p>
+<p>$(this).removeClass(&quot;colselected&quot;);</p>
+<p>&lt;/script&gt;&#39;</p>
+<p>$html = &quot;&lt;html&gt;&lt;head&gt;&lt;base href=&#39;<a href="https://docs.microsoft.com/&#39;" target="_blank" rel="noopener">https://docs.microsoft.com/&#39;</a> target=&#39;_blank&#39;&gt;</p>
+<p>$jquery&lt;style&gt;</p>
+<p>.title{</p>
+<p>display: block;</p>
+<p>font-size: 2em;</p>
+<p>margin-block-start: 0.67em;</p>
+<p>margin-block-end: 0.67em;</p>
+<p>margin-inline-start: 0px;</p>
+<p>margin-inline-end: 0px;</p>
+<p>font-weight: bold;</p>
+<p>font-family: Segoe UI;</p>
+<p>table{</p>
+<p>border-collapse: collapse;</p>
+<p>margin: 25px 0;</p>
+<p>font-size: 0.9em;</p>
+<p>min-width: 400px;</p>
+<p>box-shadow: 0 0 20px rgba(0, 0, 0, 0.15) ;</p>
+<p>text-align: center;</p>
+<p>thead tr {</p>
+<p>background-color: #009879;</p>
+<p>color: #ffffff;</p>
+<p>text-align: left;</p>
+<p>th, td {</p>
+<p>min-width: 250px;</p>
+<p>padding: 12px 15px;</p>
+<p>border: 1px solid lightgray;</p>
+<p>vertical-align: top;</p>
+<p>td {</p>
+<p>tbody tr {</p>
+<p>border-bottom: 1px solid #dddddd;</p>
+<p>tbody tr:nth-of-type(even) {</p>
+<p>background-color: #f3f3f3;</p>
+<p>tbody tr:nth-of-type(5), tbody tr:nth-of-type(8), body tr:nth-of-type(13), tbody tr:nth-of-type(24), tbody tr:nth-of-type(29){</p>
+<p>background-color: #36c;</p>
+<p>text-aling:left !important</p>
+<p>tbody tr:last-of-type {</p>
+<p>border-bottom: 2px solid #009879;</p>
+<p>tr:hover{</p>
+<p>background-color: #ffea76!important;</p>
+<p>.selected:not(th){</p>
+<p>background-color:#ffea76!important;</p>
+<p>th{</p>
+<p>background-color:white !important;</p>
+<p>.colselected {</p>
+<p>background-color: rgb(93, 236, 213)!important;</p>
+<p>table tr th:first-child,table tr td:first-child {</p>
+<p>position: sticky;</p>
+<p>inset-inline-start: 0;</p>
+<p>background-color: #36c!important;</p>
+<p>Color: #fff;</p>
+<p>font-weight: bolder;</p>
+<p>&lt;/style&gt;&lt;/head&gt;&lt;body&gt; &lt;div class=&#39;Title&#39;&gt;CA Export: $Tenantname - $Date &lt;/div&gt;&quot;</p>
+<p>Write-host &quot;Launching: Web Browser&quot; -ForegroundColor Cyan</p>
+<p>$Launch = $ExportLocation</p>
+<p>$HTML += $pivot  | Where-Object { $_.&quot;CA Item&quot; -ne &#39;row1&#39; } | Sort-object { $sort.IndexOf($_.&quot;CA Item&quot;) } | convertto-html -Fragment</p>
+<p>$HTML | Out-File $Launch</p>
+<p>start-process $Launch</p>
+<p>disconnect-mggraph</p></article>

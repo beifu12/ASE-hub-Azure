@@ -1,0 +1,225 @@
+<article class="kb-article" data-title="部署K8S在中国区超时"><h1>部署K8S在中国区超时</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RecoveryService</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-04-14 17:42:14</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>近期咱们接到一个国外客户的工单，反馈部署K8S集群异常。报错信息如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>近期咱们接到一个国外客户的工单，反馈部署K8S集群异常。报错信息如下：</li>
+</ul>
+<ul>
+<li>&quot;error&quot;:{</li>
+</ul>
+<ul>
+<li>&quot;code&quot;:&quot;ResourceDeploymentFailure&quot;,</li>
+</ul>
+<ul>
+<li>&quot;message&quot;:&quot;The resource operation completed with terminal provisioning state &#39;Failed&#39;.&quot;,</li>
+</ul>
+<ul>
+<li>&quot;code&quot;:&quot;VMExtensionProvisioningTimeout&quot;,</li>
+</ul>
+<ul>
+<li>向客户要完模板后，想尝试测试但是这个模板比较特殊是动态生成的，模板中apiServerCertificate/apiServerPrivateKey/etcdPeerCertificate0等证书信息都无法获取，因此咱们无法根据这个模板尝试测试。</li>
+</ul>
+<ul>
+<li>问题定位后，该问题基本就是网络问题导致。让客户尝试换个时间部署看看是否能解决，客户反馈仍然无法解决。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zuoteng</li>
+</ul>
+<ul>
+<li>Hi All</li>
+</ul>
+<ul>
+<li>工单号码：SR_2019012304624_[MS-LED]Virtual Machine scale set creates some VMs and fails for other VMs</li>
+</ul>
+<ul>
+<li>&quot;details&quot;:[</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;message&quot;:&quot;Provisioning of VM extension &#39;vmssCSE&#39; has timed out. Extension installation may be taking too long, or extension status could not be obtained.&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;targetResource&quot;:{</li>
+</ul>
+<ul>
+<li>&quot;id&quot;:&quot;/subscriptions/bb24922c-2359-45ca-b225-3627b0d9c59a/resourceGroups/macsetup-china-z0/providers/Microsoft.Compute/virtualMachineScaleSets/k8s-macsetupchin-39184735-vmss&quot;,</li>
+</ul>
+<ul>
+<li>&quot;resourceType&quot;:&quot;Microsoft.Compute/virtualMachineScaleSets&quot;,</li>
+</ul>
+<ul>
+<li>&quot;resourceName&quot;:&quot;k8s-macsetupchin-39184735-vmss&quot;</li>
+</ul>
+<ul>
+<li>首先向客户要模板，以便尝试在我们的环境中重现问题</li>
+</ul>
+<ul>
+<li>扩展问题基本要以下2个目录的日志即可</li>
+</ul>
+<ul>
+<li>/var/lib/waagent/custom-script/download/</li>
+</ul>
+<ul>
+<li>7460c29cea53: Waiting</li>
+</ul>
+<ul>
+<li>8455697359be: Waiting</li>
+</ul>
+<ul>
+<li>9f185d5d8a4f: Waiting</li>
+</ul>
+<ul>
+<li>2b6ac55109de: Download complete</li>
+</ul>
+<ul>
+<li>5f2ca80930ac: Download complete</li>
+</ul>
+<ul>
+<li>0dc0248c9360: Download complete</li>
+</ul>
+<ul>
+<li>7460c29cea53: Download complete</li>
+</ul>
+<ul>
+<li>8455697359be: Download complete</li>
+</ul>
+<ul>
+<li>d093dc0d702b: Download complete</li>
+</ul>
+<ul>
+<li>d093dc0d702b: Pull complete</li>
+</ul>
+<ul>
+<li>0dc0248c9360: Pull complete</li>
+</ul>
+<ul>
+<li>2b6ac55109de: Pull complete</li>
+</ul>
+<ul>
+<li>5f2ca80930ac: Pull complete</li>
+</ul>
+<ul>
+<li>+ &#39;[&#39; 124 -eq 0 &#39;]&#39;</li>
+</ul>
+<ul>
+<li>+ &#39;[&#39; 100 -eq 100 &#39;]&#39;</li>
+</ul>
+<ul>
+<li>+ return 1</li>
+</ul>
+<ul>
+<li>+ exit 31</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题排查思路：</li>
+</ul>
+<ul>
+<li>由于无法重现，只能排查系统日志：</li>
+</ul>
+<ul>
+<li>/var/log/azure</li>
+</ul>
+<ul>
+<li>通过日志查看发现由于docker pull image failed</li>
+</ul>
+<ul>
+<li>2b6ac55109de: Verifying Checksum</li>
+</ul>
+<ul>
+<li>7460c29cea53: Verifying Checksum</li>
+</ul>
+<ul>
+<li>+ echo Executed &#39;&quot;docker&#39; pull &#39;crproxy.trafficmanager.net:6000/google_containers/hyperkube-amd64:v1.10.4&quot;&#39; 100 times</li>
+</ul>
+<ul>
+<li>Executed &quot;docker pull crproxy.trafficmanager.net:6000/google_containers/hyperkube-amd64:v1.10.4&quot; 100 times</li>
+</ul>
+<ul>
+<li>5、后续使用之前K8s vmss的模板测试成功。 因此Azure官方网站中提到的crproxy.trafficmanager.net 这个站点目前看有问题。后续有接到类似工单的小伙伴注意一下，节后咱们再case study一下J</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>后续在github找到此信息：   <a href="https://github.com/Azure/acs-engine/issues/4126" target="_blank" rel="noopener">https://github.com/Azure/acs-engine/issues/4126</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zuoteng</p>
+<p>2019-02-02</p>
+<p>Hi All</p>
+<p>近期咱们接到一个国外客户的工单，反馈部署K8S集群异常。报错信息如下：</p>
+<p>工单号码：SR_2019012304624_[MS-LED]Virtual Machine scale set creates some VMs and fails for other VMs</p>
+<p>&quot;error&quot;:{</p>
+<p>&quot;code&quot;:&quot;ResourceDeploymentFailure&quot;,</p>
+<p>&quot;message&quot;:&quot;The resource operation completed with terminal provisioning state &#39;Failed&#39;.&quot;,</p>
+<p>&quot;details&quot;:[</p>
+<p>{</p>
+<p>&quot;code&quot;:&quot;VMExtensionProvisioningTimeout&quot;,</p>
+<p>&quot;message&quot;:&quot;Provisioning of VM extension &#39;vmssCSE&#39; has timed out. Extension installation may be taking too long, or extension status could not be obtained.&quot;</p>
+<p>}</p>
+<p>]</p>
+<p>},</p>
+<p>&quot;targetResource&quot;:{</p>
+<p>&quot;id&quot;:&quot;/subscriptions/bb24922c-2359-45ca-b225-3627b0d9c59a/resourceGroups/macsetup-china-z0/providers/Microsoft.Compute/virtualMachineScaleSets/k8s-macsetupchin-39184735-vmss&quot;,</p>
+<p>&quot;resourceType&quot;:&quot;Microsoft.Compute/virtualMachineScaleSets&quot;,</p>
+<p>&quot;resourceName&quot;:&quot;k8s-macsetupchin-39184735-vmss&quot;</p>
+<p>问题排查思路：</p>
+<p>首先向客户要模板，以便尝试在我们的环境中重现问题</p>
+<p>向客户要完模板后，想尝试测试但是这个模板比较特殊是动态生成的，模板中apiServerCertificate/apiServerPrivateKey/etcdPeerCertificate0等证书信息都无法获取，因此咱们无法根据这个模板尝试测试。</p>
+<p>由于无法重现，只能排查系统日志：</p>
+<p>扩展问题基本要以下2个目录的日志即可</p>
+<p>/var/log/azure</p>
+<p>/var/lib/waagent/custom-script/download/</p>
+<p>通过日志查看发现由于docker pull image failed</p>
+<p>7460c29cea53: Waiting</p>
+<p>8455697359be: Waiting</p>
+<p>9f185d5d8a4f: Waiting</p>
+<p>2b6ac55109de: Verifying Checksum</p>
+<p>2b6ac55109de: Download complete</p>
+<p>5f2ca80930ac: Download complete</p>
+<p>0dc0248c9360: Download complete</p>
+<p>7460c29cea53: Verifying Checksum</p>
+<p>7460c29cea53: Download complete</p>
+<p>8455697359be: Download complete</p>
+<p>d093dc0d702b: Download complete</p>
+<p>d093dc0d702b: Pull complete</p>
+<p>0dc0248c9360: Pull complete</p>
+<p>2b6ac55109de: Pull complete</p>
+<p>5f2ca80930ac: Pull complete</p>
+<p>+ &#39;[&#39; 124 -eq 0 &#39;]&#39;</p>
+<p>+ &#39;[&#39; 100 -eq 100 &#39;]&#39;</p>
+<p>+ echo Executed &#39;&quot;docker&#39; pull &#39;crproxy.trafficmanager.net:6000/google_containers/hyperkube-amd64:v1.10.4&quot;&#39; 100 times</p>
+<p>Executed &quot;docker pull crproxy.trafficmanager.net:6000/google_containers/hyperkube-amd64:v1.10.4&quot; 100 times</p>
+<p>+ return 1</p>
+<p>+ exit 31</p>
+<p>问题定位后，该问题基本就是网络问题导致。让客户尝试换个时间部署看看是否能解决，客户反馈仍然无法解决。</p>
+<p>后续在github找到此信息：   <a href="https://github.com/Azure/acs-engine/issues/4126" target="_blank" rel="noopener">https://github.com/Azure/acs-engine/issues/4126</a></p>
+<p>5、后续使用之前K8s vmss的模板测试成功。 因此Azure官方网站中提到的crproxy.trafficmanager.net 这个站点目前看有问题。后续有接到类似工单的小伙伴注意一下，节后咱们再case study一下J</p></article>

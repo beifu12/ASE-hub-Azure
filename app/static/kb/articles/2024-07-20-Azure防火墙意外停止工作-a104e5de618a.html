@@ -1,0 +1,110 @@
+<article class="kb-article" data-title="Azure防火墙意外停止工作"><h1>Azure防火墙意外停止工作</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AzureFW</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-20 20:33:42</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题原因：Azure Firewall自身在scale in时某些错误导致Instance进入Failed状态；促使Firewall停止了工作。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题原因：Azure Firewall自身在scale in时某些错误导致Instance进入Failed状态；促使Firewall停止了工作。</li>
+</ul>
+<ul>
+<li>关于Firewall为什么Scale in会Failed，可以进一步查阅ICM Incident 518596048: [Mooncake] | [AFW] | SR_2407020030001387 | Azure Firewall unhealthy</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2024.7.13</li>
+</ul>
+<ul>
+<li>涉及工单：20240702302129</li>
+</ul>
+<ul>
+<li>问题描述：用户从Azure Firewall指标中发现hit rule的统计归0；由Firewall疏导的业务全部中断。</li>
+</ul>
+<ul>
+<li>%0A&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20</li>
+</ul>
+<ul>
+<li>在网络连接层面（TCP连接数\PPS、CPU、Disk、Mem的使用率）也都显示归为0：</li>
+</ul>
+<ul>
+<li>考虑可能的恢复AzureFirewall的方式：对Firewall执行Stop和Start操作。结合前面看到ManagementSubnet及AzureFirewallSubnet所关联的UDR；以及Firewall它的ManagementPublic IP；综合起来判定此AzureFirewall起用了ForceTunnel。因此参照如下文档选择启用了ForceTunnel的Stop和Start方式：</li>
+</ul>
+<ul>
+<li>在Stop、Start AzureFirewall时，有一个需要注意的点，按文档说明就是Firewall的Private IP有可能改变；如果真的发生改变，很可能用户需要大量的UDR中的路由条目下一跳IP要修改，这个问题需要事先做好准备：</li>
+</ul>
+<ul>
+<li>关于Firewall ManagementSubnet的出现，只有在启用Force tunneling时才会出现：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题排查：</li>
+</ul>
+<ul>
+<li>通过Azure Firewall资源ID，Jarvis中排查防火墙日志，经过多次确认其日志数据从当天上午7点23后没有了。</li>
+</ul>
+<ul>
+<li>检查Azure Firewall Dashboard，可以看到和用户在Portal Metrics中看到的一致情况，Network rule、Application rule匹配次数统计都归0；Firewall Health状态也显示为0：</li>
+</ul>
+<ul>
+<li>排查用户VNet中的路由设置，选取任意的源、目的VM，查看NIC有效路由，显示Spoke间的来回路由都经过了Azure Firewall；路由配置没问题。</li>
+</ul>
+<ul>
+<li>排查Azure Firewall Subnet中的路由配置，怀疑是否用户设置的某些路由劫持了平台的一些管理流量导致Firewall停止了工作。注意到Firewall使用了两个Subnet，一个名为AzureFirewallSubnet；一个名为AzureFirewallManagementSubnet。两个Subnet都关联了UDR，从UDR名称来看，ManagementSubnet所关联的UDR为很可能为Azure平台所创建，因为它的名字为一串随机的字母和数字的组合，且当用户点击它时，Portal中会报404错误 ；根据该UDR的资源ID，在ASC中也无法找到它。排查AzureFirewallSubnet关联的路由表中，只有一条默认路由，下一跳指向了用户的另一个NVA FW。联系该FW排查日志显示故障时分开始，AzureFirewall与它之间没有了流量。</li>
+</ul>
+<ul>
+<li>Firewall在Start完成后，我们发现ManagementSubnet的UDR不再显示出来了；后来和PG确认，现在新建的Firewall(执行Start)操作实际也相当于新建，平台不再对用户展示这一UDR，这一UDR对用户不可见，早些时候创建的，用户点击提示404是by design的；防止用户自定义UDR将平台的管理流量给劫持了。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>问题解决：通过PowerShell指令对Firewall进行了Stop和Start操作后恢复正常。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在将Firewall Start以后，确认操作并没有修改Firewall 的Private IP；后台查询防火墙的上述日志，各Metric值都不再为0；业务连接也恢复正常。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal-east.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-07-01T23:24:00.000Z&amp;offset=~15&amp;offsetUnit=Minutes&amp;UTC=true&amp;ep=CA%20Mooncake&amp;ns=GSAGW&amp;en=AzureMonitor&amp;conditions=[[&quot;resourceId&quot;,&quot;contains&quot;,&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;]]&amp;clientQuery=orderby%20PreciseTimeStamp%20desc" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-07-01T23:24:00.000Z&amp;offset=~15&amp;offsetUnit=Minutes&amp;UTC=true&amp;ep=CA%20Mooncake&amp;ns=GSAGW&amp;en=AzureMonitor&amp;conditions=[[&quot;resourceId&quot;,&quot;contains&quot;,&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;]]&amp;clientQuery=orderby%20PreciseTimeStamp%20desc</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/AB986F36?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Hostname&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Region&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=\&quot;tenant\&quot;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[comparand=\&quot;Tenant\&quot;]&quot;,&quot;key&quot;:&quot;values&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[id=&#39;rid&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;}]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/AB986F36?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Hostname&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Region&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=\&quot;tenant\&quot;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[comparand=\&quot;Tenant\&quot;]&quot;,&quot;key&quot;:&quot;values&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[id=&#39;rid&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;}]%20</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/81C3F941?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Region&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Hostname&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayVersion&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/81C3F941?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Region&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Hostname&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayVersion&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/firewall/firewall-faq#how-can-i-stop-and-start-azure-firewall" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/firewall/firewall-faq#how-can-i-stop-and-start-azure-firewall</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024.7.13</p>
+<p>涉及工单：20240702302129</p>
+<p>问题描述：用户从Azure Firewall指标中发现hit rule的统计归0；由Firewall疏导的业务全部中断。</p>
+<p>问题原因：Azure Firewall自身在scale in时某些错误导致Instance进入Failed状态；促使Firewall停止了工作。</p>
+<p>问题解决：通过PowerShell指令对Firewall进行了Stop和Start操作后恢复正常。</p>
+<p>问题排查：</p>
+<p>通过Azure Firewall资源ID，Jarvis中排查防火墙日志，经过多次确认其日志数据从当天上午7点23后没有了。</p>
+<p><a href="https://portal-east.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-07-01T23:24:00.000Z&amp;offset=~15&amp;offsetUnit=Minutes&amp;UTC=true&amp;ep=CA%20Mooncake&amp;ns=GSAGW&amp;en=AzureMonitor&amp;conditions=[[&quot;resourceId&quot;,&quot;contains&quot;,&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;]]&amp;clientQuery=orderby%20PreciseTimeStamp%20desc" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-07-01T23:24:00.000Z&amp;offset=~15&amp;offsetUnit=Minutes&amp;UTC=true&amp;ep=CA%20Mooncake&amp;ns=GSAGW&amp;en=AzureMonitor&amp;conditions=[[&quot;resourceId&quot;,&quot;contains&quot;,&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;]]&amp;clientQuery=orderby%20PreciseTimeStamp%20desc</a></p>
+<p>%0A&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20</p>
+<p>检查Azure Firewall Dashboard，可以看到和用户在Portal Metrics中看到的一致情况，Network rule、Application rule匹配次数统计都归0；Firewall Health状态也显示为0：</p>
+<p><a href="https://portal.microsoftgeneva.com/s/AB986F36?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Hostname&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Region&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=\&quot;tenant\&quot;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[comparand=\&quot;Tenant\&quot;]&quot;,&quot;key&quot;:&quot;values&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[id=&#39;rid&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;}]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/AB986F36?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Hostname&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Region&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=\&quot;tenant\&quot;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[comparand=\&quot;Tenant\&quot;]&quot;,&quot;key&quot;:&quot;values&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[id=&#39;rid&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;}]%20</a></p>
+<p>在网络连接层面（TCP连接数\PPS、CPU、Disk、Mem的使用率）也都显示归为0：</p>
+<p><a href="https://portal.microsoftgeneva.com/s/81C3F941?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Region&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Hostname&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayVersion&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/81C3F941?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/fdaa77a1-fee0-47fc-9078-077d96231f45/resourceGroups/ce2-cndat-rg-pd-hub01/providers/Microsoft.Network/azureFirewalls/ce2-cndat-azfw-pd-hub01&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Region&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;Hostname&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;GatewayVersion&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20</a></p>
+<p>排查用户VNet中的路由设置，选取任意的源、目的VM，查看NIC有效路由，显示Spoke间的来回路由都经过了Azure Firewall；路由配置没问题。</p>
+<p>排查Azure Firewall Subnet中的路由配置，怀疑是否用户设置的某些路由劫持了平台的一些管理流量导致Firewall停止了工作。注意到Firewall使用了两个Subnet，一个名为AzureFirewallSubnet；一个名为AzureFirewallManagementSubnet。两个Subnet都关联了UDR，从UDR名称来看，ManagementSubnet所关联的UDR为很可能为Azure平台所创建，因为它的名字为一串随机的字母和数字的组合，且当用户点击它时，Portal中会报404错误 ；根据该UDR的资源ID，在ASC中也无法找到它。排查AzureFirewallSubnet关联的路由表中，只有一条默认路由，下一跳指向了用户的另一个NVA FW。联系该FW排查日志显示故障时分开始，AzureFirewall与它之间没有了流量。</p>
+<p>考虑可能的恢复AzureFirewall的方式：对Firewall执行Stop和Start操作。结合前面看到ManagementSubnet及AzureFirewallSubnet所关联的UDR；以及Firewall它的ManagementPublic IP；综合起来判定此AzureFirewall起用了ForceTunnel。因此参照如下文档选择启用了ForceTunnel的Stop和Start方式：</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/firewall/firewall-faq#how-can-i-stop-and-start-azure-firewall" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/firewall/firewall-faq#how-can-i-stop-and-start-azure-firewall</a></p>
+<p>在Stop、Start AzureFirewall时，有一个需要注意的点，按文档说明就是Firewall的Private IP有可能改变；如果真的发生改变，很可能用户需要大量的UDR中的路由条目下一跳IP要修改，这个问题需要事先做好准备：</p>
+<p>关于Firewall ManagementSubnet的出现，只有在启用Force tunneling时才会出现：</p>
+<p>在将Firewall Start以后，确认操作并没有修改Firewall 的Private IP；后台查询防火墙的上述日志，各Metric值都不再为0；业务连接也恢复正常。</p>
+<p>Firewall在Start完成后，我们发现ManagementSubnet的UDR不再显示出来了；后来和PG确认，现在新建的Firewall(执行Start)操作实际也相当于新建，平台不再对用户展示这一UDR，这一UDR对用户不可见，早些时候创建的，用户点击提示404是by design的；防止用户自定义UDR将平台的管理流量给劫持了。</p>
+<p>关于Firewall为什么Scale in会Failed，可以进一步查阅ICM Incident 518596048: [Mooncake] | [AFW] | SR_2407020030001387 | Azure Firewall unhealthy</p></article>

@@ -1,0 +1,123 @@
+<article class="kb-article" data-title="通过托管标识登录Exchange Online"><h1>通过托管标识登录Exchange Online</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-04-25 14:13:10</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考文档：使用 Azure 托管标识连接到 Exchange Online PowerShell | Microsoft Learn</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考文档：使用 Azure 托管标识连接到 Exchange Online PowerShell | Microsoft Learn</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>&lt;注意事项&gt;</li>
+</ul>
+<ul>
+<li>相反，可以在与托管标识关联的 Azure 资源的上下文中进行连接， (例如 Azure 自动化帐户或 Azure 虚拟机) 。</li>
+</ul>
+<ul>
+<li>在虚拟机上开启系统分配的托管标识，记录下对象ID</li>
+</ul>
+<ul>
+<li>在Microsoft entra  id这种为托管标识分配“Exchange”角色以及 Exchange.ManageAsApp API 权限</li>
+</ul>
+<ul>
+<li>安装模块：Install-Module -Name Microsoft.Graph</li>
+</ul>
+<ul>
+<li>ClientId和TenantId获取：</li>
+</ul>
+<ul>
+<li>设置重定向URL：</li>
+</ul>
+<ul>
+<li>将托管标识的ID赋给变量</li>
+</ul>
+<ul>
+<li>$MI_ID =“xxxxxxxxxxxxxxx”</li>
+</ul>
+<ul>
+<li>$AppRoleID = &quot;dc50a0fb-09a3-484d-be87-e023b12c6440&quot;</li>
+</ul>
+<ul>
+<li>$ResourceID = (Get-MgServicePrincipal -Filter &quot;AppId eq &#39;00000002-0000-0ff1-ce00-000000000000&#39;&quot;).Id</li>
+</ul>
+<ul>
+<li>测试Exchange Online使用Managed Identity登录：（登陆进虚拟机）</li>
+</ul>
+<ul>
+<li>Connect-ExchangeOnline -ManagedIdentity -Organization xxxxxxxxxxx -ExchangeEnvironmentName O365China</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>角色分配可以在portal上操作：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>参考文档：使用 Azure 托管标识连接到 Exchange Online PowerShell | Microsoft Learn</li>
+</ul>
+<ul>
+<li>与使用 Exchange Online PowerShell 模块的其他连接方法不同，不能在本地计算机上的 Windows PowerShell 会话中运行连接命令。</li>
+</ul>
+<ul>
+<li>API权限需要使用MgGraph命令操作</li>
+</ul>
+<ul>
+<li>&lt;运行连接命令前需要先在Microsoft entra  id注册一个应用并设置重定向URL&gt;</li>
+</ul>
+<ul>
+<li>以下命令来自文档中的步骤4，Connect-MgGraph按照中国区做了调整：</li>
+</ul>
+<ul>
+<li>使用 Azure 托管标识连接到 Exchange Online PowerShell | Microsoft Learn</li>
+</ul>
+<ul>
+<li>连接命令：Connect-MgGraph -ClientId xxxxxxxxx-TenantId xxxxxxxxxxxx -Environment China  -Scopes AppRoleAssignment.ReadWrite.All,Application.Read.All</li>
+</ul>
+<ul>
+<li>Get-MgServicePrincipal -Filter &quot;AppId eq &#39;00000002-0000-0ff1-ce00-000000000000&#39;&quot;</li>
+</ul>
+<ul>
+<li>如果命令未返回任何结果，则下一步将不起作用。</li>
+</ul>
+<ul>
+<li>New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MI_ID -PrincipalId $MI_ID -AppRoleId $AppRoleID -ResourceId $ResourceID</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>参考文档：使用 Azure 托管标识连接到 Exchange Online PowerShell | Microsoft Learn</p>
+<p>&lt;注意事项&gt;</p>
+<p>与使用 Exchange Online PowerShell 模块的其他连接方法不同，不能在本地计算机上的 Windows PowerShell 会话中运行连接命令。</p>
+<p>相反，可以在与托管标识关联的 Azure 资源的上下文中进行连接， (例如 Azure 自动化帐户或 Azure 虚拟机) 。</p>
+<p>在虚拟机上开启系统分配的托管标识，记录下对象ID</p>
+<p>在Microsoft entra  id这种为托管标识分配“Exchange”角色以及 Exchange.ManageAsApp API 权限</p>
+<p>角色分配可以在portal上操作：</p>
+<p>API权限需要使用MgGraph命令操作</p>
+<p>安装模块：Install-Module -Name Microsoft.Graph</p>
+<p>&lt;运行连接命令前需要先在Microsoft entra  id注册一个应用并设置重定向URL&gt;</p>
+<p>ClientId和TenantId获取：</p>
+<p>设置重定向URL：</p>
+<p>以下命令来自文档中的步骤4，Connect-MgGraph按照中国区做了调整：</p>
+<p>使用 Azure 托管标识连接到 Exchange Online PowerShell | Microsoft Learn</p>
+<p>连接命令：Connect-MgGraph -ClientId xxxxxxxxx-TenantId xxxxxxxxxxxx -Environment China  -Scopes AppRoleAssignment.ReadWrite.All,Application.Read.All</p>
+<p>将托管标识的ID赋给变量</p>
+<p>$MI_ID =“xxxxxxxxxxxxxxx”</p>
+<p>Get-MgServicePrincipal -Filter &quot;AppId eq &#39;00000002-0000-0ff1-ce00-000000000000&#39;&quot;</p>
+<p>如果命令未返回任何结果，则下一步将不起作用。</p>
+<p>$AppRoleID = &quot;dc50a0fb-09a3-484d-be87-e023b12c6440&quot;</p>
+<p>$ResourceID = (Get-MgServicePrincipal -Filter &quot;AppId eq &#39;00000002-0000-0ff1-ce00-000000000000&#39;&quot;).Id</p>
+<p>New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MI_ID -PrincipalId $MI_ID -AppRoleId $AppRoleID -ResourceId $ResourceID</p>
+<p>测试Exchange Online使用Managed Identity登录：（登陆进虚拟机）</p>
+<p>Connect-ExchangeOnline -ManagedIdentity -Organization xxxxxxxxxxx -ExchangeEnvironmentName O365China</p></article>

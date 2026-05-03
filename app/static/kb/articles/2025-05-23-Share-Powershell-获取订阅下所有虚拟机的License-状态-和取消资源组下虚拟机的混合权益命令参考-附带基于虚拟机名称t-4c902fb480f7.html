@@ -1,0 +1,180 @@
+<article class="kb-article" data-title="【Share】Powershell 获取订阅下所有虚拟机的License 状态，和取消资源组下虚拟机的混合权益命令参考，附带基于虚拟机名称txt的方法"><h1>【Share】Powershell 获取订阅下所有虚拟机的License 状态，和取消资源组下虚拟机的混合权益命令参考，附带基于虚拟机名称txt的方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Powershell</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-05-23 10:13:48</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>1、获取订阅下所有虚拟机License状态，按资源组分类。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>1、获取订阅下所有虚拟机License状态，按资源组分类。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1、获取订阅下所有虚拟机License状态，按资源组分类。</li>
+</ul>
+<ul>
+<li>#登录Azure账户</li>
+</ul>
+<ul>
+<li>Connect-AzAccount  -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>#选择目标订阅</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -SubscriptionId &quot;your-subscription-id&quot;</li>
+</ul>
+<ul>
+<li>$vms = Get-AzVM</li>
+</ul>
+<ul>
+<li>$vmInfo = @()</li>
+</ul>
+<ul>
+<li>foreach ($vm in $vms) {</li>
+</ul>
+<ul>
+<li>$vmDetails = [PSCustomObject]@{</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>$vmInfo += $vmDetails</li>
+</ul>
+<ul>
+<li>#列出所有状态</li>
+</ul>
+<ul>
+<li>$vmInfo | Format-Table -AutoSize</li>
+</ul>
+<ul>
+<li>示例截图</li>
+</ul>
+<ul>
+<li>2、调整取消资源组内虚拟机License Type</li>
+</ul>
+<ul>
+<li>#获取资源组VM信息</li>
+</ul>
+<ul>
+<li>$resourceGroupName = &quot;NARI-N3&quot;</li>
+</ul>
+<ul>
+<li>$vms = Get-AzVM -ResourceGroupName $resourceGroupName</li>
+</ul>
+<ul>
+<li>#取消混合权益</li>
+</ul>
+<ul>
+<li>$vm.LicenseType = &quot;None&quot;</li>
+</ul>
+<ul>
+<li>Update-AzVM -ResourceGroupName $resourceGroupName -VM $vm</li>
+</ul>
+<ul>
+<li>Write-Host &quot; License has been updated for: &quot;$vm.Name</li>
+</ul>
+<ul>
+<li>额外的方法：有时资源组也不方便，基于某个虚拟机名称TXT文件修改Licence方法：</li>
+</ul>
+<ul>
+<li># 资源组名称</li>
+</ul>
+<ul>
+<li># 读取文本文件中的虚拟机名称</li>
+</ul>
+<ul>
+<li>$vmNames = Get-Content -Path &quot;D:\vmnames.txt&quot;</li>
+</ul>
+<ul>
+<li># 循环遍历每个虚拟机名称</li>
+</ul>
+<ul>
+<li>foreach ($vmName in $vmNames) {</li>
+</ul>
+<ul>
+<li># 获取虚拟机</li>
+</ul>
+<ul>
+<li>$vm = Get-AzVM -Name $vmName -ResourceGroupName $resourceGroupName</li>
+</ul>
+<ul>
+<li># 修改 LicenseType</li>
+</ul>
+<ul>
+<li>$vm.LicenseType = &quot;Windows_Client&quot;    #(可用参数None、Windows_Client、Windows_Server、Ubuntu_Pro等)</li>
+</ul>
+<ul>
+<li># 更新虚拟机</li>
+</ul>
+<ul>
+<li>Write-Host &quot;License has been updated for: &quot;$vm.Name</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li># 输出确认信息</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>VMName       = $vm.Name</li>
+</ul>
+<ul>
+<li>ResourceGroup = $vm.ResourceGroupName</li>
+</ul>
+<ul>
+<li>LicenseType  = $vm.LicenseType</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/8/28</p>
+<p>1、获取订阅下所有虚拟机License状态，按资源组分类。</p>
+<p>#登录Azure账户</p>
+<p>Connect-AzAccount  -Environment AzureChinaCloud</p>
+<p>#选择目标订阅</p>
+<p>Select-AzSubscription -SubscriptionId &quot;your-subscription-id&quot;</p>
+<p>$vms = Get-AzVM</p>
+<p>$vmInfo = @()</p>
+<p>foreach ($vm in $vms) {</p>
+<p>$vmDetails = [PSCustomObject]@{</p>
+<p>VMName       = $vm.Name</p>
+<p>ResourceGroup = $vm.ResourceGroupName</p>
+<p>LicenseType  = $vm.LicenseType</p>
+<p>}</p>
+<p>$vmInfo += $vmDetails</p>
+<p>#列出所有状态</p>
+<p>$vmInfo | Format-Table -AutoSize</p>
+<p>示例截图</p>
+<p>2、调整取消资源组内虚拟机License Type</p>
+<p>#获取资源组VM信息</p>
+<p>$resourceGroupName = &quot;NARI-N3&quot;</p>
+<p>$vms = Get-AzVM -ResourceGroupName $resourceGroupName</p>
+<p>#取消混合权益</p>
+<p>$vm.LicenseType = &quot;None&quot;</p>
+<p>Update-AzVM -ResourceGroupName $resourceGroupName -VM $vm</p>
+<p>Write-Host &quot; License has been updated for: &quot;$vm.Name</p>
+<p>额外的方法：有时资源组也不方便，基于某个虚拟机名称TXT文件修改Licence方法：</p>
+<h1>资源组名称</h1>
+<h1>读取文本文件中的虚拟机名称</h1>
+<p>$vmNames = Get-Content -Path &quot;D:\vmnames.txt&quot;</p>
+<h1>循环遍历每个虚拟机名称</h1>
+<p>foreach ($vmName in $vmNames) {</p>
+<h1>获取虚拟机</h1>
+<p>$vm = Get-AzVM -Name $vmName -ResourceGroupName $resourceGroupName</p>
+<h1>修改 LicenseType</h1>
+<p>$vm.LicenseType = &quot;Windows_Client&quot;    #(可用参数None、Windows_Client、Windows_Server、Ubuntu_Pro等)</p>
+<h1>更新虚拟机</h1>
+<h1>输出确认信息</h1>
+<p>Write-Host &quot;License has been updated for: &quot;$vm.Name</p></article>

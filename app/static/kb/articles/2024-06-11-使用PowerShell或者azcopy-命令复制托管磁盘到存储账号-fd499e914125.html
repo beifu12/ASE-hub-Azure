@@ -1,0 +1,156 @@
+<article class="kb-article" data-title="使用PowerShell或者azcopy 命令复制托管磁盘到存储账号"><h1>使用PowerShell或者azcopy 命令复制托管磁盘到存储账号</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-11 14:12:00</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>您如果觉得安装 Azure powershell 时间较长，可以尝试先安装：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>您如果觉得安装 Azure powershell 时间较长，可以尝试先安装：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Install-Module -Name Azure.Storage</li>
+</ul>
+<ul>
+<li>具体参考：</li>
+</ul>
+<ul>
+<li>$StorageAccountName = &quot;目标存储账户名称&quot;</li>
+</ul>
+<ul>
+<li>$StorageContainerName = &quot;目标容器名称&quot;</li>
+</ul>
+<ul>
+<li>$StorageAccountKey = &#39;存储账户KEY&#39;</li>
+</ul>
+<ul>
+<li>以上信息来自：</li>
+</ul>
+<ul>
+<li>$DestinationVHDFileName = &quot;磁盘名称.vhd&quot;</li>
+</ul>
+<ul>
+<li>$sas = &quot;URL&quot;</li>
+</ul>
+<ul>
+<li>该信息来自导出磁盘的URL</li>
+</ul>
+<ul>
+<li>$destinationContext = New-AzureStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey -Environment &quot;AzureChinaCloud&quot;</li>
+</ul>
+<ul>
+<li>Start-AzureStorageBlobCopy -AbsoluteUri $sas -DestContainer $StorageContainerName -DestContext $destinationContext -DestBlob $DestinationVHDFileName</li>
+</ul>
+<ul>
+<li>更多信息请参考：</li>
+</ul>
+<ul>
+<li>AzCopy 使用服务器到服务器 api，也是直接在存储服务器之间复制数据。具体可以参考：</li>
+</ul>
+<ul>
+<li>首先，将 AzCopy V10 可执行文件下载到计算机上的任意目录。 AzCopy V10 是一个免安装的可执行文件。</li>
+</ul>
+<ul>
+<li>Windows 64 位 (zip)</li>
+</ul>
+<ul>
+<li>Windows 32 位 (zip)</li>
+</ul>
+<ul>
+<li>操作之前需要给容器设定 相关的blob权限，权限设置大约需要5分钟左右生效</li>
+</ul>
+<ul>
+<li>按照如下提示信息，通过浏览器使用刚刚设置权限的账户登录</li>
+</ul>
+<ul>
+<li>直至拷贝完成</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>您如果觉得安装 Azure powershell 时间较长，可以尝试先安装：</li>
+</ul>
+<ul>
+<li>安装过程中可能需要同意如下微软的PowerShell 源</li>
+</ul>
+<ul>
+<li>如下是拷贝时使用的命令</li>
+</ul>
+<ul>
+<li>拷贝过程中可以使用如下命令查询是否拷贝成功</li>
+</ul>
+<ul>
+<li>附命令供参考：</li>
+</ul>
+<ul>
+<li>Get-AzureStorageBlobCopyState -Context $destinationContext -Blob $DestinationVHDFileName -Container $StorageContainerName</li>
+</ul>
+<ul>
+<li>目前官方文档并未推荐该操作，经过测试可以通过如下命令实现：</li>
+</ul>
+<ul>
+<li>登录成功后既可以使用如下命令进行拷贝，第一个参数为导出磁盘的URL，第二个参数为需要拷贝到的位置以及文件名的URL。一定要添加参数--s2s-preserve-access-tier=false</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://www.powershellgallery.com/packages/Azure.Storage/4.6.1" target="_blank" rel="noopener">https://www.powershellgallery.com/packages/Azure.Storage/4.6.1</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-howto-export-managed-disks" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-howto-export-managed-disks</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/common/storage-use-azcopy-blobs#copy-blobs-between-storage-accounts" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/common/storage-use-azcopy-blobs#copy-blobs-between-storage-accounts</a></li>
+</ul>
+<ul>
+<li>azcopy login --aad-endpoint <a href="https://login.partner.microsoftonline.cn" target="_blank" rel="noopener">https://login.partner.microsoftonline.cn</a></li>
+</ul>
+<ul>
+<li>azcopy copy &quot;<a href="https://md-ssd-q03fbjkwpxp1.blob.core.chinacloudapi.cn/kzp1m0mj4psx/abcd?sv=2017-04-17&amp;sr=b&amp;si=03dbc9cc-fdca-4d97-b947-63caaa3804c8&amp;sig=bhIJghtFW1mGzaf0MpdHs24KOmvC5VNDx8%2F%2Fy47yJD0%3D&quot;" target="_blank" rel="noopener">https://md-ssd-q03fbjkwpxp1.blob.core.chinacloudapi.cn/kzp1m0mj4psx/abcd?sv=2017-04-17&amp;sr=b&amp;si=03dbc9cc-fdca-4d97-b947-63caaa3804c8&amp;sig=bhIJghtFW1mGzaf0MpdHs24KOmvC5VNDx8%2F%2Fy47yJD0%3D&quot;</a> &quot;<a href="https://abcdiag319.blob.core.chinacloudapi.cn/abc/test2.vhd&quot;" target="_blank" rel="noopener">https://abcdiag319.blob.core.chinacloudapi.cn/abc/test2.vhd&quot;</a> --s2s-preserve-access-tier=false</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020-03-31</p>
+<p>您如果觉得安装 Azure powershell 时间较长，可以尝试先安装：</p>
+<p>Install-Module -Name Azure.Storage</p>
+<p>具体参考：</p>
+<p><a href="https://www.powershellgallery.com/packages/Azure.Storage/4.6.1" target="_blank" rel="noopener">https://www.powershellgallery.com/packages/Azure.Storage/4.6.1</a></p>
+<p>安装过程中可能需要同意如下微软的PowerShell 源</p>
+<p>如下是拷贝时使用的命令</p>
+<p>拷贝过程中可以使用如下命令查询是否拷贝成功</p>
+<p>附命令供参考：</p>
+<p>$StorageAccountName = &quot;目标存储账户名称&quot;</p>
+<p>$StorageContainerName = &quot;目标容器名称&quot;</p>
+<p>$StorageAccountKey = &#39;存储账户KEY&#39;</p>
+<p>以上信息来自：</p>
+<p>$DestinationVHDFileName = &quot;磁盘名称.vhd&quot;</p>
+<p>$sas = &quot;URL&quot;</p>
+<p>该信息来自导出磁盘的URL</p>
+<p>$destinationContext = New-AzureStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $StorageAccountKey -Environment &quot;AzureChinaCloud&quot;</p>
+<p>Start-AzureStorageBlobCopy -AbsoluteUri $sas -DestContainer $StorageContainerName -DestContext $destinationContext -DestBlob $DestinationVHDFileName</p>
+<p>Get-AzureStorageBlobCopyState -Context $destinationContext -Blob $DestinationVHDFileName -Container $StorageContainerName</p>
+<p>更多信息请参考：</p>
+<p><a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-howto-export-managed-disks" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-howto-export-managed-disks</a></p>
+<p>AzCopy 使用服务器到服务器 api，也是直接在存储服务器之间复制数据。具体可以参考：</p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/common/storage-use-azcopy-blobs#copy-blobs-between-storage-accounts" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/common/storage-use-azcopy-blobs#copy-blobs-between-storage-accounts</a></p>
+<p>首先，将 AzCopy V10 可执行文件下载到计算机上的任意目录。 AzCopy V10 是一个免安装的可执行文件。</p>
+<p>Windows 64 位 (zip)</p>
+<p>Windows 32 位 (zip)</p>
+<p>目前官方文档并未推荐该操作，经过测试可以通过如下命令实现：</p>
+<p>操作之前需要给容器设定 相关的blob权限，权限设置大约需要5分钟左右生效</p>
+<p>azcopy login --aad-endpoint <a href="https://login.partner.microsoftonline.cn" target="_blank" rel="noopener">https://login.partner.microsoftonline.cn</a></p>
+<p>按照如下提示信息，通过浏览器使用刚刚设置权限的账户登录</p>
+<p>登录成功后既可以使用如下命令进行拷贝，第一个参数为导出磁盘的URL，第二个参数为需要拷贝到的位置以及文件名的URL。一定要添加参数--s2s-preserve-access-tier=false</p>
+<p>azcopy copy &quot;<a href="https://md-ssd-q03fbjkwpxp1.blob.core.chinacloudapi.cn/kzp1m0mj4psx/abcd?sv=2017-04-17&amp;sr=b&amp;si=03dbc9cc-fdca-4d97-b947-63caaa3804c8&amp;sig=bhIJghtFW1mGzaf0MpdHs24KOmvC5VNDx8%2F%2Fy47yJD0%3D&quot;" target="_blank" rel="noopener">https://md-ssd-q03fbjkwpxp1.blob.core.chinacloudapi.cn/kzp1m0mj4psx/abcd?sv=2017-04-17&amp;sr=b&amp;si=03dbc9cc-fdca-4d97-b947-63caaa3804c8&amp;sig=bhIJghtFW1mGzaf0MpdHs24KOmvC5VNDx8%2F%2Fy47yJD0%3D&quot;</a> &quot;<a href="https://abcdiag319.blob.core.chinacloudapi.cn/abc/test2.vhd&quot;" target="_blank" rel="noopener">https://abcdiag319.blob.core.chinacloudapi.cn/abc/test2.vhd&quot;</a> --s2s-preserve-access-tier=false</p>
+<p>直至拷贝完成</p></article>

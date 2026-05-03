@@ -4,15 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASE Hub - Azure Solutions Engineer Hub</title>
-    <link rel="stylesheet" href="/static/css/base.css?v=3">
-    <link rel="stylesheet" href="/static/css/components.css?v=3">
-    <link rel="stylesheet" href="/static/css/topbar.css?v=3">
-    <link rel="stylesheet" href="/static/css/sidebar.css?v=3">
-    <link rel="stylesheet" href="/static/css/breadcrumb.css?v=3">
-    <link rel="stylesheet" href="/static/css/tiles.css?v=3">
-    <link rel="stylesheet" href="/static/css/blade.css?v=3">
-    <link rel="stylesheet" href="/static/css/glossary.css?v=3">
-    <link rel="stylesheet" href="/static/css/responsive.css?v=3">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/static/css/base.css?v=6">
+    <link rel="stylesheet" href="/static/css/components.css?v=8">
+    <link rel="stylesheet" href="/static/css/style.css?v=5">
 </head>
 <body>
     <!-- Toast Container -->
@@ -30,11 +26,12 @@
         <button class="topbar__hamburger" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
         <a class="topbar__brand" href="#" onclick="navigateTo('dashboard')">ASE Hub</a>
         <div class="topbar__search">
-            <input type="text" id="global-search" placeholder="Search resources, tools, docs... (Cmd+K)" autocomplete="off">
+            <input type="text" id="global-search" placeholder="Search resources, tools, docs..." autocomplete="off">
+            <span class="kbd">⌘K</span>
         </div>
         <div class="topbar__actions">
-            <button class="topbar__action" title="Notifications">🔔</button>
-            <button class="topbar__action" title="Settings">⚙️</button>
+            <button class="topbar__action" title="Notifications"><i data-lucide="bell" class="topbar-icon"></i></button>
+            <button class="topbar__action" title="Settings"><i data-lucide="settings" class="topbar-icon"></i></button>
             <div class="topbar__user">
                 <span id="topbar-username">admin</span>
                 <button class="topbar__action" onclick="handleLogout()" title="Logout">▾</button>
@@ -49,23 +46,23 @@
     <aside class="sidebar" id="sidebar">
         <!-- Favorites -->
         <div class="sidebar__section">
-            <div class="sidebar__section-title" data-i18n="favorites">⭐ Favorites</div>
+            <div class="sidebar__section-title" data-i18n="favorites"><i data-lucide="star" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"></i>Favorites</div>
             <nav class="sidebar__nav" id="fav-nav">
                 <a class="nav-item active" data-section="dashboard" onclick="navigateTo('dashboard')">
-                    <span class="icon">📊</span> <span data-i18n="dashboard">Dashboard</span>
+                    <i data-lucide="layout-dashboard" class="icon"></i> <span data-i18n="dashboard">Dashboard</span>
                 </a>
                 <a class="nav-item" data-section="glossary" onclick="navigateTo('glossary')">
-                    <span class="icon">📖</span> <span data-i18n="glossary">Glossary</span>
+                    <i data-lucide="book-open" class="icon"></i> <span data-i18n="glossary">Glossary</span>
                 </a>
                 <a class="nav-item" data-section="translate" onclick="navigateTo('translate')">
-                    <span class="icon">🌐</span> <span data-i18n="translate">Translate</span>
+                    <i data-lucide="globe" class="icon"></i> <span data-i18n="translate">Translate</span>
                 </a>
             </nav>
         </div>
 
         <!-- Recent -->
         <div class="sidebar__section">
-            <div class="sidebar__section-title">📋 Recent</div>
+            <div class="sidebar__section-title"><i data-lucide="clipboard" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"></i>Recent</div>
             <nav class="sidebar__nav" id="recent-nav">
                 <!-- JS dynamically generates recent items -->
             </nav>
@@ -74,15 +71,15 @@
         <!-- Group: Tools -->
         <div class="sidebar__section">
             <div class="sidebar__group-header" onclick="toggleGroup('tools')">
-                <span>📂 <span data-i18n="group_tools">Pre-sales Tools</span></span>
+                <i data-lucide="folder" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"></i><span data-i18n="group_tools">Pre-sales Tools</span></span>
                 <span class="sidebar__chevron">▾</span>
             </div>
             <nav class="sidebar__nav" id="group-tools">
                 <a class="nav-item" data-section="dashboard" onclick="navigateTo('dashboard')">
-                    <span class="icon">📊</span> <span data-i18n="dashboard">Dashboard</span>
+                    <i data-lucide="layout-dashboard" class="icon"></i> <span data-i18n="dashboard">Dashboard</span>
                 </a>
                 <a class="nav-item" data-section="updates" onclick="navigateTo('updates')">
-                    <span class="icon">📡</span> <span data-i18n="updates">Updates</span>
+                    <i data-lucide="rss" class="icon"></i> <span data-i18n="updates">Updates</span>
                 </a>
             </nav>
         </div>
@@ -90,18 +87,21 @@
         <!-- Group: Knowledge -->
         <div class="sidebar__section">
             <div class="sidebar__group-header" onclick="toggleGroup('knowledge')">
-                <span>📂 <span data-i18n="group_knowledge">Knowledge Base</span></span>
-                <span class="sidebar__chevron">▸</span>
+                <i data-lucide="folder" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"></i><span data-i18n="group_knowledge">Knowledge Base</span></span>
+                <span class="sidebar__chevron">▾</span>
             </div>
-            <nav class="sidebar__nav sidebar__nav--collapsed" id="group-knowledge">
+            <nav class="sidebar__nav" id="group-knowledge">
                 <a class="nav-item" data-section="glossary" onclick="navigateTo('glossary')">
-                    <span class="icon">📖</span> <span data-i18n="glossary">Glossary</span>
+                    <i data-lucide="book-open" class="icon"></i> <span data-i18n="glossary">Glossary</span>
                 </a>
                 <a class="nav-item" data-section="pricing" onclick="navigateTo('pricing')">
-                    <span class="icon">💰</span> <span data-i18n="pricing">Pricing</span>
+                    <i data-lucide="banknote" class="icon"></i> <span data-i18n="pricing">Pricing</span>
                 </a>
                 <a class="nav-item" data-section="docs" onclick="navigateTo('docs')">
-                    <span class="icon">📚</span> <span data-i18n="docs">Docs</span>
+                    <i data-lucide="library" class="icon"></i> <span data-i18n="docs">Docs</span>
+                </a>
+                <a class="nav-item" data-section="kb" onclick="navigateTo('kb')">
+                    <i data-lucide="brain" class="icon"></i> <span>WATS KB</span>
                 </a>
             </nav>
         </div>
@@ -109,15 +109,15 @@
         <!-- Group: Workspace -->
         <div class="sidebar__section">
             <div class="sidebar__group-header" onclick="toggleGroup('workspace')">
-                <span>📂 <span data-i18n="group_workspace">Workspace</span></span>
+                <i data-lucide="folder" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"></i><span data-i18n="group_workspace">Workspace</span></span>
                 <span class="sidebar__chevron">▸</span>
             </div>
             <nav class="sidebar__nav sidebar__nav--collapsed" id="group-workspace">
                 <a class="nav-item" data-section="reports" onclick="navigateTo('reports')">
-                    <span class="icon">📝</span> <span data-i18n="reports">Reports</span>
+                    <i data-lucide="clipboard-list" class="icon"></i> <span data-i18n="reports">Reports</span>
                 </a>
                 <a class="nav-item" data-section="meetings" onclick="navigateTo('meetings')">
-                    <span class="icon">🤝</span> <span data-i18n="meetings">Meetings</span>
+                    <i data-lucide="handshake" class="icon"></i> <span data-i18n="meetings">Meetings</span>
                 </a>
             </nav>
         </div>
@@ -125,15 +125,15 @@
         <!-- Group: Admin -->
         <div class="sidebar__section">
             <div class="sidebar__group-header" onclick="toggleGroup('admin')">
-                <span>📂 <span data-i18n="group_admin">Admin</span></span>
+                <i data-lucide="folder" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"></i><span data-i18n="group_admin">Admin</span></span>
                 <span class="sidebar__chevron">▸</span>
             </div>
             <nav class="sidebar__nav sidebar__nav--collapsed" id="group-admin">
                 <a class="nav-item" data-section="snippets" onclick="navigateTo('snippets')">
-                    <span class="icon">⚡</span> <span data-i18n="snippets">Snippets</span>
+                    <i data-lucide="zap" class="icon"></i> <span data-i18n="snippets">Snippets</span>
                 </a>
                 <a class="nav-item" data-section="migration" onclick="navigateTo('migration')">
-                    <span class="icon">🔄</span> <span data-i18n="migration">Migration</span>
+                    <i data-lucide="refresh-cw" class="icon"></i> <span data-i18n="migration">Migration</span>
                 </a>
             </nav>
         </div>
@@ -141,7 +141,7 @@
         <!-- Footer -->
         <div class="sidebar__footer">
             <div class="lang-toggle">
-                <span>🌐</span>
+                <i data-lucide="globe" style="width:14px;height:14px"></i>
                 <button class="lang-btn active" data-lang="en">EN</button>
                 <button class="lang-btn" data-lang="zh">中文</button>
             </div>
@@ -161,7 +161,7 @@
         <!-- === DASHBOARD === -->
         <section class="section active" id="section-dashboard">
             <div class="page-header">
-                <h1 data-i18n="dashboard">📊 Dashboard</h1>
+                <h1 data-i18n="dashboard"><i data-lucide="layout-dashboard" class="heading-icon"></i>Dashboard</h1>
             </div>
 
             <!-- Tile Grid -->
@@ -169,10 +169,10 @@
                 <!-- T1: Azure Status (1x1) -->
                 <article class="tile tile-1x1 tile--ok" id="tile-status">
                     <header class="tile__header">
-                        <span class="tile__icon">🟢</span>
+                        <i data-lucide="circle-check" class="tile__icon" style="color:var(--success)"></i>
                         <h3 class="tile__title" data-i18n="azure_status">Azure Status</h3>
                         <div class="tile__actions">
-                            <button class="tile__action" onclick="loadStatus()" title="Refresh">↻</button>
+                            <button class="tile__action" onclick="loadStatus()" title="Refresh"><i data-lucide="rotate-cw" style="width:14px;height:14px"></i></button>
                         </div>
                     </header>
                     <div class="tile__body" id="tile-body-status">
@@ -183,10 +183,10 @@
                 <!-- T2: VM Status (1x1) -->
                 <article class="tile tile-1x1 tile--ok" id="tile-vm">
                     <header class="tile__header">
-                        <span class="tile__icon">🖥</span>
+                        <i data-lucide="monitor" class="tile__icon"></i>
                         <h3 class="tile__title" data-i18n="vm_status">VM Status</h3>
                         <div class="tile__actions">
-                            <button class="tile__action" onclick="loadVMStatus()" title="Refresh">↻</button>
+                            <button class="tile__action" onclick="loadVMStatus()" title="Refresh"><i data-lucide="rotate-cw" style="width:14px;height:14px"></i></button>
                         </div>
                     </header>
                     <div class="tile__body" id="tile-body-vm">
@@ -197,10 +197,10 @@
                 <!-- T3: User (1x1) -->
                 <article class="tile tile-1x1" id="tile-user">
                     <header class="tile__header">
-                        <span class="tile__icon">👤</span>
+                        <i data-lucide="user" class="tile__icon"></i>
                         <h3 class="tile__title" data-i18n="user_count">User</h3>
                         <div class="tile__actions">
-                            <button class="tile__action" onclick="loadUserInfo()" title="Refresh">↻</button>
+                            <button class="tile__action" onclick="loadUserInfo()" title="Refresh"><i data-lucide="rotate-cw" style="width:14px;height:14px"></i></button>
                         </div>
                     </header>
                     <div class="tile__body" id="tile-body-user">
@@ -211,10 +211,10 @@
                 <!-- T4: Service Health (2x1) -->
                 <article class="tile tile-2x1 tile--ok" id="tile-health">
                     <header class="tile__header">
-                        <span class="tile__icon">📊</span>
+                        <i data-lucide="bar-chart-3" class="tile__icon"></i>
                         <h3 class="tile__title" data-i18n="service_health">Service Health</h3>
                         <div class="tile__actions">
-                            <button class="tile__action" onclick="loadStatus()" title="Refresh">↻</button>
+                            <button class="tile__action" onclick="loadStatus()" title="Refresh"><i data-lucide="rotate-cw" style="width:14px;height:14px"></i></button>
                         </div>
                     </header>
                     <div class="tile__body" id="tile-body-health">
@@ -225,7 +225,7 @@
                 <!-- T6: Quick Links (1x1) -->
                 <article class="tile tile-1x1" id="tile-links">
                     <header class="tile__header">
-                        <span class="tile__icon">🔗</span>
+                        <i data-lucide="link" class="tile__icon"></i>
                         <h3 class="tile__title" data-i18n="quick_links">Quick Links</h3>
                     </header>
                     <div class="tile__body" id="tile-body-links">
@@ -241,10 +241,10 @@
                 <!-- T5: Latest Updates (2x1) -->
                 <article class="tile tile-2x1" id="tile-updates">
                     <header class="tile__header">
-                        <span class="tile__icon">📡</span>
+                        <i data-lucide="rss" class="tile__icon"></i>
                         <h3 class="tile__title" data-i18n="latest_updates">Latest Updates</h3>
                         <div class="tile__actions">
-                            <button class="tile__action" onclick="loadUpdatesSummary()" title="Refresh">↻</button>
+                            <button class="tile__action" onclick="loadUpdatesSummary()" title="Refresh"><i data-lucide="rotate-cw" style="width:14px;height:14px"></i></button>
                         </div>
                     </header>
                     <div class="tile__body" id="tile-body-updates">
@@ -255,10 +255,10 @@
                 <!-- T7: Bookmarks (1x1) -->
                 <article class="tile tile-1x1" id="tile-bookmarks">
                     <header class="tile__header">
-                        <span class="tile__icon">🔖</span>
+                        <i data-lucide="bookmark" class="tile__icon"></i>
                         <h3 class="tile__title" data-i18n="bookmarks">Bookmarks</h3>
                         <div class="tile__actions">
-                            <button class="tile__action" onclick="loadBookmarks()" title="Refresh">↻</button>
+                            <button class="tile__action" onclick="loadBookmarks()" title="Refresh"><i data-lucide="rotate-cw" style="width:14px;height:14px"></i></button>
                         </div>
                     </header>
                     <div class="tile__body" id="tile-body-bookmarks">
@@ -271,7 +271,7 @@
         <!-- === PRICING === -->
         <section class="section" id="section-pricing">
             <div class="page-header">
-                <h1 data-i18n="pricing">💰 Azure Pricing Query</h1>
+                <h1 data-i18n="pricing"><i data-lucide="banknote" class="heading-icon"></i>Azure Pricing Query</h1>
             </div>
             <div class="card">
                 <div class="search-box">
@@ -287,7 +287,7 @@
                         <option value="japaneast">Japan East</option>
                         <option value="australiaeast">Australia East</option>
                     </select>
-                    <button class="btn btn-primary" onclick="searchPricing()">🔍 <span data-i18n="search">Search</span></button>
+                    <button class="btn btn-primary" onclick="searchPricing()"><i data-lucide="search" class="btn-icon"></i> <span data-i18n="search">Search</span></button>
                 </div>
             </div>
             <div class="card">
@@ -315,12 +315,12 @@
         <!-- === DOCS === -->
         <section class="section" id="section-docs">
             <div class="page-header">
-                <h1 data-i18n="docs">📚 Documentation Search</h1>
+                <h1 data-i18n="docs"><i data-lucide="library" class="heading-icon"></i>Documentation Search</h1>
             </div>
             <div class="card">
                 <div class="search-box">
                     <input type="text" id="docs-query" placeholder="Search Azure documentation..." data-i18n-placeholder="search_docs" onkeydown="if(event.key==='Enter')searchDocs()">
-                    <button class="btn btn-primary" onclick="searchDocs()">🔍 <span data-i18n="search">Search</span></button>
+                    <button class="btn btn-primary" onclick="searchDocs()"><i data-lucide="search" class="btn-icon"></i> <span data-i18n="search">Search</span></button>
                 </div>
             </div>
             <div id="docs-results"></div>
@@ -329,7 +329,7 @@
         <!-- === UPDATES === -->
         <section class="section" id="section-updates">
             <div class="page-header">
-                <h1 data-i18n="updates">📡 Azure Updates Feed</h1>
+                <h1 data-i18n="updates"><i data-lucide="rss" class="heading-icon"></i>Azure Updates Feed</h1>
                 <div class="actions">
                     <select id="updates-category" onchange="loadUpdates()">
                         <option value="" data-i18n="all_categories">All Categories</option>
@@ -341,7 +341,7 @@
                         <option value="security">Security</option>
                         <option value="devops">DevOps</option>
                     </select>
-                    <button class="btn btn-primary" onclick="loadUpdates()">🔄 <span data-i18n="refresh">Refresh</span></button>
+                    <button class="btn btn-primary" onclick="loadUpdates()"><i data-lucide="refresh-cw" class="btn-icon"></i> <span data-i18n="refresh">Refresh</span></button>
                 </div>
             </div>
             <div id="updates-list"><div class="loading"><div class="spinner"></div></div></div>
@@ -350,7 +350,7 @@
         <!-- === REPORTS === -->
         <section class="section" id="section-reports">
             <div class="page-header">
-                <h1 data-i18n="reports">📝 Daily Work Reports</h1>
+                <h1 data-i18n="reports"><i data-lucide="clipboard-list" class="heading-icon"></i>Daily Work Reports</h1>
             </div>
             <div class="grid grid-2">
                 <div class="card">
@@ -362,13 +362,13 @@
                         <textarea id="report-blockers" placeholder="Blockers" data-i18n-placeholder="blockers"></textarea>
                         <textarea id="report-next" placeholder="Next steps" data-i18n-placeholder="next_steps"></textarea>
                         <input type="hidden" id="editing-report-id" value="">
-                        <button class="btn btn-primary" id="report-submit-btn" onclick="saveReport()">💾 <span data-i18n="save_report">Save Report</span></button>
+                        <button class="btn btn-primary" id="report-submit-btn" onclick="saveReport()"><i data-lucide="save" class="btn-icon"></i> <span data-i18n="save_report">Save Report</span></button>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-header">
                         <span data-i18n="saved_reports">Saved Reports</span>
-                        <button class="btn btn-sm" onclick="loadReports()">🔄</button>
+                        <button class="btn btn-sm" onclick="loadReports()"><i data-lucide="refresh-cw" class="btn-icon-sm"></i></button>
                     </div>
                     <div id="reports-list"><div class="empty-state"><span data-i18n="no_reports">No reports yet</span></div></div>
                 </div>
@@ -382,7 +382,7 @@
         <!-- === MEETINGS === -->
         <section class="section" id="section-meetings">
             <div class="page-header">
-                <h1 data-i18n="meetings">🤝 Meeting Summaries</h1>
+                <h1 data-i18n="meetings"><i data-lucide="handshake" class="heading-icon"></i>Meeting Summaries</h1>
             </div>
             <div class="grid grid-2">
                 <div class="card">
@@ -394,13 +394,13 @@
                         <textarea id="meeting-notes" placeholder="Meeting notes (AI summary will be generated)" data-i18n-placeholder="meeting_notes" rows="4"></textarea>
                         <textarea id="meeting-actions" placeholder="Action items (one per line)" data-i18n-placeholder="action_items" rows="3"></textarea>
                         <input type="hidden" id="editing-meeting-id" value="">
-                        <button class="btn btn-primary" id="meeting-submit-btn" onclick="saveMeeting()">💾 <span data-i18n="save_meeting">Save Meeting</span></button>
+                        <button class="btn btn-primary" id="meeting-submit-btn" onclick="saveMeeting()"><i data-lucide="save" class="btn-icon"></i> <span data-i18n="save_meeting">Save Meeting</span></button>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-header">
                         <span data-i18n="saved_meetings">Saved Meetings</span>
-                        <button class="btn btn-sm" onclick="loadMeetings()">🔄</button>
+                        <button class="btn btn-sm" onclick="loadMeetings()"><i data-lucide="refresh-cw" class="btn-icon-sm"></i></button>
                     </div>
                     <div id="meetings-list"><div class="empty-state"><span data-i18n="no_meetings">No meetings yet</span></div></div>
                 </div>
@@ -415,7 +415,7 @@
         <!-- === TRANSLATE === -->
         <section class="section" id="section-translate">
             <div class="page-header">
-                <h1>🌐 通用翻译</h1>
+                <h1><i data-lucide="globe" style="width:22px;height:22px;vertical-align:-4px;margin-right:8px"></i>通用翻译</h1>
             </div>
 
             <div class="translate-widget">
@@ -438,10 +438,20 @@
         </section>
 
 
+        <!-- === WATS KB === -->
+        <section class="section" id="section-kb">
+            <div class="page-header">
+                <h1><i data-lucide="brain" style="width:22px;height:22px;vertical-align:-4px;margin-right:8px"></i>WATS KB — Azure Knowledge Base</h1>
+            </div>
+            <iframe src="/static/kb/index.html" id="kb-iframe"
+                    style="width:100%;height:calc(100vh - 160px);border:none;border-radius:8px;background:#fff;"></iframe>
+        </section>
+
+
         <!-- === GLOSSARY === -->
         <section class="section" id="section-glossary">
             <div class="page-header">
-                <h1 data-i18n="glossary">📖 Azure Glossary</h1>
+                <h1 data-i18n="glossary"><i data-lucide="book-open" class="heading-icon"></i>Azure Glossary</h1>
             </div>
 
             <div class="glossary-v3">
@@ -462,7 +472,7 @@
                 <div class="card">
                     <div class="card-header">
                         <span>🕐 Recent Searches</span>
-                        <button class="btn btn-sm" onclick="renderHistory()">🔄</button>
+                        <button class="btn btn-sm" onclick="renderHistory()"><i data-lucide="refresh-cw" class="btn-icon-sm"></i></button>
                     </div>
                     <div id="glossary-history">
                         <div class="empty-state">Search history will appear here</div>
@@ -505,7 +515,7 @@
             <div class="card">
                 <div class="search-box">
                     <input type="text" id="migration-keyword" placeholder="Search service (e.g. Key Vault, AKS)..." onkeydown="if(event.key==='Enter')searchMigration()">
-                    <button class="btn btn-primary" onclick="searchMigration()">🔍 Search</button>
+                    <button class="btn btn-primary" onclick="searchMigration()"><i data-lucide="search" class="btn-icon"></i> Search</button>
                     <button class="btn btn-sm" onclick="loadMigrationServices()">📋 All Services</button>
                     <button class="btn btn-sm" style="background:#f8717120;color:#f87171" onclick="loadUnsupportedOnly()">⚠️ Cannot Move Only</button>
                 </div>
@@ -531,14 +541,20 @@
         </div>
     </aside>
 
-    <script src="/static/js/nav.js?v=3"></script>
-    <script src="/static/js/app.js?v=3"></script>
-    <script src="/static/js/dashboard.js?v=3"></script>
-    <script src="/static/js/pricing.js?v=2"></script>
-    <script src="/static/js/docs.js?v=2"></script>
-    <script src="/static/js/reports.js?v=2"></script>
-    <script src="/static/js/meetings.js?v=2"></script>
-    <script src="/static/js/glossary.js?v=2"></script>
-    <script src="/static/js/blade.js?v=2"></script>
+    <script src="/static/js/nav.js?v=6"></script>
+    <script src="/static/js/app.js?v=5"></script>
+    <script src="/static/js/dashboard.js?v=5"></script>
+    <script src="/static/js/pricing.js?v=5"></script>
+    <script src="/static/js/docs.js?v=5"></script>
+    <script src="/static/js/reports.js?v=5"></script>
+    <script src="/static/js/meetings.js?v=5"></script>
+    <script src="/static/js/glossary.js?v=5"></script>
+    <script src="/static/js/kb.js?v=1"></script>
+    <script src="/static/js/blade.js?v=5"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+    <script>lucide.createIcons({strokeWidth: 1.75});</script>
+
 </body>
 </html>

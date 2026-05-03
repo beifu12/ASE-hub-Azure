@@ -1,0 +1,155 @@
+<article class="kb-article" data-title="【share】应用程序网关公网探测阿里云主机失败"><h1>【share】应用程序网关公网探测阿里云主机失败</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-09 16:51:20</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>关联工单SR_20251202385178_无法连接到后端，unhealthy</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>关联工单SR_20251202385178_无法连接到后端，unhealthy</li>
+</ul>
+<ul>
+<li>应用程序网关探测阿里云后端主机失败，报错信息</li>
+</ul>
+<ul>
+<li>应用程序网关探测贵方配置的其他后端主机正常，只有这一台阿里云的主机探测失败，应用程序网关没有自定义路由，出站直接到公网不会经过Proxy Server或者防火墙之类的中间设备</li>
+</ul>
+<ul>
+<li>因此TLS协商失败也并非是SSL证书造成</li>
+</ul>
+<ul>
+<li>也就是说问题并非发生在Azure侧，只要从外部curl携带SNI发起访问47.100.174.43都会失败，问题缩小到47.100.174.43这个公共IP上</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述</li>
+</ul>
+<ul>
+<li>APPGW 资源ID：</li>
+</ul>
+<ul>
+<li>/subscriptions/5a1acb4c-06ed-4eeb-9377-c3eace19245f/resourceGroups/CZ-CN78-R00-CE2-P-GateWay/providers/Microsoft.Network/applicationGateways/czcn78r00ag001</li>
+</ul>
+<ul>
+<li>公共IP：40.73.78.75</li>
+</ul>
+<ul>
+<li>阿里云后端主机：</li>
+</ul>
+<ul>
+<li>公共IP：47.100.174.43</li>
+</ul>
+<ul>
+<li>网卡eth0内网IP：10.24.0.68</li>
+</ul>
+<ul>
+<li>应用程序网关后端池配置的是阿里云主机的公共IP 47.100.174.43</li>
+</ul>
+<ul>
+<li>阿里云侧安全组已经放行应用程序网关的公共IP地址40.73.78.75</li>
+</ul>
+<ul>
+<li>openssl s_client -connect 47.100.174.43:443  -showcerts -tls1_2</li>
+</ul>
+<ul>
+<li>问题原因</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Application Gateway could not connect to the backend. Check that the backend responds on the port used for the probe. Also check whether any NSG/UDR/Firewall is blocking access to the Ip and port of this backend.</li>
+</ul>
+<ul>
+<li>排查步骤</li>
+</ul>
+<ul>
+<li>从后端阿里云主机抓包查看APPGW的探测流量已到达，且TCP握手成功，TLS被reset, 看起来像是APPGW发起的TLS RESET，但需要注意的是TCP握手时可以查看到APPGW侧到阿里云后端VM的TTL是44，但是发起TLS RST的TTL是55，也就是说并不是APPGW发起的TLS RESET</li>
+</ul>
+<ul>
+<li>我们还检查了客户WEB SERVER侧的配置未见异常</li>
+</ul>
+<ul>
+<li>进一步测试验证，我们发现不管是在Azure, 阿里云和本地主机绑定阿里云公共IP 47.100.174.43发起curl时会失败，而从阿里云主机本地绑定内网IP curl的时候会成功</li>
+</ul>
+<ul>
+<li>结合Client端的抓包来看，TCP握手过程可以确认客户端到目的阿里云主机的TTL 为43，但发起TLS RST的TTL却是49，充分说明了客户端和服务器端之间还存在一个中间设备，我们怀疑是阿里云侧（因为47.100.174.43归属于阿里云）的某个WAF或者Proxy Server RST掉了TLS连接</li>
+</ul>
+<ul>
+<li>问题并非发生在Azure侧，以上排查充分说明了客户端和服务器端之间还存在一个中间设备，我们怀疑是阿里云侧（因为47.100.174.43归属于阿里云）的某个WAF或者Proxy Server RST掉了TLS连接</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>APPGW探测是会带SNI的，我们在其他本地机器上用以下curl命令分别测试发现，只要带SNI请求就会被RST，不带SNI请求就会成功</li>
+</ul>
+<ul>
+<li>客户使用命令openssl x509 -in fullchain.pem -text -noout查看SSL证书内</li>
+</ul>
+<ul>
+<li>但后续使用vim fullchain.pem准备添加中间证书时发现证书链实际是完整的，这是因为openssl x509 -in fullchain.pem -text -noout这条命令只会显示主证书，并不会显示完整证书链</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>发现只有服务器证书，我们初步判断SSL证书链不完整导致TLS协商失败，建议客户补充证书链</li>
+</ul>
+<ul>
+<li>解决方案</li>
+</ul>
+<ul>
+<li>建议客户联系阿里侧的工程师寻求支持，经客户反馈，已定位到是阿里云备案的问题</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>域名：www.handsonmetrology.cn</li>
+</ul>
+<ul>
+<li>尝试从一台测试的Azure VM 绑定一条host记录 （47.100.174.43 www.handsonmetrology.cn）验证后端阿里云主机是否公网可访问</li>
+</ul>
+<ul>
+<li>使用curl访问www.handsonmetrology.cn会出现 Connection was reset的报错，但是浏览器访www.handsonmetrology.cn又是正常的</li>
+</ul>
+<ul>
+<li>openssl s_client -connect 47.100.174.43:443 -servername www.handsonmetrology.cn -showcerts -tls1_2</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/05</p>
+<p>关联工单SR_20251202385178_无法连接到后端，unhealthy</p>
+<p>问题描述</p>
+<p>应用程序网关探测阿里云后端主机失败，报错信息</p>
+<p>Application Gateway could not connect to the backend. Check that the backend responds on the port used for the probe. Also check whether any NSG/UDR/Firewall is blocking access to the Ip and port of this backend.</p>
+<p>域名：www.handsonmetrology.cn</p>
+<p>APPGW 资源ID：</p>
+<p>/subscriptions/5a1acb4c-06ed-4eeb-9377-c3eace19245f/resourceGroups/CZ-CN78-R00-CE2-P-GateWay/providers/Microsoft.Network/applicationGateways/czcn78r00ag001</p>
+<p>公共IP：40.73.78.75</p>
+<p>阿里云后端主机：</p>
+<p>公共IP：47.100.174.43</p>
+<p>网卡eth0内网IP：10.24.0.68</p>
+<p>排查步骤</p>
+<p>应用程序网关后端池配置的是阿里云主机的公共IP 47.100.174.43</p>
+<p>阿里云侧安全组已经放行应用程序网关的公共IP地址40.73.78.75</p>
+<p>应用程序网关探测贵方配置的其他后端主机正常，只有这一台阿里云的主机探测失败，应用程序网关没有自定义路由，出站直接到公网不会经过Proxy Server或者防火墙之类的中间设备</p>
+<p>尝试从一台测试的Azure VM 绑定一条host记录 （47.100.174.43 www.handsonmetrology.cn）验证后端阿里云主机是否公网可访问</p>
+<p>使用curl访问www.handsonmetrology.cn会出现 Connection was reset的报错，但是浏览器访www.handsonmetrology.cn又是正常的</p>
+<p>从后端阿里云主机抓包查看APPGW的探测流量已到达，且TCP握手成功，TLS被reset, 看起来像是APPGW发起的TLS RESET，但需要注意的是TCP握手时可以查看到APPGW侧到阿里云后端VM的TTL是44，但是发起TLS RST的TTL是55，也就是说并不是APPGW发起的TLS RESET</p>
+<p>APPGW探测是会带SNI的，我们在其他本地机器上用以下curl命令分别测试发现，只要带SNI请求就会被RST，不带SNI请求就会成功</p>
+<p>openssl s_client -connect 47.100.174.43:443 -servername www.handsonmetrology.cn -showcerts -tls1_2</p>
+<p>openssl s_client -connect 47.100.174.43:443  -showcerts -tls1_2</p>
+<p>客户使用命令openssl x509 -in fullchain.pem -text -noout查看SSL证书内</p>
+<p>发现只有服务器证书，我们初步判断SSL证书链不完整导致TLS协商失败，建议客户补充证书链</p>
+<p>但后续使用vim fullchain.pem准备添加中间证书时发现证书链实际是完整的，这是因为openssl x509 -in fullchain.pem -text -noout这条命令只会显示主证书，并不会显示完整证书链</p>
+<p>因此TLS协商失败也并非是SSL证书造成</p>
+<p>我们还检查了客户WEB SERVER侧的配置未见异常</p>
+<p>进一步测试验证，我们发现不管是在Azure, 阿里云和本地主机绑定阿里云公共IP 47.100.174.43发起curl时会失败，而从阿里云主机本地绑定内网IP curl的时候会成功</p>
+<p>也就是说问题并非发生在Azure侧，只要从外部curl携带SNI发起访问47.100.174.43都会失败，问题缩小到47.100.174.43这个公共IP上</p>
+<p>结合Client端的抓包来看，TCP握手过程可以确认客户端到目的阿里云主机的TTL 为43，但发起TLS RST的TTL却是49，充分说明了客户端和服务器端之间还存在一个中间设备，我们怀疑是阿里云侧（因为47.100.174.43归属于阿里云）的某个WAF或者Proxy Server RST掉了TLS连接</p>
+<p>问题原因</p>
+<p>问题并非发生在Azure侧，以上排查充分说明了客户端和服务器端之间还存在一个中间设备，我们怀疑是阿里云侧（因为47.100.174.43归属于阿里云）的某个WAF或者Proxy Server RST掉了TLS连接</p>
+<p>解决方案</p>
+<p>建议客户联系阿里侧的工程师寻求支持，经客户反馈，已定位到是阿里云备案的问题</p></article>

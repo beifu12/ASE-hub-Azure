@@ -1,0 +1,162 @@
+<article class="kb-article" data-title="启用 CoreDNS query log in AKS"><h1>启用 CoreDNS query log in AKS</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-04-17 16:47:26</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2019070937780 _ [MS-LED]service无法被解析dns名</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2019070937780 _ [MS-LED]service无法被解析dns名</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>fuzhangliang</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>data:</li>
+</ul>
+<ul>
+<li>kind: ConfigMap</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>labels:</li>
+</ul>
+<ul>
+<li>addonmanager.kubernetes.io/mode: EnsureExists</li>
+</ul>
+<ul>
+<li>k8s-app: kube-dns</li>
+</ul>
+<ul>
+<li>kubernetes.io/cluster-service: &quot;true&quot;</li>
+</ul>
+<ul>
+<li>name: coredns-custom</li>
+</ul>
+<ul>
+<li>namespace: kube-system</li>
+</ul>
+<ul>
+<li>随后删除系统的coredns pod ，删除系统的core dns不会造成影响，因为系统会重建此pod。重建后，我们自定义的配置会生效：</li>
+</ul>
+<ul>
+<li>delete pod -n kube-system ********</li>
+</ul>
+<ul>
+<li>比如我们在一个Pod中解析svc ，这里解析我自己的internal-nginx 和internal-test（这个不存在）</li>
+</ul>
+<ul>
+<li>日志比较多，尽量grep一下。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>启用 CoreDNS query log in AKS</li>
+</ul>
+<ul>
+<li>不太懂怎么在Azure 门户中查看AKS的DNS 查询日志，所以这里采用K8S原生的方法查看DNS query log.</li>
+</ul>
+<ul>
+<li>AKS默认的DNS是不记录查询日志的，从coredns的configmap中可以看到，其缺少log配置，只会记录error等信息。</li>
+</ul>
+<ul>
+<li>通过查询发现，在AKS中我们不能编辑默认的CoreDns 的configmap文件去修改配置，就算修改了也是无效的。所以使用</li>
+</ul>
+<ul>
+<li>这里提供自定义的启用dns query log的configmap如下：</li>
+</ul>
+<ul>
+<li>log.override: |</li>
+</ul>
+<ul>
+<li>log</li>
+</ul>
+<ul>
+<li>这样我们就可以看到coredns的query log了。</li>
+</ul>
+<ul>
+<li>for p in $(kubectl get pods --namespace=kube-system -l k8s-app=kube-dns -o name); do kubectl logs --namespace=kube-system $p; done</li>
+</ul>
+<ul>
+<li>可以看到查询internal-test是NXDOMAIN （none exist domain），不存在的记录</li>
+</ul>
+<ul>
+<li>而查询internal-nginx肯定是 no  error ，正常的。</li>
+</ul>
+<ul>
+<li>注意启用query  log会造成额外开销，请谨慎操作。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>kubectl -n kube-system edit configmap coredns 这样的方式去修改，肯定是无效的。参见Github:</li>
+</ul>
+<ul>
+<li>kubectl apply -f core-dns-my.yaml</li>
+</ul>
+<ul>
+<li>kubectl get pod -n kube-system -o wide</li>
+</ul>
+<ul>
+<li>通过这个命令，就可以看log了</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>也就是说我们需要将自己想要的修改的配置定义到自己的configmap.这样就可以生效了。</li>
+</ul>
+<ul>
+<li>然后将这个配置应用:</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/Azure/AKS/issues/811" target="_blank" rel="noopener">https://github.com/Azure/AKS/issues/811</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>启用 CoreDNS query log in AKS</p>
+<p>fuzhangliang</p>
+<p>SR_2019070937780 _ [MS-LED]service无法被解析dns名</p>
+<p>不太懂怎么在Azure 门户中查看AKS的DNS 查询日志，所以这里采用K8S原生的方法查看DNS query log.</p>
+<p>AKS默认的DNS是不记录查询日志的，从coredns的configmap中可以看到，其缺少log配置，只会记录error等信息。</p>
+<p>通过查询发现，在AKS中我们不能编辑默认的CoreDns 的configmap文件去修改配置，就算修改了也是无效的。所以使用</p>
+<p>kubectl -n kube-system edit configmap coredns 这样的方式去修改，肯定是无效的。参见Github:</p>
+<p><a href="https://github.com/Azure/AKS/issues/811" target="_blank" rel="noopener">https://github.com/Azure/AKS/issues/811</a></p>
+<p>也就是说我们需要将自己想要的修改的配置定义到自己的configmap.这样就可以生效了。</p>
+<p>这里提供自定义的启用dns query log的configmap如下：</p>
+<p>apiVersion: v1</p>
+<p>data:</p>
+<p>log.override: |</p>
+<p>log</p>
+<p>kind: ConfigMap</p>
+<p>metadata:</p>
+<p>labels:</p>
+<p>addonmanager.kubernetes.io/mode: EnsureExists</p>
+<p>k8s-app: kube-dns</p>
+<p>kubernetes.io/cluster-service: &quot;true&quot;</p>
+<p>name: coredns-custom</p>
+<p>namespace: kube-system</p>
+<p>然后将这个配置应用:</p>
+<p>kubectl apply -f core-dns-my.yaml</p>
+<p>随后删除系统的coredns pod ，删除系统的core dns不会造成影响，因为系统会重建此pod。重建后，我们自定义的配置会生效：</p>
+<p>kubectl get pod -n kube-system -o wide</p>
+<p>delete pod -n kube-system ********</p>
+<p>这样我们就可以看到coredns的query log了。</p>
+<p>比如我们在一个Pod中解析svc ，这里解析我自己的internal-nginx 和internal-test（这个不存在）</p>
+<p>通过这个命令，就可以看log了</p>
+<p>for p in $(kubectl get pods --namespace=kube-system -l k8s-app=kube-dns -o name); do kubectl logs --namespace=kube-system $p; done</p>
+<p>日志比较多，尽量grep一下。</p>
+<p>可以看到查询internal-test是NXDOMAIN （none exist domain），不存在的记录</p>
+<p>而查询internal-nginx肯定是 no  error ，正常的。</p>
+<p>注意启用query  log会造成额外开销，请谨慎操作。</p></article>

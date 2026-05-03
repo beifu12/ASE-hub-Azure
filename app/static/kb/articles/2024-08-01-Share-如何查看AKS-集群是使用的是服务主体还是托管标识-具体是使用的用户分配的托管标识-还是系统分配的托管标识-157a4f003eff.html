@@ -1,0 +1,114 @@
+<article class="kb-article" data-title="【Share】如何查看AKS 集群是使用的是服务主体还是托管标识？具体是使用的用户分配的托管标识，还是系统分配的托管标识。"><h1>【Share】如何查看AKS 集群是使用的是服务主体还是托管标识？具体是使用的用户分配的托管标识，还是系统分配的托管标识。</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-01 13:26:38</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Hana Liu</li>
+</ul>
+<ul>
+<li>Onenote 链接：</li>
+</ul>
+<ul>
+<li>如果群集使用托管标识，则 type 属性的值将为 SystemAssigned 或 UserAssigned。</li>
+</ul>
+<ul>
+<li>如果群集正在使用服务主体，则 type 属性的值为 null。</li>
+</ul>
+<ul>
+<li>如果群集使用服务主体，则会返回服务主体的Client ID</li>
+</ul>
+<ul>
+<li>本地测试情况</li>
+</ul>
+<ul>
+<li>#使用服务主体的AKS集群#</li>
+</ul>
+<ul>
+<li>#使用系统分配的托管标识的AKS 集群#</li>
+</ul>
+<ul>
+<li>#使用用户分配的托管标识的AKS 集群#</li>
+</ul>
+<ul>
+<li>通过门户</li>
+</ul>
+<ul>
+<li>#使用服务主体的集群，其中不会有identity，但会有servicePrincipal #</li>
+</ul>
+<ul>
+<li>#使用系统分配的托管标识的集群，在identity 部分可以看到type 为SystemAssigned#</li>
+</ul>
+<ul>
+<li>#使用用户分配的托管标识的集群，在identity 部分可以看到type 为UserAssigned，以及对应的用户分配的托管标识的资源ID#</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>分享一个知识点，如何查看AKS 集群是使用的是服务主体还是托管标识？具体是使用的用户分配的托管标识，还是系统分配的托管标识。</li>
+</ul>
+<ul>
+<li>#查看AKS 托管标识#</li>
+</ul>
+<ul>
+<li>#查看AKS 集群服务主体#</li>
+</ul>
+<ul>
+<li>选定需要查看的AKS 集群 –&gt; 导出模板 –&gt; 搜索关键字identity 和servicePrincipal，更多请参考以下的截图</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>示例命令</li>
+</ul>
+<ul>
+<li>az aks show --name myAKSCluster--resource-group myResourceGroup--query identity --output json</li>
+</ul>
+<ul>
+<li>az aks show --name myAKSCluster--resource-group myResourceGroup--query servicePrincipalProfile --output json</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>通过Azure CLI，更多请参考官方文档链接： <a href="https://docs.azure.cn/zh-cn/aks/use-managed-identity#determine-which-type-of-managed-identity-a-cluster-is-using" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/use-managed-identity#determine-which-type-of-managed-identity-a-cluster-is-using</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Hana Liu</p>
+<p>分享一个知识点，如何查看AKS 集群是使用的是服务主体还是托管标识？具体是使用的用户分配的托管标识，还是系统分配的托管标识。</p>
+<p>Onenote 链接：</p>
+<p>通过Azure CLI，更多请参考官方文档链接： <a href="https://docs.azure.cn/zh-cn/aks/use-managed-identity#determine-which-type-of-managed-identity-a-cluster-is-using" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/use-managed-identity#determine-which-type-of-managed-identity-a-cluster-is-using</a></p>
+<p>示例命令</p>
+<p>#查看AKS 托管标识#</p>
+<p>az aks show --name myAKSCluster--resource-group myResourceGroup--query identity --output json</p>
+<p>如果群集使用托管标识，则 type 属性的值将为 SystemAssigned 或 UserAssigned。</p>
+<p>如果群集正在使用服务主体，则 type 属性的值为 null。</p>
+<p>#查看AKS 集群服务主体#</p>
+<p>az aks show --name myAKSCluster--resource-group myResourceGroup--query servicePrincipalProfile --output json</p>
+<p>如果群集使用服务主体，则会返回服务主体的Client ID</p>
+<p>本地测试情况</p>
+<p>#使用服务主体的AKS集群#</p>
+<p>#使用系统分配的托管标识的AKS 集群#</p>
+<p>#使用用户分配的托管标识的AKS 集群#</p>
+<p>通过门户</p>
+<p>选定需要查看的AKS 集群 –&gt; 导出模板 –&gt; 搜索关键字identity 和servicePrincipal，更多请参考以下的截图</p>
+<p>#使用服务主体的集群，其中不会有identity，但会有servicePrincipal #</p>
+<p>#使用系统分配的托管标识的集群，在identity 部分可以看到type 为SystemAssigned#</p>
+<p>#使用用户分配的托管标识的集群，在identity 部分可以看到type 为UserAssigned，以及对应的用户分配的托管标识的资源ID#</p></article>

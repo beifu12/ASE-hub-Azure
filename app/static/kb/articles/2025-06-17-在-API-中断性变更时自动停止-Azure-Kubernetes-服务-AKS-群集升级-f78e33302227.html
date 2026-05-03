@@ -1,0 +1,88 @@
+<article class="kb-article" data-title="在 API 中断性变更时自动停止 Azure Kubernetes 服务 (AKS) 群集升级"><h1>在 API 中断性变更时自动停止 Azure Kubernetes 服务 (AKS) 群集升级</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: Bug</li>
+<li>最近修改: 2025-06-17 11:51:28</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>AKS集群从1.25升级到1.26失败，报错信息：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>AKS集群从1.25升级到1.26失败，报错信息：</li>
+</ul>
+<ul>
+<li>从Release 2023-10-08后的AKS集群增加了对API版本的检测，如果发现一些目标版本不再支持的API，就会block集群升级操作，所以这次报错是expected的。</li>
+</ul>
+<ul>
+<li>从我们收到的其他案例的经验中推测可能是kube-state-metrics在call这个API。因为kube-state-metrics是三方开源的产品，我搜索了一些Github上的issue：Update bundled kube-state-metrics to v2.7.0 to mitigate deprecation warnings · Issue #14487 · DataDog/datadog-agent (github.com)</li>
+</ul>
+<ul>
+<li>这个Issue上提到版本较低的kube-state-metrics依然在使用autoscaling/v2beta2， 从kube-state-metrics 2.7.0版本之后对这个问题做了fix。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>AKS资源ID：/subscriptions/0b711b65-14f9-491c-9e1d-95c6a8258c44/resourcegroups/Central_Full_Stack_Azure-Pre-prod-vnet-01/providers/Microsoft.ContainerService/managedClusters/CentralFullStackAzure</li>
+</ul>
+<ul>
+<li>Releases ·Azure/AKS (github.com)</li>
+</ul>
+<ul>
+<li>详情您可以参考这篇链接：在API 中断性变更时自动停止Azure Kubernetes 服务(AKS) 群集升级（预览版） - Azure Kubernetes Service | Microsoft Learn</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查进展：</li>
+</ul>
+<ul>
+<li>这个报错信息提示集群中目前正在使用autoscaling/v2beta2这个API，但是这个API在K8S 1.26版本被弃用。从后台日志可以确认到集群CentralFullStackAzure中目前确实仍然有autoscaling/v2beta2 API在使用。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>建议：</li>
+</ul>
+<ul>
+<li>依据以上排查，建议升级完kube-state-metrics版本后，等待至少12小时（以保证后台相关autoscaling/v2beta2记录失效），之后再次尝试升级AKS版本。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>未能保存 Kubernetes 服务“CentralFullStackAzure”。错误: Control Plane upgrade is blocked due to recent usage of a Kubernetes API deprecated in the specified version. Please refer to <a href="https://kubernetes.io/docs/reference/using-api/deprecation-guide" target="_blank" rel="noopener">https://kubernetes.io/docs/reference/using-api/deprecation-guide</a> to migrate the usage. To bypass this error, set forceUpgrade in upgradeSettings.overrideSettings. Bypassing this error without migrating usage will result in the deprecated Kubernetes API calls failing. See details in <a href="https://aka.ms/aks/UpgradeAndDeprecatedAPIs." target="_blank" rel="noopener">https://aka.ms/aks/UpgradeAndDeprecatedAPIs.</a> Usage details: 3 errors occurred: * usage has been detected on API autoscaling.horizontalpodautoscalers.v2beta2.get, and was recently seen at: 2023-11-03 02:53:42 +0000 UTC, which will be removed in 1.26 * usage has been detected on API autoscaling.horizontalpodautoscalers.v2beta2.list, and was recently seen at: 2023-11-03 02:53:42 +0000 UTC, which will be removed in 1.26 * usage has been detected on API autoscaling.horizontalpodautoscalers.v2beta2.watch, and was recently seen at: 2023-11-03 07:53:42 +0000 UTC, which will be removed in 1.26</li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.io/docs/reference/using-api/deprecation-guide/" target="_blank" rel="noopener">https://kubernetes.io/docs/reference/using-api/deprecation-guide/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/11/06</p>
+<p>问题描述：</p>
+<p>==========</p>
+<p>AKS集群从1.25升级到1.26失败，报错信息：</p>
+<p>未能保存 Kubernetes 服务“CentralFullStackAzure”。错误: Control Plane upgrade is blocked due to recent usage of a Kubernetes API deprecated in the specified version. Please refer to <a href="https://kubernetes.io/docs/reference/using-api/deprecation-guide" target="_blank" rel="noopener">https://kubernetes.io/docs/reference/using-api/deprecation-guide</a> to migrate the usage. To bypass this error, set forceUpgrade in upgradeSettings.overrideSettings. Bypassing this error without migrating usage will result in the deprecated Kubernetes API calls failing. See details in <a href="https://aka.ms/aks/UpgradeAndDeprecatedAPIs." target="_blank" rel="noopener">https://aka.ms/aks/UpgradeAndDeprecatedAPIs.</a> Usage details: 3 errors occurred: * usage has been detected on API autoscaling.horizontalpodautoscalers.v2beta2.get, and was recently seen at: 2023-11-03 02:53:42 +0000 UTC, which will be removed in 1.26 * usage has been detected on API autoscaling.horizontalpodautoscalers.v2beta2.list, and was recently seen at: 2023-11-03 02:53:42 +0000 UTC, which will be removed in 1.26 * usage has been detected on API autoscaling.horizontalpodautoscalers.v2beta2.watch, and was recently seen at: 2023-11-03 07:53:42 +0000 UTC, which will be removed in 1.26</p>
+<p>AKS资源ID：/subscriptions/0b711b65-14f9-491c-9e1d-95c6a8258c44/resourcegroups/Central_Full_Stack_Azure-Pre-prod-vnet-01/providers/Microsoft.ContainerService/managedClusters/CentralFullStackAzure</p>
+<p>排查进展：</p>
+<p>这个报错信息提示集群中目前正在使用autoscaling/v2beta2这个API，但是这个API在K8S 1.26版本被弃用。从后台日志可以确认到集群CentralFullStackAzure中目前确实仍然有autoscaling/v2beta2 API在使用。</p>
+<p>从Release 2023-10-08后的AKS集群增加了对API版本的检测，如果发现一些目标版本不再支持的API，就会block集群升级操作，所以这次报错是expected的。</p>
+<p>Releases ·Azure/AKS (github.com)</p>
+<p>详情您可以参考这篇链接：在API 中断性变更时自动停止Azure Kubernetes 服务(AKS) 群集升级（预览版） - Azure Kubernetes Service | Microsoft Learn</p>
+<p>从我们收到的其他案例的经验中推测可能是kube-state-metrics在call这个API。因为kube-state-metrics是三方开源的产品，我搜索了一些Github上的issue：Update bundled kube-state-metrics to v2.7.0 to mitigate deprecation warnings · Issue #14487 · DataDog/datadog-agent (github.com)</p>
+<p>这个Issue上提到版本较低的kube-state-metrics依然在使用autoscaling/v2beta2， 从kube-state-metrics 2.7.0版本之后对这个问题做了fix。</p>
+<p>建议：</p>
+<p>依据以上排查，建议升级完kube-state-metrics版本后，等待至少12小时（以保证后台相关autoscaling/v2beta2记录失效），之后再次尝试升级AKS版本。</p>
+<p>参考文档：</p>
+<p><a href="https://kubernetes.io/docs/reference/using-api/deprecation-guide/" target="_blank" rel="noopener">https://kubernetes.io/docs/reference/using-api/deprecation-guide/</a></p></article>

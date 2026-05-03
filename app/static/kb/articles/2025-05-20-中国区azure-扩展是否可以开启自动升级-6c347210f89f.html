@@ -1,0 +1,347 @@
+<article class="kb-article" data-title="中国区azure 扩展是否可以开启自动升级"><h1>中国区azure 扩展是否可以开启自动升级</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-05-20 21:48:46</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>&quot;id&quot;: &quot;/subscriptions/05a7ed23-e9a5-467b-b371-7a9d9f6a504b/resourceGroups/n2rg1/providers/Microsoft.Compute/virtualMachines/ubuntu200422/extensions/AzureMonitorLinuxAgent&quot;,</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/05a7ed23-e9a5-467b-b371-7a9d9f6a504b/resourceGroups/n2rg1/providers/Microsoft.Compute/virtualMachines/ubuntu200422/extensions/AzureMonitorLinuxAgent&quot;,</li>
+</ul>
+<ul>
+<li>&quot;suppressFailures&quot;: null,</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:36 ERROR:[Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] JSON exception decoding</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:36 ERROR:[Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] JSON error processing settings file:</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:38 ERROR:[Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] JSON exception decoding</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:38 ERROR:[Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] JSON error processing settings file:</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:14 ERROR:[Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] JSON exception decoding</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:14 ERROR:[Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] JSON error processing settings file:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>关于扩展自动更新，中国区没有对应文档，在global文档中有具体描述：</li>
+</ul>
+<ul>
+<li>只有特定扩展支持自动更新：</li>
+</ul>
+<ul>
+<li>中国区：</li>
+</ul>
+<ul>
+<li>Global文档：</li>
+</ul>
+<ul>
+<li>可以参考刚才文档中列表：</li>
+</ul>
+<ul>
+<li>……</li>
+</ul>
+<ul>
+<li>&quot;autoUpgradeMinorVersion&quot;: true,</li>
+</ul>
+<ul>
+<li>&quot;forceUpdateTag&quot;: null,</li>
+</ul>
+<ul>
+<li>进一步测试：</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;instanceView&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;location&quot;: &quot;chinanorth2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;AzureMonitorLinuxAgent&quot;,</li>
+</ul>
+<ul>
+<li>&quot;protectedSettings&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;protectedSettingsFromKeyVault&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;provisionAfterExtensions&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;provisioningState&quot;: &quot;Succeeded&quot;,</li>
+</ul>
+<ul>
+<li>&quot;publisher&quot;: &quot;Microsoft.Azure.Monitor&quot;,</li>
+</ul>
+<ul>
+<li>&quot;resourceGroup&quot;: &quot;n2rg1&quot;,</li>
+</ul>
+<ul>
+<li>&quot;settings&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;tags&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;Microsoft.Compute/virtualMachines/extensions&quot;,</li>
+</ul>
+<ul>
+<li>&quot;typeHandlerVersion&quot;: &quot;1.35&quot;,</li>
+</ul>
+<ul>
+<li>&quot;typePropertiesType&quot;: &quot;AzureMonitorLinuxAgent&quot;</li>
+</ul>
+<ul>
+<li>开启自动更新后，monitor扩展版本已经自动更新成功：</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:36 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] sequence number is 0</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:36 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] setting file path is/var/lib/waagent/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4/config/0.settings</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:36 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] JSON config:</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:36 Update succeeded</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:36 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] Update succeeded</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:36 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] Update,success,0,Update succeeded</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:38 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] sequence number is 0</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:38 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] setting file path is/var/lib/waagent/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1/config/0.settings</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:38 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] JSON config:</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:38 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Running command &quot;dpkg -P azuremonitoragent&quot;</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:39</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:12 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Output of command &quot;dpkg -P azuremonitoragent&quot;:</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:12 (Reading database ... 148327 files and directories currently installed.)</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:12 Removing azuremonitoragent (1.33.1-build.main.708) ...</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:12 PRE-RM: [remove ] [ubuntu 20.04 systemd]</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:12 POST-RM: [remove ] [ubuntu 20.04 systemd deb]</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:12 Purging configuration files for azuremonitoragent (1.33.1-build.main.708) ...</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:12 POST-RM: [purge ] [ubuntu 20.04 systemd deb]</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:12 dpkg: warning: while removing azuremonitoragent, directory &#39;/opt/microsoft/azuremonitoragent/bin/kqlextension&#39; not empty so not removed</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:12 dpkg: warning: while removing azuremonitoragent, directory &#39;/etc/opt/microsoft/azuremonitoragent&#39; not empty so not removed</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:12 Processing triggers for systemd (245.4-4ubuntu3.20) ...</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:12 Uninstall succeeded</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:12 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Uninstall succeeded</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:12 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Uninstall,success,0,Uninstall succeeded</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:14 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] sequence number is 0</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:14 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] setting file path is/var/lib/waagent/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4/config/0.settings</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:14 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] JSON config:</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:14 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] Running command &quot;dpkg --force-overwrite --force-confnew -i /var/lib/waagent/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4/packages/azuremonitoragent_1.35.4-971_x86_64.deb&quot;</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:18 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] Output of command &quot;dpkg --force-overwrite --force-confnew -i /var/lib/waagent/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4/packages/azuremonitoragent_1.35.4-971_x86_64.deb&quot;:</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:18 Selecting previously unselected package azuremonitoragent.</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:18 (Reading database ... 148268 files and directories currently installed.)</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:18 Preparing to unpack .../azuremonitoragent_1.35.4-971_x86_64.deb ...</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:18 PRE-INSTALL: [install ] [ubuntu 20.04]</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:18 Unpacking azuremonitoragent (1.35.4-971) ...</li>
+</ul>
+<ul>
+<li>2025/05/20 20:44:18 Setting up azuremonitoragent (1.35.4-971) ...</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>且当前中国区portal上没有那个启用和禁用自动扩展的选项：</li>
+</ul>
+<ul>
+<li>Networkwatcher和azuremonitoragent是支持自动更新扩展的，只不过中国区portal上不能启用和禁用。</li>
+</ul>
+<ul>
+<li>通过具体查看虚拟机默认扩展自动更新选项为null：</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:/var/log/azure/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent# az vm show -g n2rg1 -n ubuntu200422</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:39 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Output of command &quot;systemctl restart rsyslog&quot;:</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:39 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Removed local syslog configuration files if found and restarted syslog</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>通过命令行可以将monitor扩展的自动升级设置为true。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>&quot;enableAutomaticUpgrade&quot;: null,</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:/var/log/azure/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent# az vm extension set --enable-auto-upgrade true --publisher Microsoft.Azure.Monitor -g n2rg1 --name AzureMonitorLinuxAgent --vm-name ubuntu200422</li>
+</ul>
+<ul>
+<li>&quot;enableAutomaticUpgrade&quot;: true,</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:35 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Disable succeeded</li>
+</ul>
+<ul>
+<li>2025/05/20 20:43:35 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Disable,success,0,Disable succeeded</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/virtual-machines/automatic-extension-upgrade?tabs=RestAPI1%2CRestAPI2" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-machines/automatic-extension-upgrade?tabs=RestAPI1%2CRestAPI2</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/5/20</p>
+<p>关于扩展自动更新，中国区没有对应文档，在global文档中有具体描述：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/virtual-machines/automatic-extension-upgrade?tabs=RestAPI1%2CRestAPI2" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-machines/automatic-extension-upgrade?tabs=RestAPI1%2CRestAPI2</a></p>
+<p>只有特定扩展支持自动更新：</p>
+<p>且当前中国区portal上没有那个启用和禁用自动扩展的选项：</p>
+<p>中国区：</p>
+<p>Global文档：</p>
+<p>可以参考刚才文档中列表：</p>
+<p>Networkwatcher和azuremonitoragent是支持自动更新扩展的，只不过中国区portal上不能启用和禁用。</p>
+<p>通过具体查看虚拟机默认扩展自动更新选项为null：</p>
+<p>root@Ubuntu20:/var/log/azure/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent# az vm show -g n2rg1 -n ubuntu200422</p>
+<p>……</p>
+<p>&quot;autoUpgradeMinorVersion&quot;: true,</p>
+<p>&quot;enableAutomaticUpgrade&quot;: null,</p>
+<p>&quot;forceUpdateTag&quot;: null,</p>
+<p>进一步测试：</p>
+<p>root@Ubuntu20:/var/log/azure/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent# az vm extension set --enable-auto-upgrade true --publisher Microsoft.Azure.Monitor -g n2rg1 --name AzureMonitorLinuxAgent --vm-name ubuntu200422</p>
+<p>{</p>
+<p>&quot;enableAutomaticUpgrade&quot;: true,</p>
+<p>&quot;id&quot;: &quot;/subscriptions/05a7ed23-e9a5-467b-b371-7a9d9f6a504b/resourceGroups/n2rg1/providers/Microsoft.Compute/virtualMachines/ubuntu200422/extensions/AzureMonitorLinuxAgent&quot;,</p>
+<p>&quot;instanceView&quot;: null,</p>
+<p>&quot;location&quot;: &quot;chinanorth2&quot;,</p>
+<p>&quot;name&quot;: &quot;AzureMonitorLinuxAgent&quot;,</p>
+<p>&quot;protectedSettings&quot;: null,</p>
+<p>&quot;protectedSettingsFromKeyVault&quot;: null,</p>
+<p>&quot;provisionAfterExtensions&quot;: null,</p>
+<p>&quot;provisioningState&quot;: &quot;Succeeded&quot;,</p>
+<p>&quot;publisher&quot;: &quot;Microsoft.Azure.Monitor&quot;,</p>
+<p>&quot;resourceGroup&quot;: &quot;n2rg1&quot;,</p>
+<p>&quot;settings&quot;: null,</p>
+<p>&quot;suppressFailures&quot;: null,</p>
+<p>&quot;tags&quot;: null,</p>
+<p>&quot;type&quot;: &quot;Microsoft.Compute/virtualMachines/extensions&quot;,</p>
+<p>&quot;typeHandlerVersion&quot;: &quot;1.35&quot;,</p>
+<p>&quot;typePropertiesType&quot;: &quot;AzureMonitorLinuxAgent&quot;</p>
+<p>通过命令行可以将monitor扩展的自动升级设置为true。</p>
+<p>开启自动更新后，monitor扩展版本已经自动更新成功：</p>
+<p>2025/05/20 20:43:35 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Disable succeeded</p>
+<p>2025/05/20 20:43:35 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Disable,success,0,Disable succeeded</p>
+<p>2025/05/20 20:43:36 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] sequence number is 0</p>
+<p>2025/05/20 20:43:36 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] setting file path is/var/lib/waagent/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4/config/0.settings</p>
+<p>2025/05/20 20:43:36 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] JSON config:</p>
+<p>2025/05/20 20:43:36 ERROR:[Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] JSON exception decoding</p>
+<p>2025/05/20 20:43:36 ERROR:[Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] JSON error processing settings file:</p>
+<p>2025/05/20 20:43:36 Update succeeded</p>
+<p>2025/05/20 20:43:36 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] Update succeeded</p>
+<p>2025/05/20 20:43:36 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] Update,success,0,Update succeeded</p>
+<p>2025/05/20 20:43:38 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] sequence number is 0</p>
+<p>2025/05/20 20:43:38 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] setting file path is/var/lib/waagent/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1/config/0.settings</p>
+<p>2025/05/20 20:43:38 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] JSON config:</p>
+<p>2025/05/20 20:43:38 ERROR:[Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] JSON exception decoding</p>
+<p>2025/05/20 20:43:38 ERROR:[Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] JSON error processing settings file:</p>
+<p>2025/05/20 20:43:38 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Running command &quot;dpkg -P azuremonitoragent&quot;</p>
+<p>2025/05/20 20:43:39 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Output of command &quot;systemctl restart rsyslog&quot;:</p>
+<p>2025/05/20 20:43:39</p>
+<p>2025/05/20 20:43:39 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Removed local syslog configuration files if found and restarted syslog</p>
+<p>2025/05/20 20:44:12 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Output of command &quot;dpkg -P azuremonitoragent&quot;:</p>
+<p>2025/05/20 20:44:12 (Reading database ... 148327 files and directories currently installed.)</p>
+<p>2025/05/20 20:44:12 Removing azuremonitoragent (1.33.1-build.main.708) ...</p>
+<p>2025/05/20 20:44:12 PRE-RM: [remove ] [ubuntu 20.04 systemd]</p>
+<p>2025/05/20 20:44:12 POST-RM: [remove ] [ubuntu 20.04 systemd deb]</p>
+<p>2025/05/20 20:44:12 Purging configuration files for azuremonitoragent (1.33.1-build.main.708) ...</p>
+<p>2025/05/20 20:44:12 POST-RM: [purge ] [ubuntu 20.04 systemd deb]</p>
+<p>2025/05/20 20:44:12 dpkg: warning: while removing azuremonitoragent, directory &#39;/opt/microsoft/azuremonitoragent/bin/kqlextension&#39; not empty so not removed</p>
+<p>2025/05/20 20:44:12 dpkg: warning: while removing azuremonitoragent, directory &#39;/etc/opt/microsoft/azuremonitoragent&#39; not empty so not removed</p>
+<p>2025/05/20 20:44:12 Processing triggers for systemd (245.4-4ubuntu3.20) ...</p>
+<p>2025/05/20 20:44:12 Uninstall succeeded</p>
+<p>2025/05/20 20:44:12 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Uninstall succeeded</p>
+<p>2025/05/20 20:44:12 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.33.1] Uninstall,success,0,Uninstall succeeded</p>
+<p>2025/05/20 20:44:14 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] sequence number is 0</p>
+<p>2025/05/20 20:44:14 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] setting file path is/var/lib/waagent/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4/config/0.settings</p>
+<p>2025/05/20 20:44:14 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] JSON config:</p>
+<p>2025/05/20 20:44:14 ERROR:[Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] JSON exception decoding</p>
+<p>2025/05/20 20:44:14 ERROR:[Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] JSON error processing settings file:</p>
+<p>2025/05/20 20:44:14 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] Running command &quot;dpkg --force-overwrite --force-confnew -i /var/lib/waagent/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4/packages/azuremonitoragent_1.35.4-971_x86_64.deb&quot;</p>
+<p>2025/05/20 20:44:18 [Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4] Output of command &quot;dpkg --force-overwrite --force-confnew -i /var/lib/waagent/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent-1.35.4/packages/azuremonitoragent_1.35.4-971_x86_64.deb&quot;:</p>
+<p>2025/05/20 20:44:18 Selecting previously unselected package azuremonitoragent.</p>
+<p>2025/05/20 20:44:18 (Reading database ... 148268 files and directories currently installed.)</p>
+<p>2025/05/20 20:44:18 Preparing to unpack .../azuremonitoragent_1.35.4-971_x86_64.deb ...</p>
+<p>2025/05/20 20:44:18 PRE-INSTALL: [install ] [ubuntu 20.04]</p>
+<p>2025/05/20 20:44:18 Unpacking azuremonitoragent (1.35.4-971) ...</p>
+<p>2025/05/20 20:44:18 Setting up azuremonitoragent (1.35.4-971) ...</p></article>

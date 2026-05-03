@@ -1,0 +1,81 @@
+<article class="kb-article" data-title="Cdn api 调用：获取endpointid"><h1>Cdn api 调用：获取endpointid</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-10-16 14:37:41</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Johnny 2022 0704</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Johnny 2022 0704</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny 2022 0704</li>
+</ul>
+<ul>
+<li>2020.11.20 更新：</li>
+</ul>
+<ul>
+<li>使用postman 写request</li>
+</ul>
+<ul>
+<li>x-azurecdn-request-date    2017-8-16 2:39:49</li>
+</ul>
+<ul>
+<li>Authorization                       AzureCDN 38cf791b-8a9c-4a59-9186-d2c291efd34b:F6D2AE1DBDA9363A29A4C2BD8310F3F50701BE3DD9CF9EBD674A1A2162DE1B9F</li>
+</ul>
+<ul>
+<li>节点管理-获取订阅下所有节点信息：</li>
+</ul>
+<ul>
+<li>第一步只需要sub id。</li>
+</ul>
+<ul>
+<li>然后就可以返回endpointid了：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在cdn管理portal中找 id 和密钥：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>脚本中也需要对应书写：</li>
+</ul>
+<ul>
+<li>如下是python脚本输出的结果：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>然后postman中是在header中设置值，就可以通过api查看出endpointid：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://restapi.cdn.azure.cn/subscriptions/4c1f7e7c-e47c-4688-8de0-19b1f8b58636/endpoints?apiVersion=1.0" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/4c1f7e7c-e47c-4688-8de0-19b1f8b58636/endpoints?apiVersion=1.0</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-list-endpoints" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-list-endpoints</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Johnny 2022 0704</p>
+<p>2020.11.20 更新：</p>
+<p>在cdn管理portal中找 id 和密钥：</p>
+<p>脚本中也需要对应书写：</p>
+<p>如下是python脚本输出的结果：</p>
+<p>然后postman中是在header中设置值，就可以通过api查看出endpointid：</p>
+<p>使用postman 写request</p>
+<p><a href="https://restapi.cdn.azure.cn/subscriptions/4c1f7e7c-e47c-4688-8de0-19b1f8b58636/endpoints?apiVersion=1.0" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/4c1f7e7c-e47c-4688-8de0-19b1f8b58636/endpoints?apiVersion=1.0</a></p>
+<p>x-azurecdn-request-date    2017-8-16 2:39:49</p>
+<p>Authorization                       AzureCDN 38cf791b-8a9c-4a59-9186-d2c291efd34b:F6D2AE1DBDA9363A29A4C2BD8310F3F50701BE3DD9CF9EBD674A1A2162DE1B9F</p>
+<p>节点管理-获取订阅下所有节点信息：</p>
+<p><a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-list-endpoints" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-list-endpoints</a></p>
+<p>第一步只需要sub id。</p>
+<p>然后就可以返回endpointid了：</p></article>

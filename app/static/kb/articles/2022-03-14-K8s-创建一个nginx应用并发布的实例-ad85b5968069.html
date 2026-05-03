@@ -1,0 +1,304 @@
+<article class="kb-article" data-title="K8s 创建一个nginx应用并发布的实例"><h1>K8s 创建一个nginx应用并发布的实例</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: K8S</li>
+<li>最近修改: 2022-03-14 16:10:58</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Image ID: docker-pullable://nginx@sha256:6202beb06ea61f44179e02ca965e8e13b961d12640101fca213efbfd145d7575</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Image ID:                docker-pullable://nginx@sha256:6202beb06ea61f44179e02ca965e8e13b961d12640101fca213efbfd145d7575</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>使用acs-engine部署的k8s群集：</li>
+</ul>
+<ul>
+<li>结构如下：</li>
+</ul>
+<ul>
+<li>ap</li>
+</ul>
+<ul>
+<li>内网ip：</li>
+</ul>
+<ul>
+<li>Master： eth0： 10.240.255.5  docker0： 172.17.0.1</li>
+</ul>
+<ul>
+<li>Pod：</li>
+</ul>
+<ul>
+<li>Agent0 ： eth0： 10.240.0.4  docker0： 172.17.0.1 cbr0: 10.244.2.1</li>
+</ul>
+<ul>
+<li>Agent1 ： eth0： 10.240.0.5  docker0： 172.17.0.1 cbr0: 10.244.0.1</li>
+</ul>
+<ul>
+<li>公网只有一个辅助均衡器有ip： 42.159.94.177 ，master加入了复制均衡器的后端池。</li>
+</ul>
+<ul>
+<li>#kubectl run nginx --replicas=3 --labels=&quot;app=example&quot; --image=nginx:1.10 --port=80</li>
+</ul>
+<ul>
+<li>#kubectl get all</li>
+</ul>
+<ul>
+<li>#kubectl get deploy</li>
+</ul>
+<ul>
+<li>#kubectl describe po/nginx-756944005-59kq6</li>
+</ul>
+<ul>
+<li>root@k8s-master-12109540-0:~# kubectl describe po/nginx-756944005-59kq6</li>
+</ul>
+<ul>
+<li>Name:                nginx-756944005-59kq6</li>
+</ul>
+<ul>
+<li>Namespace:        default</li>
+</ul>
+<ul>
+<li>Node:                k8s-agentpool1-12109540-0/10.240.0.4</li>
+</ul>
+<ul>
+<li>Start Time:        Mon, 30 Jul 2018 07:54:13 +0000</li>
+</ul>
+<ul>
+<li>Labels:                app=example</li>
+</ul>
+<ul>
+<li>Annotations:        kubernetes.io/created-by={&quot;kind&quot;:&quot;SerializedReference&quot;,&quot;apiVersion&quot;:&quot;v1&quot;,&quot;reference&quot;:{&quot;kind&quot;:&quot;ReplicaSet&quot;,&quot;namespace&quot;:&quot;default&quot;,&quot;name&quot;:&quot;nginx-756944005&quot;,&quot;uid&quot;:&quot;bfedcd48-93cd-11e8-b342-0017fa00faf9&quot;,&quot;a...</li>
+</ul>
+<ul>
+<li>Status:                Running</li>
+</ul>
+<ul>
+<li>IP:                10.244.2.2</li>
+</ul>
+<ul>
+<li>Controllers:        ReplicaSet/nginx-756944005</li>
+</ul>
+<ul>
+<li>Containers:</li>
+</ul>
+<ul>
+<li>nginx:</li>
+</ul>
+<ul>
+<li>Container ID:        docker://86216d6e309f4b7f9df79456ffca141920b92134b311742fe24538f573a70068</li>
+</ul>
+<ul>
+<li>Image:                nginx:1.10</li>
+</ul>
+<ul>
+<li>Port:                80/TCP</li>
+</ul>
+<ul>
+<li>State:                Running</li>
+</ul>
+<ul>
+<li>Started:                Mon, 30 Jul 2018 08:12:05 +0000</li>
+</ul>
+<ul>
+<li>Ready:                True</li>
+</ul>
+<ul>
+<li>Restart Count:        0</li>
+</ul>
+<ul>
+<li>Environment:        &lt;none&gt;</li>
+</ul>
+<ul>
+<li>Mounts:</li>
+</ul>
+<ul>
+<li>/var/run/secrets/kubernetes.io/serviceaccount from default-token-33fsj (ro)</li>
+</ul>
+<ul>
+<li>Conditions:</li>
+</ul>
+<ul>
+<li>Type                Status</li>
+</ul>
+<ul>
+<li>Initialized         True</li>
+</ul>
+<ul>
+<li>Ready         True</li>
+</ul>
+<ul>
+<li>PodScheduled         True</li>
+</ul>
+<ul>
+<li>Volumes:</li>
+</ul>
+<ul>
+<li>default-token-33fsj:</li>
+</ul>
+<ul>
+<li>Type:        Secret (a volume populated by a Secret)</li>
+</ul>
+<ul>
+<li>SecretName:        default-token-33fsj</li>
+</ul>
+<ul>
+<li>Optional:        false</li>
+</ul>
+<ul>
+<li>QoS Class:        BestEffort</li>
+</ul>
+<ul>
+<li>Node-Selectors:        &lt;none&gt;</li>
+</ul>
+<ul>
+<li>Tolerations:        &lt;none&gt;</li>
+</ul>
+<ul>
+<li>Events:                &lt;none&gt;</li>
+</ul>
+<ul>
+<li>#kubectl expose deployment nginx --port=88 --type=NodePort --target-port=80 --name=nginx-service</li>
+</ul>
+<ul>
+<li>#kubectl get svc</li>
+</ul>
+<ul>
+<li>#kubectl get pods --show-labels</li>
+</ul>
+<ul>
+<li>NAME                    READY     STATUS             RESTARTS   AGE       LABELS</li>
+</ul>
+<ul>
+<li>nginx-756944005-59kq6   1/1       Running            0          20m       app=example,pod-template-hash=756944005</li>
+</ul>
+<ul>
+<li>nginx-756944005-71pvb   0/1       ImagePullBackOff   0          20m       app=example,pod-template-hash=756944005</li>
+</ul>
+<ul>
+<li>nginx-756944005-qj16f   1/1       Running            0          20m       app=example,pod-template-hash=756944005</li>
+</ul>
+<ul>
+<li>在master上开启iptables</li>
+</ul>
+<ul>
+<li># modprobe ip_tables</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#查看对应ip：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>具体部署命令：</li>
+</ul>
+<ul>
+<li>#查询命令</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>#创建一个nginx部署   三个副本       标签                 镜像名称           端口</li>
+</ul>
+<ul>
+<li>pod-template-hash=756944005</li>
+</ul>
+<ul>
+<li>将端口映射到内网和公网端口</li>
+</ul>
+<ul>
+<li>内网使用 88端口访问，公网使用master 负载均衡器ip访问（31338）</li>
+</ul>
+<ul>
+<li>在master主机的nsg上添加外网端口的入站规则</li>
+</ul>
+<ul>
+<li>在node上测试内网使用 88端口访问：</li>
+</ul>
+<ul>
+<li>在负载均衡上创建对应端口：</li>
+</ul>
+<ul>
+<li>访问公网ip加端口成功：</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2018/7/31</p>
+<p>使用acs-engine部署的k8s群集：</p>
+<p>结构如下：</p>
+<p>ap</p>
+<p>内网ip：</p>
+<p>Master： eth0： 10.240.255.5  docker0： 172.17.0.1</p>
+<p>Pod：</p>
+<p>Agent0 ： eth0： 10.240.0.4  docker0： 172.17.0.1 cbr0: 10.244.2.1</p>
+<p>Agent1 ： eth0： 10.240.0.5  docker0： 172.17.0.1 cbr0: 10.244.0.1</p>
+<p>公网只有一个辅助均衡器有ip： 42.159.94.177 ，master加入了复制均衡器的后端池。</p>
+<p>具体部署命令：</p>
+<p>#kubectl run nginx --replicas=3 --labels=&quot;app=example&quot; --image=nginx:1.10 --port=80</p>
+<p>#创建一个nginx部署   三个副本       标签                 镜像名称           端口</p>
+<p>#查询命令</p>
+<p>#kubectl get all</p>
+<p>#kubectl get deploy</p>
+<p>#kubectl describe po/nginx-756944005-59kq6</p>
+<p>root@k8s-master-12109540-0:~# kubectl describe po/nginx-756944005-59kq6</p>
+<p>Name:                nginx-756944005-59kq6</p>
+<p>Namespace:        default</p>
+<p>Node:                k8s-agentpool1-12109540-0/10.240.0.4</p>
+<p>Start Time:        Mon, 30 Jul 2018 07:54:13 +0000</p>
+<p>Labels:                app=example</p>
+<p>pod-template-hash=756944005</p>
+<p>Annotations:        kubernetes.io/created-by={&quot;kind&quot;:&quot;SerializedReference&quot;,&quot;apiVersion&quot;:&quot;v1&quot;,&quot;reference&quot;:{&quot;kind&quot;:&quot;ReplicaSet&quot;,&quot;namespace&quot;:&quot;default&quot;,&quot;name&quot;:&quot;nginx-756944005&quot;,&quot;uid&quot;:&quot;bfedcd48-93cd-11e8-b342-0017fa00faf9&quot;,&quot;a...</p>
+<p>Status:                Running</p>
+<p>IP:                10.244.2.2</p>
+<p>Controllers:        ReplicaSet/nginx-756944005</p>
+<p>Containers:</p>
+<p>nginx:</p>
+<p>Container ID:        docker://86216d6e309f4b7f9df79456ffca141920b92134b311742fe24538f573a70068</p>
+<p>Image:                nginx:1.10</p>
+<p>Image ID:                docker-pullable://nginx@sha256:6202beb06ea61f44179e02ca965e8e13b961d12640101fca213efbfd145d7575</p>
+<p>Port:                80/TCP</p>
+<p>State:                Running</p>
+<p>Started:                Mon, 30 Jul 2018 08:12:05 +0000</p>
+<p>Ready:                True</p>
+<p>Restart Count:        0</p>
+<p>Environment:        &lt;none&gt;</p>
+<p>Mounts:</p>
+<p>/var/run/secrets/kubernetes.io/serviceaccount from default-token-33fsj (ro)</p>
+<p>Conditions:</p>
+<p>Type                Status</p>
+<p>Initialized         True</p>
+<p>Ready         True</p>
+<p>PodScheduled         True</p>
+<p>Volumes:</p>
+<p>default-token-33fsj:</p>
+<p>Type:        Secret (a volume populated by a Secret)</p>
+<p>SecretName:        default-token-33fsj</p>
+<p>Optional:        false</p>
+<p>QoS Class:        BestEffort</p>
+<p>Node-Selectors:        &lt;none&gt;</p>
+<p>Tolerations:        &lt;none&gt;</p>
+<p>Events:                &lt;none&gt;</p>
+<p>将端口映射到内网和公网端口</p>
+<p>#kubectl expose deployment nginx --port=88 --type=NodePort --target-port=80 --name=nginx-service</p>
+<p>#查看对应ip：</p>
+<p>#kubectl get svc</p>
+<p>内网使用 88端口访问，公网使用master 负载均衡器ip访问（31338）</p>
+<p>#kubectl get pods --show-labels</p>
+<p>NAME                    READY     STATUS             RESTARTS   AGE       LABELS</p>
+<p>nginx-756944005-59kq6   1/1       Running            0          20m       app=example,pod-template-hash=756944005</p>
+<p>nginx-756944005-71pvb   0/1       ImagePullBackOff   0          20m       app=example,pod-template-hash=756944005</p>
+<p>nginx-756944005-qj16f   1/1       Running            0          20m       app=example,pod-template-hash=756944005</p>
+<p>在master上开启iptables</p>
+<h1>modprobe ip_tables</h1>
+<p>在master主机的nsg上添加外网端口的入站规则</p>
+<p>在node上测试内网使用 88端口访问：</p>
+<p>在负载均衡上创建对应端口：</p>
+<p>访问公网ip加端口成功：</p></article>

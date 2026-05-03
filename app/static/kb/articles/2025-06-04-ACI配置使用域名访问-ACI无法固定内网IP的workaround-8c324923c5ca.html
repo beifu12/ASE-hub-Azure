@@ -1,0 +1,442 @@
+<article class="kb-article" data-title="ACI配置使用域名访问（ACI无法固定内网IP的workaround)"><h1>ACI配置使用域名访问（ACI无法固定内网IP的workaround)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-04 16:59:29</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>如果容器组停止、启动或重启，容器组的专用 IP 可能会发生更改，ACI的内网IP无法固定。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>如果容器组停止、启动或重启，容器组的专用 IP 可能会发生更改，ACI的内网IP无法固定。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Fuzhangliang</li>
+</ul>
+<ul>
+<li>根据文档说明：容器组的静态 IP 地址 - Azure Container Instances | Azure Docs ，</li>
+</ul>
+<ul>
+<li>大概思路如下：</li>
+</ul>
+<ul>
+<li>1、创建一个Private DNS zone ,并将这个DNS zone关联到需要访问ACI的VNet，这个Private DNS zone的域名是ACI的自定义域</li>
+</ul>
+<ul>
+<li>如何配置custom container ,参考：</li>
+</ul>
+<ul>
+<li>1、通过CLI创建一个服务主体，用于custom conatiner中的CLI程序登录Azure，服务主体需要有操作Private DNS Zone以及ACI的权限，这里将ACI以及Private DNS zone部署在同一个资源组，因此完成对资源组的授权即可</li>
+</ul>
+<ul>
+<li>记录下appid， password, tenant</li>
+</ul>
+<ul>
+<li>#!bin/bash</li>
+</ul>
+<ul>
+<li>echo &quot;Get ACI IP address...&quot;</li>
+</ul>
+<ul>
+<li>echo &quot;ACI_IP is:&quot; $ACI_IP</li>
+</ul>
+<ul>
+<li>while [ -z $ACI_IP ] || [ &quot;$ACI_IP&quot; = &quot;0.0.0.0&quot; ] ||  [ &quot;$ACI_IP&quot; = &quot;&quot; ]</li>
+</ul>
+<ul>
+<li>do</li>
+</ul>
+<ul>
+<li>sleep 2</li>
+</ul>
+<ul>
+<li>done</li>
+</ul>
+<ul>
+<li>echo &quot;Finally ACI_IP is&quot; $ACI_IP</li>
+</ul>
+<ul>
+<li>echo &quot;Deleting old record if there was one&quot;</li>
+</ul>
+<ul>
+<li>echo &quot;Creating a new DNS record...&quot;</li>
+</ul>
+<ul>
+<li>while true</li>
+</ul>
+<ul>
+<li>if [ $DNS_IP != $ACI_IP ];then</li>
+</ul>
+<ul>
+<li>echo &quot;DNS_IP is not equal ACI_IP, Need restart&quot;</li>
+</ul>
+<ul>
+<li>break</li>
+</ul>
+<ul>
+<li>fi</li>
+</ul>
+<ul>
+<li>sleep 120</li>
+</ul>
+<ul>
+<li>echo &quot;done&quot;</li>
+</ul>
+<ul>
+<li>exit 0</li>
+</ul>
+<ul>
+<li>#Author: fu.zhangliang@oe.21vianet.com</li>
+</ul>
+<ul>
+<li>FROM mcr.microsoft.com/azure-cli:2.65.0</li>
+</ul>
+<ul>
+<li>WORKDIR /</li>
+</ul>
+<ul>
+<li>COPY az_cli.sh /</li>
+</ul>
+<ul>
+<li># add execute to script</li>
+</ul>
+<ul>
+<li>RUN chmod +x /az_cli.sh</li>
+</ul>
+<ul>
+<li>CMD [&quot;/bin/sh&quot;, &quot;/az_cli.sh&quot;]</li>
+</ul>
+<ul>
+<li>4、制作镜像，并上传到自己的ACR</li>
+</ul>
+<ul>
+<li>Docker build   xx</li>
+</ul>
+<ul>
+<li>Docker push   xx</li>
+</ul>
+<ul>
+<li>apiVersion: &#39;2023-05-01&#39;</li>
+</ul>
+<ul>
+<li>location:  &quot;chinanorth3&quot;</li>
+</ul>
+<ul>
+<li>name: &quot;aci08&quot; #ACI名称</li>
+</ul>
+<ul>
+<li>properties:</li>
+</ul>
+<ul>
+<li>subnetIds:</li>
+</ul>
+<ul>
+<li>- id:  &quot;/subscriptions/c1fe03e6-ff80-4d91-824d-ba495a000792/resourceGroups/cn3rg/providers/Microsoft.Network/virtualNetworks/containerVnet/subnets/default&quot;</li>
+</ul>
+<ul>
+<li>Containers:</li>
+</ul>
+<ul>
+<li>- name: azcli</li>
+</ul>
+<ul>
+<li>resources:</li>
+</ul>
+<ul>
+<li>requests:</li>
+</ul>
+<ul>
+<li>cpu: 1.0</li>
+</ul>
+<ul>
+<li>memoryInGB: 2.0</li>
+</ul>
+<ul>
+<li>environmentVariables:</li>
+</ul>
+<ul>
+<li>- name: RG   #ACI 资源组</li>
+</ul>
+<ul>
+<li>value: &quot;cn3rg&quot;</li>
+</ul>
+<ul>
+<li>- name: ACI_INSTANCE_NAME  #ACI名称</li>
+</ul>
+<ul>
+<li>value: &quot;aci08&quot;</li>
+</ul>
+<ul>
+<li>- name: SP_APPID  #服务主体ID</li>
+</ul>
+<ul>
+<li>value: &quot;xxxx&quot;</li>
+</ul>
+<ul>
+<li>- name: SP_PASSWORD  #服务主体密码</li>
+</ul>
+<ul>
+<li>secureValue: &quot;xxxx&quot;</li>
+</ul>
+<ul>
+<li>- name: SP_TENANT  #服务主体tenant</li>
+</ul>
+<ul>
+<li>- name: DNS_ZONE_NAME   #Private  DNS  zone名称</li>
+</ul>
+<ul>
+<li>value: &quot;fucontainer.net&quot;</li>
+</ul>
+<ul>
+<li>- name: DNS_RG           #Private  DNS  zone资源组</li>
+</ul>
+<ul>
+<li>- name: HOSTNAME     #ACI 名称</li>
+</ul>
+<ul>
+<li>- name: nginx  #应用镜像</li>
+</ul>
+<ul>
+<li>image: fuzlreg.azurecr.cn/nginx/nginx:v20250603</li>
+</ul>
+<ul>
+<li>ports:</li>
+</ul>
+<ul>
+<li>- port: 80</li>
+</ul>
+<ul>
+<li>ipAddress:</li>
+</ul>
+<ul>
+<li>type: Private</li>
+</ul>
+<ul>
+<li>osType: Linux</li>
+</ul>
+<ul>
+<li>tags: null</li>
+</ul>
+<ul>
+<li>type: Microsoft.ContainerInstance/containerGroups</li>
+</ul>
+<ul>
+<li>使用上面的配置创建ACI：</li>
+</ul>
+<ul>
+<li>后续运行任何其他的应用镜像，只需要更改应用镜像的配置即可。</li>
+</ul>
+<ul>
+<li>Private  DNS zone中会自动创建ACI的解析记录</li>
+</ul>
+<ul>
+<li>这样客户端可以始终通过域名访问到ACI</li>
+</ul>
+<ul>
+<li>注：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>echo &quot;Logging into Azure...&quot;</li>
+</ul>
+<ul>
+<li>echo &quot;DNSIP:$DNS_IP == ACI_IP:$ACI_IP, Next check&quot;</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>为了应对ACI内网地址发生变化，可以考虑配置通过域名访问ACI，当ACI发生重启时，容器通过运行CLI命令，自动更新Private DNS zone中的容器域名和地址的映射关系。</li>
+</ul>
+<ul>
+<li>2、在容器组中包含一个运行CLI命令的容器custom container，该custome container支持运行Azure CLI命令，以及获取当前容器的内网IP</li>
+</ul>
+<ul>
+<li>3、在启动容器的时候，运行custom container中提前设置好的CLI脚本，这个CLI脚本检查当前ACI Private IP，更新Private DNS zone中的A记录，将容器实例的域名，更新为最新的容器实例的Private IP</li>
+</ul>
+<ul>
+<li>az ad sp create-for-rbac --scopes /subscriptions/c1fe03e6-ff80-4d91-824d-ba495a000792/resourceGroups/cn3rg  --role Contributor --name foraci -o json</li>
+</ul>
+<ul>
+<li>2、创建script，用于获取ACI的IP以及更新Private DNS zone,以下脚本只是参考，脚本中的变量，我们将通过容器的变量传递给脚本</li>
+</ul>
+<ul>
+<li>az cloud set -n AzureChinaCLoud</li>
+</ul>
+<ul>
+<li>az login --service-principal -u $SP_APPID -p $SP_PASSWORD --tenant $SP_TENANT</li>
+</ul>
+<ul>
+<li>az network private-dns record-set a delete -n $HOSTNAME -z $DNS_ZONE_NAME -g  $DNS_RG -y</li>
+</ul>
+<ul>
+<li>az network private-dns record-set a create -n $HOSTNAME -z $DNS_ZONE_NAME -g $DNS_RG</li>
+</ul>
+<ul>
+<li>az network private-dns record-set a add-record --record-set-name $HOSTNAME -z $DNS_ZONE_NAME -g $DNS_RG -a $ACI_IP</li>
+</ul>
+<ul>
+<li>3、制作用于运行脚本的container,  Azure CLI 镜像mcr.microsoft.com/azure-cli内置了az CLI程序，我们可以以此镜像为Base镜像，制作适合我们运行的script的镜像，参考dockerfile如下：</li>
+</ul>
+<ul>
+<li>image: fuzlreg.azurecr.cn/cli/azcli:v2025060308  #运行CLI 命令的镜像</li>
+</ul>
+<ul>
+<li>az container create -g cn3rg --file=.\aci08.yaml</li>
+</ul>
+<ul>
+<li>当ACI运行之后，将通过Custom Image中的脚本，自动更新private DNS zone中的记录</li>
+</ul>
+<ul>
+<li>1、官网文档中提到通过将运行AZ CLI命令的容器作为init容器运行来获取ACI Private IP，但是根据实际测试显示，在AzureCHina环境中，Init容器虽然会运行，也能实现init容器运行CLI命令登录Azure，但是在运行init容器时（init总是最先运行），平台不会给ACI分配IP地址，此时init容器中无论是执行AZcli命令获取ACI的地址还是执行ifconfig获取ACI的地址，都无法成功获得地址。所以测试看，使用init容器运行CLI命令去获取ACI的地址，目前行不通:运行 Init 容器 - Azure Container Instances | Microsoft Learn</li>
+</ul>
+<ul>
+<li>2、运行的CLI script只是一个参考，客户可根据自身业务需要，编写适合自己的脚本</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>ACI_IP=$(az container show --name $ACI_INSTANCE_NAME --resource-group $RG --query ipAddress.ip --output tsv)</li>
+</ul>
+<ul>
+<li>DNS_IP=$(az network private-dns record-set a show -g $DNS_RG -n $HOSTNAME -z $DNS_ZONE_NAME --query aRecords[0].ipv4Address --output tsv)</li>
+</ul>
+<ul>
+<li>protocol: TCP</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>5、将应用镜像和我们的custom image放在ACI中一并运行，我们将通过变量的方式给custom image中的script传值，参考ACI的配置文件如下：</li>
+</ul>
+<ul>
+<li>通过容器日志可以看到，Custom script会一直检查Private DNS zone中ACI名称和地址的映射，如果不一致，将会更新Private DNS zone中的配置</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Fuzhangliang</p>
+<p>根据文档说明：容器组的静态 IP 地址 - Azure Container Instances | Azure Docs ，</p>
+<p>如果容器组停止、启动或重启，容器组的专用 IP 可能会发生更改，ACI的内网IP无法固定。</p>
+<p>为了应对ACI内网地址发生变化，可以考虑配置通过域名访问ACI，当ACI发生重启时，容器通过运行CLI命令，自动更新Private DNS zone中的容器域名和地址的映射关系。</p>
+<p>大概思路如下：</p>
+<p>1、创建一个Private DNS zone ,并将这个DNS zone关联到需要访问ACI的VNet，这个Private DNS zone的域名是ACI的自定义域</p>
+<p>2、在容器组中包含一个运行CLI命令的容器custom container，该custome container支持运行Azure CLI命令，以及获取当前容器的内网IP</p>
+<p>3、在启动容器的时候，运行custom container中提前设置好的CLI脚本，这个CLI脚本检查当前ACI Private IP，更新Private DNS zone中的A记录，将容器实例的域名，更新为最新的容器实例的Private IP</p>
+<p>如何配置custom container ,参考：</p>
+<p>1、通过CLI创建一个服务主体，用于custom conatiner中的CLI程序登录Azure，服务主体需要有操作Private DNS Zone以及ACI的权限，这里将ACI以及Private DNS zone部署在同一个资源组，因此完成对资源组的授权即可</p>
+<p>az ad sp create-for-rbac --scopes /subscriptions/c1fe03e6-ff80-4d91-824d-ba495a000792/resourceGroups/cn3rg  --role Contributor --name foraci -o json</p>
+<p>记录下appid， password, tenant</p>
+<p>2、创建script，用于获取ACI的IP以及更新Private DNS zone,以下脚本只是参考，脚本中的变量，我们将通过容器的变量传递给脚本</p>
+<p>#!bin/bash</p>
+<p>az cloud set -n AzureChinaCLoud</p>
+<p>echo &quot;Logging into Azure...&quot;</p>
+<p>az login --service-principal -u $SP_APPID -p $SP_PASSWORD --tenant $SP_TENANT</p>
+<p>echo &quot;Get ACI IP address...&quot;</p>
+<p>ACI_IP=$(az container show --name $ACI_INSTANCE_NAME --resource-group $RG --query ipAddress.ip --output tsv)</p>
+<p>echo &quot;ACI_IP is:&quot; $ACI_IP</p>
+<p>while [ -z $ACI_IP ] || [ &quot;$ACI_IP&quot; = &quot;0.0.0.0&quot; ] ||  [ &quot;$ACI_IP&quot; = &quot;&quot; ]</p>
+<p>do</p>
+<p>sleep 2</p>
+<p>done</p>
+<p>echo &quot;Finally ACI_IP is&quot; $ACI_IP</p>
+<p>echo &quot;Deleting old record if there was one&quot;</p>
+<p>az network private-dns record-set a delete -n $HOSTNAME -z $DNS_ZONE_NAME -g  $DNS_RG -y</p>
+<p>echo &quot;Creating a new DNS record...&quot;</p>
+<p>az network private-dns record-set a create -n $HOSTNAME -z $DNS_ZONE_NAME -g $DNS_RG</p>
+<p>az network private-dns record-set a add-record --record-set-name $HOSTNAME -z $DNS_ZONE_NAME -g $DNS_RG -a $ACI_IP</p>
+<p>while true</p>
+<p>DNS_IP=$(az network private-dns record-set a show -g $DNS_RG -n $HOSTNAME -z $DNS_ZONE_NAME --query aRecords[0].ipv4Address --output tsv)</p>
+<p>if [ $DNS_IP != $ACI_IP ];then</p>
+<p>echo &quot;DNS_IP is not equal ACI_IP, Need restart&quot;</p>
+<p>break</p>
+<p>fi</p>
+<p>echo &quot;DNSIP:$DNS_IP == ACI_IP:$ACI_IP, Next check&quot;</p>
+<p>sleep 120</p>
+<p>echo &quot;done&quot;</p>
+<p>exit 0</p>
+<p>3、制作用于运行脚本的container,  Azure CLI 镜像mcr.microsoft.com/azure-cli内置了az CLI程序，我们可以以此镜像为Base镜像，制作适合我们运行的script的镜像，参考dockerfile如下：</p>
+<p>#Author: fu.zhangliang@oe.21vianet.com</p>
+<p>FROM mcr.microsoft.com/azure-cli:2.65.0</p>
+<p>WORKDIR /</p>
+<p>COPY az_cli.sh /</p>
+<h1>add execute to script</h1>
+<p>RUN chmod +x /az_cli.sh</p>
+<p>CMD [&quot;/bin/sh&quot;, &quot;/az_cli.sh&quot;]</p>
+<p>4、制作镜像，并上传到自己的ACR</p>
+<p>Docker build   xx</p>
+<p>Docker push   xx</p>
+<p>5、将应用镜像和我们的custom image放在ACI中一并运行，我们将通过变量的方式给custom image中的script传值，参考ACI的配置文件如下：</p>
+<p>apiVersion: &#39;2023-05-01&#39;</p>
+<p>location:  &quot;chinanorth3&quot;</p>
+<p>name: &quot;aci08&quot; #ACI名称</p>
+<p>properties:</p>
+<p>subnetIds:</p>
+<ul>
+<li>id:  &quot;/subscriptions/c1fe03e6-ff80-4d91-824d-ba495a000792/resourceGroups/cn3rg/providers/Microsoft.Network/virtualNetworks/containerVnet/subnets/default&quot;</li>
+</ul>
+<p>Containers:</p>
+<ul>
+<li>name: azcli</li>
+</ul>
+<p>image: fuzlreg.azurecr.cn/cli/azcli:v2025060308  #运行CLI 命令的镜像</p>
+<p>resources:</p>
+<p>requests:</p>
+<p>cpu: 1.0</p>
+<p>memoryInGB: 2.0</p>
+<p>environmentVariables:</p>
+<ul>
+<li>name: RG   #ACI 资源组</li>
+</ul>
+<p>value: &quot;cn3rg&quot;</p>
+<ul>
+<li>name: ACI_INSTANCE_NAME  #ACI名称</li>
+</ul>
+<p>value: &quot;aci08&quot;</p>
+<ul>
+<li>name: SP_APPID  #服务主体ID</li>
+</ul>
+<p>value: &quot;xxxx&quot;</p>
+<ul>
+<li>name: SP_PASSWORD  #服务主体密码</li>
+</ul>
+<p>secureValue: &quot;xxxx&quot;</p>
+<ul>
+<li>name: SP_TENANT  #服务主体tenant</li>
+</ul>
+<ul>
+<li>name: DNS_ZONE_NAME   #Private  DNS  zone名称</li>
+</ul>
+<p>value: &quot;fucontainer.net&quot;</p>
+<ul>
+<li>name: DNS_RG           #Private  DNS  zone资源组</li>
+</ul>
+<ul>
+<li>name: HOSTNAME     #ACI 名称</li>
+</ul>
+<ul>
+<li>name: nginx  #应用镜像</li>
+</ul>
+<p>image: fuzlreg.azurecr.cn/nginx/nginx:v20250603</p>
+<p>ports:</p>
+<ul>
+<li>port: 80</li>
+</ul>
+<p>protocol: TCP</p>
+<p>ipAddress:</p>
+<p>type: Private</p>
+<p>osType: Linux</p>
+<p>tags: null</p>
+<p>type: Microsoft.ContainerInstance/containerGroups</p>
+<p>使用上面的配置创建ACI：</p>
+<p>az container create -g cn3rg --file=.\aci08.yaml</p>
+<p>后续运行任何其他的应用镜像，只需要更改应用镜像的配置即可。</p>
+<p>当ACI运行之后，将通过Custom Image中的脚本，自动更新private DNS zone中的记录</p>
+<p>Private  DNS zone中会自动创建ACI的解析记录</p>
+<p>通过容器日志可以看到，Custom script会一直检查Private DNS zone中ACI名称和地址的映射，如果不一致，将会更新Private DNS zone中的配置</p>
+<p>这样客户端可以始终通过域名访问到ACI</p>
+<p>注：</p>
+<p>1、官网文档中提到通过将运行AZ CLI命令的容器作为init容器运行来获取ACI Private IP，但是根据实际测试显示，在AzureCHina环境中，Init容器虽然会运行，也能实现init容器运行CLI命令登录Azure，但是在运行init容器时（init总是最先运行），平台不会给ACI分配IP地址，此时init容器中无论是执行AZcli命令获取ACI的地址还是执行ifconfig获取ACI的地址，都无法成功获得地址。所以测试看，使用init容器运行CLI命令去获取ACI的地址，目前行不通:运行 Init 容器 - Azure Container Instances | Microsoft Learn</p>
+<p>2、运行的CLI script只是一个参考，客户可根据自身业务需要，编写适合自己的脚本</p></article>

@@ -1,0 +1,331 @@
+<article class="kb-article" data-title="创建Linux VM指定OS Disk名称"><h1>创建Linux VM指定OS Disk名称</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-04-20 16:28:27</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>-IdleTimeoutInMinutes 4 `</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>-IdleTimeoutInMinutes 4 `</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考样例：</li>
+</ul>
+<ul>
+<li>在New-AzVM之前加上：</li>
+</ul>
+<ul>
+<li>-Name &quot;MyVM-os&quot; -Linux -CreateOption FromImage</li>
+</ul>
+<ul>
+<li># Create a subnet configuration</li>
+</ul>
+<ul>
+<li>$subnetConfig = New-AzVirtualNetworkSubnetConfig `</li>
+</ul>
+<ul>
+<li>-Name &quot;mySubnet&quot; `</li>
+</ul>
+<ul>
+<li>-AddressPrefix 192.168.1.0/24</li>
+</ul>
+<ul>
+<li># Create a virtual network</li>
+</ul>
+<ul>
+<li>$vnet = New-AzVirtualNetwork `</li>
+</ul>
+<ul>
+<li>-ResourceGroupName &quot;myResourceGroup2&quot; `</li>
+</ul>
+<ul>
+<li>-Location &quot;ChinaEast&quot; `</li>
+</ul>
+<ul>
+<li>-Name &quot;myVNET&quot; `</li>
+</ul>
+<ul>
+<li>-AddressPrefix 192.168.0.0/16 `</li>
+</ul>
+<ul>
+<li>-Subnet $subnetConfig</li>
+</ul>
+<ul>
+<li># Create a public IP address and specify a DNS name</li>
+</ul>
+<ul>
+<li>$pip = New-AzPublicIpAddress `</li>
+</ul>
+<ul>
+<li>-AllocationMethod Static `</li>
+</ul>
+<ul>
+<li>-Name &quot;mypublicdns$(Get-Random)&quot;</li>
+</ul>
+<ul>
+<li># Create an inbound network security group rule for port 22</li>
+</ul>
+<ul>
+<li>$nsgRuleSSH = New-AzNetworkSecurityRuleConfig `</li>
+</ul>
+<ul>
+<li>-Name &quot;myNetworkSecurityGroupRuleSSH&quot;  `</li>
+</ul>
+<ul>
+<li>-Direction &quot;Inbound&quot; `</li>
+</ul>
+<ul>
+<li>-Priority 1000 `</li>
+</ul>
+<ul>
+<li>-SourceAddressPrefix * `</li>
+</ul>
+<ul>
+<li>-SourcePortRange * `</li>
+</ul>
+<ul>
+<li>-DestinationAddressPrefix * `</li>
+</ul>
+<ul>
+<li>-DestinationPortRange 22 `</li>
+</ul>
+<ul>
+<li>-Access &quot;Allow&quot;</li>
+</ul>
+<ul>
+<li># Create an inbound network security group rule for port 80</li>
+</ul>
+<ul>
+<li>$nsgRuleWeb = New-AzNetworkSecurityRuleConfig `</li>
+</ul>
+<ul>
+<li>-Name &quot;myNetworkSecurityGroupRuleWWW&quot;  `</li>
+</ul>
+<ul>
+<li>-Priority 1001 `</li>
+</ul>
+<ul>
+<li>-DestinationPortRange 80 `</li>
+</ul>
+<ul>
+<li># Create a network security group</li>
+</ul>
+<ul>
+<li>$nsg = New-AzNetworkSecurityGroup `</li>
+</ul>
+<ul>
+<li>-Name &quot;myNetworkSecurityGroup&quot; `</li>
+</ul>
+<ul>
+<li>-SecurityRules $nsgRuleSSH,$nsgRuleWeb</li>
+</ul>
+<ul>
+<li># Create a virtual network card and associate with public IP address and NSG</li>
+</ul>
+<ul>
+<li>$nic = New-AzNetworkInterface `</li>
+</ul>
+<ul>
+<li>-Name &quot;myNic&quot; `</li>
+</ul>
+<ul>
+<li>-SubnetId $vnet.Subnets[0].Id `</li>
+</ul>
+<ul>
+<li>-PublicIpAddressId $pip.Id `</li>
+</ul>
+<ul>
+<li>-NetworkSecurityGroupId $nsg.Id</li>
+</ul>
+<ul>
+<li># Define a credential object</li>
+</ul>
+<ul>
+<li>$securePassword = ConvertTo-SecureString &#39; &#39; -AsPlainText -Force</li>
+</ul>
+<ul>
+<li>$cred = New-Object System.Management.Automation.PSCredential (&quot;azureuser&quot;, $securePassword)</li>
+</ul>
+<ul>
+<li># Create a virtual machine configuration</li>
+</ul>
+<ul>
+<li>$vmConfig = New-AzVMConfig `</li>
+</ul>
+<ul>
+<li>-VMName &quot;myVM&quot; `</li>
+</ul>
+<ul>
+<li>-VMSize &quot;Standard_D1&quot; | `</li>
+</ul>
+<ul>
+<li>-Linux `</li>
+</ul>
+<ul>
+<li>-ComputerName &quot;myVM&quot; `</li>
+</ul>
+<ul>
+<li>-Credential $cred `</li>
+</ul>
+<ul>
+<li>-PublisherName &quot;Canonical&quot; `</li>
+</ul>
+<ul>
+<li>-Offer &quot;UbuntuServer&quot; `</li>
+</ul>
+<ul>
+<li>-Version &quot;latest&quot; | `</li>
+</ul>
+<ul>
+<li>Add-AzVMNetworkInterface `</li>
+</ul>
+<ul>
+<li>-Id $nic.Id</li>
+</ul>
+<ul>
+<li># Configure the SSH key</li>
+</ul>
+<ul>
+<li>$sshPublicKey = cat C:\Users\xxxxxx\.ssh\id_rsa.pub</li>
+</ul>
+<ul>
+<li>Add-AzVMSshPublicKey `</li>
+</ul>
+<ul>
+<li>-VM $vmconfig `</li>
+</ul>
+<ul>
+<li>-KeyData $sshPublicKey `</li>
+</ul>
+<ul>
+<li>-Path &quot;/home/azureuser/.ssh/authorized_keys&quot;</li>
+</ul>
+<ul>
+<li>-Location chinaeast -VM $vmConfig</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>根据目前的测试来看，如果想指定OS Disk名称，可以通过power shell脚本创建VM的时候实现：</li>
+</ul>
+<ul>
+<li>Set-AzVMOSDisk -VM $vmConfig `</li>
+</ul>
+<ul>
+<li>我的测试脚本, 仅供参考：</li>
+</ul>
+<ul>
+<li>New-AzResourceGroup -Name &quot;myResourceGroup2&quot; -Location &quot;ChinaEast&quot;</li>
+</ul>
+<ul>
+<li>Set-AzVMOperatingSystem `</li>
+</ul>
+<ul>
+<li>Set-AzVMSourceImage `</li>
+</ul>
+<ul>
+<li>New-AzVM `</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>-Protocol &quot;Tcp&quot; `</li>
+</ul>
+<ul>
+<li>-Skus &quot;18.04-LTS&quot; `</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>-DisablePasswordAuthentication | `</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/quick-create-powershell" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/quick-create-powershell</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020/10/12</p>
+<p>根据目前的测试来看，如果想指定OS Disk名称，可以通过power shell脚本创建VM的时候实现：</p>
+<p>参考样例：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/quick-create-powershell" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/quick-create-powershell</a></p>
+<p>在New-AzVM之前加上：</p>
+<p>Set-AzVMOSDisk -VM $vmConfig `</p>
+<p>-Name &quot;MyVM-os&quot; -Linux -CreateOption FromImage</p>
+<p>我的测试脚本, 仅供参考：</p>
+<p>New-AzResourceGroup -Name &quot;myResourceGroup2&quot; -Location &quot;ChinaEast&quot;</p>
+<h1>Create a subnet configuration</h1>
+<p>$subnetConfig = New-AzVirtualNetworkSubnetConfig `</p>
+<p>-Name &quot;mySubnet&quot; `</p>
+<p>-AddressPrefix 192.168.1.0/24</p>
+<h1>Create a virtual network</h1>
+<p>$vnet = New-AzVirtualNetwork `</p>
+<p>-ResourceGroupName &quot;myResourceGroup2&quot; `</p>
+<p>-Location &quot;ChinaEast&quot; `</p>
+<p>-Name &quot;myVNET&quot; `</p>
+<p>-AddressPrefix 192.168.0.0/16 `</p>
+<p>-Subnet $subnetConfig</p>
+<h1>Create a public IP address and specify a DNS name</h1>
+<p>$pip = New-AzPublicIpAddress `</p>
+<p>-AllocationMethod Static `</p>
+<p>-IdleTimeoutInMinutes 4 `</p>
+<p>-Name &quot;mypublicdns$(Get-Random)&quot;</p>
+<h1>Create an inbound network security group rule for port 22</h1>
+<p>$nsgRuleSSH = New-AzNetworkSecurityRuleConfig `</p>
+<p>-Name &quot;myNetworkSecurityGroupRuleSSH&quot;  `</p>
+<p>-Protocol &quot;Tcp&quot; `</p>
+<p>-Direction &quot;Inbound&quot; `</p>
+<p>-Priority 1000 `</p>
+<p>-SourceAddressPrefix * `</p>
+<p>-SourcePortRange * `</p>
+<p>-DestinationAddressPrefix * `</p>
+<p>-DestinationPortRange 22 `</p>
+<p>-Access &quot;Allow&quot;</p>
+<h1>Create an inbound network security group rule for port 80</h1>
+<p>$nsgRuleWeb = New-AzNetworkSecurityRuleConfig `</p>
+<p>-Name &quot;myNetworkSecurityGroupRuleWWW&quot;  `</p>
+<p>-Priority 1001 `</p>
+<p>-DestinationPortRange 80 `</p>
+<h1>Create a network security group</h1>
+<p>$nsg = New-AzNetworkSecurityGroup `</p>
+<p>-Name &quot;myNetworkSecurityGroup&quot; `</p>
+<p>-SecurityRules $nsgRuleSSH,$nsgRuleWeb</p>
+<h1>Create a virtual network card and associate with public IP address and NSG</h1>
+<p>$nic = New-AzNetworkInterface `</p>
+<p>-Name &quot;myNic&quot; `</p>
+<p>-SubnetId $vnet.Subnets[0].Id `</p>
+<p>-PublicIpAddressId $pip.Id `</p>
+<p>-NetworkSecurityGroupId $nsg.Id</p>
+<h1>Define a credential object</h1>
+<p>$securePassword = ConvertTo-SecureString &#39; &#39; -AsPlainText -Force</p>
+<p>$cred = New-Object System.Management.Automation.PSCredential (&quot;azureuser&quot;, $securePassword)</p>
+<h1>Create a virtual machine configuration</h1>
+<p>$vmConfig = New-AzVMConfig `</p>
+<p>-VMName &quot;myVM&quot; `</p>
+<p>-VMSize &quot;Standard_D1&quot; | `</p>
+<p>Set-AzVMOperatingSystem `</p>
+<p>-Linux `</p>
+<p>-ComputerName &quot;myVM&quot; `</p>
+<p>-Credential $cred `</p>
+<p>-DisablePasswordAuthentication | `</p>
+<p>Set-AzVMSourceImage `</p>
+<p>-PublisherName &quot;Canonical&quot; `</p>
+<p>-Offer &quot;UbuntuServer&quot; `</p>
+<p>-Skus &quot;18.04-LTS&quot; `</p>
+<p>-Version &quot;latest&quot; | `</p>
+<p>Add-AzVMNetworkInterface `</p>
+<p>-Id $nic.Id</p>
+<h1>Configure the SSH key</h1>
+<p>$sshPublicKey = cat C:\Users\xxxxxx\.ssh\id_rsa.pub</p>
+<p>Add-AzVMSshPublicKey `</p>
+<p>-VM $vmconfig `</p>
+<p>-KeyData $sshPublicKey `</p>
+<p>-Path &quot;/home/azureuser/.ssh/authorized_keys&quot;</p>
+<p>New-AzVM `</p>
+<p>-Location chinaeast -VM $vmConfig</p></article>

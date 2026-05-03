@@ -1,0 +1,60 @@
+<article class="kb-article" data-title="[Share] Azure VM启用“诊断设置”后，收集性能指标数据的存储账户表结构参考"><h1>[Share] Azure VM启用“诊断设置”后，收集性能指标数据的存储账户表结构参考</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-05-13 11:09:10</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>不论是Windows虚拟机还是Linux虚拟机，开启诊断设置后，其来宾级指标数据都会存储到存储账户中的WADMetrics开头的表中，类WADMetricsPT1MP10DV2S20210419</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>不论是Windows虚拟机还是Linux虚拟机，开启诊断设置后，其来宾级指标数据都会存储到存储账户中的WADMetrics开头的表中，类WADMetricsPT1MP10DV2S20210419</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>但是Windows和Linux虽然表名称一样，但是表中表示虚拟机名称的字段却是不同的：</li>
+</ul>
+<ul>
+<li>1，如果只有Linux指标数据时，它会显示“Host”字段表示虚拟机名称；</li>
+</ul>
+<ul>
+<li>2，如果只有Windows指标数据时，会显示“RoleInstance”字段显示虚拟机名称；</li>
+</ul>
+<ul>
+<li>3，而当Linux和Windows使用同一存储账户时，指标数据同时出现，会有全部的字段，详见下方截图：</li>
+</ul>
+<ul>
+<li>###WADMetricsPT1MP10DV2S20210419表字段解释，请参考下方链接：</li>
+</ul>
+<ul>
+<li>###WADMetricsPT1MP10DV2S20210419表中的数据是“重复”的，表中每个指标有除了&quot;Rowkey&quot;字段不同外，其余字段值是相同的两条数据</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>不论是Windows虚拟机还是Linux虚拟机，开启诊断设置后，其来宾级指标数据都会存储到存储账户中的WADMetrics开头的表中，类WADMetricsPT1MP10DV2S20210419</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/extensions/diagnostics-template#wadmetrics-tables-in-storage" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/extensions/diagnostics-template#wadmetrics-tables-in-storage</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-4-25</p>
+<p>不论是Windows虚拟机还是Linux虚拟机，开启诊断设置后，其来宾级指标数据都会存储到存储账户中的WADMetrics开头的表中，类WADMetricsPT1MP10DV2S20210419</p>
+<p>但是Windows和Linux虽然表名称一样，但是表中表示虚拟机名称的字段却是不同的：</p>
+<p>1，如果只有Linux指标数据时，它会显示“Host”字段表示虚拟机名称；</p>
+<p>2，如果只有Windows指标数据时，会显示“RoleInstance”字段显示虚拟机名称；</p>
+<p>3，而当Linux和Windows使用同一存储账户时，指标数据同时出现，会有全部的字段，详见下方截图：</p>
+<p>###WADMetricsPT1MP10DV2S20210419表字段解释，请参考下方链接：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/extensions/diagnostics-template#wadmetrics-tables-in-storage" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/extensions/diagnostics-template#wadmetrics-tables-in-storage</a></p>
+<p>###WADMetricsPT1MP10DV2S20210419表中的数据是“重复”的，表中每个指标有除了&quot;Rowkey&quot;字段不同外，其余字段值是相同的两条数据</p></article>

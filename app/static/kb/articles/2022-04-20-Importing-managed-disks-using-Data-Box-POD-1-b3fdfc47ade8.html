@@ -1,0 +1,146 @@
+<article class="kb-article" data-title="Importing managed disks using Data Box POD"><h1>Importing managed disks using Data Box POD</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Data Box POD</li>
+<li>最近修改: 2022-04-20 06:55:00</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>You can use the Data Box device to import VHD files from on-premises VMs for conversion into managed disks in Azure. The VHDs from on-premises VMs are copied to Data Box as page blobs and are uploaded into Azure as managed disks. These managed disks can then b...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>You can use the Data Box device to import VHD files from on-premises VMs for conversion into managed disks in Azure. The VHDs from on-premises VMs are copied to Data Box as page blobs and are uploaded into Azure as managed disks. These managed disks can then be attached to Azure VMs.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>You can use the Data Box device to import VHD files from on-premises VMs for conversion into managed disks in Azure. The VHDs from on-premises VMs are copied to Data Box as page blobs and are uploaded into Azure as managed disks. These managed disks can then be attached to Azure VMs.</li>
+</ul>
+<ul>
+<li>Based on the resource groups specified, Data Box creates one share for each associated resource group. For example, if mydbmdrg1 and mydbmdrg2 were created when placing the order, the following shares are created:</li>
+</ul>
+<ul>
+<li>mydbmdrg1_MDisk</li>
+</ul>
+<ul>
+<li>mydbmdrg2_Mdisk</li>
+</ul>
+<ul>
+<li>Within each share, the following three folders are created which correspond to containers in your storage account.</li>
+</ul>
+<ul>
+<li>Premium SSD</li>
+</ul>
+<ul>
+<li>Standard HDD</li>
+</ul>
+<ul>
+<li>Standard SSD</li>
+</ul>
+<ul>
+<li>The following table shows the UNC paths to the shares on your Data Box.</li>
+</ul>
+<ul>
+<li>UNC path to the share</li>
+</ul>
+<ul>
+<li>SMB</li>
+</ul>
+<ul>
+<li>\\&lt;DeviceIPAddress&gt;\&lt;ResourceGroupName_MDisk&gt;\&lt;PremiumSSD&gt;\file1.vhd</li>
+</ul>
+<ul>
+<li>\\&lt;DeviceIPAddress&gt;\&lt;ResourceGroupName_MDisk&gt;\&lt;StandardHDD&gt;\file2.vhd</li>
+</ul>
+<ul>
+<li>\\&lt;DeviceIPAddress&gt;\&lt;ResourceGroupName_MDisk&gt;\&lt;StandardSSD&gt;\file3.vhd</li>
+</ul>
+<ul>
+<li>NFS</li>
+</ul>
+<ul>
+<li>//&lt;DeviceIPAddress&gt;/&lt;ResourceGroup1_MDisk&gt;/&lt;PremiumSSD&gt;/file1.vhd</li>
+</ul>
+<ul>
+<li>//&lt;DeviceIPAddress&gt;/&lt;ResourceGroupName_MDisk&gt;/&lt;StandardHDD&gt;/file2.vhd</li>
+</ul>
+<ul>
+<li>//&lt;DeviceIPAddress&gt;/&lt;ResourceGroupName_MDisk&gt;/&lt;StandardSSD&gt;/file3.vhd</li>
+</ul>
+<ul>
+<li>You will need to use either SMB or NFS to connect to the Data Box shares and upload VHDs. Connecting via REST APIs is not supported for the managed disk import feature of Data Box.</li>
+</ul>
+<ul>
+<li>Review the following considerations before you begin data copy:</li>
+</ul>
+<ul>
+<li>Always copy the VHDs to one of the precreated folders. If you copy the VHDs outside of these folders or in a folder that you created, the VHDs will be uploaded to Azure Storage account as page blobs and not managed disks.</li>
+</ul>
+<ul>
+<li>You can only have one managed disk with a given name in a resource group across all of the precreated folders. This implies that the VHDs uploaded to the precreated folders should have unique names. Make sure that the given name does not match an already existing managed disk in a resource group.</li>
+</ul>
+<ul>
+<li>Review managed disk limits in Azure object size limits.</li>
+</ul>
+<ul>
+<li>For more information on importing VHD files to managed disks using Data Box, please see the link below.</li>
+</ul>
+<ul>
+<li>Use Data Box to import data as managed disks in Azure</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>If there are errors during the copy process, download the logs from the Connect and copy page.</li>
+</ul>
+<ul>
+<li>If you copied a file that is not 512 bytes aligned, the file isn&#39;t uploaded as page blob to your staging storage account. You will see an error in the logs. Remove the file and copy a file that is 512 bytes aligned.</li>
+</ul>
+<ul>
+<li>If you copied a VHDX (these files are not supported) with a long name, you will see errors in the logs similar to those shown below.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Connection protocol</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Only fixed size VHDs can be uploaded to create managed disks. VHDX files or dynamic and differencing VHDs are not supported.</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>You can use the Data Box device to import VHD files from on-premises VMs for conversion into managed disks in Azure. The VHDs from on-premises VMs are copied to Data Box as page blobs and are uploaded into Azure as managed disks. These managed disks can then be attached to Azure VMs.</p>
+<p>Based on the resource groups specified, Data Box creates one share for each associated resource group. For example, if mydbmdrg1 and mydbmdrg2 were created when placing the order, the following shares are created:</p>
+<p>mydbmdrg1_MDisk</p>
+<p>mydbmdrg2_Mdisk</p>
+<p>Within each share, the following three folders are created which correspond to containers in your storage account.</p>
+<p>Premium SSD</p>
+<p>Standard HDD</p>
+<p>Standard SSD</p>
+<p>The following table shows the UNC paths to the shares on your Data Box.</p>
+<p>Connection protocol</p>
+<p>UNC path to the share</p>
+<p>SMB</p>
+<p>\\&lt;DeviceIPAddress&gt;\&lt;ResourceGroupName_MDisk&gt;\&lt;PremiumSSD&gt;\file1.vhd</p>
+<p>\\&lt;DeviceIPAddress&gt;\&lt;ResourceGroupName_MDisk&gt;\&lt;StandardHDD&gt;\file2.vhd</p>
+<p>\\&lt;DeviceIPAddress&gt;\&lt;ResourceGroupName_MDisk&gt;\&lt;StandardSSD&gt;\file3.vhd</p>
+<p>NFS</p>
+<p>//&lt;DeviceIPAddress&gt;/&lt;ResourceGroup1_MDisk&gt;/&lt;PremiumSSD&gt;/file1.vhd</p>
+<p>//&lt;DeviceIPAddress&gt;/&lt;ResourceGroupName_MDisk&gt;/&lt;StandardHDD&gt;/file2.vhd</p>
+<p>//&lt;DeviceIPAddress&gt;/&lt;ResourceGroupName_MDisk&gt;/&lt;StandardSSD&gt;/file3.vhd</p>
+<p>You will need to use either SMB or NFS to connect to the Data Box shares and upload VHDs. Connecting via REST APIs is not supported for the managed disk import feature of Data Box.</p>
+<p>Review the following considerations before you begin data copy:</p>
+<p>Always copy the VHDs to one of the precreated folders. If you copy the VHDs outside of these folders or in a folder that you created, the VHDs will be uploaded to Azure Storage account as page blobs and not managed disks.</p>
+<p>Only fixed size VHDs can be uploaded to create managed disks. VHDX files or dynamic and differencing VHDs are not supported.</p>
+<p>You can only have one managed disk with a given name in a resource group across all of the precreated folders. This implies that the VHDs uploaded to the precreated folders should have unique names. Make sure that the given name does not match an already existing managed disk in a resource group.</p>
+<p>Review managed disk limits in Azure object size limits.</p>
+<p>If there are errors during the copy process, download the logs from the Connect and copy page.</p>
+<p>If you copied a file that is not 512 bytes aligned, the file isn&#39;t uploaded as page blob to your staging storage account. You will see an error in the logs. Remove the file and copy a file that is 512 bytes aligned.</p>
+<p>If you copied a VHDX (these files are not supported) with a long name, you will see errors in the logs similar to those shown below.</p>
+<p>For more information on importing VHD files to managed disks using Data Box, please see the link below.</p>
+<p>Use Data Box to import data as managed disks in Azure</p></article>

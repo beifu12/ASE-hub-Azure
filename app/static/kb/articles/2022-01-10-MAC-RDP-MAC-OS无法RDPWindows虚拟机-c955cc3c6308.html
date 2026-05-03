@@ -1,0 +1,56 @@
+<article class="kb-article" data-title="[MAC][RDP]MAC OS无法RDPWindows虚拟机"><h1>[MAC][RDP]MAC OS无法RDPWindows虚拟机</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RDP_SSH</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-01-10 16:51:55</li>
+<li>JD 相关性: 售后排障; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>解决方法如下，使用macOS下第三方RDP程序 Remotix 链接成功，Remotix可以试用，所以连接之后可以按照教程修改后使用微软官方RDP链接程序链接</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>解决方法如下，使用macOS下第三方RDP程序 Remotix 链接成功，Remotix可以试用，所以连接之后可以按照教程修改后使用微软官方RDP链接程序链接</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>（1）Click Start&gt;Run , Type gpedit.msc and click &quot;OK&quot; . Result: The Group Policy Editor will open:</li>
+</ul>
+<ul>
+<li>（2）In the left hand side bar, expand Computer Configuration&gt;Administrative Templates&gt;Windows Components&gt;Remote Desktop Services&gt;Remote Desktop Session Host    Select &quot;Security&quot;</li>
+</ul>
+<ul>
+<li>（5）Close Group Policy Editor and reboot the machine for changes to take effect.</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法如下，使用macOS下第三方RDP程序 Remotix 链接成功，Remotix可以试用，所以连接之后可以按照教程修改后使用微软官方RDP链接程序链接</li>
+</ul>
+<ul>
+<li>在MACOS远程管理WindowsServer的解决方案：</li>
+</ul>
+<ul>
+<li>（3）Change &quot;Require use of specific security layer for remote desktop (RDP) connection&quot; to Enabled&quot; and select &quot;RDP&quot; in the Options pane.</li>
+</ul>
+<ul>
+<li>（4）Change &quot;Require user authentication for remote connections by using Network Level Authentication&quot; to &quot;Disabled.&quot;</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>解决方法如下，使用macOS下第三方RDP程序 Remotix 链接成功，Remotix可以试用，所以连接之后可以按照教程修改后使用微软官方RDP链接程序链接</p>
+<p>在MACOS远程管理WindowsServer的解决方案：</p>
+<p>（1）Click Start&gt;Run , Type gpedit.msc and click &quot;OK&quot; . Result: The Group Policy Editor will open:</p>
+<p>（2）In the left hand side bar, expand Computer Configuration&gt;Administrative Templates&gt;Windows Components&gt;Remote Desktop Services&gt;Remote Desktop Session Host    Select &quot;Security&quot;</p>
+<p>（3）Change &quot;Require use of specific security layer for remote desktop (RDP) connection&quot; to Enabled&quot; and select &quot;RDP&quot; in the Options pane.</p>
+<p>（4）Change &quot;Require user authentication for remote connections by using Network Level Authentication&quot; to &quot;Disabled.&quot;</p>
+<p>（5）Close Group Policy Editor and reboot the machine for changes to take effect.</p></article>

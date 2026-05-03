@@ -1,0 +1,297 @@
+<article class="kb-article" data-title="Acs-engine部署的K8S集群，部分Node上的pod无法连接外网"><h1>Acs-engine部署的K8S集群，部分Node上的pod无法连接外网</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-04-06 15:25:19</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>目前集群中的新项目的pod 无法连接外网。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>目前集群中的新项目的pod 无法连接外网。</li>
+</ul>
+<ul>
+<li>Pod 访问公网失败</li>
+</ul>
+<ul>
+<li>60299 3502K KUBE-POSTROUTING  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* kubernetes postrouting rules */</li>
+</ul>
+<ul>
+<li>测试Pod 访问公网失败：</li>
+</ul>
+<ul>
+<li>根据以上分析，怀疑最终用户在问题虚拟机新部署服务或者Pod 触发iptables规则被删除，或者问题虚拟机中部署Kube-proxy Pod Iptables同步出现异常。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>LiHaitao</li>
+</ul>
+<ul>
+<li>【问题】</li>
+</ul>
+<ul>
+<li>acs集群有9个节点，使用的是虚拟机规模集。</li>
+</ul>
+<ul>
+<li>3、重启了kube-proxy，Node，Master等，问题依然存在.</li>
+</ul>
+<ul>
+<li>4、通过对比有问题的node和正常node上的iptables发现，缺少了一条nat规则：</li>
+</ul>
+<ul>
+<li>Pod 访问公网正常</li>
+</ul>
+<ul>
+<li>Chain POSTROUTING (policy ACCEPT 251 packets, 15411 bytes)</li>
+</ul>
+<ul>
+<li>pkts bytes target     prot opt in     out     source               destination</li>
+</ul>
+<ul>
+<li>14M  828M KUBE-POSTROUTING  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* kubernetes postrouting rules */</li>
+</ul>
+<ul>
+<li>0     0 MASQUERADE  all  --  *      !docker0  172.17.0.0/16        0.0.0.0/0</li>
+</ul>
+<ul>
+<li>735K   44M MASQUERADE  all  --  *      *       0.0.0.0/0           !10.0.0.0/8           destination IP range ! 168.63.129.16-168.63.129.16 ADDRTYPE match dst-type !LOCAL</li>
+</ul>
+<ul>
+<li>Chain POSTROUTING (policy ACCEPT 20 packets, 1241 bytes)</li>
+</ul>
+<ul>
+<li>sudo iptables -t nat -A POSTROUTING -s 0.0.0.0/0 ! -d 10.0.0.0/8 -j MASQUERADE</li>
+</ul>
+<ul>
+<li>【问题解决】</li>
+</ul>
+<ul>
+<li>客户手工添加上这条IPtables规则后，问题解决，pod可以正常访问外网了。</li>
+</ul>
+<ul>
+<li>【进一步测试】</li>
+</ul>
+<ul>
+<li>在K8s 集群中测试如下：</li>
+</ul>
+<ul>
+<li>测试Pod 部署在Node aks-agentpool-21324540-0</li>
+</ul>
+<ul>
+<li>NAME                                                     READY   STATUS          RESTARTS   AGE    IP          NODE                       NOMINATED NODE</li>
+</ul>
+<ul>
+<li>source-ip-app-57f8cd4699-hnbl5      1/1     Running                     9          35d                 10.1.0.11           aks-agentpool-21324540-0   &lt;none&gt;</li>
+</ul>
+<ul>
+<li>测试Pod 访问公网成功：</li>
+</ul>
+<ul>
+<li>paping v1.5.5 - Copyright (c) 2011 Mike Lovell</li>
+</ul>
+<ul>
+<li>Connection statistics:</li>
+</ul>
+<ul>
+<li>Approximate connection times:</li>
+</ul>
+<ul>
+<li>azureuser@aks-agentpool-21324540-0:~$ sudo iptables-save | grep POSTROUTING</li>
+</ul>
+<ul>
+<li>:POSTROUTING ACCEPT [44:3002]</li>
+</ul>
+<ul>
+<li>:KUBE-POSTROUTING - [0:0]</li>
+</ul>
+<ul>
+<li>-A POSTROUTING -m comment --comment &quot;kubernetes postrouting rules&quot; -j KUBE-POSTROUTING</li>
+</ul>
+<ul>
+<li>-A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE</li>
+</ul>
+<ul>
+<li>azureuser@aks-agentpool-21324540-0:~$ sudo iptables -t nat -vnL |grep -A 5 POSTROUTING</li>
+</ul>
+<ul>
+<li>Chain POSTROUTING (policy ACCEPT 39 packets, 3094 bytes)</li>
+</ul>
+<ul>
+<li>41456 2966K KUBE-POSTROUTING  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* kubernetes postrouting rules */</li>
+</ul>
+<ul>
+<li>测试在Node aks-agentpool-21324540-0    删除Iptables 规则</li>
+</ul>
+<ul>
+<li>Chain POSTROUTING (policy ACCEPT 17 packets, 1232 bytes)</li>
+</ul>
+<ul>
+<li>42635 3053K KUBE-POSTROUTING  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* kubernetes postrouting rules */</li>
+</ul>
+<ul>
+<li>Connection timed out</li>
+</ul>
+<ul>
+<li>sudo iptables -t nat -vnL |grep -A 5 POSTROUTING</li>
+</ul>
+<ul>
+<li>Chain POSTROUTING (policy ACCEPT 68 packets, 4855 bytes)</li>
+</ul>
+<ul>
+<li>43356 3101K KUBE-POSTROUTING  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* kubernetes postrouting rules */</li>
+</ul>
+<ul>
+<li>proxier.go:662] Syncing iptables rules</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>【排查步骤】</li>
+</ul>
+<ul>
+<li>1、排查测试在有问题的Node上是可以直接访问外网的，直接在node上启动一个docker服务也是可以正常访问外网的。因此判断网络没有问题。</li>
+</ul>
+<ul>
+<li>2、抓包排查，在有问题的pod上访问外网，可以在Node上抓到相应的请求报文，但是没有做NAT转换；而在正常的pod上测试，Node上是可以抓到pod的访问请求和NAT转换后的报文。因此判断为iptables的问题导致。</li>
+</ul>
+<ul>
+<li>查询Node aks-agentpool-21324540-0    Iptables 规则</li>
+</ul>
+<ul>
+<li>-A POSTROUTING -m comment --comment &quot;ip-masq-agent: ensure nat POSTROUTING directs all non-LOCAL destination traffic to our custom IP-MASQ-AGENT chain&quot; -m addrtype ! --dst-type LOCAL -j IP-MASQ-AGENT</li>
+</ul>
+<ul>
+<li>23973 1771K IP-MASQ-AGENT  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* ip-masq-agent: ensure nat POSTROUTING directs all non-LOCAL destination traffic to our custom IP-MASQ-AGENT chain */ ADDRTYPE match dst-type !LOCAL</li>
+</ul>
+<ul>
+<li>sudo iptables -t nat -D POSTROUTING -m comment --comment &quot;ip-masq-agent: ensure nat POSTROUTING directs all non-LOCAL destination traffic to our custom IP-MASQ-AGENT chain&quot; -m addrtype ! --dst-type LOCAL -j IP-MASQ-AGENT</li>
+</ul>
+<ul>
+<li>查询Node aks-agentpool-21324540-0    Iptables 规则，规则自动更新，此时测试Pod 访问公网成功。</li>
+</ul>
+<ul>
+<li>278 20226 IP-MASQ-AGENT  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* ip-masq-agent: ensure nat POSTROUTING directs all non-LOCAL destination traffic to our custom IP-MASQ-AGENT chain */ ADDRTYPE match dst-type !LOCAL</li>
+</ul>
+<ul>
+<li>查看Node aks-agentpool-21324540-0  上kube-proxy Pod日志正常状态下每间隔30s 同步iptbales规则</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>kubectl get  pods -o wide</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Connected to 220.181.38.150: time=25.92ms protocol=TCP port=80</li>
+</ul>
+<ul>
+<li>Connected to 220.181.38.150: time=36.49ms protocol=TCP port=80</li>
+</ul>
+<ul>
+<li>Connected to 220.181.38.150: time=33.96ms protocol=TCP port=80</li>
+</ul>
+<ul>
+<li>Connected to 220.181.38.150: time=40.41ms protocol=TCP port=80</li>
+</ul>
+<ul>
+<li>Attempted = 4, Connected = 4, Failed = 0 (0.00%)</li>
+</ul>
+<ul>
+<li>Minimum = 25.92ms, Maximum = 40.41ms, Average = 34.19ms</li>
+</ul>
+<ul>
+<li>Attempted = 4, Connected = 0, Failed = 4 (100.00%)</li>
+</ul>
+<ul>
+<li>Minimum = 0.00ms, Maximum = 0.00ms, Average = 0.00ms</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>如之前分析Pod 出站访问时需要进行SNAT转换，建议最终用户尝试在问题虚拟机添加以下IP tables规则：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>我们新启动了一个工具性的pod， 从该pod 的容器中去测试跟www.baidu.com的连通性。详见截图。</li>
+</ul>
+<ul>
+<li>root@source-ip-app-57f8cd4699-hnbl5:/# ./paping www.baidu.com -p 80</li>
+</ul>
+<ul>
+<li>Connecting to www.a.shifen.com [220.181.38.150] on TCP 80:</li>
+</ul>
+<ul>
+<li>Connecting to www.a.shifen.com [220.181.38.149] on TCP 80:</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>LiHaitao</p>
+<p>【问题】</p>
+<p>acs集群有9个节点，使用的是虚拟机规模集。</p>
+<p>目前集群中的新项目的pod 无法连接外网。</p>
+<p>我们新启动了一个工具性的pod， 从该pod 的容器中去测试跟www.baidu.com的连通性。详见截图。</p>
+<p>【排查步骤】</p>
+<p>1、排查测试在有问题的Node上是可以直接访问外网的，直接在node上启动一个docker服务也是可以正常访问外网的。因此判断网络没有问题。</p>
+<p>2、抓包排查，在有问题的pod上访问外网，可以在Node上抓到相应的请求报文，但是没有做NAT转换；而在正常的pod上测试，Node上是可以抓到pod的访问请求和NAT转换后的报文。因此判断为iptables的问题导致。</p>
+<p>3、重启了kube-proxy，Node，Master等，问题依然存在.</p>
+<p>4、通过对比有问题的node和正常node上的iptables发现，缺少了一条nat规则：</p>
+<p>Pod 访问公网正常</p>
+<p>Chain POSTROUTING (policy ACCEPT 251 packets, 15411 bytes)</p>
+<p>pkts bytes target     prot opt in     out     source               destination</p>
+<p>14M  828M KUBE-POSTROUTING  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* kubernetes postrouting rules */</p>
+<p>0     0 MASQUERADE  all  --  *      !docker0  172.17.0.0/16        0.0.0.0/0</p>
+<p>735K   44M MASQUERADE  all  --  *      *       0.0.0.0/0           !10.0.0.0/8           destination IP range ! 168.63.129.16-168.63.129.16 ADDRTYPE match dst-type !LOCAL</p>
+<p>Pod 访问公网失败</p>
+<p>Chain POSTROUTING (policy ACCEPT 20 packets, 1241 bytes)</p>
+<p>60299 3502K KUBE-POSTROUTING  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* kubernetes postrouting rules */</p>
+<p>如之前分析Pod 出站访问时需要进行SNAT转换，建议最终用户尝试在问题虚拟机添加以下IP tables规则：</p>
+<p>sudo iptables -t nat -A POSTROUTING -s 0.0.0.0/0 ! -d 10.0.0.0/8 -j MASQUERADE</p>
+<p>【问题解决】</p>
+<p>客户手工添加上这条IPtables规则后，问题解决，pod可以正常访问外网了。</p>
+<p>【进一步测试】</p>
+<p>在K8s 集群中测试如下：</p>
+<p>测试Pod 部署在Node aks-agentpool-21324540-0</p>
+<p>kubectl get  pods -o wide</p>
+<p>NAME                                                     READY   STATUS          RESTARTS   AGE    IP          NODE                       NOMINATED NODE</p>
+<p>source-ip-app-57f8cd4699-hnbl5      1/1     Running                     9          35d                 10.1.0.11           aks-agentpool-21324540-0   &lt;none&gt;</p>
+<p>测试Pod 访问公网成功：</p>
+<p>root@source-ip-app-57f8cd4699-hnbl5:/# ./paping www.baidu.com -p 80</p>
+<p>paping v1.5.5 - Copyright (c) 2011 Mike Lovell</p>
+<p>Connecting to www.a.shifen.com [220.181.38.150] on TCP 80:</p>
+<p>Connected to 220.181.38.150: time=25.92ms protocol=TCP port=80</p>
+<p>Connected to 220.181.38.150: time=36.49ms protocol=TCP port=80</p>
+<p>Connected to 220.181.38.150: time=33.96ms protocol=TCP port=80</p>
+<p>Connected to 220.181.38.150: time=40.41ms protocol=TCP port=80</p>
+<p>Connection statistics:</p>
+<p>Attempted = 4, Connected = 4, Failed = 0 (0.00%)</p>
+<p>Approximate connection times:</p>
+<p>Minimum = 25.92ms, Maximum = 40.41ms, Average = 34.19ms</p>
+<p>查询Node aks-agentpool-21324540-0    Iptables 规则</p>
+<p>azureuser@aks-agentpool-21324540-0:~$ sudo iptables-save | grep POSTROUTING</p>
+<p>:POSTROUTING ACCEPT [44:3002]</p>
+<p>:KUBE-POSTROUTING - [0:0]</p>
+<p>-A POSTROUTING -m comment --comment &quot;kubernetes postrouting rules&quot; -j KUBE-POSTROUTING</p>
+<p>-A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE</p>
+<p>-A POSTROUTING -m comment --comment &quot;ip-masq-agent: ensure nat POSTROUTING directs all non-LOCAL destination traffic to our custom IP-MASQ-AGENT chain&quot; -m addrtype ! --dst-type LOCAL -j IP-MASQ-AGENT</p>
+<p>azureuser@aks-agentpool-21324540-0:~$ sudo iptables -t nat -vnL |grep -A 5 POSTROUTING</p>
+<p>Chain POSTROUTING (policy ACCEPT 39 packets, 3094 bytes)</p>
+<p>41456 2966K KUBE-POSTROUTING  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* kubernetes postrouting rules */</p>
+<p>23973 1771K IP-MASQ-AGENT  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* ip-masq-agent: ensure nat POSTROUTING directs all non-LOCAL destination traffic to our custom IP-MASQ-AGENT chain */ ADDRTYPE match dst-type !LOCAL</p>
+<p>测试在Node aks-agentpool-21324540-0    删除Iptables 规则</p>
+<p>sudo iptables -t nat -D POSTROUTING -m comment --comment &quot;ip-masq-agent: ensure nat POSTROUTING directs all non-LOCAL destination traffic to our custom IP-MASQ-AGENT chain&quot; -m addrtype ! --dst-type LOCAL -j IP-MASQ-AGENT</p>
+<p>Chain POSTROUTING (policy ACCEPT 17 packets, 1232 bytes)</p>
+<p>42635 3053K KUBE-POSTROUTING  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* kubernetes postrouting rules */</p>
+<p>测试Pod 访问公网失败：</p>
+<p>Connecting to www.a.shifen.com [220.181.38.149] on TCP 80:</p>
+<p>Connection timed out</p>
+<p>Attempted = 4, Connected = 0, Failed = 4 (100.00%)</p>
+<p>Minimum = 0.00ms, Maximum = 0.00ms, Average = 0.00ms</p>
+<p>查询Node aks-agentpool-21324540-0    Iptables 规则，规则自动更新，此时测试Pod 访问公网成功。</p>
+<p>sudo iptables -t nat -vnL |grep -A 5 POSTROUTING</p>
+<p>Chain POSTROUTING (policy ACCEPT 68 packets, 4855 bytes)</p>
+<p>43356 3101K KUBE-POSTROUTING  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* kubernetes postrouting rules */</p>
+<p>278 20226 IP-MASQ-AGENT  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* ip-masq-agent: ensure nat POSTROUTING directs all non-LOCAL destination traffic to our custom IP-MASQ-AGENT chain */ ADDRTYPE match dst-type !LOCAL</p>
+<p>查看Node aks-agentpool-21324540-0  上kube-proxy Pod日志正常状态下每间隔30s 同步iptbales规则</p>
+<p>proxier.go:662] Syncing iptables rules</p>
+<p>根据以上分析，怀疑最终用户在问题虚拟机新部署服务或者Pod 触发iptables规则被删除，或者问题虚拟机中部署Kube-proxy Pod Iptables同步出现异常。</p></article>

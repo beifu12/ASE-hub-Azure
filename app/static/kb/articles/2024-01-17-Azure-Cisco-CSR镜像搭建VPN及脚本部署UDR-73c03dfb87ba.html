@@ -1,0 +1,269 @@
+<article class="kb-article" data-title="Azure Cisco CSR镜像搭建VPN及脚本部署UDR"><h1>Azure Cisco CSR镜像搭建VPN及脚本部署UDR</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-01-17 13:42:21</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2018122080573_[Hipo]ER授权经典虚拟网络无法连接专线</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2018122080573_[Hipo]ER授权经典虚拟网络无法连接专线</li>
+</ul>
+<ul>
+<li>问题现象：用户经典环境下ExpressRoute 和VPN共存，用户调整配置后导致ExpressRoute 和VPN 都无法连接，业务中断，无法紧急恢复业务。</li>
+</ul>
+<ul>
+<li>因此刚好为大家引入如下的Cisco CSR虚拟机，可谓是VPN或ExpressRoute 网关自身更新，维护，故障等情景下的福音：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20180202</li>
+</ul>
+<ul>
+<li>Dear All,</li>
+</ul>
+<ul>
+<li>有关Azure ExpressRoute 和 VPN共存情况下业务恢复的工单，大家可以参考：</li>
+</ul>
+<ul>
+<li>PS C:\Users\nisy&gt; Get-AzureVirtualNetworkGatewayConnection -GatewayId 90c17c47-41b3-49ac-b962-686015d4c9a9</li>
+</ul>
+<ul>
+<li>GatewayConnectionName   :</li>
+</ul>
+<ul>
+<li>VirtualNetworkGatewayId : 8f9a7dec-e165-49eb-9262-257aa982a0a5</li>
+</ul>
+<ul>
+<li>ConnectedEntityId       : VPNClientConnection</li>
+</ul>
+<ul>
+<li>GatewayConnectionType   : VPNClient</li>
+</ul>
+<ul>
+<li>VirtualNetworkGatewayId : 90c17c47-41b3-49ac-b962-686015d4c9a9</li>
+</ul>
+<ul>
+<li>ConnectedEntityId       : C15E9E5C_FRIDC</li>
+</ul>
+<ul>
+<li>GatewayConnectionType   : IPsec</li>
+</ul>
+<ul>
+<li>PS C:\Users\nisy&gt; Get-AzureVirtualNetworkGateway -GatewayId 90c17c47-41b3-49ac-b962-686015d4c9a9</li>
+</ul>
+<ul>
+<li>GatewayId            : 90c17c47-41b3-49ac-b962-686015d4c9a9</li>
+</ul>
+<ul>
+<li>GatewayName          : Default</li>
+</ul>
+<ul>
+<li>LastEventData        :</li>
+</ul>
+<ul>
+<li>GatewayType          : DynamicRouting</li>
+</ul>
+<ul>
+<li>LastEventTimeStamp   : 2018/12/20 16:03:08</li>
+</ul>
+<ul>
+<li>LastEventMessage     : Successfully configured the gateway.</li>
+</ul>
+<ul>
+<li>LastEventID          : 23005</li>
+</ul>
+<ul>
+<li>State                : Provisioned</li>
+</ul>
+<ul>
+<li>VIPAddress           : 42.159.153.8</li>
+</ul>
+<ul>
+<li>DefaultSite          :</li>
+</ul>
+<ul>
+<li>Location             :</li>
+</ul>
+<ul>
+<li>VnetId               : 90c17c47-41b3-49ac-b962-686015d4c9a9</li>
+</ul>
+<ul>
+<li>SubnetId             :</li>
+</ul>
+<ul>
+<li>Asn                  : 0</li>
+</ul>
+<ul>
+<li>BgpPeeringAddress    :</li>
+</ul>
+<ul>
+<li>PeerWeight           : 0</li>
+</ul>
+<ul>
+<li>OperationDescription : Get-AzureVirtualNetworkGateway</li>
+</ul>
+<ul>
+<li>OperationId          : 8746cdb8-faba-44ce-aaed-8523438d8d4a</li>
+</ul>
+<ul>
+<li>OperationStatus      : Succeeded</li>
+</ul>
+<ul>
+<li>即表现出ExpressRoute 网关有 VPN P2S 和 IPSec 的类型连接，并无Dynamic 的ER Connection，这样似乎不符合正常的逻辑。导致用户的ExpressRoute 和VPN 同时失效，影响生产环境。</li>
+</ul>
+<ul>
+<li>因此，个人认为当我们配置上引起连接问题的时候，ExpressRoute 和 VPN网关、线路的冗余性并不能够充分的发挥出来，而且如果对网关重新部署时，必须先删除VPN网关，才能执行其他对ExpressRoute 网关的操作。显然在删除VPN网关所需要的时间对于用户生产环境来说是难以接受的。</li>
+</ul>
+<ul>
+<li>通过在虚拟网络下创建Cisco CSR 路由器的方式和本地建立冗余保障业务。</li>
+</ul>
+<ul>
+<li>在PG和后线工程师协助用户下，删除所有的其他有关的connection，新建ExpressRoute Connection  和VPN Connection，逐步恢复业务架构。</li>
+</ul>
+<ul>
+<li>小结：</li>
+</ul>
+<ul>
+<li>通过部署一台第三方的路由器或者防火墙设备，可以快速有效的连接Azure 和Onpermise网络，之后将Azure 流量使用UDR 导入到第三方NVA设备当中，快速恢复业务。</li>
+</ul>
+<ul>
+<li>如下，目前Mooncake 已经出现了4网卡或者8网卡的Cisco CSR：</li>
+</ul>
+<ul>
+<li>Cisco IOS XE Software, Version 16.09.02</li>
+</ul>
+<ul>
+<li>Cisco IOS Software [Fuji], Virtual XE Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.9.2, RELEASE SOFTWARE (fc4)</li>
+</ul>
+<ul>
+<li>部署出来直接可以是4网卡的Cisco CSR设备，部署在门户即可，且整个部署过程约5~10 min，相比之下部署时间在可以承受的范围之内。</li>
+</ul>
+<ul>
+<li>部署完成后，可以参阅Azure 官方推荐的配置，或者和本地Onpermise 建立新的IPSec VPN 隧道：</li>
+</ul>
+<ul>
+<li>Import-Csv c:\temp\1220-test.csv | foreach {</li>
+</ul>
+<ul>
+<li>$table | Set-AzureRoute -RouteName $_.Name -AddressPrefix $_.Prefix -NextHopType VirtualAppliance -NextHopIpAddress $_.NextHop</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>1220-test.csv 如附件文件。</li>
+</ul>
+<ul>
+<li>以上。有什么问题随时联系我~ 谢谢！</li>
+</ul>
+<ul>
+<li>Best regards,</li>
+</ul>
+<ul>
+<li>HeShaobo | WATS</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查关键过程：检查用户的网关，在问题发生时发现配置引起ExpressRoute 和 VPN隧道连接异常，出现如下的异常连接：</li>
+</ul>
+<ul>
+<li>而经过实践确认，在业务中断以后，我们对网关的操作（几乎几个关键步骤均需要45 min 左右），以及部署自定义的Cisco CSR 均耗费了很多的时间资源，让用户承受了很多可以避免的业务压力，，尤其是在经典的网络架构下，当ExpressRoute 网关和VPN 网关的配置出现问题时，很难直接恢复ExpressRoute和VPN网关的连接。出于这样的原因，使得用户网络的ExpressRoute和VPN同时中断，并不能很好的发挥出冗余性。</li>
+</ul>
+<ul>
+<li>另外，有别于第三方独立的CiscoCSR镜像，我们Azure 官方镜像市场的中的Cisco 镜像可以进入底层Linux shell 环境下，来管理宿主机，在宿主机上完成抓包等排查。当然对于VM 问题来说，也可以配置Agent参数（此处@ lihong 姐~~）：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如下为Powershell 快速添加UDR路由方法：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>GatewaySKU           : HighPerformance</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>EnableBgp            : False</li>
+</ul>
+<ul>
+<li>解决方案：</li>
+</ul>
+<ul>
+<li>该案例解决方案是通过删除Connection ，之后创建VPN IKEv2 connection及UDR 的方式恢复和本地之间的连接。此为初步的Work Around 方案。</li>
+</ul>
+<ul>
+<li>注： IPforwarding 在各个网卡上已经启用，因此Azure  上的配置仅需要配置UDR到Subnet上：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/vpn-gateway/vpn-gateway-3rdparty-device-config-cisco-asa#bgp" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/vpn-gateway-3rdparty-device-config-cisco-asa#bgp</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20180202</p>
+<p>Dear All,</p>
+<p>有关Azure ExpressRoute 和 VPN共存情况下业务恢复的工单，大家可以参考：</p>
+<p>SR_2018122080573_[Hipo]ER授权经典虚拟网络无法连接专线</p>
+<p>问题现象：用户经典环境下ExpressRoute 和VPN共存，用户调整配置后导致ExpressRoute 和VPN 都无法连接，业务中断，无法紧急恢复业务。</p>
+<p>排查关键过程：检查用户的网关，在问题发生时发现配置引起ExpressRoute 和 VPN隧道连接异常，出现如下的异常连接：</p>
+<p>PS C:\Users\nisy&gt; Get-AzureVirtualNetworkGatewayConnection -GatewayId 90c17c47-41b3-49ac-b962-686015d4c9a9</p>
+<p>GatewayConnectionName   :</p>
+<p>VirtualNetworkGatewayId : 8f9a7dec-e165-49eb-9262-257aa982a0a5</p>
+<p>ConnectedEntityId       : VPNClientConnection</p>
+<p>GatewayConnectionType   : VPNClient</p>
+<p>VirtualNetworkGatewayId : 90c17c47-41b3-49ac-b962-686015d4c9a9</p>
+<p>ConnectedEntityId       : C15E9E5C_FRIDC</p>
+<p>GatewayConnectionType   : IPsec</p>
+<p>PS C:\Users\nisy&gt; Get-AzureVirtualNetworkGateway -GatewayId 90c17c47-41b3-49ac-b962-686015d4c9a9</p>
+<p>GatewayId            : 90c17c47-41b3-49ac-b962-686015d4c9a9</p>
+<p>GatewayName          : Default</p>
+<p>LastEventData        :</p>
+<p>GatewayType          : DynamicRouting</p>
+<p>LastEventTimeStamp   : 2018/12/20 16:03:08</p>
+<p>LastEventMessage     : Successfully configured the gateway.</p>
+<p>LastEventID          : 23005</p>
+<p>State                : Provisioned</p>
+<p>VIPAddress           : 42.159.153.8</p>
+<p>DefaultSite          :</p>
+<p>GatewaySKU           : HighPerformance</p>
+<p>Location             :</p>
+<p>VnetId               : 90c17c47-41b3-49ac-b962-686015d4c9a9</p>
+<p>SubnetId             :</p>
+<p>EnableBgp            : False</p>
+<p>Asn                  : 0</p>
+<p>BgpPeeringAddress    :</p>
+<p>PeerWeight           : 0</p>
+<p>OperationDescription : Get-AzureVirtualNetworkGateway</p>
+<p>OperationId          : 8746cdb8-faba-44ce-aaed-8523438d8d4a</p>
+<p>OperationStatus      : Succeeded</p>
+<p>即表现出ExpressRoute 网关有 VPN P2S 和 IPSec 的类型连接，并无Dynamic 的ER Connection，这样似乎不符合正常的逻辑。导致用户的ExpressRoute 和VPN 同时失效，影响生产环境。</p>
+<p>因此，个人认为当我们配置上引起连接问题的时候，ExpressRoute 和 VPN网关、线路的冗余性并不能够充分的发挥出来，而且如果对网关重新部署时，必须先删除VPN网关，才能执行其他对ExpressRoute 网关的操作。显然在删除VPN网关所需要的时间对于用户生产环境来说是难以接受的。</p>
+<p>解决方案：</p>
+<p>该案例解决方案是通过删除Connection ，之后创建VPN IKEv2 connection及UDR 的方式恢复和本地之间的连接。此为初步的Work Around 方案。</p>
+<p>通过在虚拟网络下创建Cisco CSR 路由器的方式和本地建立冗余保障业务。</p>
+<p>在PG和后线工程师协助用户下，删除所有的其他有关的connection，新建ExpressRoute Connection  和VPN Connection，逐步恢复业务架构。</p>
+<p>小结：</p>
+<p>而经过实践确认，在业务中断以后，我们对网关的操作（几乎几个关键步骤均需要45 min 左右），以及部署自定义的Cisco CSR 均耗费了很多的时间资源，让用户承受了很多可以避免的业务压力，，尤其是在经典的网络架构下，当ExpressRoute 网关和VPN 网关的配置出现问题时，很难直接恢复ExpressRoute和VPN网关的连接。出于这样的原因，使得用户网络的ExpressRoute和VPN同时中断，并不能很好的发挥出冗余性。</p>
+<p>因此刚好为大家引入如下的Cisco CSR虚拟机，可谓是VPN或ExpressRoute 网关自身更新，维护，故障等情景下的福音：</p>
+<p>通过部署一台第三方的路由器或者防火墙设备，可以快速有效的连接Azure 和Onpermise网络，之后将Azure 流量使用UDR 导入到第三方NVA设备当中，快速恢复业务。</p>
+<p>如下，目前Mooncake 已经出现了4网卡或者8网卡的Cisco CSR：</p>
+<p>Cisco IOS XE Software, Version 16.09.02</p>
+<p>Cisco IOS Software [Fuji], Virtual XE Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.9.2, RELEASE SOFTWARE (fc4)</p>
+<p>部署出来直接可以是4网卡的Cisco CSR设备，部署在门户即可，且整个部署过程约5~10 min，相比之下部署时间在可以承受的范围之内。</p>
+<p>部署完成后，可以参阅Azure 官方推荐的配置，或者和本地Onpermise 建立新的IPSec VPN 隧道：</p>
+<p>注： IPforwarding 在各个网卡上已经启用，因此Azure  上的配置仅需要配置UDR到Subnet上：</p>
+<p>如下为Powershell 快速添加UDR路由方法：</p>
+<p>Import-Csv c:\temp\1220-test.csv | foreach {</p>
+<p>$table | Set-AzureRoute -RouteName $_.Name -AddressPrefix $_.Prefix -NextHopType VirtualAppliance -NextHopIpAddress $_.NextHop</p>
+<p>}</p>
+<p>1220-test.csv 如附件文件。</p>
+<p><a href="https://docs.azure.cn/zh-cn/vpn-gateway/vpn-gateway-3rdparty-device-config-cisco-asa#bgp" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/vpn-gateway-3rdparty-device-config-cisco-asa#bgp</a></p>
+<p>另外，有别于第三方独立的CiscoCSR镜像，我们Azure 官方镜像市场的中的Cisco 镜像可以进入底层Linux shell 环境下，来管理宿主机，在宿主机上完成抓包等排查。当然对于VM 问题来说，也可以配置Agent参数（此处@ lihong 姐~~）：</p>
+<p>以上。有什么问题随时联系我~ 谢谢！</p>
+<p>Best regards,</p>
+<p>HeShaobo | WATS</p></article>

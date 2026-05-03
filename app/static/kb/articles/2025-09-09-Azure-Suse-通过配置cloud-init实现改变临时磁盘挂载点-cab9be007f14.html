@@ -1,0 +1,80 @@
+<article class="kb-article" data-title="Azure Suse 通过配置cloud-init实现改变临时磁盘挂载点"><h1>Azure Suse 通过配置cloud-init实现改变临时磁盘挂载点</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-09 11:09:51</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2025,9.8</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2025,9.8</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025,9.8</li>
+</ul>
+<ul>
+<li>zhangsong</li>
+</ul>
+<ul>
+<li>参考工单: SR_20250905371748 _ Azure 虚拟机临时盘咨询</li>
+</ul>
+<ul>
+<li>客户需求:  修改suse12 (sles-12-sp5-byos) 的临时磁盘挂载点</li>
+</ul>
+<ul>
+<li>参考了liyue老师之前分享的：</li>
+</ul>
+<ul>
+<li>Azure Ubuntu通过配置cloud-init实现改变临时磁盘挂载点</li>
+</ul>
+<ul>
+<li>测试镜像:  sles-12-sp5-byos</li>
+</ul>
+<ul>
+<li>Azure 中 Linux VM 的 cloud-init 支持概述 - Azure Virtual Machines | Azure Docs</li>
+</ul>
+<ul>
+<li>1,  Suse中cloud-init 文件位置:  /usr/lib/pythonx.x/site-packages/cloudinit/config/cc_mounts.py</li>
+</ul>
+<ul>
+<li>2,  修改挂载点位置/mnt --&gt; /abc</li>
+</ul>
+<ul>
+<li>3,  创建目录，</li>
+</ul>
+<ul>
+<li>mkdir  /abc</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>4，从portal上停止在开启虚拟机（如果内部重启不能测试出真正效果）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025,9.8</p>
+<p>zhangsong</p>
+<p>参考工单: SR_20250905371748 _ Azure 虚拟机临时盘咨询</p>
+<p>客户需求:  修改suse12 (sles-12-sp5-byos) 的临时磁盘挂载点</p>
+<p>参考了liyue老师之前分享的：</p>
+<p>Azure Ubuntu通过配置cloud-init实现改变临时磁盘挂载点</p>
+<p>测试镜像:  sles-12-sp5-byos</p>
+<p>Azure 中 Linux VM 的 cloud-init 支持概述 - Azure Virtual Machines | Azure Docs</p>
+<p>1,  Suse中cloud-init 文件位置:  /usr/lib/pythonx.x/site-packages/cloudinit/config/cc_mounts.py</p>
+<p>2,  修改挂载点位置/mnt --&gt; /abc</p>
+<p>3,  创建目录，</p>
+<p>mkdir  /abc</p>
+<p>4，从portal上停止在开启虚拟机（如果内部重启不能测试出真正效果）</p></article>

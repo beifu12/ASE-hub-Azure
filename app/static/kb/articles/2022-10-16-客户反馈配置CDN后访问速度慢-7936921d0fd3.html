@@ -1,0 +1,133 @@
+<article class="kb-article" data-title="*客户反馈配置CDN后访问速度慢"><h1>*客户反馈配置CDN后访问速度慢</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-10-16 13:13:23</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2019080543232_[S500]配置了CDN 回源流量还是很高</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2019080543232_[S500]配置了CDN 回源流量还是很高</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_2019080543232_[S500]配置了CDN 回源流量还是很高</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>======</li>
+</ul>
+<ul>
+<li>CDN加速后，通过17测检测速度慢。</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>升级后台协助优化链路。</li>
+</ul>
+<ul>
+<li>======================================================</li>
+</ul>
+<ul>
+<li>SR_2019082246760 _ [MS-LED]pre-wzq.zszq.com 回源性能通过Azure CDN后相对于不做CDN加速的情况大幅度降低</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>通过Azure CDN加速后，经过测试，回源性能相对于不经过Azure CDN大幅度降低</li>
+</ul>
+<ul>
+<li>1.由于目前未有具体的访问节点和客户端等信息，我们这边使用第三方的监控对比监测了2个URL，全国范围内的监测数据对比如下。数据显示加速后的性能是比未加速的整体性能略好一些</li>
+</ul>
+<ul>
+<li>2.另外，由于客户端网络等客观因素存在，我们对性能的指标要求一般为整体性能达到多少秒，或者是整体加速前和加速后的性能做对比，即不能以单独的某个时间点或者某个区域的请求作为依据</li>
+</ul>
+<ul>
+<li>a.问题发生时间点</li>
+</ul>
+<ul>
+<li>b.客户端互联网出口IP，以及DNS</li>
+</ul>
+<ul>
+<li>获取方法：</li>
+</ul>
+<ul>
+<li>cat /etc/resolv.conf</li>
+</ul>
+<ul>
+<li>c.DNS解析结果</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在cdn 管理界面查看 回源流量很高</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>3.同时，如果您能按照如下说明，搜集下具体的访问节点和客户端信息的话，我们将会尝试做进一步的分析排查   备注：最好能提供执行wrk命令客户端的信息</li>
+</ul>
+<ul>
+<li>Linux客户端：（如下命令的输出信息）</li>
+</ul>
+<ul>
+<li>curl ipinfo.io</li>
+</ul>
+<ul>
+<li>nslookup &lt;your_domain&gt;</li>
+</ul>
+<ul>
+<li>ping &lt;your_domain&gt;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<ul>
+<li>建议修改了忽略CACHE-CONTROL</li>
+</ul>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Windows客户端：访问 <a href="http://tools.cloudxns.net/index/diag" target="_blank" rel="noopener">http://tools.cloudxns.net/index/diag</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2019080543232_[S500]配置了CDN 回源流量还是很高</p>
+<p>问题描述：</p>
+<p>======</p>
+<p>CDN加速后，通过17测检测速度慢。</p>
+<p>在cdn 管理界面查看 回源流量很高</p>
+<p>解决方案*：</p>
+<p>=======</p>
+<p>建议修改了忽略CACHE-CONTROL</p>
+<p>升级后台协助优化链路。</p>
+<p>======================================================</p>
+<p>SR_2019082246760 _ [MS-LED]pre-wzq.zszq.com 回源性能通过Azure CDN后相对于不做CDN加速的情况大幅度降低</p>
+<p>==========</p>
+<p>通过Azure CDN加速后，经过测试，回源性能相对于不经过Azure CDN大幅度降低</p>
+<p>解决方案：</p>
+<p>1.由于目前未有具体的访问节点和客户端等信息，我们这边使用第三方的监控对比监测了2个URL，全国范围内的监测数据对比如下。数据显示加速后的性能是比未加速的整体性能略好一些</p>
+<p>2.另外，由于客户端网络等客观因素存在，我们对性能的指标要求一般为整体性能达到多少秒，或者是整体加速前和加速后的性能做对比，即不能以单独的某个时间点或者某个区域的请求作为依据</p>
+<p>3.同时，如果您能按照如下说明，搜集下具体的访问节点和客户端信息的话，我们将会尝试做进一步的分析排查   备注：最好能提供执行wrk命令客户端的信息</p>
+<p>a.问题发生时间点</p>
+<p>b.客户端互联网出口IP，以及DNS</p>
+<p>获取方法：</p>
+<p>Windows客户端：访问 <a href="http://tools.cloudxns.net/index/diag" target="_blank" rel="noopener">http://tools.cloudxns.net/index/diag</a></p>
+<p>Linux客户端：（如下命令的输出信息）</p>
+<p>cat /etc/resolv.conf</p>
+<p>curl ipinfo.io</p>
+<p>c.DNS解析结果</p>
+<p>nslookup &lt;your_domain&gt;</p>
+<p>ping &lt;your_domain&gt;</p></article>

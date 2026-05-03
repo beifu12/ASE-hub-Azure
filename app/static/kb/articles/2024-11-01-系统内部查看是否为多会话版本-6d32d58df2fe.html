@@ -1,0 +1,109 @@
+<article class="kb-article" data-title="系统内部查看是否为多会话版本"><h1>系统内部查看是否为多会话版本</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-01 16:31:07</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>目前azure 市场的win10 镜像 分为 ：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>目前azure 市场的win10 镜像 分为 ：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>目前azure 市场的win10 镜像 分为 ：</li>
+</ul>
+<ul>
+<li>Win 10 企业版  、win10 企业版 +多会话、win10 pro  三个类型。</li>
+</ul>
+<ul>
+<li>通过对比，从镜像属性信息以及描述角度没有发现win10 企业版 +多会话 镜像有共性的区别于其他镜像的特殊性。</li>
+</ul>
+<ul>
+<li>崔军 23.03.22</li>
+</ul>
+<ul>
+<li>We can  run the command below to get the image details.</li>
+</ul>
+<ul>
+<li>the yellow part is resource id of azure  vm  on the  first command lines.</li>
+</ul>
+<ul>
+<li>You can run the the second command lines  based on the firt command output.</li>
+</ul>
+<ul>
+<li>However , there is no information about multi-session</li>
+</ul>
+<ul>
+<li>You can run the command  below to get  all  the images info of  the  --publisher &quot;MicrosoftWindowsDesktop&quot;  .</li>
+</ul>
+<ul>
+<li>By comparison  , no special fields are found for  the multi-session.</li>
+</ul>
+<ul>
+<li>==========================================</li>
+</ul>
+<ul>
+<li>Please run the command below in your win10 system command lines,  if the value of ProductType is 3 ， your win10  vm belong to the multi-session vm</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>因此无法单纯从查看vm 镜像信息的角度判断azure vm win10 是否是多会话版本。</li>
+</ul>
+<ul>
+<li>Azure   portal  查看vm 实例的信息也无法判断azure vm win10 是否是多会话版本。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Base on my test and investigation .Currently , we can’t check the Azure VM is multi-session or single session win10 using either PowerShell way or portal .</li>
+</ul>
+<ul>
+<li>az vm show --ids &quot;/subscriptions/f00d42ae-5064-4957-a59d-673d54f414c7/resourceGroups/av1/providers/Microsoft.Compute/virtualMachines/multise-0&quot;  --query storageProfile.imageReference</li>
+</ul>
+<ul>
+<li>Get-AzVMImage -Location &quot;Chinanorth3&quot; -PublisherName &quot;MicrosoftWindowsDesktop&quot; -Offer &quot;windows10preview&quot; -Skus &quot;win10-22h2-avd-g2&quot; -Version &quot;19045.2130.221006&quot;</li>
+</ul>
+<ul>
+<li>az vm image list --all --publisher &quot;MicrosoftWindowsDesktop&quot;   --output table -l Chinanorth3</li>
+</ul>
+<ul>
+<li>Get-WmiObject -Class Win32_OperatingSystem -Property ProductType</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>You can check it  in the system  as workaround.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/virtual-desktop/windows-10-multisession-faq#why-does-my-application-report-windows-10-enterprise-multi-session-as-a-server-operating-system" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/virtual-desktop/windows-10-multisession-faq#why-does-my-application-report-windows-10-enterprise-multi-session-as-a-server-operating-system</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>目前azure 市场的win10 镜像 分为 ：</p>
+<p>Win 10 企业版  、win10 企业版 +多会话、win10 pro  三个类型。</p>
+<p>通过对比，从镜像属性信息以及描述角度没有发现win10 企业版 +多会话 镜像有共性的区别于其他镜像的特殊性。</p>
+<p>因此无法单纯从查看vm 镜像信息的角度判断azure vm win10 是否是多会话版本。</p>
+<p>Azure   portal  查看vm 实例的信息也无法判断azure vm win10 是否是多会话版本。</p>
+<p>崔军 23.03.22</p>
+<p>Base on my test and investigation .Currently , we can’t check the Azure VM is multi-session or single session win10 using either PowerShell way or portal .</p>
+<p>We can  run the command below to get the image details.</p>
+<p>the yellow part is resource id of azure  vm  on the  first command lines.</p>
+<p>You can run the the second command lines  based on the firt command output.</p>
+<p>However , there is no information about multi-session</p>
+<p>az vm show --ids &quot;/subscriptions/f00d42ae-5064-4957-a59d-673d54f414c7/resourceGroups/av1/providers/Microsoft.Compute/virtualMachines/multise-0&quot;  --query storageProfile.imageReference</p>
+<p>Get-AzVMImage -Location &quot;Chinanorth3&quot; -PublisherName &quot;MicrosoftWindowsDesktop&quot; -Offer &quot;windows10preview&quot; -Skus &quot;win10-22h2-avd-g2&quot; -Version &quot;19045.2130.221006&quot;</p>
+<p>You can run the command  below to get  all  the images info of  the  --publisher &quot;MicrosoftWindowsDesktop&quot;  .</p>
+<p>By comparison  , no special fields are found for  the multi-session.</p>
+<p>az vm image list --all --publisher &quot;MicrosoftWindowsDesktop&quot;   --output table -l Chinanorth3</p>
+<p>==========================================</p>
+<p>You can check it  in the system  as workaround.</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/virtual-desktop/windows-10-multisession-faq#why-does-my-application-report-windows-10-enterprise-multi-session-as-a-server-operating-system" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/virtual-desktop/windows-10-multisession-faq#why-does-my-application-report-windows-10-enterprise-multi-session-as-a-server-operating-system</a></p>
+<p>Please run the command below in your win10 system command lines,  if the value of ProductType is 3 ， your win10  vm belong to the multi-session vm</p>
+<p>Get-WmiObject -Class Win32_OperatingSystem -Property ProductType</p></article>

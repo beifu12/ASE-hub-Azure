@@ -1,0 +1,76 @@
+<article class="kb-article" data-title="Outlook 2016 pst/ost邮件数据文件存储路径修改"><h1>Outlook 2016 pst/ost邮件数据文件存储路径修改</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2023-07-03 17:36:08</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Jin Jing</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Jin Jing</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Jin Jing</li>
+</ul>
+<ul>
+<li>06/22/2021</li>
+</ul>
+<ul>
+<li>Win+R 调出运行“regedit”定位到 Computer\HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook</li>
+</ul>
+<ul>
+<li>在outlook右侧里面点击右键，新建字符串值OST文件为“ForceOSTPath”，PST文件为“ForcePSTPath”，数值数据填入你要修改的路径，如下图所示：</li>
+</ul>
+<ul>
+<li>修改完注册表后，进入控制面板，选择“邮件”，点击“显示配置文件”，添加一个新的配置文件，重新配置邮箱即可。</li>
+</ul>
+<ul>
+<li>配置成功后，重新打开Outlook邮箱，会提示选择哪一个配置文件，选择刚才咱们新建的那个就可以了。</li>
+</ul>
+<ul>
+<li>另外，附上在Outlook添加azuresupport和wats这两个共享邮箱的方法，按照下图操作，分别添加wats和azuresupport即可。</li>
+</ul>
+<ul>
+<li>如果您之前做过邮件归档到本地为PST文件，为了不占用C盘空间，可以拷贝到E盘，然后挂载到现有的邮箱配置文件中。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>大家可能会遇到公司电脑C盘容量不足的问题，检查后发现Outlook的数据文件占据了很大一部分空间。</li>
+</ul>
+<ul>
+<li>如果希望更改Outlook数据文件的位置到E盘或其他盘，请参考下面的步骤：</li>
+</ul>
+<ul>
+<li>登录进去后，可以检查一下数据文件是否已经切换到了之前注册表填写的路径</li>
+</ul>
+<ul>
+<li>如果已经确认，新的邮箱配置文件一切正常且满足您的需求，并且把归档到本地的pst文件拷贝到了其他盘，就可以去清理C盘中Outlook数据文件占用的空间了。同时，也可以在下图中选择始终使用此配置文件，下拉框选择您新建的配置文件，这样您关闭Outlook再打开，就不会提示您需要选择哪个配置文件了。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Jin Jing</p>
+<p>06/22/2021</p>
+<p>大家可能会遇到公司电脑C盘容量不足的问题，检查后发现Outlook的数据文件占据了很大一部分空间。</p>
+<p>如果希望更改Outlook数据文件的位置到E盘或其他盘，请参考下面的步骤：</p>
+<p>Win+R 调出运行“regedit”定位到 Computer\HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\Outlook</p>
+<p>在outlook右侧里面点击右键，新建字符串值OST文件为“ForceOSTPath”，PST文件为“ForcePSTPath”，数值数据填入你要修改的路径，如下图所示：</p>
+<p>修改完注册表后，进入控制面板，选择“邮件”，点击“显示配置文件”，添加一个新的配置文件，重新配置邮箱即可。</p>
+<p>配置成功后，重新打开Outlook邮箱，会提示选择哪一个配置文件，选择刚才咱们新建的那个就可以了。</p>
+<p>登录进去后，可以检查一下数据文件是否已经切换到了之前注册表填写的路径</p>
+<p>另外，附上在Outlook添加azuresupport和wats这两个共享邮箱的方法，按照下图操作，分别添加wats和azuresupport即可。</p>
+<p>如果您之前做过邮件归档到本地为PST文件，为了不占用C盘空间，可以拷贝到E盘，然后挂载到现有的邮箱配置文件中。</p>
+<p>如果已经确认，新的邮箱配置文件一切正常且满足您的需求，并且把归档到本地的pst文件拷贝到了其他盘，就可以去清理C盘中Outlook数据文件占用的空间了。同时，也可以在下图中选择始终使用此配置文件，下拉框选择您新建的配置文件，这样您关闭Outlook再打开，就不会提示您需要选择哪个配置文件了。</p></article>

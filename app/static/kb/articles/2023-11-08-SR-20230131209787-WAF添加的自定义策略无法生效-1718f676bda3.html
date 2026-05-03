@@ -1,0 +1,136 @@
+<article class="kb-article" data-title="SR_20230131209787_WAF添加的自定义策略无法生效"><h1>SR_20230131209787_WAF添加的自定义策略无法生效</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-11-08 15:18:04</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>关于WAF policy Managed rules中看不到949xxx规则是因为它们是强制的规则，是无法用户选择启用或者禁用的，所以不在Managed rules中显示。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>关于WAF policy Managed rules中看不到949xxx规则是因为它们是强制的规则，是无法用户选择启用或者禁用的，所以不在Managed rules中显示。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>WAF ResourceID：</li>
+</ul>
+<ul>
+<li>/subscriptions/19cf3375-c7aa-4b96-b8d0-f0c4f40509dd/resourceGroups/BOSCH-SEC2.0-RG/providers/Microsoft.Network/applicationGateways/BOSCH-SharingZone-WAF01</li>
+</ul>
+<ul>
+<li>系统环境/应用程序信息：</li>
+</ul>
+<ul>
+<li>===============</li>
+</ul>
+<ul>
+<li>Azure Application Gateway WAF v2</li>
+</ul>
+<ul>
+<li>尝试调整WAF policy中的自定义规则</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>WAF policy中的自定义规则requestUri *后面有一个空格</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>删除了星号后的空格</li>
+</ul>
+<ul>
+<li>温馨提示：</li>
+</ul>
+<ul>
+<li>===========</li>
+</ul>
+<ul>
+<li>您也可以参阅常用操作指南，快速了解Azure 支持中的热点话题，进行自助定位与解决问题。</li>
+</ul>
+<ul>
+<li>如果您想快速咨询，请点击 &quot;在线客服&quot;，获取即时解答。</li>
+</ul>
+<ul>
+<li>实际测试：</li>
+</ul>
+<ul>
+<li>结论：使用requestUri作为匹配值时，确保每个uri后面不要多出空格。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>用户访问URL 被WAF拦截，WAF自定义策略已添加URI路径“/api/datascience/job/*“，但用户反馈还是报403错误：</li>
+</ul>
+<ul>
+<li>排查步骤：</li>
+</ul>
+<ul>
+<li>检查WAF polciy中的自定义规则配置</li>
+</ul>
+<ul>
+<li>检查WAF firewall log</li>
+</ul>
+<ul>
+<li>如果您有其他任何关于Azure的技术问题，欢迎通过在线方式便捷地提交或者查询工单进展情况。</li>
+</ul>
+<ul>
+<li>Match values可以从ASC中查看：当配置了多个不同的requestUri时，多了空格的那个其实可以看出来：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<ul>
+<li>如果您对我们的产品和服务有任何意见或建议，可以发送邮件至 feedback@oe.21vianet.com。我们的客服专员将会尽快与您联系，为您提供反馈信息并协商解决方案。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>问题描述：</p>
+<p>=======</p>
+<p>用户访问URL 被WAF拦截，WAF自定义策略已添加URI路径“/api/datascience/job/*“，但用户反馈还是报403错误：</p>
+<p>WAF ResourceID：</p>
+<p>/subscriptions/19cf3375-c7aa-4b96-b8d0-f0c4f40509dd/resourceGroups/BOSCH-SEC2.0-RG/providers/Microsoft.Network/applicationGateways/BOSCH-SharingZone-WAF01</p>
+<p>系统环境/应用程序信息：</p>
+<p>===============</p>
+<p>Azure Application Gateway WAF v2</p>
+<p>排查步骤：</p>
+<p>检查WAF polciy中的自定义规则配置</p>
+<p>检查WAF firewall log</p>
+<p>尝试调整WAF policy中的自定义规则</p>
+<p>问题原因：</p>
+<p>========</p>
+<p>WAF policy中的自定义规则requestUri *后面有一个空格</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>删除了星号后的空格</p>
+<p>关于WAF policy Managed rules中看不到949xxx规则是因为它们是强制的规则，是无法用户选择启用或者禁用的，所以不在Managed rules中显示。</p>
+<p>温馨提示：</p>
+<p>===========</p>
+<p>如果您有其他任何关于Azure的技术问题，欢迎通过在线方式便捷地提交或者查询工单进展情况。</p>
+<p>您也可以参阅常用操作指南，快速了解Azure 支持中的热点话题，进行自助定位与解决问题。</p>
+<p>如果您对我们的产品和服务有任何意见或建议，可以发送邮件至 feedback@oe.21vianet.com。我们的客服专员将会尽快与您联系，为您提供反馈信息并协商解决方案。</p>
+<p>如果您想快速咨询，请点击 &quot;在线客服&quot;，获取即时解答。</p>
+<p>实际测试：</p>
+<p>Match values可以从ASC中查看：当配置了多个不同的requestUri时，多了空格的那个其实可以看出来：</p>
+<p>结论：使用requestUri作为匹配值时，确保每个uri后面不要多出空格。</p></article>

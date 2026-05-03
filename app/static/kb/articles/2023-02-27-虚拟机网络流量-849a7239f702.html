@@ -1,0 +1,143 @@
+<article class="kb-article" data-title="虚拟机网络流量"><h1>虚拟机网络流量</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-02-27 15:40:45</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>[REG:118082118827446][PODVM][MS-LED][2018081656500]虚拟机远程连接失败</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>[REG:118082118827446][PODVM][MS-LED][2018081656500]虚拟机远程连接失败</li>
+</ul>
+<ul>
+<li>通过containerIP查到网卡Mac, 通过Mac查ca地址，如果查到的，unknown  ,message=port not present</li>
+</ul>
+<ul>
+<li>totalPings:94,highrttPings:0,timeoutPings:0,otherFailedPings:0</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>案例：</li>
+</ul>
+<ul>
+<li>[REG:118042518066804] [PODVM][MS-LED][2018042431891][[MS-LED]vm连接问题]</li>
+</ul>
+<ul>
+<li>118042818090589] POD-VM| MS-LED |SR 2018042532307| vm连接问题</li>
+</ul>
+<ul>
+<li>对于Windows来讲，就算是on-premise的support，这种hang的原因分析，没有crash dump都是找不出来的</li>
+</ul>
+<ul>
+<li>查Host的日志，switch日志（需要安装Hyper-V组件）</li>
+</ul>
+<ul>
+<li>((get-fabric BJBPrdApp12).FabricConnection.NetworkManagementService.GetVfpFiltersForContainer(&#39;25a87eec-f3a9-426c-ad27-fa6949a3fcbe&#39;,&#39;59601c4e-bd44-4f98-b4c7-c55e381c7bd7&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39; ,&#39;&#39;,&#39;&#39;)).vfpcontainerconfiguration.VfpRules.rule &gt;D:\Users\oe-wangruifeng\Desktop\temp\nsg.txt</li>
+</ul>
+<ul>
+<li>PG分享链接：</li>
+</ul>
+<ul>
+<li>物理层到虚拟机层间网络流量</li>
+</ul>
+<ul>
+<li>CSS Hostanalyzer工具，可以显示如下信息，不要同步给客户：</li>
+</ul>
+<ul>
+<li>2018-08-15T10:44:00.0000000Z</li>
+</ul>
+<ul>
+<li>f8addb55-79b1-429f-8c26-8aba5de5e4f7</li>
+</ul>
+<ul>
+<li>1</li>
+</ul>
+<ul>
+<li>&lt;UP&gt;</li>
+</ul>
+<ul>
+<li>&lt;DOWN&gt;</li>
+</ul>
+<ul>
+<li>&lt;N/A&gt;</li>
+</ul>
+<ul>
+<li>0</li>
+</ul>
+<ul>
+<li>VSC State Unhealthy</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>常规步骤各种查起来，排查平台问题，分析系统日志。看三个案例：</li>
+</ul>
+<ul>
+<li>或者收到客户case，也可以先抽下启动诊断数据，看一眼</li>
+</ul>
+<ul>
+<li>vfp即时查看</li>
+</ul>
+<ul>
+<li>{EB927120-F7E9-4E87-9013-2BE5FC49FC5B}[0017FA002FD8]&lt;DOWN&gt;VmsNicBytesReceived is 0 but TotalBytesInRate metric is &gt; 0. Inbound traffic is blocked between VFP and vmNic___VscState is present but not operational (VscState != 3)___</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>现象可能很接近，但问题原因可能有多种。这种问题没什么好的流程化的建议，只能case by case去分析。个人建议，客户在发生问题后，进行重启或者其他操作前，可以先看看启动诊断的截图，看登陆界面是不是正常的，以此来判断VM是否以及该crash。如果这个不行，就得保留现场了，比如先console进去看看本地操作有没有反应；如果有，那可能是网络服务问题，可以进虚拟机进一步检查网络服务；如果没有，那么可能就是虚拟机crash了。windows的话，可以抓crash dump（这个在Global是wasu来做），linux 的内部crash，我们只能try best分析，但不保证找到原因；也许可以建议客户先在系统里配置crash dump（网上搜搜应该有很多文档），有第三方support的，就找第三方排查。</li>
+</ul>
+<ul>
+<li>Linux不记日志可能是rsyslog也crash了。但console上可能会有输出的，所以建议客户开启启动诊断，并第一时间保留这些数据。一旦重启，就找不回来了</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/95DF684A" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/95DF684A</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/B98FA518?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;Cluster&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;SH2PrdApp02&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ContainerId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;561fd672-e3db-4176-bdd9-b10fcb57c3f9&quot;},{&quot;query&quot;:&quot;//*[id=&#39;MacAddress&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;NodeId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;VNetId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;VFPMDMMC&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/B98FA518?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;Cluster&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;SH2PrdApp02&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ContainerId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;561fd672-e3db-4176-bdd9-b10fcb57c3f9&quot;},{&quot;query&quot;:&quot;//*[id=&#39;MacAddress&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;NodeId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;VNetId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;VFPMDMMC&quot;}]%20</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/3ED0B8E?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;AzComputeShoeboxCHINAE2&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;2b5ba0e3-f86e-4479-8b14-9993c6bd5893&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/3ED0B8E?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;AzComputeShoeboxCHINAE2&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;2b5ba0e3-f86e-4479-8b14-9993c6bd5893&quot;}]%20</a> ( <a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/3ED0B8E?overrides=%5b%7b%22query%22:%22//dataSources%22,%22key%22:%22account%22,%22replacement%22:%22AzComputeShoeboxCHINAE2%22%7d,%7b%22query%22:%22//*%5bid=%27ResourceId%27%5d%22,%22key%22:%22value%22,%22replacement%22:%222b5ba0e3-f86e-4479-8b14-9993c6bd5893%22%7d%5d%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/3ED0B8E?overrides=%5b%7b%22query%22:%22//dataSources%22,%22key%22:%22account%22,%22replacement%22:%22AzComputeShoeboxCHINAE2%22%7d,%7b%22query%22:%22//*%5bid=%27ResourceId%27%5d%22,%22key%22:%22value%22,%22replacement%22:%222b5ba0e3-f86e-4479-8b14-9993c6bd5893%22%7d%5d%20</a> )</li>
+</ul>
+<ul>
+<li><a href="https://icm.ad.msft.net/imp/v3/incidents/details/127039197/home" target="_blank" rel="noopener">https://icm.ad.msft.net/imp/v3/incidents/details/127039197/home</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>常规步骤各种查起来，排查平台问题，分析系统日志。看三个案例：</p>
+<p>案例：</p>
+<p>[REG:118042518066804] [PODVM][MS-LED][2018042431891][[MS-LED]vm连接问题]</p>
+<p>118042818090589] POD-VM| MS-LED |SR 2018042532307| vm连接问题</p>
+<p>[REG:118082118827446][PODVM][MS-LED][2018081656500]虚拟机远程连接失败</p>
+<p>现象可能很接近，但问题原因可能有多种。这种问题没什么好的流程化的建议，只能case by case去分析。个人建议，客户在发生问题后，进行重启或者其他操作前，可以先看看启动诊断的截图，看登陆界面是不是正常的，以此来判断VM是否以及该crash。如果这个不行，就得保留现场了，比如先console进去看看本地操作有没有反应；如果有，那可能是网络服务问题，可以进虚拟机进一步检查网络服务；如果没有，那么可能就是虚拟机crash了。windows的话，可以抓crash dump（这个在Global是wasu来做），linux 的内部crash，我们只能try best分析，但不保证找到原因；也许可以建议客户先在系统里配置crash dump（网上搜搜应该有很多文档），有第三方support的，就找第三方排查。</p>
+<p>对于Windows来讲，就算是on-premise的support，这种hang的原因分析，没有crash dump都是找不出来的</p>
+<p>Linux不记日志可能是rsyslog也crash了。但console上可能会有输出的，所以建议客户开启启动诊断，并第一时间保留这些数据。一旦重启，就找不回来了</p>
+<p>或者收到客户case，也可以先抽下启动诊断数据，看一眼</p>
+<p>通过containerIP查到网卡Mac, 通过Mac查ca地址，如果查到的，unknown  ,message=port not present</p>
+<p>查Host的日志，switch日志（需要安装Hyper-V组件）</p>
+<p>vfp即时查看</p>
+<p>((get-fabric BJBPrdApp12).FabricConnection.NetworkManagementService.GetVfpFiltersForContainer(&#39;25a87eec-f3a9-426c-ad27-fa6949a3fcbe&#39;,&#39;59601c4e-bd44-4f98-b4c7-c55e381c7bd7&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39; ,&#39;&#39;,&#39;&#39;)).vfpcontainerconfiguration.VfpRules.rule &gt;D:\Users\oe-wangruifeng\Desktop\temp\nsg.txt</p>
+<p>PG分享链接：</p>
+<p>物理层到虚拟机层间网络流量</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/95DF684A" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/95DF684A</a></p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/B98FA518?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;Cluster&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;SH2PrdApp02&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ContainerId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;561fd672-e3db-4176-bdd9-b10fcb57c3f9&quot;},{&quot;query&quot;:&quot;//*[id=&#39;MacAddress&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;NodeId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;VNetId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;VFPMDMMC&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/B98FA518?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;Cluster&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;SH2PrdApp02&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ContainerId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;561fd672-e3db-4176-bdd9-b10fcb57c3f9&quot;},{&quot;query&quot;:&quot;//*[id=&#39;MacAddress&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;NodeId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//*[id=&#39;VNetId&#39;]&quot;,&quot;key&quot;:&quot;regex&quot;,&quot;replacement&quot;:&quot;*&quot;},{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;VFPMDMMC&quot;}]%20</a></p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/3ED0B8E?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;AzComputeShoeboxCHINAE2&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;2b5ba0e3-f86e-4479-8b14-9993c6bd5893&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/3ED0B8E?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;AzComputeShoeboxCHINAE2&quot;},{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;2b5ba0e3-f86e-4479-8b14-9993c6bd5893&quot;}]%20</a> ( <a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/3ED0B8E?overrides=%5b%7b%22query%22:%22//dataSources%22,%22key%22:%22account%22,%22replacement%22:%22AzComputeShoeboxCHINAE2%22%7d,%7b%22query%22:%22//*%5bid=%27ResourceId%27%5d%22,%22key%22:%22value%22,%22replacement%22:%222b5ba0e3-f86e-4479-8b14-9993c6bd5893%22%7d%5d%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/3ED0B8E?overrides=%5b%7b%22query%22:%22//dataSources%22,%22key%22:%22account%22,%22replacement%22:%22AzComputeShoeboxCHINAE2%22%7d,%7b%22query%22:%22//*%5bid=%27ResourceId%27%5d%22,%22key%22:%22value%22,%22replacement%22:%222b5ba0e3-f86e-4479-8b14-9993c6bd5893%22%7d%5d%20</a> )</p>
+<p>CSS Hostanalyzer工具，可以显示如下信息，不要同步给客户：</p>
+<p>2018-08-15T10:44:00.0000000Z</p>
+<p>f8addb55-79b1-429f-8c26-8aba5de5e4f7</p>
+<p>1</p>
+<p>&lt;UP&gt;</p>
+<p>&lt;DOWN&gt;</p>
+<p>&lt;N/A&gt;</p>
+<p>0</p>
+<p>totalPings:94,highrttPings:0,timeoutPings:0,otherFailedPings:0</p>
+<p>VSC State Unhealthy</p>
+<p>{EB927120-F7E9-4E87-9013-2BE5FC49FC5B}[0017FA002FD8]&lt;DOWN&gt;VmsNicBytesReceived is 0 but TotalBytesInRate metric is &gt; 0. Inbound traffic is blocked between VFP and vmNic___VscState is present but not operational (VscState != 3)___</p>
+<p><a href="https://icm.ad.msft.net/imp/v3/incidents/details/127039197/home" target="_blank" rel="noopener">https://icm.ad.msft.net/imp/v3/incidents/details/127039197/home</a></p></article>

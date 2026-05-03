@@ -1,0 +1,94 @@
+<article class="kb-article" data-title="Windows azure Powershell批量添加ACL"><h1>Windows azure Powershell批量添加ACL</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Powershell</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-06-22 21:08:54</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>需要说明的是，对于每个Endpoint，最多可以添加50个ACL规则。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>需要说明的是，对于每个Endpoint，最多可以添加50个ACL规则。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>需要说明的是，对于每个Endpoint，最多可以添加50个ACL规则。</li>
+</ul>
+<ul>
+<li>设置ACL规则：</li>
+</ul>
+<ul>
+<li>$vm = Get-AzureVM –ServiceName &quot;MyCloudService&quot; –Name &quot;VMName&quot;</li>
+</ul>
+<ul>
+<li>$acl = New-AzureAclConfig</li>
+</ul>
+<ul>
+<li>…</li>
+</ul>
+<ul>
+<li>$vm | Set-AzureEndpoint -ACL $acl -Name &quot;MyPortName&quot; | Update-AzureVM</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-AzureAclConfig -AddRule -ACL $acl -Order 100 -Action Deny -RemoteSubnet &quot;192.168.1.1/32&quot; -Description &quot;test&quot;</li>
+</ul>
+<ul>
+<li>Set-AzureAclConfig -AddRule -ACL $acl -Order 101 -Action Deny -RemoteSubnet &quot;192.168.1.2/32&quot; -Description &quot;test&quot;</li>
+</ul>
+<ul>
+<li>Set-AzureAclConfig -AddRule -ACL $acl -Order 102 -Action Deny -RemoteSubnet &quot;192.168.1.3/32&quot; -Description &quot;test&quot;</li>
+</ul>
+<ul>
+<li>Set-AzureAclConfig -AddRule -ACL $acl -Order 103 -Action Deny -RemoteSubnet &quot;192.168.1.4/32&quot; -Description &quot;test&quot;</li>
+</ul>
+<ul>
+<li>Set-AzureAclConfig -AddRule -ACL $acl -Order 104 -Action Deny -RemoteSubnet &quot;192.168.1.5/32&quot; -Description &quot;test&quot;</li>
+</ul>
+<ul>
+<li>对于普通的Endpoint，参考命令如下：</li>
+</ul>
+<ul>
+<li>对于SLB的Endpoint，参考命令如下：</li>
+</ul>
+<ul>
+<li>Set-AzureLoadBalancedEndpoint -LBSetName &lt;LoadBalanceSetName&gt; -ServiceName &lt;CloudServiceName&gt; -ACL $acl</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>执行完成后，查看Azure虚拟机的端口的访问控制列表是否生效：</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考链接：<a href="http://azure.microsoft.com/en-us/documentation/articles/azure-subscription-service-limits" target="_blank" rel="noopener">http://azure.microsoft.com/en-us/documentation/articles/azure-subscription-service-limits</a></li>
+</ul>
+<ul>
+<li>关于Azure ACL的详细设置，您可以参考链接：<a href="https://msdn.microsoft.com/zh-cn/library/azure/dn376543.aspx" target="_blank" rel="noopener">https://msdn.microsoft.com/zh-cn/library/azure/dn376543.aspx</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>需要说明的是，对于每个Endpoint，最多可以添加50个ACL规则。</p>
+<p>参考链接：<a href="http://azure.microsoft.com/en-us/documentation/articles/azure-subscription-service-limits" target="_blank" rel="noopener">http://azure.microsoft.com/en-us/documentation/articles/azure-subscription-service-limits</a></p>
+<p>设置ACL规则：</p>
+<p>$vm = Get-AzureVM –ServiceName &quot;MyCloudService&quot; –Name &quot;VMName&quot;</p>
+<p>$acl = New-AzureAclConfig</p>
+<p>Set-AzureAclConfig -AddRule -ACL $acl -Order 100 -Action Deny -RemoteSubnet &quot;192.168.1.1/32&quot; -Description &quot;test&quot;</p>
+<p>Set-AzureAclConfig -AddRule -ACL $acl -Order 101 -Action Deny -RemoteSubnet &quot;192.168.1.2/32&quot; -Description &quot;test&quot;</p>
+<p>Set-AzureAclConfig -AddRule -ACL $acl -Order 102 -Action Deny -RemoteSubnet &quot;192.168.1.3/32&quot; -Description &quot;test&quot;</p>
+<p>Set-AzureAclConfig -AddRule -ACL $acl -Order 103 -Action Deny -RemoteSubnet &quot;192.168.1.4/32&quot; -Description &quot;test&quot;</p>
+<p>Set-AzureAclConfig -AddRule -ACL $acl -Order 104 -Action Deny -RemoteSubnet &quot;192.168.1.5/32&quot; -Description &quot;test&quot;</p>
+<p>…</p>
+<p>对于普通的Endpoint，参考命令如下：</p>
+<p>$vm | Set-AzureEndpoint -ACL $acl -Name &quot;MyPortName&quot; | Update-AzureVM</p>
+<p>对于SLB的Endpoint，参考命令如下：</p>
+<p>Set-AzureLoadBalancedEndpoint -LBSetName &lt;LoadBalanceSetName&gt; -ServiceName &lt;CloudServiceName&gt; -ACL $acl</p>
+<p>执行完成后，查看Azure虚拟机的端口的访问控制列表是否生效：</p>
+<p>关于Azure ACL的详细设置，您可以参考链接：<a href="https://msdn.microsoft.com/zh-cn/library/azure/dn376543.aspx" target="_blank" rel="noopener">https://msdn.microsoft.com/zh-cn/library/azure/dn376543.aspx</a></p></article>

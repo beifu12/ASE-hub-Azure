@@ -1,0 +1,144 @@
+<article class="kb-article" data-title="VMSS 结合LB时创建提示入站端口不足问题"><h1>VMSS 结合LB时创建提示入站端口不足问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LB</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-08-21 17:15:37</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错截图：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错截图：</li>
+</ul>
+<ul>
+<li>当选择实例数为150个时就会报错，最大尝试建120个是成功的。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>分享一个工单：20220819184372</li>
+</ul>
+<ul>
+<li>创建VMSS时选择如下：</li>
+</ul>
+<ul>
+<li>创建后LB的配置如下：</li>
+</ul>
+<ul>
+<li>目标需求是建立150个机器。但最多只能创建120个。通过Azure LB文档我们可以计算出并没有超过这个数量。</li>
+</ul>
+<ul>
+<li>-g MyResourceGroup</li>
+</ul>
+<ul>
+<li>--lb-name MyLb</li>
+</ul>
+<ul>
+<li>-n MyNatPool</li>
+</ul>
+<ul>
+<li>--frontend-port-range-start 80</li>
+</ul>
+<ul>
+<li>--frontend-port-range-end 89</li>
+</ul>
+<ul>
+<li>--backend-port 80</li>
+</ul>
+<ul>
+<li>--frontend-ip-name MyFrontendIpConfig</li>
+</ul>
+<ul>
+<li>-n myVMSS</li>
+</ul>
+<ul>
+<li>--add virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].ipConfigurations[0].loadBalancerInboundNatPools &quot;{&#39;id&#39;:&#39;/subscriptions/mySubscriptionId/resourceGroups/MyResourceGroup/providers/Microsoft.Network/loadBalancers/MyLb/inboundNatPools/MyNatPool&#39;}&quot;</li>
+</ul>
+<ul>
+<li>--instance-ids *</li>
+</ul>
+<ul>
+<li>--resource-group MyResourceGroup</li>
+</ul>
+<ul>
+<li>--name MyVMSS</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>这里是最终通过命令行的形式实现的效果。用户可以在VMSS的实例中点连接看到该公网IP或域名。</li>
+</ul>
+<ul>
+<li>LB请参考natpool.0 和.1 这个，这个是当创建VMSS时自动生成的。 后面的mynatpool是通过powershell形式添加后的最终结果。通过VMSS创建的LB的入站规则端口是平台自动分配的。默认是5000开始。后面用命令行是通过手动指定的。</li>
+</ul>
+<ul>
+<li>测试如果不成功或者命令途中报错的话请尝试移除该VMSS（因为在早前跟用户做了该测试单连接并不先生公网地址和域名，后续我在做了测试后可以显示成功了，我仅对VMSS的实例进行了update操作，但我认为并不是这个问题所致），重建VMSS并清除LB的相关配置后再使用命令行重新绑定。</li>
+</ul>
+<ul>
+<li>az network lb inbound-nat-pool create</li>
+</ul>
+<ul>
+<li>az vmss update</li>
+</ul>
+<ul>
+<li>az vmss update-instances</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>问题现象： 在portal上创建VMSS时选择集成LB时报错端口不足问题</li>
+</ul>
+<ul>
+<li>这里输入的域名标签用于在remote connect manager中自动进行连接的连接串，会以域名+端口的形式生成。</li>
+</ul>
+<ul>
+<li>为什么要计算这个值，是因为创建VMSS时会自动添加一个负载均衡规则，80的一条并启用隐性出站。但按理说这么计算端口是足够了。具体为何报错从后台抽取日志没有看出是和原因。</li>
+</ul>
+<ul>
+<li>--protocol Tcp</li>
+</ul>
+<ul>
+<li>关于导致该报错的原因升级CSS也没有拿到文档提示或最终确认，感兴趣的小伙伴可以抽取一下LB的NAT端口分配情况来查找原因。具体也可以参考邮件工单。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>最终使用<a href="https://docs.azure.cn/zh-cn/load-balancer/update-load-balancer-with-vm-scale-set" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/load-balancer/update-load-balancer-with-vm-scale-set</a>  这个文档中的将其他VMSS添加到已有LB后成功。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022/09/01</p>
+<p>分享一个工单：20220819184372</p>
+<p>问题现象： 在portal上创建VMSS时选择集成LB时报错端口不足问题</p>
+<p>报错截图：</p>
+<p>当选择实例数为150个时就会报错，最大尝试建120个是成功的。</p>
+<p>创建VMSS时选择如下：</p>
+<p>这里输入的域名标签用于在remote connect manager中自动进行连接的连接串，会以域名+端口的形式生成。</p>
+<p>创建后LB的配置如下：</p>
+<p>这里是最终通过命令行的形式实现的效果。用户可以在VMSS的实例中点连接看到该公网IP或域名。</p>
+<p>LB请参考natpool.0 和.1 这个，这个是当创建VMSS时自动生成的。 后面的mynatpool是通过powershell形式添加后的最终结果。通过VMSS创建的LB的入站规则端口是平台自动分配的。默认是5000开始。后面用命令行是通过手动指定的。</p>
+<p>目标需求是建立150个机器。但最多只能创建120个。通过Azure LB文档我们可以计算出并没有超过这个数量。</p>
+<p>为什么要计算这个值，是因为创建VMSS时会自动添加一个负载均衡规则，80的一条并启用隐性出站。但按理说这么计算端口是足够了。具体为何报错从后台抽取日志没有看出是和原因。</p>
+<p>最终使用<a href="https://docs.azure.cn/zh-cn/load-balancer/update-load-balancer-with-vm-scale-set" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/load-balancer/update-load-balancer-with-vm-scale-set</a>  这个文档中的将其他VMSS添加到已有LB后成功。</p>
+<p>测试如果不成功或者命令途中报错的话请尝试移除该VMSS（因为在早前跟用户做了该测试单连接并不先生公网地址和域名，后续我在做了测试后可以显示成功了，我仅对VMSS的实例进行了update操作，但我认为并不是这个问题所致），重建VMSS并清除LB的相关配置后再使用命令行重新绑定。</p>
+<p>az network lb inbound-nat-pool create</p>
+<p>-g MyResourceGroup</p>
+<p>--lb-name MyLb</p>
+<p>-n MyNatPool</p>
+<p>--protocol Tcp</p>
+<p>--frontend-port-range-start 80</p>
+<p>--frontend-port-range-end 89</p>
+<p>--backend-port 80</p>
+<p>--frontend-ip-name MyFrontendIpConfig</p>
+<p>az vmss update</p>
+<p>-n myVMSS</p>
+<p>--add virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].ipConfigurations[0].loadBalancerInboundNatPools &quot;{&#39;id&#39;:&#39;/subscriptions/mySubscriptionId/resourceGroups/MyResourceGroup/providers/Microsoft.Network/loadBalancers/MyLb/inboundNatPools/MyNatPool&#39;}&quot;</p>
+<p>az vmss update-instances</p>
+<p>--instance-ids *</p>
+<p>--resource-group MyResourceGroup</p>
+<p>--name MyVMSS</p>
+<p>关于导致该报错的原因升级CSS也没有拿到文档提示或最终确认，感兴趣的小伙伴可以抽取一下LB的NAT端口分配情况来查找原因。具体也可以参考邮件工单。</p></article>

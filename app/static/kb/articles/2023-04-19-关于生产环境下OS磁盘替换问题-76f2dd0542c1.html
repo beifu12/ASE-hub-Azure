@@ -1,0 +1,162 @@
+<article class="kb-article" data-title="关于生产环境下OS磁盘替换问题"><h1>关于生产环境下OS磁盘替换问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-19 14:40:47</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Hi ALL,</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Hi ALL,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi ALL,</li>
+</ul>
+<ul>
+<li>虚拟机密码修改是我们工单中重要主题，如果是生产环境更麻烦。改密码的操作这里不再赘述，以下方法可以让生产环境影响降低到分钟级别，替换OS磁盘真实有效。</li>
+</ul>
+<ul>
+<li>非托管磁盘：</li>
+</ul>
+<ul>
+<li>注意：磁盘名称和路径不能有变化</li>
+</ul>
+<ul>
+<li>启动虚拟机</li>
+</ul>
+<ul>
+<li>非托管ARM高级存储OS不能中断租约：</li>
+</ul>
+<ul>
+<li>$vm = Get-AzureRmvm -ResourceGroupName RGxxxx -Name vm2xxxx</li>
+</ul>
+<ul>
+<li>Update-Azurermvm -ResourceGroupName RGxxxx -VM $vm</li>
+</ul>
+<ul>
+<li>托管磁盘虚拟机，使用PS或CLI完成磁盘替换即可：</li>
+</ul>
+<ul>
+<li>PS C:\Users\wang.ruifeng&gt; $vm=get-azurermvm  -ResourceGroupName casestudy  -Name docker01</li>
+</ul>
+<ul>
+<li>PS C:\Users\wang.ruifeng&gt; $disk=get-azurermdisk -ResourceGroupName casestudy  -DiskName docker01newos</li>
+</ul>
+<ul>
+<li>PS C:\Users\wang.ruifeng&gt; Set-AzureRmVMOSDisk -VM $vm -ManagedDiskId $disk.Id -Name $disk.Name</li>
+</ul>
+<ul>
+<li>ResourceGroupName  : casestudy</li>
+</ul>
+<ul>
+<li>Id                 : /subscriptions/XXXXXXXXXX/resourceGroups/casestudy/providers/Microsoft.Compute/virtualMachines/docker01</li>
+</ul>
+<ul>
+<li>VmId               : 9bc92bb0-8126-4a11-aa0e-2d1b603ded89</li>
+</ul>
+<ul>
+<li>Name               : docker01</li>
+</ul>
+<ul>
+<li>Type               : Microsoft.Compute/virtualMachines</li>
+</ul>
+<ul>
+<li>Location           : chinanorth</li>
+</ul>
+<ul>
+<li>Tags               : {}</li>
+</ul>
+<ul>
+<li>DiagnosticsProfile : {BootDiagnostics}</li>
+</ul>
+<ul>
+<li>HardwareProfile    : {VmSize}</li>
+</ul>
+<ul>
+<li>NetworkProfile     : {NetworkInterfaces}</li>
+</ul>
+<ul>
+<li>ProvisioningState  : Succeeded</li>
+</ul>
+<ul>
+<li>StorageProfile     : {OsDisk, DataDisks}</li>
+</ul>
+<ul>
+<li>PS C:\Users\wang.ruifeng&gt; Update-AzureRmVM -ResourceGroupName casestudy  -VM $vm</li>
+</ul>
+<ul>
+<li>RequestId IsSuccessStatusCode StatusCode ReasonPhrase</li>
+</ul>
+<ul>
+<li>--------- ------------------- ---------- ------------</li>
+</ul>
+<ul>
+<li>True         OK OK</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>直接上步骤：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-AzureRmVMOSDisk -VM $vm -VhdUri $uri</li>
+</ul>
+<ul>
+<li>SR_2020041419657_[MS-LED]使用powershell查找虚拟机磁盘并进行OS磁盘替换</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>可以通过StorageExplorer备份并删除原来的故障VHD，将修改好的VHD复制到故障VHD位置，启动虚拟机即可。</li>
+</ul>
+<ul>
+<li>将修改好的VHD文件复制到同样路径下（注意看修改时间）</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>$uri = &quot;<a href="https://xxxxxxxxxxxxxxxxxx.blob.core.chinacloudapi.cn/vhds/vm2xxxxxxxxxxxx.vhd&quot;" target="_blank" rel="noopener">https://xxxxxxxxxxxxxxxxxx.blob.core.chinacloudapi.cn/vhds/vm2xxxxxxxxxxxx.vhd&quot;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2019/6/21</p>
+<p>Hi ALL,</p>
+<p>虚拟机密码修改是我们工单中重要主题，如果是生产环境更麻烦。改密码的操作这里不再赘述，以下方法可以让生产环境影响降低到分钟级别，替换OS磁盘真实有效。</p>
+<p>直接上步骤：</p>
+<p>非托管磁盘：</p>
+<p>可以通过StorageExplorer备份并删除原来的故障VHD，将修改好的VHD复制到故障VHD位置，启动虚拟机即可。</p>
+<p>注意：磁盘名称和路径不能有变化</p>
+<p>将修改好的VHD文件复制到同样路径下（注意看修改时间）</p>
+<p>启动虚拟机</p>
+<p>非托管ARM高级存储OS不能中断租约：</p>
+<p>$vm = Get-AzureRmvm -ResourceGroupName RGxxxx -Name vm2xxxx</p>
+<p>$uri = &quot;<a href="https://xxxxxxxxxxxxxxxxxx.blob.core.chinacloudapi.cn/vhds/vm2xxxxxxxxxxxx.vhd&quot;" target="_blank" rel="noopener">https://xxxxxxxxxxxxxxxxxx.blob.core.chinacloudapi.cn/vhds/vm2xxxxxxxxxxxx.vhd&quot;</a></p>
+<p>Set-AzureRmVMOSDisk -VM $vm -VhdUri $uri</p>
+<p>Update-Azurermvm -ResourceGroupName RGxxxx -VM $vm</p>
+<p>托管磁盘虚拟机，使用PS或CLI完成磁盘替换即可：</p>
+<p>PS C:\Users\wang.ruifeng&gt; $vm=get-azurermvm  -ResourceGroupName casestudy  -Name docker01</p>
+<p>PS C:\Users\wang.ruifeng&gt; $disk=get-azurermdisk -ResourceGroupName casestudy  -DiskName docker01newos</p>
+<p>PS C:\Users\wang.ruifeng&gt; Set-AzureRmVMOSDisk -VM $vm -ManagedDiskId $disk.Id -Name $disk.Name</p>
+<p>ResourceGroupName  : casestudy</p>
+<p>Id                 : /subscriptions/XXXXXXXXXX/resourceGroups/casestudy/providers/Microsoft.Compute/virtualMachines/docker01</p>
+<p>VmId               : 9bc92bb0-8126-4a11-aa0e-2d1b603ded89</p>
+<p>Name               : docker01</p>
+<p>Type               : Microsoft.Compute/virtualMachines</p>
+<p>Location           : chinanorth</p>
+<p>Tags               : {}</p>
+<p>DiagnosticsProfile : {BootDiagnostics}</p>
+<p>HardwareProfile    : {VmSize}</p>
+<p>NetworkProfile     : {NetworkInterfaces}</p>
+<p>ProvisioningState  : Succeeded</p>
+<p>StorageProfile     : {OsDisk, DataDisks}</p>
+<p>PS C:\Users\wang.ruifeng&gt; Update-AzureRmVM -ResourceGroupName casestudy  -VM $vm</p>
+<p>RequestId IsSuccessStatusCode StatusCode ReasonPhrase</p>
+<p>--------- ------------------- ---------- ------------</p>
+<p>True         OK OK</p>
+<p>SR_2020041419657_[MS-LED]使用powershell查找虚拟机磁盘并进行OS磁盘替换</p></article>

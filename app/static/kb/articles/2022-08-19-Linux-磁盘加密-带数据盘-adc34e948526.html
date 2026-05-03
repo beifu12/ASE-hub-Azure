@@ -1,0 +1,116 @@
+<article class="kb-article" data-title="Linux 磁盘加密（带数据盘）"><h1>Linux 磁盘加密（带数据盘）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-08-19 15:03:32</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>注意要给key vault添加可以加密的访问策略，否则报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>注意要给key vault添加可以加密的访问策略，否则报错：</li>
+</ul>
+<ul>
+<li>加密时间会比较长，加密过程中，您的数据是不可用的：</li>
+</ul>
+<ul>
+<li>这里/sd1没有了，和您之前反馈的报错是一致的。</li>
+</ul>
+<ul>
+<li>从报错看，可能是扩展和python版本不兼容，这个稍后会继续测试一下。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny lee</li>
+</ul>
+<ul>
+<li>1添加三块数据磁盘 hdd 标准ssd 高级ssd各一块：</li>
+</ul>
+<ul>
+<li>2到虚拟机中用格式化挂载这些磁盘，属于要用uuid，否则就不能加密：</li>
+</ul>
+<ul>
+<li>fdisk -l:</li>
+</ul>
+<ul>
+<li>blkid:</li>
+</ul>
+<ul>
+<li>修改/etc/fstab:</li>
+</ul>
+<ul>
+<li>挂载成功：</li>
+</ul>
+<ul>
+<li>参考如下文档：</li>
+</ul>
+<ul>
+<li>。。。。。。</li>
+</ul>
+<ul>
+<li>应该是正在加密第一块盘。</li>
+</ul>
+<ul>
+<li>这个官方文档中也有说明：</li>
+</ul>
+<ul>
+<li>最后加密系统盘，系统盘加密时是不能登录上系统的：</li>
+</ul>
+<ul>
+<li>另外，做实验时发现centos8.1的系统目前加密应该有问题：</li>
+</ul>
+<ul>
+<li>请大家参考。</li>
+</ul>
+<ul>
+<li>谢谢！</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az vm encryption enable --resource-group &quot;MyVirtualMachineResourceGroup&quot; --name &quot;MySecureVM&quot; --disk-encryption-keyvault &quot;MySecureVault&quot; --volume-type [All|OS|Data]</li>
+</ul>
+<ul>
+<li>加密开始后您可以通过如下命令查看进度：</li>
+</ul>
+<ul>
+<li>数据盘加密较快，可以通过命令查看进度：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-linux" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-linux</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Johnny lee</p>
+<p>1添加三块数据磁盘 hdd 标准ssd 高级ssd各一块：</p>
+<p>2到虚拟机中用格式化挂载这些磁盘，属于要用uuid，否则就不能加密：</p>
+<p>fdisk -l:</p>
+<p>blkid:</p>
+<p>修改/etc/fstab:</p>
+<p>挂载成功：</p>
+<p>参考如下文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-linux" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/disk-encryption-linux</a></p>
+<p>az vm encryption enable --resource-group &quot;MyVirtualMachineResourceGroup&quot; --name &quot;MySecureVM&quot; --disk-encryption-keyvault &quot;MySecureVault&quot; --volume-type [All|OS|Data]</p>
+<p>注意要给key vault添加可以加密的访问策略，否则报错：</p>
+<p>加密开始后您可以通过如下命令查看进度：</p>
+<p>。。。。。。</p>
+<p>加密时间会比较长，加密过程中，您的数据是不可用的：</p>
+<p>这里/sd1没有了，和您之前反馈的报错是一致的。</p>
+<p>应该是正在加密第一块盘。</p>
+<p>这个官方文档中也有说明：</p>
+<p>数据盘加密较快，可以通过命令查看进度：</p>
+<p>最后加密系统盘，系统盘加密时是不能登录上系统的：</p>
+<p>另外，做实验时发现centos8.1的系统目前加密应该有问题：</p>
+<p>从报错看，可能是扩展和python版本不兼容，这个稍后会继续测试一下。</p>
+<p>请大家参考。</p>
+<p>谢谢！</p></article>

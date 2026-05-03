@@ -1,0 +1,84 @@
+<article class="kb-article" data-title="Using SMB shares on Data Box POD"><h1>Using SMB shares on Data Box POD</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Databox.one</li>
+<li>Section: Azure Databox</li>
+<li>最近修改: 2022-04-15 05:40:38</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>The SMB shares on a Data Box device have a naming convention based on the storage account(s) that data is being imported to or exported from and the type of data being imported or exported. The syntax for the UNC path to each share is shown below.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>The SMB shares on a Data Box device have a naming convention based on the storage account(s) that data is being imported to or exported from and the type of data being imported or exported. The syntax for the UNC path to each share is shown below.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>The SMB shares on a Data Box device have a naming convention based on the storage account(s) that data is being imported to or exported from and the type of data being imported or exported. The syntax for the UNC path to each share is shown below.</li>
+</ul>
+<ul>
+<li>Azure Block blob - \\&lt;device IP address&gt;\&lt;storage account name&gt;_BlockBlob</li>
+</ul>
+<ul>
+<li>Azure Page blob - \\&lt;device IP address&gt;\&lt;storage account name&gt;\_PageBlob</li>
+</ul>
+<ul>
+<li>Azure Files - \\&lt;device IP address&gt;\&lt;storage account name&gt;_AzFile</li>
+</ul>
+<ul>
+<li>Azure Block blob (Archive) - \\&lt;device IP address&gt;\&lt;storage account name&gt;_BlockBlobArchive</li>
+</ul>
+<ul>
+<li>If a Data Box device is being used to import to managed disks, the device will have additional shares with a naming convention based on the resource group selected during the ordering process and the type of managed disk that will be created upon data import. The syntax for these share names is shown below.</li>
+</ul>
+<ul>
+<li>Premium SSD - \\&lt;DeviceIPAddress&gt;\&lt;ResourceGroupName_MDisk&gt;\PremiumSSD</li>
+</ul>
+<ul>
+<li>Standard HDD - \\&lt;DeviceIPAddress&gt;\&lt;ResourceGroupName_MDisk&gt;\StandardHDD</li>
+</ul>
+<ul>
+<li>Standard SSD - \\&lt;DeviceIPAddress&gt;\&lt;ResourceGroupName_MDisk&gt;\StandardSSD</li>
+</ul>
+<ul>
+<li>For more information regarding SMB shares on the Data Box device, please see the links below.</li>
+</ul>
+<ul>
+<li>Copy data to Azure Data Box via SMB</li>
+</ul>
+<ul>
+<li>Copy data from Azure Data Box via SMB</li>
+</ul>
+<ul>
+<li>Microsoft Stream</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>To connect to an SMB share on the Data Box device, the customer must first access the device web UI, visit the Connect and Copy page, and select &quot;SMB&quot; to obtain the username and password needed to connect to the shares. The customer can then use the &quot;net use&quot; command on the Windows command line, the &quot;new-psdrive&quot; command in PowerShell, or the &quot;Map network drive&quot; UI in Windows to connect from their Windows client to the desired shares. If the customer has a Linux client rather than Windows, they can use the command &quot;sudo mount&quot; with the appropriate syntax to mount the Data Box shares. The customer can then use a copy tool such as robocopy or rsync to copy data to or from the Data Box shares.</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>The SMB shares on a Data Box device have a naming convention based on the storage account(s) that data is being imported to or exported from and the type of data being imported or exported. The syntax for the UNC path to each share is shown below.</p>
+<p>Azure Block blob - \\&lt;device IP address&gt;\&lt;storage account name&gt;_BlockBlob</p>
+<p>Azure Page blob - \\&lt;device IP address&gt;\&lt;storage account name&gt;\_PageBlob</p>
+<p>Azure Files - \\&lt;device IP address&gt;\&lt;storage account name&gt;_AzFile</p>
+<p>Azure Block blob (Archive) - \\&lt;device IP address&gt;\&lt;storage account name&gt;_BlockBlobArchive</p>
+<p>If a Data Box device is being used to import to managed disks, the device will have additional shares with a naming convention based on the resource group selected during the ordering process and the type of managed disk that will be created upon data import. The syntax for these share names is shown below.</p>
+<p>Premium SSD - \\&lt;DeviceIPAddress&gt;\&lt;ResourceGroupName_MDisk&gt;\PremiumSSD</p>
+<p>Standard HDD - \\&lt;DeviceIPAddress&gt;\&lt;ResourceGroupName_MDisk&gt;\StandardHDD</p>
+<p>Standard SSD - \\&lt;DeviceIPAddress&gt;\&lt;ResourceGroupName_MDisk&gt;\StandardSSD</p>
+<p>To connect to an SMB share on the Data Box device, the customer must first access the device web UI, visit the Connect and Copy page, and select &quot;SMB&quot; to obtain the username and password needed to connect to the shares. The customer can then use the &quot;net use&quot; command on the Windows command line, the &quot;new-psdrive&quot; command in PowerShell, or the &quot;Map network drive&quot; UI in Windows to connect from their Windows client to the desired shares. If the customer has a Linux client rather than Windows, they can use the command &quot;sudo mount&quot; with the appropriate syntax to mount the Data Box shares. The customer can then use a copy tool such as robocopy or rsync to copy data to or from the Data Box shares.</p>
+<p>For more information regarding SMB shares on the Data Box device, please see the links below.</p>
+<p>Copy data to Azure Data Box via SMB</p>
+<p>Copy data from Azure Data Box via SMB</p>
+<p>Microsoft Stream</p></article>

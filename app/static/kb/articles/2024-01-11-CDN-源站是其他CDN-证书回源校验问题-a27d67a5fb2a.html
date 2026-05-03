@@ -1,0 +1,254 @@
+<article class="kb-article" data-title="CDN 源站是其他CDN 证书回源校验问题"><h1>CDN 源站是其他CDN 证书回源校验问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2024-01-11 15:59:57</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象： 老外反馈在中国境内访问主机的加速域名提示 504 Gateway timeout Jsp3/1</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象： 老外反馈在中国境内访问主机的加速域名提示 504 Gateway timeout  Jsp3/1</li>
+</ul>
+<ul>
+<li>Issue Description:</li>
+</ul>
+<ul>
+<li>---------------------Second Issue---------------------</li>
+</ul>
+<ul>
+<li>China CDN team was able to fix the issue by changing the China&#39;s CDN provider.</li>
+</ul>
+<ul>
+<li>The command shows a random certificate returned which causes the error.</li>
+</ul>
+<ul>
+<li>This is the exact same validation that previous China CDN provider was doing. New China CDN provider that was changed is not doing this validation, hence the problem is no longer happening.</li>
+</ul>
+<ul>
+<li>You can see the circumstance that led to this issue were completely unrelated to changes or actions that we have performed from both Microsoft or the customer side.</li>
+</ul>
+<ul>
+<li>These are both peculiarities among CDN providers that we cannot unfortunately regulate or change but to learn and be aware of this so that these behaviors become known in the future and then immediate actions can be taken without any long diagnosis.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Ticket ID：20230110207537 、20221212203736 ，20230116208450、20221226205489</li>
+</ul>
+<ul>
+<li>用户信息</li>
+</ul>
+<ul>
+<li>加速域名：</li>
+</ul>
+<ul>
+<li>回源主机：</li>
+</ul>
+<ul>
+<li>通过host 文件指定该地址直接访问远程测试。</li>
+</ul>
+<ul>
+<li>多次测试发现该证书会变化，（比较明显是切换网络这个证书就会变）</li>
+</ul>
+<ul>
+<li>这个单子这么看起来是证书问题过期导致的，但实际并不是。实际情况是：</li>
+</ul>
+<ul>
+<li>而且CDN提到了一点是： 用户访问当前的运营商会动态变化。</li>
+</ul>
+<ul>
+<li>最终是通过CDN 切换指定的运营商后解决了这个问题，据目前我们已知的是：</li>
+</ul>
+<ul>
+<li>由于客户的源站是global CDN, 我们在早前看到用户的证书是没有这个DNS的。</li>
+</ul>
+<ul>
+<li>这个是问题时间段的证书object 这个是CDN默认返回的，并不包含用户域名的证书。</li>
+</ul>
+<ul>
+<li>回源使用http （用户否决）</li>
+</ul>
+<ul>
+<li>切换不校验的运营商</li>
+</ul>
+<ul>
+<li>源站域名证书使用包含用户DNS的名称。如下是最新用户添加后的截图：</li>
+</ul>
+<ul>
+<li>他的另一个加速域名更明显：</li>
+</ul>
+<ul>
+<li>CDN给的回复：</li>
+</ul>
+<ul>
+<li>Below you will find a summary of our latest set of actions.</li>
+</ul>
+<ul>
+<li>Enjoy the rest of your day!</li>
+</ul>
+<ul>
+<li>Your feedback is very important to us. After this interaction you will receive a separate closure email with an opportunity to tell us about your experience.</li>
+</ul>
+<ul>
+<li>---------------------NOTE---------------------</li>
+</ul>
+<ul>
+<li>safespec.dupont.co.kr</li>
+</ul>
+<ul>
+<li>We have these domains:</li>
+</ul>
+<ul>
+<li>Analysis:</li>
+</ul>
+<ul>
+<li>Keep in mind that we are doing CDN chaining here between China CDN and Verizon&#39;s CDN.</li>
+</ul>
+<ul>
+<li>Next question is why Verizon is not displaying the right certificate on this specific scenario?</li>
+</ul>
+<ul>
+<li>Well, Verizon uses a shared SNI model as I have explained before. This means, among other things,  that if Verizon&#39;s POP is not aware of a certificate that we request, it would return a random one.</li>
+</ul>
+<ul>
+<li>What can we do to prevent this?</li>
+</ul>
+<ul>
+<li>Previous China CDN provider performing a particular validation of domain through origin site&#39;s IP. Which is not the case for the new China CDN provider.</li>
+</ul>
+<ul>
+<li>The shared SNI model used by Verizon, which is not common across other CDN providers such as Akamai or Microsoft itself.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>我们在该问题的时，有可能并不会复现客户反馈访问的504 问题。 不容易复现，做了如下步骤发现了疑点：</li>
+</ul>
+<ul>
+<li>通过CDN endnpoint 查看用户的加速域名配置，看到源站是Global CDN.</li>
+</ul>
+<ul>
+<li>测试发现页面不安全，查看证书过期。</li>
+</ul>
+<ul>
+<li>不同运营商对源站的证书检查方式不同，有的检查源站证书，有的不检查。</li>
+</ul>
+<ul>
+<li>腾讯回源时是不检查源站的证书的。但不确保其他的运营商会不会检查，从切换后效果看，其他的运营商进行了检查。</li>
+</ul>
+<ul>
+<li>检查了什么：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>This issue was caused by the interoperability of the CDN providers that are involved.</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>CDN 给的建议：</li>
+</ul>
+<ul>
+<li>The previous issue was fixed by disabling HTTPs on below endpoints on 1/12 as per recommendations from Verizon on incident INC1098718 :</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>www.safespec.dupont.cn</li>
+</ul>
+<ul>
+<li>www.safespec.dupont.com</li>
+</ul>
+<ul>
+<li>解析源站 www.safespec.dupont.com 地址是：152.199.39.108</li>
+</ul>
+<ul>
+<li>www.safespec.dupont.ru</li>
+</ul>
+<ul>
+<li>www.safespec.dupont.com - 152.199.39.108 (origin site)</li>
+</ul>
+<ul>
+<li>www.safespec.dupont.cn - 157.185.178.148 (China domain)</li>
+</ul>
+<ul>
+<li>During the 13th and 14th weekend, users in China started to experience HTTP 504 error accessing www.safespec.dupont.cn. No changes were made whatsoever and website was working fine the day before.</li>
+</ul>
+<ul>
+<li>Changing the China&#39;s CDN provider fixed the issue because the previous one was doing validation of the website www.safespec.dupont.cn against the origin site IP which is the Verizon CDN 152.199.39.108. This is producing a certificate error, as show here:</li>
+</ul>
+<ul>
+<li>You can see we are connecting to www.safespec.dupont.cn but we are not using its original IP to connect. Instead, we are using the origin site IP 152.199.39.108, which belongs to Verizon.</li>
+</ul>
+<ul>
+<li>In this case, we are requesting Verizon&#39;s POP for the certificate of www.safespec.dupont.cn, but it is not aware of it, so it returns a random one, only for the particular scenario of connecting to www.safespec.dupont.cn via Verizon&#39;s IP.</li>
+</ul>
+<ul>
+<li>This scenario won&#39;t happen under normal circumstances because DNS is not resolving Verizon&#39;s IP (152.199.39.108) for domain www.safespec.dupont.cn. This was only happening for the previous China CDN provider validation.</li>
+</ul>
+<ul>
+<li>As per Verizon&#39;s recommendation we also enabled HTTPS for www.safespec.dupont.cn so that validations will not show the wrong certificate. Verizon incident: INC1105746.</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Ticket ID：20230110207537 、20221212203736 ，20230116208450、20221226205489</p>
+<p>问题现象： 老外反馈在中国境内访问主机的加速域名提示 504 Gateway timeout  Jsp3/1</p>
+<p>用户信息</p>
+<p>加速域名：</p>
+<p>www.safespec.dupont.cn</p>
+<p>回源主机：</p>
+<p>www.safespec.dupont.com</p>
+<p>我们在该问题的时，有可能并不会复现客户反馈访问的504 问题。 不容易复现，做了如下步骤发现了疑点：</p>
+<p>通过CDN endnpoint 查看用户的加速域名配置，看到源站是Global CDN.</p>
+<p>解析源站 www.safespec.dupont.com 地址是：152.199.39.108</p>
+<p>通过host 文件指定该地址直接访问远程测试。</p>
+<p>测试发现页面不安全，查看证书过期。</p>
+<p>多次测试发现该证书会变化，（比较明显是切换网络这个证书就会变）</p>
+<p>这个单子这么看起来是证书问题过期导致的，但实际并不是。实际情况是：</p>
+<p>不同运营商对源站的证书检查方式不同，有的检查源站证书，有的不检查。</p>
+<p>而且CDN提到了一点是： 用户访问当前的运营商会动态变化。</p>
+<p>最终是通过CDN 切换指定的运营商后解决了这个问题，据目前我们已知的是：</p>
+<p>腾讯回源时是不检查源站的证书的。但不确保其他的运营商会不会检查，从切换后效果看，其他的运营商进行了检查。</p>
+<p>检查了什么：</p>
+<p>由于客户的源站是global CDN, 我们在早前看到用户的证书是没有这个DNS的。</p>
+<p>这个是问题时间段的证书object 这个是CDN默认返回的，并不包含用户域名的证书。</p>
+<p>CDN 给的建议：</p>
+<p>回源使用http （用户否决）</p>
+<p>切换不校验的运营商</p>
+<p>源站域名证书使用包含用户DNS的名称。如下是最新用户添加后的截图：</p>
+<p>他的另一个加速域名更明显：</p>
+<p>CDN给的回复：</p>
+<p>Below you will find a summary of our latest set of actions.</p>
+<p>Enjoy the rest of your day!</p>
+<p>Your feedback is very important to us. After this interaction you will receive a separate closure email with an opportunity to tell us about your experience.</p>
+<p>Issue Description:</p>
+<p>---------------------NOTE---------------------</p>
+<p>The previous issue was fixed by disabling HTTPs on below endpoints on 1/12 as per recommendations from Verizon on incident INC1098718 :</p>
+<p>safespec.dupont.co.kr</p>
+<p>www.safespec.dupont.ru</p>
+<p>---------------------Second Issue---------------------</p>
+<p>We have these domains:</p>
+<p>www.safespec.dupont.com - 152.199.39.108 (origin site)</p>
+<p>www.safespec.dupont.cn - 157.185.178.148 (China domain)</p>
+<p>During the 13th and 14th weekend, users in China started to experience HTTP 504 error accessing www.safespec.dupont.cn. No changes were made whatsoever and website was working fine the day before.</p>
+<p>Analysis:</p>
+<p>China CDN team was able to fix the issue by changing the China&#39;s CDN provider.</p>
+<p>Keep in mind that we are doing CDN chaining here between China CDN and Verizon&#39;s CDN.</p>
+<p>Changing the China&#39;s CDN provider fixed the issue because the previous one was doing validation of the website www.safespec.dupont.cn against the origin site IP which is the Verizon CDN 152.199.39.108. This is producing a certificate error, as show here:</p>
+<p>The command shows a random certificate returned which causes the error.</p>
+<p>You can see we are connecting to www.safespec.dupont.cn but we are not using its original IP to connect. Instead, we are using the origin site IP 152.199.39.108, which belongs to Verizon.</p>
+<p>This is the exact same validation that previous China CDN provider was doing. New China CDN provider that was changed is not doing this validation, hence the problem is no longer happening.</p>
+<p>Next question is why Verizon is not displaying the right certificate on this specific scenario?</p>
+<p>Well, Verizon uses a shared SNI model as I have explained before. This means, among other things,  that if Verizon&#39;s POP is not aware of a certificate that we request, it would return a random one.</p>
+<p>In this case, we are requesting Verizon&#39;s POP for the certificate of www.safespec.dupont.cn, but it is not aware of it, so it returns a random one, only for the particular scenario of connecting to www.safespec.dupont.cn via Verizon&#39;s IP.</p>
+<p>This scenario won&#39;t happen under normal circumstances because DNS is not resolving Verizon&#39;s IP (152.199.39.108) for domain www.safespec.dupont.cn. This was only happening for the previous China CDN provider validation.</p>
+<p>What can we do to prevent this?</p>
+<p>You can see the circumstance that led to this issue were completely unrelated to changes or actions that we have performed from both Microsoft or the customer side.</p>
+<p>This issue was caused by the interoperability of the CDN providers that are involved.</p>
+<p>Previous China CDN provider performing a particular validation of domain through origin site&#39;s IP. Which is not the case for the new China CDN provider.</p>
+<p>The shared SNI model used by Verizon, which is not common across other CDN providers such as Akamai or Microsoft itself.</p>
+<p>These are both peculiarities among CDN providers that we cannot unfortunately regulate or change but to learn and be aware of this so that these behaviors become known in the future and then immediate actions can be taken without any long diagnosis.</p>
+<p>As per Verizon&#39;s recommendation we also enabled HTTPS for www.safespec.dupont.cn so that validations will not show the wrong certificate. Verizon incident: INC1105746.</p></article>

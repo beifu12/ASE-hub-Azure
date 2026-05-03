@@ -1,0 +1,114 @@
+<article class="kb-article" data-title="虚拟机创建时间-2"><h1>虚拟机创建时间-2</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-11-16 12:40:42</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>注意：该信息已失效，作为存档备查</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>注意：该信息已失效，作为存档备查</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>注意：该信息已失效，作为存档备查</li>
+</ul>
+<ul>
+<li>ARM 托管磁盘虚拟机</li>
+</ul>
+<ul>
+<li>虚拟机—&gt; 选择虚拟机 —&gt; 磁盘 —&gt; OS 磁盘</li>
+</ul>
+<ul>
+<li>#登录#</li>
+</ul>
+<ul>
+<li>Add-AzAccount -Environment azurechinacloud</li>
+</ul>
+<ul>
+<li>#如果有多个订阅，选择当前虚拟机所在的订阅#</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -Subscriptionid **********</li>
+</ul>
+<ul>
+<li>$resourceGroupName = &quot;centos76&quot;</li>
+</ul>
+<ul>
+<li>$vmname = &quot;centos76&quot;</li>
+</ul>
+<ul>
+<li>$vm = Get-AzVM -ResourceGroupName $resourceGroupName -Name $vmname</li>
+</ul>
+<ul>
+<li>$diskname = $vm.StorageProfile.OsDisk.Name</li>
+</ul>
+<ul>
+<li>$manageddisk = get-azdisk -ResourceGroupName $resourceGroupName -DiskName $diskname</li>
+</ul>
+<ul>
+<li>$manageddisk.TimeCreated</li>
+</ul>
+<ul>
+<li>经典虚拟机</li>
+</ul>
+<ul>
+<li>虚拟机—&gt; 选择虚拟机 —&gt; 磁盘 —&gt; 操作系统磁盘 —&gt;  位置—&gt;根据位置导航到对应的存储账户 --容器 --  VHD 文件</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1.1  通过门户查询</li>
+</ul>
+<ul>
+<li>#查询ARM托管磁盘的创建时间#</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>目前Azure暂未在portal/powershell中提供直接查询虚机创建时间的入口，但若虚机是通过镜像市场创建的，我们可以通过查看OS Disk的创建时间间接获得虚机的创建日期。</li>
+</ul>
+<ul>
+<li>1.2  通过Azure Powershell查询</li>
+</ul>
+<ul>
+<li>注1：如下Azure Powershell 命令使用的是Az 模块， 如果您使用的模块为 AzureRM , 请将如下参考命名中的az 替换为azurerm</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>注 2：请将标黄位置按照您的实际环境进行修改</li>
+</ul>
+<ul>
+<li>ARM 非托管磁盘虚拟机可以通过portal查询OS Disk的vhd名称或url，获得对应虚机的创建时间。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>注意：该信息已失效，作为存档备查</p>
+<p>目前Azure暂未在portal/powershell中提供直接查询虚机创建时间的入口，但若虚机是通过镜像市场创建的，我们可以通过查看OS Disk的创建时间间接获得虚机的创建日期。</p>
+<p>ARM 托管磁盘虚拟机</p>
+<p>1.1  通过门户查询</p>
+<p>虚拟机—&gt; 选择虚拟机 —&gt; 磁盘 —&gt; OS 磁盘</p>
+<p>1.2  通过Azure Powershell查询</p>
+<p>注1：如下Azure Powershell 命令使用的是Az 模块， 如果您使用的模块为 AzureRM , 请将如下参考命名中的az 替换为azurerm</p>
+<p>注 2：请将标黄位置按照您的实际环境进行修改</p>
+<p>#登录#</p>
+<p>Add-AzAccount -Environment azurechinacloud</p>
+<p>#如果有多个订阅，选择当前虚拟机所在的订阅#</p>
+<p>Select-AzSubscription -Subscriptionid **********</p>
+<p>#查询ARM托管磁盘的创建时间#</p>
+<p>$resourceGroupName = &quot;centos76&quot;</p>
+<p>$vmname = &quot;centos76&quot;</p>
+<p>$vm = Get-AzVM -ResourceGroupName $resourceGroupName -Name $vmname</p>
+<p>$diskname = $vm.StorageProfile.OsDisk.Name</p>
+<p>$manageddisk = get-azdisk -ResourceGroupName $resourceGroupName -DiskName $diskname</p>
+<p>$manageddisk.TimeCreated</p>
+<p>ARM 非托管磁盘虚拟机可以通过portal查询OS Disk的vhd名称或url，获得对应虚机的创建时间。</p>
+<p>经典虚拟机</p>
+<p>虚拟机—&gt; 选择虚拟机 —&gt; 磁盘 —&gt; 操作系统磁盘 —&gt;  位置—&gt;根据位置导航到对应的存储账户 --容器 --  VHD 文件</p></article>

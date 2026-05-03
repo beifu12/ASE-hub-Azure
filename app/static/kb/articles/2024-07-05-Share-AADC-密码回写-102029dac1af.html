@@ -1,0 +1,71 @@
+<article class="kb-article" data-title="[Share] AADC 密码回写"><h1>[Share] AADC 密码回写</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-05 19:17:03</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>5/23/2024</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>5/23/2024</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>5/23/2024</li>
+</ul>
+<ul>
+<li>配置AADC密码回写，本地用户同步后可以在云端修改密码。</li>
+</ul>
+<ul>
+<li>1.在本地AD环境根据官网的要求添加Entra ID Connect账号权限以及相关属性配置，具体信息请参考官网中的描述：</li>
+</ul>
+<ul>
+<li>2.修改本地域环境组策略并更新使得立即生效</li>
+</ul>
+<ul>
+<li>3.在Entra ID Connect中启用密码回写</li>
+</ul>
+<ul>
+<li>4.用户访问下面url初始化个人信息设置</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>根据根据下面官网信息，完成截图中两个步骤的配置，测试验证本地同步的用户可以在云端修改密码：</li>
+</ul>
+<ul>
+<li>5.验证、测试同步的账号云端修改密码成功，同时验证使用新密码在本地环境可以正常通过验证（登陆一台加域的机器）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/entra/identity/authentication/tutorial-enable-sspr-writeback#configure-account-permissions-for-microsoft-entra-connect" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/authentication/tutorial-enable-sspr-writeback#configure-account-permissions-for-microsoft-entra-connect</a></li>
+</ul>
+<ul>
+<li><a href="https://account.activedirectory.windowsazure.cn/PasswordReset/Register.aspx?regref=ssprsetup" target="_blank" rel="noopener">https://account.activedirectory.windowsazure.cn/PasswordReset/Register.aspx?regref=ssprsetup</a></li>
+</ul>
+<ul>
+<li><a href="https://account.activedirectory.windowsazure.cn/changepassword.aspx" target="_blank" rel="noopener">https://account.activedirectory.windowsazure.cn/changepassword.aspx</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>5/23/2024</p>
+<p>配置AADC密码回写，本地用户同步后可以在云端修改密码。</p>
+<p>根据根据下面官网信息，完成截图中两个步骤的配置，测试验证本地同步的用户可以在云端修改密码：</p>
+<p><a href="https://docs.azure.cn/zh-cn/entra/identity/authentication/tutorial-enable-sspr-writeback#configure-account-permissions-for-microsoft-entra-connect" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/authentication/tutorial-enable-sspr-writeback#configure-account-permissions-for-microsoft-entra-connect</a></p>
+<p>1.在本地AD环境根据官网的要求添加Entra ID Connect账号权限以及相关属性配置，具体信息请参考官网中的描述：</p>
+<p>2.修改本地域环境组策略并更新使得立即生效</p>
+<p>3.在Entra ID Connect中启用密码回写</p>
+<p>4.用户访问下面url初始化个人信息设置</p>
+<p><a href="https://account.activedirectory.windowsazure.cn/PasswordReset/Register.aspx?regref=ssprsetup" target="_blank" rel="noopener">https://account.activedirectory.windowsazure.cn/PasswordReset/Register.aspx?regref=ssprsetup</a></p>
+<p>5.验证、测试同步的账号云端修改密码成功，同时验证使用新密码在本地环境可以正常通过验证（登陆一台加域的机器）</p>
+<p><a href="https://account.activedirectory.windowsazure.cn/changepassword.aspx" target="_blank" rel="noopener">https://account.activedirectory.windowsazure.cn/changepassword.aspx</a></p></article>

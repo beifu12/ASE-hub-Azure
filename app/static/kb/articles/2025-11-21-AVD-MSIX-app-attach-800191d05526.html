@@ -1,0 +1,114 @@
+<article class="kb-article" data-title="AVD MSIX app attach"><h1>AVD MSIX app attach</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-11-21 14:04:13</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>发布后的msix 会有概率启动错误 Bob说PG还在修(需要确认)</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>发布后的msix 会有概率启动错误  Bob说PG还在修(需要确认)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Below are the steps for setting up the MSIX app lab.</li>
+</ul>
+<ul>
+<li>Intro</li>
+</ul>
+<ul>
+<li>Steps</li>
+</ul>
+<ul>
+<li>Follow doc to set up MSIX packaging environment</li>
+</ul>
+<ul>
+<li>Follow doc to Create an MSIX package. Pay attention to below items.</li>
+</ul>
+<ul>
+<li>Create a self-signing certificate for test purpose.</li>
+</ul>
+<ul>
+<li>$cert = New-SelfSignedCertificate -CertStoreLocation Cert:\LocalMachine\My -DnsName &#39;yourdomainname&#39; -Type CodeSigningCert -Verbose</li>
+</ul>
+<ul>
+<li>$secPassword = ConvertTo-SecureString -String &#39;yourpassword)&#39; -Force -AsPlainText</li>
+</ul>
+<ul>
+<li>$certPath = &quot;Cert:\LocalMachine\My\$($Cert.Thumbprint)&quot;</li>
+</ul>
+<ul>
+<li>Export-PfxCertificate -Cert $certPath -FilePath &#39;C:\temp\CodeSigning.pfx&#39; -Password $secPassword</li>
+</ul>
+<ul>
+<li>Use MSI installer for example, select the certificate created in previous step.</li>
+</ul>
+<ul>
+<li>Following MSIX packages will be created. Then follow doc to install the self-signed certificates in your session hosts.</li>
+</ul>
+<ul>
+<li>Create an AD DS security group and add computer accounts for all session hosts as member of the group. Then sync it to Azure AD.</li>
+</ul>
+<ul>
+<li>Assign Storage File Data SMB Share Contributor role to both AVD users and session hosts.</li>
+</ul>
+<ul>
+<li>Grant NTFS permissions on the file share to the AD DS group and AVD users.</li>
+</ul>
+<ul>
+<li>Follow doc to add MSIX image to host pool</li>
+</ul>
+<ul>
+<li>Follow doc to publish MSIX apps to app group</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>发布后的msix 会有概率启动错误  Bob说PG还在修(需要确认)</li>
+</ul>
+<ul>
+<li>Follow doc to create a Azure File Share for MSIX image (created in next step). It’s roughly the same procedure as setting up file share for FSLogix Profile. Use</li>
+</ul>
+<ul>
+<li>Create an Azure File Share and join the storage account to AD DS. You can use the same storage account for FSLogix.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Select a session host, follow doc to prepare an MSIX image on it. Then upload the VHD file to Azure File Share created in previous step.</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>MSIX app attach is an application layering solution that allows you to dynamically attach apps from an MSIX package to a user session. The MSIX package system separates apps from the operating system, making it easier to build images for virtual machines. MSIX packages also give you greater control over which apps your users can access in their virtual machines. You can even separate apps from the master image and give them to users later.</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>发布后的msix 会有概率启动错误  Bob说PG还在修(需要确认)</p>
+<p>Below are the steps for setting up the MSIX app lab.</p>
+<p>Intro</p>
+<p>MSIX app attach is an application layering solution that allows you to dynamically attach apps from an MSIX package to a user session. The MSIX package system separates apps from the operating system, making it easier to build images for virtual machines. MSIX packages also give you greater control over which apps your users can access in their virtual machines. You can even separate apps from the master image and give them to users later.</p>
+<p>Steps</p>
+<p>Follow doc to set up MSIX packaging environment</p>
+<p>Follow doc to Create an MSIX package. Pay attention to below items.</p>
+<p>Create a self-signing certificate for test purpose.</p>
+<p>$cert = New-SelfSignedCertificate -CertStoreLocation Cert:\LocalMachine\My -DnsName &#39;yourdomainname&#39; -Type CodeSigningCert -Verbose</p>
+<p>$secPassword = ConvertTo-SecureString -String &#39;yourpassword)&#39; -Force -AsPlainText</p>
+<p>$certPath = &quot;Cert:\LocalMachine\My\$($Cert.Thumbprint)&quot;</p>
+<p>Export-PfxCertificate -Cert $certPath -FilePath &#39;C:\temp\CodeSigning.pfx&#39; -Password $secPassword</p>
+<p>Use MSI installer for example, select the certificate created in previous step.</p>
+<p>Following MSIX packages will be created. Then follow doc to install the self-signed certificates in your session hosts.</p>
+<p>Follow doc to create a Azure File Share for MSIX image (created in next step). It’s roughly the same procedure as setting up file share for FSLogix Profile. Use</p>
+<p>Create an AD DS security group and add computer accounts for all session hosts as member of the group. Then sync it to Azure AD.</p>
+<p>Create an Azure File Share and join the storage account to AD DS. You can use the same storage account for FSLogix.</p>
+<p>Assign Storage File Data SMB Share Contributor role to both AVD users and session hosts.</p>
+<p>Grant NTFS permissions on the file share to the AD DS group and AVD users.</p>
+<p>Select a session host, follow doc to prepare an MSIX image on it. Then upload the VHD file to Azure File Share created in previous step.</p>
+<p>Follow doc to add MSIX image to host pool</p>
+<p>Follow doc to publish MSIX apps to app group</p></article>

@@ -1,0 +1,207 @@
+<article class="kb-article" data-title="ASR UEFI Secure boot is not supported 问题解决方案"><h1>ASR UEFI Secure boot is not supported 问题解决方案</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RecoveryService</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-12-08 13:05:43</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>出现问题的两台Windows Server 2016无法安装mobility service，日志报错为：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>出现问题的两台Windows Server 2016无法安装mobility service，日志报错为：</li>
+</ul>
+<ul>
+<li>12:21:20:error_name: ASRMobilityServiceBootUEFISecureBootNotSupported , default_message</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny lee</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>UEFI Secure boot is not supported</li>
+</ul>
+<ul>
+<li>我们官方文档明确书写不支持 UEFI Secure boot 但是支持 UEFI模式：</li>
+</ul>
+<ul>
+<li>方法如下:</li>
+</ul>
+<ul>
+<li>右键单击清单中的虚拟机，然后选择编辑设置。</li>
+</ul>
+<ul>
+<li>单击虚拟机选项选项卡，然后展开引导选项。</li>
+</ul>
+<ul>
+<li>在引导选项下，确保固件设置为 EFI。</li>
+</ul>
+<ul>
+<li>选择任务。选中安全引导复选框以启用安全引导，然后单击确定。选中安全引导复选框以启用安全引导，</li>
+</ul>
+<ul>
+<li>取消选中安全引导复选框以禁用安全引导。</li>
+</ul>
+<ul>
+<li>为虚拟机启用或禁用 UEFI 安全引导</li>
+</ul>
+<ul>
+<li>更新时间 2019年05月31日</li>
+</ul>
+<ul>
+<li>选择的产品版本：VMware vSphere 6.5</li>
+</ul>
+<ul>
+<li>UEFI 安全引导是一种安全标准，有助于确保您的 PC 仅使用该 PC 制造商信任的软件进行引导。对于某些虚拟机硬件版本和操作系统，您可以完全按照对物理计算机启用安全引导的方式来启用安全引导。</li>
+</ul>
+<ul>
+<li>在支持 UEFI 安全引导的操作系统中，引导软件的每个部分都会进行签名，包括引导加载程序、操作系统内核以及操作系统驱动程序。虚拟机的默认配置包括多个代码签名证书。</li>
+</ul>
+<ul>
+<li>一个仅用于引导 Windows 的 Microsoft 证书。</li>
+</ul>
+<ul>
+<li>一个用于 Microsoft 签名的第三方代码（例如 Linux 引导加载程序）的 Microsoft 证书。</li>
+</ul>
+<ul>
+<li>一个仅用于在虚拟机内部引导 ESXi 的 VMware 证书。</li>
+</ul>
+<ul>
+<li>几乎在所有情况下，均不需要替换现有证书。如果要替换证书，请参见 VMware 知识库系统。</li>
+</ul>
+<ul>
+<li>对于使用 UEFI 安全引导的虚拟机，需要 VMware Tools 10.1 或更高版本。在 VMware Tools 的更高版本推出后，可以将这些虚拟机升级到该版本。</li>
+</ul>
+<ul>
+<li>对于 Linux 虚拟机，安全引导模式不支持 VMware 主机客户机文件系统。先将 VMware 主机客户机文件系统从 VMware Tools 中移除，然后再启动安全引导。</li>
+</ul>
+<ul>
+<li>注： 如果为某个虚拟机启用了安全引导，则只能在该虚拟机中加载经过签名的驱动程序。</li>
+</ul>
+<ul>
+<li>$vm = Get-VM TestVM</li>
+</ul>
+<ul>
+<li>$spec = New-Object VMware.Vim.VirtualMachineConfigSpec</li>
+</ul>
+<ul>
+<li>$spec.Firmware = [VMware.Vim.GuestOsDescriptorFirmwareType]::efi</li>
+</ul>
+<ul>
+<li>$vm.ExtensionData.ReconfigVM($spec)</li>
+</ul>
+<ul>
+<li>有关详细信息，请参见 《VMware PowerCLI 用户指南》。</li>
+</ul>
+<ul>
+<li>前提条件</li>
+</ul>
+<ul>
+<li>只有在满足所有必备条件的情况下，才能启用安全引导。如果不满足必备条件，则 vSphere Client 中将不显示该复选框。</li>
+</ul>
+<ul>
+<li>EFI 固件</li>
+</ul>
+<ul>
+<li>虚拟硬件版本 13 或更高版本。</li>
+</ul>
+<ul>
+<li>支持 UEFI 安全引导的操作系统。</li>
+</ul>
+<ul>
+<li>关闭虚拟机。如果虚拟机正在运行，则该复选框将灰显。</li>
+</ul>
+<ul>
+<li>过程</li>
+</ul>
+<ul>
+<li>选择任务。选中安全引导复选框以启用安全引导，然后单击确定。</li>
+</ul>
+<ul>
+<li>选中安全引导复选框以启用安全引导，</li>
+</ul>
+<ul>
+<li>结果</li>
+</ul>
+<ul>
+<li>当虚拟机引导时，仅支持具有有效签名的组件。如果某个组件缺少签名或签名无效，则引导过程将停止。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>虚拟机的默认配置包括一个用于在虚拟机内部对修改安全引导配置（包括安全引导撤消列表）的请求进行身份验证的证书，该证书是一个 Microsoft KEK（密钥交换密钥）证书。</li>
+</ul>
+<ul>
+<li>验证虚拟机操作系统和固件是否支持 UEFI 引导。</li>
+</ul>
+<ul>
+<li>注： 某些客户机操作系统不支持在不进行客户机操作系统修改的情况下从 BIOS 引导更改为 UEFI 引导。更改为 UEFI 引导之前，请查看客户机操作系统文档。如果将已使用 UEFI 引导的虚拟机升级到支持 UEFI 安全引导的操作系统，则可以对该虚拟机启用安全引导。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>此任务介绍了如何使用 vSphere Client 为虚拟机启用安全引导。此外，还可以编写脚本来管理虚拟机设置。例如，可以使用以下 PowerCLI 代码自动将虚拟机固件由 BIOS 更改为 EFI：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>可以通过vmware上的配置关闭 Secure 模式的UEFI，使虚拟机受ASR支持：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.vmware.com/cn/VMware-vSphere/6.5/com.vmware.vsphere.security.doc/GUID-898217D4-689D-4EB5-866C-888353FE241C.html" target="_blank" rel="noopener">https://docs.vmware.com/cn/VMware-vSphere/6.5/com.vmware.vsphere.security.doc/GUID-898217D4-689D-4EB5-866C-888353FE241C.html</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Johnny lee</p>
+<p>2022-3-4</p>
+<p>问题描述：</p>
+<p>出现问题的两台Windows Server 2016无法安装mobility service，日志报错为：</p>
+<p>12:21:20:error_name: ASRMobilityServiceBootUEFISecureBootNotSupported , default_message</p>
+<p>UEFI Secure boot is not supported</p>
+<p>我们官方文档明确书写不支持 UEFI Secure boot 但是支持 UEFI模式：</p>
+<p>可以通过vmware上的配置关闭 Secure 模式的UEFI，使虚拟机受ASR支持：</p>
+<p>方法如下:</p>
+<p>右键单击清单中的虚拟机，然后选择编辑设置。</p>
+<p>单击虚拟机选项选项卡，然后展开引导选项。</p>
+<p>在引导选项下，确保固件设置为 EFI。</p>
+<p>选择任务。选中安全引导复选框以启用安全引导，然后单击确定。选中安全引导复选框以启用安全引导，</p>
+<p>取消选中安全引导复选框以禁用安全引导。</p>
+<p><a href="https://docs.vmware.com/cn/VMware-vSphere/6.5/com.vmware.vsphere.security.doc/GUID-898217D4-689D-4EB5-866C-888353FE241C.html" target="_blank" rel="noopener">https://docs.vmware.com/cn/VMware-vSphere/6.5/com.vmware.vsphere.security.doc/GUID-898217D4-689D-4EB5-866C-888353FE241C.html</a></p>
+<p>为虚拟机启用或禁用 UEFI 安全引导</p>
+<p>更新时间 2019年05月31日</p>
+<p>选择的产品版本：VMware vSphere 6.5</p>
+<p>UEFI 安全引导是一种安全标准，有助于确保您的 PC 仅使用该 PC 制造商信任的软件进行引导。对于某些虚拟机硬件版本和操作系统，您可以完全按照对物理计算机启用安全引导的方式来启用安全引导。</p>
+<p>在支持 UEFI 安全引导的操作系统中，引导软件的每个部分都会进行签名，包括引导加载程序、操作系统内核以及操作系统驱动程序。虚拟机的默认配置包括多个代码签名证书。</p>
+<p>一个仅用于引导 Windows 的 Microsoft 证书。</p>
+<p>一个用于 Microsoft 签名的第三方代码（例如 Linux 引导加载程序）的 Microsoft 证书。</p>
+<p>一个仅用于在虚拟机内部引导 ESXi 的 VMware 证书。</p>
+<p>虚拟机的默认配置包括一个用于在虚拟机内部对修改安全引导配置（包括安全引导撤消列表）的请求进行身份验证的证书，该证书是一个 Microsoft KEK（密钥交换密钥）证书。</p>
+<p>几乎在所有情况下，均不需要替换现有证书。如果要替换证书，请参见 VMware 知识库系统。</p>
+<p>对于使用 UEFI 安全引导的虚拟机，需要 VMware Tools 10.1 或更高版本。在 VMware Tools 的更高版本推出后，可以将这些虚拟机升级到该版本。</p>
+<p>对于 Linux 虚拟机，安全引导模式不支持 VMware 主机客户机文件系统。先将 VMware 主机客户机文件系统从 VMware Tools 中移除，然后再启动安全引导。</p>
+<p>注： 如果为某个虚拟机启用了安全引导，则只能在该虚拟机中加载经过签名的驱动程序。</p>
+<p>此任务介绍了如何使用 vSphere Client 为虚拟机启用安全引导。此外，还可以编写脚本来管理虚拟机设置。例如，可以使用以下 PowerCLI 代码自动将虚拟机固件由 BIOS 更改为 EFI：</p>
+<p>$vm = Get-VM TestVM</p>
+<p>$spec = New-Object VMware.Vim.VirtualMachineConfigSpec</p>
+<p>$spec.Firmware = [VMware.Vim.GuestOsDescriptorFirmwareType]::efi</p>
+<p>$vm.ExtensionData.ReconfigVM($spec)</p>
+<p>有关详细信息，请参见 《VMware PowerCLI 用户指南》。</p>
+<p>前提条件</p>
+<p>只有在满足所有必备条件的情况下，才能启用安全引导。如果不满足必备条件，则 vSphere Client 中将不显示该复选框。</p>
+<p>验证虚拟机操作系统和固件是否支持 UEFI 引导。</p>
+<p>EFI 固件</p>
+<p>虚拟硬件版本 13 或更高版本。</p>
+<p>支持 UEFI 安全引导的操作系统。</p>
+<p>注： 某些客户机操作系统不支持在不进行客户机操作系统修改的情况下从 BIOS 引导更改为 UEFI 引导。更改为 UEFI 引导之前，请查看客户机操作系统文档。如果将已使用 UEFI 引导的虚拟机升级到支持 UEFI 安全引导的操作系统，则可以对该虚拟机启用安全引导。</p>
+<p>关闭虚拟机。如果虚拟机正在运行，则该复选框将灰显。</p>
+<p>过程</p>
+<p>选择任务。选中安全引导复选框以启用安全引导，然后单击确定。</p>
+<p>选中安全引导复选框以启用安全引导，</p>
+<p>结果</p>
+<p>当虚拟机引导时，仅支持具有有效签名的组件。如果某个组件缺少签名或签名无效，则引导过程将停止。</p></article>

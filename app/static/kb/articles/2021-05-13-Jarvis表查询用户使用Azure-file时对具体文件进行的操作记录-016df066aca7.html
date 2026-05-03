@@ -1,0 +1,437 @@
+<article class="kb-article" data-title="Jarvis表查询用户使用Azure file时对具体文件进行的操作记录"><h1>Jarvis表查询用户使用Azure file时对具体文件进行的操作记录</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-05-13 16:08:37</li>
+<li>JD 相关性: 售后排障; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2，此表记录的日志数据为采样数据，对成功操作的采样率为0.1%,对失败操作的采样率为100%</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2，此表记录的日志数据为采样数据，对成功操作的采样率为0.1%,对失败操作的采样率为100%</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>服务区域 (Meter Region)</li>
+</ul>
+<ul>
+<li>服务资源 (Meter Name)</li>
+</ul>
+<ul>
+<li>已消耗资源数量 (Consumed Quantity)</li>
+</ul>
+<ul>
+<li>资源费率 (ResourceRate)</li>
+</ul>
+<ul>
+<li>扩展的成本 (ExtendedCost)</li>
+</ul>
+<ul>
+<li>服务子区域 (Resource Location)</li>
+</ul>
+<ul>
+<li>服务信息 (Consumed Service)</li>
+</ul>
+<ul>
+<li>组件 (Instance ID)</li>
+</ul>
+<ul>
+<li>CN North 2</li>
+</ul>
+<ul>
+<li>LRS Write Operations</li>
+</ul>
+<ul>
+<li>474.7815</li>
+</ul>
+<ul>
+<li>0.094337</li>
+</ul>
+<ul>
+<li>44.78954</li>
+</ul>
+<ul>
+<li>cnnorth2</li>
+</ul>
+<ul>
+<li>Microsoft.Storage</li>
+</ul>
+<ul>
+<li>/subscriptions/5abb9dea-9e78-4887-b2fc-54333e70660e/resourceGroups/MC_taskhub-test_taskhub-test_chinanorth2/providers/Microsoft.Storage/storageAccounts/f0dbb85ccc53511e98fa20e</li>
+</ul>
+<ul>
+<li>简单理解来看，就是客户的存储账户f0dbb85ccc53511e98fa20e使用Auzre file服务，执行的写操作消耗费用为 474.7815 * 0.094337 . 其中 474.7815为写入次数，具体数值为474.7815*10k=4747815次，即一天写入操作数为400多万次。</li>
+</ul>
+<ul>
+<li>客户感觉这个写入次数远超过其预期，要求我们提供他的操作记录针对了哪些文件以及具体每个文件的操作次数为多少？</li>
+</ul>
+<ul>
+<li>(Internal info，不要同步给客户)需要注意的是：</li>
+</ul>
+<ul>
+<li>RequestUrl</li>
+</ul>
+<ul>
+<li>Count of RequestUrl</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\</li>
+</ul>
+<ul>
+<li>114</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\.airflowignore</li>
+</ul>
+<ul>
+<li>688</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__</li>
+</ul>
+<ul>
+<li>1971</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\.airflowignore</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\airflow-dag.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>4348</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.apply_resources_taskv2.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>1628</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.delete_datav2.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>2409</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.get_task.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>2590</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.task_injectv2.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>3731</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.task_parse_mergev2.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>1960</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.task_processv2.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>4784</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.task_splitv2.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>1634</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weibo.update_engagement.assign_new_tasks.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>1821</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weibo.update_engagement.execute_a_task.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>1702</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weibo.update_engagement.execute_a_task_timerange.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>1558</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weibo.update_engagement.process_a_minibatch.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>3825</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weixin.test.a_simple_dag.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>1662</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weixin.test.batch_create_external_dag_run_operator.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>1675</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weixin.update_engagement.assign_new_tasks.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>3035</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weixin.update_engagement.execute_a_task.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>1511</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weixin.update_engagement.process_a_minibatch.cpython-37.pyc</li>
+</ul>
+<ul>
+<li>4753</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\airflow-dag.py</li>
+</ul>
+<ul>
+<li>265</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.apply_resources_taskv2.py</li>
+</ul>
+<ul>
+<li>7344</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.delete_datav2.py</li>
+</ul>
+<ul>
+<li>5253</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.get_task.py</li>
+</ul>
+<ul>
+<li>129</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.task_injectv2.py</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.task_parse_mergev2.py</li>
+</ul>
+<ul>
+<li>6257</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.task_processv2.py</li>
+</ul>
+<ul>
+<li>1125</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.task_splitv2.py</li>
+</ul>
+<ul>
+<li>8454</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weibo.update_engagement.assign_new_tasks.py</li>
+</ul>
+<ul>
+<li>7580</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weibo.update_engagement.execute_a_task.py</li>
+</ul>
+<ul>
+<li>8844</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weibo.update_engagement.execute_a_task_timerange.py</li>
+</ul>
+<ul>
+<li>11165</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weibo.update_engagement.process_a_minibatch.py</li>
+</ul>
+<ul>
+<li>151</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weixin.test.a_simple_dag.py</li>
+</ul>
+<ul>
+<li>11221</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weixin.test.batch_create_external_dag_run_operator.py</li>
+</ul>
+<ul>
+<li>10085</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weixin.update_engagement.assign_new_tasks.py</li>
+</ul>
+<ul>
+<li>4029</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weixin.update_engagement.execute_a_task.py</li>
+</ul>
+<ul>
+<li>9823</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weixin.update_engagement.process_a_minibatch.py</li>
+</ul>
+<ul>
+<li>949</li>
+</ul>
+<ul>
+<li>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-f4bfbdf9-e28d-11e9-bf14-3a81b6371bef\</li>
+</ul>
+<ul>
+<li>2</li>
+</ul>
+<ul>
+<li>(blank)</li>
+</ul>
+<ul>
+<li>Grand Total</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>前几天收到这么一个工单： “SR_2019101556540_[MS-LED]File操作日志查看”，客户收到账单后发现这么一条收费信息：</li>
+</ul>
+<ul>
+<li>1，此表一次查询的结果有数量限制（500000），所以要注意查询的时间跨度；</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>最后找到了这个表：<a href="https://jarvis-west.dc.ad.msft.net/FD2FB1AB" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/FD2FB1AB</a> 基本满足了客户的需求，下载查询记录并使用Excel统计后提供的6小时的参考值如下：</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2019-10-28</p>
+<p>前几天收到这么一个工单： “SR_2019101556540_[MS-LED]File操作日志查看”，客户收到账单后发现这么一条收费信息：</p>
+<p>服务区域 (Meter Region)</p>
+<p>服务资源 (Meter Name)</p>
+<p>已消耗资源数量 (Consumed Quantity)</p>
+<p>资源费率 (ResourceRate)</p>
+<p>扩展的成本 (ExtendedCost)</p>
+<p>服务子区域 (Resource Location)</p>
+<p>服务信息 (Consumed Service)</p>
+<p>组件 (Instance ID)</p>
+<p>CN North 2</p>
+<p>LRS Write Operations</p>
+<p>474.7815</p>
+<p>0.094337</p>
+<p>44.78954</p>
+<p>cnnorth2</p>
+<p>Microsoft.Storage</p>
+<p>/subscriptions/5abb9dea-9e78-4887-b2fc-54333e70660e/resourceGroups/MC_taskhub-test_taskhub-test_chinanorth2/providers/Microsoft.Storage/storageAccounts/f0dbb85ccc53511e98fa20e</p>
+<p>简单理解来看，就是客户的存储账户f0dbb85ccc53511e98fa20e使用Auzre file服务，执行的写操作消耗费用为 474.7815 * 0.094337 . 其中 474.7815为写入次数，具体数值为474.7815*10k=4747815次，即一天写入操作数为400多万次。</p>
+<p>客户感觉这个写入次数远超过其预期，要求我们提供他的操作记录针对了哪些文件以及具体每个文件的操作次数为多少？</p>
+<p>最后找到了这个表：<a href="https://jarvis-west.dc.ad.msft.net/FD2FB1AB" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/FD2FB1AB</a> 基本满足了客户的需求，下载查询记录并使用Excel统计后提供的6小时的参考值如下：</p>
+<p>(Internal info，不要同步给客户)需要注意的是：</p>
+<p>1，此表一次查询的结果有数量限制（500000），所以要注意查询的时间跨度；</p>
+<p>2，此表记录的日志数据为采样数据，对成功操作的采样率为0.1%,对失败操作的采样率为100%</p>
+<p>RequestUrl</p>
+<p>Count of RequestUrl</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\</p>
+<p>114</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\.airflowignore</p>
+<p>688</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__</p>
+<p>1971</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\.airflowignore</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\airflow-dag.cpython-37.pyc</p>
+<p>4348</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.apply_resources_taskv2.cpython-37.pyc</p>
+<p>1628</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.delete_datav2.cpython-37.pyc</p>
+<p>2409</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.get_task.cpython-37.pyc</p>
+<p>2590</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.task_injectv2.cpython-37.pyc</p>
+<p>3731</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.task_parse_mergev2.cpython-37.pyc</p>
+<p>1960</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.task_processv2.cpython-37.pyc</p>
+<p>4784</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\etl.task_splitv2.cpython-37.pyc</p>
+<p>1634</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weibo.update_engagement.assign_new_tasks.cpython-37.pyc</p>
+<p>1821</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weibo.update_engagement.execute_a_task.cpython-37.pyc</p>
+<p>1702</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weibo.update_engagement.execute_a_task_timerange.cpython-37.pyc</p>
+<p>1558</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weibo.update_engagement.process_a_minibatch.cpython-37.pyc</p>
+<p>3825</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weixin.test.a_simple_dag.cpython-37.pyc</p>
+<p>1662</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weixin.test.batch_create_external_dag_run_operator.cpython-37.pyc</p>
+<p>1675</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weixin.update_engagement.assign_new_tasks.cpython-37.pyc</p>
+<p>3035</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weixin.update_engagement.execute_a_task.cpython-37.pyc</p>
+<p>1511</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\__pycache__\weixin.update_engagement.process_a_minibatch.cpython-37.pyc</p>
+<p>4753</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\airflow-dag.py</p>
+<p>265</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.apply_resources_taskv2.py</p>
+<p>7344</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.delete_datav2.py</p>
+<p>5253</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.get_task.py</p>
+<p>129</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.task_injectv2.py</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.task_parse_mergev2.py</p>
+<p>6257</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.task_processv2.py</p>
+<p>1125</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\etl.task_splitv2.py</p>
+<p>8454</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weibo.update_engagement.assign_new_tasks.py</p>
+<p>7580</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weibo.update_engagement.execute_a_task.py</p>
+<p>8844</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weibo.update_engagement.execute_a_task_timerange.py</p>
+<p>11165</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weibo.update_engagement.process_a_minibatch.py</p>
+<p>151</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weixin.test.a_simple_dag.py</p>
+<p>11221</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weixin.test.batch_create_external_dag_run_operator.py</p>
+<p>10085</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weixin.update_engagement.assign_new_tasks.py</p>
+<p>4029</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weixin.update_engagement.execute_a_task.py</p>
+<p>9823</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-e4057567-c88e-11e9-b737-8a11f5f42c56\weixin.update_engagement.process_a_minibatch.py</p>
+<p>949</p>
+<p>\\f0dbb85ccc53511e98fa20e.file.core.chinacloudapi.cn\kubernetes-dynamic-pvc-f4bfbdf9-e28d-11e9-bf14-3a81b6371bef\</p>
+<p>2</p>
+<p>(blank)</p>
+<p>Grand Total</p></article>

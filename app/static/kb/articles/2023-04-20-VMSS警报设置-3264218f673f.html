@@ -1,0 +1,207 @@
+<article class="kb-article" data-title="VMSS警报设置"><h1>VMSS警报设置</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-20 14:03:52</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>$storageAccount = Get-azurermStorageAccount -StorageAccountName $StorageAccountName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>$storageAccount = Get-azurermStorageAccount -StorageAccountName $StorageAccountName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考工单：</li>
+</ul>
+<ul>
+<li>请将黄色部分替换为您环境中的内容</li>
+</ul>
+<ul>
+<li>1． 对Linux VMSS设置警报</li>
+</ul>
+<ul>
+<li>$wadperfcounters1 = &#39;&lt;PerformanceCounters scheduledTransferPeriod=&quot;PT1M&quot;&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\AvailableMemory&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Bytes&quot;&gt;&lt;annotation displayName=&quot;Memory available&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\PercentAvailableMemory&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Mem. percent available&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\UsedMemory&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Bytes&quot;&gt;&lt;annotation displayName=&quot;Memory used&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\PercentUsedMemory&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Memory percentage&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\PercentUsedByCache&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Mem. used by cache&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor\PercentIdleTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU idle time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor\PercentUserTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU user time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor\PercentProcessorTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU percentage guest OS&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor\PercentIOWaitTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU IO wait time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&#39;</li>
+</ul>
+<ul>
+<li>$wadperfcounters2 = &#39;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\BytesPerSecond&quot; sampleRate=&quot;PT15S&quot; unit=&quot;BytesPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk total bytes&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\ReadBytesPerSecond&quot; sampleRate=&quot;PT15S&quot; unit=&quot;BytesPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk read guest OS&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\WriteBytesPerSecond&quot; sampleRate=&quot;PT15S&quot; unit=&quot;BytesPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk write guest OS&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\TransfersPerSecond&quot; sampleRate=&quot;PT15S&quot; unit=&quot;CountPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk transfers&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\ReadsPerSecond&quot; sampleRate=&quot;PT15S&quot; unit=&quot;CountPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk reads&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\WritesPerSecond&quot; sampleRate=&quot;PT15S&quot; unit=&quot;CountPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk writes&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\AverageReadTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Seconds&quot;&gt;&lt;annotation displayName=&quot;Disk read time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\AverageWriteTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Seconds&quot;&gt;&lt;annotation displayName=&quot;Disk write time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\AverageTransferTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Seconds&quot;&gt;&lt;annotation displayName=&quot;Disk transfer time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\AverageDiskQueueLength&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Count&quot;&gt;&lt;annotation displayName=&quot;Disk queue length&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;/PerformanceCounters&gt;&#39;</li>
+</ul>
+<ul>
+<li>#change vmss resourceid accordingly</li>
+</ul>
+<ul>
+<li>$wadmetricsresourceid = &#39;/subscriptions/XXXX/resourceGroups/zlhvmss/providers/Microsoft.Compute/virtualMachineScaleSets/XXXX&#39;</li>
+</ul>
+<ul>
+<li>$wadcfgxend = &#39;&quot;&gt;&lt;MetricAggregation scheduledTransferPeriod=&quot;PT1H&quot;/&gt;&lt;MetricAggregation scheduledTransferPeriod=&quot;PT1M&quot;/&gt;&lt;/Metrics&gt;&lt;/DiagnosticMonitorConfiguration&gt;&lt;/WadCfg&gt;&#39;</li>
+</ul>
+<ul>
+<li>$xmlCfg = $wadcfgxstart + $wadmetricsresourceid + $wadcfgxend</li>
+</ul>
+<ul>
+<li>#Encode the XML config</li>
+</ul>
+<ul>
+<li>$xmlCfg = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($xmlCfg))</li>
+</ul>
+<ul>
+<li>#change storage account info</li>
+</ul>
+<ul>
+<li>$resourceGroupName = &quot;XXX&quot;</li>
+</ul>
+<ul>
+<li>$storageAccountName = &quot;XXX&quot;</li>
+</ul>
+<ul>
+<li>$storageAccountKey = (Get-azurermStorageAccountKey -StorageAccountName $StorageAccountName -ResourceGroupName $ResourceGroupName)[0].Value</li>
+</ul>
+<ul>
+<li>$settings = @{&quot;xmlCfg&quot; = $xmlCfg; &quot;storageAccount&quot; = $storageAccountName}</li>
+</ul>
+<ul>
+<li>#extension name, resource group, resource name(vmss)</li>
+</ul>
+<ul>
+<li>$publisher =  &quot;Microsoft.OSTCExtensions&quot;</li>
+</ul>
+<ul>
+<li>$type =  &quot;LinuxDiagnostic&quot;</li>
+</ul>
+<ul>
+<li>$typeHandlerVersion = &quot;2.3&quot;</li>
+</ul>
+<ul>
+<li>$resourceName =&quot;XXX&quot;</li>
+</ul>
+<ul>
+<li>$virtualMachineScaleSet = Get-AzureRmVmss -ResourceGroupName $resourceGroupName -VMScaleSetName $resourceName</li>
+</ul>
+<ul>
+<li>Add-AzureRmVmssExtension -VirtualMachineScaleSet $virtualMachineScaleSet -Name $exname -Publisher $publisher -Type $type -TypeHandlerVersion $typeHandlerVersion -AutoUpgradeMinorVersion $true -Setting $settings -ProtectedSetting $protectedSettings</li>
+</ul>
+<ul>
+<li>Update-AzureRmVmss -ResourceGroupName $resourceGroupName -Name $virtualMachineScaleSet.Name -VirtualMachineScaleSet $virtualMachineScaleSet</li>
+</ul>
+<ul>
+<li>$actionEmail = New-AzureRmAlertRuleEmail -CustomEmail XXX@oe.21vianet.com</li>
+</ul>
+<ul>
+<li>#因东2和北2暂不支持Alert,Location请设置为chinaeast或chinanorth</li>
+</ul>
+<ul>
+<li>Alert邮件样例：</li>
+</ul>
+<ul>
+<li>2． 对Window VMSS设置警报</li>
+</ul>
+<ul>
+<li>$wadperfcounters1 =  &#39;&lt;PerformanceCounters scheduledTransferPeriod=&quot;PT1M&quot;&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor Information(_Total)\% Processor Time&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU utilization&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor Information(_Total)\% Privileged Time&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU privileged time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor Information(_Total)\% User Time&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU user time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor Information(_Total)\Processor Frequency&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Count&quot;&gt;&lt;annotation displayName=&quot;CPU frequency&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\System\Processes&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Count&quot;&gt;&lt;annotation displayName=&quot;Processes&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Process(_Total)\Thread Count&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Count&quot;&gt;&lt;annotation displayName=&quot;Threads&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Process(_Total)\Handle Count&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Count&quot;&gt;&lt;annotation displayName=&quot;Handles&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\% Committed Bytes In Use&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Memory usage&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\Available Bytes&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Bytes&quot;&gt;&lt;annotation displayName=&quot;Memory available&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\Committed Bytes&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Bytes&quot;&gt;&lt;annotation displayName=&quot;Memory committed&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\Commit Limit&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Bytes&quot;&gt;&lt;annotation displayName=&quot;Memory commit limit&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\% Disk Time&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Disk active time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&#39;</li>
+</ul>
+<ul>
+<li>$wadmetricsresourceid = &#39;/subscriptions/XXXX/resourceGroups/XXX/providers/Microsoft.Compute/virtualMachineScaleSets/XXXX&#39;</li>
+</ul>
+<ul>
+<li>$publisher =  &quot;Microsoft.Azure.Diagnostics&quot;</li>
+</ul>
+<ul>
+<li>$type =  &quot;IaaSDiagnostics&quot;</li>
+</ul>
+<ul>
+<li>$typeHandlerVersion = &quot;1.7&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>SR_2019080743821_[MS-LED]创建报警规则时虚拟机规模集只能根据Log报警不能根据Metric</li>
+</ul>
+<ul>
+<li>$wadlogs = &#39;&lt;WadCfg&gt;&lt;DiagnosticMonitorConfiguration&gt;&#39;</li>
+</ul>
+<ul>
+<li>$wadcfgxstart = $wadlogs + $wadperfcounters1 + $wadperfcounters2 + &#39;&lt;Metrics resourceId=&quot;&#39;</li>
+</ul>
+<ul>
+<li>$exname = &quot;VMSSDiagnosticslog&quot;</li>
+</ul>
+<ul>
+<li>$wadperfcounters2 =  &#39;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\% Disk Read Time&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Disk active read time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\% Disk Write Time&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Disk active write time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\Disk Transfers/sec&quot; sampleRate=&quot;PT15S&quot; unit=&quot;CountPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk operations&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\Disk Reads/sec&quot; sampleRate=&quot;PT15S&quot; unit=&quot;CountPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk read operations&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\Disk Writes/sec&quot; sampleRate=&quot;PT15S&quot; unit=&quot;CountPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk write operations&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\Disk Bytes/sec&quot; sampleRate=&quot;PT15S&quot; unit=&quot;BytesPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk speed&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\Disk Read Bytes/sec&quot; sampleRate=&quot;PT15S&quot; unit=&quot;BytesPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk read speed&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\Disk Write Bytes/sec&quot; sampleRate=&quot;PT15S&quot; unit=&quot;BytesPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk write speed&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\LogicalDisk(_Total)\% Free Space&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Disk free space (percentage)&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;/PerformanceCounters&gt;&#39;</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Add-AzureRMMetricAlertRule -Name vmsslinuxcpu_gt_5 -Location &quot;chinaeast&quot; -ResourceGroup XXX -TargetResourceId &quot;/subscriptions/XXX/resourceGroups/XXX/providers/Microsoft.Compute/virtualMachineScaleSets/XXX&quot; -MetricName &quot;\Processor\PercentProcessorTime&quot; -Operator GreaterThan -Threshold 0.1 -WindowSize 00:05:00 -TimeAggregationOperator Average -Action $actionEmail -Description &quot;alert on CPU &gt; 0.1%&quot;</li>
+</ul>
+<ul>
+<li>Add-AzureRMMetricAlertRule -Name vmss2012cpu_gt_3 -Location &quot;chinaeast&quot; -ResourceGroup XXX -TargetResourceId &quot;/subscriptions/XXX/resourceGroups/XXX/providers/Microsoft.Compute/virtualMachineScaleSets/XXX&quot; -MetricName &quot;\Processor Information(_Total)\% Processor Time&quot; -Operator GreaterThan -Threshold 3 -WindowSize 00:05:00 -TimeAggregationOperator Average -Action $actionEmail -Description &quot;alert on CPU &gt; 3%&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>$protectedSettings = @{&quot;storageAccountName&quot; = $storageAccountName;&quot;storageAccountKey&quot; = $storageAccountKey; &quot;storageAccountEndPoint&quot; = &quot;<a href="https://core.chinacloudapi.cn&quot;}" target="_blank" rel="noopener">https://core.chinacloudapi.cn&quot;}</a></li>
+</ul>
+<ul>
+<li>$wadlogs = &#39;&lt;WadCfg&gt; &lt;DiagnosticMonitorConfiguration overallQuotaInMB=&quot;50000&quot; xmlns=&quot;<a href="http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration&quot;&gt;" target="_blank" rel="noopener">http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration&quot;&gt;</a> &lt;DiagnosticInfrastructureLogs scheduledTransferLogLevelFilter=&quot;Error&quot;/&gt; &lt;WindowsEventLog scheduledTransferPeriod=&quot;PT1M&quot; &gt; &lt;DataSource name=&quot;Application!*[System[(Level = 1 or Level = 2)]]&quot; /&gt; &lt;DataSource name=&quot;Security!*[System[(Level = 1 or Level = 2)]]&quot; /&gt; &lt;DataSource name=&quot;System!*[System[(Level = 1 or Level = 2)]]&quot; /&gt;&lt;/WindowsEventLog&gt;&#39;</li>
+</ul>
+<ul>
+<li>3．PowerShell安装，请您参考：<a href="https://docs.azure.cn/zh-cn/powershell-install-configure" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/powershell-install-configure</a></li>
+</ul>
+<ul>
+<li>参考文档：<a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machine-scale-sets/aog-virtual-machine-scale-sets-linux-enable-diagnostic" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machine-scale-sets/aog-virtual-machine-scale-sets-linux-enable-diagnostic</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machine-scale-sets/virtual-machine-scale-sets-faq#autoscale" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machine-scale-sets/virtual-machine-scale-sets-faq#autoscale</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>参考工单：</p>
+<p>SR_2019080743821_[MS-LED]创建报警规则时虚拟机规模集只能根据Log报警不能根据Metric</p>
+<p>请将黄色部分替换为您环境中的内容</p>
+<p>1． 对Linux VMSS设置警报</p>
+<p>$wadlogs = &#39;&lt;WadCfg&gt;&lt;DiagnosticMonitorConfiguration&gt;&#39;</p>
+<p>$wadperfcounters1 = &#39;&lt;PerformanceCounters scheduledTransferPeriod=&quot;PT1M&quot;&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\AvailableMemory&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Bytes&quot;&gt;&lt;annotation displayName=&quot;Memory available&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\PercentAvailableMemory&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Mem. percent available&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\UsedMemory&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Bytes&quot;&gt;&lt;annotation displayName=&quot;Memory used&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\PercentUsedMemory&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Memory percentage&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\PercentUsedByCache&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Mem. used by cache&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor\PercentIdleTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU idle time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor\PercentUserTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU user time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor\PercentProcessorTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU percentage guest OS&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor\PercentIOWaitTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU IO wait time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&#39;</p>
+<p>$wadperfcounters2 = &#39;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\BytesPerSecond&quot; sampleRate=&quot;PT15S&quot; unit=&quot;BytesPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk total bytes&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\ReadBytesPerSecond&quot; sampleRate=&quot;PT15S&quot; unit=&quot;BytesPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk read guest OS&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\WriteBytesPerSecond&quot; sampleRate=&quot;PT15S&quot; unit=&quot;BytesPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk write guest OS&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\TransfersPerSecond&quot; sampleRate=&quot;PT15S&quot; unit=&quot;CountPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk transfers&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\ReadsPerSecond&quot; sampleRate=&quot;PT15S&quot; unit=&quot;CountPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk reads&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\WritesPerSecond&quot; sampleRate=&quot;PT15S&quot; unit=&quot;CountPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk writes&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\AverageReadTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Seconds&quot;&gt;&lt;annotation displayName=&quot;Disk read time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\AverageWriteTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Seconds&quot;&gt;&lt;annotation displayName=&quot;Disk write time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\AverageTransferTime&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Seconds&quot;&gt;&lt;annotation displayName=&quot;Disk transfer time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk\AverageDiskQueueLength&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Count&quot;&gt;&lt;annotation displayName=&quot;Disk queue length&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;/PerformanceCounters&gt;&#39;</p>
+<p>#change vmss resourceid accordingly</p>
+<p>$wadcfgxstart = $wadlogs + $wadperfcounters1 + $wadperfcounters2 + &#39;&lt;Metrics resourceId=&quot;&#39;</p>
+<p>$wadmetricsresourceid = &#39;/subscriptions/XXXX/resourceGroups/zlhvmss/providers/Microsoft.Compute/virtualMachineScaleSets/XXXX&#39;</p>
+<p>$wadcfgxend = &#39;&quot;&gt;&lt;MetricAggregation scheduledTransferPeriod=&quot;PT1H&quot;/&gt;&lt;MetricAggregation scheduledTransferPeriod=&quot;PT1M&quot;/&gt;&lt;/Metrics&gt;&lt;/DiagnosticMonitorConfiguration&gt;&lt;/WadCfg&gt;&#39;</p>
+<p>$xmlCfg = $wadcfgxstart + $wadmetricsresourceid + $wadcfgxend</p>
+<p>#Encode the XML config</p>
+<p>$xmlCfg = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($xmlCfg))</p>
+<p>#change storage account info</p>
+<p>$resourceGroupName = &quot;XXX&quot;</p>
+<p>$storageAccountName = &quot;XXX&quot;</p>
+<p>$storageAccount = Get-azurermStorageAccount -StorageAccountName $StorageAccountName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue</p>
+<p>$storageAccountKey = (Get-azurermStorageAccountKey -StorageAccountName $StorageAccountName -ResourceGroupName $ResourceGroupName)[0].Value</p>
+<p>$protectedSettings = @{&quot;storageAccountName&quot; = $storageAccountName;&quot;storageAccountKey&quot; = $storageAccountKey; &quot;storageAccountEndPoint&quot; = &quot;<a href="https://core.chinacloudapi.cn&quot;}" target="_blank" rel="noopener">https://core.chinacloudapi.cn&quot;}</a></p>
+<p>$settings = @{&quot;xmlCfg&quot; = $xmlCfg; &quot;storageAccount&quot; = $storageAccountName}</p>
+<p>#extension name, resource group, resource name(vmss)</p>
+<p>$exname = &quot;VMSSDiagnosticslog&quot;</p>
+<p>$publisher =  &quot;Microsoft.OSTCExtensions&quot;</p>
+<p>$type =  &quot;LinuxDiagnostic&quot;</p>
+<p>$typeHandlerVersion = &quot;2.3&quot;</p>
+<p>$resourceName =&quot;XXX&quot;</p>
+<p>$virtualMachineScaleSet = Get-AzureRmVmss -ResourceGroupName $resourceGroupName -VMScaleSetName $resourceName</p>
+<p>Add-AzureRmVmssExtension -VirtualMachineScaleSet $virtualMachineScaleSet -Name $exname -Publisher $publisher -Type $type -TypeHandlerVersion $typeHandlerVersion -AutoUpgradeMinorVersion $true -Setting $settings -ProtectedSetting $protectedSettings</p>
+<p>Update-AzureRmVmss -ResourceGroupName $resourceGroupName -Name $virtualMachineScaleSet.Name -VirtualMachineScaleSet $virtualMachineScaleSet</p>
+<p>$actionEmail = New-AzureRmAlertRuleEmail -CustomEmail XXX@oe.21vianet.com</p>
+<p>#因东2和北2暂不支持Alert,Location请设置为chinaeast或chinanorth</p>
+<p>Add-AzureRMMetricAlertRule -Name vmsslinuxcpu_gt_5 -Location &quot;chinaeast&quot; -ResourceGroup XXX -TargetResourceId &quot;/subscriptions/XXX/resourceGroups/XXX/providers/Microsoft.Compute/virtualMachineScaleSets/XXX&quot; -MetricName &quot;\Processor\PercentProcessorTime&quot; -Operator GreaterThan -Threshold 0.1 -WindowSize 00:05:00 -TimeAggregationOperator Average -Action $actionEmail -Description &quot;alert on CPU &gt; 0.1%&quot;</p>
+<p>Alert邮件样例：</p>
+<p>2． 对Window VMSS设置警报</p>
+<p>$wadlogs = &#39;&lt;WadCfg&gt; &lt;DiagnosticMonitorConfiguration overallQuotaInMB=&quot;50000&quot; xmlns=&quot;<a href="http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration&quot;&gt;" target="_blank" rel="noopener">http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration&quot;&gt;</a> &lt;DiagnosticInfrastructureLogs scheduledTransferLogLevelFilter=&quot;Error&quot;/&gt; &lt;WindowsEventLog scheduledTransferPeriod=&quot;PT1M&quot; &gt; &lt;DataSource name=&quot;Application!*[System[(Level = 1 or Level = 2)]]&quot; /&gt; &lt;DataSource name=&quot;Security!*[System[(Level = 1 or Level = 2)]]&quot; /&gt; &lt;DataSource name=&quot;System!*[System[(Level = 1 or Level = 2)]]&quot; /&gt;&lt;/WindowsEventLog&gt;&#39;</p>
+<p>$wadperfcounters1 =  &#39;&lt;PerformanceCounters scheduledTransferPeriod=&quot;PT1M&quot;&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor Information(_Total)\% Processor Time&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU utilization&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor Information(_Total)\% Privileged Time&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU privileged time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor Information(_Total)\% User Time&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;CPU user time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Processor Information(_Total)\Processor Frequency&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Count&quot;&gt;&lt;annotation displayName=&quot;CPU frequency&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\System\Processes&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Count&quot;&gt;&lt;annotation displayName=&quot;Processes&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Process(_Total)\Thread Count&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Count&quot;&gt;&lt;annotation displayName=&quot;Threads&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Process(_Total)\Handle Count&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Count&quot;&gt;&lt;annotation displayName=&quot;Handles&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\% Committed Bytes In Use&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Memory usage&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\Available Bytes&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Bytes&quot;&gt;&lt;annotation displayName=&quot;Memory available&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\Committed Bytes&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Bytes&quot;&gt;&lt;annotation displayName=&quot;Memory committed&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\Memory\Commit Limit&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Bytes&quot;&gt;&lt;annotation displayName=&quot;Memory commit limit&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\% Disk Time&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Disk active time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&#39;</p>
+<p>$wadperfcounters2 =  &#39;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\% Disk Read Time&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Disk active read time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\% Disk Write Time&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Disk active write time&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\Disk Transfers/sec&quot; sampleRate=&quot;PT15S&quot; unit=&quot;CountPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk operations&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\Disk Reads/sec&quot; sampleRate=&quot;PT15S&quot; unit=&quot;CountPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk read operations&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\Disk Writes/sec&quot; sampleRate=&quot;PT15S&quot; unit=&quot;CountPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk write operations&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\Disk Bytes/sec&quot; sampleRate=&quot;PT15S&quot; unit=&quot;BytesPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk speed&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\Disk Read Bytes/sec&quot; sampleRate=&quot;PT15S&quot; unit=&quot;BytesPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk read speed&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\PhysicalDisk(_Total)\Disk Write Bytes/sec&quot; sampleRate=&quot;PT15S&quot; unit=&quot;BytesPerSecond&quot;&gt;&lt;annotation displayName=&quot;Disk write speed&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;PerformanceCounterConfiguration counterSpecifier=&quot;\LogicalDisk(_Total)\% Free Space&quot; sampleRate=&quot;PT15S&quot; unit=&quot;Percent&quot;&gt;&lt;annotation displayName=&quot;Disk free space (percentage)&quot; locale=&quot;en-us&quot;/&gt;&lt;/PerformanceCounterConfiguration&gt;&lt;/PerformanceCounters&gt;&#39;</p>
+<p>$wadmetricsresourceid = &#39;/subscriptions/XXXX/resourceGroups/XXX/providers/Microsoft.Compute/virtualMachineScaleSets/XXXX&#39;</p>
+<p>$publisher =  &quot;Microsoft.Azure.Diagnostics&quot;</p>
+<p>$type =  &quot;IaaSDiagnostics&quot;</p>
+<p>$typeHandlerVersion = &quot;1.7&quot;</p>
+<p>Add-AzureRMMetricAlertRule -Name vmss2012cpu_gt_3 -Location &quot;chinaeast&quot; -ResourceGroup XXX -TargetResourceId &quot;/subscriptions/XXX/resourceGroups/XXX/providers/Microsoft.Compute/virtualMachineScaleSets/XXX&quot; -MetricName &quot;\Processor Information(_Total)\% Processor Time&quot; -Operator GreaterThan -Threshold 3 -WindowSize 00:05:00 -TimeAggregationOperator Average -Action $actionEmail -Description &quot;alert on CPU &gt; 3%&quot;</p>
+<p>3．PowerShell安装，请您参考：<a href="https://docs.azure.cn/zh-cn/powershell-install-configure" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/powershell-install-configure</a></p>
+<p>参考文档：<a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machine-scale-sets/aog-virtual-machine-scale-sets-linux-enable-diagnostic" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machine-scale-sets/aog-virtual-machine-scale-sets-linux-enable-diagnostic</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machine-scale-sets/virtual-machine-scale-sets-faq#autoscale" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machine-scale-sets/virtual-machine-scale-sets-faq#autoscale</a></p></article>

@@ -1,0 +1,74 @@
+<article class="kb-article" data-title="d upgrade"><h1>d upgrade</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AzureFW</li>
+<li>Section: Troubleshooting</li>
+<li>最近修改: 2023-03-07 16:36:37</li>
+<li>JD 相关性: 售后排障</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>d upgrade</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>d upgrade</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>d upgrade</li>
+</ul>
+<ul>
+<li>Wang Zhen</li>
+</ul>
+<ul>
+<li>参考工单：SR_20220513165229_防火墙连续出现多次FirewallHealth指标告警</li>
+</ul>
+<ul>
+<li>问题描述：防火墙连续出现多次FirewallHealth指标告警，显示利用率为0%</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>相关Jarvis FW upgrade 链接：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>关于该Firewall Health指标，其是基于SNAT端口可用性来指示防火墙的运行状况：Azure 防火墙日志和指标的概述 | Azure Docs</li>
+</ul>
+<ul>
+<li>当已用SNAT端口数 &gt; 95%，则视为该SNAT端口已用尽，并且运行状况显示为50%。</li>
+</ul>
+<ul>
+<li>当已用SNAT端口数 &lt; 95%，则视为防火墙正常，并且运行状况显示为100%。</li>
+</ul>
+<ul>
+<li>当系统未报告SNAT端口使用率，则运行状况显示为0%。</li>
+</ul>
+<ul>
+<li>在后台日志中看到从05-12-2022 21:29:54开始Azure Firewall发生过一次版本升级。Azure Firewall由内部架构中VMSS的多个实例提供服务，升级过程为逐个实例滚动进行，当一个实例完成升级并可以正常承载业务之后，平台才会对下一个实例进行升级，因此该升级不会对业务造成影响，而实例在完成升级之后指标数据可能需要一定的时间来恢复上报，因此我们分析“系统未报告SNAT端口使用率”是此次版本升级导致的。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/974D0820" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/974D0820</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>d upgrade</p>
+<p>Wang Zhen</p>
+<p>参考工单：SR_20220513165229_防火墙连续出现多次FirewallHealth指标告警</p>
+<p>问题描述：防火墙连续出现多次FirewallHealth指标告警，显示利用率为0%</p>
+<p>问题原因：</p>
+<p>关于该Firewall Health指标，其是基于SNAT端口可用性来指示防火墙的运行状况：Azure 防火墙日志和指标的概述 | Azure Docs</p>
+<p>当已用SNAT端口数 &gt; 95%，则视为该SNAT端口已用尽，并且运行状况显示为50%。</p>
+<p>当已用SNAT端口数 &lt; 95%，则视为防火墙正常，并且运行状况显示为100%。</p>
+<p>当系统未报告SNAT端口使用率，则运行状况显示为0%。</p>
+<p>在后台日志中看到从05-12-2022 21:29:54开始Azure Firewall发生过一次版本升级。Azure Firewall由内部架构中VMSS的多个实例提供服务，升级过程为逐个实例滚动进行，当一个实例完成升级并可以正常承载业务之后，平台才会对下一个实例进行升级，因此该升级不会对业务造成影响，而实例在完成升级之后指标数据可能需要一定的时间来恢复上报，因此我们分析“系统未报告SNAT端口使用率”是此次版本升级导致的。</p>
+<p>相关Jarvis FW upgrade 链接：</p>
+<p><a href="https://portal.microsoftgeneva.com/s/974D0820" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/974D0820</a></p></article>

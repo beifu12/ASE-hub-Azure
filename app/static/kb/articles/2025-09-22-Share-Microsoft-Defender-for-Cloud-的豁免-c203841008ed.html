@@ -1,0 +1,88 @@
+<article class="kb-article" data-title="【Share】Microsoft Defender for Cloud 的豁免"><h1>【Share】Microsoft Defender for Cloud 的豁免</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Microsoft Defender for Cloud(安全中心).one</li>
+<li>Section: Microsoft Defender for Cloud(安全中心)</li>
+<li>最近修改: 2025-09-22 13:11:42</li>
+<li>JD 相关性: Defender/Sentinel/安全; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：SR_20250109334135_Defender 无法创建豁免</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：SR_20250109334135_Defender 无法创建豁免</li>
+</ul>
+<ul>
+<li>目前Microsoft Defender for Cloud 中已经无法创建豁免。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>##问题</li>
+</ul>
+<ul>
+<li>同时在国内版文档中也找不到豁免的文档：</li>
+</ul>
+<ul>
+<li>在这种情况下，客户还是希望使用豁免功能。</li>
+</ul>
+<ul>
+<li>Azure门户》策略》创作》定义，找到对应的策略，如 “All network ports should be restricted on network security groups associated to your virtual machine“</li>
+</ul>
+<ul>
+<li>选择创建豁免</li>
+</ul>
+<ul>
+<li>在选择策略时注意勾选对应的策略，如果有多个策略豁免，可以一起勾选。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>产品组确认 exemptions are not supported in non-public clouds，可以参考 Incident-577065879 Details - IcM。</li>
+</ul>
+<ul>
+<li>选择分配》选择对应的计划，如下我这边是“Microsoft 云安全基准“， 也可能是ASC Default(subscription:xxxx-xxx-xxx-xxxx)</li>
+</ul>
+<ul>
+<li>确认豁免范围，可以是订阅，资源组，或者是具体的资源。</li>
+</ul>
+<ul>
+<li>24小时后在defender》推荐中查看，豁免已生效，如下。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>##解决方法</li>
+</ul>
+<ul>
+<li>经测试发现，可以通过以下方法创建豁免，局限性是只能针对某个订阅，或者资源组，或者具体的资源创建豁免。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/defender-for-cloud/update-regulatory-compliance-packages" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/defender-for-cloud/update-regulatory-compliance-packages</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/defender-for-cloud/exempt-resource" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/defender-for-cloud/exempt-resource</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/02/18</p>
+<p>参考工单：SR_20250109334135_Defender 无法创建豁免</p>
+<p>##问题</p>
+<p>目前Microsoft Defender for Cloud 中已经无法创建豁免。</p>
+<p>产品组确认 exemptions are not supported in non-public clouds，可以参考 Incident-577065879 Details - IcM。</p>
+<p>同时在国内版文档中也找不到豁免的文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/defender-for-cloud/update-regulatory-compliance-packages" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/defender-for-cloud/update-regulatory-compliance-packages</a></p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/defender-for-cloud/exempt-resource" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/defender-for-cloud/exempt-resource</a></p>
+<p>在这种情况下，客户还是希望使用豁免功能。</p>
+<p>##解决方法</p>
+<p>经测试发现，可以通过以下方法创建豁免，局限性是只能针对某个订阅，或者资源组，或者具体的资源创建豁免。</p>
+<p>Azure门户》策略》创作》定义，找到对应的策略，如 “All network ports should be restricted on network security groups associated to your virtual machine“</p>
+<p>选择分配》选择对应的计划，如下我这边是“Microsoft 云安全基准“， 也可能是ASC Default(subscription:xxxx-xxx-xxx-xxxx)</p>
+<p>选择创建豁免</p>
+<p>确认豁免范围，可以是订阅，资源组，或者是具体的资源。</p>
+<p>在选择策略时注意勾选对应的策略，如果有多个策略豁免，可以一起勾选。</p>
+<p>24小时后在defender》推荐中查看，豁免已生效，如下。</p></article>

@@ -1,0 +1,73 @@
+<article class="kb-article" data-title="[Share] Databricks专用终结点"><h1>[Share] Databricks专用终结点</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Private Endpoint</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-04 16:48:59</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Databricks专用终结点与其他资源的专用终结点有明显的区别，Azure Databricks 使用两种不同的专用终结点来完全私有化流量。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Databricks专用终结点与其他资源的专用终结点有明显的区别，Azure Databricks 使用两种不同的专用终结点来完全私有化流量。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Databricks专用终结点与其他资源的专用终结点有明显的区别，Azure Databricks 使用两种不同的专用终结点来完全私有化流量。</li>
+</ul>
+<ul>
+<li>databricks_ui_api 专用终结点：</li>
+</ul>
+<ul>
+<li>这个是工作区终结点，这是用于保护传入和传出工作区的核心流量的主要专用终结点。 它处理前端和后端的连接。</li>
+</ul>
+<ul>
+<li>browser_authentication 专用终结点：</li>
+</ul>
+<ul>
+<li>这是一个专用的附加终结点，仅用于在专用连接上通过 Web 浏览器实现单点登录（SSO）。 前端连接和端到端连接需要用到它。</li>
+</ul>
+<ul>
+<li>Azure 专用链接概念 - Azure Databricks | Azure Docs</li>
+</ul>
+<ul>
+<li>创建示例：</li>
+</ul>
+<ul>
+<li>databricks_ui_api终结点：</li>
+</ul>
+<ul>
+<li>browser_authentication终结点：</li>
+</ul>
+<ul>
+<li>启用 Azure 专用链接作为简化部署 - Azure Databricks | Azure Docs</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>可以看到该终结点有两个链接，该终结点用于该区域所有Databricks 身份验证，（从该终结点的FQDN特征可以看到），</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/4</p>
+<p>Databricks专用终结点与其他资源的专用终结点有明显的区别，Azure Databricks 使用两种不同的专用终结点来完全私有化流量。</p>
+<p>databricks_ui_api 专用终结点：</p>
+<p>这个是工作区终结点，这是用于保护传入和传出工作区的核心流量的主要专用终结点。 它处理前端和后端的连接。</p>
+<p>browser_authentication 专用终结点：</p>
+<p>这是一个专用的附加终结点，仅用于在专用连接上通过 Web 浏览器实现单点登录（SSO）。 前端连接和端到端连接需要用到它。</p>
+<p>Azure 专用链接概念 - Azure Databricks | Azure Docs</p>
+<p>创建示例：</p>
+<p>databricks_ui_api终结点：</p>
+<p>browser_authentication终结点：</p>
+<p>可以看到该终结点有两个链接，该终结点用于该区域所有Databricks 身份验证，（从该终结点的FQDN特征可以看到），</p>
+<p>启用 Azure 专用链接作为简化部署 - Azure Databricks | Azure Docs</p></article>

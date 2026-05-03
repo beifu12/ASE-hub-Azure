@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="【Share】AVD会话主机安装语言包及配置"><h1>【Share】AVD会话主机安装语言包及配置</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-15 16:24:14</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>update</li>
+</ul>
+<ul>
+<li>Song Weiqin</li>
+</ul>
+<ul>
+<li>工单：SR_20240227279765_AVD中安装中文软件包卡在下载阶段</li>
+</ul>
+<ul>
+<li>[string]$LIPContent = &quot;E:&quot;</li>
+</ul>
+<ul>
+<li>Add-AppProvisionedPackage -Online -PackagePath $LIPContent\zh-cn\LanguageExperiencePack.zh-cn.Neutral.appx -LicensePath $LIPContent\zh-cn\License.xml</li>
+</ul>
+<ul>
+<li>Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-Client-Language-Pack_x64_zh-cn.cab</li>
+</ul>
+<ul>
+<li>$LanguageList = Get-WinUserLanguageList</li>
+</ul>
+<ul>
+<li>$LanguageList.Add(&quot;zh-cn&quot;)</li>
+</ul>
+<ul>
+<li>关于中文输入法的问题，请参考如下：</li>
+</ul>
+<ul>
+<li>测试使用客户端连接到会话主机后，输入法可以使用中文。</li>
+</ul>
+<ul>
+<li>客户端下载地址：使用适用于 Windows 的远程桌面客户端连接到 Azure 虚拟桌面 - Azure 虚拟桌面 | Microsoft Learn</li>
+</ul>
+<ul>
+<li>在web端连接时，连接到工作区后，先在设置中选择简体中文，然后再选择sessiondesktop连接，这样就可以使用中文输入法了。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在我的测试环境中按照文档复制 LocalExperiencePacks 和 x64\langpacks 文件夹中的中文语言包到本地一个文件夹，然后在PowerShell中执行如下命令：</li>
+</ul>
+<ul>
+<li>Set-WinUserLanguageList $LanguageList -force</li>
+</ul>
+<ul>
+<li>Get-WinUserLanguageList</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档<a href="https://docs.azure.cn/zh-cn/virtual-desktop/language-packs" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/language-packs</a> 下载语言包</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>update</p>
+<p>Song Weiqin</p>
+<p>工单：SR_20240227279765_AVD中安装中文软件包卡在下载阶段</p>
+<p>参考文档<a href="https://docs.azure.cn/zh-cn/virtual-desktop/language-packs" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/language-packs</a> 下载语言包</p>
+<p>在我的测试环境中按照文档复制 LocalExperiencePacks 和 x64\langpacks 文件夹中的中文语言包到本地一个文件夹，然后在PowerShell中执行如下命令：</p>
+<p>[string]$LIPContent = &quot;E:&quot;</p>
+<p>Add-AppProvisionedPackage -Online -PackagePath $LIPContent\zh-cn\LanguageExperiencePack.zh-cn.Neutral.appx -LicensePath $LIPContent\zh-cn\License.xml</p>
+<p>Add-WindowsPackage -Online -PackagePath $LIPContent\Microsoft-Windows-Client-Language-Pack_x64_zh-cn.cab</p>
+<p>$LanguageList = Get-WinUserLanguageList</p>
+<p>$LanguageList.Add(&quot;zh-cn&quot;)</p>
+<p>Set-WinUserLanguageList $LanguageList -force</p>
+<p>Get-WinUserLanguageList</p>
+<p>关于中文输入法的问题，请参考如下：</p>
+<p>测试使用客户端连接到会话主机后，输入法可以使用中文。</p>
+<p>客户端下载地址：使用适用于 Windows 的远程桌面客户端连接到 Azure 虚拟桌面 - Azure 虚拟桌面 | Microsoft Learn</p>
+<p>在web端连接时，连接到工作区后，先在设置中选择简体中文，然后再选择sessiondesktop连接，这样就可以使用中文输入法了。</p></article>

@@ -1,0 +1,66 @@
+<article class="kb-article" data-title="查询文件共享File Share的操作记录"><h1>查询文件共享File Share的操作记录</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-18 11:43:32</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<ul>
+<li>#问题：</li>
+</ul>
+<ul>
+<li>我这边测试自己的文件共享从门户或Azure Storage Explorer操作，不会写入这样表。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>客户确认文件共享的某一个文件删除操作是通过挂载文件共享的客户端，还是通过门户或者是Azure Storage Explorer删除的。</li>
+</ul>
+<ul>
+<li>之前xiaolei分享过使用 XSMBPerfMetric这张表查询文件共享的操作记录</li>
+</ul>
+<ul>
+<li>和CSS确认了下，门户或Azure Storage Explorer是Rest API, 需要在FileFrontEndSummaryPerfLogs这样表中查询。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>#解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/FD15A1B1" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/FD15A1B1</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/73D476B1" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/73D476B1</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Zhang Lihong</p>
+<p>#问题：</p>
+<p>客户确认文件共享的某一个文件删除操作是通过挂载文件共享的客户端，还是通过门户或者是Azure Storage Explorer删除的。</p>
+<p>#解决方案：</p>
+<p>之前xiaolei分享过使用 XSMBPerfMetric这张表查询文件共享的操作记录</p>
+<p><a href="https://portal.microsoftgeneva.com/s/FD15A1B1" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/FD15A1B1</a></p>
+<p>我这边测试自己的文件共享从门户或Azure Storage Explorer操作，不会写入这样表。</p>
+<p>和CSS确认了下，门户或Azure Storage Explorer是Rest API, 需要在FileFrontEndSummaryPerfLogs这样表中查询。</p>
+<p><a href="https://portal.microsoftgeneva.com/s/73D476B1" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/73D476B1</a></p></article>

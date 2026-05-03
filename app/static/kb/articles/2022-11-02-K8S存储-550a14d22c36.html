@@ -1,0 +1,272 @@
+<article class="kb-article" data-title="K8S存储"><h1>K8S存储</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: K8S</li>
+<li>最近修改: 2022-11-02 19:17:51</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>普通Volume和使用它的Pod之间是一种静态绑定关系，在定义Pod的文件里，同时定义了它使用的Volume。Volume 是Pod的附属品，我们无法单独创建一个Volume，因为它不是一个独立的K8S资源对象。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>普通Volume和使用它的Pod之间是一种静态绑定关系，在定义Pod的文件里，同时定义了它使用的Volume。Volume 是Pod的附属品，我们无法单独创建一个Volume，因为它不是一个独立的K8S资源对象。</li>
+</ul>
+<ul>
+<li>Failed – 自动回收失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>前言</li>
+</ul>
+<ul>
+<li>在K8S运行的服务，从简单到复杂可以分成三类：无状态服务、普通有状态服务和有状态集群服务。下面分别来看K8S是如何运行这三类服务的。</li>
+</ul>
+<ul>
+<li>无状态服务</li>
+</ul>
+<ul>
+<li>K8S使用RC（或更新的Replica Set）来保证一个服务的实例数量，如果说某个Pod实例由于某种原因Crash了，RC会立刻用这个Pod的模版新启一个Pod来替代它，由于是无状态的服务，新启的Pod与原来健康状态下的Pod一模一样。在Pod被重建后它的IP地址可能发生变化，为了对外提供一个稳定的访问接口，K8S引入了Service的概念重点内容。一个Service后面可以挂多个Pod，实现服务的高可用。</li>
+</ul>
+<ul>
+<li>普通有状态服务</li>
+</ul>
+<ul>
+<li>和无状态服务相比，它多了状态保存的需求。Kubernetes提供了以Volume和Persistent Volume为基础的存储系统，可以实现服务的状态保存。</li>
+</ul>
+<ul>
+<li>有状态集群服务(StatefulSet)</li>
+</ul>
+<ul>
+<li>与普通有状态服务相比，它多了集群管理的需求。K8S为此开发了一套以Pet Set为核心的全新特性，方便了有状态集群服务在K8S上的部署和管理。具体来说是通过Init Container来做集群的初始化工作.用 Headless Service 来维持集群成员的稳定关系，用动态存储供给来方便集群扩容，最后用Pet Set来综合管理整个集群。要运行有状态集群服务要解决的问题有两个,一个是状态保存，另个是集群管理。 我们先来看如何解决第一个问题：状态保存.Kubernetes 有一套以Volume插件为基础的存储系统，通过这套存储系统可以实现应用和服务的状态保存。</li>
+</ul>
+<ul>
+<li>K8S存储系统</li>
+</ul>
+<ul>
+<li>K8S的存储系统从基础到高级又大致分为三个层次：普通Volume，Persistent Volume 和动态存储供应(dynamic provisioning)。</li>
+</ul>
+<ul>
+<li>普通Volume</li>
+</ul>
+<ul>
+<li>单节点Volume</li>
+</ul>
+<ul>
+<li>单节点Volume是最简单的普通Volume，它和Docker的存储卷类似，使用的是Pod所在K8S节点的本地目录。具体有两种，一种是 emptyDir，是一个匿名的空目录，由Kubernetes在创建Pod时创建，删除Pod时删除。另外一种是 hostPath，与emptyDir的区别是，它在Pod之外独立存在，由用户指定路径名。这类和节点绑定的存储卷在Pod迁移到其它节点后数据就会丢失，所以只能用于存储临时数据或用于在同一个Pod里的容器之间共享数据。</li>
+</ul>
+<ul>
+<li>跨节点存储卷</li>
+</ul>
+<ul>
+<li>这种存储卷不和某个具体的K8S节点绑定，而是独立于K8S节点存在的，整个存储集群和K8S集群是两个集群，相互独立。</li>
+</ul>
+<ul>
+<li>跨节点的存储卷在Kubernetes上用的比较多，如果已有的存储不能满足要求，还可以开发自己的Volume插件，只需要实现Volume.go 里定义的接口。如果你是一个存储厂商，想要自己的存储支持Kubernetes 上运行的容器，就可以去开发一个自己的Volume插件。普通volume目前支持的各种存储插件及情况如下：</li>
+</ul>
+<ul>
+<li>persistent volume 和普通Volume的区别</li>
+</ul>
+<ul>
+<li>而Persistent Volume 简称PV是一个K8S资源对象，所以我们可以单独创建一个PV。它不和Pod直接发生关系，而是通过Persistent Volume Claim，简称PVC来实现动态绑定。Pod定义里指定的是PVC，然后PVC会根据Pod的要求去自动绑定合适的PV给Pod使用。</li>
+</ul>
+<ul>
+<li>绑定的概念</li>
+</ul>
+<ul>
+<li>用户根据所需存储空间大小和访问模式创建（或在动态部署中已创建）一个 PersistentVolumeClaim。Kubernetes的Master节点循环监控新产生的PVC，找到与之匹配的PV（如果有的话），并把他们绑定在一起。动态配置时，循环会一直将PV与这个PVC绑定，直到PV完全匹配PVC。避免PVC请求和得到的PV不一致。绑定一旦形成，PersistentVolumeClaim绑定就是独有的，不管是使用何种模式绑定的。</li>
+</ul>
+<ul>
+<li>PV的访问模式</li>
+</ul>
+<ul>
+<li>ReadWriteOnce：是最基本的方式，可读可写，但只支持被单个Pod挂载。</li>
+</ul>
+<ul>
+<li>ReadOnlyMany：可以以只读的方式被多个Pod挂载。</li>
+</ul>
+<ul>
+<li>ReadWriteMany：这种存储可以以读写的方式被多个Pod共享。</li>
+</ul>
+<ul>
+<li>不是每一种存储都支持这三种方式，像共享方式，目前支持的还比较少，比较常用的是NFS。在PVC绑定PV时通常根据两个条件来绑定，一个是存储的大小，另一个就是访问模式。在CLI下，访问方式被简写为：</li>
+</ul>
+<ul>
+<li>RWO – ReadWriteOnce</li>
+</ul>
+<ul>
+<li>ROX – ReadOnlyMany</li>
+</ul>
+<ul>
+<li>RWX – ReadWriteMany</li>
+</ul>
+<ul>
+<li>需要注意的是即使同时支持几种不同的模式，但绑定时只能选择其中的一种。</li>
+</ul>
+<ul>
+<li>PV的使用过程</li>
+</ul>
+<ul>
+<li>刚才提到说PV与普通Volume的区别是动态绑定，我们来看一下这个过程是怎样的。</li>
+</ul>
+<ul>
+<li>storage-flow.png</li>
+</ul>
+<ul>
+<li>这是PV的生命周期，首先是Provision，即创建PV。</li>
+</ul>
+<ul>
+<li>一个PV创建完后状态会变成Available，等待被PVC绑定。一旦被PVC邦定，PV的状态会变成Bound，就可以被定义了相应PVC的Pod使用。Pod使用完后会释放PV，PV的状态变成Released。变成Released的PV会根据定义的回收策略做相应的回收工作。有三种回收策略，Retain、Delete 和 Recycle。</li>
+</ul>
+<ul>
+<li>Retain就是保留现场，K8S什么也不做，等待用户手动去处理PV里的数据，处理完后，再手动删除PV。</li>
+</ul>
+<ul>
+<li>Delete 策略，K8S会自动删除该PV及里面的数据。</li>
+</ul>
+<ul>
+<li>Recycle方式，K8S会将PV里的数据删除，然后把PV的状态变成Available，又可以被新的PVC绑定使用。</li>
+</ul>
+<ul>
+<li>在使用过程中卷又有以下四种状态</li>
+</ul>
+<ul>
+<li>Available –闲置状态，没有被绑定到PVC</li>
+</ul>
+<ul>
+<li>Bound – 绑定到PVC</li>
+</ul>
+<ul>
+<li>Released – PVC被删掉，资源没有被在利用</li>
+</ul>
+<ul>
+<li>动态存储供应（Storage class）</li>
+</ul>
+<ul>
+<li>创建PV有两种方式，静态和动态。</li>
+</ul>
+<ul>
+<li>静态，是管理员手动创建一堆PV，组成一个PV池，供PVC来绑定。</li>
+</ul>
+<ul>
+<li>动态，是指在现有PV不满足PVC的请求时，可以使用存储分类(StorageClass)，描述具体过程为：PV先创建分类，PVC请求已创建的某个类（StorageClass）的资源，这样就达到动态配置的效果。即通过一个叫 Storage Class的对象由存储系统根据PVC的要求自动创建。</li>
+</ul>
+<ul>
+<li>使用StorageClass的好处</li>
+</ul>
+<ul>
+<li>在实际使用场景里，PV的创建和使用通常不是同一个人。这里有一个典型的应用场景：管理员创建一个PV池，开发人员创建Pod和PVC，PVC里定义了Pod所需存储的大小和访问模式，然后PVC会到PV池里自动匹配最合适的PV给Pod使用。</li>
+</ul>
+<ul>
+<li>除了由存储系统动态创建，节省了管理员的时间，还有一个好处是可以封装不同类型的存储供PVC选用。在StorageClass出现以前，PVC绑定一个PV只能根据两个条件，一个是存储的大小，另一个是访问模式。在StorageClass出现后，等于增加了一个绑定维度。</li>
+</ul>
+<ul>
+<li>比如这里就有两个StorageClass，它们都是用谷歌的存储系统，但是一个使用的是普通磁盘，我们把这个StorageClass命名为slow。另一个使用的是SSD，我们把它命名为fast。</li>
+</ul>
+<ul>
+<li>storageClass.png</li>
+</ul>
+<ul>
+<li>在PVC里除了常规的大小、访问模式的要求外，还通过annotation指定了Storage Class的名字为fast，这样这个PVC就会绑定一个SSD，而不会绑定一个普通的磁盘。</li>
+</ul>
+<ul>
+<li>pvc.png</li>
+</ul>
+<ul>
+<li>缺省行为</li>
+</ul>
+<ul>
+<li>所有的 PVC 都可以在不使用 StorageClass 注解的情况下，直接使用某个动态存储。把一个StorageClass 对象标记为 “default” 就可以了。StorageClass 用注解storageclass.beta.kubernetes.io/is-default-class 就可以成为缺省存储。</li>
+</ul>
+<ul>
+<li>有了缺省的 StorageClass，用户创建 PVC 就不用 storage-class 的注解了，1.4 中新加入的DefaultStorageClass 准入控制器会自动把这个标注指向缺省存储类。</li>
+</ul>
+<ul>
+<li>来源：简书</li>
+</ul>
+<ul>
+<li>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>如果找不到匹配的volume，用户请求会一直保持未绑定状态。在匹配的volume可用之后，用户请求将会被绑定。比如，一个配置了许多50Gi PV的集群不会匹配到一个要求100Gi的PVC。 只有在100Gi PV被加到集群之后，这个PVC才可以被绑定。</li>
+</ul>
+<ul>
+<li>到这里Kubernetes的整个存储系统就都介绍完了。总结一下，两种存储卷：普通Volume 和Persistent Volume。普通Volume在定义Pod的时候直接定义，Persistent Volume通过Persistent Volume Claim来动态绑定。PV可以手动创建,也可以通过StorageClass来动态创建。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>链接：<a href="https://www.jianshu.com/p/b0a5305fa5c0" target="_blank" rel="noopener">https://www.jianshu.com/p/b0a5305fa5c0</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>前言</p>
+<p>在K8S运行的服务，从简单到复杂可以分成三类：无状态服务、普通有状态服务和有状态集群服务。下面分别来看K8S是如何运行这三类服务的。</p>
+<p>无状态服务</p>
+<p>K8S使用RC（或更新的Replica Set）来保证一个服务的实例数量，如果说某个Pod实例由于某种原因Crash了，RC会立刻用这个Pod的模版新启一个Pod来替代它，由于是无状态的服务，新启的Pod与原来健康状态下的Pod一模一样。在Pod被重建后它的IP地址可能发生变化，为了对外提供一个稳定的访问接口，K8S引入了Service的概念重点内容。一个Service后面可以挂多个Pod，实现服务的高可用。</p>
+<p>普通有状态服务</p>
+<p>和无状态服务相比，它多了状态保存的需求。Kubernetes提供了以Volume和Persistent Volume为基础的存储系统，可以实现服务的状态保存。</p>
+<p>有状态集群服务(StatefulSet)</p>
+<p>与普通有状态服务相比，它多了集群管理的需求。K8S为此开发了一套以Pet Set为核心的全新特性，方便了有状态集群服务在K8S上的部署和管理。具体来说是通过Init Container来做集群的初始化工作.用 Headless Service 来维持集群成员的稳定关系，用动态存储供给来方便集群扩容，最后用Pet Set来综合管理整个集群。要运行有状态集群服务要解决的问题有两个,一个是状态保存，另个是集群管理。 我们先来看如何解决第一个问题：状态保存.Kubernetes 有一套以Volume插件为基础的存储系统，通过这套存储系统可以实现应用和服务的状态保存。</p>
+<p>K8S存储系统</p>
+<p>K8S的存储系统从基础到高级又大致分为三个层次：普通Volume，Persistent Volume 和动态存储供应(dynamic provisioning)。</p>
+<p>普通Volume</p>
+<p>单节点Volume</p>
+<p>单节点Volume是最简单的普通Volume，它和Docker的存储卷类似，使用的是Pod所在K8S节点的本地目录。具体有两种，一种是 emptyDir，是一个匿名的空目录，由Kubernetes在创建Pod时创建，删除Pod时删除。另外一种是 hostPath，与emptyDir的区别是，它在Pod之外独立存在，由用户指定路径名。这类和节点绑定的存储卷在Pod迁移到其它节点后数据就会丢失，所以只能用于存储临时数据或用于在同一个Pod里的容器之间共享数据。</p>
+<p>跨节点存储卷</p>
+<p>这种存储卷不和某个具体的K8S节点绑定，而是独立于K8S节点存在的，整个存储集群和K8S集群是两个集群，相互独立。</p>
+<p>跨节点的存储卷在Kubernetes上用的比较多，如果已有的存储不能满足要求，还可以开发自己的Volume插件，只需要实现Volume.go 里定义的接口。如果你是一个存储厂商，想要自己的存储支持Kubernetes 上运行的容器，就可以去开发一个自己的Volume插件。普通volume目前支持的各种存储插件及情况如下：</p>
+<p>persistent volume 和普通Volume的区别</p>
+<p>普通Volume和使用它的Pod之间是一种静态绑定关系，在定义Pod的文件里，同时定义了它使用的Volume。Volume 是Pod的附属品，我们无法单独创建一个Volume，因为它不是一个独立的K8S资源对象。</p>
+<p>而Persistent Volume 简称PV是一个K8S资源对象，所以我们可以单独创建一个PV。它不和Pod直接发生关系，而是通过Persistent Volume Claim，简称PVC来实现动态绑定。Pod定义里指定的是PVC，然后PVC会根据Pod的要求去自动绑定合适的PV给Pod使用。</p>
+<p>绑定的概念</p>
+<p>用户根据所需存储空间大小和访问模式创建（或在动态部署中已创建）一个 PersistentVolumeClaim。Kubernetes的Master节点循环监控新产生的PVC，找到与之匹配的PV（如果有的话），并把他们绑定在一起。动态配置时，循环会一直将PV与这个PVC绑定，直到PV完全匹配PVC。避免PVC请求和得到的PV不一致。绑定一旦形成，PersistentVolumeClaim绑定就是独有的，不管是使用何种模式绑定的。</p>
+<p>如果找不到匹配的volume，用户请求会一直保持未绑定状态。在匹配的volume可用之后，用户请求将会被绑定。比如，一个配置了许多50Gi PV的集群不会匹配到一个要求100Gi的PVC。 只有在100Gi PV被加到集群之后，这个PVC才可以被绑定。</p>
+<p>PV的访问模式</p>
+<p>ReadWriteOnce：是最基本的方式，可读可写，但只支持被单个Pod挂载。</p>
+<p>ReadOnlyMany：可以以只读的方式被多个Pod挂载。</p>
+<p>ReadWriteMany：这种存储可以以读写的方式被多个Pod共享。</p>
+<p>不是每一种存储都支持这三种方式，像共享方式，目前支持的还比较少，比较常用的是NFS。在PVC绑定PV时通常根据两个条件来绑定，一个是存储的大小，另一个就是访问模式。在CLI下，访问方式被简写为：</p>
+<p>RWO – ReadWriteOnce</p>
+<p>ROX – ReadOnlyMany</p>
+<p>RWX – ReadWriteMany</p>
+<p>需要注意的是即使同时支持几种不同的模式，但绑定时只能选择其中的一种。</p>
+<p>PV的使用过程</p>
+<p>刚才提到说PV与普通Volume的区别是动态绑定，我们来看一下这个过程是怎样的。</p>
+<p>storage-flow.png</p>
+<p>这是PV的生命周期，首先是Provision，即创建PV。</p>
+<p>一个PV创建完后状态会变成Available，等待被PVC绑定。一旦被PVC邦定，PV的状态会变成Bound，就可以被定义了相应PVC的Pod使用。Pod使用完后会释放PV，PV的状态变成Released。变成Released的PV会根据定义的回收策略做相应的回收工作。有三种回收策略，Retain、Delete 和 Recycle。</p>
+<p>Retain就是保留现场，K8S什么也不做，等待用户手动去处理PV里的数据，处理完后，再手动删除PV。</p>
+<p>Delete 策略，K8S会自动删除该PV及里面的数据。</p>
+<p>Recycle方式，K8S会将PV里的数据删除，然后把PV的状态变成Available，又可以被新的PVC绑定使用。</p>
+<p>在使用过程中卷又有以下四种状态</p>
+<p>Available –闲置状态，没有被绑定到PVC</p>
+<p>Bound – 绑定到PVC</p>
+<p>Released – PVC被删掉，资源没有被在利用</p>
+<p>Failed – 自动回收失败</p>
+<p>动态存储供应（Storage class）</p>
+<p>创建PV有两种方式，静态和动态。</p>
+<p>静态，是管理员手动创建一堆PV，组成一个PV池，供PVC来绑定。</p>
+<p>动态，是指在现有PV不满足PVC的请求时，可以使用存储分类(StorageClass)，描述具体过程为：PV先创建分类，PVC请求已创建的某个类（StorageClass）的资源，这样就达到动态配置的效果。即通过一个叫 Storage Class的对象由存储系统根据PVC的要求自动创建。</p>
+<p>使用StorageClass的好处</p>
+<p>在实际使用场景里，PV的创建和使用通常不是同一个人。这里有一个典型的应用场景：管理员创建一个PV池，开发人员创建Pod和PVC，PVC里定义了Pod所需存储的大小和访问模式，然后PVC会到PV池里自动匹配最合适的PV给Pod使用。</p>
+<p>除了由存储系统动态创建，节省了管理员的时间，还有一个好处是可以封装不同类型的存储供PVC选用。在StorageClass出现以前，PVC绑定一个PV只能根据两个条件，一个是存储的大小，另一个是访问模式。在StorageClass出现后，等于增加了一个绑定维度。</p>
+<p>比如这里就有两个StorageClass，它们都是用谷歌的存储系统，但是一个使用的是普通磁盘，我们把这个StorageClass命名为slow。另一个使用的是SSD，我们把它命名为fast。</p>
+<p>storageClass.png</p>
+<p>在PVC里除了常规的大小、访问模式的要求外，还通过annotation指定了Storage Class的名字为fast，这样这个PVC就会绑定一个SSD，而不会绑定一个普通的磁盘。</p>
+<p>pvc.png</p>
+<p>缺省行为</p>
+<p>所有的 PVC 都可以在不使用 StorageClass 注解的情况下，直接使用某个动态存储。把一个StorageClass 对象标记为 “default” 就可以了。StorageClass 用注解storageclass.beta.kubernetes.io/is-default-class 就可以成为缺省存储。</p>
+<p>有了缺省的 StorageClass，用户创建 PVC 就不用 storage-class 的注解了，1.4 中新加入的DefaultStorageClass 准入控制器会自动把这个标注指向缺省存储类。</p>
+<p>到这里Kubernetes的整个存储系统就都介绍完了。总结一下，两种存储卷：普通Volume 和Persistent Volume。普通Volume在定义Pod的时候直接定义，Persistent Volume通过Persistent Volume Claim来动态绑定。PV可以手动创建,也可以通过StorageClass来动态创建。</p>
+<p>链接：<a href="https://www.jianshu.com/p/b0a5305fa5c0" target="_blank" rel="noopener">https://www.jianshu.com/p/b0a5305fa5c0</a></p>
+<p>来源：简书</p>
+<p>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p></article>

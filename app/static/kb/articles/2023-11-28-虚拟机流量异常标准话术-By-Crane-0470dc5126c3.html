@@ -1,0 +1,173 @@
+<article class="kb-article" data-title="虚拟机流量异常标准话术--By Crane"><h1>虚拟机流量异常标准话术--By Crane</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: 标准话术</li>
+<li>最近修改: 2023-11-28 15:38:16</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>XXX:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>XXX:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>XXX:</li>
+</ul>
+<ul>
+<li>您好！</li>
+</ul>
+<ul>
+<li>Azure平台后台监控到您的虚拟机42.159.201.143在2017-03-14T18:00:45至2017-03-14T18:05:47疑似向外发送DDOS攻击。（请根据客户收到的通知邮件酌情修改）</li>
+</ul>
+<ul>
+<li>3. 在您的虚拟机上部署第三方监控软件，实时监控网络流量及数据包。</li>
+</ul>
+<ul>
+<li>在虚拟机层面增加安全防护：</li>
+</ul>
+<ul>
+<li>1.禁止ROOT账号登录虚拟机，</li>
+</ul>
+<ul>
+<li>2.增加密码的复杂度</li>
+</ul>
+<ul>
+<li>4.使用证书登录，</li>
+</ul>
+<ul>
+<li>5.限制IP登录</li>
+</ul>
+<ul>
+<li>6.在虚拟机内部部署防火墙或第三方防护工具</li>
+</ul>
+<ul>
+<li>在Azure Platform层面增加安全防护：</li>
+</ul>
+<ul>
+<li>2.为虚拟机所在虚拟网络添加NSG</li>
+</ul>
+<ul>
+<li>关于网络安全我们需要用户和Azure共担责任，以下为来自《云计算中的共担责任》中的具体描述：</li>
+</ul>
+<ul>
+<li>在基础设施即服务模式中，客户有责任保护他们虚拟机上部署的操作系统和虚拟机应用层，使其免受攻击和损害。</li>
+</ul>
+<ul>
+<li>例如，如果一个基础设施即服务部署目标是建立一个 Web 服务产品，其管理员需要保障虚拟机和 Web 服务的安全性，这需要多个安全领域的专业知识。不管在 Windows 还是 Linux 中，虚拟机堆栈都需要熟练的管理员来管理和保护主机及其附件。</li>
+</ul>
+<ul>
+<li>另外您使用该镜像是合作方提供的，并不是原生镜像，镜像说明中是否有提示，比如默认root账号密码是多少？要求您尽快修改等。您是否及时修改或关闭了root账号的密码或远程访问权限。</li>
+</ul>
+<ul>
+<li>例如：</li>
+</ul>
+<ul>
+<li>系统作为最终承载用户应用的环境，是最后一道攻破应用的安全防线，同样需要进行严谨的设计和管理，特别是公有云环境中的系统。</li>
+</ul>
+<ul>
+<li>2. 在创建管理系统时，严格设置和管理用户密码，如复杂度，有效期，离职人员账号及时删除，admin权限赋予等。</li>
+</ul>
+<ul>
+<li>4. 在应用层面，相关的应用管理人员，如数据库管理员，应该具有强烈的安全意识，在配置应用时，开启相关的安全规则。安装软件时，应该从官方渠道下载，避免受到带毒安装包的影响。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1. Linux虚拟机中使用NetHogs来根据进程实时查看网络带宽利用率。</li>
+</ul>
+<ul>
+<li>2. Linux虚拟机中使用iftop来查看实时的网络流量，监控TCP/IP连接；</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>3.修改SSH端口为非默认端口，</li>
+</ul>
+<ul>
+<li>1.为虚拟机的关键端口配置ACL</li>
+</ul>
+<ul>
+<li>1. 在系统架构设计上，将不同功能放置在不同的虚拟机上。按功能对虚拟机划分安全组，设置访问控制规则。对不需要外网访问的端口或虚拟机，如后端数据库，不开放外网访问端口。或者对所有内部虚拟机的访问，都通过跳板机发方式进行，将重要功能虚拟机被直接入侵的几率降低为零。</li>
+</ul>
+<ul>
+<li>3. 在系统层面，通过开启防火墙，设置服务允许拒绝规则等，防止非法的访问。在Linux上，可以通过tcp_wrappers等实现。同时，根据最少服务原则，在安装配置系统时，安装应用需要的最少的包，开启最少的服务，达到让黑客无法通过不在控制范围内的端口入侵。并定期更新系统，打补丁，减少安全隐患。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>如您再次收到类似流量异常的通知邮件，建议您通过如下方式确认异常数据流：</li>
+</ul>
+<ul>
+<li>为了保护您的虚拟机的数据安全，避免不必要的异常流量，建议您参照如下建议，对您的虚拟机加强安全防护：</li>
+</ul>
+<ul>
+<li>3.必要的情况下，建议您删除虚拟机，将原虚拟机磁盘挂载到新部署的服务器上取出业务数据，重新部署业务。</li>
+</ul>
+<ul>
+<li>对于中毒的VM，我们还是建议您重建，因为病毒文件不易清理干净。</li>
+</ul>
+<ul>
+<li>对于VM的安全建议，请参考：</li>
+</ul>
+<ul>
+<li>关于虚拟机内部安全，提供如下建议，仅供贵方参考：</li>
+</ul>
+<ul>
+<li>5. 在新建虚拟机的时候建议安装杀毒软件以增强对虚拟机的保护。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://www.azure.cn/support/announcement/shared-responsibility/" target="_blank" rel="noopener">https://www.azure.cn/support/announcement/shared-responsibility/</a></li>
+</ul>
+<ul>
+<li>云服务管理员对其IaaS的虚拟机及其他产品享有完全的控制权，因此也需要负责虚拟机及其上层的数据安全。 请参考该文档了解具体的安全责任划分：<a href="https://www.azure.cn/support/announcement/shared-responsibility/" target="_blank" rel="noopener">https://www.azure.cn/support/announcement/shared-responsibility/</a>  。对于Iaas的虚拟机，平台层面目前不提供第七层（应用层）的安全防护。</li>
+</ul>
+<ul>
+<li>保护 Web 应用程序，使其免受常见 Web 攻击的威胁，您可参考使用Application Gateway WAF. <a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-web-application-firewall-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-web-application-firewall-portal</a></li>
+</ul>
+<ul>
+<li>6. 定期备份数据或虚拟机，防止数据一旦损坏或丢失，造成数据不可用。这里附上Azure备份的相关连接，请参考： <a href="https://www.azure.cn/documentation/articles/backup-azure-manage-windows-server-classic/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/backup-azure-manage-windows-server-classic/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>XXX:</p>
+<p>您好！</p>
+<p>Azure平台后台监控到您的虚拟机42.159.201.143在2017-03-14T18:00:45至2017-03-14T18:05:47疑似向外发送DDOS攻击。（请根据客户收到的通知邮件酌情修改）</p>
+<p>如您再次收到类似流量异常的通知邮件，建议您通过如下方式确认异常数据流：</p>
+<p>1. Linux虚拟机中使用NetHogs来根据进程实时查看网络带宽利用率。</p>
+<p>2. Linux虚拟机中使用iftop来查看实时的网络流量，监控TCP/IP连接；</p>
+<p>3. 在您的虚拟机上部署第三方监控软件，实时监控网络流量及数据包。</p>
+<p>为了保护您的虚拟机的数据安全，避免不必要的异常流量，建议您参照如下建议，对您的虚拟机加强安全防护：</p>
+<p>在虚拟机层面增加安全防护：</p>
+<p>1.禁止ROOT账号登录虚拟机，</p>
+<p>2.增加密码的复杂度</p>
+<p>3.修改SSH端口为非默认端口，</p>
+<p>4.使用证书登录，</p>
+<p>5.限制IP登录</p>
+<p>6.在虚拟机内部部署防火墙或第三方防护工具</p>
+<p>在Azure Platform层面增加安全防护：</p>
+<p>1.为虚拟机的关键端口配置ACL</p>
+<p>2.为虚拟机所在虚拟网络添加NSG</p>
+<p>3.必要的情况下，建议您删除虚拟机，将原虚拟机磁盘挂载到新部署的服务器上取出业务数据，重新部署业务。</p>
+<p>关于网络安全我们需要用户和Azure共担责任，以下为来自《云计算中的共担责任》中的具体描述：</p>
+<p><a href="https://www.azure.cn/support/announcement/shared-responsibility/" target="_blank" rel="noopener">https://www.azure.cn/support/announcement/shared-responsibility/</a></p>
+<p>在基础设施即服务模式中，客户有责任保护他们虚拟机上部署的操作系统和虚拟机应用层，使其免受攻击和损害。</p>
+<p>例如，如果一个基础设施即服务部署目标是建立一个 Web 服务产品，其管理员需要保障虚拟机和 Web 服务的安全性，这需要多个安全领域的专业知识。不管在 Windows 还是 Linux 中，虚拟机堆栈都需要熟练的管理员来管理和保护主机及其附件。</p>
+<p>另外您使用该镜像是合作方提供的，并不是原生镜像，镜像说明中是否有提示，比如默认root账号密码是多少？要求您尽快修改等。您是否及时修改或关闭了root账号的密码或远程访问权限。</p>
+<p>例如：</p>
+<p>对于中毒的VM，我们还是建议您重建，因为病毒文件不易清理干净。</p>
+<p>对于VM的安全建议，请参考：</p>
+<p>系统作为最终承载用户应用的环境，是最后一道攻破应用的安全防线，同样需要进行严谨的设计和管理，特别是公有云环境中的系统。</p>
+<p>云服务管理员对其IaaS的虚拟机及其他产品享有完全的控制权，因此也需要负责虚拟机及其上层的数据安全。 请参考该文档了解具体的安全责任划分：<a href="https://www.azure.cn/support/announcement/shared-responsibility/" target="_blank" rel="noopener">https://www.azure.cn/support/announcement/shared-responsibility/</a>  。对于Iaas的虚拟机，平台层面目前不提供第七层（应用层）的安全防护。</p>
+<p>保护 Web 应用程序，使其免受常见 Web 攻击的威胁，您可参考使用Application Gateway WAF. <a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-web-application-firewall-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-web-application-firewall-portal</a></p>
+<p>关于虚拟机内部安全，提供如下建议，仅供贵方参考：</p>
+<p>1. 在系统架构设计上，将不同功能放置在不同的虚拟机上。按功能对虚拟机划分安全组，设置访问控制规则。对不需要外网访问的端口或虚拟机，如后端数据库，不开放外网访问端口。或者对所有内部虚拟机的访问，都通过跳板机发方式进行，将重要功能虚拟机被直接入侵的几率降低为零。</p>
+<p>2. 在创建管理系统时，严格设置和管理用户密码，如复杂度，有效期，离职人员账号及时删除，admin权限赋予等。</p>
+<p>3. 在系统层面，通过开启防火墙，设置服务允许拒绝规则等，防止非法的访问。在Linux上，可以通过tcp_wrappers等实现。同时，根据最少服务原则，在安装配置系统时，安装应用需要的最少的包，开启最少的服务，达到让黑客无法通过不在控制范围内的端口入侵。并定期更新系统，打补丁，减少安全隐患。</p>
+<p>4. 在应用层面，相关的应用管理人员，如数据库管理员，应该具有强烈的安全意识，在配置应用时，开启相关的安全规则。安装软件时，应该从官方渠道下载，避免受到带毒安装包的影响。</p>
+<p>5. 在新建虚拟机的时候建议安装杀毒软件以增强对虚拟机的保护。</p>
+<p>6. 定期备份数据或虚拟机，防止数据一旦损坏或丢失，造成数据不可用。这里附上Azure备份的相关连接，请参考： <a href="https://www.azure.cn/documentation/articles/backup-azure-manage-windows-server-classic/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/backup-azure-manage-windows-server-classic/</a></p></article>

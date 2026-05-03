@@ -1,0 +1,123 @@
+<article class="kb-article" data-title="【share】Centos 7.9安装Grid驱动"><h1>【share】Centos 7.9安装Grid驱动</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-12-12 14:14:58</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Yang zhenjiang</li>
+</ul>
+<ul>
+<li>Centos 7.9：</li>
+</ul>
+<ul>
+<li>禁用系统selinux</li>
+</ul>
+<ul>
+<li>sudo yum update</li>
+</ul>
+<ul>
+<li>sudo yum install kernel-devel</li>
+</ul>
+<ul>
+<li>sudo yum install dkms</li>
+</ul>
+<ul>
+<li>sudo yum install hyperv-daemons</li>
+</ul>
+<ul>
+<li># grub2-editenv list</li>
+</ul>
+<ul>
+<li># cat /boot/grub2/grub.cfg | grep menuentry</li>
+</ul>
+<ul>
+<li>if [ x&quot;${feature_menuentry_id}&quot; = xy ]; then</li>
+</ul>
+<ul>
+<li>export menuentry_id_option</li>
+</ul>
+<ul>
+<li>menuentry &#39;CentOS Linux (3.10.0-1160.102.1.el7.x86_64) 7 (Core)&#39; --class centos --class gnu-linux --class gnu --class os --unrestricted $menuentry_id_option &#39;gnulinux-3.10.0-1160.76.1.el7.x86_64-advan  ced-9bf828a4-1be2-424d-9a59-1382cde5f9f8&#39; {</li>
+</ul>
+<ul>
+<li>menuentry &#39;CentOS Linux (3.10.0-1160.76.1.el7.x86_64) 7 (Core)&#39; --class centos --class gnu-linux --class gnu --class os --unrestricted $menuentry_id_option &#39;gnulinux-3.10.0-1160.76.1.el7.x86_64-advanc  ed-9bf828a4-1be2-424d-9a59-1382cde5f9f8&#39; {</li>
+</ul>
+<ul>
+<li># grub2-set-default &#39;CentOS Linux (3.10.0-1160.102.1.el7.x86_64) 7 (Core)&#39;</li>
+</ul>
+<ul>
+<li># reboot</li>
+</ul>
+<ul>
+<li>sh nv-grid.run</li>
+</ul>
+<ul>
+<li>nvidia-smi</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>saved_entry=CentOS Linux (3.10.0-1160.102.1.el7.x86_64) 7 (Core)</li>
+</ul>
+<ul>
+<li>menuentry_id_option=&quot;--id&quot;</li>
+</ul>
+<ul>
+<li>menuentry_id_option=&quot;&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/virtual-machines/linux/n-series-driver-setup" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-machines/linux/n-series-driver-setup</a></li>
+</ul>
+<ul>
+<li>sudo rpm -Uvh <a href="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm" target="_blank" rel="noopener">https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</a></li>
+</ul>
+<ul>
+<li>wget <a href="https://download.microsoft.com/download/6/2/5/625e22a0-34ea-4d03-8738-a639acebc15e/NVIDIA-Linux-x86_64-510.73.08-grid-azure.run" target="_blank" rel="noopener">https://download.microsoft.com/download/6/2/5/625e22a0-34ea-4d03-8738-a639acebc15e/NVIDIA-Linux-x86_64-510.73.08-grid-azure.run</a> -O nv-grid.run</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Yang zhenjiang</p>
+<p>Centos 7.9：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/virtual-machines/linux/n-series-driver-setup" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-machines/linux/n-series-driver-setup</a></p>
+<p>禁用系统selinux</p>
+<p>sudo yum update</p>
+<p>sudo yum install kernel-devel</p>
+<p>sudo rpm -Uvh <a href="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm" target="_blank" rel="noopener">https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</a></p>
+<p>sudo yum install dkms</p>
+<p>sudo yum install hyperv-daemons</p>
+<h1>grub2-editenv list</h1>
+<p>saved_entry=CentOS Linux (3.10.0-1160.102.1.el7.x86_64) 7 (Core)</p>
+<h1>cat /boot/grub2/grub.cfg | grep menuentry</h1>
+<p>if [ x&quot;${feature_menuentry_id}&quot; = xy ]; then</p>
+<p>menuentry_id_option=&quot;--id&quot;</p>
+<p>menuentry_id_option=&quot;&quot;</p>
+<p>export menuentry_id_option</p>
+<p>menuentry &#39;CentOS Linux (3.10.0-1160.102.1.el7.x86_64) 7 (Core)&#39; --class centos --class gnu-linux --class gnu --class os --unrestricted $menuentry_id_option &#39;gnulinux-3.10.0-1160.76.1.el7.x86_64-advan  ced-9bf828a4-1be2-424d-9a59-1382cde5f9f8&#39; {</p>
+<p>menuentry &#39;CentOS Linux (3.10.0-1160.76.1.el7.x86_64) 7 (Core)&#39; --class centos --class gnu-linux --class gnu --class os --unrestricted $menuentry_id_option &#39;gnulinux-3.10.0-1160.76.1.el7.x86_64-advanc  ed-9bf828a4-1be2-424d-9a59-1382cde5f9f8&#39; {</p>
+<h1>grub2-set-default &#39;CentOS Linux (3.10.0-1160.102.1.el7.x86_64) 7 (Core)&#39;</h1>
+<h1>reboot</h1>
+<p>wget <a href="https://download.microsoft.com/download/6/2/5/625e22a0-34ea-4d03-8738-a639acebc15e/NVIDIA-Linux-x86_64-510.73.08-grid-azure.run" target="_blank" rel="noopener">https://download.microsoft.com/download/6/2/5/625e22a0-34ea-4d03-8738-a639acebc15e/NVIDIA-Linux-x86_64-510.73.08-grid-azure.run</a> -O nv-grid.run</p>
+<p>sh nv-grid.run</p>
+<p>nvidia-smi</p></article>

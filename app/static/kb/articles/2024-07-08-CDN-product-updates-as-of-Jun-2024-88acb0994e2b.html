@@ -1,0 +1,324 @@
+<article class="kb-article" data-title="CDN product updates as of Jun. 2024"><h1>CDN product updates as of Jun. 2024</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: CDN Operation Guideline</li>
+<li>最近修改: 2024-07-08 13:31:11</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Tencent use 514 instead of 403 when configured IP blacklist. Hit is a reference to hitting blacklist. This counts as illusion tactic to a degree but sophisticated actors will be able to pick it up with minimal effort, so take it with a grain of salt.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Tencent use 514 instead of 403 when configured IP blacklist. Hit is a reference to hitting blacklist. This counts as illusion tactic to a degree but sophisticated actors will be able to pick it up with minimal effort, so take it with a grain of salt.</li>
+</ul>
+<ul>
+<li>increase the preload upper limit per day (the upper limit of single API call cannot be increased)</li>
+</ul>
+<ul>
+<li>*In general, we provide no scheduled Non-standard configuration. Please apply one to PM only if the customer or issue impact is significant enough.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Below are the recent updates about CDN service.</li>
+</ul>
+<ul>
+<li>last update date</li>
+</ul>
+<ul>
+<li>Type</li>
+</ul>
+<ul>
+<li>Description</li>
+</ul>
+<ul>
+<li>Discussion</li>
+</ul>
+<ul>
+<li>Related case</li>
+</ul>
+<ul>
+<li>Tips</li>
+</ul>
+<ul>
+<li>provider那边block一个域名可能有两种方式：1）DNS解析出127.0.0.1；2）DNS解析直接回源站。 (每个供应商的机制不一样，百度是直接回源)</li>
+</ul>
+<ul>
+<li>客户的ICP信息更新后，provider那边不会自动更新，需要提起工单，我们找provider去更新。</li>
+</ul>
+<ul>
+<li>20231115262943</li>
+</ul>
+<ul>
+<li>20240626301116</li>
+</ul>
+<ul>
+<li>20240627301352</li>
+</ul>
+<ul>
+<li>And we have updated the Non-standard operation Request list according to the feedback from Yuefeng after confirmation with PM.</li>
+</ul>
+<ul>
+<li>Redirection (HTTPS to HTTP, HTTP to HTTPS)</li>
+</ul>
+<ul>
+<li>HTTP/2 [manual config still needed for provider Baishan]</li>
+</ul>
+<ul>
+<li>Gzip / BR</li>
+</ul>
+<ul>
+<li>Specified Cache rule/ back-to-source method</li>
+</ul>
+<ul>
+<li>URI encryption (Anti hijacking)/MD5</li>
+</ul>
+<ul>
+<li>Specified back-to-source port (but non-standart port between client and CDN is not supported)</li>
+</ul>
+<ul>
+<li>*Confirm CDN IP</li>
+</ul>
+<ul>
+<li>IPv6</li>
+</ul>
+<ul>
+<li>Range Gets</li>
+</ul>
+<ul>
+<li>Follow 301, 302</li>
+</ul>
+<ul>
+<li>Original Image Protection</li>
+</ul>
+<ul>
+<li>Move (Migration)</li>
+</ul>
+<ul>
+<li>HSTS</li>
+</ul>
+<ul>
+<li>RTMP</li>
+</ul>
+<ul>
+<li>Upload file size limitation</li>
+</ul>
+<ul>
+<li>Change CDN Provider</li>
+</ul>
+<ul>
+<li>**海外加速节点申请流程（升级信息）</li>
+</ul>
+<ul>
+<li>更改计费模式</li>
+</ul>
+<ul>
+<li>设置TLS最低版本</li>
+</ul>
+<ul>
+<li>禁用特定TLS加密套件</li>
+</ul>
+<ul>
+<li>URL rewrite</li>
+</ul>
+<ul>
+<li>Require resource redundancy</li>
+</ul>
+<ul>
+<li>Back-to-origin IP list merge/simplify request</li>
+</ul>
+<ul>
+<li>Remove &quot;Server&quot; response header</li>
+</ul>
+<ul>
+<li>Lastly, please see below a list of supported functions via PS/CLI in Mooncake:</li>
+</ul>
+<ul>
+<li>Profile Get/List</li>
+</ul>
+<ul>
+<li>Profile Delete</li>
+</ul>
+<ul>
+<li>Profile Create</li>
+</ul>
+<ul>
+<li>Endpoint List/Get</li>
+</ul>
+<ul>
+<li>Endpoint Delete</li>
+</ul>
+<ul>
+<li>Endpoint Purge</li>
+</ul>
+<ul>
+<li>Endpoint Preload</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Azure PowerShell</li>
+</ul>
+<ul>
+<li>Azure CLI</li>
+</ul>
+<ul>
+<li>Get-AzCdnProfile:</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Back origin protocol (Follow request, HTTP, HTTPS)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Endpoint Enable</li>
+</ul>
+<ul>
+<li>Disable Endpoint</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>按照官网文档介绍，默认情况下，7 天内未备案将强制回源：<a href="https://docs.azure.cn/zh-cn/cdn/cdn-faq-service-domain#how-long-can-content-delivery-network-serve-after-the-record-number-becomes-invalid-" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-faq-service-domain#how-long-can-content-delivery-network-serve-after-the-record-number-becomes-invalid-</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/get-azcdnprofile?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/get-azcdnprofile?view=azps-12.0.0</a></li>
+</ul>
+<ul>
+<li>az cdn profile list:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-list" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-list</a></li>
+</ul>
+<ul>
+<li>az cdn profile show:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-show" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-show</a></li>
+</ul>
+<ul>
+<li>Remove-AzCdnProfile:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/remove-azcdnprofile?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/remove-azcdnprofile?view=azps-12.0.0</a></li>
+</ul>
+<ul>
+<li>az cdn profile delete:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-delete" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-delete</a></li>
+</ul>
+<ul>
+<li>New-AzCdnProfile:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/new-azcdnprofile?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/new-azcdnprofile?view=azps-12.0.0</a></li>
+</ul>
+<ul>
+<li>az cdn profile create:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-create" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-create</a></li>
+</ul>
+<ul>
+<li>Get-AzCdnEndpoint:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/get-azcdnendpoint?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/get-azcdnendpoint?view=azps-12.0.0</a></li>
+</ul>
+<ul>
+<li>az cdn endpoint list:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-list" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-list</a></li>
+</ul>
+<ul>
+<li>az cdn endpoint show:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-show" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-show</a></li>
+</ul>
+<ul>
+<li>Remove-AzCdnEndpoint:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/remove-azcdnendpoint?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/remove-azcdnendpoint?view=azps-12.0.0</a></li>
+</ul>
+<ul>
+<li>az cdn endpoint delete:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-delete" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-delete</a></li>
+</ul>
+<ul>
+<li>Start-AzCdnEndpoint:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/start-azcdnendpoint?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/start-azcdnendpoint?view=azps-12.0.0</a></li>
+</ul>
+<ul>
+<li>az cdn endpoint start:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-start" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-start</a></li>
+</ul>
+<ul>
+<li>Stop-AzCdnEndpoint:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/stop-azcdnendpoint?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/stop-azcdnendpoint?view=azps-12.0.0</a></li>
+</ul>
+<ul>
+<li>az cdn endpoint stop:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-stop" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-stop</a></li>
+</ul>
+<ul>
+<li>Clear-AzCdnEndpointContent:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/clear-azcdnendpointcontent?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/clear-azcdnendpointcontent?view=azps-12.0.0</a></li>
+</ul>
+<ul>
+<li>az cdn endpoint purge:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-purge" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-purge</a></li>
+</ul>
+<ul>
+<li>Import-AzCdnEndpointContent:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/import-azcdnendpointcontent?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/import-azcdnendpointcontent?view=azps-12.0.0</a></li>
+</ul>
+<ul>
+<li>az cdn endpoint load:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-load" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-load</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Below are the recent updates about CDN service.</p>
+<p>last update date</p>
+<p>Type</p>
+<p>Description</p>
+<p>Discussion</p>
+<p>Related case</p>
+<p>2023/12/8</p>
+<p>2024/7/3</p>
+<p>Tips</p>
+<p>provider那边block一个域名可能有两种方式：1）DNS解析出127.0.0.1；2）DNS解析直接回源站。 (每个供应商的机制不一样，百度是直接回源)</p>
+<p>客户的ICP信息更新后，provider那边不会自动更新，需要提起工单，我们找provider去更新。</p>
+<p>按照官网文档介绍，默认情况下，7 天内未备案将强制回源：<a href="https://docs.azure.cn/zh-cn/cdn/cdn-faq-service-domain#how-long-can-content-delivery-network-serve-after-the-record-number-becomes-invalid-" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-faq-service-domain#how-long-can-content-delivery-network-serve-after-the-record-number-becomes-invalid-</a></p>
+<p>20231115262943</p>
+<p>20240626301116</p>
+<p>Tencent use 514 instead of 403 when configured IP blacklist. Hit is a reference to hitting blacklist. This counts as illusion tactic to a degree but sophisticated actors will be able to pick it up with minimal effort, so take it with a grain of salt.</p>
+<p>20240627301352</p>
+<p>And we have updated the Non-standard operation Request list according to the feedback from Yuefeng after confirmation with PM.</p>
+<p>Redirection (HTTPS to HTTP, HTTP to HTTPS)</p>
+<p>HTTP/2 [manual config still needed for provider Baishan]</p>
+<p>Gzip / BR</p>
+<p>Specified Cache rule/ back-to-source method</p>
+<p>URI encryption (Anti hijacking)/MD5</p>
+<p>Specified back-to-source port (but non-standart port between client and CDN is not supported)</p>
+<p>*Confirm CDN IP</p>
+<p>IPv6</p>
+<p>Range Gets</p>
+<p>Follow 301, 302</p>
+<p>Original Image Protection</p>
+<p>Move (Migration)</p>
+<p>HSTS</p>
+<p>RTMP</p>
+<p>Upload file size limitation</p>
+<p>Back origin protocol (Follow request, HTTP, HTTPS)</p>
+<p>Change CDN Provider</p>
+<p>**海外加速节点申请流程（升级信息）</p>
+<p>更改计费模式</p>
+<p>设置TLS最低版本</p>
+<p>禁用特定TLS加密套件</p>
+<p>URL rewrite</p>
+<p>Require resource redundancy</p>
+<p>Back-to-origin IP list merge/simplify request</p>
+<p>Remove &quot;Server&quot; response header</p>
+<p>increase the preload upper limit per day (the upper limit of single API call cannot be increased)</p>
+<p>*In general, we provide no scheduled Non-standard configuration. Please apply one to PM only if the customer or issue impact is significant enough.</p>
+<p>Lastly, please see below a list of supported functions via PS/CLI in Mooncake:</p>
+<p>Azure PowerShell</p>
+<p>Azure CLI</p>
+<p>Profile Get/List</p>
+<p>Get-AzCdnProfile:</p>
+<p><a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/get-azcdnprofile?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/get-azcdnprofile?view=azps-12.0.0</a></p>
+<p>az cdn profile list:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-list" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-list</a></p>
+<p>az cdn profile show:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-show" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-show</a></p>
+<p>Profile Delete</p>
+<p>Remove-AzCdnProfile:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/remove-azcdnprofile?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/remove-azcdnprofile?view=azps-12.0.0</a></p>
+<p>az cdn profile delete:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-delete" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-delete</a></p>
+<p>Profile Create</p>
+<p>New-AzCdnProfile:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/new-azcdnprofile?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/new-azcdnprofile?view=azps-12.0.0</a></p>
+<p>az cdn profile create:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-create" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/profile?view=azure-cli-latest#az-cdn-profile-create</a></p>
+<p>Endpoint List/Get</p>
+<p>Get-AzCdnEndpoint:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/get-azcdnendpoint?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/get-azcdnendpoint?view=azps-12.0.0</a></p>
+<p>az cdn endpoint list:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-list" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-list</a></p>
+<p>az cdn endpoint show:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-show" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-show</a></p>
+<p>Endpoint Delete</p>
+<p>Remove-AzCdnEndpoint:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/remove-azcdnendpoint?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/remove-azcdnendpoint?view=azps-12.0.0</a></p>
+<p>az cdn endpoint delete:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-delete" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-delete</a></p>
+<p>Endpoint Enable</p>
+<p>Start-AzCdnEndpoint:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/start-azcdnendpoint?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/start-azcdnendpoint?view=azps-12.0.0</a></p>
+<p>az cdn endpoint start:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-start" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-start</a></p>
+<p>Disable Endpoint</p>
+<p>Stop-AzCdnEndpoint:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/stop-azcdnendpoint?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/stop-azcdnendpoint?view=azps-12.0.0</a></p>
+<p>az cdn endpoint stop:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-stop" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-stop</a></p>
+<p>Endpoint Purge</p>
+<p>Clear-AzCdnEndpointContent:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/clear-azcdnendpointcontent?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/clear-azcdnendpointcontent?view=azps-12.0.0</a></p>
+<p>az cdn endpoint purge:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-purge" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-purge</a></p>
+<p>Endpoint Preload</p>
+<p>Import-AzCdnEndpointContent:  <a href="https://learn.microsoft.com/en-us/powershell/module/az.cdn/import-azcdnendpointcontent?view=azps-12.0.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/az.cdn/import-azcdnendpointcontent?view=azps-12.0.0</a></p>
+<p>az cdn endpoint load:  <a href="https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-load" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/cli/azure/cdn/endpoint?view=azure-cli-latest#az-cdn-endpoint-load</a></p></article>

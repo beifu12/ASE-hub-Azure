@@ -1,0 +1,130 @@
+<article class="kb-article" data-title="测试APPGW V1和V2版关于TLS证书的不同"><h1>测试APPGW V1和V2版关于TLS证书的不同</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-07-25 15:03:08</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>V1和V2版的Azure Application Gateway, 前端配置为80访问，后端配置为443方式，后端池为客户APPGW后面的VM。测试结果为V1版的网关后端探测可以成功，V2版的网关不管是在httpsettings中选择“”使用知名的CA证书“，还是选择上传客户端证书中提取出来的根证书，V2版后端探测状态始终显示为失败的状态。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>V1和V2版的Azure Application Gateway, 前端配置为80访问，后端配置为443方式，后端池为客户APPGW后面的VM。测试结果为V1版的网关后端探测可以成功，V2版的网关不管是在httpsettings中选择“”使用知名的CA证书“，还是选择上传客户端证书中提取出来的根证书，V2版后端探测状态始终显示为失败的状态。</li>
+</ul>
+<ul>
+<li>需要注意的是，APPGW前端上传的PFX格式证书，也是需要带有证书中间件的证书。否则Linux客户端或其他不能自动下载证书中间链的客户端将无法正常访问Web服务。</li>
+</ul>
+<ul>
+<li>最终客户使用如下方法将中间链证书导出后，将中间链证书追加到Server端的公钥证书中，解决了V2版网关通过Https方式探测后端Server失败的问题。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20200312</li>
+</ul>
+<ul>
+<li>使用客户不带证书链的Server端证书创建V1和V2版的Azure Application Gateway,</li>
+</ul>
+<ul>
+<li>测试：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>创建一台Linux VM (Centos)，通过在host文件中指定域名对应的IP为客户APPGW后面的VM IP 40.73.127.74:</li>
+</ul>
+<ul>
+<li>v</li>
+</ul>
+<ul>
+<li>在windows系统下导出贵方证书的中间链证书，导出方法如下：</li>
+</ul>
+<ul>
+<li>cat customermedia.cer &gt;&gt; /etc/pki/tls/certs/ca-bundle.crt  #ubuntu 是: /etc/ssl/certs/ca-certificates.crt,  centos是/etc/pki/tls/certs/ca-bundle.crt</li>
+</ul>
+<ul>
+<li>发现该Linux VM可以成功访问到贵方APPGW后面的VM IP 40.73.127.74上的Web服务：</li>
+</ul>
+<ul>
+<li>==========================</li>
+</ul>
+<ul>
+<li>方法如下：</li>
+</ul>
+<ul>
+<li>1.双击打开客户提供的不带证书链的server端公钥证书，此时windows系统会自动下载完整的证书链：</li>
+</ul>
+<ul>
+<li>#cat customermedia.cer &gt;&gt; sslserver.crt</li>
+</ul>
+<ul>
+<li>如下是Fuzhangliang之前的测试：</li>
+</ul>
+<ul>
+<li>如果不导入到系统受信任的根证书，实际上curl是可以带上根证书访问的，使用—cacert带上导出的证书即可：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>发现通过Linux客户端是无法正常访问贵方的域名的，报错“Unable to locally verify the issuer’s authority” 或“Peer’s Certificate issuer is not recognized.”说明客户的Server中Web应用使用的证书是不包含完整证书链的：</li>
+</ul>
+<ul>
+<li>查看该Linux下的/etc/pki/tls/certs/ca-bundle.crt文件，发现Linux系统中授信的证书list中并没有贵方证书的签发证书，即贵方证书链中的中间件证书：</li>
+</ul>
+<ul>
+<li>排查结论：</li>
+</ul>
+<ul>
+<li>根据如上测试，我们可以看到,  V1版的APPGW证书机制会自动下载中间链证书，所以V1版的APPGW可以正常和客户的VM建立SSL握手。V2版的网关不会自动下载中间链证书，导致APPGW无法和Server端进行正常的证书验证。</li>
+</ul>
+<ul>
+<li>4.通过如上红色框选的方法可以查看中间链证书，然后通过如下“Copy to file”导出证书：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在Linux下使用如下命令将该中间件证书添加至授信的证书list</li>
+</ul>
+<ul>
+<li>5.将导出的证书上传到Linux Server中，使用如下命令将该中间链证书追加到Server的公钥.crt证书中，重启nginx服务后，APPGW的后端探测就正常了。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>此种情况建议客户向证书颁发机构申请带有完整证书链的证书，在APPGW V2的后端server端上传带有完整证书链的证书。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/application-gateway/certificates-for-backend-authentication" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/application-gateway/certificates-for-backend-authentication</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20200312</p>
+<p>使用客户不带证书链的Server端证书创建V1和V2版的Azure Application Gateway,</p>
+<p>V1和V2版的Azure Application Gateway, 前端配置为80访问，后端配置为443方式，后端池为客户APPGW后面的VM。测试结果为V1版的网关后端探测可以成功，V2版的网关不管是在httpsettings中选择“”使用知名的CA证书“，还是选择上传客户端证书中提取出来的根证书，V2版后端探测状态始终显示为失败的状态。</p>
+<p>测试：</p>
+<p>========</p>
+<p>创建一台Linux VM (Centos)，通过在host文件中指定域名对应的IP为客户APPGW后面的VM IP 40.73.127.74:</p>
+<p>发现通过Linux客户端是无法正常访问贵方的域名的，报错“Unable to locally verify the issuer’s authority” 或“Peer’s Certificate issuer is not recognized.”说明客户的Server中Web应用使用的证书是不包含完整证书链的：</p>
+<p>查看该Linux下的/etc/pki/tls/certs/ca-bundle.crt文件，发现Linux系统中授信的证书list中并没有贵方证书的签发证书，即贵方证书链中的中间件证书：</p>
+<p>v</p>
+<p>在windows系统下导出贵方证书的中间链证书，导出方法如下：</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/application-gateway/certificates-for-backend-authentication" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/application-gateway/certificates-for-backend-authentication</a></p>
+<p>在Linux下使用如下命令将该中间件证书添加至授信的证书list</p>
+<p>cat customermedia.cer &gt;&gt; /etc/pki/tls/certs/ca-bundle.crt  #ubuntu 是: /etc/ssl/certs/ca-certificates.crt,  centos是/etc/pki/tls/certs/ca-bundle.crt</p>
+<p>发现该Linux VM可以成功访问到贵方APPGW后面的VM IP 40.73.127.74上的Web服务：</p>
+<p>排查结论：</p>
+<p>==========================</p>
+<p>根据如上测试，我们可以看到,  V1版的APPGW证书机制会自动下载中间链证书，所以V1版的APPGW可以正常和客户的VM建立SSL握手。V2版的网关不会自动下载中间链证书，导致APPGW无法和Server端进行正常的证书验证。</p>
+<p>此种情况建议客户向证书颁发机构申请带有完整证书链的证书，在APPGW V2的后端server端上传带有完整证书链的证书。</p>
+<p>需要注意的是，APPGW前端上传的PFX格式证书，也是需要带有证书中间件的证书。否则Linux客户端或其他不能自动下载证书中间链的客户端将无法正常访问Web服务。</p>
+<p>最终客户使用如下方法将中间链证书导出后，将中间链证书追加到Server端的公钥证书中，解决了V2版网关通过Https方式探测后端Server失败的问题。</p>
+<p>方法如下：</p>
+<p>1.双击打开客户提供的不带证书链的server端公钥证书，此时windows系统会自动下载完整的证书链：</p>
+<p>4.通过如上红色框选的方法可以查看中间链证书，然后通过如下“Copy to file”导出证书：</p>
+<p>5.将导出的证书上传到Linux Server中，使用如下命令将该中间链证书追加到Server的公钥.crt证书中，重启nginx服务后，APPGW的后端探测就正常了。</p>
+<p>#cat customermedia.cer &gt;&gt; sslserver.crt</p>
+<p>如下是Fuzhangliang之前的测试：</p>
+<p>如果不导入到系统受信任的根证书，实际上curl是可以带上根证书访问的，使用—cacert带上导出的证书即可：</p></article>

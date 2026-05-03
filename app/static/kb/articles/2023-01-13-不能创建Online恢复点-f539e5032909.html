@@ -1,0 +1,110 @@
+<article class="kb-article" data-title="不能创建Online恢复点"><h1>不能创建Online恢复点</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-01-13 18:36:29</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2018091963299_[MS-LED]Backupserver error when credential</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2018091963299_[MS-LED]Backupserver error when credential</li>
+</ul>
+<ul>
+<li>在线恢复点创建失败</li>
+</ul>
+<ul>
+<li>错误消息：Windows Azure Backup Agent was unable to create a snapshot of the selected volume.（Windows Azure 备份代理无法创建选定卷的快照。）</li>
+</ul>
+<ul>
+<li>错误消息：The Windows Azure Backup Agent cannot connect to the OBEngine service（Windows Azure 备份代理无法连接到 OBEngine 服务）</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>操作</li>
+</ul>
+<ul>
+<li>错误详细信息</li>
+</ul>
+<ul>
+<li>Backup</li>
+</ul>
+<ul>
+<li>错误消息：The encryption passphrase for this server is not set. Please configure an encryption passphrase.（未设置此服务器的加密通行短语。请配置加密通行短语。）</li>
+</ul>
+<ul>
+<li>如果暂存位置存在，请尝试使用旧通行短语重新注册。 配置加密通行短语时，请将其保存在安全的位置。</li>
+</ul>
+<ul>
+<li>手动创建一个在线恢复点</li>
+</ul>
+<ul>
+<li>// Get ResourceId</li>
+</ul>
+<ul>
+<li>ContainerUsageStats  | where SubscriptionId == &#39;b229cfde-373d-4a03-8ca4-5f4722f62db2&#39;</li>
+</ul>
+<ul>
+<li>| project ResourceId</li>
+</ul>
+<ul>
+<li>CBPBackupStats | where ResourceId  == &#39;719228776935270626&#39;</li>
+</ul>
+<ul>
+<li>CBPTaskStats | where ResourceId  == &#39;719228776935270626&#39;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>检查是否存在暂存位置。 注册表项 HKEY_LOCAL_MACHINE\Software\Microsoft\Windows Azure Backup\Config 中提到的名为 ScratchLocation 的位置应该存在。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>解决方法：请验证并确保 OBEngine 存在于计算机上正在运行的服务的列表中。 如果未运行 OBEngine 服务，请使用“net start OBEngine”命令启动 OBEngine 服务。</li>
+</ul>
+<ul>
+<li>Kusto脚本可以查询到客户本地的备份情况：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法</li>
+</ul>
+<ul>
+<li>解决方法：请尝试增加副本和恢复点卷中的空间。</li>
+</ul>
+<ul>
+<li>解决方法：请尝试配置加密通行短语。 如果此方法不起作用，请执行以下步骤：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://mabprodmc.kusto.chinacloudapi.cn:443/MABKustoProd" target="_blank" rel="noopener">https://mabprodmc.kusto.chinacloudapi.cn:443/MABKustoProd</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2018091963299_[MS-LED]Backupserver error when credential</p>
+<p>在线恢复点创建失败</p>
+<p>操作</p>
+<p>错误详细信息</p>
+<p>解决方法</p>
+<p>Backup</p>
+<p>错误消息：Windows Azure Backup Agent was unable to create a snapshot of the selected volume.（Windows Azure 备份代理无法创建选定卷的快照。）</p>
+<p>解决方法：请尝试增加副本和恢复点卷中的空间。</p>
+<p>错误消息：The Windows Azure Backup Agent cannot connect to the OBEngine service（Windows Azure 备份代理无法连接到 OBEngine 服务）</p>
+<p>解决方法：请验证并确保 OBEngine 存在于计算机上正在运行的服务的列表中。 如果未运行 OBEngine 服务，请使用“net start OBEngine”命令启动 OBEngine 服务。</p>
+<p>错误消息：The encryption passphrase for this server is not set. Please configure an encryption passphrase.（未设置此服务器的加密通行短语。请配置加密通行短语。）</p>
+<p>解决方法：请尝试配置加密通行短语。 如果此方法不起作用，请执行以下步骤：</p>
+<p>检查是否存在暂存位置。 注册表项 HKEY_LOCAL_MACHINE\Software\Microsoft\Windows Azure Backup\Config 中提到的名为 ScratchLocation 的位置应该存在。</p>
+<p>如果暂存位置存在，请尝试使用旧通行短语重新注册。 配置加密通行短语时，请将其保存在安全的位置。</p>
+<p>手动创建一个在线恢复点</p>
+<p>Kusto脚本可以查询到客户本地的备份情况：</p>
+<p>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://mabprodmc.kusto.chinacloudapi.cn:443/MABKustoProd" target="_blank" rel="noopener">https://mabprodmc.kusto.chinacloudapi.cn:443/MABKustoProd</a></p>
+<p>// Get ResourceId</p>
+<p>ContainerUsageStats  | where SubscriptionId == &#39;b229cfde-373d-4a03-8ca4-5f4722f62db2&#39;</p>
+<p>| project ResourceId</p>
+<p>CBPBackupStats | where ResourceId  == &#39;719228776935270626&#39;</p>
+<p>CBPTaskStats | where ResourceId  == &#39;719228776935270626&#39;</p></article>

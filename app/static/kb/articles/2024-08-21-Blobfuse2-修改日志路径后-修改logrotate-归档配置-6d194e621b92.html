@@ -1,0 +1,515 @@
+<article class="kb-article" data-title="Blobfuse2 修改日志路径后，修改logrotate 归档配置"><h1>Blobfuse2 修改日志路径后，修改logrotate 归档配置</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-21 09:50:26</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2024-08-20T13:10:58.552913+08:00 Ubuntu20 udisksd[693]: failed to load module mdraid: libbd_mdraid.so.2: cannot open shared object file: No such file or directory</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2024-08-20T13:10:58.552913+08:00 Ubuntu20 udisksd[693]: failed to load module mdraid: libbd_mdraid.so.2: cannot open shared object file: No such file or directory</li>
+</ul>
+<ul>
+<li>2024-08-20T13:10:59.061039+08:00 Ubuntu20 udisksd[693]: Failed to load the &#39;mdraid&#39; libblockdev plugin</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>默认不会做日志压缩：</li>
+</ul>
+<ul>
+<li>rotate 10</li>
+</ul>
+<ul>
+<li>maxsize 100M</li>
+</ul>
+<ul>
+<li>daily</li>
+</ul>
+<ul>
+<li>missingok</li>
+</ul>
+<ul>
+<li>notifempty</li>
+</ul>
+<ul>
+<li>compress</li>
+</ul>
+<ul>
+<li>dateext</li>
+</ul>
+<ul>
+<li>delaycompress</li>
+</ul>
+<ul>
+<li>sharedscripts</li>
+</ul>
+<ul>
+<li>postrotate</li>
+</ul>
+<ul>
+<li>endscript</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>2024-08-20T13:10:58.701406+08:00 Ubuntu20 ModemManager[787]: &lt;info&gt;  ModemManager (version 1.18.6) starting in system bus...</li>
+</ul>
+<ul>
+<li>Allocating hash table for state file, size 64 entries</li>
+</ul>
+<ul>
+<li>Creating new state</li>
+</ul>
+<ul>
+<li>=======================</li>
+</ul>
+<ul>
+<li>……</li>
+</ul>
+<ul>
+<li>switching euid to 0 and egid to 110</li>
+</ul>
+<ul>
+<li>Now: 2024-08-20 17:12</li>
+</ul>
+<ul>
+<li>Last rotated at 2024-08-20 13:10</li>
+</ul>
+<ul>
+<li>switching euid to 0 and egid to 0</li>
+</ul>
+<ul>
+<li>但是还没有压缩日志：</li>
+</ul>
+<ul>
+<li>==================================</li>
+</ul>
+<ul>
+<li>改成 su root root</li>
+</ul>
+<ul>
+<li>Now: 2024-08-20 18:57</li>
+</ul>
+<ul>
+<li>Last rotated at 2024-08-21 18:00</li>
+</ul>
+<ul>
+<li>dateext suffix &#39;-20240820&#39;</li>
+</ul>
+<ul>
+<li>glob pattern &#39;-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]&#39;</li>
+</ul>
+<ul>
+<li>running postrotate script</li>
+</ul>
+<ul>
+<li>就不报权限错误了。</li>
+</ul>
+<ul>
+<li>但是也还是没有显示归档日志文件。</li>
+</ul>
+<ul>
+<li>su root adm</li>
+</ul>
+<ul>
+<li>weekly</li>
+</ul>
+<ul>
+<li># use the adm group by default, since this is the owning group</li>
+</ul>
+<ul>
+<li>rotate 4</li>
+</ul>
+<ul>
+<li>create</li>
+</ul>
+<ul>
+<li># use date as a suffix of the rotated file</li>
+</ul>
+<ul>
+<li>#dateext</li>
+</ul>
+<ul>
+<li>#compress</li>
+</ul>
+<ul>
+<li>total 96</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 15 root   root    4096 Aug 17 18:39 ../</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Blobfuse2 修改日志路径后，修改logrotate 归档配置：</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# ls /usr/log</li>
+</ul>
+<ul>
+<li>blobfuse2-rest.log  blobfuse2.log</li>
+</ul>
+<ul>
+<li>/var/log/blobfuse2.log</li>
+</ul>
+<ul>
+<li>/var/log/bfusemon.log</li>
+</ul>
+<ul>
+<li>/var/log/blobfuse2-rest.log {</li>
+</ul>
+<ul>
+<li>systemctl kill -s HUP rsyslog.service</li>
+</ul>
+<ul>
+<li>&quot;/etc/logrotate.d/blobfuse2&quot; 17L, 249C</li>
+</ul>
+<ul>
+<li>将/var/log 目录替换为 /usr/log 目录。</li>
+</ul>
+<ul>
+<li>然后重启logrotate服务：</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# systemctl restart logrotate.service</li>
+</ul>
+<ul>
+<li>但是过一天查看，日志还是没有归档：</li>
+</ul>
+<ul>
+<li>通过查询系统日志：</li>
+</ul>
+<ul>
+<li>2024-08-20T13:10:57.348902+08:00 Ubuntu20 logrotate[745]: error: failed to rename /usr/log/blobfuse2.log to /usr/log/blobfuse2.log-20240820: Read-only file system</li>
+</ul>
+<ul>
+<li>2024-08-20T13:10:58.492797+08:00 Ubuntu20 systemd[1]: logrotate.service: Main process exited, code=exited, status=1/FAILURE</li>
+</ul>
+<ul>
+<li>2024-08-20T13:10:58.492912+08:00 Ubuntu20 systemd[1]: logrotate.service: Failed with result &#39;exit-code&#39;.</li>
+</ul>
+<ul>
+<li>2024-08-20T13:10:58.492988+08:00 Ubuntu20 systemd[1]: Failed to start Rotate log files.</li>
+</ul>
+<ul>
+<li>通过查找logrotate社区文档：</li>
+</ul>
+<ul>
+<li>Logrotate 错误，因为父目录具有不安全的权限 (kitsake.com)</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# logrotate -d /etc/logrotate.d/blobfuse2</li>
+</ul>
+<ul>
+<li>WARNING: logrotate in debug mode does nothing except printing debug messages!  Consider using verbose mode (-v) instead if this is not what you want.</li>
+</ul>
+<ul>
+<li>reading config file /etc/logrotate.d/blobfuse2</li>
+</ul>
+<ul>
+<li>Reading state from file: /var/lib/logrotate/status</li>
+</ul>
+<ul>
+<li>Handling 1 logs</li>
+</ul>
+<ul>
+<li>rotating pattern: /usr/log/blobfuse2.log</li>
+</ul>
+<ul>
+<li>/usr/log/bfusemon.log</li>
+</ul>
+<ul>
+<li>/usr/log/blobfuse2-rest.log  after 1 days (10 rotations)</li>
+</ul>
+<ul>
+<li>empty log files are not rotated, log files &gt;= 104857600 are rotated earlier, old logs are removed</li>
+</ul>
+<ul>
+<li>considering log /usr/log/blobfuse2.log</li>
+</ul>
+<ul>
+<li>error: skipping &quot;/usr/log/blobfuse2.log&quot; because parent directory has insecure permissions (It&#39;s world writable or writable by group which is not &quot;root&quot;) Set &quot;su&quot; directive in config file to tell logrotate which user/group should be used for rotation.</li>
+</ul>
+<ul>
+<li>considering log /usr/log/bfusemon.log</li>
+</ul>
+<ul>
+<li>error: skipping &quot;/usr/log/bfusemon.log&quot; because parent directory has insecure permissions (It&#39;s world writable or writable by group which is not &quot;root&quot;) Set &quot;su&quot; directive in config file to tell logrotate which user/group should be used for rotation.</li>
+</ul>
+<ul>
+<li>considering log /usr/log/blobfuse2-rest.log</li>
+</ul>
+<ul>
+<li>error: skipping &quot;/usr/log/blobfuse2-rest.log&quot; because parent directory has insecure permissions (It&#39;s world writable or writable by group which is not &quot;root&quot;) Set &quot;su&quot; directive in config file to tell logrotate which user/group should be used for rotation.</li>
+</ul>
+<ul>
+<li>改成syslog组有写权限是为了让rsyslog服务可以向 /usr/log 目录写日志,所以是需要的：</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# ll -d /usr/log/</li>
+</ul>
+<ul>
+<li>drwxrwxr-x 11 root syslog 4096 Aug 20 16:42 /var/log/</li>
+</ul>
+<ul>
+<li>/usr/log/blobfuse2.log</li>
+</ul>
+<ul>
+<li>/usr/log/blobfuse2-rest.log {</li>
+</ul>
+<ul>
+<li>su root syslog</li>
+</ul>
+<ul>
+<li>log does not need rotating (log has been rotated at 2024-8-20 13:10, that is not day ago yet)</li>
+</ul>
+<ul>
+<li>log /usr/log/bfusemon.log does not exist -- skipping</li>
+</ul>
+<ul>
+<li>not running postrotate script, since no logs were rotated</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:/etc/rsyslog.d# logrotate -d /etc/logrotate.d/blobfuse2</li>
+</ul>
+<ul>
+<li>log needs rotating</li>
+</ul>
+<ul>
+<li>rotating log /usr/log/blobfuse2.log, log-&gt;rotateCount is 10</li>
+</ul>
+<ul>
+<li>glob finding logs to compress failed</li>
+</ul>
+<ul>
+<li>glob finding old rotated logs failed</li>
+</ul>
+<ul>
+<li>rotating log /usr/log/blobfuse2-rest.log, log-&gt;rotateCount is 10</li>
+</ul>
+<ul>
+<li>renaming /usr/log/blobfuse2.log to /usr/log/blobfuse2.log-20240820</li>
+</ul>
+<ul>
+<li>renaming /usr/log/blobfuse2-rest.log to /usr/log/blobfuse2-rest.log-20240820</li>
+</ul>
+<ul>
+<li>running script with arg /usr/log/blobfuse2.log</li>
+</ul>
+<ul>
+<li>/usr/log/blobfuse2-rest.log : &quot;</li>
+</ul>
+<ul>
+<li>默认/var/log 中的配置文件就是使用的这个权限:</li>
+</ul>
+<ul>
+<li># see &quot;man logrotate&quot; for details</li>
+</ul>
+<ul>
+<li># rotate log files weekly</li>
+</ul>
+<ul>
+<li># of /var/log/syslog.</li>
+</ul>
+<ul>
+<li># keep 4 weeks worth of backlogs</li>
+</ul>
+<ul>
+<li># create new (empty) log files after rotating old ones</li>
+</ul>
+<ul>
+<li># uncomment this if you want your log files compressed</li>
+</ul>
+<ul>
+<li># packages drop log rotation information into this directory</li>
+</ul>
+<ul>
+<li>include /etc/logrotate.d</li>
+</ul>
+<ul>
+<li># system-specific logs may be also be configured here.</li>
+</ul>
+<ul>
+<li>~                                                                                                                               ~                                                                                                                               ~                                                                                                                               ~                                                                                                                               ~                                                                                                                               ~                                                                                                                               ~                                                                                                                               ~                                                                                                                               &quot;/etc/logrotate.conf&quot; 24L, 533C</li>
+</ul>
+<ul>
+<li>修改完重启服务后，/usr/log下可以看到归档日志文件了：</li>
+</ul>
+<ul>
+<li>root@Ubuntu20:~# ll /usr/log/</li>
+</ul>
+<ul>
+<li>drwxrwxr--  2 root   syslog  4096 Aug 20 19:15 ./</li>
+</ul>
+<ul>
+<li>-rw-r-----  1 syslog adm     1425 Aug 20 19:15 blobfuse2-rest.log</li>
+</ul>
+<ul>
+<li>-rw-r-----  1 syslog adm     4337 Aug 20 19:13 blobfuse2-rest.log-20240820</li>
+</ul>
+<ul>
+<li>-rw-r-----  1 syslog adm    20386 Aug 20 19:22 blobfuse2.log</li>
+</ul>
+<ul>
+<li>-rw-r-----  1 syslog adm    51824 Aug 20 19:13 blobfuse2.log-20240820</li>
+</ul>
+<ul>
+<li>/usr/sbin/logrotate -f -v -s /var/lib/logrotate/status /etc/logrotate.d/blobfuse2</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用如下命令模拟logrotate运行查看到报错：</li>
+</ul>
+<ul>
+<li>修改完成在使用命令测试：</li>
+</ul>
+<ul>
+<li>手动执行测试归档的命令如下：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>报错原因是blobfuse的日志对应的父文件夹有root以外的组有写权限，这个不符合系统的安全策略。</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>您还需要修改 /etc/logrotate.d/blobfuse2 的配置文件：</li>
+</ul>
+<ul>
+<li>解决方案是改配置vim /etc/logrotate.d/blobfuse2 添加su 选项让logrotate 允许使用syslog组：</li>
+</ul>
+<ul>
+<li>最终确认应该将su 设置为  root adm</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/8/21</p>
+<p>Blobfuse2 修改日志路径后，修改logrotate 归档配置：</p>
+<p>默认不会做日志压缩：</p>
+<p>root@Ubuntu20:~# ls /usr/log</p>
+<p>blobfuse2-rest.log  blobfuse2.log</p>
+<p>您还需要修改 /etc/logrotate.d/blobfuse2 的配置文件：</p>
+<p>/var/log/blobfuse2.log</p>
+<p>/var/log/bfusemon.log</p>
+<p>/var/log/blobfuse2-rest.log {</p>
+<p>rotate 10</p>
+<p>maxsize 100M</p>
+<p>daily</p>
+<p>missingok</p>
+<p>notifempty</p>
+<p>compress</p>
+<p>dateext</p>
+<p>delaycompress</p>
+<p>sharedscripts</p>
+<p>postrotate</p>
+<p>systemctl kill -s HUP rsyslog.service</p>
+<p>endscript</p>
+<p>}</p>
+<p>&quot;/etc/logrotate.d/blobfuse2&quot; 17L, 249C</p>
+<p>将/var/log 目录替换为 /usr/log 目录。</p>
+<p>然后重启logrotate服务：</p>
+<p>root@Ubuntu20:~# systemctl restart logrotate.service</p>
+<p>但是过一天查看，日志还是没有归档：</p>
+<p>通过查询系统日志：</p>
+<p>2024-08-20T13:10:57.348902+08:00 Ubuntu20 logrotate[745]: error: failed to rename /usr/log/blobfuse2.log to /usr/log/blobfuse2.log-20240820: Read-only file system</p>
+<p>2024-08-20T13:10:58.492797+08:00 Ubuntu20 systemd[1]: logrotate.service: Main process exited, code=exited, status=1/FAILURE</p>
+<p>2024-08-20T13:10:58.492912+08:00 Ubuntu20 systemd[1]: logrotate.service: Failed with result &#39;exit-code&#39;.</p>
+<p>2024-08-20T13:10:58.492988+08:00 Ubuntu20 systemd[1]: Failed to start Rotate log files.</p>
+<p>2024-08-20T13:10:58.552913+08:00 Ubuntu20 udisksd[693]: failed to load module mdraid: libbd_mdraid.so.2: cannot open shared object file: No such file or directory</p>
+<p>2024-08-20T13:10:58.701406+08:00 Ubuntu20 ModemManager[787]: &lt;info&gt;  ModemManager (version 1.18.6) starting in system bus...</p>
+<p>2024-08-20T13:10:59.061039+08:00 Ubuntu20 udisksd[693]: Failed to load the &#39;mdraid&#39; libblockdev plugin</p>
+<p>通过查找logrotate社区文档：</p>
+<p>Logrotate 错误，因为父目录具有不安全的权限 (kitsake.com)</p>
+<p>使用如下命令模拟logrotate运行查看到报错：</p>
+<p>root@Ubuntu20:~# logrotate -d /etc/logrotate.d/blobfuse2</p>
+<p>WARNING: logrotate in debug mode does nothing except printing debug messages!  Consider using verbose mode (-v) instead if this is not what you want.</p>
+<p>reading config file /etc/logrotate.d/blobfuse2</p>
+<p>Reading state from file: /var/lib/logrotate/status</p>
+<p>Allocating hash table for state file, size 64 entries</p>
+<p>Creating new state</p>
+<p>Handling 1 logs</p>
+<p>rotating pattern: /usr/log/blobfuse2.log</p>
+<p>/usr/log/bfusemon.log</p>
+<p>/usr/log/blobfuse2-rest.log  after 1 days (10 rotations)</p>
+<p>empty log files are not rotated, log files &gt;= 104857600 are rotated earlier, old logs are removed</p>
+<p>considering log /usr/log/blobfuse2.log</p>
+<p>error: skipping &quot;/usr/log/blobfuse2.log&quot; because parent directory has insecure permissions (It&#39;s world writable or writable by group which is not &quot;root&quot;) Set &quot;su&quot; directive in config file to tell logrotate which user/group should be used for rotation.</p>
+<p>considering log /usr/log/bfusemon.log</p>
+<p>error: skipping &quot;/usr/log/bfusemon.log&quot; because parent directory has insecure permissions (It&#39;s world writable or writable by group which is not &quot;root&quot;) Set &quot;su&quot; directive in config file to tell logrotate which user/group should be used for rotation.</p>
+<p>considering log /usr/log/blobfuse2-rest.log</p>
+<p>error: skipping &quot;/usr/log/blobfuse2-rest.log&quot; because parent directory has insecure permissions (It&#39;s world writable or writable by group which is not &quot;root&quot;) Set &quot;su&quot; directive in config file to tell logrotate which user/group should be used for rotation.</p>
+<p>报错原因是blobfuse的日志对应的父文件夹有root以外的组有写权限，这个不符合系统的安全策略。</p>
+<p>=======================</p>
+<p>改成syslog组有写权限是为了让rsyslog服务可以向 /usr/log 目录写日志,所以是需要的：</p>
+<p>root@Ubuntu20:~# ll -d /usr/log/</p>
+<p>drwxrwxr-x 11 root syslog 4096 Aug 20 16:42 /var/log/</p>
+<p>解决方案是改配置vim /etc/logrotate.d/blobfuse2 添加su 选项让logrotate 允许使用syslog组：</p>
+<p>/usr/log/blobfuse2.log</p>
+<p>/usr/log/blobfuse2-rest.log {</p>
+<p>su root syslog</p>
+<p>修改完成在使用命令测试：</p>
+<p>……</p>
+<p>switching euid to 0 and egid to 110</p>
+<p>Now: 2024-08-20 17:12</p>
+<p>Last rotated at 2024-08-20 13:10</p>
+<p>log does not need rotating (log has been rotated at 2024-8-20 13:10, that is not day ago yet)</p>
+<p>log /usr/log/bfusemon.log does not exist -- skipping</p>
+<p>not running postrotate script, since no logs were rotated</p>
+<p>switching euid to 0 and egid to 0</p>
+<p>但是还没有压缩日志：</p>
+<p>==================================</p>
+<p>改成 su root root</p>
+<p>root@Ubuntu20:/etc/rsyslog.d# logrotate -d /etc/logrotate.d/blobfuse2</p>
+<p>Now: 2024-08-20 18:57</p>
+<p>Last rotated at 2024-08-21 18:00</p>
+<p>log needs rotating</p>
+<p>rotating log /usr/log/blobfuse2.log, log-&gt;rotateCount is 10</p>
+<p>dateext suffix &#39;-20240820&#39;</p>
+<p>glob pattern &#39;-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]&#39;</p>
+<p>glob finding logs to compress failed</p>
+<p>glob finding old rotated logs failed</p>
+<p>rotating log /usr/log/blobfuse2-rest.log, log-&gt;rotateCount is 10</p>
+<p>renaming /usr/log/blobfuse2.log to /usr/log/blobfuse2.log-20240820</p>
+<p>renaming /usr/log/blobfuse2-rest.log to /usr/log/blobfuse2-rest.log-20240820</p>
+<p>running postrotate script</p>
+<p>running script with arg /usr/log/blobfuse2.log</p>
+<p>/usr/log/blobfuse2-rest.log : &quot;</p>
+<p>就不报权限错误了。</p>
+<p>但是也还是没有显示归档日志文件。</p>
+<p>最终确认应该将su 设置为  root adm</p>
+<p>su root adm</p>
+<p>默认/var/log 中的配置文件就是使用的这个权限:</p>
+<h1>see &quot;man logrotate&quot; for details</h1>
+<h1>rotate log files weekly</h1>
+<p>weekly</p>
+<h1>use the adm group by default, since this is the owning group</h1>
+<h1>of /var/log/syslog.</h1>
+<h1>keep 4 weeks worth of backlogs</h1>
+<p>rotate 4</p>
+<h1>create new (empty) log files after rotating old ones</h1>
+<p>create</p>
+<h1>use date as a suffix of the rotated file</h1>
+<p>#dateext</p>
+<h1>uncomment this if you want your log files compressed</h1>
+<p>#compress</p>
+<h1>packages drop log rotation information into this directory</h1>
+<p>include /etc/logrotate.d</p>
+<h1>system-specific logs may be also be configured here.</h1>
+<p>~                                                                                                                               ~                                                                                                                               ~                                                                                                                               ~                                                                                                                               ~                                                                                                                               ~                                                                                                                               ~                                                                                                                               ~                                                                                                                               &quot;/etc/logrotate.conf&quot; 24L, 533C</p>
+<p>修改完重启服务后，/usr/log下可以看到归档日志文件了：</p>
+<p>root@Ubuntu20:~# ll /usr/log/</p>
+<p>total 96</p>
+<p>drwxrwxr--  2 root   syslog  4096 Aug 20 19:15 ./</p>
+<p>drwxr-xr-x 15 root   root    4096 Aug 17 18:39 ../</p>
+<p>-rw-r-----  1 syslog adm     1425 Aug 20 19:15 blobfuse2-rest.log</p>
+<p>-rw-r-----  1 syslog adm     4337 Aug 20 19:13 blobfuse2-rest.log-20240820</p>
+<p>-rw-r-----  1 syslog adm    20386 Aug 20 19:22 blobfuse2.log</p>
+<p>-rw-r-----  1 syslog adm    51824 Aug 20 19:13 blobfuse2.log-20240820</p>
+<p>手动执行测试归档的命令如下：</p>
+<p>/usr/sbin/logrotate -f -v -s /var/lib/logrotate/status /etc/logrotate.d/blobfuse2</p></article>

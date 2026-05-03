@@ -1,0 +1,221 @@
+<article class="kb-article" data-title="【Share】Azure虚拟机备份还原后域信任关系失效(The trust relationship between this workstation and the primary domain failed)"><h1>【Share】Azure虚拟机备份还原后域信任关系失效(The trust relationship between this workstation and the primary domain failed)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: Troubleshooting</li>
+<li>最近修改: 2025-07-29 14:36:51</li>
+<li>JD 相关性: 售后排障; 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>在Azure环境中，当用户对加入Active Directory域的虚拟机进行备份还原操作后，有时会遇到以下报错</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>在Azure环境中，当用户对加入Active Directory域的虚拟机进行备份还原操作后，有时会遇到以下报错</li>
+</ul>
+<ul>
+<li>The trust relationship between this workstation and the primary domain failed</li>
+</ul>
+<ul>
+<li>工单:  SR_20250728365312 _ 在做备份还原后，无法用域账号通过RDP登录，报错为network password incorrect</li>
+</ul>
+<ul>
+<li>还原的虚拟机在启动时，其系统时间可能被设置为接近备份时间点 T0 的时间（尤其是在未配置或无法立即联系时间源的情况下）。而域控制器的时间是当前的 T_now。</li>
+</ul>
+<ul>
+<li>如果 T_now - T0 &gt; 5 分钟（这在还原旧备份时非常常见），即使密码匹配，Kerberos 认证也会因为时间偏差过大而失败，进一步加剧了“信任关系失败”的问题</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>最近遇到一个工单，客户要求分析一下为何通过备份还原的虚拟机会出现脱域的原因(还原时选择的是覆盖原机器非新建).  结合工单分享以下供大家参考:</li>
+</ul>
+<ul>
+<li>参考的文档:  将计算机加入到域 | Microsoft Learn</li>
+</ul>
+<ul>
+<li>常见问题解答 - 备份 Azure VM - Azure Backup | Microsoft Learn</li>
+</ul>
+<ul>
+<li>使用 Azure 备份通过 Azure 门户还原 VM - Azure Backup | Microsoft Learn</li>
+</ul>
+<ul>
+<li>Windows 时间服务技术参考 | Microsoft Learn</li>
+</ul>
+<ul>
+<li>发生脱域的原因:</li>
+</ul>
+<ul>
+<li>计算机账户密码不匹配与时间偏差</li>
+</ul>
+<ul>
+<li>1,  Active Directory 计算机账户密码机制：</li>
+</ul>
+<ul>
+<li>当一台计算机（无论是物理机还是虚拟机）加入 Active Directory 域时，它会在域中创建一个唯一的计算机账户（通常以计算机名后跟 $ 表示，如 MyServer$）。</li>
+</ul>
+<ul>
+<li>与用户账户类似，计算机账户也有一个密码。这个密码由操作系统自动管理，默认情况下每 30 天自动更改一次。</li>
+</ul>
+<ul>
+<li>关键点：计算机账户密码必须同时存储在：</li>
+</ul>
+<ul>
+<li>本地计算机的安全账户管理器（SAM）数据库或 LSA 机密中。</li>
+</ul>
+<ul>
+<li>Active Directory 域控制器上的对应计算机账户对象中。</li>
+</ul>
+<ul>
+<li>2,  Azure 备份还原：</li>
+</ul>
+<ul>
+<li>Azure 备份（使用 VM 扩展和 VSS）捕获的是虚拟机在备份时间点的磁盘状态（操作系统盘和数据盘）</li>
+</ul>
+<ul>
+<li>还原操作是将虚拟机回滚到这个过去的时间点的磁盘状态。这包括：</li>
+</ul>
+<ul>
+<li>à操作系统文件</li>
+</ul>
+<ul>
+<li>à注册表设置</li>
+</ul>
+<ul>
+<li>à本地 SAM 数据库 / LSA 机密（其中包含当时的计算机账户密码）</li>
+</ul>
+<ul>
+<li>à系统时间（在启动时会尝试同步，但初始启动时可能基于还原点的时间）</li>
+</ul>
+<ul>
+<li>Azure 备份还原加域虚拟机导致域关系破坏的核心并非备份还原技术本身的缺陷，而是 Active Directory 安全机制（计算机账户密码轮换）与将系统状态回滚到过去时间点这一操作之间固有的冲突</li>
+</ul>
+<ul>
+<li>1：脱域再加域（推荐）</li>
+</ul>
+<ul>
+<li>--&gt;  使用本地管理员登录</li>
+</ul>
+<ul>
+<li>--&gt; 脱域</li>
+</ul>
+<ul>
+<li>--&gt; 重启后重新加域</li>
+</ul>
+<ul>
+<li>2:   密码重置</li>
+</ul>
+<ul>
+<li>--&gt;   重置计算机账户密码</li>
+</ul>
+<ul>
+<li>$cred = Get-Credential -UserName &quot;Domain\Admin&quot; -Message &quot;输入域管理员凭据&quot;</li>
+</ul>
+<ul>
+<li>Reset-ComputerMachinePassword -Credential $cred</li>
+</ul>
+<ul>
+<li>Restart-Computer -Force</li>
+</ul>
+<ul>
+<li>Test-ComputerSecureChannel -Repair</li>
+</ul>
+<ul>
+<li>Test-ComputerSecureChannel 测试安全通道</li>
+</ul>
+<ul>
+<li>Test-ComputerSecureChannel -Repair -Credential (Get-Credential)</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查 Azure Windows VM 中失败的信任关系问题 - Virtual Machines | Microsoft Learn</li>
+</ul>
+<ul>
+<li>Windows 身份验证中的凭据进程 | Microsoft Learn</li>
+</ul>
+<ul>
+<li>这个密码用于在计算机启动、访问域资源（如文件共享、应用服务器）以及与其他域计算机通信时，向域控制器进行相互身份验证。</li>
+</ul>
+<ul>
+<li>这两个地方存储的密码必须完全一致，身份验证才能成功。</li>
+</ul>
+<ul>
+<li>3,  如果在还原点之后计算机账户密码已更改，当还原的虚拟机启动并尝试联系域控制器进行身份验证（例如，用户登录、系统服务启动、访问网络资源）时会导致密码不匹配，身份验证失败</li>
+</ul>
+<ul>
+<li>由于无法通过域控制器的身份验证，域控制器认为该计算机“不可信”。操作系统（如 Windows）会检测到这种失败，并报告“信任关系失败”或类似错误（例如 “The trust relationship between this workstation and the primary domain failed”）</li>
+</ul>
+<ul>
+<li>4, Kerberos（Windows 域身份验证的核心协议）对时间同步极其敏感。通常要求计算机与域控制器之间的时间差不超过 5 分钟。</li>
+</ul>
+<ul>
+<li>--&gt; 验证并重启</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>根据Windows 官方文档，此报错是由于 VM 与主域之间的 Active Directory 安全通道已中断, 通过脱域重新加域即可修复.</li>
+</ul>
+<ul>
+<li>解决方法:</li>
+</ul>
+<ul>
+<li>3,  无需重启的紧急修复</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/7/29</p>
+<p>在Azure环境中，当用户对加入Active Directory域的虚拟机进行备份还原操作后，有时会遇到以下报错</p>
+<p>The trust relationship between this workstation and the primary domain failed</p>
+<p>根据Windows 官方文档，此报错是由于 VM 与主域之间的 Active Directory 安全通道已中断, 通过脱域重新加域即可修复.</p>
+<p>排查 Azure Windows VM 中失败的信任关系问题 - Virtual Machines | Microsoft Learn</p>
+<p>最近遇到一个工单，客户要求分析一下为何通过备份还原的虚拟机会出现脱域的原因(还原时选择的是覆盖原机器非新建).  结合工单分享以下供大家参考:</p>
+<p>参考的文档:  将计算机加入到域 | Microsoft Learn</p>
+<p>常见问题解答 - 备份 Azure VM - Azure Backup | Microsoft Learn</p>
+<p>使用 Azure 备份通过 Azure 门户还原 VM - Azure Backup | Microsoft Learn</p>
+<p>Windows 身份验证中的凭据进程 | Microsoft Learn</p>
+<p>Windows 时间服务技术参考 | Microsoft Learn</p>
+<p>工单:  SR_20250728365312 _ 在做备份还原后，无法用域账号通过RDP登录，报错为network password incorrect</p>
+<p>发生脱域的原因:</p>
+<p>计算机账户密码不匹配与时间偏差</p>
+<p>1,  Active Directory 计算机账户密码机制：</p>
+<p>当一台计算机（无论是物理机还是虚拟机）加入 Active Directory 域时，它会在域中创建一个唯一的计算机账户（通常以计算机名后跟 $ 表示，如 MyServer$）。</p>
+<p>与用户账户类似，计算机账户也有一个密码。这个密码由操作系统自动管理，默认情况下每 30 天自动更改一次。</p>
+<p>这个密码用于在计算机启动、访问域资源（如文件共享、应用服务器）以及与其他域计算机通信时，向域控制器进行相互身份验证。</p>
+<p>关键点：计算机账户密码必须同时存储在：</p>
+<p>本地计算机的安全账户管理器（SAM）数据库或 LSA 机密中。</p>
+<p>Active Directory 域控制器上的对应计算机账户对象中。</p>
+<p>这两个地方存储的密码必须完全一致，身份验证才能成功。</p>
+<p>2,  Azure 备份还原：</p>
+<p>Azure 备份（使用 VM 扩展和 VSS）捕获的是虚拟机在备份时间点的磁盘状态（操作系统盘和数据盘）</p>
+<p>还原操作是将虚拟机回滚到这个过去的时间点的磁盘状态。这包括：</p>
+<p>à操作系统文件</p>
+<p>à注册表设置</p>
+<p>à本地 SAM 数据库 / LSA 机密（其中包含当时的计算机账户密码）</p>
+<p>à系统时间（在启动时会尝试同步，但初始启动时可能基于还原点的时间）</p>
+<p>3,  如果在还原点之后计算机账户密码已更改，当还原的虚拟机启动并尝试联系域控制器进行身份验证（例如，用户登录、系统服务启动、访问网络资源）时会导致密码不匹配，身份验证失败</p>
+<p>由于无法通过域控制器的身份验证，域控制器认为该计算机“不可信”。操作系统（如 Windows）会检测到这种失败，并报告“信任关系失败”或类似错误（例如 “The trust relationship between this workstation and the primary domain failed”）</p>
+<p>4, Kerberos（Windows 域身份验证的核心协议）对时间同步极其敏感。通常要求计算机与域控制器之间的时间差不超过 5 分钟。</p>
+<p>还原的虚拟机在启动时，其系统时间可能被设置为接近备份时间点 T0 的时间（尤其是在未配置或无法立即联系时间源的情况下）。而域控制器的时间是当前的 T_now。</p>
+<p>如果 T_now - T0 &gt; 5 分钟（这在还原旧备份时非常常见），即使密码匹配，Kerberos 认证也会因为时间偏差过大而失败，进一步加剧了“信任关系失败”的问题</p>
+<p>Azure 备份还原加域虚拟机导致域关系破坏的核心并非备份还原技术本身的缺陷，而是 Active Directory 安全机制（计算机账户密码轮换）与将系统状态回滚到过去时间点这一操作之间固有的冲突</p>
+<p>解决方法:</p>
+<p>1：脱域再加域（推荐）</p>
+<p>--&gt;  使用本地管理员登录</p>
+<p>--&gt; 脱域</p>
+<p>--&gt; 重启后重新加域</p>
+<p>2:   密码重置</p>
+<p>--&gt;   重置计算机账户密码</p>
+<p>$cred = Get-Credential -UserName &quot;Domain\Admin&quot; -Message &quot;输入域管理员凭据&quot;</p>
+<p>Reset-ComputerMachinePassword -Credential $cred</p>
+<p>Restart-Computer -Force</p>
+<p>--&gt; 验证并重启</p>
+<p>Test-ComputerSecureChannel -Repair</p>
+<p>3,  无需重启的紧急修复</p>
+<p>Test-ComputerSecureChannel 测试安全通道</p>
+<p>Test-ComputerSecureChannel -Repair -Credential (Get-Credential)</p></article>

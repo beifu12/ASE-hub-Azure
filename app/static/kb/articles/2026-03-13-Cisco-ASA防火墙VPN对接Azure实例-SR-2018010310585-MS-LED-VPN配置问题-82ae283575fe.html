@@ -1,0 +1,190 @@
+<article class="kb-article" data-title="Cisco ASA防火墙VPN对接Azure实例(SR_2018010310585_[MS-LED]VPN配置问题)"><h1>Cisco ASA防火墙VPN对接Azure实例(SR_2018010310585_[MS-LED]VPN配置问题)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-03-13 11:27:45</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Cisco ASA防火墙VPN对接Azure实例</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Cisco ASA防火墙VPN对接Azure实例</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Cisco ASA防火墙VPN对接Azure实例</li>
+</ul>
+<ul>
+<li>ASA:</li>
+</ul>
+<ul>
+<li>型号5525</li>
+</ul>
+<ul>
+<li>软件版本：v9.8(2)  **不能低于V9.8</li>
+</ul>
+<ul>
+<li>配置方式：IPSEC VTI</li>
+</ul>
+<ul>
+<li>Azure:</li>
+</ul>
+<ul>
+<li>环境：官方默认</li>
+</ul>
+<ul>
+<li>配置方式：基于路由模式(routeBased)</li>
+</ul>
+<ul>
+<li>ASA配置示例：</li>
+</ul>
+<ul>
+<li>P1</li>
+</ul>
+<ul>
+<li>crypto ikev2 policy 10</li>
+</ul>
+<ul>
+<li>encryption aes-256</li>
+</ul>
+<ul>
+<li>integrity sha</li>
+</ul>
+<ul>
+<li>group 2</li>
+</ul>
+<ul>
+<li>prf sha</li>
+</ul>
+<ul>
+<li>lifetime seconds 86400</li>
+</ul>
+<ul>
+<li>P2</li>
+</ul>
+<ul>
+<li>crypto ipsec ikev2 ipsec-proposal AES-256</li>
+</ul>
+<ul>
+<li>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</li>
+</ul>
+<ul>
+<li>crypto ipsec profile PROFILE1     //PROFILE1为自定义名称，在后面tunnel中调用</li>
+</ul>
+<ul>
+<li>set ikev2 ipsec-proposal AES-256 //此处调用上面定义的AES-256</li>
+</ul>
+<ul>
+<li>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</li>
+</ul>
+<ul>
+<li>interface Tunnel 10             //创建虚拟隧道接口</li>
+</ul>
+<ul>
+<li>nameif primary_vti</li>
+</ul>
+<ul>
+<li>tunnel source interface outside           //应用在外部接口</li>
+</ul>
+<ul>
+<li>tunnel destination 42.159.205.xx         //Azure VPN网关地址</li>
+</ul>
+<ul>
+<li>tunnel mode ipsec ipv4</li>
+</ul>
+<ul>
+<li>tunnel protection ipsec profile PROFILE1   //此处调用上方定义PROFILE1</li>
+</ul>
+<ul>
+<li>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</li>
+</ul>
+<ul>
+<li>tunnel-group 42.159.205.xx type ipsec-l2l  //VPN形式</li>
+</ul>
+<ul>
+<li>tunnel-group 42.159.205.xx ipsec-attributes //VPN属性</li>
+</ul>
+<ul>
+<li>ikev2 remote-authentication pre-shared-key p@ssw0rd   //预共享秘钥</li>
+</ul>
+<ul>
+<li>ikev2 local-authentication pre-shared-key p@ssw0rd</li>
+</ul>
+<ul>
+<li>示例：</li>
+</ul>
+<ul>
+<li>*****无需做免NAT配置</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>ip address 169.254.0.10 255.255.255.0 //接口地址**此处烦请标注下在Azure中的名称或者表达方式</li>
+</ul>
+<ul>
+<li>route vti &lt;remote-subnet&gt; &lt;remote-mask&gt; &lt;ip-address-on-the-remote-tunnel-interface&gt;   //路由配置方式</li>
+</ul>
+<ul>
+<li>route primary_vti 192.168.100.0 255.255.255.0 169.254.0.1 1  //下一跳地址与tunnel中配置的接口地址相对应,如有多个网段，需写多条</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>protocol esp encryption aes-256</li>
+</ul>
+<ul>
+<li>protocol esp integrity sha-1</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>crypto ikev2 enable outside</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Cisco ASA防火墙VPN对接Azure实例</p>
+<p>ASA:</p>
+<p>型号5525</p>
+<p>软件版本：v9.8(2)  **不能低于V9.8</p>
+<p>配置方式：IPSEC VTI</p>
+<p>Azure:</p>
+<p>环境：官方默认</p>
+<p>配置方式：基于路由模式(routeBased)</p>
+<p>ASA配置示例：</p>
+<p>P1</p>
+<p>crypto ikev2 policy 10</p>
+<p>encryption aes-256</p>
+<p>integrity sha</p>
+<p>group 2</p>
+<p>prf sha</p>
+<p>lifetime seconds 86400</p>
+<p>crypto ikev2 enable outside</p>
+<p>P2</p>
+<p>crypto ipsec ikev2 ipsec-proposal AES-256</p>
+<p>protocol esp encryption aes-256</p>
+<p>protocol esp integrity sha-1</p>
+<p>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</p>
+<p>crypto ipsec profile PROFILE1     //PROFILE1为自定义名称，在后面tunnel中调用</p>
+<p>set ikev2 ipsec-proposal AES-256 //此处调用上面定义的AES-256</p>
+<p>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</p>
+<p>interface Tunnel 10             //创建虚拟隧道接口</p>
+<p>nameif primary_vti</p>
+<p>ip address 169.254.0.10 255.255.255.0 //接口地址**此处烦请标注下在Azure中的名称或者表达方式</p>
+<p>tunnel source interface outside           //应用在外部接口</p>
+<p>tunnel destination 42.159.205.xx         //Azure VPN网关地址</p>
+<p>tunnel mode ipsec ipv4</p>
+<p>tunnel protection ipsec profile PROFILE1   //此处调用上方定义PROFILE1</p>
+<p>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</p>
+<p>tunnel-group 42.159.205.xx type ipsec-l2l  //VPN形式</p>
+<p>tunnel-group 42.159.205.xx ipsec-attributes //VPN属性</p>
+<p>ikev2 remote-authentication pre-shared-key p@ssw0rd   //预共享秘钥</p>
+<p>ikev2 local-authentication pre-shared-key p@ssw0rd</p>
+<p>route vti &lt;remote-subnet&gt; &lt;remote-mask&gt; &lt;ip-address-on-the-remote-tunnel-interface&gt;   //路由配置方式</p>
+<p>示例：</p>
+<p>route primary_vti 192.168.100.0 255.255.255.0 169.254.0.1 1  //下一跳地址与tunnel中配置的接口地址相对应,如有多个网段，需写多条</p>
+<p>*****无需做免NAT配置</p></article>

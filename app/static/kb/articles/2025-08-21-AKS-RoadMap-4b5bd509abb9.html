@@ -1,0 +1,252 @@
+<article class="kb-article" data-title="AKS RoadMap"><h1>AKS RoadMap</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Roadmap.one</li>
+<li>Section: Roadmap</li>
+<li>最近修改: 2025-08-21 23:01:11</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>如果学习测试过程中有遇到什么问题，欢迎联系caozheng或mingyue进行讨论。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>如果学习测试过程中有遇到什么问题，欢迎联系caozheng或mingyue进行讨论。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>如果学习测试过程中有遇到什么问题，欢迎联系caozheng或mingyue进行讨论。</li>
+</ul>
+<ul>
+<li>Level 200</li>
+</ul>
+<ul>
+<li>caozheng</li>
+</ul>
+<ul>
+<li>zhanglihe</li>
+</ul>
+<ul>
+<li>YYJ</li>
+</ul>
+<ul>
+<li>ZLH</li>
+</ul>
+<ul>
+<li>功能</li>
+</ul>
+<ul>
+<li>胡明月</li>
+</ul>
+<ul>
+<li>张立鹤</li>
+</ul>
+<ul>
+<li>傅张良</li>
+</ul>
+<ul>
+<li>王书文</li>
+</ul>
+<ul>
+<li>辛岳凤</li>
+</ul>
+<ul>
+<li>边明凯</li>
+</ul>
+<ul>
+<li>李镇山</li>
+</ul>
+<ul>
+<li>李海涛</li>
+</ul>
+<ul>
+<li>周昆</li>
+</ul>
+<ul>
+<li>姚月建</li>
+</ul>
+<ul>
+<li>何少博</li>
+</ul>
+<ul>
+<li>曹峥</li>
+</ul>
+<ul>
+<li>王彬</li>
+</ul>
+<ul>
+<li>Document</li>
+</ul>
+<ul>
+<li>1、两次AKS培训的视频</li>
+</ul>
+<ul>
+<li>\\172.31.20.65\share$\WATS 2019 培训\AKS培训</li>
+</ul>
+<ul>
+<li>Y</li>
+</ul>
+<ul>
+<li>y</li>
+</ul>
+<ul>
+<li>2、POD overview</li>
+</ul>
+<ul>
+<li>3、service</li>
+</ul>
+<ul>
+<li>4、Cluster Networking</li>
+</ul>
+<ul>
+<li>6、AKS集群的两种网络模型</li>
+</ul>
+<ul>
+<li>8、Yaml文件说明</li>
+</ul>
+<ul>
+<li>9、创建AKS集群时需要指定/调整的参数</li>
+</ul>
+<ul>
+<li>10、helm的安装和使用</li>
+</ul>
+<ul>
+<li>11、DNS</li>
+</ul>
+<ul>
+<li>Test</li>
+</ul>
+<ul>
+<li>1、使用CLI创建AKS集群，要求使用高级网络，3个node，自定义service-cidr和pod-cidr，标准SLB，指定最大pod数为35</li>
+</ul>
+<ul>
+<li>3、提取test2中web service的请求日志、pod日志</li>
+</ul>
+<ul>
+<li>5、在test1的集群中使用helm部署nginx-ingress-controller，使用标准ILB</li>
+</ul>
+<ul>
+<li>6、重启集群的kube-proxy</li>
+</ul>
+<ul>
+<li>7、重启集群的DNS服务</li>
+</ul>
+<ul>
+<li>Need to Pay attention</li>
+</ul>
+<ul>
+<li>Limitation</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>7、ssh到VMSS和Node进行问题排查</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>5、Kubectl的常用命令</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>4、在test1的集群中部署一个pod，要求里面有两个container，分别使用不同端口；要求可以通过NODE的ip访问到这两个container</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>2、在test1中创建的集群中部署一套网站服务，使用自定义namespace，要求每个node上都要有且只有一个此服务的pod，可以通过SLB从公网访问</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/</a></li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.io/docs/concepts/services-networking/service/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/services-networking/service/</a></li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.io/docs/concepts/cluster-administration/networking/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/cluster-administration/networking/</a></li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands" target="_blank" rel="noopener">https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/concepts-network" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/concepts-network</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/ssh" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/ssh</a></li>
+</ul>
+<ul>
+<li><a href="https://blog.csdn.net/u013938484/article/details/101693532" target="_blank" rel="noopener">https://blog.csdn.net/u013938484/article/details/101693532</a></li>
+</ul>
+<ul>
+<li><a href="https://www.scriptjc.com/article/925" target="_blank" rel="noopener">https://www.scriptjc.com/article/925</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-create" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-create</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/kubernetes-helm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/kubernetes-helm</a></li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.io/zh/docs/tasks/administer-cluster/coredns/#%e5%85%b3%e4%ba%8e-coredns" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/tasks/administer-cluster/coredns/#%e5%85%b3%e4%ba%8e-coredns</a></li>
+</ul>
+<ul>
+<li>示例可以参考：<a href="https://www.jianshu.com/p/ffb1ceb7aba9" target="_blank" rel="noopener">https://www.jianshu.com/p/ffb1ceb7aba9</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>如果学习测试过程中有遇到什么问题，欢迎联系caozheng或mingyue进行讨论。</p>
+<p>Level 200</p>
+<p>caozheng</p>
+<p>zhanglihe</p>
+<p>YYJ</p>
+<p>ZLH</p>
+<p>功能</p>
+<p>胡明月</p>
+<p>张立鹤</p>
+<p>傅张良</p>
+<p>王书文</p>
+<p>辛岳凤</p>
+<p>边明凯</p>
+<p>李镇山</p>
+<p>李海涛</p>
+<p>周昆</p>
+<p>姚月建</p>
+<p>何少博</p>
+<p>曹峥</p>
+<p>王彬</p>
+<p>Document</p>
+<p>1、两次AKS培训的视频</p>
+<p>\\172.31.20.65\share$\WATS 2019 培训\AKS培训</p>
+<p>Y</p>
+<p>y</p>
+<p>2、POD overview</p>
+<p><a href="https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/</a></p>
+<p>3、service</p>
+<p><a href="https://kubernetes.io/docs/concepts/services-networking/service/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/services-networking/service/</a></p>
+<p>4、Cluster Networking</p>
+<p><a href="https://kubernetes.io/docs/concepts/cluster-administration/networking/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/cluster-administration/networking/</a></p>
+<p>5、Kubectl的常用命令</p>
+<p><a href="https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands" target="_blank" rel="noopener">https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands</a></p>
+<p>6、AKS集群的两种网络模型</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/concepts-network" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/concepts-network</a></p>
+<p>7、ssh到VMSS和Node进行问题排查</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/ssh" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/ssh</a></p>
+<p>8、Yaml文件说明</p>
+<p><a href="https://blog.csdn.net/u013938484/article/details/101693532" target="_blank" rel="noopener">https://blog.csdn.net/u013938484/article/details/101693532</a></p>
+<p><a href="https://www.scriptjc.com/article/925" target="_blank" rel="noopener">https://www.scriptjc.com/article/925</a></p>
+<p>9、创建AKS集群时需要指定/调整的参数</p>
+<p><a href="https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-create" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-create</a></p>
+<p>10、helm的安装和使用</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/kubernetes-helm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/kubernetes-helm</a></p>
+<p>11、DNS</p>
+<p><a href="https://kubernetes.io/zh/docs/tasks/administer-cluster/coredns/#%e5%85%b3%e4%ba%8e-coredns" target="_blank" rel="noopener">https://kubernetes.io/zh/docs/tasks/administer-cluster/coredns/#%e5%85%b3%e4%ba%8e-coredns</a></p>
+<p>Test</p>
+<p>1、使用CLI创建AKS集群，要求使用高级网络，3个node，自定义service-cidr和pod-cidr，标准SLB，指定最大pod数为35</p>
+<p>2、在test1中创建的集群中部署一套网站服务，使用自定义namespace，要求每个node上都要有且只有一个此服务的pod，可以通过SLB从公网访问</p>
+<p>3、提取test2中web service的请求日志、pod日志</p>
+<p>4、在test1的集群中部署一个pod，要求里面有两个container，分别使用不同端口；要求可以通过NODE的ip访问到这两个container</p>
+<p>示例可以参考：<a href="https://www.jianshu.com/p/ffb1ceb7aba9" target="_blank" rel="noopener">https://www.jianshu.com/p/ffb1ceb7aba9</a></p>
+<p>5、在test1的集群中使用helm部署nginx-ingress-controller，使用标准ILB</p>
+<p>6、重启集群的kube-proxy</p>
+<p>7、重启集群的DNS服务</p>
+<p>Need to Pay attention</p>
+<p>Limitation</p></article>

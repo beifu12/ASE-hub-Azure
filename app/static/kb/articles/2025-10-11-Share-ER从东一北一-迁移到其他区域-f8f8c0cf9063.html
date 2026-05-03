@@ -1,0 +1,139 @@
+<article class="kb-article" data-title="[Share] ER从东一北一 迁移到其他区域"><h1>[Share] ER从东一北一 迁移到其他区域</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-11 15:32:04</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>ER线路如果资源组在东一北一，需要迁移到其他区域，目前不支持跨 Azure 区域迁移 Azure ExpressRoute 实例。所以需要在目标 Azure 其他区域中 创建新的 ExpressRoute 线路和新的 ExpressRoute 网关。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>ER线路如果资源组在东一北一，需要迁移到其他区域，目前不支持跨 Azure 区域迁移 Azure ExpressRoute 实例。所以需要在目标 Azure 其他区域中 创建新的 ExpressRoute 线路和新的 ExpressRoute 网关。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>ER线路如果资源组在东一北一，需要迁移到其他区域，目前不支持跨 Azure 区域迁移 Azure ExpressRoute 实例。所以需要在目标 Azure 其他区域中 创建新的 ExpressRoute 线路和新的 ExpressRoute 网关。</li>
+</ul>
+<ul>
+<li>创建ER线路流程：</li>
+</ul>
+<ul>
+<li>需要用户联系线路供应商，新建ER线路，参考文档：</li>
+</ul>
+<ul>
+<li>快速入门 - 创建和修改 ExpressRoute 线路 - Azure 门户 | Azure Docs</li>
+</ul>
+<ul>
+<li>创建的时候，资源组一定不能是东1和北1：</li>
+</ul>
+<ul>
+<li>在线路的“概述”页上，可以找到“服务密钥”。 向服务提供商提供服务密钥，以便完成预配流程。 服务密钥对于线路是唯一的。</li>
+</ul>
+<ul>
+<li>当连接服务提供商正在为你启用线路时，线路将更改为以下状态：</li>
+</ul>
+<ul>
+<li>提供程序状态：预配</li>
+</ul>
+<ul>
+<li>线路状态：已启用</li>
+</ul>
+<ul>
+<li>若要使用 ExpressRoute 线路，该线路必须处于以下状态：</li>
+</ul>
+<ul>
+<li>提供程序状态：已预配</li>
+</ul>
+<ul>
+<li>配置对等：</li>
+</ul>
+<ul>
+<li>Azure侧的ASN是12076，</li>
+</ul>
+<ul>
+<li>配置 ExpressRoute 线路的对等互连 - Azure 门户 | Azure Docs</li>
+</ul>
+<ul>
+<li>ER连接创建后与ER网关进行连接</li>
+</ul>
+<ul>
+<li>1）必备条件</li>
+</ul>
+<ul>
+<li>2）     开始预配： 选择“连接”&gt;“添加”，打开“添加连接”页面</li>
+</ul>
+<ul>
+<li>3）  输入连接的名称，然后选择“下一步: 设置 &gt;”。</li>
+</ul>
+<ul>
+<li>5）    成功配置连接之后，连接对象会显示连接的信息。</li>
+</ul>
+<ul>
+<li>如果运营商为您提供的是2层接入，那就需要您在本地设备上配置路由信息：</li>
+</ul>
+<ul>
+<li>Azure ExpressRoute：路由器配置示例 | Azure Docs</li>
+</ul>
+<ul>
+<li>以上配置完成后，就有两条ER线路从用户本地连接到Azure云，然后用户可以按照以下方法来切换ER线路：</li>
+</ul>
+<ul>
+<li>创建新的 ExpressRoute 线路 | Azure Docs</li>
+</ul>
+<ul>
+<li>如果已通过第 3 层服务提供商拥有 ExpressRoute 线路，请在 Azure 门户中的订阅下创建新线路。 与服务提供商合作，将流量无缝切换到新线路。 服务提供商取消预配旧线路后，请从 Azure 门户将其删除。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>需要确认好 ER线路的互连接口的地址段，VLANID，本地ASN号码，</li>
+</ul>
+<ul>
+<li>4）   选择要链接到线路的虚拟网络中的网关，然后选择“查看 + 创建”。 然后在验证完成后，选择“创建”。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>如果你是通过第 2 层服务提供商或 ExpressRoute 直接端口而拥有 ExpressRoute 线路，则本文档的其余部分适用。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档： <a href="https://docs.azure.cn/zh-cn/expressroute/expressroute-howto-linkvnet-portal-resource-manager" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/expressroute/expressroute-howto-linkvnet-portal-resource-manager</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/08/18</p>
+<p>ER线路如果资源组在东一北一，需要迁移到其他区域，目前不支持跨 Azure 区域迁移 Azure ExpressRoute 实例。所以需要在目标 Azure 其他区域中 创建新的 ExpressRoute 线路和新的 ExpressRoute 网关。</p>
+<p>创建ER线路流程：</p>
+<p>需要用户联系线路供应商，新建ER线路，参考文档：</p>
+<p>快速入门 - 创建和修改 ExpressRoute 线路 - Azure 门户 | Azure Docs</p>
+<p>创建的时候，资源组一定不能是东1和北1：</p>
+<p>在线路的“概述”页上，可以找到“服务密钥”。 向服务提供商提供服务密钥，以便完成预配流程。 服务密钥对于线路是唯一的。</p>
+<p>当连接服务提供商正在为你启用线路时，线路将更改为以下状态：</p>
+<p>提供程序状态：预配</p>
+<p>线路状态：已启用</p>
+<p>若要使用 ExpressRoute 线路，该线路必须处于以下状态：</p>
+<p>提供程序状态：已预配</p>
+<p>配置对等：</p>
+<p>需要确认好 ER线路的互连接口的地址段，VLANID，本地ASN号码，</p>
+<p>Azure侧的ASN是12076，</p>
+<p>配置 ExpressRoute 线路的对等互连 - Azure 门户 | Azure Docs</p>
+<p>ER连接创建后与ER网关进行连接</p>
+<p>1）必备条件</p>
+<p>参考文档： <a href="https://docs.azure.cn/zh-cn/expressroute/expressroute-howto-linkvnet-portal-resource-manager" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/expressroute/expressroute-howto-linkvnet-portal-resource-manager</a></p>
+<p>2）     开始预配： 选择“连接”&gt;“添加”，打开“添加连接”页面</p>
+<p>3）  输入连接的名称，然后选择“下一步: 设置 &gt;”。</p>
+<p>4）   选择要链接到线路的虚拟网络中的网关，然后选择“查看 + 创建”。 然后在验证完成后，选择“创建”。</p>
+<p>5）    成功配置连接之后，连接对象会显示连接的信息。</p>
+<p>如果运营商为您提供的是2层接入，那就需要您在本地设备上配置路由信息：</p>
+<p>Azure ExpressRoute：路由器配置示例 | Azure Docs</p>
+<p>以上配置完成后，就有两条ER线路从用户本地连接到Azure云，然后用户可以按照以下方法来切换ER线路：</p>
+<p>创建新的 ExpressRoute 线路 | Azure Docs</p>
+<p>如果已通过第 3 层服务提供商拥有 ExpressRoute 线路，请在 Azure 门户中的订阅下创建新线路。 与服务提供商合作，将流量无缝切换到新线路。 服务提供商取消预配旧线路后，请从 Azure 门户将其删除。</p>
+<p>如果你是通过第 2 层服务提供商或 ExpressRoute 直接端口而拥有 ExpressRoute 线路，则本文档的其余部分适用。</p></article>

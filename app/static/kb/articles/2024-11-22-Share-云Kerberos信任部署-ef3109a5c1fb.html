@@ -1,0 +1,106 @@
+<article class="kb-article" data-title="【Share】云Kerberos信任部署"><h1>【Share】云Kerberos信任部署</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-22 10:29:35</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：SR_20241025321771_Does 21Vianet MS Entra Connect support MS Entra Kerberos deployment?</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：SR_20241025321771_Does 21Vianet MS Entra Connect support MS Entra Kerberos deployment?</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考工单：SR_20241025321771_Does 21Vianet MS Entra Connect support MS Entra Kerberos deployment?</li>
+</ul>
+<ul>
+<li>部署Microsoft Entra Kerberos</li>
+</ul>
+<ul>
+<li>安装 AzureADHybridAuthenticationManagement 模块：</li>
+</ul>
+<ul>
+<li>Install-Module -Name AzureADHybridAuthenticationManagement -AllowClobber</li>
+</ul>
+<ul>
+<li>创建Kerberos服务器对象</li>
+</ul>
+<ul>
+<li>获取可用云的列表 Get-AzureADKerberosServerEndpoint ， 默认为China，无需修改。</li>
+</ul>
+<ul>
+<li># Specify the on-premises Active Directory domain. A new Microsoft Entra ID Kerberos Server object will be created in this Active Directory domain.</li>
+</ul>
+<ul>
+<li>$domain = $env:USERDNSDOMAIN</li>
+</ul>
+<ul>
+<li># Enter an Azure Active Directory Global Administrator username and password.</li>
+</ul>
+<ul>
+<li>$cloudCred = Get-Credential -Message &#39;An Azure Active Directory user who is a member of the Global Administrators group for Microsoft Entra ID.&#39;</li>
+</ul>
+<ul>
+<li># Enter a Domain Administrator username and password.</li>
+</ul>
+<ul>
+<li>$domainCred = Get-Credential -Message &#39;An Active Directory user who is a member of the Domain Admins group.&#39;</li>
+</ul>
+<ul>
+<li># Create the new Microsoft Entra ID Kerberos Server object in Active Directory and then publish it to Azure Active Directory.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查看并验证 Microsoft Entra Kerberos服务器</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>运行以下 PowerShell 命令以同时在本地 Active Directory 域和 Microsoft Entra 租户中创建新的 Microsoft Entra Kerberos 服务器对象。</li>
+</ul>
+<ul>
+<li>Set-AzureADKerberosServer -Domain $domain -CloudCredential $cloudCred -DomainCredential $domainCred</li>
+</ul>
+<ul>
+<li>Get-AzureADKerberosServer -Domain $domain -UserPrincipalName admin@xxxxx.partner.onmschina.cn</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>部署 Entra ID Connect <a href="https://learn.microsoft.com/zh-cn/entra/identity/hybrid/connect/how-to-connect-install-roadmap" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/hybrid/connect/how-to-connect-install-roadmap</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/entra/identity/authentication/howto-authentication-passwordless-security-key-on-premises#install-the-azureadhybridauthenticationmanagement-module" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/authentication/howto-authentication-passwordless-security-key-on-premises#install-the-azureadhybridauthenticationmanagement-module</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/11/22</p>
+<p>参考工单：SR_20241025321771_Does 21Vianet MS Entra Connect support MS Entra Kerberos deployment?</p>
+<p>部署Microsoft Entra Kerberos</p>
+<p>部署 Entra ID Connect <a href="https://learn.microsoft.com/zh-cn/entra/identity/hybrid/connect/how-to-connect-install-roadmap" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/hybrid/connect/how-to-connect-install-roadmap</a></p>
+<p>安装 AzureADHybridAuthenticationManagement 模块：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/entra/identity/authentication/howto-authentication-passwordless-security-key-on-premises#install-the-azureadhybridauthenticationmanagement-module" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/authentication/howto-authentication-passwordless-security-key-on-premises#install-the-azureadhybridauthenticationmanagement-module</a></p>
+<p>[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12</p>
+<p>Install-Module -Name AzureADHybridAuthenticationManagement -AllowClobber</p>
+<p>创建Kerberos服务器对象</p>
+<p>运行以下 PowerShell 命令以同时在本地 Active Directory 域和 Microsoft Entra 租户中创建新的 Microsoft Entra Kerberos 服务器对象。</p>
+<p>获取可用云的列表 Get-AzureADKerberosServerEndpoint ， 默认为China，无需修改。</p>
+<h1>Specify the on-premises Active Directory domain. A new Microsoft Entra ID Kerberos Server object will be created in this Active Directory domain.</h1>
+<p>$domain = $env:USERDNSDOMAIN</p>
+<h1>Enter an Azure Active Directory Global Administrator username and password.</h1>
+<p>$cloudCred = Get-Credential -Message &#39;An Azure Active Directory user who is a member of the Global Administrators group for Microsoft Entra ID.&#39;</p>
+<h1>Enter a Domain Administrator username and password.</h1>
+<p>$domainCred = Get-Credential -Message &#39;An Active Directory user who is a member of the Domain Admins group.&#39;</p>
+<h1>Create the new Microsoft Entra ID Kerberos Server object in Active Directory and then publish it to Azure Active Directory.</h1>
+<p>Set-AzureADKerberosServer -Domain $domain -CloudCredential $cloudCred -DomainCredential $domainCred</p>
+<p>查看并验证 Microsoft Entra Kerberos服务器</p>
+<p>Get-AzureADKerberosServer -Domain $domain -UserPrincipalName admin@xxxxx.partner.onmschina.cn</p></article>

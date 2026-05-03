@@ -1,0 +1,370 @@
+<article class="kb-article" data-title="DNS 解析超时失败"><h1>DNS 解析超时失败</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DNS</li>
+<li>Section: DNS</li>
+<li>最近修改: 2023-03-13 13:53:30</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户现象是Azure VM解析超时。 但其他服务器（本地）均正常。我们测试也和客户一致。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户现象是Azure VM解析超时。 但其他服务器（本地）均正常。我们测试也和客户一致。</li>
+</ul>
+<ul>
+<li>看到均超时。</li>
+</ul>
+<ul>
+<li>如果我们看EventMessage 内可以找到RESPONSE_FAILURE字段。</li>
+</ul>
+<ul>
+<li>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 21818</li>
+</ul>
+<ul>
+<li>RESPONSE_FAILURE          LOOK_UP</li>
+</ul>
+<ul>
+<li>0               No error condition</li>
+</ul>
+<ul>
+<li>1               Format error - The name server was</li>
+</ul>
+<ul>
+<li>unable to interpret the query.</li>
+</ul>
+<ul>
+<li>2               Server failure - The name server was</li>
+</ul>
+<ul>
+<li>unable to process this query due to a</li>
+</ul>
+<ul>
+<li>problem with the name server.</li>
+</ul>
+<ul>
+<li>3               Name Error - Meaningful only for</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>分享一个工单，20230313217551</li>
+</ul>
+<ul>
+<li>在自己环境进行测试复现，如果能够复现说明是普遍问题。</li>
+</ul>
+<ul>
+<li>&gt;  jc-api-uat.bba-app.com</li>
+</ul>
+<ul>
+<li>Server:  bj-dc-office01.bj-oe.21vianet.com</li>
+</ul>
+<ul>
+<li>Address:  172.31.8.11</li>
+</ul>
+<ul>
+<li>bba-app.com</li>
+</ul>
+<ul>
+<li>&gt; set type=a</li>
+</ul>
+<ul>
+<li>Non-authoritative answer:</li>
+</ul>
+<ul>
+<li>Name:    jc-api-uat.bba-app.com</li>
+</ul>
+<ul>
+<li>Address:  52.131.32.191</li>
+</ul>
+<ul>
+<li>Azure 虚机：</li>
+</ul>
+<ul>
+<li>&gt; set type=ns</li>
+</ul>
+<ul>
+<li>;; connection timed out; no servers could be reached</li>
+</ul>
+<ul>
+<li>DNS请求日志：</li>
+</ul>
+<ul>
+<li>看不到响应的请求记录。（where TaskName != &quot;LOOK_UP&quot; and TaskName != &quot;RECURSE_QUERY&quot;）#用这个过滤一下。</li>
+</ul>
+<ul>
+<li>这里可以看到recode 记录是2. 同时我们用DNS PacketData 的字符进行解码也能够看到如下提醒。</li>
+</ul>
+<ul>
+<li>root@wangguoyuan-d-2:~# python decode_dns.py  3AFE818200010000000000010A6A632D6170692D756174076262612D61707003636F6D000001000100002904C8000000000000</li>
+</ul>
+<ul>
+<li>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: SERVFAIL, id: 15102</li>
+</ul>
+<ul>
+<li>;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1</li>
+</ul>
+<ul>
+<li>;; QUESTION SECTION:</li>
+</ul>
+<ul>
+<li>;jc-api-uat.bba-app.com.        IN      A</li>
+</ul>
+<ul>
+<li>;; ADDITIONAL SECTION:</li>
+</ul>
+<ul>
+<li>;; OPT PSEUDOSECTION</li>
+</ul>
+<ul>
+<li>; EDNS: version: 0, flags: ; udp: 1224</li>
+</ul>
+<ul>
+<li>拿正常对比看。</li>
+</ul>
+<ul>
+<li>root@wangguoyuan-d-2:~# python decode_dns.py  553A8180000100020000000108706C617974657374076262612D61707003636F6D016106626479646E7303636F6D0000010001C00C000500010000007700150A6F70656E63646E737079076A6F6D6F646E73C02AC03F00010001000000100004992359E100002904C8000000000060FF9C001080FF3F5E52AA6C438B237C1D0AE15283FF9B0048620033003400310062006600380062002D0033003700610061002D0034003700640061002D0039003100640031002D00360065003800380038006500660035006200320061006200</li>
+</ul>
+<ul>
+<li>;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1</li>
+</ul>
+<ul>
+<li>;playtest.bba-app.com.a.bdydns.com. IN      A</li>
+</ul>
+<ul>
+<li>;; ANSWER SECTION:</li>
+</ul>
+<ul>
+<li>playtest.bba-app.com.a.bdydns.com. 119     IN      CNAME   opencdnspy.jomodns.com.</li>
+</ul>
+<ul>
+<li>opencdnspy.jomodns.com. 16      IN      A       153.35.89.225</li>
+</ul>
+<ul>
+<li>; EDNS: code: 65436; data: 80ff3f5e52aa6c438b237c1d0ae15283</li>
+</ul>
+<ul>
+<li>; EDNS: code: 65435; data: 620033003400310062006600380062002d0033003700610061002d0034003700640061002d0039003100640031002d00360065003800380038006500660035006200320061006200</li>
+</ul>
+<ul>
+<li>root@wangguoyuan-d-2:~#</li>
+</ul>
+<ul>
+<li>DNS 表中可以重点关注KeywordName TaskName和EventMessage中的信息。从中来判断是否是成功的。</li>
+</ul>
+<ul>
+<li>KeywordName                    TaskName</li>
+</ul>
+<ul>
+<li>RECURSE_QUERY_OUT       RECURSE_QUERY   *</li>
+</ul>
+<ul>
+<li>RECURSE_RESPONSE_IN    RECURSE_QUERY</li>
+</ul>
+<ul>
+<li>QUERY_RECEIVED              LOOK_UP</li>
+</ul>
+<ul>
+<li>RESPONSE_SUCCESS         LOOK_UP  *</li>
+</ul>
+<ul>
+<li>关于DNS 协议的recode 可以参考RFC中的字段意义：</li>
+</ul>
+<ul>
+<li>RCODE           Response code - this 4 bit field is set as part of</li>
+</ul>
+<ul>
+<li>responses.  The values have the following</li>
+</ul>
+<ul>
+<li>interpretation:</li>
+</ul>
+<ul>
+<li>responses from an authoritative name</li>
+</ul>
+<ul>
+<li>server, this code signifies that the</li>
+</ul>
+<ul>
+<li>domain name referenced in the query does</li>
+</ul>
+<ul>
+<li>not exist.</li>
+</ul>
+<ul>
+<li>4               Not Implemented - The name server does</li>
+</ul>
+<ul>
+<li>not support the requested kind of query.</li>
+</ul>
+<ul>
+<li>5               Refused - The name server refuses to</li>
+</ul>
+<ul>
+<li>perform the specified operation for</li>
+</ul>
+<ul>
+<li>policy reasons.  For example, a name</li>
+</ul>
+<ul>
+<li>server may not wish to provide the</li>
+</ul>
+<ul>
+<li>information to the particular requester,</li>
+</ul>
+<ul>
+<li>or a name server may not wish to perform</li>
+</ul>
+<ul>
+<li>a particular operation (e.g., zone</li>
+</ul>
+<ul>
+<li>transfer) for particular data.</li>
+</ul>
+<ul>
+<li>6-15            Reserved for future use.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>遇到这种问题排查思路：</li>
+</ul>
+<ul>
+<li>询问客户请求时间，客户的VM信息。 检查后端DNS 记录。</li>
+</ul>
+<ul>
+<li>检查方法：</li>
+</ul>
+<ul>
+<li>本地和Azure VM检查解析；</li>
+</ul>
+<ul>
+<li>本机nslookup 正常。ns查询是阿里云。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>primary name server = ns1.alidns.com</li>
+</ul>
+<ul>
+<li>responsible mail addr = hostmaster.hichina.com</li>
+</ul>
+<ul>
+<li>serial  = 2022052002</li>
+</ul>
+<ul>
+<li>refresh = 3600 (1 hour)</li>
+</ul>
+<ul>
+<li>retry   = 1200 (20 mins)</li>
+</ul>
+<ul>
+<li>expire  = 86400 (1 day)</li>
+</ul>
+<ul>
+<li>default TTL = 600 (10 mins)</li>
+</ul>
+<ul>
+<li>RESPONSE_FAILURE: TCP=0; InterfaceIP=100.77.199.26; Reason=; Destination=139.217.80.1; QNAME=jc-api-uat.bba-app.com.; QTYPE=1; XID=15102; RCODE=2; Port=22114; Flags=33154; Zone=..Cache; PolicyName=NULL; PacketData=3AFE818200010000000000010A6A632D6170692D756174076262612D61707003636F6D000001000100002904C8000000000000; AdditionalInfo = VirtualizationInstance: 51; ElapsedTime=16321; GUID={BE3F939D-795D-40D7-B458-41B23D3C0B13}; EDNSCorrelationTag=157fe334-fa1d-41d0-9445-70e430fce91b</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>查询DNS记录，建议根据VM的node ip地址进行精细查询。（Source==&quot;10.156.18.218&quot;）</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Javis: <a href="https://portal.microsoftgeneva.com/s/F9C74D94" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/F9C74D94</a></li>
+</ul>
+<ul>
+<li><a href="http://mirrors.nju.edu.cn/rfc/beta/errata/rfc1035.html" target="_blank" rel="noopener">http://mirrors.nju.edu.cn/rfc/beta/errata/rfc1035.html</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>分享一个工单，20230313217551</p>
+<p>客户现象是Azure VM解析超时。 但其他服务器（本地）均正常。我们测试也和客户一致。</p>
+<p>Javis: <a href="https://portal.microsoftgeneva.com/s/F9C74D94" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/F9C74D94</a></p>
+<p>遇到这种问题排查思路：</p>
+<p>询问客户请求时间，客户的VM信息。 检查后端DNS 记录。</p>
+<p>在自己环境进行测试复现，如果能够复现说明是普遍问题。</p>
+<p>查询DNS记录，建议根据VM的node ip地址进行精细查询。（Source==&quot;10.156.18.218&quot;）</p>
+<p>检查方法：</p>
+<p>本地和Azure VM检查解析；</p>
+<p>本机nslookup 正常。ns查询是阿里云。</p>
+<p>&gt;  jc-api-uat.bba-app.com</p>
+<p>Server:  bj-dc-office01.bj-oe.21vianet.com</p>
+<p>Address:  172.31.8.11</p>
+<p>bba-app.com</p>
+<p>primary name server = ns1.alidns.com</p>
+<p>responsible mail addr = hostmaster.hichina.com</p>
+<p>serial  = 2022052002</p>
+<p>refresh = 3600 (1 hour)</p>
+<p>retry   = 1200 (20 mins)</p>
+<p>expire  = 86400 (1 day)</p>
+<p>default TTL = 600 (10 mins)</p>
+<p>&gt; set type=a</p>
+<p>Non-authoritative answer:</p>
+<p>Name:    jc-api-uat.bba-app.com</p>
+<p>Address:  52.131.32.191</p>
+<p>Azure 虚机：</p>
+<p>&gt; set type=ns</p>
+<p>;; connection timed out; no servers could be reached</p>
+<p>看到均超时。</p>
+<p>DNS请求日志：</p>
+<p>看不到响应的请求记录。（where TaskName != &quot;LOOK_UP&quot; and TaskName != &quot;RECURSE_QUERY&quot;）#用这个过滤一下。</p>
+<p>如果我们看EventMessage 内可以找到RESPONSE_FAILURE字段。</p>
+<p>RESPONSE_FAILURE: TCP=0; InterfaceIP=100.77.199.26; Reason=; Destination=139.217.80.1; QNAME=jc-api-uat.bba-app.com.; QTYPE=1; XID=15102; RCODE=2; Port=22114; Flags=33154; Zone=..Cache; PolicyName=NULL; PacketData=3AFE818200010000000000010A6A632D6170692D756174076262612D61707003636F6D000001000100002904C8000000000000; AdditionalInfo = VirtualizationInstance: 51; ElapsedTime=16321; GUID={BE3F939D-795D-40D7-B458-41B23D3C0B13}; EDNSCorrelationTag=157fe334-fa1d-41d0-9445-70e430fce91b</p>
+<p>这里可以看到recode 记录是2. 同时我们用DNS PacketData 的字符进行解码也能够看到如下提醒。</p>
+<p>root@wangguoyuan-d-2:~# python decode_dns.py  3AFE818200010000000000010A6A632D6170692D756174076262612D61707003636F6D000001000100002904C8000000000000</p>
+<p>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: SERVFAIL, id: 15102</p>
+<p>;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 1</p>
+<p>;; QUESTION SECTION:</p>
+<p>;jc-api-uat.bba-app.com.        IN      A</p>
+<p>;; ADDITIONAL SECTION:</p>
+<p>;; OPT PSEUDOSECTION</p>
+<p>; EDNS: version: 0, flags: ; udp: 1224</p>
+<p>拿正常对比看。</p>
+<p>root@wangguoyuan-d-2:~# python decode_dns.py  553A8180000100020000000108706C617974657374076262612D61707003636F6D016106626479646E7303636F6D0000010001C00C000500010000007700150A6F70656E63646E737079076A6F6D6F646E73C02AC03F00010001000000100004992359E100002904C8000000000060FF9C001080FF3F5E52AA6C438B237C1D0AE15283FF9B0048620033003400310062006600380062002D0033003700610061002D0034003700640061002D0039003100640031002D00360065003800380038006500660035006200320061006200</p>
+<p>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 21818</p>
+<p>;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1</p>
+<p>;playtest.bba-app.com.a.bdydns.com. IN      A</p>
+<p>;; ANSWER SECTION:</p>
+<p>playtest.bba-app.com.a.bdydns.com. 119     IN      CNAME   opencdnspy.jomodns.com.</p>
+<p>opencdnspy.jomodns.com. 16      IN      A       153.35.89.225</p>
+<p>; EDNS: code: 65436; data: 80ff3f5e52aa6c438b237c1d0ae15283</p>
+<p>; EDNS: code: 65435; data: 620033003400310062006600380062002d0033003700610061002d0034003700640061002d0039003100640031002d00360065003800380038006500660035006200320061006200</p>
+<p>root@wangguoyuan-d-2:~#</p>
+<p>DNS 表中可以重点关注KeywordName TaskName和EventMessage中的信息。从中来判断是否是成功的。</p>
+<p>KeywordName                    TaskName</p>
+<p>RECURSE_QUERY_OUT       RECURSE_QUERY   *</p>
+<p>RECURSE_RESPONSE_IN    RECURSE_QUERY</p>
+<p>QUERY_RECEIVED              LOOK_UP</p>
+<p>RESPONSE_FAILURE          LOOK_UP</p>
+<p>RESPONSE_SUCCESS         LOOK_UP  *</p>
+<p>关于DNS 协议的recode 可以参考RFC中的字段意义：</p>
+<p><a href="http://mirrors.nju.edu.cn/rfc/beta/errata/rfc1035.html" target="_blank" rel="noopener">http://mirrors.nju.edu.cn/rfc/beta/errata/rfc1035.html</a></p>
+<p>RCODE           Response code - this 4 bit field is set as part of</p>
+<p>responses.  The values have the following</p>
+<p>interpretation:</p>
+<p>0               No error condition</p>
+<p>1               Format error - The name server was</p>
+<p>unable to interpret the query.</p>
+<p>2               Server failure - The name server was</p>
+<p>unable to process this query due to a</p>
+<p>problem with the name server.</p>
+<p>3               Name Error - Meaningful only for</p>
+<p>responses from an authoritative name</p>
+<p>server, this code signifies that the</p>
+<p>domain name referenced in the query does</p>
+<p>not exist.</p>
+<p>4               Not Implemented - The name server does</p>
+<p>not support the requested kind of query.</p>
+<p>5               Refused - The name server refuses to</p>
+<p>perform the specified operation for</p>
+<p>policy reasons.  For example, a name</p>
+<p>server may not wish to provide the</p>
+<p>information to the particular requester,</p>
+<p>or a name server may not wish to perform</p>
+<p>a particular operation (e.g., zone</p>
+<p>transfer) for particular data.</p>
+<p>6-15            Reserved for future use.</p></article>

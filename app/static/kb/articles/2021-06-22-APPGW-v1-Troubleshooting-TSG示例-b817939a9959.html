@@ -1,0 +1,433 @@
+<article class="kb-article" data-title="APPGW v1 Troubleshooting TSG示例"><h1>APPGW v1 Troubleshooting TSG示例</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: 查询-排查-工具</li>
+<li>最近修改: 2021-06-22 13:35:37</li>
+<li>JD 相关性: 售后排障; 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>综合以上分析初步怀疑应用程序网关实例处理连接TCP（Established）增加导致实例CPU 达到100% 因此无法处理TCP连接（前端负载均衡器探测响应和与后端池服务器探测通信）无法处理业务请求。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>综合以上分析初步怀疑应用程序网关实例处理连接TCP（Established）增加导致实例CPU 达到100% 因此无法处理TCP连接（前端负载均衡器探测响应和与后端池服务器探测通信）无法处理业务请求。</li>
+</ul>
+<ul>
+<li>VIP Endpoint      : 42.159.80.59:65503</li>
+</ul>
+<ul>
+<li>IdleTimeoutInMins       : 0</li>
+</ul>
+<ul>
+<li>42.159.80.59:65503 -&gt; 10.208.92.19:65503         (ApplicationGatewayRole ApplicationGatewayRole_IN_0 InstanceServiceHost IS ) True</li>
+</ul>
+<ul>
+<li>VIP Endpoint      : 42.159.80.59:65504</li>
+</ul>
+<ul>
+<li>42.159.80.59:65504 -&gt; 10.208.82.17:65503         (ApplicationGatewayRole ApplicationGatewayRole_IN_1 InstanceServiceHost IS ) True</li>
+</ul>
+<ul>
+<li>42.159.80.59:65505 -&gt; 10.209.10.7:65503          (ApplicationGatewayRole ApplicationGatewayRole_IN_2 InstanceServiceHost IS ) True</li>
+</ul>
+<ul>
+<li>42.159.80.59:65506 -&gt; 10.208.82.42:65503         (ApplicationGatewayRole ApplicationGatewayRole_IN_3 InstanceServiceHost IS ) True</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20191209</li>
+</ul>
+<ul>
+<li>/subscriptions/97deefb2-9571-41a1-826d-54d23b044ac0/resourceGroups/infra/providers/Microsoft.Network/applicationGateways/app-gw-prod007</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt;= ago(8d)</li>
+</ul>
+<ul>
+<li>| where ContainerID == &quot;466c84cf-b0c9-4913-865b-4afa42b39567&quot;</li>
+</ul>
+<ul>
+<li>//| where EntityState == &quot;VMGuestHEUpgrade&quot;</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP, NodeID, ContainerID,TenantName, RoleInstanceName, Context, EntityState, OccurredTime</li>
+</ul>
+<ul>
+<li>| where tenantName == &quot;7469b9e7810f4561a11705ed2f359d93&quot;</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP, nodeId, containerId, containerType, creationTime, roleInstanceName,Tenant</li>
+</ul>
+<ul>
+<li>Container健康状况如下：</li>
+</ul>
+<ul>
+<li>OccurredTime                                       Context                     EntityState</li>
+</ul>
+<ul>
+<li>2019-12-06 10:04:07.3693650    ContainerStateChanged              ContainerStateUnhealthy</li>
+</ul>
+<ul>
+<li>2019-12-06 10:04:41.6513163    ContainerStateChanged              ContainerStateStarted</li>
+</ul>
+<ul>
+<li>2019-12-06 10:06:22.7823402    ContainerStateChanged              ContainerStateUnhealthy</li>
+</ul>
+<ul>
+<li>2019-12-06 10:07:14.4396187    ContainerStateChanged              ContainerStateStarted</li>
+</ul>
+<ul>
+<li>2019-12-06 10:10:52.1627365    ContainerStateChanged              ContainerStateUnhealthy</li>
+</ul>
+<ul>
+<li>2019-12-06 10:20:21.7532105    ContainerStateChanged              ContainerStateStopped</li>
+</ul>
+<ul>
+<li>2019-12-06 10:20:21.7532105    RoleStateChanged              RoleStateDestroyed</li>
+</ul>
+<ul>
+<li>2019-12-06 10:24:48.8679613    ContainerStateChanged              ContainerStateStarted</li>
+</ul>
+<ul>
+<li>2019-12-06 10:25:04.0557852    RoleStateChanged          RoleStateCreated</li>
+</ul>
+<ul>
+<li>2019-12-06 10:25:07.0870803    RoleStateChanged          RoleStateStarting</li>
+</ul>
+<ul>
+<li>2019-12-06 10:27:16.4959314    ContainerStateChanged              ContainerStateUnhealthy</li>
+</ul>
+<ul>
+<li>2019-12-06 10:27:26.6211648    ContainerStateChanged              ContainerStateStarted</li>
+</ul>
+<ul>
+<li>2019-12-06 10:28:57.5604622    RoleStateChanged          RoleStateStarted</li>
+</ul>
+<ul>
+<li>$ff=Get-Fabric -CloudName bjbprdapp05</li>
+</ul>
+<ul>
+<li>$tt=Get-Tenant -TenantName 7469b9e7810f4561a11705ed2f359d93 -Fabric $ff</li>
+</ul>
+<ul>
+<li>$tt.LoadBalancerSettings</li>
+</ul>
+<ul>
+<li>获取到的VFP如下：</li>
+</ul>
+<ul>
+<li>MappingTableEntries : { Role Name         : ApplicationGatewayRole</li>
+</ul>
+<ul>
+<li>ProbeType         : None</li>
+</ul>
+<ul>
+<li>MonitorString     :</li>
+</ul>
+<ul>
+<li>Programmed        : True</li>
+</ul>
+<ul>
+<li>Served By         : e9930552-c71b-4790-8e10-92de3f003d16</li>
+</ul>
+<ul>
+<li>Interface Name    : ApplicationGatewayRole:InstanceServiceHost</li>
+</ul>
+<ul>
+<li>LoadBalancerPolicy       : None</li>
+</ul>
+<ul>
+<li>Mapping Table     :</li>
+</ul>
+<ul>
+<li>---------------------------------------------------------</li>
+</ul>
+<ul>
+<li>tcp)) PreallocatedPorts:0 ByPassSnatInRegion: False</li>
+</ul>
+<ul>
+<li>,  Role Name         : ApplicationGatewayRole</li>
+</ul>
+<ul>
+<li>VIP Endpoint      : 42.159.80.59:65505</li>
+</ul>
+<ul>
+<li>VIP Endpoint      : 42.159.80.59:65506</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>VirtualIP           : 42.159.80.59</li>
+</ul>
+<ul>
+<li>VirtualIPName       : L7lbCloudServiceContractContract</li>
+</ul>
+<ul>
+<li>VlanName            :</li>
+</ul>
+<ul>
+<li>ServiceInstanceName : 7469b9e7810f4561a11705ed2f359d93.116</li>
+</ul>
+<ul>
+<li>OwningAppliance     : e9930552-c71b-4790-8e10-92de3f003d16</li>
+</ul>
+<ul>
+<li>CustomerIPAddress   :</li>
+</ul>
+<ul>
+<li>Accessibility       : Public</li>
+</ul>
+<ul>
+<li>VIP Endpoint      : 10.211.12.227:80</li>
+</ul>
+<ul>
+<li>ProbeType         : Default</li>
+</ul>
+<ul>
+<li>MonitorString     : ApplicationGatewayRole</li>
+</ul>
+<ul>
+<li>Served By         : 1961c8bf-14fa-49cd-98c1-35c4f9472028</li>
+</ul>
+<ul>
+<li>Interface Name    : ApplicationGatewayRole:Listener_80</li>
+</ul>
+<ul>
+<li>10.211.12.227:80  -&gt; 10.171.23.18@10.208.92.19:80        (ApplicationGatewayRole ApplicationGatewayRole_IN_0 Listener_80 IS )</li>
+</ul>
+<ul>
+<li>True tcp)) PreallocatedPorts:0 ByPassSnatInRegion: False</li>
+</ul>
+<ul>
+<li>10.211.12.227:80  -&gt; 10.171.23.20@10.208.82.17:80        (ApplicationGatewayRole ApplicationGatewayRole_IN_1 Listener_80 IS )</li>
+</ul>
+<ul>
+<li>10.211.12.227:80  -&gt; 10.171.23.5@10.209.10.7:80          (ApplicationGatewayRole ApplicationGatewayRole_IN_2 Listener_80 IS ) True</li>
+</ul>
+<ul>
+<li>10.211.12.227:80  -&gt; 10.171.23.6@10.208.82.42:80         (ApplicationGatewayRole ApplicationGatewayRole_IN_3 Listener_80 IS ) True</li>
+</ul>
+<ul>
+<li>VIP Endpoint      : 10.211.12.227:443</li>
+</ul>
+<ul>
+<li>Interface Name    : ApplicationGatewayRole:Listener_443</li>
+</ul>
+<ul>
+<li>10.211.12.227:443 -&gt; 10.171.23.18@10.208.92.19:443       (ApplicationGatewayRole ApplicationGatewayRole_IN_0 Listener_443 IS )</li>
+</ul>
+<ul>
+<li>10.211.12.227:443 -&gt; 10.171.23.20@10.208.82.17:443       (ApplicationGatewayRole ApplicationGatewayRole_IN_1 Listener_443 IS )</li>
+</ul>
+<ul>
+<li>10.211.12.227:443 -&gt; 10.171.23.5@10.209.10.7:443         (ApplicationGatewayRole ApplicationGatewayRole_IN_2 Listener_443 IS )</li>
+</ul>
+<ul>
+<li>10.211.12.227:443 -&gt; 10.171.23.6@10.208.82.42:443        (ApplicationGatewayRole ApplicationGatewayRole_IN_3 Listener_443 IS )</li>
+</ul>
+<ul>
+<li>VirtualIP           : 10.211.12.227</li>
+</ul>
+<ul>
+<li>VirtualIPName       : Lb:appGwPrivateFrontendIp</li>
+</ul>
+<ul>
+<li>OwningAppliance     : 1961c8bf-14fa-49cd-98c1-35c4f9472028</li>
+</ul>
+<ul>
+<li>CustomerIPAddress   : 10.171.23.19</li>
+</ul>
+<ul>
+<li>Accessibility       : Private</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>119120921000139/NET/CapitaLand (China) Corporate Management Co.,Ltd/SR_2019120667452 _ [MS-LED]help check the error</li>
+</ul>
+<ul>
+<li>根据沟通了解到最终用户遇到的问题是在2019/12/6 17:55 ~18:30期间通过应用程序网关app-gw-prod007访问后端应用失败，需要协助排查原因。</li>
+</ul>
+<ul>
+<li>查询应用程序网关app-gw-prod007后台日志，在2019/12/6 17:55 ~18:30后端池探测为unhealthy状态，同时应用程序网关无法响应请求。</li>
+</ul>
+<ul>
+<li>根据沟通和排查，2019/12/6 17:55左右应用程序网关实例CPU使用率达到将近100%，在高负荷的情况下应用程序网关可能无法响应请求，导致访问失败。</li>
+</ul>
+<ul>
+<li>以下为内部排查请不要转发客户：</li>
+</ul>
+<ul>
+<li>查询应用程序网关实例0/1请求数：</li>
+</ul>
+<ul>
+<li>查询应用程序网关实例TCP连接（Established）数overtime</li>
+</ul>
+<ul>
+<li>APPGW Dashboard:</li>
+</ul>
+<ul>
+<li>查询应用程序网关实例1 SLA状态：</li>
+</ul>
+<ul>
+<li>查询条件要以container ID为条件，如果仅以Tenant ID为查询条件，则无法查全：</li>
+</ul>
+<ul>
+<li>也可以用kusto查询;</li>
+</ul>
+<ul>
+<li>TMMgmtSlaMeasurementEventEtwTable  #查询container健康状况</li>
+</ul>
+<ul>
+<li>LogContainerSnapshot    #查询container是否有变化</li>
+</ul>
+<ul>
+<li>备注: Appgw的负载均衡前端内网IP地址查询方法：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Fcshell运行如下命令获取VFP信息：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>通过过滤80端口过滤http请求。</li>
+</ul>
+<ul>
+<li>Protocol          : tcp</li>
+</ul>
+<ul>
+<li>Source            -&gt; DIP:Port (Role Name, Role Instance Name, Endpoint Name, IS/OOS) DIP Programmed Protocol</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>DsrEnabled        : False</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/453410F5" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/453410F5</a> 应用程序网关Performance 日志，在17:55~18:28 之间后端池状态异常。</li>
+</ul>
+<ul>
+<li>查询应用程序网关前端内部负载均衡器（10.211.12.227）后端池探测：<a href="https://jarvis-west.dc.ad.msft.net/76BDD005" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/76BDD005</a> 在17:55~18:28期间应用程序网关0和1探测状态不稳定Healthy/unhealthy 频繁切换。</li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/846D17AB?globalStartTime=1575623280000&amp;globalEndTime=1575630480000&amp;pinGlobalTimeRange=true" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/846D17AB?globalStartTime=1575623280000&amp;globalEndTime=1575630480000&amp;pinGlobalTimeRange=true</a></li>
+</ul>
+<ul>
+<li>查询应用程序网关实例0/1 CPU 使用率：<a href="https://jarvis-west.dc.ad.msft.net/18234F14" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/18234F14</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/99D1A3CA" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/99D1A3CA</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/dashboard?overrides=[{%22query%22:%22//*[id=%27Cluster%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//*[id=%27ContainerId%27]%22,%22key%22:%22value%22,%22replacement%22:%229dde6b3e-13cd-49ef-aede-e15bdee872a1,466c84cf-b0c9-4913-865b-4afa42b39567%22},{%22query%22:%22//*[id=%27MacAddress%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//*[id=%27NodeId%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//*[id=%27VNetId%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//dataSources%22,%22key%22:%22account%22,%22replacement%22:%22VFPMDMMC%22}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard?overrides=[{%22query%22:%22//*[id=%27Cluster%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//*[id=%27ContainerId%27]%22,%22key%22:%22value%22,%22replacement%22:%229dde6b3e-13cd-49ef-aede-e15bdee872a1,466c84cf-b0c9-4913-865b-4afa42b39567%22},{%22query%22:%22//*[id=%27MacAddress%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//*[id=%27NodeId%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//*[id=%27VNetId%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//dataSources%22,%22key%22:%22account%22,%22replacement%22:%22VFPMDMMC%22}]%20</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/7CCA9130" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/7CCA9130</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20191209</p>
+<p>119120921000139/NET/CapitaLand (China) Corporate Management Co.,Ltd/SR_2019120667452 _ [MS-LED]help check the error</p>
+<p>根据沟通了解到最终用户遇到的问题是在2019/12/6 17:55 ~18:30期间通过应用程序网关app-gw-prod007访问后端应用失败，需要协助排查原因。</p>
+<p>/subscriptions/97deefb2-9571-41a1-826d-54d23b044ac0/resourceGroups/infra/providers/Microsoft.Network/applicationGateways/app-gw-prod007</p>
+<p>查询应用程序网关app-gw-prod007后台日志，在2019/12/6 17:55 ~18:30后端池探测为unhealthy状态，同时应用程序网关无法响应请求。</p>
+<p>根据沟通和排查，2019/12/6 17:55左右应用程序网关实例CPU使用率达到将近100%，在高负荷的情况下应用程序网关可能无法响应请求，导致访问失败。</p>
+<p>以下为内部排查请不要转发客户：</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/453410F5" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/453410F5</a> 应用程序网关Performance 日志，在17:55~18:28 之间后端池状态异常。</p>
+<p>查询应用程序网关前端内部负载均衡器（10.211.12.227）后端池探测：<a href="https://jarvis-west.dc.ad.msft.net/76BDD005" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/76BDD005</a> 在17:55~18:28期间应用程序网关0和1探测状态不稳定Healthy/unhealthy 频繁切换。</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/846D17AB?globalStartTime=1575623280000&amp;globalEndTime=1575630480000&amp;pinGlobalTimeRange=true" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/846D17AB?globalStartTime=1575623280000&amp;globalEndTime=1575630480000&amp;pinGlobalTimeRange=true</a></p>
+<p>查询应用程序网关实例0/1请求数：</p>
+<p>查询应用程序网关实例0/1 CPU 使用率：<a href="https://jarvis-west.dc.ad.msft.net/18234F14" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/18234F14</a></p>
+<p>查询应用程序网关实例TCP连接（Established）数overtime</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/99D1A3CA" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/99D1A3CA</a></p>
+<p>通过过滤80端口过滤http请求。</p>
+<p>APPGW Dashboard:</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/dashboard?overrides=[{%22query%22:%22//*[id=%27Cluster%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//*[id=%27ContainerId%27]%22,%22key%22:%22value%22,%22replacement%22:%229dde6b3e-13cd-49ef-aede-e15bdee872a1,466c84cf-b0c9-4913-865b-4afa42b39567%22},{%22query%22:%22//*[id=%27MacAddress%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//*[id=%27NodeId%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//*[id=%27VNetId%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//dataSources%22,%22key%22:%22account%22,%22replacement%22:%22VFPMDMMC%22}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard?overrides=[{%22query%22:%22//*[id=%27Cluster%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//*[id=%27ContainerId%27]%22,%22key%22:%22value%22,%22replacement%22:%229dde6b3e-13cd-49ef-aede-e15bdee872a1,466c84cf-b0c9-4913-865b-4afa42b39567%22},{%22query%22:%22//*[id=%27MacAddress%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//*[id=%27NodeId%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//*[id=%27VNetId%27]%22,%22key%22:%22regex%22,%22replacement%22:%22*%22},{%22query%22:%22//dataSources%22,%22key%22:%22account%22,%22replacement%22:%22VFPMDMMC%22}]%20</a></p>
+<p>查询应用程序网关实例1 SLA状态：</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/7CCA9130" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/7CCA9130</a></p>
+<p>查询条件要以container ID为条件，如果仅以Tenant ID为查询条件，则无法查全：</p>
+<p>也可以用kusto查询;</p>
+<p>TMMgmtSlaMeasurementEventEtwTable  #查询container健康状况</p>
+<p>| where TIMESTAMP &gt;= ago(8d)</p>
+<p>| where ContainerID == &quot;466c84cf-b0c9-4913-865b-4afa42b39567&quot;</p>
+<p>//| where EntityState == &quot;VMGuestHEUpgrade&quot;</p>
+<p>| project TIMESTAMP, NodeID, ContainerID,TenantName, RoleInstanceName, Context, EntityState, OccurredTime</p>
+<p>LogContainerSnapshot    #查询container是否有变化</p>
+<p>| where tenantName == &quot;7469b9e7810f4561a11705ed2f359d93&quot;</p>
+<p>| project TIMESTAMP, nodeId, containerId, containerType, creationTime, roleInstanceName,Tenant</p>
+<p>Container健康状况如下：</p>
+<p>OccurredTime                                       Context                     EntityState</p>
+<p>2019-12-06 10:04:07.3693650    ContainerStateChanged              ContainerStateUnhealthy</p>
+<p>2019-12-06 10:04:41.6513163    ContainerStateChanged              ContainerStateStarted</p>
+<p>2019-12-06 10:06:22.7823402    ContainerStateChanged              ContainerStateUnhealthy</p>
+<p>2019-12-06 10:07:14.4396187    ContainerStateChanged              ContainerStateStarted</p>
+<p>2019-12-06 10:10:52.1627365    ContainerStateChanged              ContainerStateUnhealthy</p>
+<p>2019-12-06 10:20:21.7532105    ContainerStateChanged              ContainerStateStopped</p>
+<p>2019-12-06 10:20:21.7532105    RoleStateChanged              RoleStateDestroyed</p>
+<p>2019-12-06 10:24:48.8679613    ContainerStateChanged              ContainerStateStarted</p>
+<p>2019-12-06 10:25:04.0557852    RoleStateChanged          RoleStateCreated</p>
+<p>2019-12-06 10:25:07.0870803    RoleStateChanged          RoleStateStarting</p>
+<p>2019-12-06 10:27:16.4959314    ContainerStateChanged              ContainerStateUnhealthy</p>
+<p>2019-12-06 10:27:26.6211648    ContainerStateChanged              ContainerStateStarted</p>
+<p>2019-12-06 10:28:57.5604622    RoleStateChanged          RoleStateStarted</p>
+<p>综合以上分析初步怀疑应用程序网关实例处理连接TCP（Established）增加导致实例CPU 达到100% 因此无法处理TCP连接（前端负载均衡器探测响应和与后端池服务器探测通信）无法处理业务请求。</p>
+<p>备注: Appgw的负载均衡前端内网IP地址查询方法：</p>
+<p>Fcshell运行如下命令获取VFP信息：</p>
+<p>$ff=Get-Fabric -CloudName bjbprdapp05</p>
+<p>$tt=Get-Tenant -TenantName 7469b9e7810f4561a11705ed2f359d93 -Fabric $ff</p>
+<p>$tt.LoadBalancerSettings</p>
+<p>获取到的VFP如下：</p>
+<p>MappingTableEntries : { Role Name         : ApplicationGatewayRole</p>
+<p>VIP Endpoint      : 42.159.80.59:65503</p>
+<p>ProbeType         : None</p>
+<p>MonitorString     :</p>
+<p>DsrEnabled        : False</p>
+<p>Protocol          : tcp</p>
+<p>Programmed        : True</p>
+<p>Served By         : e9930552-c71b-4790-8e10-92de3f003d16</p>
+<p>Interface Name    : ApplicationGatewayRole:InstanceServiceHost</p>
+<p>IdleTimeoutInMins       : 0</p>
+<p>LoadBalancerPolicy       : None</p>
+<p>Mapping Table     :</p>
+<p>Source            -&gt; DIP:Port (Role Name, Role Instance Name, Endpoint Name, IS/OOS) DIP Programmed Protocol</p>
+<p>---------------------------------------------------------</p>
+<p>42.159.80.59:65503 -&gt; 10.208.92.19:65503         (ApplicationGatewayRole ApplicationGatewayRole_IN_0 InstanceServiceHost IS ) True</p>
+<p>tcp)) PreallocatedPorts:0 ByPassSnatInRegion: False</p>
+<p>,  Role Name         : ApplicationGatewayRole</p>
+<p>VIP Endpoint      : 42.159.80.59:65504</p>
+<p>42.159.80.59:65504 -&gt; 10.208.82.17:65503         (ApplicationGatewayRole ApplicationGatewayRole_IN_1 InstanceServiceHost IS ) True</p>
+<p>VIP Endpoint      : 42.159.80.59:65505</p>
+<p>42.159.80.59:65505 -&gt; 10.209.10.7:65503          (ApplicationGatewayRole ApplicationGatewayRole_IN_2 InstanceServiceHost IS ) True</p>
+<p>VIP Endpoint      : 42.159.80.59:65506</p>
+<p>42.159.80.59:65506 -&gt; 10.208.82.42:65503         (ApplicationGatewayRole ApplicationGatewayRole_IN_3 InstanceServiceHost IS ) True</p>
+<p>}</p>
+<p>VirtualIP           : 42.159.80.59</p>
+<p>VirtualIPName       : L7lbCloudServiceContractContract</p>
+<p>VlanName            :</p>
+<p>ServiceInstanceName : 7469b9e7810f4561a11705ed2f359d93.116</p>
+<p>OwningAppliance     : e9930552-c71b-4790-8e10-92de3f003d16</p>
+<p>CustomerIPAddress   :</p>
+<p>Accessibility       : Public</p>
+<p>VIP Endpoint      : 10.211.12.227:80</p>
+<p>ProbeType         : Default</p>
+<p>MonitorString     : ApplicationGatewayRole</p>
+<p>Served By         : 1961c8bf-14fa-49cd-98c1-35c4f9472028</p>
+<p>Interface Name    : ApplicationGatewayRole:Listener_80</p>
+<p>10.211.12.227:80  -&gt; 10.171.23.18@10.208.92.19:80        (ApplicationGatewayRole ApplicationGatewayRole_IN_0 Listener_80 IS )</p>
+<p>True tcp)) PreallocatedPorts:0 ByPassSnatInRegion: False</p>
+<p>10.211.12.227:80  -&gt; 10.171.23.20@10.208.82.17:80        (ApplicationGatewayRole ApplicationGatewayRole_IN_1 Listener_80 IS )</p>
+<p>10.211.12.227:80  -&gt; 10.171.23.5@10.209.10.7:80          (ApplicationGatewayRole ApplicationGatewayRole_IN_2 Listener_80 IS ) True</p>
+<p>10.211.12.227:80  -&gt; 10.171.23.6@10.208.82.42:80         (ApplicationGatewayRole ApplicationGatewayRole_IN_3 Listener_80 IS ) True</p>
+<p>VIP Endpoint      : 10.211.12.227:443</p>
+<p>Interface Name    : ApplicationGatewayRole:Listener_443</p>
+<p>10.211.12.227:443 -&gt; 10.171.23.18@10.208.92.19:443       (ApplicationGatewayRole ApplicationGatewayRole_IN_0 Listener_443 IS )</p>
+<p>10.211.12.227:443 -&gt; 10.171.23.20@10.208.82.17:443       (ApplicationGatewayRole ApplicationGatewayRole_IN_1 Listener_443 IS )</p>
+<p>10.211.12.227:443 -&gt; 10.171.23.5@10.209.10.7:443         (ApplicationGatewayRole ApplicationGatewayRole_IN_2 Listener_443 IS )</p>
+<p>10.211.12.227:443 -&gt; 10.171.23.6@10.208.82.42:443        (ApplicationGatewayRole ApplicationGatewayRole_IN_3 Listener_443 IS )</p>
+<p>VirtualIP           : 10.211.12.227</p>
+<p>VirtualIPName       : Lb:appGwPrivateFrontendIp</p>
+<p>OwningAppliance     : 1961c8bf-14fa-49cd-98c1-35c4f9472028</p>
+<p>CustomerIPAddress   : 10.171.23.19</p>
+<p>Accessibility       : Private</p></article>

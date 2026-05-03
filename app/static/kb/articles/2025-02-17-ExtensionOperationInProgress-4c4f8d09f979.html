@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="ExtensionOperationInProgress"><h1>ExtensionOperationInProgress</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-02-17 14:28:59</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Error code: ExtensionOperationInProgress</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Error code: ExtensionOperationInProgress</li>
+</ul>
+<ul>
+<li>Error message: Command execution failed.</li>
+</ul>
+<ul>
+<li>We have identified that the backup operation failed because changes were made to the Virtual Machine while the operation Create Restore Point was in progress.</li>
+</ul>
+<ul>
+<li>ErrorCode: ExtensionInstallProviderCOMMemoryQuotaReached</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Recommended Steps for CSS:</li>
+</ul>
+<ul>
+<li>ExtensionInstallProviderCOMMemoryQuotaReached</li>
+</ul>
+<ul>
+<li>In the impacted machine, open the Registry Editor by typing regedit in the Run window.</li>
+</ul>
+<ul>
+<li>Go to the HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\SubSystems - windows</li>
+</ul>
+<ul>
+<li>Right-click on Windows shared section and click Modify.</li>
+</ul>
+<ul>
+<li>Update the value with Windows SharedSection=1024,20480,4096.</li>
+</ul>
+<ul>
+<li>Once the registry is updated with above value, reboot the server and retry the backup operation.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>in BCMBackupStats kusto table</li>
+</ul>
+<ul>
+<li>or Check if the message &quot;Detail: 8007000E : ERROR_OUTOFMEMORY&quot; appears in the output of the below Kusto query:</li>
+</ul>
+<ul>
+<li>union cluster(&#39;mabprod1&#39;).database(&#39;MABKustoProd1&#39;).TraceLogMessage, cluster(&#39;mabprodweu&#39;).database(&#39;MABKustoProd&#39;).TraceLogMessage, cluster(&#39;mabprodwus&#39;).database(&#39;MABKustoProd&#39;).TraceLogMessage | where TIMESTAMP &gt; ago(15d) | where TaskId == &quot;&lt;Replace with TaskId/ActivityId&gt;&quot; | where Message contains &quot;Detail: 8007000E : ERROR_OUTOFMEMORY&quot; | summarize count() by PreciseTimeStamp, Message | order by PreciseTimeStamp asc</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>How to verify if the failure is caused by this specific root cause?</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>This could be a transient error, to resolve this issue retry the operation.</li>
+</ul>
+<ul>
+<li>What is the workaround?</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Error code: ExtensionOperationInProgress</p>
+<p>Error message: Command execution failed.</p>
+<p>Recommended Steps for CSS:</p>
+<p>We have identified that the backup operation failed because changes were made to the Virtual Machine while the operation Create Restore Point was in progress.</p>
+<p>This could be a transient error, to resolve this issue retry the operation.</p>
+<p>ExtensionInstallProviderCOMMemoryQuotaReached</p>
+<p>How to verify if the failure is caused by this specific root cause?</p>
+<p>ErrorCode: ExtensionInstallProviderCOMMemoryQuotaReached</p>
+<p>in BCMBackupStats kusto table</p>
+<p>or Check if the message &quot;Detail: 8007000E : ERROR_OUTOFMEMORY&quot; appears in the output of the below Kusto query:</p>
+<p>union cluster(&#39;mabprod1&#39;).database(&#39;MABKustoProd1&#39;).TraceLogMessage, cluster(&#39;mabprodweu&#39;).database(&#39;MABKustoProd&#39;).TraceLogMessage, cluster(&#39;mabprodwus&#39;).database(&#39;MABKustoProd&#39;).TraceLogMessage | where TIMESTAMP &gt; ago(15d) | where TaskId == &quot;&lt;Replace with TaskId/ActivityId&gt;&quot; | where Message contains &quot;Detail: 8007000E : ERROR_OUTOFMEMORY&quot; | summarize count() by PreciseTimeStamp, Message | order by PreciseTimeStamp asc</p>
+<p>What is the workaround?</p>
+<p>In the impacted machine, open the Registry Editor by typing regedit in the Run window.</p>
+<p>Go to the HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\SubSystems - windows</p>
+<p>Right-click on Windows shared section and click Modify.</p>
+<p>Update the value with Windows SharedSection=1024,20480,4096.</p>
+<p>Once the registry is updated with above value, reboot the server and retry the backup operation.</p></article>

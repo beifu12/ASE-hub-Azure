@@ -1,0 +1,398 @@
+<article class="kb-article" data-title="[AVD][FSlogix]在AVD中使用 Azure 文件存储和 Active Directory 域服务来设置 FSLogix"><h1>[AVD][FSlogix]在AVD中使用 Azure 文件存储和 Active Directory 域服务来设置 FSLogix</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-03-09 11:03:22</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>文档参考: 使用 Azure 文件存储和 Active Directory 域服务或 Azure Active Directory 域服务来设置 FSLogix 配置文件容器:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>文档参考: 使用 Azure 文件存储和 Active Directory 域服务或 Azure Active Directory 域服务来设置 FSLogix 配置文件容器:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>结合文档以及以前的KB,  通过测试总结如下:</li>
+</ul>
+<ul>
+<li># Change the execution policy to unblock importing AzFilesHybrid.psm1 module</li>
+</ul>
+<ul>
+<li># Navigate to where AzFilesHybrid is unzipped and stored and run to copy the files into your path</li>
+</ul>
+<ul>
+<li>.\CopyToPSPath.ps1</li>
+</ul>
+<ul>
+<li># Import AzFilesHybrid module</li>
+</ul>
+<ul>
+<li>Import-Module -Name AzFilesHybrid</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li># Define parameters</li>
+</ul>
+<ul>
+<li># $StorageAccountName is the name of an existing storage account that you want to join to AD</li>
+</ul>
+<ul>
+<li># for the object. It must be 20 characters or less and has certain character restrictions.</li>
+</ul>
+<ul>
+<li>$SubscriptionId = &quot;a3ea0528-5e63-429a-bf77-5cfdde804350&quot;</li>
+</ul>
+<ul>
+<li>$ResourceGroupName = &quot;myResourceGroupE2&quot;</li>
+</ul>
+<ul>
+<li>$StorageAccountName = &quot;mystorage0001&quot;</li>
+</ul>
+<ul>
+<li>#$SamAccountName = &quot;&lt;sam-account-name-here&gt;&quot;</li>
+</ul>
+<ul>
+<li># If you don&#39;t provide the OU name as an input parameter, the AD identity that represents the</li>
+</ul>
+<ul>
+<li># storage account is created under the root directory.</li>
+</ul>
+<ul>
+<li>#$OuDistinguishedName = &quot;&lt;ou-distinguishedname-here&gt;&quot;</li>
+</ul>
+<ul>
+<li># Specify the encryption algorithm used for Kerberos authentication. Using AES256 is recommended.</li>
+</ul>
+<ul>
+<li>#$EncryptionType = &quot;&lt;AES256|RC4|AES256,RC4&gt;&quot;</li>
+</ul>
+<ul>
+<li># Select the target subscription for the current session</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -SubscriptionId $SubscriptionId</li>
+</ul>
+<ul>
+<li># Register the target storage account with your active directory environment under the target OU</li>
+</ul>
+<ul>
+<li># (for example: specify the OU with Name as &quot;UserAccounts&quot; or DistinguishedName as</li>
+</ul>
+<ul>
+<li># to find the Name and DistinguishedName of your target OU. If you are using the OU Name, specify it</li>
+</ul>
+<ul>
+<li># with -OrganizationalUnitName as shown below. If you are using the OU DistinguishedName, you can set it</li>
+</ul>
+<ul>
+<li># with -OrganizationalUnitDistinguishedName. You can choose to provide one of the two names to specify</li>
+</ul>
+<ul>
+<li># the target OU. You can choose to create the identity that represents the storage account as either a</li>
+</ul>
+<ul>
+<li># and preference. Run Get-Help Join-AzStorageAccountForAuth for more details on this cmdlet. Note that</li>
+</ul>
+<ul>
+<li>Join-AzStorageAccount `</li>
+</ul>
+<ul>
+<li>-ResourceGroupName $ResourceGroupName `</li>
+</ul>
+<ul>
+<li>-StorageAccountName $StorageAccountName `</li>
+</ul>
+<ul>
+<li>Update-AzStorageAccountAuthForAES256 -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName</li>
+</ul>
+<ul>
+<li>Debug-AzStorageAccountAuth -StorageAccountName $StorageAccountName -ResourceGroupName $ResourceGroupName -Verbose</li>
+</ul>
+<ul>
+<li>实验中在文件共享级别（IAM）添加了存储文件数据 SMB 共享参与者</li>
+</ul>
+<ul>
+<li>2,  net use &lt;desired-drive-letter&gt;: \\&lt;storage-account-name&gt;.file.core.chinacloudapi.cn\&lt;share-name&gt; /user:azure\&lt;storage-account-name&gt; &lt;storage-account-key&gt;</li>
+</ul>
+<ul>
+<li>icacls &lt;mounted-drive-letter&gt;: /grant &lt;user-email&gt;:(M)</li>
+</ul>
+<ul>
+<li>icacls &lt;mounted-drive-letter&gt;: /grant &quot;Creator Owner&quot;:(OI)(CI)(IO)(M)</li>
+</ul>
+<ul>
+<li>icacls &lt;mounted-drive-letter&gt;: /remove &quot;Authenticated Users&quot;</li>
+</ul>
+<ul>
+<li>icacls &lt;mounted-drive-letter&gt;: /remove &quot;Builtin\Users&quot;</li>
+</ul>
+<ul>
+<li>可允许 Azure 虚拟桌面用户创建自己的配置文件容器，同时阻止其他用户访问其配置文件容器。</li>
+</ul>
+<ul>
+<li>4, 配置组策略 (AVD场景化实验手册中12-17步)(DC中操作)</li>
+</ul>
+<ul>
+<li>5，修改注册表 (会话主机中操作)</li>
+</ul>
+<ul>
+<li>关键: 注册表VHDLocation 一定要替换为 &lt;storage-account-name&gt;.file.core.chinacloudapi.cn\&lt;share-name&gt;</li>
+</ul>
+<ul>
+<li>Name</li>
+</ul>
+<ul>
+<li>Type</li>
+</ul>
+<ul>
+<li>Data/Value</li>
+</ul>
+<ul>
+<li>DWORD</li>
+</ul>
+<ul>
+<li>1</li>
+</ul>
+<ul>
+<li>VHDLocations</li>
+</ul>
+<ul>
+<li>Multi-String Value</li>
+</ul>
+<ul>
+<li>\\&lt;storage-account-name&gt;.file.core.windows.net\&lt;share-name&gt;</li>
+</ul>
+<ul>
+<li>使用Event Viewer:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>文档参考: 使用 Azure 文件存储和 Active Directory 域服务或 Azure Active Directory 域服务来设置 FSLogix 配置文件容器:</li>
+</ul>
+<ul>
+<li>2,创建好之后, 要在 Storage Account中的Azure File启用AD验证这项功能</li>
+</ul>
+<ul>
+<li># Login with an Azure AD credential that has either storage account owner or contributor Azure role assignment</li>
+</ul>
+<ul>
+<li># $SamAccountName is the name of the to-be-created AD object, which is used by AD as the logon name</li>
+</ul>
+<ul>
+<li>#$DomainAccountType = &quot;&lt;ComputerAccount|ServiceLogonAccount&gt;&quot; # Default is set as ComputerAccount</li>
+</ul>
+<ul>
+<li># Note that ServiceLogonAccount does not support AES256 encryption.</li>
+</ul>
+<ul>
+<li># Service Logon Account or Computer Account (default parameter value), depending on your AD permissions</li>
+</ul>
+<ul>
+<li># Service Logon Accounts do not support AES256 encryption.</li>
+</ul>
+<ul>
+<li># Note that if you set $DomainAccountType to ServiceLogonAccount, running this command will change</li>
+</ul>
+<ul>
+<li># the account type to ComputerAccount because ServiceLogonAccount doesn&#39;t support AES256.</li>
+</ul>
+<ul>
+<li># You can run the Debug-AzStorageAccountAuth cmdlet to conduct a set of basic checks on your AD configuration</li>
+</ul>
+<ul>
+<li># with the logged on AD user. This cmdlet is supported on AzFilesHybrid v0.1.2+ version. For more details on</li>
+</ul>
+<ul>
+<li># the checks performed in this cmdlet, see Azure Files Windows troubleshooting guide.</li>
+</ul>
+<ul>
+<li>验证我们的Storage Account中的Azure File，已经启用了AD验证这项功能。在21v环境下，生成的object可能会跑到了Domain Controller这里。</li>
+</ul>
+<ul>
+<li>步骤三：挂载文件共享</li>
+</ul>
+<ul>
+<li>$regPath = &quot;HKLM:\SOFTWARE\FSLogix\Profiles&quot;</li>
+</ul>
+<ul>
+<li>配置成功之后，1,每次连接会话主机开机页面中会显示，加载Fslogix服务页面，2,以及每次登录会在portal文件共享里看到用户配置文件.</li>
+</ul>
+<ul>
+<li>6, troubleshooting</li>
+</ul>
+<ul>
+<li>注意： 主要查看1, 是否在DC中分配了NTFS权限  (步骤四)</li>
+</ul>
+<ul>
+<li>2, 步骤二中添加了存储文件数据 SMB 共享参与者权限可以授予ADDC同步上来的组</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>#使用 AzFilesHybrid PowerShell 模块</li>
+</ul>
+<ul>
+<li>Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser</li>
+</ul>
+<ul>
+<li>#运行 Join-AzStorageAccount   只需如下绿色标注的命令参数，其余注释</li>
+</ul>
+<ul>
+<li>#&quot;OU=UserAccounts,DC=CONTOSO,DC=COM&quot;). You can use this PowerShell cmdlet: Get-ADOrganizationalUnit</li>
+</ul>
+<ul>
+<li>两个方法: 1, portal文件共享，连接，复制脚本到DC中，使用powershell挂载.</li>
+</ul>
+<ul>
+<li>步骤四:   给予AVD用户Full Control的NTFS的权限。（如果要使用官方文档中的命令，请使用CMD，而不是Powershell）</li>
+</ul>
+<ul>
+<li>New-ItemProperty -Path $regPath -Name Enabled -PropertyType DWORD -Value 1 -Force</li>
+</ul>
+<ul>
+<li>New-ItemProperty -Path $regPath -Name VHDLocations -PropertyType MultiString -Value \\&lt;storage-account-name&gt;.file.core.windows.net\&lt;share-name&gt; -Force   file.core.chinacloudapi.cn---替换</li>
+</ul>
+<ul>
+<li>3, 修改注册表在会话主机中设置. 可以跑命令 同5中步骤, 或者在注册表中直接修改</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>1, 创建用户保存用户配置文件的Azure File的存储账户, 创建SMB文件共享，建议选择与 Azure 虚拟桌面主机池相同的位置</li>
+</ul>
+<ul>
+<li># Run the command below to enable AES256 encryption. If you plan to use RC4, you can skip this step.</li>
+</ul>
+<ul>
+<li>Enabled</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/virtual-desktop/fslogix-profile-container-configure-azure-files-active-directory?tabs=adds" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-desktop/fslogix-profile-container-configure-azure-files-active-directory?tabs=adds</a></li>
+</ul>
+<ul>
+<li>步骤一(在DC域控中操作)， 为 Azure 文件共享存储启用 AD DS 身份验证 : <a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-enable?WT.mc_id=Portal-Microsoft_Azure_FileStorage" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-enable?WT.mc_id=Portal-Microsoft_Azure_FileStorage</a></li>
+</ul>
+<ul>
+<li># See <a href="https://learn.microsoft.com/windows/win32/adschema/a-samaccountname" target="_blank" rel="noopener">https://learn.microsoft.com/windows/win32/adschema/a-samaccountname</a> for more information.</li>
+</ul>
+<ul>
+<li>步骤二: 分配共享级权限 :<a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-assign-permissions?WT.mc_id=Portal-Microsoft_Azure_FileStorage&amp;tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-assign-permissions?WT.mc_id=Portal-Microsoft_Azure_FileStorage&amp;tabs=azure-portal</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-configure-permissions?WT.mc_id=Portal-Microsoft_Azure_FileStorage" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-configure-permissions?WT.mc_id=Portal-Microsoft_Azure_FileStorage</a></li>
+</ul>
+<ul>
+<li>设置 NTFS 权限 : <a href="https://learn.microsoft.com/zh-cn/azure/virtual-desktop/fslogix-profile-container-configure-azure-files-active-directory?tabs=adds" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-desktop/fslogix-profile-container-configure-azure-files-active-directory?tabs=adds</a></li>
+</ul>
+<ul>
+<li>3, <a href="https://docs.microsoft.com/en-us/fslogix/install-ht,下载FSLogix，并解压缩。(DC中操作)" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/fslogix/install-ht,下载FSLogix，并解压缩。(DC中操作)</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/vitual-desktop/create-file-share和https://docs.microsoft.com/en-us/fslogix/use-group-policy-templates-ht" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/vitual-desktop/create-file-share和https://docs.microsoft.com/en-us/fslogix/use-group-policy-templates-ht</a></li>
+</ul>
+<ul>
+<li>将会话主机配置为使用配置文件容器: <a href="https://learn.microsoft.com/zh-cn/azure/virtual-desktop/fslogix-profile-container-configure-azure-files-active-directory?tabs=adds#configure-session-hosts-to-use-profile-container" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-desktop/fslogix-profile-container-configure-azure-files-active-directory?tabs=adds#configure-session-hosts-to-use-profile-container</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023-12-01</p>
+<p>文档参考: 使用 Azure 文件存储和 Active Directory 域服务或 Azure Active Directory 域服务来设置 FSLogix 配置文件容器:</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/virtual-desktop/fslogix-profile-container-configure-azure-files-active-directory?tabs=adds" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-desktop/fslogix-profile-container-configure-azure-files-active-directory?tabs=adds</a></p>
+<p>结合文档以及以前的KB,  通过测试总结如下:</p>
+<p>1, 创建用户保存用户配置文件的Azure File的存储账户, 创建SMB文件共享，建议选择与 Azure 虚拟桌面主机池相同的位置</p>
+<p>2,创建好之后, 要在 Storage Account中的Azure File启用AD验证这项功能</p>
+<p>步骤一(在DC域控中操作)， 为 Azure 文件共享存储启用 AD DS 身份验证 : <a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-enable?WT.mc_id=Portal-Microsoft_Azure_FileStorage" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-enable?WT.mc_id=Portal-Microsoft_Azure_FileStorage</a></p>
+<p>#使用 AzFilesHybrid PowerShell 模块</p>
+<h1>Change the execution policy to unblock importing AzFilesHybrid.psm1 module</h1>
+<p>Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser</p>
+<h1>Navigate to where AzFilesHybrid is unzipped and stored and run to copy the files into your path</h1>
+<p>.\CopyToPSPath.ps1</p>
+<h1>Import AzFilesHybrid module</h1>
+<p>Import-Module -Name AzFilesHybrid</p>
+<h1>Login with an Azure AD credential that has either storage account owner or contributor Azure role assignment</h1>
+<p>Connect-AzAccount -Environment AzureChinaCloud</p>
+<p>#运行 Join-AzStorageAccount   只需如下绿色标注的命令参数，其余注释</p>
+<h1>Define parameters</h1>
+<h1>$StorageAccountName is the name of an existing storage account that you want to join to AD</h1>
+<h1>$SamAccountName is the name of the to-be-created AD object, which is used by AD as the logon name</h1>
+<h1>for the object. It must be 20 characters or less and has certain character restrictions.</h1>
+<h1>See <a href="https://learn.microsoft.com/windows/win32/adschema/a-samaccountname" target="_blank" rel="noopener">https://learn.microsoft.com/windows/win32/adschema/a-samaccountname</a> for more information.</h1>
+<p>$SubscriptionId = &quot;a3ea0528-5e63-429a-bf77-5cfdde804350&quot;</p>
+<p>$ResourceGroupName = &quot;myResourceGroupE2&quot;</p>
+<p>$StorageAccountName = &quot;mystorage0001&quot;</p>
+<p>#$SamAccountName = &quot;&lt;sam-account-name-here&gt;&quot;</p>
+<p>#$DomainAccountType = &quot;&lt;ComputerAccount|ServiceLogonAccount&gt;&quot; # Default is set as ComputerAccount</p>
+<h1>If you don&#39;t provide the OU name as an input parameter, the AD identity that represents the</h1>
+<h1>storage account is created under the root directory.</h1>
+<p>#$OuDistinguishedName = &quot;&lt;ou-distinguishedname-here&gt;&quot;</p>
+<h1>Specify the encryption algorithm used for Kerberos authentication. Using AES256 is recommended.</h1>
+<h1>Note that ServiceLogonAccount does not support AES256 encryption.</h1>
+<p>#$EncryptionType = &quot;&lt;AES256|RC4|AES256,RC4&gt;&quot;</p>
+<h1>Select the target subscription for the current session</h1>
+<p>Select-AzSubscription -SubscriptionId $SubscriptionId</p>
+<h1>Register the target storage account with your active directory environment under the target OU</h1>
+<h1>(for example: specify the OU with Name as &quot;UserAccounts&quot; or DistinguishedName as</h1>
+<p>#&quot;OU=UserAccounts,DC=CONTOSO,DC=COM&quot;). You can use this PowerShell cmdlet: Get-ADOrganizationalUnit</p>
+<h1>to find the Name and DistinguishedName of your target OU. If you are using the OU Name, specify it</h1>
+<h1>with -OrganizationalUnitName as shown below. If you are using the OU DistinguishedName, you can set it</h1>
+<h1>with -OrganizationalUnitDistinguishedName. You can choose to provide one of the two names to specify</h1>
+<h1>the target OU. You can choose to create the identity that represents the storage account as either a</h1>
+<h1>Service Logon Account or Computer Account (default parameter value), depending on your AD permissions</h1>
+<h1>and preference. Run Get-Help Join-AzStorageAccountForAuth for more details on this cmdlet. Note that</h1>
+<h1>Service Logon Accounts do not support AES256 encryption.</h1>
+<p>Join-AzStorageAccount `</p>
+<p>-ResourceGroupName $ResourceGroupName `</p>
+<p>-StorageAccountName $StorageAccountName `</p>
+<h1>Run the command below to enable AES256 encryption. If you plan to use RC4, you can skip this step.</h1>
+<h1>Note that if you set $DomainAccountType to ServiceLogonAccount, running this command will change</h1>
+<h1>the account type to ComputerAccount because ServiceLogonAccount doesn&#39;t support AES256.</h1>
+<p>Update-AzStorageAccountAuthForAES256 -ResourceGroupName $ResourceGroupName -StorageAccountName $StorageAccountName</p>
+<h1>You can run the Debug-AzStorageAccountAuth cmdlet to conduct a set of basic checks on your AD configuration</h1>
+<h1>with the logged on AD user. This cmdlet is supported on AzFilesHybrid v0.1.2+ version. For more details on</h1>
+<h1>the checks performed in this cmdlet, see Azure Files Windows troubleshooting guide.</h1>
+<p>Debug-AzStorageAccountAuth -StorageAccountName $StorageAccountName -ResourceGroupName $ResourceGroupName -Verbose</p>
+<p>验证我们的Storage Account中的Azure File，已经启用了AD验证这项功能。在21v环境下，生成的object可能会跑到了Domain Controller这里。</p>
+<p>步骤二: 分配共享级权限 :<a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-assign-permissions?WT.mc_id=Portal-Microsoft_Azure_FileStorage&amp;tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-assign-permissions?WT.mc_id=Portal-Microsoft_Azure_FileStorage&amp;tabs=azure-portal</a></p>
+<p>实验中在文件共享级别（IAM）添加了存储文件数据 SMB 共享参与者</p>
+<p>步骤三：挂载文件共享</p>
+<p>两个方法: 1, portal文件共享，连接，复制脚本到DC中，使用powershell挂载.</p>
+<p>2,  net use &lt;desired-drive-letter&gt;: \\&lt;storage-account-name&gt;.file.core.chinacloudapi.cn\&lt;share-name&gt; /user:azure\&lt;storage-account-name&gt; &lt;storage-account-key&gt;</p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-configure-permissions?WT.mc_id=Portal-Microsoft_Azure_FileStorage" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-identity-ad-ds-configure-permissions?WT.mc_id=Portal-Microsoft_Azure_FileStorage</a></p>
+<p>步骤四:   给予AVD用户Full Control的NTFS的权限。（如果要使用官方文档中的命令，请使用CMD，而不是Powershell）</p>
+<p>设置 NTFS 权限 : <a href="https://learn.microsoft.com/zh-cn/azure/virtual-desktop/fslogix-profile-container-configure-azure-files-active-directory?tabs=adds" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-desktop/fslogix-profile-container-configure-azure-files-active-directory?tabs=adds</a></p>
+<p>icacls &lt;mounted-drive-letter&gt;: /grant &lt;user-email&gt;:(M)</p>
+<p>icacls &lt;mounted-drive-letter&gt;: /grant &quot;Creator Owner&quot;:(OI)(CI)(IO)(M)</p>
+<p>icacls &lt;mounted-drive-letter&gt;: /remove &quot;Authenticated Users&quot;</p>
+<p>icacls &lt;mounted-drive-letter&gt;: /remove &quot;Builtin\Users&quot;</p>
+<p>可允许 Azure 虚拟桌面用户创建自己的配置文件容器，同时阻止其他用户访问其配置文件容器。</p>
+<p>3, <a href="https://docs.microsoft.com/en-us/fslogix/install-ht,下载FSLogix，并解压缩。(DC中操作)" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/fslogix/install-ht,下载FSLogix，并解压缩。(DC中操作)</a></p>
+<p>4, 配置组策略 (AVD场景化实验手册中12-17步)(DC中操作)</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/vitual-desktop/create-file-share和https://docs.microsoft.com/en-us/fslogix/use-group-policy-templates-ht" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/vitual-desktop/create-file-share和https://docs.microsoft.com/en-us/fslogix/use-group-policy-templates-ht</a></p>
+<p>5，修改注册表 (会话主机中操作)</p>
+<p>将会话主机配置为使用配置文件容器: <a href="https://learn.microsoft.com/zh-cn/azure/virtual-desktop/fslogix-profile-container-configure-azure-files-active-directory?tabs=adds#configure-session-hosts-to-use-profile-container" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-desktop/fslogix-profile-container-configure-azure-files-active-directory?tabs=adds#configure-session-hosts-to-use-profile-container</a></p>
+<p>关键: 注册表VHDLocation 一定要替换为 &lt;storage-account-name&gt;.file.core.chinacloudapi.cn\&lt;share-name&gt;</p>
+<p>$regPath = &quot;HKLM:\SOFTWARE\FSLogix\Profiles&quot;</p>
+<p>New-ItemProperty -Path $regPath -Name Enabled -PropertyType DWORD -Value 1 -Force</p>
+<p>New-ItemProperty -Path $regPath -Name VHDLocations -PropertyType MultiString -Value \\&lt;storage-account-name&gt;.file.core.windows.net\&lt;share-name&gt; -Force   file.core.chinacloudapi.cn---替换</p>
+<p>Name</p>
+<p>Type</p>
+<p>Data/Value</p>
+<p>Enabled</p>
+<p>DWORD</p>
+<p>1</p>
+<p>VHDLocations</p>
+<p>Multi-String Value</p>
+<p>\\&lt;storage-account-name&gt;.file.core.windows.net\&lt;share-name&gt;</p>
+<p>配置成功之后，1,每次连接会话主机开机页面中会显示，加载Fslogix服务页面，2,以及每次登录会在portal文件共享里看到用户配置文件.</p>
+<p>6, troubleshooting</p>
+<p>使用Event Viewer:</p>
+<p>注意： 主要查看1, 是否在DC中分配了NTFS权限  (步骤四)</p>
+<p>2, 步骤二中添加了存储文件数据 SMB 共享参与者权限可以授予ADDC同步上来的组</p>
+<p>3, 修改注册表在会话主机中设置. 可以跑命令 同5中步骤, 或者在注册表中直接修改</p></article>

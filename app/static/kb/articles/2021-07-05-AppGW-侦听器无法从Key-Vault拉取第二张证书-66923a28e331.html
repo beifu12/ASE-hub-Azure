@@ -1,0 +1,112 @@
+<article class="kb-article" data-title="AppGW 侦听器无法从Key Vault拉取第二张证书"><h1>AppGW 侦听器无法从Key Vault拉取第二张证书</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Bug</li>
+<li>最近修改: 2021-07-05 21:08:22</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>提交后即出现报错。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>提交后即出现报错。</li>
+</ul>
+<ul>
+<li>&quot;error&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;Cannot parse the request.&quot;,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Latest Update</li>
+</ul>
+<ul>
+<li>2021-Jun-25</li>
+</ul>
+<ul>
+<li>创建一个https的listener，其证书从key vault拉取。可以看到，证书会被自动命名为listener name+&quot;vaultcert&quot;。</li>
+</ul>
+<ul>
+<li>打开这个listener并且编辑其证书，创建一个新的证书并且从Key Vault选择。</li>
+</ul>
+<ul>
+<li>F12错误返回代码400，并能看到如下错误信息：</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;InvalidRequestFormat&quot;,</li>
+</ul>
+<ul>
+<li>&quot;details&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;DuplicateResourceName&quot;,</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;Resource /subscriptions//resourceGroups//providers/Microsoft.Network/applicationGateways/ has two child resources with the same name (mylistenervaultCert).&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>错误产生原因：</li>
+</ul>
+<ul>
+<li>第二个从Key Vault拉取的证书也会被命名为listener name+&quot;vaultcert&quot;，与之前已经存在的证书重名。</li>
+</ul>
+<ul>
+<li>勾选Renew or edit selected certificate来修改已经存在的证书。这样新的证书会覆盖旧的证书，而不是添加一个新证书。</li>
+</ul>
+<ul>
+<li>2021年7月末</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题复现步骤：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Workaround:</li>
+</ul>
+<ul>
+<li>Bug预计修复时间：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Latest Update</p>
+<p>2021-Jun-25</p>
+<p>问题复现步骤：</p>
+<p>创建一个https的listener，其证书从key vault拉取。可以看到，证书会被自动命名为listener name+&quot;vaultcert&quot;。</p>
+<p>打开这个listener并且编辑其证书，创建一个新的证书并且从Key Vault选择。</p>
+<p>提交后即出现报错。</p>
+<p>F12错误返回代码400，并能看到如下错误信息：</p>
+<p>{</p>
+<p>&quot;error&quot;: {</p>
+<p>&quot;code&quot;: &quot;InvalidRequestFormat&quot;,</p>
+<p>&quot;message&quot;: &quot;Cannot parse the request.&quot;,</p>
+<p>&quot;details&quot;: [</p>
+<p>&quot;code&quot;: &quot;DuplicateResourceName&quot;,</p>
+<p>&quot;message&quot;: &quot;Resource /subscriptions//resourceGroups//providers/Microsoft.Network/applicationGateways/ has two child resources with the same name (mylistenervaultCert).&quot;</p>
+<p>}</p>
+<p>]</p>
+<p>错误产生原因：</p>
+<p>第二个从Key Vault拉取的证书也会被命名为listener name+&quot;vaultcert&quot;，与之前已经存在的证书重名。</p>
+<p>Workaround:</p>
+<p>勾选Renew or edit selected certificate来修改已经存在的证书。这样新的证书会覆盖旧的证书，而不是添加一个新证书。</p>
+<p>Bug预计修复时间：</p>
+<p>2021年7月末</p></article>

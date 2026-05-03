@@ -1,0 +1,56 @@
+<article class="kb-article" data-title="关闭Windows防火墙"><h1>关闭Windows防火墙</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Cli</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-01-09 14:51:22</li>
+<li>JD 相关性: 自动化/命令工具</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>#使用CLI登录Azure账号</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>#使用CLI登录Azure账号</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>#使用CLI登录Azure账号</li>
+</ul>
+<ul>
+<li>#使用run-command关闭防火墙</li>
+</ul>
+<ul>
+<li>run</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az cloud set -n AzureChinaCloud</li>
+</ul>
+<ul>
+<li>az login</li>
+</ul>
+<ul>
+<li>az account set -s d3c17595-846b-42e1-8e58-dc872136fbd2</li>
+</ul>
+<ul>
+<li>az vm run-command invoke -g ResourceGroup -n xiaojingVM --command-id RunPowerShellScript --scripts &quot;NetSh Advfirewall set allprofiles state off&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>#使用CLI登录Azure账号</p>
+<p>az cloud set -n AzureChinaCloud</p>
+<p>az login</p>
+<p>az account set -s d3c17595-846b-42e1-8e58-dc872136fbd2</p>
+<p>#使用run-command关闭防火墙</p>
+<p>az vm run-command invoke -g ResourceGroup -n xiaojingVM --command-id RunPowerShellScript --scripts &quot;NetSh Advfirewall set allprofiles state off&quot;</p>
+<p>run</p></article>

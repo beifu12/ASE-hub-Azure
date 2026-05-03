@@ -1,0 +1,100 @@
+<article class="kb-article" data-title="Linux WAAgent 状态排查"><h1>Linux WAAgent 状态排查</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-08-20 11:36:00</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>root@CN-AZR-PUADOA01:~# service walinuxagent status</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>root@CN-AZR-PUADOA01:~# service walinuxagent status</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>root@CN-AZR-PUADOA01:~# service walinuxagent status</li>
+</ul>
+<ul>
+<li>● walinuxagent.service - Azure Linux Agent</li>
+</ul>
+<ul>
+<li>Active: active (running) since Tue 2021-12-14 10:47:23 UTC; 7s ago</li>
+</ul>
+<ul>
+<li>Main PID: 12499 (python3)</li>
+</ul>
+<ul>
+<li>Tasks: 2 (limit: 4915)</li>
+</ul>
+<ul>
+<li>CGroup: /system.slice/walinuxagent.service</li>
+</ul>
+<ul>
+<li>└─12499 /usr/bin/python3 -u /usr/sbin/waagent -daemon</li>
+</ul>
+<ul>
+<li>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: 2021/12/14 10:47:30.666801 WARNING Daemon Too many files under: /var/lib/waagent/events, removing oldest</li>
+</ul>
+<ul>
+<li>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: 2021/12/14 10:47:30.667866 WARNING Daemon Agent WALinuxAgent-2.2.45 launched with command &#39;python3 -u /usr/sbin/waagent</li>
+</ul>
+<ul>
+<li>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: 2021/12/14 10:47:30.670435 INFO Daemon Installed Agent WALinuxAgent-2.2.45 is the most current agent</li>
+</ul>
+<ul>
+<li>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: /usr/sbin/waagent:27: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module&#39;s document</li>
+</ul>
+<ul>
+<li>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: import imp</li>
+</ul>
+<ul>
+<li>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: Traceback (most recent call last):</li>
+</ul>
+<ul>
+<li>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: File &quot;/usr/sbin/waagent&quot;, line 31, in &lt;module&gt;</li>
+</ul>
+<ul>
+<li>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: import azurelinuxagent.agent as agent</li>
+</ul>
+<ul>
+<li>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: [</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Loaded: loaded (/lib/systemd/system/walinuxagent.service; enabled; vendor preset: enabled)</li>
+</ul>
+<ul>
+<li>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: 2021/12/14 10:47:30.665219 ERROR Daemon Event: name=WALinuxAgent, op=Enable, message=eJw1zLsOgzAMQNFf8cYUokK7sGVn7+wSt4k</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>root@CN-AZR-PUADOA01:~# service walinuxagent status</p>
+<p>● walinuxagent.service - Azure Linux Agent</p>
+<p>Loaded: loaded (/lib/systemd/system/walinuxagent.service; enabled; vendor preset: enabled)</p>
+<p>Active: active (running) since Tue 2021-12-14 10:47:23 UTC; 7s ago</p>
+<p>Main PID: 12499 (python3)</p>
+<p>Tasks: 2 (limit: 4915)</p>
+<p>CGroup: /system.slice/walinuxagent.service</p>
+<p>└─12499 /usr/bin/python3 -u /usr/sbin/waagent -daemon</p>
+<p>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: 2021/12/14 10:47:30.665219 ERROR Daemon Event: name=WALinuxAgent, op=Enable, message=eJw1zLsOgzAMQNFf8cYUokK7sGVn7+wSt4k</p>
+<p>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: 2021/12/14 10:47:30.666801 WARNING Daemon Too many files under: /var/lib/waagent/events, removing oldest</p>
+<p>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: 2021/12/14 10:47:30.667866 WARNING Daemon Agent WALinuxAgent-2.2.45 launched with command &#39;python3 -u /usr/sbin/waagent</p>
+<p>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: 2021/12/14 10:47:30.670435 INFO Daemon Installed Agent WALinuxAgent-2.2.45 is the most current agent</p>
+<p>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: /usr/sbin/waagent:27: DeprecationWarning: the imp module is deprecated in favour of importlib; see the module&#39;s document</p>
+<p>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: import imp</p>
+<p>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: Traceback (most recent call last):</p>
+<p>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: File &quot;/usr/sbin/waagent&quot;, line 31, in &lt;module&gt;</p>
+<p>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: import azurelinuxagent.agent as agent</p>
+<p>Dec 14 10:47:30 CN-AZR-PUADOA01 python3[12499]: [</p></article>

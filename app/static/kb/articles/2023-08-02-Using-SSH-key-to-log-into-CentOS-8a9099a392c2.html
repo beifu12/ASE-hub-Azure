@@ -1,0 +1,113 @@
+<article class="kb-article" data-title="Using SSH key to log into CentOS"><h1>Using SSH key to log into CentOS</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: EMS E3 and AIP P1</li>
+<li>Section: English KB</li>
+<li>最近修改: 2023-08-02 16:09:59</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Translated by:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Translated by:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Translated by:</li>
+</ul>
+<ul>
+<li>First create a user:</li>
+</ul>
+<ul>
+<li>Useradd user01</li>
+</ul>
+<ul>
+<li>Then generate the ssh directory for this user:</li>
+</ul>
+<ul>
+<li>Mkdir /home/user01/.ssh</li>
+</ul>
+<ul>
+<li>Switch to this directory:</li>
+</ul>
+<ul>
+<li>Cd /home/user01/.ssh</li>
+</ul>
+<ul>
+<li>Create an authorized keys file in this directory.</li>
+</ul>
+<ul>
+<li>Vim authorized keys</li>
+</ul>
+<ul>
+<li>Then use the key generation tool to generate the public and private keys (here we use the tools that come with xshell. Putty also provides a similar tool):</li>
+</ul>
+<ul>
+<li>The DSA encryption algorithm is selected by default.</li>
+</ul>
+<ul>
+<li>Next, you can assign a password to this key:</li>
+</ul>
+<ul>
+<li>The content of the key will be generated:</li>
+</ul>
+<ul>
+<li>Save the contents of the key and paste it into the authorized_keys file：</li>
+</ul>
+<ul>
+<li>When you are done, create a new connection：</li>
+</ul>
+<ul>
+<li>Edit the authentication method and use the key we created before to authenticate：</li>
+</ul>
+<ul>
+<li>After the connection is successful, you can&#39;t access the root privilege. You need to edit the sudo configuration file (this operation requires another session and needs to be on the root account to modify it)：</li>
+</ul>
+<ul>
+<li>vim /etc/sudoers.d/waagent</li>
+</ul>
+<ul>
+<li>Add the following line：</li>
+</ul>
+<ul>
+<li>Save and exit, it should take effect immediately.</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>User01 ALL = (ALL) NOPASSWD: ALL</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Translated by:</p>
+<p>2018/11/05</p>
+<p>First create a user:</p>
+<p>Useradd user01</p>
+<p>Then generate the ssh directory for this user:</p>
+<p>Mkdir /home/user01/.ssh</p>
+<p>Switch to this directory:</p>
+<p>Cd /home/user01/.ssh</p>
+<p>Create an authorized keys file in this directory.</p>
+<p>Vim authorized keys</p>
+<p>Then use the key generation tool to generate the public and private keys (here we use the tools that come with xshell. Putty also provides a similar tool):</p>
+<p>The DSA encryption algorithm is selected by default.</p>
+<p>Next, you can assign a password to this key:</p>
+<p>The content of the key will be generated:</p>
+<p>Save the contents of the key and paste it into the authorized_keys file：</p>
+<p>When you are done, create a new connection：</p>
+<p>Edit the authentication method and use the key we created before to authenticate：</p>
+<p>After the connection is successful, you can&#39;t access the root privilege. You need to edit the sudo configuration file (this operation requires another session and needs to be on the root account to modify it)：</p>
+<p>vim /etc/sudoers.d/waagent</p>
+<p>Add the following line：</p>
+<p>User01 ALL = (ALL) NOPASSWD: ALL</p>
+<p>Save and exit, it should take effect immediately.</p></article>

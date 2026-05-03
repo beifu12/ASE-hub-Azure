@@ -1,0 +1,116 @@
+<article class="kb-article" data-title="存储账号Sftp由于防火墙显示认证失败"><h1>存储账号Sftp由于防火墙显示认证失败</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-04-28 15:44:24</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错信息如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错信息如下：</li>
+</ul>
+<ul>
+<li>Authentication failed.</li>
+</ul>
+<ul>
+<li>这个报错很不友好，显示的是认证失败，实际就是被存储防火墙拦截了：</li>
+</ul>
+<ul>
+<li>这样一来就不会走之前客户设定的路由线路，没有经过客户本地的防火墙再访问公网，所以对端存储账号白名单添加这个防火墙的公网ip访问就会报认证失败。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Received disconnect from 52.130.106.68 port 22:11: - RequestId:ed3ffaaa-c01e-002d-0903-97a511000000 Time:2024-04-25T11:23:41.0799657Z</li>
+</ul>
+<ul>
+<li>Couldn&#39;t read packet: Connection reset by peer</li>
+</ul>
+<ul>
+<li>环境描述：</li>
+</ul>
+<ul>
+<li>客户azure vm通过自定义路由，指向自己的防火墙通过公网，访问另外一个公司订阅的存储账号的sftp服务，然后对方公司的存储账号是通过配置公网ip的白名单做限制。</li>
+</ul>
+<ul>
+<li>[root@N3-Dms-Pro-app04 ccip-ssh]# paping cdmpcnn3dataprod.blob.core.chinacloudapi.cn -p 22</li>
+</ul>
+<ul>
+<li>paping v1.5.5 - Copyright (c) 2011 Mike Lovell</li>
+</ul>
+<ul>
+<li>Connecting to blob.zqz20prdstr03a.store.core.chinacloudapi.cn [52.130.106.68] on TCP 22:</li>
+</ul>
+<ul>
+<li>客户在给我们开工单前有个premier工单给指向的是系统问题，需要升级ssl版本和centos版本，但是没有解决问题。</li>
+</ul>
+<ul>
+<li>我创建了个测试开启sftp的存储账号让客户链接，可以azure vm就可以访问，另外客户测试创建一台新的test vm 出口指向自己本地防火墙也可以访问目标存储账号。所以感觉还是网络相关问题。</li>
+</ul>
+<ul>
+<li>这里有个很容易被忽略的问题：</li>
+</ul>
+<ul>
+<li>一旦在存储账号的网络中选择已从所选虚拟网络和 IP 地址启用：</li>
+</ul>
+<ul>
+<li>且添加了某个虚拟网络：</li>
+</ul>
+<ul>
+<li>这个虚拟网络的子网上就会自动启用storage的服务终结点：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>请书文帮忙排查了客户的路由表，查看子网路由表发现由于开启了服务终结点添加了新的路由，导致之前的默认路由不生效，没有通过客户的防火墙公网IP作为出口，所以对方存储账号添加客户本地防火墙的公网IP也不生效。</li>
+</ul>
+<ul>
+<li>然后查看子网中虚拟机的有效路由表就会多出到服务终结点的路由条目：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>使用paping还可以ping通22端口，更会让客户认为不是网络问题。</li>
+</ul>
+<ul>
+<li>Connected to 52.130.106.68: time=1.33ms protocol=TCP port=22</li>
+</ul>
+<ul>
+<li>Connected to 52.130.106.68: time=1.60ms protocol=TCP port=22</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案，删除这个storage 服务终结点。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-04-28</p>
+<p>报错信息如下：</p>
+<p>Received disconnect from 52.130.106.68 port 22:11: - RequestId:ed3ffaaa-c01e-002d-0903-97a511000000 Time:2024-04-25T11:23:41.0799657Z</p>
+<p>Authentication failed.</p>
+<p>Couldn&#39;t read packet: Connection reset by peer</p>
+<p>环境描述：</p>
+<p>客户azure vm通过自定义路由，指向自己的防火墙通过公网，访问另外一个公司订阅的存储账号的sftp服务，然后对方公司的存储账号是通过配置公网ip的白名单做限制。</p>
+<p>这个报错很不友好，显示的是认证失败，实际就是被存储防火墙拦截了：</p>
+<p>使用paping还可以ping通22端口，更会让客户认为不是网络问题。</p>
+<p>[root@N3-Dms-Pro-app04 ccip-ssh]# paping cdmpcnn3dataprod.blob.core.chinacloudapi.cn -p 22</p>
+<p>paping v1.5.5 - Copyright (c) 2011 Mike Lovell</p>
+<p>Connecting to blob.zqz20prdstr03a.store.core.chinacloudapi.cn [52.130.106.68] on TCP 22:</p>
+<p>Connected to 52.130.106.68: time=1.33ms protocol=TCP port=22</p>
+<p>Connected to 52.130.106.68: time=1.60ms protocol=TCP port=22</p>
+<p>客户在给我们开工单前有个premier工单给指向的是系统问题，需要升级ssl版本和centos版本，但是没有解决问题。</p>
+<p>我创建了个测试开启sftp的存储账号让客户链接，可以azure vm就可以访问，另外客户测试创建一台新的test vm 出口指向自己本地防火墙也可以访问目标存储账号。所以感觉还是网络相关问题。</p>
+<p>请书文帮忙排查了客户的路由表，查看子网路由表发现由于开启了服务终结点添加了新的路由，导致之前的默认路由不生效，没有通过客户的防火墙公网IP作为出口，所以对方存储账号添加客户本地防火墙的公网IP也不生效。</p>
+<p>这里有个很容易被忽略的问题：</p>
+<p>一旦在存储账号的网络中选择已从所选虚拟网络和 IP 地址启用：</p>
+<p>且添加了某个虚拟网络：</p>
+<p>这个虚拟网络的子网上就会自动启用storage的服务终结点：</p>
+<p>然后查看子网中虚拟机的有效路由表就会多出到服务终结点的路由条目：</p>
+<p>这样一来就不会走之前客户设定的路由线路，没有经过客户本地的防火墙再访问公网，所以对端存储账号白名单添加这个防火墙的公网ip访问就会报认证失败。</p>
+<p>解决方案，删除这个storage 服务终结点。</p></article>

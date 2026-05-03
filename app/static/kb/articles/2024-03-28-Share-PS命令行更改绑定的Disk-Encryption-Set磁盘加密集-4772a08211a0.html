@@ -1,0 +1,92 @@
+<article class="kb-article" data-title="【Share】PS命令行更改绑定的Disk Encryption Set磁盘加密集"><h1>【Share】PS命令行更改绑定的Disk Encryption Set磁盘加密集</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-03-28 20:53:13</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>磁盘启用 用户管理的密钥后，在门户无法进行更改Disk Encryption Set：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>磁盘启用 用户管理的密钥后，在门户无法进行更改Disk Encryption Set：</li>
+</ul>
+<ul>
+<li>在加密集Set的页面同样无法更改：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>#定位到您的订阅</li>
+</ul>
+<ul>
+<li>#设置变量</li>
+</ul>
+<ul>
+<li>$rgName = &quot;磁盘的资源组的名称&quot;</li>
+</ul>
+<ul>
+<li>$diskName = &quot;磁盘的名称&quot;</li>
+</ul>
+<ul>
+<li>$diskEncryptionSetName = &quot;新的加密集的名称&quot;</li>
+</ul>
+<ul>
+<li>#获取需要绑定的磁盘加密集的信息</li>
+</ul>
+<ul>
+<li>$diskEncryptionSet = Get-AzDiskEncryptionSet -ResourceGroupName $rgName -Name $diskEncryptionSetName</li>
+</ul>
+<ul>
+<li>#新建磁盘配置&amp;更新目标磁盘</li>
+</ul>
+<ul>
+<li>Thanks.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>更改后可以在门户查看到变更结果：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>我们可以通过Azure PowerShell命令，新建配置文件 &amp; 更新到磁盘配置信息，修改Disk Encryption Set：</li>
+</ul>
+<ul>
+<li>#使用Azure PowerShell登录：</li>
+</ul>
+<ul>
+<li>Set-AzContext -subscription &quot;您的订阅ID&quot;</li>
+</ul>
+<ul>
+<li>New-AzDiskUpdateConfig -EncryptionType &quot;EncryptionAtRestWithCustomerKey&quot; -DiskEncryptionSetId $diskEncryptionSet.Id | Update-AzDisk -ResourceGroupName $rgName -DiskName $diskName</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>磁盘启用 用户管理的密钥后，在门户无法进行更改Disk Encryption Set：</p>
+<p>在加密集Set的页面同样无法更改：</p>
+<p>我们可以通过Azure PowerShell命令，新建配置文件 &amp; 更新到磁盘配置信息，修改Disk Encryption Set：</p>
+<p>#使用Azure PowerShell登录：</p>
+<p>Connect-AzAccount -Environment AzureChinaCloud</p>
+<p>#定位到您的订阅</p>
+<p>Set-AzContext -subscription &quot;您的订阅ID&quot;</p>
+<p>#设置变量</p>
+<p>$rgName = &quot;磁盘的资源组的名称&quot;</p>
+<p>$diskName = &quot;磁盘的名称&quot;</p>
+<p>$diskEncryptionSetName = &quot;新的加密集的名称&quot;</p>
+<p>#获取需要绑定的磁盘加密集的信息</p>
+<p>$diskEncryptionSet = Get-AzDiskEncryptionSet -ResourceGroupName $rgName -Name $diskEncryptionSetName</p>
+<p>#新建磁盘配置&amp;更新目标磁盘</p>
+<p>New-AzDiskUpdateConfig -EncryptionType &quot;EncryptionAtRestWithCustomerKey&quot; -DiskEncryptionSetId $diskEncryptionSet.Id | Update-AzDisk -ResourceGroupName $rgName -DiskName $diskName</p>
+<p>更改后可以在门户查看到变更结果：</p>
+<p>Thanks.</p></article>

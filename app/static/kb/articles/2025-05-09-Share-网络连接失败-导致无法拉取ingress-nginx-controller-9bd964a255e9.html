@@ -1,0 +1,65 @@
+<article class="kb-article" data-title="【Share】网络连接失败，导致无法拉取ingress-nginx-controller"><h1>【Share】网络连接失败，导致无法拉取ingress-nginx-controller</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2025-05-09 14:16:38</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>最近因为 长城防火墙 加强了对海外网站的访问限制，导致大家近期会遇到很多ingress-nginx-controller 镜像拉取失败的工单</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>最近因为 长城防火墙 加强了对海外网站的访问限制，导致大家近期会遇到很多ingress-nginx-controller 镜像拉取失败的工单</li>
+</ul>
+<ul>
+<li>经过测试，Azure官网给出的拉取方法已经失效，同时我们测试了一些代理镜像站点，依然拉取失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>现在分享给大家一个本地部署Ingress-nginx-Controller的方法</li>
+</ul>
+<ul>
+<li>文件为 ingress-nginx-controller-v1.1.0.tar.gz</li>
+</ul>
+<ul>
+<li>访问密码：*;#Syo!]jP</li>
+</ul>
+<ul>
+<li>可以让客户下载文件并解压后，进行安装</li>
+</ul>
+<ul>
+<li>helm install ingress-nginx ingress-nginx-controller-v1.1.0/charts/ingress-nginx/ -n ingress-nginx  --create-namespace --set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path&quot;=/healthz</li>
+</ul>
+<ul>
+<li>测试结果可以成功部署</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>我们已经通过科学上网的方法 将Charts下载到了21v的文件站点， 并且我们已经修改好 image 地址</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>客户链接：<a href="https://exchangefile.21vbluecloud.com/CustomerCenter/Index/dXoyNUFkSmlCUWh6aEF5ODMvbklRQT09" target="_blank" rel="noopener">https://exchangefile.21vbluecloud.com/CustomerCenter/Index/dXoyNUFkSmlCUWh6aEF5ODMvbklRQT09</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/01/23</p>
+<p>最近因为 长城防火墙 加强了对海外网站的访问限制，导致大家近期会遇到很多ingress-nginx-controller 镜像拉取失败的工单</p>
+<p>经过测试，Azure官网给出的拉取方法已经失效，同时我们测试了一些代理镜像站点，依然拉取失败</p>
+<p>现在分享给大家一个本地部署Ingress-nginx-Controller的方法</p>
+<p>我们已经通过科学上网的方法 将Charts下载到了21v的文件站点， 并且我们已经修改好 image 地址</p>
+<p>文件为 ingress-nginx-controller-v1.1.0.tar.gz</p>
+<p>客户链接：<a href="https://exchangefile.21vbluecloud.com/CustomerCenter/Index/dXoyNUFkSmlCUWh6aEF5ODMvbklRQT09" target="_blank" rel="noopener">https://exchangefile.21vbluecloud.com/CustomerCenter/Index/dXoyNUFkSmlCUWh6aEF5ODMvbklRQT09</a></p>
+<p>访问密码：*;#Syo!]jP</p>
+<p>可以让客户下载文件并解压后，进行安装</p>
+<p>helm install ingress-nginx ingress-nginx-controller-v1.1.0/charts/ingress-nginx/ -n ingress-nginx  --create-namespace --set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path&quot;=/healthz</p>
+<p>测试结果可以成功部署</p></article>

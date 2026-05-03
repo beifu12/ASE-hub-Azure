@@ -1,0 +1,503 @@
+<article class="kb-article" data-title="powershell az 模块怎么查看虚拟机LUN ID"><h1>powershell az 模块怎么查看虚拟机LUN ID</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Powershell</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-03-15 16:16:32</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>现象描述</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>现象描述</li>
+</ul>
+<ul>
+<li>/dev/sdc 和 /dev/sdd 为上述附加的数据磁盘，可以看到，这两块数据盘大小一致，无法准确区分对应的是 Azure 存储账号里的哪一块数据磁盘。</li>
+</ul>
+<ul>
+<li>Name            : centos751-datadisk-000-20191125-050358</li>
+</ul>
+<ul>
+<li>Name            : centos751-datadisk-001-20191125-050358</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>在很多场景下,客户会挂载多个数据磁盘到虚拟机上,为了提高性能和易扩展性，会使用到 raid 或者 lvm 逻辑卷来组合磁盘使用，在进行数据迁移和备份时，会涉及到数据磁盘的管理，由于数据磁盘在虚拟机内部和 Azure 存储账号内的命名方式不一样， 客户会经常对一大堆磁盘如何进行一一对应而深感头痛。</li>
+</ul>
+<ul>
+<li>以下主要介绍如何定位虚拟机内部附加的数据磁盘在存储账号里的对应关系。</li>
+</ul>
+<ul>
+<li>Linux虚拟机环境</li>
+</ul>
+<ul>
+<li>案例中，Linux 虚拟机采用的是 CentOS 7.3,其他版本的 Linux 操作系统会略有区别，请注意区分。</li>
+</ul>
+<ul>
+<li>创建 CentOS 7.3 虚拟机。</li>
+</ul>
+<ul>
+<li>创建两块数据磁盘，名字为：</li>
+</ul>
+<ul>
+<li>LunTest-LunTest-0-201706130314040006 （对应 vhd： LunTest-LunTest-0613-1.vhd）</li>
+</ul>
+<ul>
+<li>LunTest-LunTest-1-201706130315590578 （对应 vhd： LunTest-LunTest-0613-2.vhd）</li>
+</ul>
+<ul>
+<li>将上述数据磁盘附加到虚拟机。</li>
+</ul>
+<ul>
+<li>以管理员身份登录虚拟机，并切换到 root 用户。</li>
+</ul>
+<ul>
+<li>[root@LunTest chpaadmin]# fdisk  -l |grep -i Disk</li>
+</ul>
+<ul>
+<li>Disk /dev/sda: 32.2 GB, 32214351872 bytes, 62918656 sectors</li>
+</ul>
+<ul>
+<li>Disk label type: dos</li>
+</ul>
+<ul>
+<li>Disk identifier: 0x000c7e0e</li>
+</ul>
+<ul>
+<li>Disk /dev/sdb: 75.2 GB, 75161927680 bytes, 146800640 sectors</li>
+</ul>
+<ul>
+<li>Disk identifier: 0x7ca6a8d6</li>
+</ul>
+<ul>
+<li>Disk /dev/sdc: 10.7 GB, 10737418240 bytes, 20971520 sectors</li>
+</ul>
+<ul>
+<li>Disk /dev/sdd: 10.7 GB, 10737418240 bytes, 20971520 sectors</li>
+</ul>
+<ul>
+<li>以下介绍如何来进行区分：</li>
+</ul>
+<ul>
+<li>[root@LunTest chpaadmin]# dmesg -T |grep -i scsi</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:14 2017] SCSI subsystem initialized</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:14 2017] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 251)</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] scsi host0: ata_piix</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] scsi host1: ata_piix</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] scsi host2: storvsc_host_t</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] scsi 2:0:0:0: Direct-Access     Msft     Virtual Disk     1.0  PQ: 0 ANSI: 4</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] scsi host3: storvsc_host_t</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] scsi: waiting for bus probes to complete ...</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] scsi 1:0:0:0: CD-ROM            Msft     Virtual CD/ROM   1.0  PQ: 0 ANSI: 5</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] scsi host4: storvsc_host_t</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] scsi host5: storvsc_host_t</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] scsi 5:0:1:0: Direct-Access     Msft     Virtual Disk     1.0  PQ: 0 ANSI: 4</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] sr 1:0:0:0: [sr0] scsi3-mmc drive: 0x/0x tray</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] sr 1:0:0:0: Attached scsi CD-ROM sr0</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] sd 2:0:0:0: [sda] Attached SCSI disk</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:16 2017] sd 5:0:1:0: [sdb] Attached SCSI disk</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:23 2017] sd 2:0:0:0: Attached scsi generic sg0 type 0</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:23 2017] sr 1:0:0:0: Attached scsi generic sg1 type 5</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:11:23 2017] sd 5:0:1:0: Attached scsi generic sg2 type 0</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:14:16 2017] scsi 4:0:0:0: Direct-Access     Msft     Virtual Disk     1.0  PQ: 0 ANSI: 4</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:14:16 2017] sd 4:0:0:0: Attached scsi generic sg3 type 0</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:14:16 2017] sd 4:0:0:0: [sdc] Attached SCSI disk</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:16:23 2017] scsi 4:0:0:1: Direct-Access     Msft     Virtual Disk     1.0  PQ: 0 ANSI: 4</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:16:23 2017] sd 4:0:0:1: Attached scsi generic sg4 type 0</li>
+</ul>
+<ul>
+<li>[Tue Jun 13 03:16:23 2017] sd 4:0:0:1: [sdd] Attached SCSI disk</li>
+</ul>
+<ul>
+<li>上述显示的 &quot;4:0:0:0&quot; 和 &quot;4:0:0:1&quot; 分别为磁盘 /dev/sdc 和 /dev/sdd 的设备挂载地址，最后一位为磁盘的 LUN ID.</li>
+</ul>
+<ul>
+<li>PS C:\Users\chpa&gt; $vm = Get-AzureVM -ServiceName luntest -Name luntest</li>
+</ul>
+<ul>
+<li>PS C:\Users\chpa&gt; $vm.VM.DataVirtualHardDisks</li>
+</ul>
+<ul>
+<li>HostCaching         : None</li>
+</ul>
+<ul>
+<li>DiskLabel           :</li>
+</ul>
+<ul>
+<li>DiskName            : LunTest-LunTest-0-201706130314040006</li>
+</ul>
+<ul>
+<li>Lun                 : 0</li>
+</ul>
+<ul>
+<li>SourceMediaLink     :</li>
+</ul>
+<ul>
+<li>IOType              : Standard</li>
+</ul>
+<ul>
+<li>ExtensionData       :</li>
+</ul>
+<ul>
+<li>DiskName            : LunTest-LunTest-1-201706130315590578</li>
+</ul>
+<ul>
+<li>Lun                 : 1</li>
+</ul>
+<ul>
+<li>至此，通过 LUN ID 将虚拟机内部的数据磁盘和 Azure 存储账号的磁盘一一对应起来了。</li>
+</ul>
+<ul>
+<li>Windows 虚拟机环境</li>
+</ul>
+<ul>
+<li>案例中，Windows 虚拟机采用的是 Windows Server 2012 R2,其他版本的 Windows 操作系统会略有区别，请注意区分。</li>
+</ul>
+<ul>
+<li>创建 Windows Server 2012 R2 虚拟机。</li>
+</ul>
+<ul>
+<li>dcuser-dcuser-0-201706130918520846（对应 vhd： dcuser-dcuser-noid.vhd）</li>
+</ul>
+<ul>
+<li>dcuser-dcuser-1-201706130924230994（对应 vhd： dcuser-dcuser-noid-too.vhd）</li>
+</ul>
+<ul>
+<li>以管理员身份登录虚拟机。</li>
+</ul>
+<ul>
+<li>PS C:\Users\azureuser&gt; diskpart</li>
+</ul>
+<ul>
+<li>Microsoft DiskPart version 6.3.9600</li>
+</ul>
+<ul>
+<li>Copyright (C) 1999-2013 Microsoft Corporation.</li>
+</ul>
+<ul>
+<li>On computer: dcuser</li>
+</ul>
+<ul>
+<li>DISKPART&gt; list disk</li>
+</ul>
+<ul>
+<li>Disk ###  Status         Size     Free     Dyn  Gpt</li>
+</ul>
+<ul>
+<li>--------  -------------  -------  -------  ---  ---</li>
+</ul>
+<ul>
+<li>Disk 0    Online          127 GB  2048 KB</li>
+</ul>
+<ul>
+<li>Disk 1    Online           50 GB      0 B</li>
+</ul>
+<ul>
+<li>Disk 2    Online           10 GB  1024 KB</li>
+</ul>
+<ul>
+<li>Disk 3    Online           10 GB  1024 KB</li>
+</ul>
+<ul>
+<li>DISKPART&gt; select disk 2</li>
+</ul>
+<ul>
+<li>Disk 2 is now the selected disk.</li>
+</ul>
+<ul>
+<li>DISKPART&gt; detail disk</li>
+</ul>
+<ul>
+<li>Microsoft Virtual Disk</li>
+</ul>
+<ul>
+<li>Disk ID: 961D20C6</li>
+</ul>
+<ul>
+<li>Type   : SAS</li>
+</ul>
+<ul>
+<li>Status : Online</li>
+</ul>
+<ul>
+<li>Path   : 0</li>
+</ul>
+<ul>
+<li>Target : 0</li>
+</ul>
+<ul>
+<li>LUN ID : 5</li>
+</ul>
+<ul>
+<li>Location Path : UNAVAILABLE</li>
+</ul>
+<ul>
+<li>Current Read-only State : No</li>
+</ul>
+<ul>
+<li>Read-only  : No</li>
+</ul>
+<ul>
+<li>Boot Disk  : No</li>
+</ul>
+<ul>
+<li>Pagefile Disk  : No</li>
+</ul>
+<ul>
+<li>Hibernation File Disk  : No</li>
+</ul>
+<ul>
+<li>Crashdump Disk  : No</li>
+</ul>
+<ul>
+<li>Clustered Disk  : No</li>
+</ul>
+<ul>
+<li>Volume ###  Ltr  Label        Fs     Type        Size     Status     Info</li>
+</ul>
+<ul>
+<li>----------  ---  -----------  -----  ----------  -------  ---------  --------</li>
+</ul>
+<ul>
+<li>Volume 2     E   New Volume   NTFS   Partition      9 GB  Healthy</li>
+</ul>
+<ul>
+<li>DISKPART&gt;</li>
+</ul>
+<ul>
+<li>DiskSizeGB      :</li>
+</ul>
+<ul>
+<li>Lun             : 0</li>
+</ul>
+<ul>
+<li>Caching         : None</li>
+</ul>
+<ul>
+<li>CreateOption    : Attach</li>
+</ul>
+<ul>
+<li>SourceImage     :</li>
+</ul>
+<ul>
+<li>VirtualHardDisk :</li>
+</ul>
+<ul>
+<li>Lun             : 1</li>
+</ul>
+<ul>
+<li>注： 引用韩旭的博客如下：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>LogicalDiskSizeInGB : 10</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>执行命令：#fdisk -l :</li>
+</ul>
+<ul>
+<li>执行命令：# dmesg -T |grep -i scsi:</li>
+</ul>
+<ul>
+<li>通过 PowerShell，执行以下命令来获取数据磁盘的 LUN ID：</li>
+</ul>
+<ul>
+<li>打开命令，执行如下命令，查看当前磁盘的 LUN ID：</li>
+</ul>
+<ul>
+<li>PS C:\WindowsPowerShell\v1.0&gt; $vm = Get-AzVM -ResourceGroupName rgnorth1 -Name centos751</li>
+</ul>
+<ul>
+<li>PS C:\WindowsPowerShell\v1.0&gt; $vm.StorageProfile.DataDisks</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>MediaLink           : <a href="https://tcportalvhdsgrnnb3k173zr.blob.core.chinacloudapi.cn/vhds/LunTest-LunTest-0613-1.vhd" target="_blank" rel="noopener">https://tcportalvhdsgrnnb3k173zr.blob.core.chinacloudapi.cn/vhds/LunTest-LunTest-0613-1.vhd</a></li>
+</ul>
+<ul>
+<li>MediaLink           : <a href="https://tcportalvhdsgrnnb3k173zr.blob.core.chinacloudapi.cn/vhds/LunTest-LunTest-0613-2.vhd" target="_blank" rel="noopener">https://tcportalvhdsgrnnb3k173zr.blob.core.chinacloudapi.cn/vhds/LunTest-LunTest-0613-2.vhd</a></li>
+</ul>
+<ul>
+<li><a href="https://blog.csdn.net/qwertyupoiuytr/article/details/77571725" target="_blank" rel="noopener">https://blog.csdn.net/qwertyupoiuytr/article/details/77571725</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2019/12/21</p>
+<p>现象描述</p>
+<p>在很多场景下,客户会挂载多个数据磁盘到虚拟机上,为了提高性能和易扩展性，会使用到 raid 或者 lvm 逻辑卷来组合磁盘使用，在进行数据迁移和备份时，会涉及到数据磁盘的管理，由于数据磁盘在虚拟机内部和 Azure 存储账号内的命名方式不一样， 客户会经常对一大堆磁盘如何进行一一对应而深感头痛。</p>
+<p>解决方案</p>
+<p>以下主要介绍如何定位虚拟机内部附加的数据磁盘在存储账号里的对应关系。</p>
+<p>Linux虚拟机环境</p>
+<p>案例中，Linux 虚拟机采用的是 CentOS 7.3,其他版本的 Linux 操作系统会略有区别，请注意区分。</p>
+<p>创建 CentOS 7.3 虚拟机。</p>
+<p>创建两块数据磁盘，名字为：</p>
+<p>LunTest-LunTest-0-201706130314040006 （对应 vhd： LunTest-LunTest-0613-1.vhd）</p>
+<p>LunTest-LunTest-1-201706130315590578 （对应 vhd： LunTest-LunTest-0613-2.vhd）</p>
+<p>将上述数据磁盘附加到虚拟机。</p>
+<p>以管理员身份登录虚拟机，并切换到 root 用户。</p>
+<p>执行命令：#fdisk -l :</p>
+<p>[root@LunTest chpaadmin]# fdisk  -l |grep -i Disk</p>
+<p>Disk /dev/sda: 32.2 GB, 32214351872 bytes, 62918656 sectors</p>
+<p>Disk label type: dos</p>
+<p>Disk identifier: 0x000c7e0e</p>
+<p>Disk /dev/sdb: 75.2 GB, 75161927680 bytes, 146800640 sectors</p>
+<p>Disk identifier: 0x7ca6a8d6</p>
+<p>Disk /dev/sdc: 10.7 GB, 10737418240 bytes, 20971520 sectors</p>
+<p>Disk /dev/sdd: 10.7 GB, 10737418240 bytes, 20971520 sectors</p>
+<p>/dev/sdc 和 /dev/sdd 为上述附加的数据磁盘，可以看到，这两块数据盘大小一致，无法准确区分对应的是 Azure 存储账号里的哪一块数据磁盘。</p>
+<p>以下介绍如何来进行区分：</p>
+<p>执行命令：# dmesg -T |grep -i scsi:</p>
+<p>[root@LunTest chpaadmin]# dmesg -T |grep -i scsi</p>
+<p>[Tue Jun 13 03:11:14 2017] SCSI subsystem initialized</p>
+<p>[Tue Jun 13 03:11:14 2017] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 251)</p>
+<p>[Tue Jun 13 03:11:16 2017] scsi host0: ata_piix</p>
+<p>[Tue Jun 13 03:11:16 2017] scsi host1: ata_piix</p>
+<p>[Tue Jun 13 03:11:16 2017] scsi host2: storvsc_host_t</p>
+<p>[Tue Jun 13 03:11:16 2017] scsi 2:0:0:0: Direct-Access     Msft     Virtual Disk     1.0  PQ: 0 ANSI: 4</p>
+<p>[Tue Jun 13 03:11:16 2017] scsi host3: storvsc_host_t</p>
+<p>[Tue Jun 13 03:11:16 2017] scsi: waiting for bus probes to complete ...</p>
+<p>[Tue Jun 13 03:11:16 2017] scsi 1:0:0:0: CD-ROM            Msft     Virtual CD/ROM   1.0  PQ: 0 ANSI: 5</p>
+<p>[Tue Jun 13 03:11:16 2017] scsi host4: storvsc_host_t</p>
+<p>[Tue Jun 13 03:11:16 2017] scsi host5: storvsc_host_t</p>
+<p>[Tue Jun 13 03:11:16 2017] scsi 5:0:1:0: Direct-Access     Msft     Virtual Disk     1.0  PQ: 0 ANSI: 4</p>
+<p>[Tue Jun 13 03:11:16 2017] sr 1:0:0:0: [sr0] scsi3-mmc drive: 0x/0x tray</p>
+<p>[Tue Jun 13 03:11:16 2017] sr 1:0:0:0: Attached scsi CD-ROM sr0</p>
+<p>[Tue Jun 13 03:11:16 2017] sd 2:0:0:0: [sda] Attached SCSI disk</p>
+<p>[Tue Jun 13 03:11:16 2017] sd 5:0:1:0: [sdb] Attached SCSI disk</p>
+<p>[Tue Jun 13 03:11:23 2017] sd 2:0:0:0: Attached scsi generic sg0 type 0</p>
+<p>[Tue Jun 13 03:11:23 2017] sr 1:0:0:0: Attached scsi generic sg1 type 5</p>
+<p>[Tue Jun 13 03:11:23 2017] sd 5:0:1:0: Attached scsi generic sg2 type 0</p>
+<p>[Tue Jun 13 03:14:16 2017] scsi 4:0:0:0: Direct-Access     Msft     Virtual Disk     1.0  PQ: 0 ANSI: 4</p>
+<p>[Tue Jun 13 03:14:16 2017] sd 4:0:0:0: Attached scsi generic sg3 type 0</p>
+<p>[Tue Jun 13 03:14:16 2017] sd 4:0:0:0: [sdc] Attached SCSI disk</p>
+<p>[Tue Jun 13 03:16:23 2017] scsi 4:0:0:1: Direct-Access     Msft     Virtual Disk     1.0  PQ: 0 ANSI: 4</p>
+<p>[Tue Jun 13 03:16:23 2017] sd 4:0:0:1: Attached scsi generic sg4 type 0</p>
+<p>[Tue Jun 13 03:16:23 2017] sd 4:0:0:1: [sdd] Attached SCSI disk</p>
+<p>上述显示的 &quot;4:0:0:0&quot; 和 &quot;4:0:0:1&quot; 分别为磁盘 /dev/sdc 和 /dev/sdd 的设备挂载地址，最后一位为磁盘的 LUN ID.</p>
+<p>通过 PowerShell，执行以下命令来获取数据磁盘的 LUN ID：</p>
+<p>PS C:\Users\chpa&gt; $vm = Get-AzureVM -ServiceName luntest -Name luntest</p>
+<p>PS C:\Users\chpa&gt; $vm.VM.DataVirtualHardDisks</p>
+<p>HostCaching         : None</p>
+<p>DiskLabel           :</p>
+<p>DiskName            : LunTest-LunTest-0-201706130314040006</p>
+<p>Lun                 : 0</p>
+<p>LogicalDiskSizeInGB : 10</p>
+<p>MediaLink           : <a href="https://tcportalvhdsgrnnb3k173zr.blob.core.chinacloudapi.cn/vhds/LunTest-LunTest-0613-1.vhd" target="_blank" rel="noopener">https://tcportalvhdsgrnnb3k173zr.blob.core.chinacloudapi.cn/vhds/LunTest-LunTest-0613-1.vhd</a></p>
+<p>SourceMediaLink     :</p>
+<p>IOType              : Standard</p>
+<p>ExtensionData       :</p>
+<p>DiskName            : LunTest-LunTest-1-201706130315590578</p>
+<p>Lun                 : 1</p>
+<p>MediaLink           : <a href="https://tcportalvhdsgrnnb3k173zr.blob.core.chinacloudapi.cn/vhds/LunTest-LunTest-0613-2.vhd" target="_blank" rel="noopener">https://tcportalvhdsgrnnb3k173zr.blob.core.chinacloudapi.cn/vhds/LunTest-LunTest-0613-2.vhd</a></p>
+<p>至此，通过 LUN ID 将虚拟机内部的数据磁盘和 Azure 存储账号的磁盘一一对应起来了。</p>
+<p>Windows 虚拟机环境</p>
+<p>案例中，Windows 虚拟机采用的是 Windows Server 2012 R2,其他版本的 Windows 操作系统会略有区别，请注意区分。</p>
+<p>创建 Windows Server 2012 R2 虚拟机。</p>
+<p>dcuser-dcuser-0-201706130918520846（对应 vhd： dcuser-dcuser-noid.vhd）</p>
+<p>dcuser-dcuser-1-201706130924230994（对应 vhd： dcuser-dcuser-noid-too.vhd）</p>
+<p>以管理员身份登录虚拟机。</p>
+<p>打开命令，执行如下命令，查看当前磁盘的 LUN ID：</p>
+<p>PS C:\Users\azureuser&gt; diskpart</p>
+<p>Microsoft DiskPart version 6.3.9600</p>
+<p>Copyright (C) 1999-2013 Microsoft Corporation.</p>
+<p>On computer: dcuser</p>
+<p>DISKPART&gt; list disk</p>
+<p>Disk ###  Status         Size     Free     Dyn  Gpt</p>
+<p>--------  -------------  -------  -------  ---  ---</p>
+<p>Disk 0    Online          127 GB  2048 KB</p>
+<p>Disk 1    Online           50 GB      0 B</p>
+<p>Disk 2    Online           10 GB  1024 KB</p>
+<p>Disk 3    Online           10 GB  1024 KB</p>
+<p>DISKPART&gt; select disk 2</p>
+<p>Disk 2 is now the selected disk.</p>
+<p>DISKPART&gt; detail disk</p>
+<p>Microsoft Virtual Disk</p>
+<p>Disk ID: 961D20C6</p>
+<p>Type   : SAS</p>
+<p>Status : Online</p>
+<p>Path   : 0</p>
+<p>Target : 0</p>
+<p>LUN ID : 5</p>
+<p>Location Path : UNAVAILABLE</p>
+<p>Current Read-only State : No</p>
+<p>Read-only  : No</p>
+<p>Boot Disk  : No</p>
+<p>Pagefile Disk  : No</p>
+<p>Hibernation File Disk  : No</p>
+<p>Crashdump Disk  : No</p>
+<p>Clustered Disk  : No</p>
+<p>Volume ###  Ltr  Label        Fs     Type        Size     Status     Info</p>
+<p>----------  ---  -----------  -----  ----------  -------  ---------  --------</p>
+<p>Volume 2     E   New Volume   NTFS   Partition      9 GB  Healthy</p>
+<p>DISKPART&gt;</p>
+<p>PS C:\WindowsPowerShell\v1.0&gt; $vm = Get-AzVM -ResourceGroupName rgnorth1 -Name centos751</p>
+<p>PS C:\WindowsPowerShell\v1.0&gt; $vm.StorageProfile.DataDisks</p>
+<p>Name            : centos751-datadisk-000-20191125-050358</p>
+<p>DiskSizeGB      :</p>
+<p>Lun             : 0</p>
+<p>Caching         : None</p>
+<p>CreateOption    : Attach</p>
+<p>SourceImage     :</p>
+<p>VirtualHardDisk :</p>
+<p>Name            : centos751-datadisk-001-20191125-050358</p>
+<p>Lun             : 1</p>
+<p>注： 引用韩旭的博客如下：</p>
+<p><a href="https://blog.csdn.net/qwertyupoiuytr/article/details/77571725" target="_blank" rel="noopener">https://blog.csdn.net/qwertyupoiuytr/article/details/77571725</a></p></article>

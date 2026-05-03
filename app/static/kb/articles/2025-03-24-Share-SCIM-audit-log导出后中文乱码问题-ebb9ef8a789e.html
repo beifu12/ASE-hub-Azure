@@ -1,0 +1,60 @@
+<article class="kb-article" data-title="[Share]SCIM audit log导出后中文乱码问题"><h1>[Share]SCIM audit log导出后中文乱码问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-03-24 13:53:37</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Case ：20250304341622</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Case ：20250304341622</li>
+</ul>
+<ul>
+<li>问题现象：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>在compliance上目前使用Audit导出日志后，页面上中文可以正常显示，但是导出结果后中文部分都是乱码。</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>临时解决方案，使用命令转换一下CSV，转换成支持中文字符集的。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>PG确认已知问题，计划修复但是没ETA</li>
+</ul>
+<ul>
+<li>Import-Csv C:\Users\Downloads\1cb8e529-ba90-431b-bc36-e2013800aa0e.csv | Export-Csv -Encoding utf8 C:\Users \Downloads\PurviewAuditLog_fixed.csv</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>WangZhaoqing</p>
+<p>Case ：20250304341622</p>
+<p>问题现象：</p>
+<p>在compliance上目前使用Audit导出日志后，页面上中文可以正常显示，但是导出结果后中文部分都是乱码。</p>
+<p>问题原因：</p>
+<p>PG确认已知问题，计划修复但是没ETA</p>
+<p>临时解决方案，使用命令转换一下CSV，转换成支持中文字符集的。</p>
+<p>Import-Csv C:\Users\Downloads\1cb8e529-ba90-431b-bc36-e2013800aa0e.csv | Export-Csv -Encoding utf8 C:\Users \Downloads\PurviewAuditLog_fixed.csv</p></article>

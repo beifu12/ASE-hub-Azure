@@ -1,0 +1,95 @@
+<article class="kb-article" data-title="Azure数据盘传输数据卡顿现象分析"><h1>Azure数据盘传输数据卡顿现象分析</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-10-25 10:21:47</li>
+<li>JD 相关性: 售后排障; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：2台D32s_v3数据盘（2T SSD）之间通过共享方式拷贝大文件数据出现卡顿，传输速率频繁降为0 bytes/s。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：2台D32s_v3数据盘（2T SSD）之间通过共享方式拷贝大文件数据出现卡顿，传输速率频繁降为0 bytes/s。</li>
+</ul>
+<ul>
+<li>测试结果：每当目标机器（B）数据盘“HOST CACHING”配置为“Read/Write”时，在执行大文件传输及频繁写入期间会导致磁盘写入Pending或卡顿。</li>
+</ul>
+<ul>
+<li>问题原因：硬盘写入缓存功能可以加快硬盘的读写速度，根据写缓存原理，数据会暂时存储在缓存，硬盘会在空闲（不进行读取或写入的时候）时再将缓存中的数据写入到盘片上。但由于特殊情况下有大量数据写入以致瓶颈，此时系统无法再继续处理缓存写入，造成写入Pending，并优先处理缓存数据到永久磁盘（数据盘），体现为数据写入卡顿/传输速率频繁降为0 bytes/s。</li>
+</ul>
+<ul>
+<li>使用文件拷贝的方式无法科学地衡量磁盘的性能。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>LuYitong</li>
+</ul>
+<ul>
+<li>搭建测试：模拟贵方实际测试场景，搭建了2台VM（同一虚拟网络），通过UNC:\\共享路径访问模式，从A机器数据盘（只读缓存）àB机器数据盘 （读写缓存）进行数据传输（200G大文件）。</li>
+</ul>
+<ul>
+<li>缓存配置：</li>
+</ul>
+<ul>
+<li>设置为无   ：如果你的应用基本都是写入，或者超过80%以上的都是写入操作，则缓存设置为无。</li>
+</ul>
+<ul>
+<li>设置为读写：如果你的程序可以处理缓存数据，并且在需要的时候可以将缓存数据写入到持久化磁盘，对应用程序有较高要求，处理不当可能会有数据损失（例如突然断电）。</li>
+</ul>
+<ul>
+<li>需要根据用户具体应用的实际情况进行正确设置获得最佳性能。</li>
+</ul>
+<ul>
+<li>备注信息：</li>
+</ul>
+<ul>
+<li>附上截图：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>近期在处理工单时，客户反应在2台Azure数据磁盘之间传输数据出现卡顿/传输速率频繁降为0bytes/s。经查看文档和多次测试，现象分析如下：</li>
+</ul>
+<ul>
+<li>但是，并非所有 VM 都支持缓存，因此请查看 VM 说明了解你感兴趣的 VM 的大小及更多信息，支持缓存的 VM 将在其说明中以“最大缓存和临时存储吞吐量”度量进行指示。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>设置为只读：这个选项是Premium Storage的默认选项也是最为常见的选项，如果你的应用操作是读写的，或者只读的操作,建议使用该选项。</li>
+</ul>
+<ul>
+<li>相关建议：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>对于读取频繁或只读数据磁盘（如 SQL Server 数据文件），可将磁盘缓存策略设置为 ReadOnly。对于写入频繁或只写数据磁盘（如 SQL Server 日志文件），可将磁盘缓存策略设置为 None。具体请参考：<a href="https://docs.microsoft.com/zh-cn/azure/virtual-machines/windows/premium-storage-performance#disk-caching。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-machines/windows/premium-storage-performance#disk-caching。</a></li>
+</ul>
+<ul>
+<li>测定Azure虚机磁盘性能官方文档，供参考：<a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-disk-performace" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-disk-performace</a> 。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>LuYitong</p>
+<p>近期在处理工单时，客户反应在2台Azure数据磁盘之间传输数据出现卡顿/传输速率频繁降为0bytes/s。经查看文档和多次测试，现象分析如下：</p>
+<p>问题现象：2台D32s_v3数据盘（2T SSD）之间通过共享方式拷贝大文件数据出现卡顿，传输速率频繁降为0 bytes/s。</p>
+<p>搭建测试：模拟贵方实际测试场景，搭建了2台VM（同一虚拟网络），通过UNC:\\共享路径访问模式，从A机器数据盘（只读缓存）àB机器数据盘 （读写缓存）进行数据传输（200G大文件）。</p>
+<p>测试结果：每当目标机器（B）数据盘“HOST CACHING”配置为“Read/Write”时，在执行大文件传输及频繁写入期间会导致磁盘写入Pending或卡顿。</p>
+<p>问题原因：硬盘写入缓存功能可以加快硬盘的读写速度，根据写缓存原理，数据会暂时存储在缓存，硬盘会在空闲（不进行读取或写入的时候）时再将缓存中的数据写入到盘片上。但由于特殊情况下有大量数据写入以致瓶颈，此时系统无法再继续处理缓存写入，造成写入Pending，并优先处理缓存数据到永久磁盘（数据盘），体现为数据写入卡顿/传输速率频繁降为0 bytes/s。</p>
+<p>缓存配置：</p>
+<p>设置为无   ：如果你的应用基本都是写入，或者超过80%以上的都是写入操作，则缓存设置为无。</p>
+<p>设置为只读：这个选项是Premium Storage的默认选项也是最为常见的选项，如果你的应用操作是读写的，或者只读的操作,建议使用该选项。</p>
+<p>设置为读写：如果你的程序可以处理缓存数据，并且在需要的时候可以将缓存数据写入到持久化磁盘，对应用程序有较高要求，处理不当可能会有数据损失（例如突然断电）。</p>
+<p>相关建议：</p>
+<p>需要根据用户具体应用的实际情况进行正确设置获得最佳性能。</p>
+<p>对于读取频繁或只读数据磁盘（如 SQL Server 数据文件），可将磁盘缓存策略设置为 ReadOnly。对于写入频繁或只写数据磁盘（如 SQL Server 日志文件），可将磁盘缓存策略设置为 None。具体请参考：<a href="https://docs.microsoft.com/zh-cn/azure/virtual-machines/windows/premium-storage-performance#disk-caching。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-machines/windows/premium-storage-performance#disk-caching。</a></p>
+<p>但是，并非所有 VM 都支持缓存，因此请查看 VM 说明了解你感兴趣的 VM 的大小及更多信息，支持缓存的 VM 将在其说明中以“最大缓存和临时存储吞吐量”度量进行指示。</p>
+<p>备注信息：</p>
+<p>使用文件拷贝的方式无法科学地衡量磁盘的性能。</p>
+<p>测定Azure虚机磁盘性能官方文档，供参考：<a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-disk-performace" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-disk-performace</a> 。</p>
+<p>附上截图：</p></article>

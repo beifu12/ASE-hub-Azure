@@ -1,0 +1,87 @@
+<article class="kb-article" data-title="Share | 查询订阅下所有VM的操作系统类型和版本"><h1>Share | 查询订阅下所有VM的操作系统类型和版本</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Cli</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-27 16:02:27</li>
+<li>JD 相关性: 自动化/命令工具</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<ul>
+<li>++++++++++++++++++++++++++++++</li>
+</ul>
+<ul>
+<li>$vms = Get-AzVM</li>
+</ul>
+<ul>
+<li>foreach ($vm in $vms) {</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>输出结果如下方截图所示（注，此方法需要1，虚拟机需要开机运行；2，虚拟机的代理状态为Ready），下方示例中OS信息为空的VM，皆因虚拟机未开机所致。</li>
+</ul>
+<ul>
+<li>+++++++++++++++++++++++++++++</li>
+</ul>
+<ul>
+<li>for ((i=0; i&lt;${#vmname[*]}; i++ )); do  az vm get-instance-view --resource-group ${vmrg[i]} --name ${vmname[i]} --query &quot;{VMName:name, OS:instanceView.osName, OSVersion:instanceView.osVersion}&quot; --output table | grep -v ^VMName; done</li>
+</ul>
+<ul>
+<li>输出结果如下方截图：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>1，使用Azure Powershell</li>
+</ul>
+<ul>
+<li>Get-Azvm --ResourceGroup $vm.ResourceGroupName --Name $vm.Name -Status | select Name, OsName, OsVersion</li>
+</ul>
+<ul>
+<li>2，使用Azure CLI</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>vmname=(<code>az vm list --query &quot;[].{vmName:name}&quot; -o table | grep -v ^VmName | grep -v ^---</code>)</li>
+</ul>
+<ul>
+<li>vmrg=(<code>az vm list --query &quot;[].{ResourceGroup:resourceGroup}&quot; -o table | grep -v ^ResourceGroup | grep -v ^---</code>)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Jia.Xiaolei</p>
+<p>1，使用Azure Powershell</p>
+<p>++++++++++++++++++++++++++++++</p>
+<p>$vms = Get-AzVM</p>
+<p>foreach ($vm in $vms) {</p>
+<p>Get-Azvm --ResourceGroup $vm.ResourceGroupName --Name $vm.Name -Status | select Name, OsName, OsVersion</p>
+<p>}</p>
+<p>输出结果如下方截图所示（注，此方法需要1，虚拟机需要开机运行；2，虚拟机的代理状态为Ready），下方示例中OS信息为空的VM，皆因虚拟机未开机所致。</p>
+<p>2，使用Azure CLI</p>
+<p>+++++++++++++++++++++++++++++</p>
+<p>vmname=(<code>az vm list --query &quot;[].{vmName:name}&quot; -o table | grep -v ^VmName | grep -v ^---</code>)</p>
+<p>vmrg=(<code>az vm list --query &quot;[].{ResourceGroup:resourceGroup}&quot; -o table | grep -v ^ResourceGroup | grep -v ^---</code>)</p>
+<p>for ((i=0; i&lt;${#vmname[*]}; i++ )); do  az vm get-instance-view --resource-group ${vmrg[i]} --name ${vmname[i]} --query &quot;{VMName:name, OS:instanceView.osName, OSVersion:instanceView.osVersion}&quot; --output table | grep -v ^VMName; done</p>
+<p>输出结果如下方截图：</p></article>

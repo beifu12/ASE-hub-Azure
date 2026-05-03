@@ -1,0 +1,151 @@
+<article class="kb-article" data-title="【Share】本地AD用户使用其他域名后缀同步到Entra ID"><h1>【Share】本地AD用户使用其他域名后缀同步到Entra ID</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-15 11:01:53</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>在官网中没有在同步过程中使用其他后缀域名同步的方案建议，用户的需求属于特殊需求，对于此非标准操作仅供参考。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>在官网中没有在同步过程中使用其他后缀域名同步的方案建议，用户的需求属于特殊需求，对于此非标准操作仅供参考。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>方法一：</li>
+</ul>
+<ul>
+<li>======</li>
+</ul>
+<ul>
+<li># 登录到云端：</li>
+</ul>
+<ul>
+<li>Connect-AzureAD -AzureEnvironmentName AzureChinaCloud</li>
+</ul>
+<ul>
+<li>$user = Get-AzureADUser -ObjectId wangyu0825@sweet2023.top</li>
+</ul>
+<ul>
+<li>$newUpn = &quot;wangyu0825@wats.xyz&quot;</li>
+</ul>
+<ul>
+<li>本地AD账户与云端账户使用的是“本地不可变ID”，更改云端账户后缀域名后，不会影响原本地AD账户的同步和更新。</li>
+</ul>
+<ul>
+<li># 连接到 Azure AD</li>
+</ul>
+<ul>
+<li># 定义域名映射（旧域名 → 新域名）</li>
+</ul>
+<ul>
+<li>$domainMapping = @{</li>
+</ul>
+<ul>
+<li>&quot;olddomain.com&quot; = &quot;newdomain.com&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li># 获取所有用户</li>
+</ul>
+<ul>
+<li>$users = Get-AzureADUser -All $true</li>
+</ul>
+<ul>
+<li># 遍历用户并更新 UPN</li>
+</ul>
+<ul>
+<li>foreach ($user in $users) {</li>
+</ul>
+<ul>
+<li>$currentUpn = $user.UserPrincipalName</li>
+</ul>
+<ul>
+<li>$currentDomain = $currentUpn.Split(&#39;@&#39;)[1]</li>
+</ul>
+<ul>
+<li>if ($domainMapping.ContainsKey($currentDomain)) {</li>
+</ul>
+<ul>
+<li>$newDomain = $domainMapping[$currentDomain]</li>
+</ul>
+<ul>
+<li>$newUpn = $currentUpn.Split(&#39;@&#39;)[0] + &quot;@&quot; + $newDomain</li>
+</ul>
+<ul>
+<li># 更新 UPN</li>
+</ul>
+<ul>
+<li>Write-Host &quot;已更新: $currentUpn → $newUpn&quot;</li>
+</ul>
+<ul>
+<li>方法二：</li>
+</ul>
+<ul>
+<li>可在本地AD域控添加UPN suffix，添加后会使用UPN suffix为后缀同步到云端。参考链接：</li>
+</ul>
+<ul>
+<li>How to add UPN suffix in Active Directory - ALI TAJRAN</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>更改云端账户后缀的方法属于非标操作，目的是满足您的特殊场景，但您需要对此更变可能产生的影响做更多验证。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用本地AD账户原域名后缀同步到云端后，使用命令将云端账户更改后缀域名：</li>
+</ul>
+<ul>
+<li>Set-AzureADUser -ObjectId $user.ObjectId -UserPrincipalName $newUpn</li>
+</ul>
+<ul>
+<li>关于批量操作脚本已经超出了我们的支持范围，我们为您提供互联网搜索到的相关命令，仅供您参考，需自行评估此脚本的运行风险。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在官网中没有在同步过程中使用其他后缀域名同步的方案建议，用户的需求属于特殊需求，对于此非标准操作仅供参考。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/10</p>
+<p>在官网中没有在同步过程中使用其他后缀域名同步的方案建议，用户的需求属于特殊需求，对于此非标准操作仅供参考。</p>
+<p>方法一：</p>
+<p>======</p>
+<p>使用本地AD账户原域名后缀同步到云端后，使用命令将云端账户更改后缀域名：</p>
+<h1>登录到云端：</h1>
+<p>Connect-AzureAD -AzureEnvironmentName AzureChinaCloud</p>
+<p>$user = Get-AzureADUser -ObjectId wangyu0825@sweet2023.top</p>
+<p>$newUpn = &quot;wangyu0825@wats.xyz&quot;</p>
+<p>Set-AzureADUser -ObjectId $user.ObjectId -UserPrincipalName $newUpn</p>
+<p>本地AD账户与云端账户使用的是“本地不可变ID”，更改云端账户后缀域名后，不会影响原本地AD账户的同步和更新。</p>
+<p>更改云端账户后缀的方法属于非标操作，目的是满足您的特殊场景，但您需要对此更变可能产生的影响做更多验证。</p>
+<p>关于批量操作脚本已经超出了我们的支持范围，我们为您提供互联网搜索到的相关命令，仅供您参考，需自行评估此脚本的运行风险。</p>
+<h1>连接到 Azure AD</h1>
+<h1>定义域名映射（旧域名 → 新域名）</h1>
+<p>$domainMapping = @{</p>
+<p>&quot;olddomain.com&quot; = &quot;newdomain.com&quot;</p>
+<p>}</p>
+<h1>获取所有用户</h1>
+<p>$users = Get-AzureADUser -All $true</p>
+<h1>遍历用户并更新 UPN</h1>
+<p>foreach ($user in $users) {</p>
+<p>$currentUpn = $user.UserPrincipalName</p>
+<p>$currentDomain = $currentUpn.Split(&#39;@&#39;)[1]</p>
+<p>if ($domainMapping.ContainsKey($currentDomain)) {</p>
+<p>$newDomain = $domainMapping[$currentDomain]</p>
+<p>$newUpn = $currentUpn.Split(&#39;@&#39;)[0] + &quot;@&quot; + $newDomain</p>
+<h1>更新 UPN</h1>
+<p>Write-Host &quot;已更新: $currentUpn → $newUpn&quot;</p>
+<p>方法二：</p>
+<p>可在本地AD域控添加UPN suffix，添加后会使用UPN suffix为后缀同步到云端。参考链接：</p>
+<p>How to add UPN suffix in Active Directory - ALI TAJRAN</p></article>

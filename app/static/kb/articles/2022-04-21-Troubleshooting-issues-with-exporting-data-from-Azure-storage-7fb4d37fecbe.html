@@ -1,0 +1,68 @@
+<article class="kb-article" data-title="Troubleshooting issues with exporting data from Azure storage"><h1>Troubleshooting issues with exporting data from Azure storage</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Databox.one</li>
+<li>Section: Azure Databox</li>
+<li>最近修改: 2022-04-21 04:35:47</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Contact the customer and gather as much information as you can about the issue.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Contact the customer and gather as much information as you can about the issue.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Are there any ICM&#39;s already generated for the case</li>
+</ul>
+<ul>
+<li>Data transfer status and last update dates.</li>
+</ul>
+<ul>
+<li>Engage TA&#39;s or Raise ICM if needed</li>
+</ul>
+<ul>
+<li>References:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>If the customer believes data upload is taking long time, check ASC and confirm:</li>
+</ul>
+<ul>
+<li>Check with TA&#39;s or Raise ICM if needed</li>
+</ul>
+<ul>
+<li>By default, logs are written to a container named copylog. Download the copy log from the Connect and copy page.</li>
+</ul>
+<ul>
+<li>Verbose log contains a list of all the files that were successfully exported from Azure Storage account. The log also contains file size and checksum computation. The verbose logs are also copied to the Azure storage account. By default, logs are written to a container named copylog.</li>
+</ul>
+<ul>
+<li>Check Audit logs: Audit logs contain information on how to power on and access shares on the Data Box or Data Box Heavy when it is outside of Azure datacenter. These logs are located at: storage-account/azuredatabox-chainofcustodylogs</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Check logs during data copy: Before you copy data from your Data Box, you can download and review copy log and verbose log for the data that was copied to the Data Box. These logs are generated when the data is copied from your Storage account in Azure to your Data Box if enabled when placing the order, you can use these logs to verify that files copied from Azure match the data that was copied to your on-premises server.</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Contact the customer and gather as much information as you can about the issue.</p>
+<p>If the customer believes data upload is taking long time, check ASC and confirm:</p>
+<p>Are there any ICM&#39;s already generated for the case</p>
+<p>Data transfer status and last update dates.</p>
+<p>Check with TA&#39;s or Raise ICM if needed</p>
+<p>Check logs during data copy: Before you copy data from your Data Box, you can download and review copy log and verbose log for the data that was copied to the Data Box. These logs are generated when the data is copied from your Storage account in Azure to your Data Box if enabled when placing the order, you can use these logs to verify that files copied from Azure match the data that was copied to your on-premises server.</p>
+<p>By default, logs are written to a container named copylog. Download the copy log from the Connect and copy page.</p>
+<p>Verbose log contains a list of all the files that were successfully exported from Azure Storage account. The log also contains file size and checksum computation. The verbose logs are also copied to the Azure storage account. By default, logs are written to a container named copylog.</p>
+<p>Check Audit logs: Audit logs contain information on how to power on and access shares on the Data Box or Data Box Heavy when it is outside of Azure datacenter. These logs are located at: storage-account/azuredatabox-chainofcustodylogs</p>
+<p>Engage TA&#39;s or Raise ICM if needed</p>
+<p>References:</p></article>

@@ -1,0 +1,96 @@
+<article class="kb-article" data-title="0xc000021a系统不断蓝屏重启"><h1>0xc000021a系统不断蓝屏重启</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-23 14:12:01</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>FAILURE_BUCKET_ID: 0xc000021a_Roche.Services.Task_Critical_Service_Terminated_nt!_??_::OKHAJAOM::_string_</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>FAILURE_BUCKET_ID:  0xc000021a_Roche.Services.Task_Critical_Service_Terminated_nt!_??_::OKHAJAOM::_string_</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>客户反馈虚拟机连接几分钟后就会断开。</li>
+</ul>
+<ul>
+<li>基于以上，此问题是由于系统内部问题引起。</li>
+</ul>
+<ul>
+<li>关于0xc000021a，请您参考：</li>
+</ul>
+<ul>
+<li>对提供的Memory.dump文件进行分析后，</li>
+</ul>
+<ul>
+<li>发现有以下记录：</li>
+</ul>
+<ul>
+<li>dump分析工具Windbg下载路径：</li>
+</ul>
+<ul>
+<li>客户反馈停止Roche.Services后，依然自动重启。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查分析：</li>
+</ul>
+<ul>
+<li>1.查看虚拟机系统日志，发现system.evtx中有大量的bugcheck报错，报错代码为0xc000021a</li>
+</ul>
+<ul>
+<li>最终客户确认，对已安装操作禁用了所有的非Microsoft Services，启用项并未启用后，问题解决。</li>
+</ul>
+<ul>
+<li>当怀疑Bugcheck问题是软件兼容性引起，而客户由于一些原因不能卸载软件时，可以使用clean boot分步缩小排查范围。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>客户对虚拟机进行了sfc /scannow等一系列修复系统文件的操作，但均没有效果。</li>
+</ul>
+<ul>
+<li>建议客户参考以下文档设置clean boot</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/windows-stop-error-system-process-terminated" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/windows-stop-error-system-process-terminated</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/windows-hardware/drivers/debugger/debugger-download-tools" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows-hardware/drivers/debugger/debugger-download-tools</a></li>
+</ul>
+<ul>
+<li><a href="https://support.microsoft.com/en-us/topic/how-to-perform-a-clean-boot-in-windows-da2f9573-6eec-00ad-2f8a-a97a1807f3dd" target="_blank" rel="noopener">https://support.microsoft.com/en-us/topic/how-to-perform-a-clean-boot-in-windows-da2f9573-6eec-00ad-2f8a-a97a1807f3dd</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023-4-23</p>
+<p>问题描述：</p>
+<p>客户反馈虚拟机连接几分钟后就会断开。</p>
+<p>排查分析：</p>
+<p>1.查看虚拟机系统日志，发现system.evtx中有大量的bugcheck报错，报错代码为0xc000021a</p>
+<p>基于以上，此问题是由于系统内部问题引起。</p>
+<p>关于0xc000021a，请您参考：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/windows-stop-error-system-process-terminated" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/windows-stop-error-system-process-terminated</a></p>
+<p>客户对虚拟机进行了sfc /scannow等一系列修复系统文件的操作，但均没有效果。</p>
+<p>对提供的Memory.dump文件进行分析后，</p>
+<p>发现有以下记录：</p>
+<p>FAILURE_BUCKET_ID:  0xc000021a_Roche.Services.Task_Critical_Service_Terminated_nt!_??_::OKHAJAOM::_string_</p>
+<p>dump分析工具Windbg下载路径：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/windows-hardware/drivers/debugger/debugger-download-tools" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows-hardware/drivers/debugger/debugger-download-tools</a></p>
+<p>客户反馈停止Roche.Services后，依然自动重启。</p>
+<p>建议客户参考以下文档设置clean boot</p>
+<p><a href="https://support.microsoft.com/en-us/topic/how-to-perform-a-clean-boot-in-windows-da2f9573-6eec-00ad-2f8a-a97a1807f3dd" target="_blank" rel="noopener">https://support.microsoft.com/en-us/topic/how-to-perform-a-clean-boot-in-windows-da2f9573-6eec-00ad-2f8a-a97a1807f3dd</a></p>
+<p>最终客户确认，对已安装操作禁用了所有的非Microsoft Services，启用项并未启用后，问题解决。</p>
+<p>当怀疑Bugcheck问题是软件兼容性引起，而客户由于一些原因不能卸载软件时，可以使用clean boot分步缩小排查范围。</p></article>

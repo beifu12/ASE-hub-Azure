@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="如何通过log analytics 查看AKS 系统容器日志 ConfigMap"><h1>如何通过log analytics 查看AKS 系统容器日志 ConfigMap</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-05-27 15:05:09</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>默认情况下kube-system中容器的日志默认OMS 代理是不进行收集的，如果需要收集，需要使用 ConfigMap 进行配置omsagent代理</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>默认情况下kube-system中容器的日志默认OMS 代理是不进行收集的，如果需要收集，需要使用 ConfigMap 进行配置omsagent代理</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>默认情况下kube-system中容器的日志默认OMS 代理是不进行收集的，如果需要收集，需要使用 ConfigMap 进行配置omsagent代理</li>
+</ul>
+<ul>
+<li>下载模板 ConfigMap yaml 文件，并将其保存为 container-azm-ms-agentconfig.yaml。</li>
+</ul>
+<ul>
+<li>经过测试，注释掉命名空间排除项:</li>
+</ul>
+<ul>
+<li>KubeEvents</li>
+</ul>
+<ul>
+<li>| where Name contains &quot;keycloak-667d6d69c7-b86nt&quot;</li>
+</ul>
+<ul>
+<li>| project TimeGenerated,Name,Reason,Message,SourceComponent</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>参考邮件：| MCVKB | AKS | Container logs ingestion and modification</li>
+</ul>
+<ul>
+<li>大概5分钟左右，可以在log analytics看到系统容器的日志了</li>
+</ul>
+<ul>
+<li>如下是查看pod 的Event日志的例子</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>运行以下 kubectl 命令创建 ConfigMap：</li>
+</ul>
+<ul>
+<li>kubectl apply -f container-azm-ms-agentconfig.yaml。</li>
+</ul>
+<ul>
+<li>如果是其他命名空间直接可以看到，如下容器测试脚本供参考：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>详见：<a href="https://docs.azure.cn/zh-cn/azure-monitor/insights/container-insights-agent-config" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/insights/container-insights-agent-config</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020-08-5</p>
+<p>默认情况下kube-system中容器的日志默认OMS 代理是不进行收集的，如果需要收集，需要使用 ConfigMap 进行配置omsagent代理</p>
+<p>详见：<a href="https://docs.azure.cn/zh-cn/azure-monitor/insights/container-insights-agent-config" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/insights/container-insights-agent-config</a></p>
+<p>参考邮件：| MCVKB | AKS | Container logs ingestion and modification</p>
+<p>下载模板 ConfigMap yaml 文件，并将其保存为 container-azm-ms-agentconfig.yaml。</p>
+<p>经过测试，注释掉命名空间排除项:</p>
+<p>运行以下 kubectl 命令创建 ConfigMap：</p>
+<p>kubectl apply -f container-azm-ms-agentconfig.yaml。</p>
+<p>大概5分钟左右，可以在log analytics看到系统容器的日志了</p>
+<p>如果是其他命名空间直接可以看到，如下容器测试脚本供参考：</p>
+<p>如下是查看pod 的Event日志的例子</p>
+<p>KubeEvents</p>
+<p>| where Name contains &quot;keycloak-667d6d69c7-b86nt&quot;</p>
+<p>| project TimeGenerated,Name,Reason,Message,SourceComponent</p></article>

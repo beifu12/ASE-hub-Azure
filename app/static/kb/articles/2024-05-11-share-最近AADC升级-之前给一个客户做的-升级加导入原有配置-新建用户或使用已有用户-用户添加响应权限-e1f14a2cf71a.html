@@ -1,0 +1,211 @@
+<article class="kb-article" data-title="[share] 最近AADC升级，之前给一个客户做的，升级加导入原有配置，新建用户或使用已有用户(用户添加响应权限)"><h1>[share] 最近AADC升级，之前给一个客户做的，升级加导入原有配置，新建用户或使用已有用户(用户添加响应权限)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2024-05-11 11:17:28</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>我这边测试，导入配置的方式安装AADC是无法用域管理员</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>我这边测试，导入配置的方式安装AADC是无法用域管理员</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi team，</li>
+</ul>
+<ul>
+<li>最近AADC升级，之前给一个客户做的，升级加导入原有配置，新建用户或使用已有用户(用户添加响应权限)，共大家参考</li>
+</ul>
+<ul>
+<li>当前的 AADConnect 版本为1.5.30.0，如果要升级到最新支持的版本，请参考如下文档</li>
+</ul>
+<ul>
+<li>Microsoft Entra Connect：从旧版升级到最新版本</li>
+</ul>
+<ul>
+<li>Microsoft Entra Connect V2的先决条件</li>
+</ul>
+<ul>
+<li>Microsoft Entra Connect 的硬件要求</li>
+</ul>
+<ul>
+<li>Microsoft Entra Connect V2 简介</li>
+</ul>
+<ul>
+<li>Microsoft Entra Connect：版本发布历史记录</li>
+</ul>
+<ul>
+<li>然后在新server上安装新版本AADC</li>
+</ul>
+<ul>
+<li>选择自定义安装</li>
+</ul>
+<ul>
+<li>选择 MigratedPolicy.json 文件</li>
+</ul>
+<ul>
+<li>安装</li>
+</ul>
+<ul>
+<li>新创建用户是可以的，但是是需要输入域管理员用户而不是新建的用户名</li>
+</ul>
+<ul>
+<li>如果用自定义的用户，您可参照如下权限分配</li>
+</ul>
+<ul>
+<li>例如用户 aadcaccount@mcazure.xyz</li>
+</ul>
+<ul>
+<li>在的aadc 2019上 ps中</li>
+</ul>
+<ul>
+<li>Install-WindowsFeature RSAT-AD-Tools</li>
+</ul>
+<ul>
+<li>Import-Module &quot;C:\Program Files\Microsoft Azure Active Directory Connect\AdSyncConfig\AdSyncConfig.psm1&quot;</li>
+</ul>
+<ul>
+<li>可以参照刚才的权限文档分配不同的权限</li>
+</ul>
+<ul>
+<li>然后安装时选择现有用户 aadcaccount@mcazure.xyz</li>
+</ul>
+<ul>
+<li>新建用户（使用域管理员账户来创建时），是不能自定义新创建的账户吗？</li>
+</ul>
+<ul>
+<li>是的。</li>
+</ul>
+<ul>
+<li>我这边用已有的用户搭建完AADC后，同步正常</li>
+</ul>
+<ul>
+<li>同步账户是已有的用户aadcaccount@mcazure.xyz</li>
+</ul>
+<ul>
+<li>Aad中已同步上来</li>
+</ul>
+<ul>
+<li>Jason Wu(吴曦) | Azure VM+SCIM Support Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>可以尝试用  MigrateSettings.ps1  ps脚本导出现有配置</li>
+</ul>
+<ul>
+<li>在原AADC的server上运行ps脚本</li>
+</ul>
+<ul>
+<li>Get-Command -Module AdSyncConfig</li>
+</ul>
+<ul>
+<li>Set-ADSyncPasswordHashSyncPermissions -ADConnectorAccountName aadcaccount -ADConnectorAccountDomain mcazure.xyz</li>
+</ul>
+<ul>
+<li>Set-ADSyncBasicReadPermissions -ADConnectorAccountName aadcaccount -ADConnectorAccountDomain mcazure.xyz</li>
+</ul>
+<ul>
+<li>Set-ADSyncMsDsConsistencyGuidPermissions -ADConnectorAccountName aadcaccount -ADConnectorAccountDomain  mcazure.xyz</li>
+</ul>
+<ul>
+<li>Set-ADSyncPasswordWritebackPermissions -ADConnectorAccountName aadcaccount -ADConnectorAccountDomain  mcazure.xyz</li>
+</ul>
+<ul>
+<li>Set-ADSyncUnifiedGroupWritebackPermissions -ADConnectorAccountName aadcaccount -ADConnectorAccountDomain  mcazure.xyz</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>建议您用交叉升级</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-upgrade-previous-version" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-upgrade-previous-version</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-upgrade-previous-version#swing-migration" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-upgrade-previous-version#swing-migration</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-install-prerequisites#installation-prerequisites" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-install-prerequisites#installation-prerequisites</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-install-prerequisites#hardware-requirements-for-microsoft-entra-connect" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-install-prerequisites#hardware-requirements-for-microsoft-entra-connect</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/whatis-azure-ad-connect-v2" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/whatis-azure-ad-connect-v2</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/reference-connect-version-history" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/reference-connect-version-history</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-import-export-config#migrate-settings-from-an-existing-server" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-import-export-config#migrate-settings-from-an-existing-server</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-configure-ad-ds-connector-account" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-configure-ad-ds-connector-account</a></li>
+</ul>
+<ul>
+<li>Support direct line: 010-56060236 Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></li>
+</ul>
+<ul>
+<li>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi team，</p>
+<p>最近AADC升级，之前给一个客户做的，升级加导入原有配置，新建用户或使用已有用户(用户添加响应权限)，共大家参考</p>
+<p>当前的 AADConnect 版本为1.5.30.0，如果要升级到最新支持的版本，请参考如下文档</p>
+<p>Microsoft Entra Connect：从旧版升级到最新版本</p>
+<p><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-upgrade-previous-version" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-upgrade-previous-version</a></p>
+<p>建议您用交叉升级</p>
+<p><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-upgrade-previous-version#swing-migration" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-upgrade-previous-version#swing-migration</a></p>
+<p>Microsoft Entra Connect V2的先决条件</p>
+<p><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-install-prerequisites#installation-prerequisites" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-install-prerequisites#installation-prerequisites</a></p>
+<p>Microsoft Entra Connect 的硬件要求</p>
+<p><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-install-prerequisites#hardware-requirements-for-microsoft-entra-connect" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-install-prerequisites#hardware-requirements-for-microsoft-entra-connect</a></p>
+<p>Microsoft Entra Connect V2 简介</p>
+<p><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/whatis-azure-ad-connect-v2" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/whatis-azure-ad-connect-v2</a></p>
+<p>Microsoft Entra Connect：版本发布历史记录</p>
+<p><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/reference-connect-version-history" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/reference-connect-version-history</a></p>
+<p>可以尝试用  MigrateSettings.ps1  ps脚本导出现有配置</p>
+<p><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-import-export-config#migrate-settings-from-an-existing-server" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-import-export-config#migrate-settings-from-an-existing-server</a></p>
+<p>在原AADC的server上运行ps脚本</p>
+<p>然后在新server上安装新版本AADC</p>
+<p>选择自定义安装</p>
+<p>选择 MigratedPolicy.json 文件</p>
+<p>安装</p>
+<p>我这边测试，导入配置的方式安装AADC是无法用域管理员</p>
+<p>新创建用户是可以的，但是是需要输入域管理员用户而不是新建的用户名</p>
+<p>如果用自定义的用户，您可参照如下权限分配</p>
+<p><a href="https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-configure-ad-ds-connector-account" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/hybrid/connect/how-to-connect-configure-ad-ds-connector-account</a></p>
+<p>例如用户 aadcaccount@mcazure.xyz</p>
+<p>在的aadc 2019上 ps中</p>
+<p>Install-WindowsFeature RSAT-AD-Tools</p>
+<p>Import-Module &quot;C:\Program Files\Microsoft Azure Active Directory Connect\AdSyncConfig\AdSyncConfig.psm1&quot;</p>
+<p>Get-Command -Module AdSyncConfig</p>
+<p>可以参照刚才的权限文档分配不同的权限</p>
+<p>Set-ADSyncPasswordHashSyncPermissions -ADConnectorAccountName aadcaccount -ADConnectorAccountDomain mcazure.xyz</p>
+<p>Set-ADSyncBasicReadPermissions -ADConnectorAccountName aadcaccount -ADConnectorAccountDomain mcazure.xyz</p>
+<p>Set-ADSyncMsDsConsistencyGuidPermissions -ADConnectorAccountName aadcaccount -ADConnectorAccountDomain  mcazure.xyz</p>
+<p>Set-ADSyncPasswordWritebackPermissions -ADConnectorAccountName aadcaccount -ADConnectorAccountDomain  mcazure.xyz</p>
+<p>Set-ADSyncUnifiedGroupWritebackPermissions -ADConnectorAccountName aadcaccount -ADConnectorAccountDomain  mcazure.xyz</p>
+<p>然后安装时选择现有用户 aadcaccount@mcazure.xyz</p>
+<p>新建用户（使用域管理员账户来创建时），是不能自定义新创建的账户吗？</p>
+<p>是的。</p>
+<p>我这边用已有的用户搭建完AADC后，同步正常</p>
+<p>同步账户是已有的用户aadcaccount@mcazure.xyz</p>
+<p>Aad中已同步上来</p>
+<p>Jason Wu(吴曦) | Azure VM+SCIM Support Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060236 Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></p>
+<p>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</p></article>

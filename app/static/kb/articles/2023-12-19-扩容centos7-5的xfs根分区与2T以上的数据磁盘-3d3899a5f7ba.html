@@ -1,0 +1,120 @@
+<article class="kb-article" data-title="扩容centos7.5的xfs根分区与2T以上的数据磁盘"><h1>扩容centos7.5的xfs根分区与2T以上的数据磁盘</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-12-19 00:28:50</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>这里更推荐大家使用&quot;xfs_growfs /&quot;即使用&quot;mount-point&quot;目录代替磁盘设备名称，否则有可能出现如下报错</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>这里更推荐大家使用&quot;xfs_growfs /&quot;即使用&quot;mount-point&quot;目录代替磁盘设备名称，否则有可能出现如下报错</li>
+</ul>
+<ul>
+<li>在print时如果提示如下报错请先输入ignore再输入fix即可。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Jia Xiaolei</li>
+</ul>
+<ul>
+<li>此文档用于扩容已使用的linux centos环境，扩容xfs格式的根分区，以及大于2T的数据磁盘，保证数据不丢失进行动态扩容。</li>
+</ul>
+<ul>
+<li>1，扩容前环境</li>
+</ul>
+<ul>
+<li>3，扩容根分区</li>
+</ul>
+<ul>
+<li>保存成功后输入reboot重启操作系统，重新登录虚拟机，此时输入df –lh看到sda2挂在的根分区还没有改变，输入xfs_growfs /dev/sda2对sda2进行扩容。</li>
+</ul>
+<ul>
+<li>###############################################################################</li>
+</ul>
+<ul>
+<li>####################################################################################</li>
+</ul>
+<ul>
+<li>Congratulation，此时根分区已扩容成功,继续下面扩容数据磁盘的操作吧！</li>
+</ul>
+<ul>
+<li>4，扩容数据磁盘</li>
+</ul>
+<ul>
+<li>首先需要取消数据磁盘的挂载，我这里挂在目录为/data。umount /data</li>
+</ul>
+<ul>
+<li>如果之前配置过数据磁盘fstab的自动挂载，请先保存挂载配置后将其删除，防止重启后自动挂载数据磁盘。</li>
+</ul>
+<ul>
+<li>输入parted /dev/sdc为sdc1进行扩容，输入resizepart 1来修改sdc1的大小，默认修改为最高，如需指定大小可参考/dev/sdc的总大小，修改成功后输入q退出。并reboot操作系统。</li>
+</ul>
+<ul>
+<li>bl</li>
+</ul>
+<ul>
+<li>使用之前备份的fstab语句恢复之前的fstab文件。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>登陆虚拟机，使用fdisk /dev/sda查看系统磁盘情况，此时看到修改后的大小已更改，此时需要更改sda2的大小。输入p，查看sda分区情况。</li>
+</ul>
+<ul>
+<li>输入d   再输入 2 ，直接将sda2删除，在出入p查看，此时sda2已删除。</li>
+</ul>
+<ul>
+<li>输入n 新建分区，输入p选择分区后面3项均使用默认项，再次输入p查看，可看到此时sda2分区大小已改变。确认后输入w进行保存。</li>
+</ul>
+<ul>
+<li>输入parted进入(parted)模式，输入select /dev/sdc来选定数据磁盘，输入print来查看分区情况</li>
+</ul>
+<ul>
+<li>登陆虚拟机，先输入blkid /dev/sdc1查看sdc1的UUID，然后使用mount手工将sdc1挂载，然后使用resize2fs /dev/sdc1进行扩容,成功后使用df –lh查看磁盘，此时已变为4T.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>备注：如果从fdisk分区的2T转换为parted分区时，由于parted只能识别gpt格式的磁盘，此时在parted /dev/xxx后需要执行mklabel gpt将磁盘格式转换。此时会自动清除分区，之后需要使用mkpart进行分区，例如：mkpart primary 0 -1,此命令表示将一个磁盘分一个区</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>2，停止虚拟机，修改磁盘大小，将系统盘修改为60G,数据磁盘修改为4T</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://cloud.tencent.com/document/product/362/6738" target="_blank" rel="noopener">https://cloud.tencent.com/document/product/362/6738</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2018-08-07</p>
+<p>Jia Xiaolei</p>
+<p>2019-07-18</p>
+<p>此文档用于扩容已使用的linux centos环境，扩容xfs格式的根分区，以及大于2T的数据磁盘，保证数据不丢失进行动态扩容。</p>
+<p>1，扩容前环境</p>
+<p>2，停止虚拟机，修改磁盘大小，将系统盘修改为60G,数据磁盘修改为4T</p>
+<p>3，扩容根分区</p>
+<p>登陆虚拟机，使用fdisk /dev/sda查看系统磁盘情况，此时看到修改后的大小已更改，此时需要更改sda2的大小。输入p，查看sda分区情况。</p>
+<p>输入d   再输入 2 ，直接将sda2删除，在出入p查看，此时sda2已删除。</p>
+<p>输入n 新建分区，输入p选择分区后面3项均使用默认项，再次输入p查看，可看到此时sda2分区大小已改变。确认后输入w进行保存。</p>
+<p>保存成功后输入reboot重启操作系统，重新登录虚拟机，此时输入df –lh看到sda2挂在的根分区还没有改变，输入xfs_growfs /dev/sda2对sda2进行扩容。</p>
+<p>###############################################################################</p>
+<p>这里更推荐大家使用&quot;xfs_growfs /&quot;即使用&quot;mount-point&quot;目录代替磁盘设备名称，否则有可能出现如下报错</p>
+<p>####################################################################################</p>
+<p>Congratulation，此时根分区已扩容成功,继续下面扩容数据磁盘的操作吧！</p>
+<p>4，扩容数据磁盘</p>
+<p>首先需要取消数据磁盘的挂载，我这里挂在目录为/data。umount /data</p>
+<p>输入parted进入(parted)模式，输入select /dev/sdc来选定数据磁盘，输入print来查看分区情况</p>
+<p>在print时如果提示如下报错请先输入ignore再输入fix即可。</p>
+<p>如果之前配置过数据磁盘fstab的自动挂载，请先保存挂载配置后将其删除，防止重启后自动挂载数据磁盘。</p>
+<p>输入parted /dev/sdc为sdc1进行扩容，输入resizepart 1来修改sdc1的大小，默认修改为最高，如需指定大小可参考/dev/sdc的总大小，修改成功后输入q退出。并reboot操作系统。</p>
+<p>登陆虚拟机，先输入blkid /dev/sdc1查看sdc1的UUID，然后使用mount手工将sdc1挂载，然后使用resize2fs /dev/sdc1进行扩容,成功后使用df –lh查看磁盘，此时已变为4T.</p>
+<p>bl</p>
+<p>使用之前备份的fstab语句恢复之前的fstab文件。</p>
+<p>备注：如果从fdisk分区的2T转换为parted分区时，由于parted只能识别gpt格式的磁盘，此时在parted /dev/xxx后需要执行mklabel gpt将磁盘格式转换。此时会自动清除分区，之后需要使用mkpart进行分区，例如：mkpart primary 0 -1,此命令表示将一个磁盘分一个区</p>
+<p><a href="https://cloud.tencent.com/document/product/362/6738" target="_blank" rel="noopener">https://cloud.tencent.com/document/product/362/6738</a></p></article>

@@ -1,0 +1,114 @@
+<article class="kb-article" data-title="[Share]设备Entra ID Joined后对于操作系统管理员权限设置方式"><h1>[Share]设备Entra ID Joined后对于操作系统管理员权限设置方式</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-27 15:47:20</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Create</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Create</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Create</li>
+</ul>
+<ul>
+<li>case：20250626360260</li>
+</ul>
+<ul>
+<li>问题背景：</li>
+</ul>
+<ul>
+<li>客户本地设备没有本地域，仅是Entra ID Joined，使用了Entra ID》设备设置中的两个预览版功能。</li>
+</ul>
+<ul>
+<li>问题1：需求使用独立账户作为所有设备操作系统内的管理员，而不想给该用户全局管理员角色。</li>
+</ul>
+<ul>
+<li>解答：</li>
+</ul>
+<ul>
+<li>问题1：</li>
+</ul>
+<ul>
+<li>方法1：</li>
+</ul>
+<ul>
+<li>您可以单独找云上的账户作为所有设备的全局管理员，从现有您提出的功能上是给该用户云中的全局管理员角色，根据官方文档也可以设置其它角色，但是文档中提到仅提到windows 10系统。具体您可以参考文档：Microsoft Entra 内置角色 | Azure Docs</li>
+</ul>
+<ul>
+<li>方法2：</li>
+</ul>
+<ul>
+<li>根据官方文档介绍的原理进一步分析：</li>
+</ul>
+<ul>
+<li>默认情况下，Azure AD 加入的设备会自动创建以下本地账户：</li>
+</ul>
+<ul>
+<li>这些账户不应手动删除或修改，否则可能导致设备管理功能失效。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题2：同时在设备加入Entra ID后在系统管理员组中看到2个额外账户，需要确认功能。</li>
+</ul>
+<ul>
+<li>问题2，S-1-12-2-*开头的用户是您本地加入Entra ID时自动生成的，分别是用于设备身份验证和策略管理以及任务管理的。不能删除。删除后无法恢复。如果误删除，请尝试将设备退出Entra ID，然后重新加入。</li>
+</ul>
+<ul>
+<li>AzureADJoinedDeviceLocalAccount（SID 格式：S-1-12-2-*）用于设备身份验证和策略管理。</li>
+</ul>
+<ul>
+<li>AzureADJoinedDeviceAdmin（SID 格式：S-1-12-2-*）用于设备管理任务（如证书续订、合规性检查）。</li>
+</ul>
+<ul>
+<li># 查看本地 Administrators 组成员及其来源</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如果要验证这些SID用户的合法性，可以使用以下命令查看，合法的 Azure AD 相关 SID 会显示 PrincipalSource: AzureAD</li>
+</ul>
+<ul>
+<li>Get-LocalGroupMember -Group &quot;Administrators&quot; | Format-Table Name, SID, PrincipalSource</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>也可以通过intune策略集中推送，将某一AAD账号加入administrators里，具体路径如下：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>官方文档： <a href="https://docs.azure.cn/zh-cn/entra/identity/devices/assign-local-admin#default-local-administrator-accounts" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/devices/assign-local-admin#default-local-administrator-accounts</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Create</p>
+<p>2025-06-27</p>
+<p>case：20250626360260</p>
+<p>问题背景：</p>
+<p>客户本地设备没有本地域，仅是Entra ID Joined，使用了Entra ID》设备设置中的两个预览版功能。</p>
+<p>问题1：需求使用独立账户作为所有设备操作系统内的管理员，而不想给该用户全局管理员角色。</p>
+<p>问题2：同时在设备加入Entra ID后在系统管理员组中看到2个额外账户，需要确认功能。</p>
+<p>解答：</p>
+<p>问题1：</p>
+<p>方法1：</p>
+<p>您可以单独找云上的账户作为所有设备的全局管理员，从现有您提出的功能上是给该用户云中的全局管理员角色，根据官方文档也可以设置其它角色，但是文档中提到仅提到windows 10系统。具体您可以参考文档：Microsoft Entra 内置角色 | Azure Docs</p>
+<p>方法2：</p>
+<p>也可以通过intune策略集中推送，将某一AAD账号加入administrators里，具体路径如下：</p>
+<p>问题2，S-1-12-2-*开头的用户是您本地加入Entra ID时自动生成的，分别是用于设备身份验证和策略管理以及任务管理的。不能删除。删除后无法恢复。如果误删除，请尝试将设备退出Entra ID，然后重新加入。</p>
+<p>官方文档： <a href="https://docs.azure.cn/zh-cn/entra/identity/devices/assign-local-admin#default-local-administrator-accounts" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/devices/assign-local-admin#default-local-administrator-accounts</a></p>
+<p>根据官方文档介绍的原理进一步分析：</p>
+<p>默认情况下，Azure AD 加入的设备会自动创建以下本地账户：</p>
+<p>AzureADJoinedDeviceLocalAccount（SID 格式：S-1-12-2-*）用于设备身份验证和策略管理。</p>
+<p>AzureADJoinedDeviceAdmin（SID 格式：S-1-12-2-*）用于设备管理任务（如证书续订、合规性检查）。</p>
+<p>这些账户不应手动删除或修改，否则可能导致设备管理功能失效。</p>
+<p>如果要验证这些SID用户的合法性，可以使用以下命令查看，合法的 Azure AD 相关 SID 会显示 PrincipalSource: AzureAD</p>
+<h1>查看本地 Administrators 组成员及其来源</h1>
+<p>Get-LocalGroupMember -Group &quot;Administrators&quot; | Format-Table Name, SID, PrincipalSource</p></article>

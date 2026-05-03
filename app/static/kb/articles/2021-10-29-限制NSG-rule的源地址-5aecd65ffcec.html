@@ -1,0 +1,196 @@
+<article class="kb-article" data-title="限制NSG rule的源地址"><h1>限制NSG rule的源地址</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: PolicyOnNet</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-10-29 16:32:11</li>
+<li>JD 相关性: Defender/Sentinel/安全</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>fuzhangliang</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>fuzhangliang</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>fuzhangliang</li>
+</ul>
+<ul>
+<li>参考工单： SR_2020021706494_[MS-LED]策略的编写中，子网的包含关系怎么写？</li>
+</ul>
+<ul>
+<li>需求：</li>
+</ul>
+<ul>
+<li>实现：</li>
+</ul>
+<ul>
+<li>使用Azure Policy实现，定义的Policy如下</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;properties&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;policyType&quot;: &quot;Custom&quot;,</li>
+</ul>
+<ul>
+<li>&quot;mode&quot;: &quot;All&quot;,</li>
+</ul>
+<ul>
+<li>&quot;metadata&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;createdBy&quot;: &quot;244b217a-b616-49f3-b084-445ad47b3640&quot;,</li>
+</ul>
+<ul>
+<li>&quot;createdOn&quot;: &quot;2020-02-21T09:29:30.3675135Z&quot;,</li>
+</ul>
+<ul>
+<li>&quot;updatedBy&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;updatedOn&quot;: null</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;policyRule&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;if&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;allOf&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;field&quot;: &quot;type&quot;,</li>
+</ul>
+<ul>
+<li>&quot;equals&quot;: &quot;Microsoft.Network/networkSecurityGroups/securityRules&quot;</li>
+</ul>
+<ul>
+<li>&quot;field&quot;: &quot;Microsoft.Network/networkSecurityGroups/securityRules/access&quot;,</li>
+</ul>
+<ul>
+<li>&quot;equals&quot;: &quot;Allow&quot;</li>
+</ul>
+<ul>
+<li>&quot;field&quot;: &quot;Microsoft.Network/networkSecurityGroups/securityRules/direction&quot;,</li>
+</ul>
+<ul>
+<li>&quot;equals&quot;: &quot;Inbound&quot;</li>
+</ul>
+<ul>
+<li>&quot;field&quot;: &quot;Microsoft.Network/networkSecurityGroups/securityRules/sourceAddressPrefix&quot;,</li>
+</ul>
+<ul>
+<li>&quot;notEquals&quot;: &quot;10.0.0.0/8&quot;</li>
+</ul>
+<ul>
+<li>&quot;field&quot;: &quot;Microsoft.Network/networkSecurityGroups/securityRules/destinationPortRange&quot;,</li>
+</ul>
+<ul>
+<li>&quot;equals&quot;: &quot;22&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>&quot;then&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;effect&quot;: &quot;deny&quot;</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/c1fe03e6-ff80-4d91-824d-ba495a000792/providers/Microsoft.Authorization/policyDefinitions/fuzltestpolicy&quot;,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;Microsoft.Authorization/policyDefinitions&quot;,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;fuzltestpolicy&quot;</li>
+</ul>
+<ul>
+<li>启用之后，测试如下：</li>
+</ul>
+<ul>
+<li>拒绝创建</li>
+</ul>
+<ul>
+<li>以上，如有任何问题，欢迎联系！</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>一个用户可以修改NSG规则，但是如果他添加22端口的源地址不是10.0.0.0/8的NSG条目的话，那Policy就Deny这个操作</li>
+</ul>
+<ul>
+<li>1、创建源地址是*， 目标端口是22的规则，由于源地址不是10.0.0.0/8, 拒绝创建</li>
+</ul>
+<ul>
+<li>2、创建源地址是10.0.0.0/8，目标端口是22的规则，可以创建</li>
+</ul>
+<ul>
+<li>3、添加源不是10.0.0.0/8, 但是目标端口不是22，比如是9000，由于未违反规则，可以创建</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>fuzhangliang</p>
+<p>参考工单： SR_2020021706494_[MS-LED]策略的编写中，子网的包含关系怎么写？</p>
+<p>需求：</p>
+<p>一个用户可以修改NSG规则，但是如果他添加22端口的源地址不是10.0.0.0/8的NSG条目的话，那Policy就Deny这个操作</p>
+<p>实现：</p>
+<p>使用Azure Policy实现，定义的Policy如下</p>
+<p>{</p>
+<p>&quot;properties&quot;: {</p>
+<p>&quot;policyType&quot;: &quot;Custom&quot;,</p>
+<p>&quot;mode&quot;: &quot;All&quot;,</p>
+<p>&quot;metadata&quot;: {</p>
+<p>&quot;createdBy&quot;: &quot;244b217a-b616-49f3-b084-445ad47b3640&quot;,</p>
+<p>&quot;createdOn&quot;: &quot;2020-02-21T09:29:30.3675135Z&quot;,</p>
+<p>&quot;updatedBy&quot;: null,</p>
+<p>&quot;updatedOn&quot;: null</p>
+<p>},</p>
+<p>&quot;policyRule&quot;: {</p>
+<p>&quot;if&quot;: {</p>
+<p>&quot;allOf&quot;: [</p>
+<p>&quot;field&quot;: &quot;type&quot;,</p>
+<p>&quot;equals&quot;: &quot;Microsoft.Network/networkSecurityGroups/securityRules&quot;</p>
+<p>&quot;field&quot;: &quot;Microsoft.Network/networkSecurityGroups/securityRules/access&quot;,</p>
+<p>&quot;equals&quot;: &quot;Allow&quot;</p>
+<p>&quot;field&quot;: &quot;Microsoft.Network/networkSecurityGroups/securityRules/direction&quot;,</p>
+<p>&quot;equals&quot;: &quot;Inbound&quot;</p>
+<p>&quot;field&quot;: &quot;Microsoft.Network/networkSecurityGroups/securityRules/sourceAddressPrefix&quot;,</p>
+<p>&quot;notEquals&quot;: &quot;10.0.0.0/8&quot;</p>
+<p>&quot;field&quot;: &quot;Microsoft.Network/networkSecurityGroups/securityRules/destinationPortRange&quot;,</p>
+<p>&quot;equals&quot;: &quot;22&quot;</p>
+<p>}</p>
+<p>]</p>
+<p>&quot;then&quot;: {</p>
+<p>&quot;effect&quot;: &quot;deny&quot;</p>
+<p>&quot;id&quot;: &quot;/subscriptions/c1fe03e6-ff80-4d91-824d-ba495a000792/providers/Microsoft.Authorization/policyDefinitions/fuzltestpolicy&quot;,</p>
+<p>&quot;type&quot;: &quot;Microsoft.Authorization/policyDefinitions&quot;,</p>
+<p>&quot;name&quot;: &quot;fuzltestpolicy&quot;</p>
+<p>启用之后，测试如下：</p>
+<p>1、创建源地址是*， 目标端口是22的规则，由于源地址不是10.0.0.0/8, 拒绝创建</p>
+<p>拒绝创建</p>
+<p>2、创建源地址是10.0.0.0/8，目标端口是22的规则，可以创建</p>
+<p>3、添加源不是10.0.0.0/8, 但是目标端口不是22，比如是9000，由于未违反规则，可以创建</p>
+<p>以上，如有任何问题，欢迎联系！</p></article>

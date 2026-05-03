@@ -1,0 +1,139 @@
+<article class="kb-article" data-title="[Share][Script][Storage account TLS setting]"><h1>[Share][Script][Storage account TLS setting]</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-02-24 17:53:11</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>The following Azure PowerShell command is used to set the separate storage account TLS for your reference：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>The following Azure PowerShell command is used to set the separate storage account TLS for your reference：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>==============================================</li>
+</ul>
+<ul>
+<li>$rgName = &quot;&lt;resource-group&gt;&quot;</li>
+</ul>
+<ul>
+<li>$accountName = &quot;&lt;storage-account&gt;&quot;</li>
+</ul>
+<ul>
+<li># Read the MinimumTlsVersion property.</li>
+</ul>
+<ul>
+<li>(Get-AzStorageAccount -ResourceGroupName $rgName -Name $accountName).MinimumTlsVersion</li>
+</ul>
+<ul>
+<li># Update the MinimumTlsVersion version for the storage account to TLS 1.2.</li>
+</ul>
+<ul>
+<li>-AccountName $accountName `</li>
+</ul>
+<ul>
+<li>-MinimumTlsVersion TLS1_2</li>
+</ul>
+<ul>
+<li>Below is my test environment settings for your reference:</li>
+</ul>
+<ul>
+<li>$subscription = Get-AzSubscription</li>
+</ul>
+<ul>
+<li>foreach ($sub in $subscription) {</li>
+</ul>
+<ul>
+<li>$resourcegroup = Get-AzResourceGroup</li>
+</ul>
+<ul>
+<li>foreach ($rg in $resourcegroup) {</li>
+</ul>
+<ul>
+<li>$storageaccount = Get-AzStorageAccount -ResourceGroupName $rg.resourcegroupname</li>
+</ul>
+<ul>
+<li>foreach ($sa in $storageaccount) {</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>Disclaimer</li>
+</ul>
+<ul>
+<li>This Sample Code is provided for the purpose of illustration only and is not intended to be used in a production environment.</li>
+</ul>
+<ul>
+<li>THIS SAMPLE CODE AND ANY RELATED INFORMATION ARE PROVIDED &quot;AS IS&quot; WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.</li>
+</ul>
+<ul>
+<li>We grant You a nonexclusive, royalty-free right to use and modify the Sample Code and to reproduce and distribute the object code form of the Sample Code, provided that You agree:</li>
+</ul>
+<ul>
+<li>to include a valid copyright notice on Your software product in which the Sample Code is embedded;</li>
+</ul>
+<ul>
+<li>to indemnify, hold harmless, and defend Us and Our suppliers from and against any claims or lawsuits, including attorneys’ fees, that arise or result from the use or distribution of the Sample Code.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>to not use Our name, logo, or trademarks to market Your software product in which the Sample Code is embedded;</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>The following Azure PowerShell command is used to set the separate storage account TLS for your reference：</li>
+</ul>
+<ul>
+<li>Set-AzStorageAccount -ResourceGroupName $rgName `</li>
+</ul>
+<ul>
+<li>Set-AzContext -SubscriptionId $sub.id</li>
+</ul>
+<ul>
+<li>Set-AzStorageAccount -ResourceGroupName $rg.resourcegroupname -AccountName $sa.StorageAccountName -MinimumTlsVersion TLS1_2</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>I have tested the following script to enable TLS1.2 for all storage accounts in a subscription, just for your reference:</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-2-24</p>
+<p>The following Azure PowerShell command is used to set the separate storage account TLS for your reference：</p>
+<p>==============================================</p>
+<p>$rgName = &quot;&lt;resource-group&gt;&quot;</p>
+<p>$accountName = &quot;&lt;storage-account&gt;&quot;</p>
+<h1>Read the MinimumTlsVersion property.</h1>
+<p>(Get-AzStorageAccount -ResourceGroupName $rgName -Name $accountName).MinimumTlsVersion</p>
+<h1>Update the MinimumTlsVersion version for the storage account to TLS 1.2.</h1>
+<p>Set-AzStorageAccount -ResourceGroupName $rgName `</p>
+<p>-AccountName $accountName `</p>
+<p>-MinimumTlsVersion TLS1_2</p>
+<p>Below is my test environment settings for your reference:</p>
+<p>I have tested the following script to enable TLS1.2 for all storage accounts in a subscription, just for your reference:</p>
+<p>$subscription = Get-AzSubscription</p>
+<p>foreach ($sub in $subscription) {</p>
+<p>Set-AzContext -SubscriptionId $sub.id</p>
+<p>$resourcegroup = Get-AzResourceGroup</p>
+<p>foreach ($rg in $resourcegroup) {</p>
+<p>$storageaccount = Get-AzStorageAccount -ResourceGroupName $rg.resourcegroupname</p>
+<p>foreach ($sa in $storageaccount) {</p>
+<p>Set-AzStorageAccount -ResourceGroupName $rg.resourcegroupname -AccountName $sa.StorageAccountName -MinimumTlsVersion TLS1_2</p>
+<p>}</p>
+<p>Disclaimer</p>
+<p>This Sample Code is provided for the purpose of illustration only and is not intended to be used in a production environment.</p>
+<p>THIS SAMPLE CODE AND ANY RELATED INFORMATION ARE PROVIDED &quot;AS IS&quot; WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.</p>
+<p>We grant You a nonexclusive, royalty-free right to use and modify the Sample Code and to reproduce and distribute the object code form of the Sample Code, provided that You agree:</p>
+<p>to not use Our name, logo, or trademarks to market Your software product in which the Sample Code is embedded;</p>
+<p>to include a valid copyright notice on Your software product in which the Sample Code is embedded;</p>
+<p>to indemnify, hold harmless, and defend Us and Our suppliers from and against any claims or lawsuits, including attorneys’ fees, that arise or result from the use or distribution of the Sample Code.</p></article>

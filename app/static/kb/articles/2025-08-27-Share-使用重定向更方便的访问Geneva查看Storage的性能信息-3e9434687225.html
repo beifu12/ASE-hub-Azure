@@ -1,0 +1,151 @@
+<article class="kb-article" data-title="[Share] 使用重定向更方便的访问Geneva查看Storage的性能信息"><h1>[Share] 使用重定向更方便的访问Geneva查看Storage的性能信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-08-27 09:39:57</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Gao Xieen</li>
+</ul>
+<ul>
+<li>首先在浏览器中安装 Redirector</li>
+</ul>
+<ul>
+<li>Edge 浏览器：Redirector - Microsoft Edge Addons</li>
+</ul>
+<ul>
+<li>Chrome暂时没办法，扩展不支持MV3。</li>
+</ul>
+<ul>
+<li>安装后导入下方的json文件。</li>
+</ul>
+<ul>
+<li>简单说明一下这些表</li>
+</ul>
+<ul>
+<li>Account SLA Shoebox Metrics</li>
+</ul>
+<ul>
+<li>针对存储账户的SLA的值，也包括一些性能的指标作为对比。</li>
+</ul>
+<ul>
+<li>包含更多性能的指标。（Transcation数量，延迟，吞吐量）</li>
+</ul>
+<ul>
+<li>Account Capacity Shoebox Metrics</li>
+</ul>
+<ul>
+<li>这个表主要针对一些存储账户的容量变化。比如客户问文件突然变少变多的情况。</li>
+</ul>
+<ul>
+<li>Blob Capacity Shoebox Metrics</li>
+</ul>
+<ul>
+<li>只显示blob的容量。</li>
+</ul>
+<ul>
+<li>File的的性能显示。</li>
+</ul>
+<ul>
+<li>针对fileshare挂载的性能。</li>
+</ul>
+<ul>
+<li>一些表的说明。</li>
+</ul>
+<ul>
+<li>但是如果这个值下降必定是性能提供不足。或者是存储账户服务出现问题。</li>
+</ul>
+<ul>
+<li>Transcation可以直观的看到某一时间操作的类型和数量。</li>
+</ul>
+<ul>
+<li>传输的吞吐量。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在ASC中有相当多的链接都是Global的链接。但是其实我们的环境访问也是可以的，只不过需要更改链接为MoonCake能用的链接。</li>
+</ul>
+<ul>
+<li>下方的三个正则会在 将老的Jarvis链接 和 ASI 以及netvma 重定向到我们可以访问的Mooncake链接。</li>
+</ul>
+<ul>
+<li>在ASC中就可以访问以下的任意一个Dashboard了。</li>
+</ul>
+<ul>
+<li>*启动后可能需要打开 New Portal。</li>
+</ul>
+<ul>
+<li>Shoebox API Investigation Dashboard</li>
+</ul>
+<ul>
+<li>Account Dashboard - Azure File</li>
+</ul>
+<ul>
+<li>Account Dashboard - Azure Fileshare</li>
+</ul>
+<ul>
+<li>包含所有信息的Dashboard一般可以使用objectype来筛选需要的资源。比如 筛选 blob 和 file。</li>
+</ul>
+<ul>
+<li>观察Availablity 如果是100%通常表明存储账户提供了足够的性能（只参考）</li>
+</ul>
+<ul>
+<li>Capaity的表可以查看某一时间点的容量变化。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>E2E Latency = Server Latency + 网络到客户的延迟。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Gao Xieen</p>
+<p>在ASC中有相当多的链接都是Global的链接。但是其实我们的环境访问也是可以的，只不过需要更改链接为MoonCake能用的链接。</p>
+<p>首先在浏览器中安装 Redirector</p>
+<p>Edge 浏览器：Redirector - Microsoft Edge Addons</p>
+<p>Chrome暂时没办法，扩展不支持MV3。</p>
+<p>安装后导入下方的json文件。</p>
+<p>下方的三个正则会在 将老的Jarvis链接 和 ASI 以及netvma 重定向到我们可以访问的Mooncake链接。</p>
+<p>在ASC中就可以访问以下的任意一个Dashboard了。</p>
+<p>*启动后可能需要打开 New Portal。</p>
+<p>简单说明一下这些表</p>
+<p>Account SLA Shoebox Metrics</p>
+<p>针对存储账户的SLA的值，也包括一些性能的指标作为对比。</p>
+<p>Shoebox API Investigation Dashboard</p>
+<p>包含更多性能的指标。（Transcation数量，延迟，吞吐量）</p>
+<p>Account Capacity Shoebox Metrics</p>
+<p>这个表主要针对一些存储账户的容量变化。比如客户问文件突然变少变多的情况。</p>
+<p>Blob Capacity Shoebox Metrics</p>
+<p>只显示blob的容量。</p>
+<p>Account Dashboard - Azure File</p>
+<p>File的的性能显示。</p>
+<p>Account Dashboard - Azure Fileshare</p>
+<p>针对fileshare挂载的性能。</p>
+<p>包含所有信息的Dashboard一般可以使用objectype来筛选需要的资源。比如 筛选 blob 和 file。</p>
+<p>一些表的说明。</p>
+<p>观察Availablity 如果是100%通常表明存储账户提供了足够的性能（只参考）</p>
+<p>但是如果这个值下降必定是性能提供不足。或者是存储账户服务出现问题。</p>
+<p>E2E Latency = Server Latency + 网络到客户的延迟。</p>
+<p>Transcation可以直观的看到某一时间操作的类型和数量。</p>
+<p>传输的吞吐量。</p>
+<p>Capaity的表可以查看某一时间点的容量变化。</p></article>

@@ -1,0 +1,110 @@
+<article class="kb-article" data-title="如何通过vnet to vnet或vnet peering实现北2区的HDInsight集群与北1区的Azure存储之间的通信"><h1>如何通过vnet to vnet或vnet peering实现北2区的HDInsight集群与北1区的Azure存储之间的通信</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: 标准话术</li>
+<li>最近修改: 2021-11-09 10:21:16</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Case: SR_2019030811992 _ [T100]如何通过vnet to vnet或vnet peering实现北2区的HDInsight集群与北1区的Azure存储之间的通信</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Case: SR_2019030811992 _ [T100]如何通过vnet to vnet或vnet peering实现北2区的HDInsight集群与北1区的Azure存储之间的通信</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Case: SR_2019030811992 _ [T100]如何通过vnet to vnet或vnet peering实现北2区的HDInsight集群与北1区的Azure存储之间的通信</li>
+</ul>
+<ul>
+<li>案例总结如下：</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>北1区有个Azure存储，北2区有个HDInsight集群，</li>
+</ul>
+<ul>
+<li>需求是，HDInsig</li>
+</ul>
+<ul>
+<li>的其他区域中访问ht集群中的spark应用程序，读取Azure存储的blob中的文件，</li>
+</ul>
+<ul>
+<li>能否通过vnet to vnet或vnet peering实现两者间的通信？</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>=============</li>
+</ul>
+<ul>
+<li>出于性能和资费方面的考虑，Azure HDInsight集群不支持通过VNET Peering的方式在集群之外</li>
+</ul>
+<ul>
+<li>BLOB存储帐户，参考文档如下：</li>
+</ul>
+<ul>
+<li>将其他存储帐户添加到 HDInsight</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>wasbs://&lt;container_name&gt;@&lt;storage_name&gt;.blob.core.chinacloudapi.cn/&lt;folder_name&gt;/&lt;file name&gt;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查步骤：</li>
+</ul>
+<ul>
+<li>升级后线进一步排查</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<ul>
+<li>我们建议客户您先在北二区创建Spark群集，然后考虑通过定期任务(例如批处理)实现北一区和北二区的BLOB数据同步；</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/hdinsight/hdinsight-hadoop-add-storage?toc=%2Fzh-cn%2Fhdinsight%2Fspark%2FTOC.json&amp;bc=%2Fzh-cn%2Fbread%2Ftoc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/hdinsight/hdinsight-hadoop-add-storage?toc=%2Fzh-cn%2Fhdinsight%2Fspark%2FTOC.json&amp;bc=%2Fzh-cn%2Fbread%2Ftoc.json</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Case: SR_2019030811992 _ [T100]如何通过vnet to vnet或vnet peering实现北2区的HDInsight集群与北1区的Azure存储之间的通信</p>
+<p>案例总结如下：</p>
+<p>问题描述：</p>
+<p>==========</p>
+<p>北1区有个Azure存储，北2区有个HDInsight集群，</p>
+<p>需求是，HDInsig</p>
+<p>的其他区域中访问ht集群中的spark应用程序，读取Azure存储的blob中的文件，</p>
+<p>能否通过vnet to vnet或vnet peering实现两者间的通信？</p>
+<p>排查步骤：</p>
+<p>========</p>
+<p>升级后线进一步排查</p>
+<p>问题原因：</p>
+<p>=============</p>
+<p>出于性能和资费方面的考虑，Azure HDInsight集群不支持通过VNET Peering的方式在集群之外</p>
+<p>BLOB存储帐户，参考文档如下：</p>
+<p>将其他存储帐户添加到 HDInsight</p>
+<p><a href="https://docs.azure.cn/zh-cn/hdinsight/hdinsight-hadoop-add-storage?toc=%2Fzh-cn%2Fhdinsight%2Fspark%2FTOC.json&amp;bc=%2Fzh-cn%2Fbread%2Ftoc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/hdinsight/hdinsight-hadoop-add-storage?toc=%2Fzh-cn%2Fhdinsight%2Fspark%2FTOC.json&amp;bc=%2Fzh-cn%2Fbread%2Ftoc.json</a></p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>我们建议客户您先在北二区创建Spark群集，然后考虑通过定期任务(例如批处理)实现北一区和北二区的BLOB数据同步；</p>
+<p>wasbs://&lt;container_name&gt;@&lt;storage_name&gt;.blob.core.chinacloudapi.cn/&lt;folder_name&gt;/&lt;file name&gt;</p></article>

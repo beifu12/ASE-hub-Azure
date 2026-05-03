@@ -1,0 +1,59 @@
+<article class="kb-article" data-title="windows激活提示DNS名称不存在"><h1>windows激活提示DNS名称不存在</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-03 11:15:33</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>【问题描述】</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>【问题描述】</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>【问题描述】</li>
+</ul>
+<ul>
+<li>【问题解决】</li>
+</ul>
+<ul>
+<li>手动指定中国区KMS终结点后，再手动激活，就可以了。</li>
+</ul>
+<ul>
+<li>这个问题比较少见，一般不需要手动指定中国区KMS终结点。</li>
+</ul>
+<ul>
+<li>手动指定中国区KMS终结点：slmgr.vbs /skms kms.core.chinacloudapi.cn</li>
+</ul>
+<ul>
+<li>手动激活：slmgr.vbs /ato</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>检查了虚拟机中的网络配置，没有自定义DNS并且中国区KMS终结点可以正常解析。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>用户反馈，将中国区KMS终结点放行后，使用命令激活：slmgr.vbs /ato，一直提示DNS名称不存在</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>【问题描述】</p>
+<p>用户反馈，将中国区KMS终结点放行后，使用命令激活：slmgr.vbs /ato，一直提示DNS名称不存在</p>
+<p>【问题解决】</p>
+<p>检查了虚拟机中的网络配置，没有自定义DNS并且中国区KMS终结点可以正常解析。</p>
+<p>手动指定中国区KMS终结点后，再手动激活，就可以了。</p>
+<p>这个问题比较少见，一般不需要手动指定中国区KMS终结点。</p>
+<p>手动指定中国区KMS终结点：slmgr.vbs /skms kms.core.chinacloudapi.cn</p>
+<p>手动激活：slmgr.vbs /ato</p></article>

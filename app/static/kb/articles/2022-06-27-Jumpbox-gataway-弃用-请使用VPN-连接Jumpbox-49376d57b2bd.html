@@ -1,0 +1,187 @@
+<article class="kb-article" data-title="Jumpbox gataway 弃用，请使用VPN 连接Jumpbox"><h1>Jumpbox gataway 弃用，请使用VPN 连接Jumpbox</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2022-06-27 18:04:32</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>下载并安装Pluse Secure（old，请使用the SSL_VPN Client update (#1) · Issues · Network / ssl_vpn · GitLab (oe.net)链接并下载最新版本）</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>下载并安装Pluse Secure（old，请使用the SSL_VPN Client update (#1) · Issues · Network / ssl_vpn · GitLab (oe.net)链接并下载最新版本）</li>
+</ul>
+<ul>
+<li>Open the SSL_VPN Client update (#1) · Issues · Network / ssl_vpn · GitLab (oe.net) and download package</li>
+</ul>
+<ul>
+<li>Install the latest package on your machine and re-connect the Pulse Security VPN, it will fix the issue.</li>
+</ul>
+<ul>
+<li>If unable access the package, please email 21V-WAPHYNET@oe.21vianet.com and we will transfer the package via email/Lync to you.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>LiuHuan</li>
+</ul>
+<ul>
+<li>收到公司PS邮件，当前连接Jumpbox 的gateway 要弃用，后续需要使用VPN 连接Jumpbox（更多请参见邮件</li>
+</ul>
+<ul>
+<li>附件）。</li>
+</ul>
+<ul>
+<li>Download the Pulse Secure Access Client for your system.</li>
+</ul>
+<ul>
+<li>Windows (32bit)</li>
+</ul>
+<ul>
+<li>Windows (64bit)</li>
+</ul>
+<ul>
+<li>32bit MD5</li>
+</ul>
+<ul>
+<li>64bit MD5</li>
+</ul>
+<ul>
+<li>MacOS</li>
+</ul>
+<ul>
+<li>MD5</li>
+</ul>
+<ul>
+<li>Ubuntu/Debian 64 Bit Installer</li>
+</ul>
+<ul>
+<li>CentOS/RHEL 64 Bit Installer</li>
+</ul>
+<ul>
+<li>iOS</li>
+</ul>
+<ul>
+<li>Android</li>
+</ul>
+<ul>
+<li>当前需要安装新版本</li>
+</ul>
+<ul>
+<li>Please upgrade your Pulse Security VPN to 9.1.11 by following steps.</li>
+</ul>
+<ul>
+<li>Connect 21v EasyConnect first</li>
+</ul>
+<ul>
+<li>打开Pluse Secure，配置 VPN 节点， 然后 &quot;Connect&quot;</li>
+</ul>
+<ul>
+<li>VPN 的名称和URL</li>
+</ul>
+<ul>
+<li>VPN 节点加完之后，如果需要连接Jumpbox, 请先 connect VPN , 需要输入 smart card PIN 码</li>
+</ul>
+<ul>
+<li>申请JIT，或者直接使用BJS20SPARE01. CME.GBL 或者 SHA20SPARE01.CME.GBL 测试</li>
+</ul>
+<ul>
+<li>连接Jumpbox</li>
+</ul>
+<ul>
+<li>注2：可以将申请的JIT 的RDP 文件保存在特定的位置，不用每次都下载，后续如果申请同一Jumpbox, 可以使用之前对应Jumpbox名称的RDP 文件。</li>
+</ul>
+<ul>
+<li>4.2 使用 Remote Desktop Connection (mstsc) 连接</li>
+</ul>
+<ul>
+<li>运行 mstsc，输入Jumpbox 名称 --&gt;  Show Options --&gt; Advanced  --&gt; Settings --&gt; 勾选 &quot;Automatically detect RD gateway server settings&quot; 取消勾选“Use These RD Gateway Server settings”--&gt; OK--&gt; connect</li>
+</ul>
+<ul>
+<li>4.2 使用Remote Desktop Connection Manger 连接</li>
+</ul>
+<ul>
+<li>选择根组 --&gt; 右键“属性” --&gt; Gateway Settings --&gt;  去掉勾选的“Use a TS Gateway server”</li>
+</ul>
+<ul>
+<li>下面的所有的子组以及Jumpbox  --&gt; 右键“属性” --&gt; Gateway Settings --&gt;   勾选“Inherit from parent ”</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如下是按照英文版文档（具体请参见附件），整理的中文版如何使用VPN 连接Jumpbox 的参考步骤。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>注 1：如果提示升级，建议忽略，个人测试升级后 Pluse Secure 无法打开</li>
+</ul>
+<ul>
+<li>4.1 直接通过JIT 申请的Jumpbox 权限， 并下载RDP文件的，可以直接使用RDP 连接，不需要修改任何配置。</li>
+</ul>
+<ul>
+<li>使用完成后，建议从Jumpbox logoff , 然后断开VPN</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>下载地址： <a href="https://azuresupport.blob.core.chinacloudapi.cn/tools/ps-pulse-win-9.1r7.0-b2525-64bitinstaller.msi" target="_blank" rel="noopener">https://azuresupport.blob.core.chinacloudapi.cn/tools/ps-pulse-win-9.1r7.0-b2525-64bitinstaller.msi</a></li>
+</ul>
+<ul>
+<li>注：如果安装过程中遇到报错 2503 或者2502 ，不能安装 ，请参考 <a href="https://jingyan.baidu.com/article/fcb5aff7acb92aedaa4a7117.html" target="_blank" rel="noopener">https://jingyan.baidu.com/article/fcb5aff7acb92aedaa4a7117.html</a></li>
+</ul>
+<ul>
+<li>BJB: <a href="https://bjb.core.chinacloudapi.cn" target="_blank" rel="noopener">https://bjb.core.chinacloudapi.cn</a></li>
+</ul>
+<ul>
+<li>SHA02: <a href="https://sha02.core.chinacloudapi.cn" target="_blank" rel="noopener">https://sha02.core.chinacloudapi.cn</a></li>
+</ul>
+<ul>
+<li>Global URL for CME: <a href="https://cmevpn.trafficmanager.net" target="_blank" rel="noopener">https://cmevpn.trafficmanager.net</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>LiuHuan</p>
+<p>收到公司PS邮件，当前连接Jumpbox 的gateway 要弃用，后续需要使用VPN 连接Jumpbox（更多请参见邮件</p>
+<p>附件）。</p>
+<p>如下是按照英文版文档（具体请参见附件），整理的中文版如何使用VPN 连接Jumpbox 的参考步骤。</p>
+<p>下载并安装Pluse Secure（old，请使用the SSL_VPN Client update (#1) · Issues · Network / ssl_vpn · GitLab (oe.net)链接并下载最新版本）</p>
+<p>下载地址： <a href="https://azuresupport.blob.core.chinacloudapi.cn/tools/ps-pulse-win-9.1r7.0-b2525-64bitinstaller.msi" target="_blank" rel="noopener">https://azuresupport.blob.core.chinacloudapi.cn/tools/ps-pulse-win-9.1r7.0-b2525-64bitinstaller.msi</a></p>
+<p>Download the Pulse Secure Access Client for your system.</p>
+<p>Windows (32bit)</p>
+<p>Windows (64bit)</p>
+<p>32bit MD5</p>
+<p>64bit MD5</p>
+<p>MacOS</p>
+<p>MD5</p>
+<p>Ubuntu/Debian 64 Bit Installer</p>
+<p>CentOS/RHEL 64 Bit Installer</p>
+<p>iOS</p>
+<p>Android</p>
+<p>注：如果安装过程中遇到报错 2503 或者2502 ，不能安装 ，请参考 <a href="https://jingyan.baidu.com/article/fcb5aff7acb92aedaa4a7117.html" target="_blank" rel="noopener">https://jingyan.baidu.com/article/fcb5aff7acb92aedaa4a7117.html</a></p>
+<p>当前需要安装新版本</p>
+<p>Please upgrade your Pulse Security VPN to 9.1.11 by following steps.</p>
+<p>Connect 21v EasyConnect first</p>
+<p>Open the SSL_VPN Client update (#1) · Issues · Network / ssl_vpn · GitLab (oe.net) and download package</p>
+<p>Install the latest package on your machine and re-connect the Pulse Security VPN, it will fix the issue.</p>
+<p>If unable access the package, please email 21V-WAPHYNET@oe.21vianet.com and we will transfer the package via email/Lync to you.</p>
+<p>打开Pluse Secure，配置 VPN 节点， 然后 &quot;Connect&quot;</p>
+<p>VPN 的名称和URL</p>
+<p>BJB: <a href="https://bjb.core.chinacloudapi.cn" target="_blank" rel="noopener">https://bjb.core.chinacloudapi.cn</a></p>
+<p>SHA02: <a href="https://sha02.core.chinacloudapi.cn" target="_blank" rel="noopener">https://sha02.core.chinacloudapi.cn</a></p>
+<p>Global URL for CME: <a href="https://cmevpn.trafficmanager.net" target="_blank" rel="noopener">https://cmevpn.trafficmanager.net</a></p>
+<p>VPN 节点加完之后，如果需要连接Jumpbox, 请先 connect VPN , 需要输入 smart card PIN 码</p>
+<p>注 1：如果提示升级，建议忽略，个人测试升级后 Pluse Secure 无法打开</p>
+<p>申请JIT，或者直接使用BJS20SPARE01. CME.GBL 或者 SHA20SPARE01.CME.GBL 测试</p>
+<p>连接Jumpbox</p>
+<p>4.1 直接通过JIT 申请的Jumpbox 权限， 并下载RDP文件的，可以直接使用RDP 连接，不需要修改任何配置。</p>
+<p>注2：可以将申请的JIT 的RDP 文件保存在特定的位置，不用每次都下载，后续如果申请同一Jumpbox, 可以使用之前对应Jumpbox名称的RDP 文件。</p>
+<p>4.2 使用 Remote Desktop Connection (mstsc) 连接</p>
+<p>运行 mstsc，输入Jumpbox 名称 --&gt;  Show Options --&gt; Advanced  --&gt; Settings --&gt; 勾选 &quot;Automatically detect RD gateway server settings&quot; 取消勾选“Use These RD Gateway Server settings”--&gt; OK--&gt; connect</p>
+<p>4.2 使用Remote Desktop Connection Manger 连接</p>
+<p>选择根组 --&gt; 右键“属性” --&gt; Gateway Settings --&gt;  去掉勾选的“Use a TS Gateway server”</p>
+<p>下面的所有的子组以及Jumpbox  --&gt; 右键“属性” --&gt; Gateway Settings --&gt;   勾选“Inherit from parent ”</p>
+<p>使用完成后，建议从Jumpbox logoff , 然后断开VPN</p></article>

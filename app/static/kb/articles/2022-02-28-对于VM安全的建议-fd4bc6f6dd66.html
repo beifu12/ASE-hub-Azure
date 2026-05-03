@@ -1,0 +1,78 @@
+<article class="kb-article" data-title="对于VM安全的建议"><h1>对于VM安全的建议</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: 标准话术</li>
+<li>最近修改: 2022-02-28 12:40:06</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>以下内容已经整合到此onenote [ 安全建议话术---20201028 (Web view)] 中，请到最新的oneonte位置查看相应信息</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>以下内容已经整合到此onenote [ 安全建议话术---20201028  (Web view)] 中，请到最新的oneonte位置查看相应信息</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>系统作为最终承载用户应用的环境，是最后一道攻破应用的安全防线，同样需要进行严谨的设计和管理，特别是公有云环境中的系统。</li>
+</ul>
+<ul>
+<li>2. 在创建管理系统时，严格设置和管理用户密码，如复杂度，有效期，离职人员账号及时删除，admin权限赋予等。</li>
+</ul>
+<ul>
+<li>4. 在应用层面，相关的应用管理人员，如数据库管理员，应该具有强烈的安全意识，在配置应用时，开启相关的安全规则。安装软件时，应该从官方渠道下载，避免受到带毒安装包的影响。</li>
+</ul>
+<ul>
+<li>+</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>1. 在系统架构设计上，将不同功能放置在不同的虚拟机上。按功能对虚拟机划分安全组，设置访问控制规则。对不需要外网访问的端口或虚拟机，如后端数据库，不开放外网访问端口。或者对所有内部虚拟机的访问，都通过跳板机发方式进行，将重要功能虚拟机被直接入侵的几率降低为零。</li>
+</ul>
+<ul>
+<li>3. 在系统层面，通过开启防火墙，设置服务允许拒绝规则等，防止非法的访问。在Linux上，可以通过tcp_wrappers等实现。同时，根据最少服务原则，在安装配置系统时，安装应用需要的最少的包，开启最少的服务，达到让黑客无法通过不在控制范围内的端口入侵。并定期更新系统，打补丁，减少安全隐患。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>以下内容已经整合到此onenote [ 安全建议话术---20201028  (Web view)] 中，请到最新的oneonte位置查看相应信息</li>
+</ul>
+<ul>
+<li>对于VM安全的建议：</li>
+</ul>
+<ul>
+<li>关于虚拟机内部安全，提供如下建议，仅供贵方参考：</li>
+</ul>
+<ul>
+<li>5. 在新建虚拟机的时候建议安装杀毒软件以增强对虚拟机的保护。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>云服务管理员对其IaaS的虚拟机及其他产品享有完全的控制权，因此也需要负责虚拟机及其上层的数据安全。 请参考该文档了解具体的安全责任划分：<a href="https://www.azure.cn/support/announcement/shared-responsibility/" target="_blank" rel="noopener">https://www.azure.cn/support/announcement/shared-responsibility/</a>  。对于Iaas的虚拟机，平台层面目前不提供第七层（应用层）的安全防护。</li>
+</ul>
+<ul>
+<li>保护 Web 应用程序，使其免受常见 Web 攻击的威胁，您可参考使用Application Gateway WAF. <a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-web-application-firewall-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-web-application-firewall-portal</a></li>
+</ul>
+<ul>
+<li>6. 定期备份数据或虚拟机，防止数据一旦损坏或丢失，造成数据不可用。这里附上Azure备份的相关连接，请参考： <a href="https://www.azure.cn/documentation/articles/backup-azure-manage-windows-server-classic/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/backup-azure-manage-windows-server-classic/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>以下内容已经整合到此onenote [ 安全建议话术---20201028  (Web view)] 中，请到最新的oneonte位置查看相应信息</p>
+<p>对于VM安全的建议：</p>
+<p>系统作为最终承载用户应用的环境，是最后一道攻破应用的安全防线，同样需要进行严谨的设计和管理，特别是公有云环境中的系统。</p>
+<p>云服务管理员对其IaaS的虚拟机及其他产品享有完全的控制权，因此也需要负责虚拟机及其上层的数据安全。 请参考该文档了解具体的安全责任划分：<a href="https://www.azure.cn/support/announcement/shared-responsibility/" target="_blank" rel="noopener">https://www.azure.cn/support/announcement/shared-responsibility/</a>  。对于Iaas的虚拟机，平台层面目前不提供第七层（应用层）的安全防护。</p>
+<p>保护 Web 应用程序，使其免受常见 Web 攻击的威胁，您可参考使用Application Gateway WAF. <a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-web-application-firewall-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-web-application-firewall-portal</a></p>
+<p>关于虚拟机内部安全，提供如下建议，仅供贵方参考：</p>
+<p>1. 在系统架构设计上，将不同功能放置在不同的虚拟机上。按功能对虚拟机划分安全组，设置访问控制规则。对不需要外网访问的端口或虚拟机，如后端数据库，不开放外网访问端口。或者对所有内部虚拟机的访问，都通过跳板机发方式进行，将重要功能虚拟机被直接入侵的几率降低为零。</p>
+<p>2. 在创建管理系统时，严格设置和管理用户密码，如复杂度，有效期，离职人员账号及时删除，admin权限赋予等。</p>
+<p>3. 在系统层面，通过开启防火墙，设置服务允许拒绝规则等，防止非法的访问。在Linux上，可以通过tcp_wrappers等实现。同时，根据最少服务原则，在安装配置系统时，安装应用需要的最少的包，开启最少的服务，达到让黑客无法通过不在控制范围内的端口入侵。并定期更新系统，打补丁，减少安全隐患。</p>
+<p>4. 在应用层面，相关的应用管理人员，如数据库管理员，应该具有强烈的安全意识，在配置应用时，开启相关的安全规则。安装软件时，应该从官方渠道下载，避免受到带毒安装包的影响。</p>
+<p>5. 在新建虚拟机的时候建议安装杀毒软件以增强对虚拟机的保护。</p>
+<p>6. 定期备份数据或虚拟机，防止数据一旦损坏或丢失，造成数据不可用。这里附上Azure备份的相关连接，请参考： <a href="https://www.azure.cn/documentation/articles/backup-azure-manage-windows-server-classic/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/backup-azure-manage-windows-server-classic/</a></p>
+<p>+</p></article>

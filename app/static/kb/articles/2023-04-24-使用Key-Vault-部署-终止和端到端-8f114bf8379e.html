@@ -1,0 +1,222 @@
+<article class="kb-article" data-title="使用Key Vault 部署  终止和端到端"><h1>使用Key Vault 部署  终止和端到端</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: 查询-排查-工具</li>
+<li>最近修改: 2023-04-24 16:34:20</li>
+<li>JD 相关性: 售后排障; 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>针对用户在门户上部署使用 Key Vault 证书配置 TLS 终止 导致网关失败的问题，分享如下，大家如有问题欢迎随时交流：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>针对用户在门户上部署使用 Key Vault 证书配置 TLS 终止 导致网关失败的问题，分享如下，大家如有问题欢迎随时交流：</li>
+</ul>
+<ul>
+<li>目前Azure 门户上已经支持Azure 应用程序网关启用Key Vault 证书，部署出基于使用 Key Vault证书的SSL 卸载多站点、SSL 端到端功能，但是在部署引用过程中，因为应用程序网关和用户托管标识之间的分配关系、Key Vault 的访问策略权限问题，导致部署使用 Key Vault证书失败、致使Azure 应用程序网关也处于Failed 状态。</li>
+</ul>
+<ul>
+<li>场景1，Key Vault 访问策略分配权限错误或者未分配权限，创建后导致Azure APPGW 状态失败，并有如下报错：</li>
+</ul>
+<ul>
+<li>无需额外的配置，更新当前创建失败的Azure 应用程序网关，更新失败的HTTP 侦听器配置，点击“保持”更新即可。</li>
+</ul>
+<ul>
+<li>场景2：没有将用户托管标识分配给应用程序网关，直接的使用Key Vault，也是无法成功的，缺少用户托管标识的权限：</li>
+</ul>
+<ul>
+<li>场景3，当侦听器已经被Rule 引用时，如果没有没有将用户托管标识分配给应用程序网关，直接替换使用Key Vault，由于缺少用户托管标识权限，也会致使Azure  应用程序网关 Failed。</li>
+</ul>
+<ul>
+<li>注：此状态下Azure 应用程序网关已有的配置理论上正常生效、也就是说原有的站点是不受影响的，可以正常使用。但是Azure 应用程序网关无法做其他的操作部署，只能够先更新Azure 应用程序网关状态。</li>
+</ul>
+<ul>
+<li>#因为此规则以及处于Failed状态，并且证书资源的内容是无效的、没有Data的。因此，需要删除对应的规则、侦听器、证书等资源，以恢复Azure 应用程序网关。</li>
+</ul>
+<ul>
+<li>#删除规则会导致此站点无法访问。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>HeShaobo</li>
+</ul>
+<ul>
+<li>背景：</li>
+</ul>
+<ul>
+<li>因此基于上述的使用背景、本文旨在</li>
+</ul>
+<ul>
+<li>指导对现有的Azure 应用程序网关 使用Key Vault 来部署出基于使用 Key Vault证书的SSL 卸载多站点、SSL 端到端功能。</li>
+</ul>
+<ul>
+<li>对现有的Azure 应用程序网关 使用Key Vault 来部署出基于使用 Key Vault证书的SSL 卸载多站点、SSL 端到端功能：</li>
+</ul>
+<ul>
+<li>先决条件：</li>
+</ul>
+<ul>
+<li>已经正在使用的、已经创建的Azure 应用程序网关appgw</li>
+</ul>
+<ul>
+<li>已经创建的Azure 用户托管表示appgwKeyVaultIdentity</li>
+</ul>
+<ul>
+<li>具备SSL证书的 Azure Key Vault 资源TestKeyVaultAppGw</li>
+</ul>
+<ul>
+<li>#在Key Vault 上配置访问策略，将基于机密权限PermissionsToSecrets的 Get 分配给使用的托管标识</li>
+</ul>
+<ul>
+<li>获取Azure APPGW</li>
+</ul>
+<ul>
+<li>$appgw = Get-AzApplicationGateway -Name $appgwName -ResourceGroupName $rgName</li>
+</ul>
+<ul>
+<li>获取用户分配托管标识</li>
+</ul>
+<ul>
+<li>$identity = Get-AzUserAssignedIdentity -Name $identityName -ResourceGroupName $rgName</li>
+</ul>
+<ul>
+<li>将用户托管标识分配给应用程序网关</li>
+</ul>
+<ul>
+<li>$appgwIdentity = Set-AzApplicationGatewayIdentity -UserAssignedIdentity $identity.Id -ApplicationGateway $appgw</li>
+</ul>
+<ul>
+<li>$updatedAppGw = Set-AzApplicationGateway -ApplicationGateway $appgw</li>
+</ul>
+<ul>
+<li>#在Azure 应用程序网关概述下，点击“侦听器”，选择“添加”，创建基于Key Vault 的多站点侦听器，以后续部署出SSL终止的站点：</li>
+</ul>
+<ul>
+<li>接下来使用上述创建的侦听器，完成所必要的规则创建，这一部分教程本篇文章不多赘述，请参阅：使用 Azure 门户配置带有 TLS 终止的应用程序网关、在门户中使用应用程序网关配置端到端 TLS。</li>
+</ul>
+<ul>
+<li>在Key Vault 上，修正访问权限，使得托管表示具备基于机密权限PermissionsToSecrets的 Get权限。</li>
+</ul>
+<ul>
+<li>删除创建的无效证书资源：</li>
+</ul>
+<ul>
+<li>删除引用证书的侦听器：</li>
+</ul>
+<ul>
+<li>更新保存配置：</li>
+</ul>
+<ul>
+<li>删除当前规则</li>
+</ul>
+<ul>
+<li>删除无效的证书资源</li>
+</ul>
+<ul>
+<li>删除对应引用的侦听器</li>
+</ul>
+<ul>
+<li>更新使配置生效</li>
+</ul>
+<ul>
+<li>之后，重新按照文档上述的重新配置，完成需求。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查解决操作过程中导致Azure 应用程序网关失败的状态。</li>
+</ul>
+<ul>
+<li>排查解决操作过程中导致Azure 应用程序网关失败的状态</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如果需要针对新创建的APPGW 使用 Key Vault 证书配置 TLS 终止，请参阅通过 Azure PowerShell 使用 Key Vault 证书配置 TLS 终止。</li>
+</ul>
+<ul>
+<li>#使用如下Azure PowerShell命令创建基于Azure 应用程序网关资源的用户托管标识</li>
+</ul>
+<ul>
+<li>#此排查需要使用Azure PowerShell 等工具，具体如下：</li>
+</ul>
+<ul>
+<li>Set-AzApplicationGateway -ApplicationGateway $appgw</li>
+</ul>
+<ul>
+<li>Remove-AzApplicationGatewaySslCertificate -Name contoso -ApplicationGateway $appgw</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>#解决方案：</li>
+</ul>
+<ul>
+<li>解决方案：因为Azure 应用程序网关已经处于Failed 状态，任何其他的操作部署都是禁止的，所以无法直接给失败的Azure应用程序网关分配用户托管标识。因此，需要首先通过删除错误的证书、侦听器来恢复Azure应用程序网关到Healthy 状态，然后分配用户标识、并创建新的侦听器。</li>
+</ul>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Remove-AzApplicationGatewaySslCertificate -Name www.contoso.comvaultCert -ApplicationGateway $appgw</li>
+</ul>
+<ul>
+<li>Remove-AzApplicationGatewayHttpListener -Name www.contoso.com -ApplicationGateway $appgw</li>
+</ul>
+<ul>
+<li>Remove-AzApplicationGatewayRequestRoutingRule -Name www.contoso.com -ApplicationGateway $appgw</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>HeShaobo</p>
+<p>针对用户在门户上部署使用 Key Vault 证书配置 TLS 终止 导致网关失败的问题，分享如下，大家如有问题欢迎随时交流：</p>
+<p>背景：</p>
+<p>如果需要针对新创建的APPGW 使用 Key Vault 证书配置 TLS 终止，请参阅通过 Azure PowerShell 使用 Key Vault 证书配置 TLS 终止。</p>
+<p>目前Azure 门户上已经支持Azure 应用程序网关启用Key Vault 证书，部署出基于使用 Key Vault证书的SSL 卸载多站点、SSL 端到端功能，但是在部署引用过程中，因为应用程序网关和用户托管标识之间的分配关系、Key Vault 的访问策略权限问题，导致部署使用 Key Vault证书失败、致使Azure 应用程序网关也处于Failed 状态。</p>
+<p>因此基于上述的使用背景、本文旨在</p>
+<p>指导对现有的Azure 应用程序网关 使用Key Vault 来部署出基于使用 Key Vault证书的SSL 卸载多站点、SSL 端到端功能。</p>
+<p>排查解决操作过程中导致Azure 应用程序网关失败的状态。</p>
+<p>对现有的Azure 应用程序网关 使用Key Vault 来部署出基于使用 Key Vault证书的SSL 卸载多站点、SSL 端到端功能：</p>
+<p>先决条件：</p>
+<p>已经正在使用的、已经创建的Azure 应用程序网关appgw</p>
+<p>已经创建的Azure 用户托管表示appgwKeyVaultIdentity</p>
+<p>具备SSL证书的 Azure Key Vault 资源TestKeyVaultAppGw</p>
+<p>#在Key Vault 上配置访问策略，将基于机密权限PermissionsToSecrets的 Get 分配给使用的托管标识</p>
+<p>#使用如下Azure PowerShell命令创建基于Azure 应用程序网关资源的用户托管标识</p>
+<p>获取Azure APPGW</p>
+<p>$appgw = Get-AzApplicationGateway -Name $appgwName -ResourceGroupName $rgName</p>
+<p>获取用户分配托管标识</p>
+<p>$identity = Get-AzUserAssignedIdentity -Name $identityName -ResourceGroupName $rgName</p>
+<p>将用户托管标识分配给应用程序网关</p>
+<p>$appgwIdentity = Set-AzApplicationGatewayIdentity -UserAssignedIdentity $identity.Id -ApplicationGateway $appgw</p>
+<p>$updatedAppGw = Set-AzApplicationGateway -ApplicationGateway $appgw</p>
+<p>#在Azure 应用程序网关概述下，点击“侦听器”，选择“添加”，创建基于Key Vault 的多站点侦听器，以后续部署出SSL终止的站点：</p>
+<p>接下来使用上述创建的侦听器，完成所必要的规则创建，这一部分教程本篇文章不多赘述，请参阅：使用 Azure 门户配置带有 TLS 终止的应用程序网关、在门户中使用应用程序网关配置端到端 TLS。</p>
+<p>排查解决操作过程中导致Azure 应用程序网关失败的状态</p>
+<p>场景1，Key Vault 访问策略分配权限错误或者未分配权限，创建后导致Azure APPGW 状态失败，并有如下报错：</p>
+<p>#解决方案：</p>
+<p>在Key Vault 上，修正访问权限，使得托管表示具备基于机密权限PermissionsToSecrets的 Get权限。</p>
+<p>无需额外的配置，更新当前创建失败的Azure 应用程序网关，更新失败的HTTP 侦听器配置，点击“保持”更新即可。</p>
+<p>场景2：没有将用户托管标识分配给应用程序网关，直接的使用Key Vault，也是无法成功的，缺少用户托管标识的权限：</p>
+<p>解决方案：因为Azure 应用程序网关已经处于Failed 状态，任何其他的操作部署都是禁止的，所以无法直接给失败的Azure应用程序网关分配用户托管标识。因此，需要首先通过删除错误的证书、侦听器来恢复Azure应用程序网关到Healthy 状态，然后分配用户标识、并创建新的侦听器。</p>
+<p>#此排查需要使用Azure PowerShell 等工具，具体如下：</p>
+<p>删除创建的无效证书资源：</p>
+<p>Remove-AzApplicationGatewaySslCertificate -Name www.contoso.comvaultCert -ApplicationGateway $appgw</p>
+<p>删除引用证书的侦听器：</p>
+<p>Remove-AzApplicationGatewayHttpListener -Name www.contoso.com -ApplicationGateway $appgw</p>
+<p>更新保存配置：</p>
+<p>Set-AzApplicationGateway -ApplicationGateway $appgw</p>
+<p>场景3，当侦听器已经被Rule 引用时，如果没有没有将用户托管标识分配给应用程序网关，直接替换使用Key Vault，由于缺少用户托管标识权限，也会致使Azure  应用程序网关 Failed。</p>
+<p>注：此状态下Azure 应用程序网关已有的配置理论上正常生效、也就是说原有的站点是不受影响的，可以正常使用。但是Azure 应用程序网关无法做其他的操作部署，只能够先更新Azure 应用程序网关状态。</p>
+<p>解决方案：</p>
+<p>#因为此规则以及处于Failed状态，并且证书资源的内容是无效的、没有Data的。因此，需要删除对应的规则、侦听器、证书等资源，以恢复Azure 应用程序网关。</p>
+<p>#删除规则会导致此站点无法访问。</p>
+<p>删除当前规则</p>
+<p>Remove-AzApplicationGatewayRequestRoutingRule -Name www.contoso.com -ApplicationGateway $appgw</p>
+<p>删除无效的证书资源</p>
+<p>Remove-AzApplicationGatewaySslCertificate -Name contoso -ApplicationGateway $appgw</p>
+<p>删除对应引用的侦听器</p>
+<p>更新使配置生效</p>
+<p>之后，重新按照文档上述的重新配置，完成需求。</p></article>

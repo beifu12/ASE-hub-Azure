@@ -1,0 +1,227 @@
+<article class="kb-article" data-title="【share】Azure backup vault CLI命令行创建vault backup policy（Azure blob）"><h1>【share】Azure backup vault CLI命令行创建vault backup policy（Azure blob）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-27 16:34:52</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>目前产品组回滚了Azure Portal，目前又无法在Portal上创建出对应的备份policy。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>目前产品组回滚了Azure Portal，目前又无法在Portal上创建出对应的备份policy。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>首先在本地电脑侧准备一个policy JSON file（此JSON file可以直接使用）</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;datasourceTypes&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;Microsoft.Storage/storageAccounts/blobServices&quot;</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;BlobPolicy1&quot;,</li>
+</ul>
+<ul>
+<li>&quot;objectType&quot;: &quot;BackupPolicy&quot;,</li>
+</ul>
+<ul>
+<li>&quot;policyRules&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;isDefault&quot;: true,</li>
+</ul>
+<ul>
+<li>&quot;lifecycles&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;deleteAfter&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;duration&quot;: &quot;P30D&quot;,</li>
+</ul>
+<ul>
+<li>&quot;objectType&quot;: &quot;AbsoluteDeleteOption&quot;</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;sourceDataStore&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;dataStoreType&quot;: &quot;OperationalStore&quot;,</li>
+</ul>
+<ul>
+<li>&quot;objectType&quot;: &quot;DataStoreInfoBase&quot;</li>
+</ul>
+<ul>
+<li>&quot;targetDataStoreCopySettings&quot;: []</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;Default&quot;,</li>
+</ul>
+<ul>
+<li>&quot;objectType&quot;: &quot;AzureRetentionRule&quot;</li>
+</ul>
+<ul>
+<li>&quot;dataStoreType&quot;: &quot;VaultStore&quot;,</li>
+</ul>
+<ul>
+<li>&quot;backupParameters&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;backupType&quot;: &quot;Discrete&quot;,</li>
+</ul>
+<ul>
+<li>&quot;objectType&quot;: &quot;AzureBackupParams&quot;</li>
+</ul>
+<ul>
+<li>&quot;dataStore&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;BackupDaily&quot;,</li>
+</ul>
+<ul>
+<li>&quot;objectType&quot;: &quot;AzureBackupRule&quot;,</li>
+</ul>
+<ul>
+<li>&quot;trigger&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;objectType&quot;: &quot;ScheduleBasedTriggerContext&quot;,</li>
+</ul>
+<ul>
+<li>&quot;schedule&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;repeatingTimeIntervals&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;R/2023-06-28T07:30:00+00:00/P1D&quot;</li>
+</ul>
+<ul>
+<li>&quot;timeZone&quot;: &quot;UTC&quot;</li>
+</ul>
+<ul>
+<li>&quot;taggingCriteria&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;tagInfo&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;Default_&quot;,</li>
+</ul>
+<ul>
+<li>&quot;tagName&quot;: &quot;Default&quot;</li>
+</ul>
+<ul>
+<li>&quot;taggingPriority&quot;: 93</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>打开CMD，锁定目前CMD正在运行的文件夹：</li>
+</ul>
+<ul>
+<li>将JSON file复制到此文件夹。</li>
+</ul>
+<ul>
+<li>成功配置。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>目前产品组回滚了Azure Portal，目前又无法在Portal上创建出对应的备份policy。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>然后使用Azure CLI登录azure portal：</li>
+</ul>
+<ul>
+<li>Az cloud set -n AzureChinaCloud               az login</li>
+</ul>
+<ul>
+<li>然后运行下方命令：</li>
+</ul>
+<ul>
+<li>az dataprotection backup-policy create -g &lt;resource group name&gt; --vault-name &lt;backup vault name&gt; -n &lt;policy name&gt; --policy &lt;json file name.json&gt;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>经过测试，可以通过以下方式实现：</li>
+</ul>
+<ul>
+<li>如果需要修改备份时间的话，则需要提前修改json file的时间：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026/01/27</p>
+<p>目前产品组回滚了Azure Portal，目前又无法在Portal上创建出对应的备份policy。</p>
+<p>经过测试，可以通过以下方式实现：</p>
+<p>首先在本地电脑侧准备一个policy JSON file（此JSON file可以直接使用）</p>
+<p>{</p>
+<p>&quot;datasourceTypes&quot;: [</p>
+<p>&quot;Microsoft.Storage/storageAccounts/blobServices&quot;</p>
+<p>],</p>
+<p>&quot;name&quot;: &quot;BlobPolicy1&quot;,</p>
+<p>&quot;objectType&quot;: &quot;BackupPolicy&quot;,</p>
+<p>&quot;policyRules&quot;: [</p>
+<p>&quot;isDefault&quot;: true,</p>
+<p>&quot;lifecycles&quot;: [</p>
+<p>&quot;deleteAfter&quot;: {</p>
+<p>&quot;duration&quot;: &quot;P30D&quot;,</p>
+<p>&quot;objectType&quot;: &quot;AbsoluteDeleteOption&quot;</p>
+<p>},</p>
+<p>&quot;sourceDataStore&quot;: {</p>
+<p>&quot;dataStoreType&quot;: &quot;OperationalStore&quot;,</p>
+<p>&quot;objectType&quot;: &quot;DataStoreInfoBase&quot;</p>
+<p>&quot;targetDataStoreCopySettings&quot;: []</p>
+<p>}</p>
+<p>&quot;name&quot;: &quot;Default&quot;,</p>
+<p>&quot;objectType&quot;: &quot;AzureRetentionRule&quot;</p>
+<p>&quot;dataStoreType&quot;: &quot;VaultStore&quot;,</p>
+<p>&quot;backupParameters&quot;: {</p>
+<p>&quot;backupType&quot;: &quot;Discrete&quot;,</p>
+<p>&quot;objectType&quot;: &quot;AzureBackupParams&quot;</p>
+<p>&quot;dataStore&quot;: {</p>
+<p>&quot;name&quot;: &quot;BackupDaily&quot;,</p>
+<p>&quot;objectType&quot;: &quot;AzureBackupRule&quot;,</p>
+<p>&quot;trigger&quot;: {</p>
+<p>&quot;objectType&quot;: &quot;ScheduleBasedTriggerContext&quot;,</p>
+<p>&quot;schedule&quot;: {</p>
+<p>&quot;repeatingTimeIntervals&quot;: [</p>
+<p>&quot;R/2023-06-28T07:30:00+00:00/P1D&quot;</p>
+<p>&quot;timeZone&quot;: &quot;UTC&quot;</p>
+<p>&quot;taggingCriteria&quot;: [</p>
+<p>&quot;tagInfo&quot;: {</p>
+<p>&quot;id&quot;: &quot;Default_&quot;,</p>
+<p>&quot;tagName&quot;: &quot;Default&quot;</p>
+<p>&quot;taggingPriority&quot;: 93</p>
+<p>]</p>
+<p>然后使用Azure CLI登录azure portal：</p>
+<p>Az cloud set -n AzureChinaCloud               az login</p>
+<p>打开CMD，锁定目前CMD正在运行的文件夹：</p>
+<p>将JSON file复制到此文件夹。</p>
+<p>然后运行下方命令：</p>
+<p>az dataprotection backup-policy create -g &lt;resource group name&gt; --vault-name &lt;backup vault name&gt; -n &lt;policy name&gt; --policy &lt;json file name.json&gt;</p>
+<p>如果需要修改备份时间的话，则需要提前修改json file的时间：</p>
+<p>成功配置。</p></article>

@@ -1,0 +1,95 @@
+<article class="kb-article" data-title="FSlogix磁盘压缩"><h1>FSlogix磁盘压缩</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Microsoft Sentinel</li>
+<li>Section: Azure VD</li>
+<li>最近修改: 2023-02-16 11:48:47</li>
+<li>JD 相关性: Defender/Sentinel/安全</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>日志集中有大量的以下报错，从报错来看，无法获取文件的size。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>日志集中有大量的以下报错，从报错来看，无法获取文件的size。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>删除文件， 并注销账号ww后，profile文件自动压缩。</li>
+</ul>
+<ul>
+<li>从日志中可以看到相应的压缩记录，附件是我测试环境的详细日志信息。</li>
+</ul>
+<ul>
+<li>此问题应该是系统WMI的问题。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>搭建环境测试FSlogix磁盘压缩的功能是正常的。</li>
+</ul>
+<ul>
+<li>测试账户ww登录后，复制一个大文件后，查看fslogix对应的文件共享中，profile的size变大。</li>
+</ul>
+<ul>
+<li>排查：</li>
+</ul>
+<ul>
+<li>查看客户提供的日志，发现日志中disk size reduced 都是0MB。</li>
+</ul>
+<ul>
+<li>从目前的排查情况来看，主机池里面的VM在执行Get-PartitionSupportedSize -DiskNumber xx时，会有以下Invalid property的报错，报错的code为：0x80041031</li>
+</ul>
+<ul>
+<li>如官方文档上的描述，执行磁盘压缩需要使用Get-SupportedSize 方法中的 SizeMin 参数查询 MSFT_Partition API 来确定支持的最小大小。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>但是系统在执行命令时报错，导致无法获取磁盘大小，进而实现压缩。</li>
+</ul>
+<ul>
+<li>如您的环境允许您测试一下的话，您可以参考我们之前为您提供的第三方文档的命令尝试下，看看是不是可以修复。</li>
+</ul>
+<ul>
+<li>Winmgmt命令参考：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>为客户提供了以下建议：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/fslogix/concepts-vhd-disk-compaction" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/fslogix/concepts-vhd-disk-compaction</a></li>
+</ul>
+<ul>
+<li>根据官方文档：<a href="https://learn.microsoft.com/en-us/windows/win32/wmisdk/wmi-error-constants" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/windows/win32/wmisdk/wmi-error-constants</a></li>
+</ul>
+<ul>
+<li><a href="https://forums.tomshardware.com/threads/powershells-cmdlet-get-partition-started-to-give-error-message.3751659/" target="_blank" rel="noopener">https://forums.tomshardware.com/threads/powershells-cmdlet-get-partition-started-to-give-error-message.3751659/</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/windows/win32/wmisdk/winmgmt" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/win32/wmisdk/winmgmt</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023-2-16</p>
+<p><a href="https://learn.microsoft.com/zh-cn/fslogix/concepts-vhd-disk-compaction" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/fslogix/concepts-vhd-disk-compaction</a></p>
+<p>搭建环境测试FSlogix磁盘压缩的功能是正常的。</p>
+<p>测试账户ww登录后，复制一个大文件后，查看fslogix对应的文件共享中，profile的size变大。</p>
+<p>删除文件， 并注销账号ww后，profile文件自动压缩。</p>
+<p>从日志中可以看到相应的压缩记录，附件是我测试环境的详细日志信息。</p>
+<p>排查：</p>
+<p>查看客户提供的日志，发现日志中disk size reduced 都是0MB。</p>
+<p>日志集中有大量的以下报错，从报错来看，无法获取文件的size。</p>
+<p>从目前的排查情况来看，主机池里面的VM在执行Get-PartitionSupportedSize -DiskNumber xx时，会有以下Invalid property的报错，报错的code为：0x80041031</p>
+<p>根据官方文档：<a href="https://learn.microsoft.com/en-us/windows/win32/wmisdk/wmi-error-constants" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/windows/win32/wmisdk/wmi-error-constants</a></p>
+<p>此问题应该是系统WMI的问题。</p>
+<p>如官方文档上的描述，执行磁盘压缩需要使用Get-SupportedSize 方法中的 SizeMin 参数查询 MSFT_Partition API 来确定支持的最小大小。</p>
+<p>但是系统在执行命令时报错，导致无法获取磁盘大小，进而实现压缩。</p>
+<p>为客户提供了以下建议：</p>
+<p>如您的环境允许您测试一下的话，您可以参考我们之前为您提供的第三方文档的命令尝试下，看看是不是可以修复。</p>
+<p><a href="https://forums.tomshardware.com/threads/powershells-cmdlet-get-partition-started-to-give-error-message.3751659/" target="_blank" rel="noopener">https://forums.tomshardware.com/threads/powershells-cmdlet-get-partition-started-to-give-error-message.3751659/</a></p>
+<p>Winmgmt命令参考：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/windows/win32/wmisdk/winmgmt" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/win32/wmisdk/winmgmt</a></p></article>

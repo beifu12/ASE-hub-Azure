@@ -1,0 +1,561 @@
+<article class="kb-article" data-title="将本地Hyper-V中的虚拟机上传到Azure中"><h1>将本地Hyper-V中的虚拟机上传到Azure中</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2021-07-05 13:07:38</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>用户可以上传非官方支持的操作系统，例如Server 2003，CentOS 5.5或者32位的操作系统等等，但是如果在这些非官方支持的操作系统层面遇到任何问题，将无法获得微软官方的支持。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>用户可以上传非官方支持的操作系统，例如Server 2003，CentOS 5.5或者32位的操作系统等等，但是如果在这些非官方支持的操作系统层面遇到任何问题，将无法获得微软官方的支持。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>下载完成后，直接双击安装：</li>
+</ul>
+<ul>
+<li>下载所需版本的安装程序（msi文件），双击安装即可：</li>
+</ul>
+<ul>
+<li>分别使用Install-Module Azure和Install-Module AzureRm安装经典模型和资源管理器模型的模块，过程中的所有交互一律选择Y（Yes）或者A（Yes to All）：</li>
+</ul>
+<ul>
+<li>安装完成后，分别针对经典模式和资源管理器模式进行登录和选择默认订阅：</li>
+</ul>
+<ul>
+<li>经典模式：</li>
+</ul>
+<ul>
+<li>Add-AzureAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>Select-AzureSubscription -SubscriptionId &lt;Subscription Id&gt;</li>
+</ul>
+<ul>
+<li>资源管理器模式：</li>
+</ul>
+<ul>
+<li>Select-AzureRmSubscription -SubscriptionId &lt;Subscription Id&gt;</li>
+</ul>
+<ul>
+<li>准备本地Hyper-V虚拟机：</li>
+</ul>
+<ul>
+<li>在将本地虚拟机上传到Azure之前，必须先准备好虚拟硬盘（VHD）文件。如果是文件格式，例如vhdx，vmdk等，则需要转换成VHD文件。（文件格式较多，这里就不一一列举转换方法了）</li>
+</ul>
+<ul>
+<li>在准备本地Hyper-V虚拟机和VHD的一些要求和注意事项：</li>
+</ul>
+<ul>
+<li>目前Azure仅支持VHD文件格式的且具磁盘大小固定的第一代虚拟机。</li>
+</ul>
+<ul>
+<li>上传的VHD允许的最大大小为4095GB。Azure 支持最大为 2 TB 的操作系统磁盘，如果磁盘大于 2 TB，额外的空间可能不会被操作系统识别。</li>
+</ul>
+<ul>
+<li>上传的VHD的大小必须是1MB的整数倍。</li>
+</ul>
+<ul>
+<li>请勿使用admin/administrator/test这些用户作为管理员用户名。</li>
+</ul>
+<ul>
+<li>对于Windows操作系统，需要开启远程访问（取消勾选NLA）：</li>
+</ul>
+<ul>
+<li>对于Linux操作系统，需要安装ssh服务并设置开机自动启动。</li>
+</ul>
+<ul>
+<li>对于Linux操作系统，不要在操作系统磁盘上配置交换分区。</li>
+</ul>
+<ul>
+<li>Windows虚拟机安装代理：</li>
+</ul>
+<ul>
+<li>以管理员权限安装。</li>
+</ul>
+<ul>
+<li>Linux虚拟机安装代理：</li>
+</ul>
+<ul>
+<li>由于Linux发行版较多，因此这里仅以CentOS和Ubuntu作为示例说明。</li>
+</ul>
+<ul>
+<li>目前Azure官方支持的虚拟机操作系统版本：</li>
+</ul>
+<ul>
+<li>Azure支持的Windows操作系统及版本：</li>
+</ul>
+<ul>
+<li>Windows Server 2008 R2</li>
+</ul>
+<ul>
+<li>Windows Server 2012, Windows Server 2012 R2</li>
+</ul>
+<ul>
+<li>Windows Server 2016</li>
+</ul>
+<ul>
+<li>Azure支持的Linux分发版及对应版本：</li>
+</ul>
+<ul>
+<li>分发</li>
+</ul>
+<ul>
+<li>版本</li>
+</ul>
+<ul>
+<li>CentOS</li>
+</ul>
+<ul>
+<li>CentOS 6.3+、7.0+</li>
+</ul>
+<ul>
+<li>CoreOS</li>
+</ul>
+<ul>
+<li>494.4.0+</li>
+</ul>
+<ul>
+<li>Debian</li>
+</ul>
+<ul>
+<li>Debian 7.9+、8.2+</li>
+</ul>
+<ul>
+<li>SUSE Linux Enterprise</li>
+</ul>
+<ul>
+<li>SLES/SLES for SAP</li>
+</ul>
+<ul>
+<li>11 SP4</li>
+</ul>
+<ul>
+<li>12 SP1+</li>
+</ul>
+<ul>
+<li>openSUSE</li>
+</ul>
+<ul>
+<li>openSUSE Leap 42.2+</li>
+</ul>
+<ul>
+<li>Ubuntu</li>
+</ul>
+<ul>
+<li>Ubuntu 12.04+</li>
+</ul>
+<ul>
+<li>说明：</li>
+</ul>
+<ul>
+<li>目前Azure支持的Windows和Linux的操作系统均为64位系统。</li>
+</ul>
+<ul>
+<li>上传VHD文件到Azure存储中：</li>
+</ul>
+<ul>
+<li>首先在容器的属性里面找到要上传的目标容器的URL：</li>
+</ul>
+<ul>
+<li>Add-AzureVhd -Destination &quot;&lt;Target VHD URL&gt;&quot; -LocalFilePath &quot;&lt;Local VHD Path&gt;&quot;</li>
+</ul>
+<ul>
+<li>传输过程要保证网络连通，断网之后会中断不能重传。</li>
+</ul>
+<ul>
+<li>使用Microsoft Storage Explorer上传VHD文件：</li>
+</ul>
+<ul>
+<li>下载后默认安装即可。</li>
+</ul>
+<ul>
+<li>安装完成后，打开界面，将我们目标存储账号添加进去：</li>
+</ul>
+<ul>
+<li>添加存储账号的名称以及访问秘钥：</li>
+</ul>
+<ul>
+<li>存储账号名称和访问秘钥可以在存储账号的“访问秘钥”里面找到：</li>
+</ul>
+<ul>
+<li>添加完成后，可以在左侧存储账号列表（Storage Accounts）中找到添加的存储账号，展开我们要上传的目标容器，点击Upload上传VHD文件，注意Blob type要选择&quot;Page Blob&quot;：</li>
+</ul>
+<ul>
+<li>使用AzCopy上传VHD文件：</li>
+</ul>
+<ul>
+<li>AzCopy for Windows最新下载地址：latest preview version of AzCopy on Windows</li>
+</ul>
+<ul>
+<li>下载完成后默认安装即可。</li>
+</ul>
+<ul>
+<li>azcopy /Source:&lt;source vhd directory&gt; /Dest:&lt;target container url&gt; /DestKey:&lt;target storage account key&gt; /Pattern:&lt;vhd file name&gt; /BlobType:page</li>
+</ul>
+<ul>
+<li>例如：</li>
+</ul>
+<ul>
+<li>使用上传的VHD创建虚拟机：</li>
+</ul>
+<ul>
+<li>针对经典模式和资源管理器模式可以分别使用下面的方法进行虚拟机的创建：</li>
+</ul>
+<ul>
+<li>$VmName = &quot;DanTestVM&quot;;</li>
+</ul>
+<ul>
+<li>$CloudServiceName = &quot;dannorthcs&quot;;</li>
+</ul>
+<ul>
+<li>$VirtualNetworkName = &quot;DanNorthVNET&quot;;</li>
+</ul>
+<ul>
+<li>$SubnetName = &quot;default&quot;;</li>
+</ul>
+<ul>
+<li>$OSType = &quot;Linux&quot;;</li>
+</ul>
+<ul>
+<li>$Location = &quot;China North&quot;;</li>
+</ul>
+<ul>
+<li>$VMSize = &quot;Standard_D2&quot;;</li>
+</ul>
+<ul>
+<li>$OSDiskName = $VmName + &quot;_OSDisk&quot;</li>
+</ul>
+<ul>
+<li>$vmconfig = New-AzureVMConfig -Name $VmName -InstanceSize $VMSize -DiskName $OSDiskName;</li>
+</ul>
+<ul>
+<li>$vmconfig = $vmconfig | Set-AzureSubnet -SubnetNames $SubnetName;</li>
+</ul>
+<ul>
+<li>$vmconfig | New-AzureVM -ServiceName $CloudServiceName -VNetName $VirtualNetworkName -Location $Location;</li>
+</ul>
+<ul>
+<li>$ResourceGroupName = &quot;DanNorthResourceGroup&quot;;</li>
+</ul>
+<ul>
+<li>$VNETResourceGroupName = &quot;DanNorthResourceGroup&quot;;</li>
+</ul>
+<ul>
+<li>$SubnetName = &quot;Subnet1&quot;;</li>
+</ul>
+<ul>
+<li>if ($VNETResourceGroupName -eq $null)</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>$VNETResourceGroupName = $ResourceGroupName;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>$vnet = Get-AzureRmVirtualNetwork -Name $VirtualNetworkName -ResourceGroupName $VNETResourceGroupName;</li>
+</ul>
+<ul>
+<li>$subnet01 = Get-AzureRmVirtualNetworkSubnetConfig -Name $SubnetName -VirtualNetwork $vnet;</li>
+</ul>
+<ul>
+<li>$ipName = (&quot;{0}_pip&quot; -f $VmName);</li>
+</ul>
+<ul>
+<li>$publicIP = New-AzureRmPublicIpAddress -Name $IPName -ResourceGroupName $ResourceGroupName -Location $Location -AllocationMethod Static -Force;</li>
+</ul>
+<ul>
+<li>$nicName = (&quot;{0}_nic&quot; -f $VmName);</li>
+</ul>
+<ul>
+<li>$NIC = New-AzureRmNetworkInterface -Name $nicName -ResourceGroupName $ResourceGroupName -Location $Location -SubnetId $subnet01.Id -PublicIpAddressId $publicIP.Id;</li>
+</ul>
+<ul>
+<li>$vmconfig = $null;</li>
+</ul>
+<ul>
+<li>if ($OSType -eq &quot;Linux&quot;)</li>
+</ul>
+<ul>
+<li>if ($OSType -eq &quot;Windows&quot;)</li>
+</ul>
+<ul>
+<li>使用Github Template利用上传的VHD文件创建虚拟机：</li>
+</ul>
+<ul>
+<li>这种方式只能针对资源管理器模式进行部署，点击下面的链接：</li>
+</ul>
+<ul>
+<li>会自动跳转到Azure的门户中（如果未登录需要登录），按要求填写参数：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Login-AzureRmAccount -EnvironmentName AzureChinaCloud</li>
+</ul>
+<ul>
+<li>确认参数填写无误后点击“创建”按钮创建即可。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>准备Azure Powershell：</li>
+</ul>
+<ul>
+<li>安装Azure Powershell模块：</li>
+</ul>
+<ul>
+<li>通过Web Installer工具安装Azure Powershell：</li>
+</ul>
+<ul>
+<li>注意这种安装方式需要本地Windows Powershell版本在5.0以上。</li>
+</ul>
+<ul>
+<li>在Github上下载Azure Powershell模块：</li>
+</ul>
+<ul>
+<li>注意Github的链接是海外的，所以下载速度相对不太稳定，如果下载超时，可以在非工作时间段多尝试几次。每个版本的Azure Powershell对本地Windows Powershell的最低版本要求不通，目前的Azure Powershell都可以安装在Windows Powershell版本在5.0以上的系统中。</li>
+</ul>
+<ul>
+<li>使用Install-Module命令进行模块安装：</li>
+</ul>
+<ul>
+<li>注意这种安装方式同样需要本地Windows Powershell版本在5.0以上。</li>
+</ul>
+<ul>
+<li>登陆Azure Powershell模块：</li>
+</ul>
+<ul>
+<li>使用命令下面的命令进行登录，回车后会弹出一个Azure账号的认证窗口，需要输入Azure Portal的管理账号：</li>
+</ul>
+<ul>
+<li>登录成功后，使用下面的命令选择默认订阅：</li>
+</ul>
+<ul>
+<li>由于低于 2.6.37 的 Linux 内核版本中的 bug，因此大型VM不支持非一致性内存访问 (NUMA)，运行版本低于 2.6.37 的自定义内核的系统或者版本低于 2.6.32-504 的基于 RHEL 的内核必须在 grub.conf 中的内核命令行上设置启动参数 numa=off，有关详细信息，请参阅 Red Hat KB 436883。</li>
+</ul>
+<ul>
+<li>CentOS安装命令：sudo yum install waagent</li>
+</ul>
+<ul>
+<li>Ubuntu安装命令：sudo apt-get install walinuxagent</li>
+</ul>
+<ul>
+<li>使用Azure Powershell上传VHD文件：</li>
+</ul>
+<ul>
+<li>按照前面的建议安装并配置好Azure Powershell，然后使用下面的命令将本地VHD上传到Azure存储账号中。</li>
+</ul>
+<ul>
+<li>然后打开cmd，使用下面的命令进行VHD上传：</li>
+</ul>
+<ul>
+<li>使用Azure Powershell利用上传的VHD文件创建虚拟机：</li>
+</ul>
+<ul>
+<li>创建虚拟机脚本示例（注意需要根据实际情况对其中高亮的参数进行修改）：</li>
+</ul>
+<ul>
+<li>New-AzureRmVM -ResourceGroupName $ResourceGroupName -Location $Location -VM $vmconfig;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>在安装Windows系统时，注意将防火墙关闭或者为远程桌面添加放行规则。在安装Linux系统时，注意在iptables或者firewalld中添加ssh端口的放行规则或者关闭服务。</li>
+</ul>
+<ul>
+<li>Add-AzureDisk -DiskName $OSDiskName -MediaLocation $OSDiskUrl -OS $OSType;</li>
+</ul>
+<ul>
+<li>$vmconfig = New-AzureRmVMConfig -VMName $VmName -VMSize $VMSize | Set-AzureRmVMOSDisk -Name $OSDiskName -VhdUri $OSDiskUrl -CreateOption attach -Linux | Add-AzureRmVMNetworkInterface -Id $NIC.Id -Primary;</li>
+</ul>
+<ul>
+<li>$vmconfig = New-AzureRmVMConfig -VMName $VmName -VMSize $VMSize | Set-AzureRmVMOSDisk -Name $OSDiskName -VhdUri $OSDiskUrl -CreateOption attach -Windows | Add-AzureRmVMNetworkInterface -Id $NIC.Id -Primary;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在安装 Linux 系统时，建议使用标准分区而不是 LVM（通常是许多安装的默认值）。</li>
+</ul>
+<ul>
+<li>请将网卡获取IP的方式调整为DHCP，请勿配置静态的IP地址。</li>
+</ul>
+<ul>
+<li>上传之前建议先在本地虚拟机中安装虚拟机代理服务：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Web Installer下载地址：<a href="http://aka.ms/webpi-azps" target="_blank" rel="noopener">http://aka.ms/webpi-azps</a></li>
+</ul>
+<ul>
+<li>Github链接：<a href="https://github.com/Azure/azure-powershell/releases" target="_blank" rel="noopener">https://github.com/Azure/azure-powershell/releases</a></li>
+</ul>
+<ul>
+<li>在虚拟机内下载MSI安装程序：<a href="http://download.microsoft.com/download/3/4/3/3437907D-745F-46EF-8116-7FC025BBEBDB/WindowsAzureVmAgent.2.7.41491.872_180220-1153.fre.msi" target="_blank" rel="noopener">http://download.microsoft.com/download/3/4/3/3437907D-745F-46EF-8116-7FC025BBEBDB/WindowsAzureVmAgent.2.7.41491.872_180220-1153.fre.msi</a></li>
+</ul>
+<ul>
+<li>参考链接：<a href="https://www.azure.cn/zh-cn/support/faq/" target="_blank" rel="noopener">https://www.azure.cn/zh-cn/support/faq/</a></li>
+</ul>
+<ul>
+<li>参考链接：<a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/endorsed-distros?toc=%2fvirtual-machines%2flinux%2ftoc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/endorsed-distros?toc=%2fvirtual-machines%2flinux%2ftoc.json</a></li>
+</ul>
+<ul>
+<li>链接参考：<a href="https://support.microsoft.com/en-us/help/4021388/support-for-32-bit-operating-systems-in-azure-virtual-machines" target="_blank" rel="noopener">https://support.microsoft.com/en-us/help/4021388/support-for-32-bit-operating-systems-in-azure-virtual-machines</a></li>
+</ul>
+<ul>
+<li>例如：Add-AzureVhd -Destination &quot;<a href="https://2hportalvhds4m9k1c1y70qd.blob.core.chinacloudapi.cn/forupload/RHEL" target="_blank" rel="noopener">https://2hportalvhds4m9k1c1y70qd.blob.core.chinacloudapi.cn/forupload/RHEL</a> 7.1.vhd&quot; -LocalFilePath &quot;E:\WATS Work\Hyper-V\RHEL 7.1\Virtual Hard Disks\RHEL 7.1.vhd&quot;</li>
+</ul>
+<ul>
+<li>Microsoft Storage Explorer工具的下载地址：<a href="https://azure.microsoft.com/en-us/features/storage-explorer/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/features/storage-explorer/</a></li>
+</ul>
+<ul>
+<li>$OSDiskUrl = &quot;<a href="http://danielnorthstorage.blob.core.chinacloudapi.cn/test/DanTestImg-os-2017-12-26-5D231562.vhd&quot;;" target="_blank" rel="noopener">http://danielnorthstorage.blob.core.chinacloudapi.cn/test/DanTestImg-os-2017-12-26-5D231562.vhd&quot;;</a></li>
+</ul>
+<ul>
+<li>$OSDiskUrl = &quot;<a href="http://dannorthstorage.blob.core.chinacloudapi.cn/test/DanCentOS6920180327152508.vhd&quot;;" target="_blank" rel="noopener">http://dannorthstorage.blob.core.chinacloudapi.cn/test/DanCentOS6920180327152508.vhd&quot;;</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.azure.cn/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmekenthompson%2F201-vm-specialized-vhd-existing-vnet-existing-availability-set%2Fmaster%2Fazuredeploy.json" target="_blank" rel="noopener">https://portal.azure.cn/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmekenthompson%2F201-vm-specialized-vhd-existing-vnet-existing-availability-set%2Fmaster%2Fazuredeploy.json</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>准备Azure Powershell：</p>
+<p>安装Azure Powershell模块：</p>
+<p>通过Web Installer工具安装Azure Powershell：</p>
+<p>Web Installer下载地址：<a href="http://aka.ms/webpi-azps" target="_blank" rel="noopener">http://aka.ms/webpi-azps</a></p>
+<p>注意这种安装方式需要本地Windows Powershell版本在5.0以上。</p>
+<p>下载完成后，直接双击安装：</p>
+<p>在Github上下载Azure Powershell模块：</p>
+<p>Github链接：<a href="https://github.com/Azure/azure-powershell/releases" target="_blank" rel="noopener">https://github.com/Azure/azure-powershell/releases</a></p>
+<p>下载所需版本的安装程序（msi文件），双击安装即可：</p>
+<p>注意Github的链接是海外的，所以下载速度相对不太稳定，如果下载超时，可以在非工作时间段多尝试几次。每个版本的Azure Powershell对本地Windows Powershell的最低版本要求不通，目前的Azure Powershell都可以安装在Windows Powershell版本在5.0以上的系统中。</p>
+<p>使用Install-Module命令进行模块安装：</p>
+<p>注意这种安装方式同样需要本地Windows Powershell版本在5.0以上。</p>
+<p>分别使用Install-Module Azure和Install-Module AzureRm安装经典模型和资源管理器模型的模块，过程中的所有交互一律选择Y（Yes）或者A（Yes to All）：</p>
+<p>登陆Azure Powershell模块：</p>
+<p>安装完成后，分别针对经典模式和资源管理器模式进行登录和选择默认订阅：</p>
+<p>经典模式：</p>
+<p>使用命令下面的命令进行登录，回车后会弹出一个Azure账号的认证窗口，需要输入Azure Portal的管理账号：</p>
+<p>Add-AzureAccount -Environment AzureChinaCloud</p>
+<p>登录成功后，使用下面的命令选择默认订阅：</p>
+<p>Select-AzureSubscription -SubscriptionId &lt;Subscription Id&gt;</p>
+<p>资源管理器模式：</p>
+<p>Login-AzureRmAccount -EnvironmentName AzureChinaCloud</p>
+<p>Select-AzureRmSubscription -SubscriptionId &lt;Subscription Id&gt;</p>
+<p>准备本地Hyper-V虚拟机：</p>
+<p>在将本地虚拟机上传到Azure之前，必须先准备好虚拟硬盘（VHD）文件。如果是文件格式，例如vhdx，vmdk等，则需要转换成VHD文件。（文件格式较多，这里就不一一列举转换方法了）</p>
+<p>在准备本地Hyper-V虚拟机和VHD的一些要求和注意事项：</p>
+<p>目前Azure仅支持VHD文件格式的且具磁盘大小固定的第一代虚拟机。</p>
+<p>上传的VHD允许的最大大小为4095GB。Azure 支持最大为 2 TB 的操作系统磁盘，如果磁盘大于 2 TB，额外的空间可能不会被操作系统识别。</p>
+<p>上传的VHD的大小必须是1MB的整数倍。</p>
+<p>请勿使用admin/administrator/test这些用户作为管理员用户名。</p>
+<p>对于Windows操作系统，需要开启远程访问（取消勾选NLA）：</p>
+<p>对于Linux操作系统，需要安装ssh服务并设置开机自动启动。</p>
+<p>对于Linux操作系统，不要在操作系统磁盘上配置交换分区。</p>
+<p>在安装 Linux 系统时，建议使用标准分区而不是 LVM（通常是许多安装的默认值）。</p>
+<p>请将网卡获取IP的方式调整为DHCP，请勿配置静态的IP地址。</p>
+<p>在安装Windows系统时，注意将防火墙关闭或者为远程桌面添加放行规则。在安装Linux系统时，注意在iptables或者firewalld中添加ssh端口的放行规则或者关闭服务。</p>
+<p>由于低于 2.6.37 的 Linux 内核版本中的 bug，因此大型VM不支持非一致性内存访问 (NUMA)，运行版本低于 2.6.37 的自定义内核的系统或者版本低于 2.6.32-504 的基于 RHEL 的内核必须在 grub.conf 中的内核命令行上设置启动参数 numa=off，有关详细信息，请参阅 Red Hat KB 436883。</p>
+<p>上传之前建议先在本地虚拟机中安装虚拟机代理服务：</p>
+<p>Windows虚拟机安装代理：</p>
+<p>在虚拟机内下载MSI安装程序：<a href="http://download.microsoft.com/download/3/4/3/3437907D-745F-46EF-8116-7FC025BBEBDB/WindowsAzureVmAgent.2.7.41491.872_180220-1153.fre.msi" target="_blank" rel="noopener">http://download.microsoft.com/download/3/4/3/3437907D-745F-46EF-8116-7FC025BBEBDB/WindowsAzureVmAgent.2.7.41491.872_180220-1153.fre.msi</a></p>
+<p>以管理员权限安装。</p>
+<p>Linux虚拟机安装代理：</p>
+<p>由于Linux发行版较多，因此这里仅以CentOS和Ubuntu作为示例说明。</p>
+<p>CentOS安装命令：sudo yum install waagent</p>
+<p>Ubuntu安装命令：sudo apt-get install walinuxagent</p>
+<p>目前Azure官方支持的虚拟机操作系统版本：</p>
+<p>Azure支持的Windows操作系统及版本：</p>
+<p>Windows Server 2008 R2</p>
+<p>Windows Server 2012, Windows Server 2012 R2</p>
+<p>Windows Server 2016</p>
+<p>参考链接：<a href="https://www.azure.cn/zh-cn/support/faq/" target="_blank" rel="noopener">https://www.azure.cn/zh-cn/support/faq/</a></p>
+<p>Azure支持的Linux分发版及对应版本：</p>
+<p>分发</p>
+<p>版本</p>
+<p>CentOS</p>
+<p>CentOS 6.3+、7.0+</p>
+<p>CoreOS</p>
+<p>494.4.0+</p>
+<p>Debian</p>
+<p>Debian 7.9+、8.2+</p>
+<p>SUSE Linux Enterprise</p>
+<p>SLES/SLES for SAP</p>
+<p>11 SP4</p>
+<p>12 SP1+</p>
+<p>openSUSE</p>
+<p>openSUSE Leap 42.2+</p>
+<p>Ubuntu</p>
+<p>Ubuntu 12.04+</p>
+<p>参考链接：<a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/endorsed-distros?toc=%2fvirtual-machines%2flinux%2ftoc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/endorsed-distros?toc=%2fvirtual-machines%2flinux%2ftoc.json</a></p>
+<p>说明：</p>
+<p>目前Azure支持的Windows和Linux的操作系统均为64位系统。</p>
+<p>链接参考：<a href="https://support.microsoft.com/en-us/help/4021388/support-for-32-bit-operating-systems-in-azure-virtual-machines" target="_blank" rel="noopener">https://support.microsoft.com/en-us/help/4021388/support-for-32-bit-operating-systems-in-azure-virtual-machines</a></p>
+<p>用户可以上传非官方支持的操作系统，例如Server 2003，CentOS 5.5或者32位的操作系统等等，但是如果在这些非官方支持的操作系统层面遇到任何问题，将无法获得微软官方的支持。</p>
+<p>上传VHD文件到Azure存储中：</p>
+<p>使用Azure Powershell上传VHD文件：</p>
+<p>首先在容器的属性里面找到要上传的目标容器的URL：</p>
+<p>按照前面的建议安装并配置好Azure Powershell，然后使用下面的命令将本地VHD上传到Azure存储账号中。</p>
+<p>Add-AzureVhd -Destination &quot;&lt;Target VHD URL&gt;&quot; -LocalFilePath &quot;&lt;Local VHD Path&gt;&quot;</p>
+<p>例如：Add-AzureVhd -Destination &quot;<a href="https://2hportalvhds4m9k1c1y70qd.blob.core.chinacloudapi.cn/forupload/RHEL" target="_blank" rel="noopener">https://2hportalvhds4m9k1c1y70qd.blob.core.chinacloudapi.cn/forupload/RHEL</a> 7.1.vhd&quot; -LocalFilePath &quot;E:\WATS Work\Hyper-V\RHEL 7.1\Virtual Hard Disks\RHEL 7.1.vhd&quot;</p>
+<p>传输过程要保证网络连通，断网之后会中断不能重传。</p>
+<p>使用Microsoft Storage Explorer上传VHD文件：</p>
+<p>Microsoft Storage Explorer工具的下载地址：<a href="https://azure.microsoft.com/en-us/features/storage-explorer/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/features/storage-explorer/</a></p>
+<p>下载后默认安装即可。</p>
+<p>安装完成后，打开界面，将我们目标存储账号添加进去：</p>
+<p>添加存储账号的名称以及访问秘钥：</p>
+<p>存储账号名称和访问秘钥可以在存储账号的“访问秘钥”里面找到：</p>
+<p>添加完成后，可以在左侧存储账号列表（Storage Accounts）中找到添加的存储账号，展开我们要上传的目标容器，点击Upload上传VHD文件，注意Blob type要选择&quot;Page Blob&quot;：</p>
+<p>使用AzCopy上传VHD文件：</p>
+<p>AzCopy for Windows最新下载地址：latest preview version of AzCopy on Windows</p>
+<p>下载完成后默认安装即可。</p>
+<p>然后打开cmd，使用下面的命令进行VHD上传：</p>
+<p>azcopy /Source:&lt;source vhd directory&gt; /Dest:&lt;target container url&gt; /DestKey:&lt;target storage account key&gt; /Pattern:&lt;vhd file name&gt; /BlobType:page</p>
+<p>例如：</p>
+<p>使用上传的VHD创建虚拟机：</p>
+<p>使用Azure Powershell利用上传的VHD文件创建虚拟机：</p>
+<p>针对经典模式和资源管理器模式可以分别使用下面的方法进行虚拟机的创建：</p>
+<p>创建虚拟机脚本示例（注意需要根据实际情况对其中高亮的参数进行修改）：</p>
+<p>$VmName = &quot;DanTestVM&quot;;</p>
+<p>$CloudServiceName = &quot;dannorthcs&quot;;</p>
+<p>$VirtualNetworkName = &quot;DanNorthVNET&quot;;</p>
+<p>$SubnetName = &quot;default&quot;;</p>
+<p>$OSType = &quot;Linux&quot;;</p>
+<p>$Location = &quot;China North&quot;;</p>
+<p>$VMSize = &quot;Standard_D2&quot;;</p>
+<p>$OSDiskUrl = &quot;<a href="http://danielnorthstorage.blob.core.chinacloudapi.cn/test/DanTestImg-os-2017-12-26-5D231562.vhd&quot;;" target="_blank" rel="noopener">http://danielnorthstorage.blob.core.chinacloudapi.cn/test/DanTestImg-os-2017-12-26-5D231562.vhd&quot;;</a></p>
+<p>$OSDiskName = $VmName + &quot;_OSDisk&quot;</p>
+<p>Add-AzureDisk -DiskName $OSDiskName -MediaLocation $OSDiskUrl -OS $OSType;</p>
+<p>$vmconfig = New-AzureVMConfig -Name $VmName -InstanceSize $VMSize -DiskName $OSDiskName;</p>
+<p>$vmconfig = $vmconfig | Set-AzureSubnet -SubnetNames $SubnetName;</p>
+<p>$vmconfig | New-AzureVM -ServiceName $CloudServiceName -VNetName $VirtualNetworkName -Location $Location;</p>
+<p>$ResourceGroupName = &quot;DanNorthResourceGroup&quot;;</p>
+<p>$VNETResourceGroupName = &quot;DanNorthResourceGroup&quot;;</p>
+<p>$SubnetName = &quot;Subnet1&quot;;</p>
+<p>$OSDiskUrl = &quot;<a href="http://dannorthstorage.blob.core.chinacloudapi.cn/test/DanCentOS6920180327152508.vhd&quot;;" target="_blank" rel="noopener">http://dannorthstorage.blob.core.chinacloudapi.cn/test/DanCentOS6920180327152508.vhd&quot;;</a></p>
+<p>if ($VNETResourceGroupName -eq $null)</p>
+<p>{</p>
+<p>$VNETResourceGroupName = $ResourceGroupName;</p>
+<p>}</p>
+<p>$vnet = Get-AzureRmVirtualNetwork -Name $VirtualNetworkName -ResourceGroupName $VNETResourceGroupName;</p>
+<p>$subnet01 = Get-AzureRmVirtualNetworkSubnetConfig -Name $SubnetName -VirtualNetwork $vnet;</p>
+<p>$ipName = (&quot;{0}_pip&quot; -f $VmName);</p>
+<p>$publicIP = New-AzureRmPublicIpAddress -Name $IPName -ResourceGroupName $ResourceGroupName -Location $Location -AllocationMethod Static -Force;</p>
+<p>$nicName = (&quot;{0}_nic&quot; -f $VmName);</p>
+<p>$NIC = New-AzureRmNetworkInterface -Name $nicName -ResourceGroupName $ResourceGroupName -Location $Location -SubnetId $subnet01.Id -PublicIpAddressId $publicIP.Id;</p>
+<p>$vmconfig = $null;</p>
+<p>if ($OSType -eq &quot;Linux&quot;)</p>
+<p>$vmconfig = New-AzureRmVMConfig -VMName $VmName -VMSize $VMSize | Set-AzureRmVMOSDisk -Name $OSDiskName -VhdUri $OSDiskUrl -CreateOption attach -Linux | Add-AzureRmVMNetworkInterface -Id $NIC.Id -Primary;</p>
+<p>if ($OSType -eq &quot;Windows&quot;)</p>
+<p>$vmconfig = New-AzureRmVMConfig -VMName $VmName -VMSize $VMSize | Set-AzureRmVMOSDisk -Name $OSDiskName -VhdUri $OSDiskUrl -CreateOption attach -Windows | Add-AzureRmVMNetworkInterface -Id $NIC.Id -Primary;</p>
+<p>New-AzureRmVM -ResourceGroupName $ResourceGroupName -Location $Location -VM $vmconfig;</p>
+<p>使用Github Template利用上传的VHD文件创建虚拟机：</p>
+<p>这种方式只能针对资源管理器模式进行部署，点击下面的链接：</p>
+<p><a href="https://portal.azure.cn/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmekenthompson%2F201-vm-specialized-vhd-existing-vnet-existing-availability-set%2Fmaster%2Fazuredeploy.json" target="_blank" rel="noopener">https://portal.azure.cn/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmekenthompson%2F201-vm-specialized-vhd-existing-vnet-existing-availability-set%2Fmaster%2Fazuredeploy.json</a></p>
+<p>会自动跳转到Azure的门户中（如果未登录需要登录），按要求填写参数：</p>
+<p>确认参数填写无误后点击“创建”按钮创建即可。</p></article>

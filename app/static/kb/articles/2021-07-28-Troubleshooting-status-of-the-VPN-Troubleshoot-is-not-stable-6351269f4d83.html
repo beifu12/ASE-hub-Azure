@@ -1,0 +1,67 @@
+<article class="kb-article" data-title="&quot;Troubleshooting status&quot; of the &quot;VPN Troubleshoot&quot;  is not stable"><h1>&quot;Troubleshooting status&quot; of the &quot;VPN Troubleshoot&quot;  is not stable</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-07-28 11:16:21</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题描述：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>例如：如下两个截图仅仅是刷新浏览器前后的对比，可以看到上图的状态是Unhealthy和Running，下图又变为Not Started了。这对客户来说非常有迷惑性。</li>
+</ul>
+<ul>
+<li>如下是微软的解释：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>客户使用VPN troubleshoot来查看VPN状态，但是发现其中的Troubleshooting Status显示不稳定，有Not Started, Running, Healthy, Unhealthy几种状态。刷新页面后还可能变化。</li>
+</ul>
+<ul>
+<li>但是如果在Network Watcher中的VPN Troubleshoot中看同样的界面，其Troubleshooting Status要稳定的多，不会随浏览器刷新而变化。</li>
+</ul>
+<ul>
+<li>首先，“Not Started”是表示“Start troubleshooting”这个操作还没有开始，“Running”表示“Start troubleshooting”这个操作正在进行。</li>
+</ul>
+<ul>
+<li>在VPN Support+Troubleshooting中，“Troubleshooting Status”只是当前“Start troubleshooting”的一次操作结果，结果会随浏览器的刷新而变。</li>
+</ul>
+<ul>
+<li>在Network Watcher中，可能对“Start troubleshooting”的结果有缓存，导致用户在切换界面的时候还能看到上一次“Start troubleshooting”的结果。</li>
+</ul>
+<ul>
+<li>“Troubleshooting Status” 只是当前Troubleshooting的一次操作结果，结果会随浏览器的刷新而变。其结果不能等同于VPN Gateway的状态或Connection的状态。例如，“Not Started”是表示“Start troubleshooting”这个操作还没有开始，“Running”表示“Start troubleshooting”这个操作正在进行。如果要获取准确的VPN Gateway状态和Connection的状态，请在Troubleshooting结束后，从存储账户下载最终的报告查看。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>建议对客户的话术：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>问题描述：</p>
+<p>客户使用VPN troubleshoot来查看VPN状态，但是发现其中的Troubleshooting Status显示不稳定，有Not Started, Running, Healthy, Unhealthy几种状态。刷新页面后还可能变化。</p>
+<p>例如：如下两个截图仅仅是刷新浏览器前后的对比，可以看到上图的状态是Unhealthy和Running，下图又变为Not Started了。这对客户来说非常有迷惑性。</p>
+<p>但是如果在Network Watcher中的VPN Troubleshoot中看同样的界面，其Troubleshooting Status要稳定的多，不会随浏览器刷新而变化。</p>
+<p>如下是微软的解释：</p>
+<p>首先，“Not Started”是表示“Start troubleshooting”这个操作还没有开始，“Running”表示“Start troubleshooting”这个操作正在进行。</p>
+<p>在VPN Support+Troubleshooting中，“Troubleshooting Status”只是当前“Start troubleshooting”的一次操作结果，结果会随浏览器的刷新而变。</p>
+<p>在Network Watcher中，可能对“Start troubleshooting”的结果有缓存，导致用户在切换界面的时候还能看到上一次“Start troubleshooting”的结果。</p>
+<p>建议对客户的话术：</p>
+<p>“Troubleshooting Status” 只是当前Troubleshooting的一次操作结果，结果会随浏览器的刷新而变。其结果不能等同于VPN Gateway的状态或Connection的状态。例如，“Not Started”是表示“Start troubleshooting”这个操作还没有开始，“Running”表示“Start troubleshooting”这个操作正在进行。如果要获取准确的VPN Gateway状态和Connection的状态，请在Troubleshooting结束后，从存储账户下载最终的报告查看。</p></article>

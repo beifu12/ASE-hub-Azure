@@ -1,0 +1,80 @@
+<article class="kb-article" data-title="【Share】Linux挂载Blobfuse2后读写报错"><h1>【Share】Linux挂载Blobfuse2后读写报错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-12-26 09:56:31</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>在Linux系统中成功挂载BLobfuse2后，在挂载目录中读写会报错：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Wang Yu</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>在存储账户层面，客户使用的SAS权限足够；</li>
+</ul>
+<ul>
+<li>将授权模式从SAS改为Key的方式问题依旧。</li>
+</ul>
+<ul>
+<li>Blobfuse2配置文件中同时启用了cache block_cache,file_cache。</li>
+</ul>
+<ul>
+<li>经测试，如下cache block_cache,file_cache，二选一后可以正常访问读取文件内容</li>
+</ul>
+<ul>
+<li>具体您可以参考Github上相应的示例：</li>
+</ul>
+<ul>
+<li>Sample File Cache Config</li>
+</ul>
+<ul>
+<li>Sample Block-Cache Config</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Wang Yu</p>
+<p>问题现象：</p>
+<p>========</p>
+<p>在Linux系统中成功挂载BLobfuse2后，在挂载目录中读写会报错：</p>
+<p>排查过程：</p>
+<p>在存储账户层面，客户使用的SAS权限足够；</p>
+<p>将授权模式从SAS改为Key的方式问题依旧。</p>
+<p>解决方案：</p>
+<p>Blobfuse2配置文件中同时启用了cache block_cache,file_cache。</p>
+<p>经测试，如下cache block_cache,file_cache，二选一后可以正常访问读取文件内容</p>
+<p>具体您可以参考Github上相应的示例：</p>
+<p>Sample File Cache Config</p>
+<p>Sample Block-Cache Config</p></article>

@@ -1,0 +1,154 @@
+<article class="kb-article" data-title="[Share]使用Service principal无交互方式登录订阅"><h1>[Share]使用Service principal无交互方式登录订阅</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Cli</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-31 21:38:48</li>
+<li>JD 相关性: 自动化/命令工具</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>2024.7.31</li>
+</ul>
+<ul>
+<li>liuwei</li>
+</ul>
+<ul>
+<li>1.使用Cli无交互式登陆订阅:</li>
+</ul>
+<ul>
+<li># Change to Azure China cloud environment</li>
+</ul>
+<ul>
+<li>Create a service principal (It will show the appId password and tenant, please copy these value)</li>
+</ul>
+<ul>
+<li>$client_id = &quot;fbxxxxxxxxxxxxxxxxxxxx99c&quot;</li>
+</ul>
+<ul>
+<li>$client_secret = &quot;5gxxxxxxxxxxxxxxxxxxxxG&quot;</li>
+</ul>
+<ul>
+<li>$tenant_id = &quot;b3xxxxxxxxxxxxxxxxxxxx9b&quot;</li>
+</ul>
+<ul>
+<li>$SecurePassword = ConvertTo-SecureString &quot;$client_secret&quot; -AsPlainText -Force</li>
+</ul>
+<ul>
+<li>$credentials = New-Object System.Management.Automation.PSCredential($client_id, $SecurePassword)</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Credential $credentials -ServicePrincipal -Tenant $tenant_id –Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>#1. 首先使用Service principal来登陆订阅</li>
+</ul>
+<ul>
+<li>#2.成功登陆订阅后通过获取的token来登陆AzureAD：</li>
+</ul>
+<ul>
+<li>$ctx = Get-AzContext</li>
+</ul>
+<ul>
+<li>Connect-AzureAD -AadAccessToken $token.Token -AccountId $ctx.Account.Id -TenantId $ctx.Tenant.Id -AzureEnvironmentName AzureChinaCloud</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#use xxx@xxx.partner.onmschina.cn login</li>
+</ul>
+<ul>
+<li>logout the current user “xxx@xxx.partner.onmschina.cn”</li>
+</ul>
+<ul>
+<li>Login using the created service principal</li>
+</ul>
+<ul>
+<li>#Login to Azure China</li>
+</ul>
+<ul>
+<li>#get AzAccount login context</li>
+</ul>
+<ul>
+<li>#get AzAccount login token</li>
+</ul>
+<ul>
+<li>#login Azuread</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az login Azure china subscription with the following command</li>
+</ul>
+<ul>
+<li>az cloud set --name AzureChinaCloud</li>
+</ul>
+<ul>
+<li>az login -u &#39;xxx@xxx.partner.onmschina.cn&#39;</li>
+</ul>
+<ul>
+<li>az ad sp create-for-rbac --name ptsp21525</li>
+</ul>
+<ul>
+<li>az logout</li>
+</ul>
+<ul>
+<li>az login --service-principal --username appId --password xxxxxxxxxx --tenant xxxxxxxxxxxx</li>
+</ul>
+<ul>
+<li>2.使用AZ PowerShell无交互式登陆订阅:</li>
+</ul>
+<ul>
+<li>3.无交互式PowerShell登陆AAD</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>$token = Get-AzAccessToken -ResourceUrl <a href="https://graph.chinacloudapi.cn" target="_blank" rel="noopener">https://graph.chinacloudapi.cn</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>2024.7.31</p>
+<p>liuwei</p>
+<p>1.使用Cli无交互式登陆订阅:</p>
+<p>az login Azure china subscription with the following command</p>
+<h1>Change to Azure China cloud environment</h1>
+<p>az cloud set --name AzureChinaCloud</p>
+<p>#use xxx@xxx.partner.onmschina.cn login</p>
+<p>az login -u &#39;xxx@xxx.partner.onmschina.cn&#39;</p>
+<p>Create a service principal (It will show the appId password and tenant, please copy these value)</p>
+<p>az ad sp create-for-rbac --name ptsp21525</p>
+<p>logout the current user “xxx@xxx.partner.onmschina.cn”</p>
+<p>az logout</p>
+<p>Login using the created service principal</p>
+<p>az login --service-principal --username appId --password xxxxxxxxxx --tenant xxxxxxxxxxxx</p>
+<p>2.使用AZ PowerShell无交互式登陆订阅:</p>
+<p>$client_id = &quot;fbxxxxxxxxxxxxxxxxxxxx99c&quot;</p>
+<p>$client_secret = &quot;5gxxxxxxxxxxxxxxxxxxxxG&quot;</p>
+<p>$tenant_id = &quot;b3xxxxxxxxxxxxxxxxxxxx9b&quot;</p>
+<p>$SecurePassword = ConvertTo-SecureString &quot;$client_secret&quot; -AsPlainText -Force</p>
+<p>$credentials = New-Object System.Management.Automation.PSCredential($client_id, $SecurePassword)</p>
+<p>#Login to Azure China</p>
+<p>Connect-AzAccount -Credential $credentials -ServicePrincipal -Tenant $tenant_id –Environment AzureChinaCloud</p>
+<p>3.无交互式PowerShell登陆AAD</p>
+<p>#1. 首先使用Service principal来登陆订阅</p>
+<p>#2.成功登陆订阅后通过获取的token来登陆AzureAD：</p>
+<p>#get AzAccount login context</p>
+<p>$ctx = Get-AzContext</p>
+<p>#get AzAccount login token</p>
+<p>$token = Get-AzAccessToken -ResourceUrl <a href="https://graph.chinacloudapi.cn" target="_blank" rel="noopener">https://graph.chinacloudapi.cn</a></p>
+<p>#login Azuread</p>
+<p>Connect-AzureAD -AadAccessToken $token.Token -AccountId $ctx.Account.Id -TenantId $ctx.Tenant.Id -AzureEnvironmentName AzureChinaCloud</p></article>

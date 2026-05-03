@@ -1,0 +1,243 @@
+<article class="kb-article" data-title="【Share】Azure application proxy 功能测试"><h1>【Share】Azure application proxy 功能测试</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-12-09 17:35:44</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>测试需要</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>测试需要</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>测试需要</li>
+</ul>
+<ul>
+<li>一个 Microsoft Entra ID P1 或 P2 订阅</li>
+</ul>
+<ul>
+<li>一组与本地目录同步的用户标识 tom jones(Tom@vincentjones.cn)。</li>
+</ul>
+<ul>
+<li>测试环境</li>
+</ul>
+<ul>
+<li>一、创建应用代理</li>
+</ul>
+<ul>
+<li>至少以应用程序管理员的身份登录到 Microsoft Entra 管理中心，浏览到“标识”&gt;“应用程序”&gt;“企业应用程序”。</li>
+</ul>
+<ul>
+<li>选择“新建应用程序” 。</li>
+</ul>
+<ul>
+<li>选择“添加本地应用程序”按钮，该按钮显示在“本地应用程序”部分的中间位置。 也可以在页面顶部选择“创建自己的应用程序”，然后选择“配置应用程序代理以安全地远程访问本地应用程序”。</li>
+</ul>
+<ul>
+<li>在“添加自己的本地应用程序”部分中，提供有关应用程序的以下信息 。注：URL 需要以 http 或 https 开头，以“/”结尾，URL 应为域名，而非 IP 地址</li>
+</ul>
+<ul>
+<li>在Microsoft Entra 管理中心 下载connector services 安装包</li>
+</ul>
+<ul>
+<li>中国区安装需要添加如下参数.\MicrosoftEntraPrivateNetworkConnectorInstaller.exe ENVIRONMENTNAME=AzureChinaCloud</li>
+</ul>
+<ul>
+<li>安装成功后使用管理员登录</li>
+</ul>
+<ul>
+<li>安装成功后可以在应用代理中看到应用代理服务器的名字和状态。</li>
+</ul>
+<ul>
+<li>二、添加用于测试的用户</li>
+</ul>
+<ul>
+<li>添加测试用户：</li>
+</ul>
+<ul>
+<li>选择“企业应用程序”，然后选择要测试的应用程序 。</li>
+</ul>
+<ul>
+<li>选择“用户和组”，然后选择“分配用于测试的用户” 。</li>
+</ul>
+<ul>
+<li>在“用户和组”下，选择“添加用户” 。</li>
+</ul>
+<ul>
+<li>选择要添加的帐户。</li>
+</ul>
+<ul>
+<li>依次选择“选择”、“分配” 。</li>
+</ul>
+<ul>
+<li>三、测试登录</li>
+</ul>
+<ul>
+<li>从要测试的应用程序中，选择“应用程序代理”。</li>
+</ul>
+<ul>
+<li>登录有可以正常访问内网的服务了访问</li>
+</ul>
+<ul>
+<li>详细信息可以参考：添加本地应用程序以通过 Microsoft Entra ID 中的应用程序代理进行远程访问。 - Microsoft Entra ID | Microsoft Learn</li>
+</ul>
+<ul>
+<li>三、使用自定义域名</li>
+</ul>
+<ul>
+<li>并再DNS服务商处设置DNS CNAME 记录 如：web1.vincentjones.cn -&gt; web1-microsoftinternal.msappproxy.cn</li>
+</ul>
+<ul>
+<li>详细信息可以参考：Microsoft Entra 应用程序代理中的自定义域 - Microsoft Entra ID | Microsoft Learn</li>
+</ul>
+<ul>
+<li>$certname = &quot;web1.vincentjones.cn&quot; ## Replace {certificateName}</li>
+</ul>
+<ul>
+<li>$cert = New-SelfSignedCertificate -Subject &quot;CN=$certname&quot; -CertStoreLocation &quot;Cert:\CurrentUser\My&quot; -KeyExportPolicy Exportable -KeySpec Signature -KeyLength 2048 -KeyAlgorithm RSA -HashAlgorithm SHA256</li>
+</ul>
+<ul>
+<li>在应用代理中进行添加</li>
+</ul>
+<ul>
+<li>注册SPN到 web应用 计算机账户</li>
+</ul>
+<ul>
+<li>setspn -A HTTP/&lt;IIS service name&gt; &lt;VMhostname&gt;</li>
+</ul>
+<ul>
+<li>我的web 服务器名称为membertest2，服务名称可以根据自己需要选择（该测试membertest2为IIS 服务器）</li>
+</ul>
+<ul>
+<li>注册后在活动目录和计算机中找到该设备并添加SPN授权到 应用代理的服务上（该测试中安装应用代理的计算机为ADFSserver）</li>
+</ul>
+<ul>
+<li>设置后通过同步到AAD的用户tom jones （该用户为本地用户同步到AAD）登录 AAD 加入的计算机访问，会有如下提示：</li>
+</ul>
+<ul>
+<li>下面我们配置SSO，转到我们创建的应用注册，选择Single Sign-on 并选择Windows Integrated Authentication</li>
+</ul>
+<ul>
+<li>填写之前建立的SPN并保存</li>
+</ul>
+<ul>
+<li>详细参考：了解如何使用应用程序代理通过本地应用进行单一登录 - Microsoft Entra ID | Microsoft Learn</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>创建好后可以在企业应用中找到应用名称查看</li>
+</ul>
+<ul>
+<li>在内部服务器上安装IIS 服务测试（测试过程中安装了验证方法）</li>
+</ul>
+<ul>
+<li>将用户添加到应用程序之前，请验证该用户帐户是否有权从企业网络内部访问应用程序。</li>
+</ul>
+<ul>
+<li>若要测试对应用程的身份验证：</li>
+</ul>
+<ul>
+<li>在页面顶部，选择“测试应用程序” 以对应用程序运行测试并检查是否存在任何配置问题。</li>
+</ul>
+<ul>
+<li>如果使用自定义域名，需要添加并验证自定义域名后，选择自定义域名</li>
+</ul>
+<ul>
+<li>在 Microsoft Entra 管理中心，浏览到”&gt;“企业应用程序”&gt;找到您的应用 在“应用程序代理”中找到“外部 URL”字段，向下滚动查看列表，再选择你想要使用的自定义域。</li>
+</ul>
+<ul>
+<li>验证域名解析</li>
+</ul>
+<ul>
+<li>四、为Windows 验证设置SSO</li>
+</ul>
+<ul>
+<li>AAD joined 的设备访问，测试用户为Tom jones，首先确认用户有权访问应用代理</li>
+</ul>
+<ul>
+<li>在IIS 上启用windows 集成验证，禁用匿名访问</li>
+</ul>
+<ul>
+<li>确认web 服务器如下位置为true 使用计算机账户解析Kerberos Ticket</li>
+</ul>
+<ul>
+<li>以上为IIS服务器上 的设置，仅供参考。详细步骤可以参考 第三方链接：Setting up Kerberos Authentication for a Website in IIS | Microsoft Community Hub</li>
+</ul>
+<ul>
+<li>使用AAD 加入的客户端访问，不用再次验证直接可以打开页面访问</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>可以测试为自签发证书，该证书只为测试，导出pfx。如果在实际场景中建议购买证书使用（必须使用 PFX 证书，以确保包含所有必需的中间证书。 该证书必须包含私钥。才能保证验证的完整性）</li>
+</ul>
+<ul>
+<li>添加后可以通过自定义域名访问（注：如下演示证书为自定义证书，报错为正常 有的浏览器可能会不允许继续访问，建议使用edge测试）</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>测试需要</p>
+<p>一个 Microsoft Entra ID P1 或 P2 订阅</p>
+<p>一组与本地目录同步的用户标识 tom jones(Tom@vincentjones.cn)。</p>
+<p>测试环境</p>
+<p>一、创建应用代理</p>
+<p>至少以应用程序管理员的身份登录到 Microsoft Entra 管理中心，浏览到“标识”&gt;“应用程序”&gt;“企业应用程序”。</p>
+<p>选择“新建应用程序” 。</p>
+<p>选择“添加本地应用程序”按钮，该按钮显示在“本地应用程序”部分的中间位置。 也可以在页面顶部选择“创建自己的应用程序”，然后选择“配置应用程序代理以安全地远程访问本地应用程序”。</p>
+<p>在“添加自己的本地应用程序”部分中，提供有关应用程序的以下信息 。注：URL 需要以 http 或 https 开头，以“/”结尾，URL 应为域名，而非 IP 地址</p>
+<p>创建好后可以在企业应用中找到应用名称查看</p>
+<p>在内部服务器上安装IIS 服务测试（测试过程中安装了验证方法）</p>
+<p>在Microsoft Entra 管理中心 下载connector services 安装包</p>
+<p>中国区安装需要添加如下参数.\MicrosoftEntraPrivateNetworkConnectorInstaller.exe ENVIRONMENTNAME=AzureChinaCloud</p>
+<p>安装成功后使用管理员登录</p>
+<p>安装成功后可以在应用代理中看到应用代理服务器的名字和状态。</p>
+<p>二、添加用于测试的用户</p>
+<p>将用户添加到应用程序之前，请验证该用户帐户是否有权从企业网络内部访问应用程序。</p>
+<p>添加测试用户：</p>
+<p>选择“企业应用程序”，然后选择要测试的应用程序 。</p>
+<p>选择“用户和组”，然后选择“分配用于测试的用户” 。</p>
+<p>在“用户和组”下，选择“添加用户” 。</p>
+<p>选择要添加的帐户。</p>
+<p>依次选择“选择”、“分配” 。</p>
+<p>三、测试登录</p>
+<p>若要测试对应用程的身份验证：</p>
+<p>从要测试的应用程序中，选择“应用程序代理”。</p>
+<p>在页面顶部，选择“测试应用程序” 以对应用程序运行测试并检查是否存在任何配置问题。</p>
+<p>登录有可以正常访问内网的服务了访问</p>
+<p>详细信息可以参考：添加本地应用程序以通过 Microsoft Entra ID 中的应用程序代理进行远程访问。 - Microsoft Entra ID | Microsoft Learn</p>
+<p>三、使用自定义域名</p>
+<p>如果使用自定义域名，需要添加并验证自定义域名后，选择自定义域名</p>
+<p>在 Microsoft Entra 管理中心，浏览到”&gt;“企业应用程序”&gt;找到您的应用 在“应用程序代理”中找到“外部 URL”字段，向下滚动查看列表，再选择你想要使用的自定义域。</p>
+<p>并再DNS服务商处设置DNS CNAME 记录 如：web1.vincentjones.cn -&gt; web1-microsoftinternal.msappproxy.cn</p>
+<p>验证域名解析</p>
+<p>详细信息可以参考：Microsoft Entra 应用程序代理中的自定义域 - Microsoft Entra ID | Microsoft Learn</p>
+<p>$certname = &quot;web1.vincentjones.cn&quot; ## Replace {certificateName}</p>
+<p>$cert = New-SelfSignedCertificate -Subject &quot;CN=$certname&quot; -CertStoreLocation &quot;Cert:\CurrentUser\My&quot; -KeyExportPolicy Exportable -KeySpec Signature -KeyLength 2048 -KeyAlgorithm RSA -HashAlgorithm SHA256</p>
+<p>可以测试为自签发证书，该证书只为测试，导出pfx。如果在实际场景中建议购买证书使用（必须使用 PFX 证书，以确保包含所有必需的中间证书。 该证书必须包含私钥。才能保证验证的完整性）</p>
+<p>在应用代理中进行添加</p>
+<p>添加后可以通过自定义域名访问（注：如下演示证书为自定义证书，报错为正常 有的浏览器可能会不允许继续访问，建议使用edge测试）</p>
+<p>四、为Windows 验证设置SSO</p>
+<p>AAD joined 的设备访问，测试用户为Tom jones，首先确认用户有权访问应用代理</p>
+<p>在IIS 上启用windows 集成验证，禁用匿名访问</p>
+<p>确认web 服务器如下位置为true 使用计算机账户解析Kerberos Ticket</p>
+<p>注册SPN到 web应用 计算机账户</p>
+<p>setspn -A HTTP/&lt;IIS service name&gt; &lt;VMhostname&gt;</p>
+<p>我的web 服务器名称为membertest2，服务名称可以根据自己需要选择（该测试membertest2为IIS 服务器）</p>
+<p>注册后在活动目录和计算机中找到该设备并添加SPN授权到 应用代理的服务上（该测试中安装应用代理的计算机为ADFSserver）</p>
+<p>以上为IIS服务器上 的设置，仅供参考。详细步骤可以参考 第三方链接：Setting up Kerberos Authentication for a Website in IIS | Microsoft Community Hub</p>
+<p>设置后通过同步到AAD的用户tom jones （该用户为本地用户同步到AAD）登录 AAD 加入的计算机访问，会有如下提示：</p>
+<p>下面我们配置SSO，转到我们创建的应用注册，选择Single Sign-on 并选择Windows Integrated Authentication</p>
+<p>填写之前建立的SPN并保存</p>
+<p>使用AAD 加入的客户端访问，不用再次验证直接可以打开页面访问</p>
+<p>详细参考：了解如何使用应用程序代理通过本地应用进行单一登录 - Microsoft Entra ID | Microsoft Learn</p></article>

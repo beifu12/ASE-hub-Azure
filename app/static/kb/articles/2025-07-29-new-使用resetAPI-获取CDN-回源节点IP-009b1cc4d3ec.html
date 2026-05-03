@@ -1,0 +1,44 @@
+<article class="kb-article" data-title="(new)使用resetAPI 获取CDN 回源节点IP"><h1>(new)使用resetAPI 获取CDN 回源节点IP</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-29 10:12:32</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2024.8.13</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2024.8.13</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2024.8.13</li>
+</ul>
+<ul>
+<li>for ip in $(cat /tmp/cdnip.txt) ; do  az storage account network-rule add --resource-group RGname  --account-name  StorageAccoutname  --ip-address $ip &gt; /dev/null; sleep 5 ;done</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>修改了python3获取CDN回源节点IP的脚本，去掉了IPv6的地址，脚本成功执行后，会将IPv4的地址保存到/tmp/cdnip.txt 中。</li>
+</ul>
+<ul>
+<li>接下来客户可以直接通过Azure CLI命令行将这些IP添加到storage 防火墙的IP白名单中（不能写入的太快，测试了几次，sleep 1 或者2秒以及3秒，都会遇到错误）</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024.8.13</p>
+<p>修改了python3获取CDN回源节点IP的脚本，去掉了IPv6的地址，脚本成功执行后，会将IPv4的地址保存到/tmp/cdnip.txt 中。</p>
+<p>接下来客户可以直接通过Azure CLI命令行将这些IP添加到storage 防火墙的IP白名单中（不能写入的太快，测试了几次，sleep 1 或者2秒以及3秒，都会遇到错误）</p>
+<p>for ip in $(cat /tmp/cdnip.txt) ; do  az storage account network-rule add --resource-group RGname  --account-name  StorageAccoutname  --ip-address $ip &gt; /dev/null; sleep 5 ;done</p></article>

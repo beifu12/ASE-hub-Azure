@@ -1,0 +1,129 @@
+<article class="kb-article" data-title="为APPGW V2生成完整证书"><h1>为APPGW V2生成完整证书</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-06-06 10:59:54</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Zhou Kun</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Zhou Kun</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhou Kun</li>
+</ul>
+<ul>
+<li>并将现有的yourcert.pfx转成yourcert.pem, 并且导出对应的秘钥yourcert.key：openssl pkcs12 -in yourcert.pfx -nodes -out your.pem</li>
+</ul>
+<ul>
+<li>如果是中间CA签发的服务器证书， 当打开这个证书后， 您会看到类似这样一个证书层级路径：</li>
+</ul>
+<ul>
+<li>然后找到“详细信息”中的“授权信息访问”， 找到其中的url对应的证书，将其下载下来：</li>
+</ul>
+<ul>
+<li>将2中的.crt证书上传到linux系统中，转换成.pem格式：</li>
+</ul>
+<ul>
+<li>openssl x509 -inform der -in a2g2r1.crt -out a2g2r1.pem</li>
+</ul>
+<ul>
+<li>将3中生成的.pem证书追加到目前.pfx对应的.pem证书后， 构成一个完整的证书：</li>
+</ul>
+<ul>
+<li>cat a2g2r1.pem &gt;&gt; yourcert.pem</li>
+</ul>
+<ul>
+<li>-----BEGIN RSA PRIVATE KEY-----</li>
+</ul>
+<ul>
+<li>(Your Private Key: your_domain_name.key)</li>
+</ul>
+<ul>
+<li>-----END RSA PRIVATE KEY-----</li>
+</ul>
+<ul>
+<li>-----BEGIN CERTIFICATE-----</li>
+</ul>
+<ul>
+<li>(Your Primary SSL certificate: your_domain_name.crt)</li>
+</ul>
+<ul>
+<li>-----END CERTIFICATE-----</li>
+</ul>
+<ul>
+<li>(Your Intermediate certificate: DigiCertCA.crt)</li>
+</ul>
+<ul>
+<li>(Your Root certificate: TrustedRoot.crt)</li>
+</ul>
+<ul>
+<li>-----END CERTIFICATE---</li>
+</ul>
+<ul>
+<li>把以上的完整的yourcert.pem 转换成完整的yourcert.pfx:</li>
+</ul>
+<ul>
+<li>openssl pkcs12 -export -name &quot;yourcert-complete&quot; -inkey yourcert.key -in yourcert.pem -out  yourcert.pfx</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在linux机器上检查目前您手里不完整的.pfx证书的情况：openssl pkcs12 -info -in yourcert.pfx</li>
+</ul>
+<ul>
+<li>验证此时的证书是否已经包含了完整信息：openssl pkcs12 -info -in yourcert.pfx</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在测试环境中，是可以使用下面的命令生成完整的.pfx证书的，如果想要自己合成，可以酌情参考：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>AppGWv2上不支持无链的证书，所以需要将完整的证书链上传。实际上证书问题已经超出了工单和我们的支持范围，我们并不是这个方面的专家，建议联系证书提供商生成完整证书链，以免生成的证书有问题。</li>
+</ul>
+<ul>
+<li>如果正常，至此导出yourcert.pfx到本地，然后上传到AppGWv2上使用，可以看到证书过程中还是比较复杂的，所以还是建议联系证书提供商来提供的。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>打开并安装这个.pfx证书，从这个.pfx证书AIA(Authority Info Access)中下载中间链证书:   URL=<a href="http://secure.globalsign.com/cacert/xxxx.crt" target="_blank" rel="noopener">http://secure.globalsign.com/cacert/xxxx.crt</a></li>
+</ul>
+<ul>
+<li>按照证书的组成顺序，调整4中的yourcert.pem中的顺序， 正常一个由中间链签发的证书的顺序是这样的，参考<a href="https://www.digicert.com/ssl-support/pem-ssl-creation.htm" target="_blank" rel="noopener">https://www.digicert.com/ssl-support/pem-ssl-creation.htm</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhou Kun</p>
+<p>AppGWv2上不支持无链的证书，所以需要将完整的证书链上传。实际上证书问题已经超出了工单和我们的支持范围，我们并不是这个方面的专家，建议联系证书提供商生成完整证书链，以免生成的证书有问题。</p>
+<p>在测试环境中，是可以使用下面的命令生成完整的.pfx证书的，如果想要自己合成，可以酌情参考：</p>
+<p>在linux机器上检查目前您手里不完整的.pfx证书的情况：openssl pkcs12 -info -in yourcert.pfx</p>
+<p>并将现有的yourcert.pfx转成yourcert.pem, 并且导出对应的秘钥yourcert.key：openssl pkcs12 -in yourcert.pfx -nodes -out your.pem</p>
+<p>打开并安装这个.pfx证书，从这个.pfx证书AIA(Authority Info Access)中下载中间链证书:   URL=<a href="http://secure.globalsign.com/cacert/xxxx.crt" target="_blank" rel="noopener">http://secure.globalsign.com/cacert/xxxx.crt</a></p>
+<p>如果是中间CA签发的服务器证书， 当打开这个证书后， 您会看到类似这样一个证书层级路径：</p>
+<p>然后找到“详细信息”中的“授权信息访问”， 找到其中的url对应的证书，将其下载下来：</p>
+<p>将2中的.crt证书上传到linux系统中，转换成.pem格式：</p>
+<p>openssl x509 -inform der -in a2g2r1.crt -out a2g2r1.pem</p>
+<p>将3中生成的.pem证书追加到目前.pfx对应的.pem证书后， 构成一个完整的证书：</p>
+<p>cat a2g2r1.pem &gt;&gt; yourcert.pem</p>
+<p>按照证书的组成顺序，调整4中的yourcert.pem中的顺序， 正常一个由中间链签发的证书的顺序是这样的，参考<a href="https://www.digicert.com/ssl-support/pem-ssl-creation.htm" target="_blank" rel="noopener">https://www.digicert.com/ssl-support/pem-ssl-creation.htm</a></p>
+<p>-----BEGIN RSA PRIVATE KEY-----</p>
+<p>(Your Private Key: your_domain_name.key)</p>
+<p>-----END RSA PRIVATE KEY-----</p>
+<p>-----BEGIN CERTIFICATE-----</p>
+<p>(Your Primary SSL certificate: your_domain_name.crt)</p>
+<p>-----END CERTIFICATE-----</p>
+<p>(Your Intermediate certificate: DigiCertCA.crt)</p>
+<p>(Your Root certificate: TrustedRoot.crt)</p>
+<p>-----END CERTIFICATE---</p>
+<p>把以上的完整的yourcert.pem 转换成完整的yourcert.pfx:</p>
+<p>openssl pkcs12 -export -name &quot;yourcert-complete&quot; -inkey yourcert.key -in yourcert.pem -out  yourcert.pfx</p>
+<p>验证此时的证书是否已经包含了完整信息：openssl pkcs12 -info -in yourcert.pfx</p>
+<p>如果正常，至此导出yourcert.pfx到本地，然后上传到AppGWv2上使用，可以看到证书过程中还是比较复杂的，所以还是建议联系证书提供商来提供的。</p></article>

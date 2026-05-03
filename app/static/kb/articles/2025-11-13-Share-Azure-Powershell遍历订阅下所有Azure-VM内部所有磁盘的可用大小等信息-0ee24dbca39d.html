@@ -1,0 +1,818 @@
+<article class="kb-article" data-title="【Share】Azure Powershell遍历订阅下所有Azure VM内部所有磁盘的可用大小等信息"><h1>【Share】Azure Powershell遍历订阅下所有Azure VM内部所有磁盘的可用大小等信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-11-13 18:29:31</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Write-Host &quot; 无法确定操作系统类型，跳过。&quot; -ForegroundColor Red</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Write-Host &quot;  无法确定操作系统类型，跳过。&quot; -ForegroundColor Red</li>
+</ul>
+<ul>
+<li># 方法2: 如果方法1失败，尝试在[stdout]块中查找</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  无法解析Linux磁盘信息，显示原始输出进行调试:&quot; -ForegroundColor Red</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Feng Nanrui</li>
+</ul>
+<ul>
+<li>reviewer</li>
+</ul>
+<ul>
+<li>zhangwenxin</li>
+</ul>
+<ul>
+<li>注意事项：</li>
+</ul>
+<ul>
+<li># 连接到 Azure China Cloud</li>
+</ul>
+<ul>
+<li>$SubscriptionId = &quot;19017a67-ea0a-4bb3-ae6f-2b14ce2199c8&quot;</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li># 获取所有虚拟机</li>
+</ul>
+<ul>
+<li>$vmList = Get-AzVM</li>
+</ul>
+<ul>
+<li>$allResults = @()</li>
+</ul>
+<ul>
+<li>foreach ($vm in $vmList) {</li>
+</ul>
+<ul>
+<li>$resourceGroupName = $vm.ResourceGroupName</li>
+</ul>
+<ul>
+<li>$vmName = $vm.Name</li>
+</ul>
+<ul>
+<li>Write-Host &quot;正在处理虚拟机: $vmName (资源组: $resourceGroupName) ...&quot; -ForegroundColor Yellow</li>
+</ul>
+<ul>
+<li>$osType = $vm.StorageProfile.OsDisk.OsType</li>
+</ul>
+<ul>
+<li>$scriptToRun = &quot;&quot;</li>
+</ul>
+<ul>
+<li>$commandId = &quot;&quot;</li>
+</ul>
+<ul>
+<li>if ($osType -eq &quot;Linux&quot;) {</li>
+</ul>
+<ul>
+<li>$scriptToRun = @&#39;</li>
+</ul>
+<ul>
+<li># 获取磁盘信息并格式化为表格</li>
+</ul>
+<ul>
+<li>echo &quot;===DISK_INFO_START===&quot;</li>
+</ul>
+<ul>
+<li>df -h | awk &#39;NR==1{print &quot;Filesystem|Size|Used|Avail|Use%|Mounted&quot;} NR&gt;1{print $1&quot;|&quot;$2&quot;|&quot;$3&quot;|&quot;$4&quot;|&quot;$5&quot;|&quot;$6}&#39;</li>
+</ul>
+<ul>
+<li>echo &quot;===DISK_INFO_END===&quot;</li>
+</ul>
+<ul>
+<li>&#39;@</li>
+</ul>
+<ul>
+<li>$commandId = &quot;RunShellScript&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>elseif ($osType -eq &quot;Windows&quot;) {</li>
+</ul>
+<ul>
+<li># Windows: 输出为结构化数据</li>
+</ul>
+<ul>
+<li>foreach ($disk in $disks) {</li>
+</ul>
+<ul>
+<li>$sizeGB = [math]::Round($disk.Size/1GB, 2)</li>
+</ul>
+<ul>
+<li>$freeGB = [math]::Round($disk.FreeSpace/1GB, 2)</li>
+</ul>
+<ul>
+<li>$usedGB = [math]::Round(($disk.Size - $disk.FreeSpace)/1GB, 2)</li>
+</ul>
+<ul>
+<li>$usedPercent = if($disk.Size -gt 0){[math]::Round(($disk.Size - $disk.FreeSpace)/$disk.Size * 100, 2)}else{0}</li>
+</ul>
+<ul>
+<li>Write-Output &quot;DISK_INFO:$($disk.DeviceID)|$sizeGB|$freeGB|$usedGB|$usedPercent&quot;</li>
+</ul>
+<ul>
+<li>else {</li>
+</ul>
+<ul>
+<li>continue</li>
+</ul>
+<ul>
+<li>try {</li>
+</ul>
+<ul>
+<li>$runCommandResult = Invoke-AzVMRunCommand -ResourceGroupName $resourceGroupName -VMName $vmName -CommandId $commandId -ScriptString $scriptToRun</li>
+</ul>
+<ul>
+<li>$outputMessage = $runCommandResult.Value[0].Message</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  原始输出预览: $($outputMessage.Substring(0, [Math]::Min(300, $outputMessage.Length)))...&quot; -ForegroundColor Gray</li>
+</ul>
+<ul>
+<li># 解析输出</li>
+</ul>
+<ul>
+<li>if ($osType -eq &quot;Windows&quot;) {</li>
+</ul>
+<ul>
+<li># 解析Windows磁盘信息</li>
+</ul>
+<ul>
+<li>$diskLines = $outputMessage -split &quot;`n&quot; | Where-Object { $_ -match &quot;^DISK_INFO:&quot; }</li>
+</ul>
+<ul>
+<li>foreach ($line in $diskLines) {</li>
+</ul>
+<ul>
+<li>$diskData = $line -replace &quot;^DISK_INFO:&quot;, &quot;&quot; -split &quot;\|&quot;</li>
+</ul>
+<ul>
+<li>if ($diskData.Count -eq 5) {</li>
+</ul>
+<ul>
+<li>$resultObject = [PSCustomObject]@{</li>
+</ul>
+<ul>
+<li>$allResults += $resultObject</li>
+</ul>
+<ul>
+<li>elseif ($osType -eq &quot;Linux&quot;) {</li>
+</ul>
+<ul>
+<li># 解析Linux文件系统信息 - 专门处理包含[stdout]的情况</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  解析Linux输出...&quot; -ForegroundColor Gray</li>
+</ul>
+<ul>
+<li># 方法1: 使用更明确的分隔符</li>
+</ul>
+<ul>
+<li>if ($outputMessage -match &quot;===DISK_INFO_START===(.*?)===DISK_INFO_END===&quot;) {</li>
+</ul>
+<ul>
+<li>$diskSection = $matches[1].Trim()</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  使用方法1找到磁盘信息&quot; -ForegroundColor Green</li>
+</ul>
+<ul>
+<li>elseif ($outputMessage -match &quot;\[stdout\](.*?)\[stderr\]&quot;) {</li>
+</ul>
+<ul>
+<li>$stdoutSection = $matches[1].Trim()</li>
+</ul>
+<ul>
+<li>if ($stdoutSection -match &quot;===DISK_INFO_START===(.*?)===DISK_INFO_END===&quot;) {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  使用方法2找到磁盘信息&quot; -ForegroundColor Green</li>
+</ul>
+<ul>
+<li>} else {</li>
+</ul>
+<ul>
+<li># 方法3: 直接解析[stdout]中的df输出</li>
+</ul>
+<ul>
+<li>$diskSection = $stdoutSection</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  使用方法3直接解析stdout&quot; -ForegroundColor Yellow</li>
+</ul>
+<ul>
+<li># 方法4: 最后的备用方法 - 直接在整个输出中查找表格格式</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  使用方法4备用解析&quot; -ForegroundColor Yellow</li>
+</ul>
+<ul>
+<li>$lines = $outputMessage -split &quot;`n&quot; | Where-Object { $_ -match &quot;^\S+\|\S+\|\S+\|\S+\|\S+\%\|\S+&quot; -and $_ -notmatch &quot;Filesystem&quot; }</li>
+</ul>
+<ul>
+<li>if ($lines) {</li>
+</ul>
+<ul>
+<li>$diskSection = $lines -join &quot;`n&quot;</li>
+</ul>
+<ul>
+<li>$diskSection = $null</li>
+</ul>
+<ul>
+<li>if ($diskSection) {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  磁盘信息段落: $diskSection&quot; -ForegroundColor Gray</li>
+</ul>
+<ul>
+<li>$lines = $diskSection -split &quot;`n&quot; | Where-Object { $_ -match &quot;\|&quot; -and $_ -notmatch &quot;Filesystem&quot; }</li>
+</ul>
+<ul>
+<li>foreach ($line in $lines) {</li>
+</ul>
+<ul>
+<li>$diskData = $line.Trim() -split &quot;\|&quot;</li>
+</ul>
+<ul>
+<li>if ($diskData.Count -ge 6) {</li>
+</ul>
+<ul>
+<li>$usePercent = $diskData[4] -replace &#39;%&#39;,&#39;&#39; -as [double]</li>
+</ul>
+<ul>
+<li>$status = if ($usePercent -gt 90) { &quot;警告&quot; } elseif ($usePercent -gt 80) { &quot;注意&quot; } else { &quot;正常&quot; }</li>
+</ul>
+<ul>
+<li>Write-Host &quot;    找到Linux磁盘: $($diskData[0]) 挂载在 $($diskData[5]) 使用率: $($diskData[4])&quot; -ForegroundColor Green</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  完整输出: $outputMessage&quot; -ForegroundColor Red</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  √ 成功获取 $vmName 的磁盘信息&quot; -ForegroundColor Green</li>
+</ul>
+<ul>
+<li>catch {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  × 获取 $vmName 的磁盘信息时出错: $_&quot; -ForegroundColor Red</li>
+</ul>
+<ul>
+<li>Write-Host &quot;`n&quot; + &quot;=&quot;*80 -ForegroundColor Magenta</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Azure 虚拟机磁盘空间报告&quot; -ForegroundColor Magenta</li>
+</ul>
+<ul>
+<li>Write-Host &quot;=&quot;*80 -ForegroundColor Magenta</li>
+</ul>
+<ul>
+<li>Write-Host &quot;总共收集到 $($allResults.Count) 条磁盘记录&quot; -ForegroundColor Cyan</li>
+</ul>
+<ul>
+<li>$windowsResults = $allResults | Where-Object { $_.OSType -eq &quot;Windows&quot; }</li>
+</ul>
+<ul>
+<li>$linuxResults = $allResults | Where-Object { $_.OSType -eq &quot;Linux&quot; }</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Windows 记录: $($windowsResults.Count) 条&quot; -ForegroundColor Yellow</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Linux 记录: $($linuxResults.Count) 条&quot; -ForegroundColor Yellow</li>
+</ul>
+<ul>
+<li>if ($windowsResults) {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;`nWindows 虚拟机磁盘信息:&quot; -ForegroundColor Yellow</li>
+</ul>
+<ul>
+<li>$windowsResults | Format-Table -Property ResourceGroup, VMName, Drive, TotalSizeGB, FreeSpaceGB, UsedSpaceGB, UsedPercent, Status -AutoSize</li>
+</ul>
+<ul>
+<li>if ($linuxResults) {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;`nLinux 虚拟机磁盘信息:&quot; -ForegroundColor Yellow</li>
+</ul>
+<ul>
+<li>$linuxResults | Format-Table -Property ResourceGroup, VMName, Filesystem, MountedOn, Size, Used, Available, UsePercent, Status -AutoSize</li>
+</ul>
+<ul>
+<li>Write-Host &quot;`n未找到Linux虚拟机的磁盘信息&quot; -ForegroundColor Red</li>
+</ul>
+<ul>
+<li># 如果Linux虚拟机存在但没有记录，显示调试信息</li>
+</ul>
+<ul>
+<li>$linuxVMs = $vmList | Where-Object { $_.StorageProfile.OsDisk.OsType -eq &quot;Linux&quot; }</li>
+</ul>
+<ul>
+<li>if ($linuxVMs) {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;存在的Linux虚拟机:&quot; -ForegroundColor Yellow</li>
+</ul>
+<ul>
+<li>$linuxVMs | ForEach-Object { Write-Host &quot;  - $($_.Name)&quot; -ForegroundColor White }</li>
+</ul>
+<ul>
+<li>$warnings = $allResults | Where-Object { $_.Status -eq &quot;警告&quot; }</li>
+</ul>
+<ul>
+<li>if ($warnings) {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;`n⚠️  磁盘空间警告 (使用率 &gt; 90%):&quot; -ForegroundColor Red</li>
+</ul>
+<ul>
+<li>$warnings | Format-Table -Property ResourceGroup, VMName, @{Name=&quot;位置&quot;;Expression={if($_.OSType -eq &quot;Windows&quot;){$_.Drive}else{$_.MountedOn}}}, UsePercent, Status -AutoSize</li>
+</ul>
+<ul>
+<li>$timestamp = Get-Date -Format &quot;yyyyMMdd_HHmmss&quot;</li>
+</ul>
+<ul>
+<li>$reportDir = &quot;D:\VMDiskReport&quot;</li>
+</ul>
+<ul>
+<li>if (!(Test-Path $reportDir)) {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;创建目录: $reportDir&quot; -ForegroundColor Cyan</li>
+</ul>
+<ul>
+<li>$csvPath = &quot;$reportDir\AzureVMDiskReport_$timestamp.csv&quot;</li>
+</ul>
+<ul>
+<li>$jsonPath = &quot;$reportDir\AzureVMDiskReport_$timestamp.json&quot;</li>
+</ul>
+<ul>
+<li>$htmlPath = &quot;$reportDir\AzureVMDiskReport_$timestamp.html&quot;</li>
+</ul>
+<ul>
+<li># CSV导出</li>
+</ul>
+<ul>
+<li>$allResults | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8</li>
+</ul>
+<ul>
+<li>Write-Host &quot;✓ CSV文件已保存: $csvPath&quot; -ForegroundColor Green</li>
+</ul>
+<ul>
+<li># JSON导出</li>
+</ul>
+<ul>
+<li>$allResults | ConvertTo-Json -Depth 3 | Out-File -FilePath $jsonPath -Encoding UTF8</li>
+</ul>
+<ul>
+<li>Write-Host &quot;✓ JSON文件已保存: $jsonPath&quot; -ForegroundColor Green</li>
+</ul>
+<ul>
+<li># HTML报告</li>
+</ul>
+<ul>
+<li>$htmlHeader = @&quot;</li>
+</ul>
+<ul>
+<li>&lt;!DOCTYPE html&gt;</li>
+</ul>
+<ul>
+<li>&lt;html&gt;</li>
+</ul>
+<ul>
+<li>&lt;head&gt;</li>
+</ul>
+<ul>
+<li>&lt;title&gt;Azure VM 磁盘空间报告&lt;/title&gt;</li>
+</ul>
+<ul>
+<li>&lt;style&gt;</li>
+</ul>
+<ul>
+<li>body { font-family: Arial, sans-serif; margin: 20px; }</li>
+</ul>
+<ul>
+<li>table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }</li>
+</ul>
+<ul>
+<li>th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }</li>
+</ul>
+<ul>
+<li>th { background-color: #f2f2f2; }</li>
+</ul>
+<ul>
+<li>.warning { background-color: #ffcccc; }</li>
+</ul>
+<ul>
+<li>.notice { background-color: #ffffcc; }</li>
+</ul>
+<ul>
+<li>.normal { background-color: #ccffcc; }</li>
+</ul>
+<ul>
+<li>h2 { color: #333; }</li>
+</ul>
+<ul>
+<li>&lt;/style&gt;</li>
+</ul>
+<ul>
+<li>&lt;/head&gt;</li>
+</ul>
+<ul>
+<li>&lt;body&gt;</li>
+</ul>
+<ul>
+<li>&lt;h1&gt;Azure VM 磁盘空间报告&lt;/h1&gt;</li>
+</ul>
+<ul>
+<li>&lt;p&gt;生成时间: $(Get-Date)&lt;/p&gt;</li>
+</ul>
+<ul>
+<li>&quot;@</li>
+</ul>
+<ul>
+<li>$htmlContent = &quot;&quot;</li>
+</ul>
+<ul>
+<li>foreach ($vmGroup in $allResults | Group-Object VMName) {</li>
+</ul>
+<ul>
+<li>$htmlContent += &quot;&lt;h2&gt;虚拟机: $($vmGroup.Name) (资源组: $($vmGroup.Group[0].ResourceGroup))&lt;/h2&gt;&quot;</li>
+</ul>
+<ul>
+<li>$htmlContent += &quot;&lt;table&gt;&lt;tr&gt;&quot;</li>
+</ul>
+<ul>
+<li>if ($vmGroup.Group[0].OSType -eq &quot;Windows&quot;) {</li>
+</ul>
+<ul>
+<li>$htmlContent += &quot;&lt;th&gt;驱动器&lt;/th&gt;&lt;th&gt;总大小(GB)&lt;/th&gt;&lt;th&gt;可用空间(GB)&lt;/th&gt;&lt;th&gt;已用空间(GB)&lt;/th&gt;&lt;th&gt;使用率&lt;/th&gt;&lt;th&gt;状态&lt;/th&gt;&lt;/tr&gt;&quot;</li>
+</ul>
+<ul>
+<li>foreach ($disk in $vmGroup.Group) {</li>
+</ul>
+<ul>
+<li>$statusClass = $disk.Status.ToLower()</li>
+</ul>
+<ul>
+<li>$htmlContent += &quot;&lt;tr class=&#39;$statusClass&#39;&gt;&lt;td&gt;$($disk.Drive)&lt;/td&gt;&lt;td&gt;$($disk.TotalSizeGB)&lt;/td&gt;&lt;td&gt;$($disk.FreeSpaceGB)&lt;/td&gt;&lt;td&gt;$($disk.UsedSpaceGB)&lt;/td&gt;&lt;td&gt;$($disk.UsedPercent)&lt;/td&gt;&lt;td&gt;$($disk.Status)&lt;/td&gt;&lt;/tr&gt;&quot;</li>
+</ul>
+<ul>
+<li>$htmlContent += &quot;&lt;th&gt;文件系统&lt;/th&gt;&lt;th&gt;挂载点&lt;/th&gt;&lt;th&gt;大小&lt;/th&gt;&lt;th&gt;已用&lt;/th&gt;&lt;th&gt;可用&lt;/th&gt;&lt;th&gt;使用率&lt;/th&gt;&lt;th&gt;状态&lt;/th&gt;&lt;/tr&gt;&quot;</li>
+</ul>
+<ul>
+<li>$htmlContent += &quot;&lt;tr class=&#39;$statusClass&#39;&gt;&lt;td&gt;$($disk.Filesystem)&lt;/td&gt;&lt;td&gt;$($disk.MountedOn)&lt;/td&gt;&lt;td&gt;$($disk.Size)&lt;/td&gt;&lt;td&gt;$($disk.Used)&lt;/td&gt;&lt;td&gt;$($disk.Available)&lt;/td&gt;&lt;td&gt;$($disk.UsePercent)&lt;/td&gt;&lt;td&gt;$($disk.Status)&lt;/td&gt;&lt;/tr&gt;&quot;</li>
+</ul>
+<ul>
+<li>$htmlContent += &quot;&lt;/table&gt;&quot;</li>
+</ul>
+<ul>
+<li>$htmlFooter = @&quot;</li>
+</ul>
+<ul>
+<li>&lt;/body&gt;</li>
+</ul>
+<ul>
+<li>&lt;/html&gt;</li>
+</ul>
+<ul>
+<li>$htmlHeader + $htmlContent + $htmlFooter | Out-File -FilePath $htmlPath -Encoding UTF8</li>
+</ul>
+<ul>
+<li>Write-Host &quot;✓ HTML文件已保存: $htmlPath&quot; -ForegroundColor Green</li>
+</ul>
+<ul>
+<li>Write-Host &quot;导出文件时出错: $_&quot; -ForegroundColor Red</li>
+</ul>
+<ul>
+<li>Write-Host &quot;`n报告已导出到以下文件:&quot; -ForegroundColor Cyan</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  CSV格式: $csvPath&quot; -ForegroundColor White</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  JSON格式: $jsonPath&quot; -ForegroundColor White</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  HTML格式: $htmlPath&quot; -ForegroundColor White</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  2. 使用 Excel 打开 CSV 文件并进行筛选排序&quot; -ForegroundColor White</li>
+</ul>
+<ul>
+<li>if ($allResults.Count -gt 0) {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;`n完整结果表格:&quot; -ForegroundColor Magenta</li>
+</ul>
+<ul>
+<li>$allResults | Format-Table -AutoSize</li>
+</ul>
+<ul>
+<li>报告示例：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>$disks = Get-CimInstance Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  1. 直接在浏览器中打开 HTML 文件查看美观的报告&quot; -ForegroundColor White</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>本脚本借用了azure VM运行命令功能，可修改实现各种其他功能。</li>
+</ul>
+<ul>
+<li>所有被统计VM需开机&amp;所有VM的运行命令功能需可用。</li>
+</ul>
+<ul>
+<li>Set-AzContext -Subscription $SubscriptionId</li>
+</ul>
+<ul>
+<li># 简化Linux命令，使用更明确的分隔符</li>
+</ul>
+<ul>
+<li>$commandId = &quot;RunPowerShellScript&quot;</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  正在执行磁盘检查命令...&quot; -ForegroundColor Cyan</li>
+</ul>
+<ul>
+<li>New-Item -ItemType Directory -Path $reportDir -Force</li>
+</ul>
+<ul>
+<li>Write-Host &quot;  3. 使用 PowerShell: Import-Csv &#39;$csvPath&#39; | Format-Table&quot; -ForegroundColor White</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>ResourceGroup = $resourceGroupName</li>
+</ul>
+<ul>
+<li>VMName = $vmName</li>
+</ul>
+<ul>
+<li>OSType = $osType</li>
+</ul>
+<ul>
+<li>Drive = $diskData[0]</li>
+</ul>
+<ul>
+<li>TotalSizeGB = $diskData[1]</li>
+</ul>
+<ul>
+<li>FreeSpaceGB = $diskData[2]</li>
+</ul>
+<ul>
+<li>UsedSpaceGB = $diskData[3]</li>
+</ul>
+<ul>
+<li>UsedPercent = &quot;$($diskData[4])%&quot;</li>
+</ul>
+<ul>
+<li>Status = if ([double]$diskData[4] -gt 90) { &quot;警告&quot; } elseif ([double]$diskData[4] -gt 80) { &quot;注意&quot; } else { &quot;正常&quot; }</li>
+</ul>
+<ul>
+<li>Timestamp = Get-Date -Format &quot;yyyy-MM-dd HH:mm:ss&quot;</li>
+</ul>
+<ul>
+<li>Filesystem = $diskData[0].Trim()</li>
+</ul>
+<ul>
+<li>Size = $diskData[1].Trim()</li>
+</ul>
+<ul>
+<li>Used = $diskData[2].Trim()</li>
+</ul>
+<ul>
+<li>Available = $diskData[3].Trim()</li>
+</ul>
+<ul>
+<li>UsePercent = $diskData[4].Trim()</li>
+</ul>
+<ul>
+<li>MountedOn = $diskData[5].Trim()</li>
+</ul>
+<ul>
+<li>Status = $status</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Write-Host &quot;`n建议使用以下方式查看报告:&quot; -ForegroundColor Green</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Feng Nanrui</p>
+<p>reviewer</p>
+<p>zhangwenxin</p>
+<p>本脚本借用了azure VM运行命令功能，可修改实现各种其他功能。</p>
+<p>注意事项：</p>
+<p>所有被统计VM需开机&amp;所有VM的运行命令功能需可用。</p>
+<h1>连接到 Azure China Cloud</h1>
+<p>$SubscriptionId = &quot;19017a67-ea0a-4bb3-ae6f-2b14ce2199c8&quot;</p>
+<p>Connect-AzAccount -Environment AzureChinaCloud</p>
+<p>Set-AzContext -Subscription $SubscriptionId</p>
+<h1>获取所有虚拟机</h1>
+<p>$vmList = Get-AzVM</p>
+<p>$allResults = @()</p>
+<p>foreach ($vm in $vmList) {</p>
+<p>$resourceGroupName = $vm.ResourceGroupName</p>
+<p>$vmName = $vm.Name</p>
+<p>Write-Host &quot;正在处理虚拟机: $vmName (资源组: $resourceGroupName) ...&quot; -ForegroundColor Yellow</p>
+<p>$osType = $vm.StorageProfile.OsDisk.OsType</p>
+<p>$scriptToRun = &quot;&quot;</p>
+<p>$commandId = &quot;&quot;</p>
+<p>if ($osType -eq &quot;Linux&quot;) {</p>
+<h1>简化Linux命令，使用更明确的分隔符</h1>
+<p>$scriptToRun = @&#39;</p>
+<h1>获取磁盘信息并格式化为表格</h1>
+<p>echo &quot;===DISK_INFO_START===&quot;</p>
+<p>df -h | awk &#39;NR==1{print &quot;Filesystem|Size|Used|Avail|Use%|Mounted&quot;} NR&gt;1{print $1&quot;|&quot;$2&quot;|&quot;$3&quot;|&quot;$4&quot;|&quot;$5&quot;|&quot;$6}&#39;</p>
+<p>echo &quot;===DISK_INFO_END===&quot;</p>
+<p>&#39;@</p>
+<p>$commandId = &quot;RunShellScript&quot;</p>
+<p>}</p>
+<p>elseif ($osType -eq &quot;Windows&quot;) {</p>
+<h1>Windows: 输出为结构化数据</h1>
+<p>$disks = Get-CimInstance Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }</p>
+<p>foreach ($disk in $disks) {</p>
+<p>$sizeGB = [math]::Round($disk.Size/1GB, 2)</p>
+<p>$freeGB = [math]::Round($disk.FreeSpace/1GB, 2)</p>
+<p>$usedGB = [math]::Round(($disk.Size - $disk.FreeSpace)/1GB, 2)</p>
+<p>$usedPercent = if($disk.Size -gt 0){[math]::Round(($disk.Size - $disk.FreeSpace)/$disk.Size * 100, 2)}else{0}</p>
+<p>Write-Output &quot;DISK_INFO:$($disk.DeviceID)|$sizeGB|$freeGB|$usedGB|$usedPercent&quot;</p>
+<p>$commandId = &quot;RunPowerShellScript&quot;</p>
+<p>else {</p>
+<p>Write-Host &quot;  无法确定操作系统类型，跳过。&quot; -ForegroundColor Red</p>
+<p>continue</p>
+<p>try {</p>
+<p>Write-Host &quot;  正在执行磁盘检查命令...&quot; -ForegroundColor Cyan</p>
+<p>$runCommandResult = Invoke-AzVMRunCommand -ResourceGroupName $resourceGroupName -VMName $vmName -CommandId $commandId -ScriptString $scriptToRun</p>
+<p>$outputMessage = $runCommandResult.Value[0].Message</p>
+<p>Write-Host &quot;  原始输出预览: $($outputMessage.Substring(0, [Math]::Min(300, $outputMessage.Length)))...&quot; -ForegroundColor Gray</p>
+<h1>解析输出</h1>
+<p>if ($osType -eq &quot;Windows&quot;) {</p>
+<h1>解析Windows磁盘信息</h1>
+<p>$diskLines = $outputMessage -split &quot;`n&quot; | Where-Object { $_ -match &quot;^DISK_INFO:&quot; }</p>
+<p>foreach ($line in $diskLines) {</p>
+<p>$diskData = $line -replace &quot;^DISK_INFO:&quot;, &quot;&quot; -split &quot;\|&quot;</p>
+<p>if ($diskData.Count -eq 5) {</p>
+<p>$resultObject = [PSCustomObject]@{</p>
+<p>ResourceGroup = $resourceGroupName</p>
+<p>VMName = $vmName</p>
+<p>OSType = $osType</p>
+<p>Drive = $diskData[0]</p>
+<p>TotalSizeGB = $diskData[1]</p>
+<p>FreeSpaceGB = $diskData[2]</p>
+<p>UsedSpaceGB = $diskData[3]</p>
+<p>UsedPercent = &quot;$($diskData[4])%&quot;</p>
+<p>Status = if ([double]$diskData[4] -gt 90) { &quot;警告&quot; } elseif ([double]$diskData[4] -gt 80) { &quot;注意&quot; } else { &quot;正常&quot; }</p>
+<p>Timestamp = Get-Date -Format &quot;yyyy-MM-dd HH:mm:ss&quot;</p>
+<p>$allResults += $resultObject</p>
+<p>elseif ($osType -eq &quot;Linux&quot;) {</p>
+<h1>解析Linux文件系统信息 - 专门处理包含[stdout]的情况</h1>
+<p>Write-Host &quot;  解析Linux输出...&quot; -ForegroundColor Gray</p>
+<h1>方法1: 使用更明确的分隔符</h1>
+<p>if ($outputMessage -match &quot;===DISK_INFO_START===(.*?)===DISK_INFO_END===&quot;) {</p>
+<p>$diskSection = $matches[1].Trim()</p>
+<p>Write-Host &quot;  使用方法1找到磁盘信息&quot; -ForegroundColor Green</p>
+<h1>方法2: 如果方法1失败，尝试在[stdout]块中查找</h1>
+<p>elseif ($outputMessage -match &quot;\[stdout\](.*?)\[stderr\]&quot;) {</p>
+<p>$stdoutSection = $matches[1].Trim()</p>
+<p>if ($stdoutSection -match &quot;===DISK_INFO_START===(.*?)===DISK_INFO_END===&quot;) {</p>
+<p>Write-Host &quot;  使用方法2找到磁盘信息&quot; -ForegroundColor Green</p>
+<p>} else {</p>
+<h1>方法3: 直接解析[stdout]中的df输出</h1>
+<p>$diskSection = $stdoutSection</p>
+<p>Write-Host &quot;  使用方法3直接解析stdout&quot; -ForegroundColor Yellow</p>
+<h1>方法4: 最后的备用方法 - 直接在整个输出中查找表格格式</h1>
+<p>Write-Host &quot;  使用方法4备用解析&quot; -ForegroundColor Yellow</p>
+<p>$lines = $outputMessage -split &quot;`n&quot; | Where-Object { $_ -match &quot;^\S+\|\S+\|\S+\|\S+\|\S+\%\|\S+&quot; -and $_ -notmatch &quot;Filesystem&quot; }</p>
+<p>if ($lines) {</p>
+<p>$diskSection = $lines -join &quot;`n&quot;</p>
+<p>$diskSection = $null</p>
+<p>if ($diskSection) {</p>
+<p>Write-Host &quot;  磁盘信息段落: $diskSection&quot; -ForegroundColor Gray</p>
+<p>$lines = $diskSection -split &quot;`n&quot; | Where-Object { $_ -match &quot;\|&quot; -and $_ -notmatch &quot;Filesystem&quot; }</p>
+<p>foreach ($line in $lines) {</p>
+<p>$diskData = $line.Trim() -split &quot;\|&quot;</p>
+<p>if ($diskData.Count -ge 6) {</p>
+<p>$usePercent = $diskData[4] -replace &#39;%&#39;,&#39;&#39; -as [double]</p>
+<p>$status = if ($usePercent -gt 90) { &quot;警告&quot; } elseif ($usePercent -gt 80) { &quot;注意&quot; } else { &quot;正常&quot; }</p>
+<p>Filesystem = $diskData[0].Trim()</p>
+<p>Size = $diskData[1].Trim()</p>
+<p>Used = $diskData[2].Trim()</p>
+<p>Available = $diskData[3].Trim()</p>
+<p>UsePercent = $diskData[4].Trim()</p>
+<p>MountedOn = $diskData[5].Trim()</p>
+<p>Status = $status</p>
+<p>Write-Host &quot;    找到Linux磁盘: $($diskData[0]) 挂载在 $($diskData[5]) 使用率: $($diskData[4])&quot; -ForegroundColor Green</p>
+<p>Write-Host &quot;  无法解析Linux磁盘信息，显示原始输出进行调试:&quot; -ForegroundColor Red</p>
+<p>Write-Host &quot;  完整输出: $outputMessage&quot; -ForegroundColor Red</p>
+<p>Write-Host &quot;  √ 成功获取 $vmName 的磁盘信息&quot; -ForegroundColor Green</p>
+<p>catch {</p>
+<p>Write-Host &quot;  × 获取 $vmName 的磁盘信息时出错: $_&quot; -ForegroundColor Red</p>
+<p>Write-Host &quot;`n&quot; + &quot;=&quot;*80 -ForegroundColor Magenta</p>
+<p>Write-Host &quot;Azure 虚拟机磁盘空间报告&quot; -ForegroundColor Magenta</p>
+<p>Write-Host &quot;=&quot;*80 -ForegroundColor Magenta</p>
+<p>Write-Host &quot;总共收集到 $($allResults.Count) 条磁盘记录&quot; -ForegroundColor Cyan</p>
+<p>$windowsResults = $allResults | Where-Object { $_.OSType -eq &quot;Windows&quot; }</p>
+<p>$linuxResults = $allResults | Where-Object { $_.OSType -eq &quot;Linux&quot; }</p>
+<p>Write-Host &quot;Windows 记录: $($windowsResults.Count) 条&quot; -ForegroundColor Yellow</p>
+<p>Write-Host &quot;Linux 记录: $($linuxResults.Count) 条&quot; -ForegroundColor Yellow</p>
+<p>if ($windowsResults) {</p>
+<p>Write-Host &quot;`nWindows 虚拟机磁盘信息:&quot; -ForegroundColor Yellow</p>
+<p>$windowsResults | Format-Table -Property ResourceGroup, VMName, Drive, TotalSizeGB, FreeSpaceGB, UsedSpaceGB, UsedPercent, Status -AutoSize</p>
+<p>if ($linuxResults) {</p>
+<p>Write-Host &quot;`nLinux 虚拟机磁盘信息:&quot; -ForegroundColor Yellow</p>
+<p>$linuxResults | Format-Table -Property ResourceGroup, VMName, Filesystem, MountedOn, Size, Used, Available, UsePercent, Status -AutoSize</p>
+<p>Write-Host &quot;`n未找到Linux虚拟机的磁盘信息&quot; -ForegroundColor Red</p>
+<h1>如果Linux虚拟机存在但没有记录，显示调试信息</h1>
+<p>$linuxVMs = $vmList | Where-Object { $_.StorageProfile.OsDisk.OsType -eq &quot;Linux&quot; }</p>
+<p>if ($linuxVMs) {</p>
+<p>Write-Host &quot;存在的Linux虚拟机:&quot; -ForegroundColor Yellow</p>
+<p>$linuxVMs | ForEach-Object { Write-Host &quot;  - $($_.Name)&quot; -ForegroundColor White }</p>
+<p>$warnings = $allResults | Where-Object { $_.Status -eq &quot;警告&quot; }</p>
+<p>if ($warnings) {</p>
+<p>Write-Host &quot;`n⚠️  磁盘空间警告 (使用率 &gt; 90%):&quot; -ForegroundColor Red</p>
+<p>$warnings | Format-Table -Property ResourceGroup, VMName, @{Name=&quot;位置&quot;;Expression={if($_.OSType -eq &quot;Windows&quot;){$_.Drive}else{$_.MountedOn}}}, UsePercent, Status -AutoSize</p>
+<p>$timestamp = Get-Date -Format &quot;yyyyMMdd_HHmmss&quot;</p>
+<p>$reportDir = &quot;D:\VMDiskReport&quot;</p>
+<p>if (!(Test-Path $reportDir)) {</p>
+<p>Write-Host &quot;创建目录: $reportDir&quot; -ForegroundColor Cyan</p>
+<p>New-Item -ItemType Directory -Path $reportDir -Force</p>
+<p>$csvPath = &quot;$reportDir\AzureVMDiskReport_$timestamp.csv&quot;</p>
+<p>$jsonPath = &quot;$reportDir\AzureVMDiskReport_$timestamp.json&quot;</p>
+<p>$htmlPath = &quot;$reportDir\AzureVMDiskReport_$timestamp.html&quot;</p>
+<h1>CSV导出</h1>
+<p>$allResults | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8</p>
+<p>Write-Host &quot;✓ CSV文件已保存: $csvPath&quot; -ForegroundColor Green</p>
+<h1>JSON导出</h1>
+<p>$allResults | ConvertTo-Json -Depth 3 | Out-File -FilePath $jsonPath -Encoding UTF8</p>
+<p>Write-Host &quot;✓ JSON文件已保存: $jsonPath&quot; -ForegroundColor Green</p>
+<h1>HTML报告</h1>
+<p>$htmlHeader = @&quot;</p>
+<p>&lt;!DOCTYPE html&gt;</p>
+<p>&lt;html&gt;</p>
+<p>&lt;head&gt;</p>
+<p>&lt;title&gt;Azure VM 磁盘空间报告&lt;/title&gt;</p>
+<p>&lt;style&gt;</p>
+<p>body { font-family: Arial, sans-serif; margin: 20px; }</p>
+<p>table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }</p>
+<p>th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }</p>
+<p>th { background-color: #f2f2f2; }</p>
+<p>.warning { background-color: #ffcccc; }</p>
+<p>.notice { background-color: #ffffcc; }</p>
+<p>.normal { background-color: #ccffcc; }</p>
+<p>h2 { color: #333; }</p>
+<p>&lt;/style&gt;</p>
+<p>&lt;/head&gt;</p>
+<p>&lt;body&gt;</p>
+<p>&lt;h1&gt;Azure VM 磁盘空间报告&lt;/h1&gt;</p>
+<p>&lt;p&gt;生成时间: $(Get-Date)&lt;/p&gt;</p>
+<p>&quot;@</p>
+<p>$htmlContent = &quot;&quot;</p>
+<p>foreach ($vmGroup in $allResults | Group-Object VMName) {</p>
+<p>$htmlContent += &quot;&lt;h2&gt;虚拟机: $($vmGroup.Name) (资源组: $($vmGroup.Group[0].ResourceGroup))&lt;/h2&gt;&quot;</p>
+<p>$htmlContent += &quot;&lt;table&gt;&lt;tr&gt;&quot;</p>
+<p>if ($vmGroup.Group[0].OSType -eq &quot;Windows&quot;) {</p>
+<p>$htmlContent += &quot;&lt;th&gt;驱动器&lt;/th&gt;&lt;th&gt;总大小(GB)&lt;/th&gt;&lt;th&gt;可用空间(GB)&lt;/th&gt;&lt;th&gt;已用空间(GB)&lt;/th&gt;&lt;th&gt;使用率&lt;/th&gt;&lt;th&gt;状态&lt;/th&gt;&lt;/tr&gt;&quot;</p>
+<p>foreach ($disk in $vmGroup.Group) {</p>
+<p>$statusClass = $disk.Status.ToLower()</p>
+<p>$htmlContent += &quot;&lt;tr class=&#39;$statusClass&#39;&gt;&lt;td&gt;$($disk.Drive)&lt;/td&gt;&lt;td&gt;$($disk.TotalSizeGB)&lt;/td&gt;&lt;td&gt;$($disk.FreeSpaceGB)&lt;/td&gt;&lt;td&gt;$($disk.UsedSpaceGB)&lt;/td&gt;&lt;td&gt;$($disk.UsedPercent)&lt;/td&gt;&lt;td&gt;$($disk.Status)&lt;/td&gt;&lt;/tr&gt;&quot;</p>
+<p>$htmlContent += &quot;&lt;th&gt;文件系统&lt;/th&gt;&lt;th&gt;挂载点&lt;/th&gt;&lt;th&gt;大小&lt;/th&gt;&lt;th&gt;已用&lt;/th&gt;&lt;th&gt;可用&lt;/th&gt;&lt;th&gt;使用率&lt;/th&gt;&lt;th&gt;状态&lt;/th&gt;&lt;/tr&gt;&quot;</p>
+<p>$htmlContent += &quot;&lt;tr class=&#39;$statusClass&#39;&gt;&lt;td&gt;$($disk.Filesystem)&lt;/td&gt;&lt;td&gt;$($disk.MountedOn)&lt;/td&gt;&lt;td&gt;$($disk.Size)&lt;/td&gt;&lt;td&gt;$($disk.Used)&lt;/td&gt;&lt;td&gt;$($disk.Available)&lt;/td&gt;&lt;td&gt;$($disk.UsePercent)&lt;/td&gt;&lt;td&gt;$($disk.Status)&lt;/td&gt;&lt;/tr&gt;&quot;</p>
+<p>$htmlContent += &quot;&lt;/table&gt;&quot;</p>
+<p>$htmlFooter = @&quot;</p>
+<p>&lt;/body&gt;</p>
+<p>&lt;/html&gt;</p>
+<p>$htmlHeader + $htmlContent + $htmlFooter | Out-File -FilePath $htmlPath -Encoding UTF8</p>
+<p>Write-Host &quot;✓ HTML文件已保存: $htmlPath&quot; -ForegroundColor Green</p>
+<p>Write-Host &quot;导出文件时出错: $_&quot; -ForegroundColor Red</p>
+<p>Write-Host &quot;`n报告已导出到以下文件:&quot; -ForegroundColor Cyan</p>
+<p>Write-Host &quot;  CSV格式: $csvPath&quot; -ForegroundColor White</p>
+<p>Write-Host &quot;  JSON格式: $jsonPath&quot; -ForegroundColor White</p>
+<p>Write-Host &quot;  HTML格式: $htmlPath&quot; -ForegroundColor White</p>
+<p>Write-Host &quot;`n建议使用以下方式查看报告:&quot; -ForegroundColor Green</p>
+<p>Write-Host &quot;  1. 直接在浏览器中打开 HTML 文件查看美观的报告&quot; -ForegroundColor White</p>
+<p>Write-Host &quot;  2. 使用 Excel 打开 CSV 文件并进行筛选排序&quot; -ForegroundColor White</p>
+<p>Write-Host &quot;  3. 使用 PowerShell: Import-Csv &#39;$csvPath&#39; | Format-Table&quot; -ForegroundColor White</p>
+<p>if ($allResults.Count -gt 0) {</p>
+<p>Write-Host &quot;`n完整结果表格:&quot; -ForegroundColor Magenta</p>
+<p>$allResults | Format-Table -AutoSize</p>
+<p>报告示例：</p></article>

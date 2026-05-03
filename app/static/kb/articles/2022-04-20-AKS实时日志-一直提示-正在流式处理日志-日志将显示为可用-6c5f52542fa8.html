@@ -1,0 +1,66 @@
+<article class="kb-article" data-title="AKS实时日志，一直提示“正在流式处理日志，日志将显示为可用”"><h1>AKS实时日志，一直提示“正在流式处理日志，日志将显示为可用”</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-04-20 20:48:15</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Zhang Lihong</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<ul>
+<li>在AKS中创建一个nginx pod</li>
+</ul>
+<ul>
+<li>4． 在nginx pod的终端中输入 curl -s localhost</li>
+</ul>
+<ul>
+<li>可以看到实时日志中是有日志输出的。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>实时日志中只显示当前产生的即时日志，历史日志不会显示。也就是说，如果在点击实时日志后，kubectl logs中没有日志输出的话，页面不会有显示。</li>
+</ul>
+<ul>
+<li>以下测试验证步骤供参考：</li>
+</ul>
+<ul>
+<li>在Azure Portal中点开nignx pod的实时日志，页面显示”正在处理流式日志，日志将显示为可用”</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用以下命令连接到nginx pod</li>
+</ul>
+<ul>
+<li>kubectl exec -it nginx /bin/sh</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：<a href="https://docs.microsoft.com/zh-cn/azure/azure-monitor/containers/container-insights-livedata-overview" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/azure-monitor/containers/container-insights-livedata-overview</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang Lihong</p>
+<p>实时日志中只显示当前产生的即时日志，历史日志不会显示。也就是说，如果在点击实时日志后，kubectl logs中没有日志输出的话，页面不会有显示。</p>
+<p>参考文档：<a href="https://docs.microsoft.com/zh-cn/azure/azure-monitor/containers/container-insights-livedata-overview" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/azure-monitor/containers/container-insights-livedata-overview</a></p>
+<p>以下测试验证步骤供参考：</p>
+<p>在AKS中创建一个nginx pod</p>
+<p>使用以下命令连接到nginx pod</p>
+<p>kubectl exec -it nginx /bin/sh</p>
+<p>在Azure Portal中点开nignx pod的实时日志，页面显示”正在处理流式日志，日志将显示为可用”</p>
+<p>4． 在nginx pod的终端中输入 curl -s localhost</p>
+<p>可以看到实时日志中是有日志输出的。</p></article>

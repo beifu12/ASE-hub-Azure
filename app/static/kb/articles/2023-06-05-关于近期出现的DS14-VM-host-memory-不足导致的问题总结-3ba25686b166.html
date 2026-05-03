@@ -1,0 +1,115 @@
+<article class="kb-article" data-title="关于近期出现的DS14 VM host memory 不足导致的问题总结"><h1>关于近期出现的DS14 VM host memory 不足导致的问题总结</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2023-06-05 10:40:05</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>虚拟机及平台其他指标在问题发生时间段无异常</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>虚拟机及平台其他指标在问题发生时间段无异常</li>
+</ul>
+<ul>
+<li>针对用户反馈的故障事件，收集Host Analyzer报告会有以下发现：</li>
+</ul>
+<ul>
+<li>故障可能的原因</li>
+</ul>
+<ul>
+<li>由于物理节点可用内存不足(少于2GB)，导致虚拟机出现无响应，数据磁盘读写错误，无法识别等故障。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>症状 (Windows VM)</li>
+</ul>
+<ul>
+<li>DS14 虚拟机症状举例：</li>
+</ul>
+<ul>
+<li>虚拟机系统日志中记录有针对数据盘I/O retry的告警:</li>
+</ul>
+<ul>
+<li>同时可能伴有NTFS文件系统的告警:</li>
+</ul>
+<ul>
+<li>数据盘显示为未初始化</li>
+</ul>
+<ul>
+<li>症状 (Linux VM)</li>
+</ul>
+<ul>
+<li>系统日志记录有针对数据盘的I/O读写错误</li>
+</ul>
+<ul>
+<li>虚拟机重启后症状消失</li>
+</ul>
+<ul>
+<li>定位问题</li>
+</ul>
+<ul>
+<li>Findings部分记录Host内存不足</li>
+</ul>
+<ul>
+<li>目前产品组正在调查物理节点可用内存不足的原因。</li>
+</ul>
+<ul>
+<li>缓解措施</li>
+</ul>
+<ul>
+<li>Option 1: 门户发起重新部署虚拟机，触发虚拟机迁移至健康物理节点</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>经过与产品组的排查和讨论，将DS14问题总结重新整理如下，请参考</li>
+</ul>
+<ul>
+<li>查看物理节点的Windows Esvent Log或者Jarvis WindowsEventTable，近期记录有low memory的告警</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>修复方案</li>
+</ul>
+<ul>
+<li>产品组正在制定短期和长期的修复方案，ETA未知，CSS会与产品组持续跟进。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/60D0183B" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/60D0183B</a></li>
+</ul>
+<ul>
+<li>Option 2: 产品组建议将虚拟机规格调整为DS_V2。DS_V2构建在新的硬件平台，会极大减少该问题出现的可能性。如果为Classic VM，调整大小的步骤请参考<a href="https://azure.microsoft.com/en-us/blog/resize-virtual-machines/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/blog/resize-virtual-machines/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>经过与产品组的排查和讨论，将DS14问题总结重新整理如下，请参考</p>
+<p>症状 (Windows VM)</p>
+<p>DS14 虚拟机症状举例：</p>
+<p>虚拟机系统日志中记录有针对数据盘I/O retry的告警:</p>
+<p>同时可能伴有NTFS文件系统的告警:</p>
+<p>数据盘显示为未初始化</p>
+<p>症状 (Linux VM)</p>
+<p>系统日志记录有针对数据盘的I/O读写错误</p>
+<p>虚拟机重启后症状消失</p>
+<p>定位问题</p>
+<p>虚拟机及平台其他指标在问题发生时间段无异常</p>
+<p>针对用户反馈的故障事件，收集Host Analyzer报告会有以下发现：</p>
+<p>Findings部分记录Host内存不足</p>
+<p>查看物理节点的Windows Esvent Log或者Jarvis WindowsEventTable，近期记录有low memory的告警</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/60D0183B" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/60D0183B</a></p>
+<p>故障可能的原因</p>
+<p>由于物理节点可用内存不足(少于2GB)，导致虚拟机出现无响应，数据磁盘读写错误，无法识别等故障。</p>
+<p>目前产品组正在调查物理节点可用内存不足的原因。</p>
+<p>缓解措施</p>
+<p>Option 1: 门户发起重新部署虚拟机，触发虚拟机迁移至健康物理节点</p>
+<p>Option 2: 产品组建议将虚拟机规格调整为DS_V2。DS_V2构建在新的硬件平台，会极大减少该问题出现的可能性。如果为Classic VM，调整大小的步骤请参考<a href="https://azure.microsoft.com/en-us/blog/resize-virtual-machines/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/blog/resize-virtual-machines/</a></p>
+<p>修复方案</p>
+<p>产品组正在制定短期和长期的修复方案，ETA未知，CSS会与产品组持续跟进。</p></article>

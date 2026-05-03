@@ -1,0 +1,81 @@
+<article class="kb-article" data-title="如何注册并配置一个app，可以用来在 &quot;管理员同意请求&quot; 页面造数据"><h1>如何注册并配置一个app，可以用来在 &quot;管理员同意请求&quot; 页面造数据</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-12-12 17:29:46</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>3，下面的配置如果不做，添加github的时候会提示报错。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>3，下面的配置如果不做，添加github的时候会提示报错。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>有一个工单客户有此诉求：如何注册并配置一个app，可以用来在 &quot;管理员同意请求&quot; 页面造数据?</li>
+</ul>
+<ul>
+<li>我这边做了如下测试，可供后续我们参考使用。</li>
+</ul>
+<ul>
+<li>按照如下文档部署一个PHP web应用。</li>
+</ul>
+<ul>
+<li>其中注意文档中没提到或者不同的配置点：</li>
+</ul>
+<ul>
+<li>这里首次新建一个应用注册即可，其他保持默认。</li>
+</ul>
+<ul>
+<li>4，新建一个测试用户未分配任何权限，去访问url。</li>
+</ul>
+<ul>
+<li>管理员同意请求：</li>
+</ul>
+<ul>
+<li>使用用户再次访问网站。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1，配置github。此步骤前需要先做第3步，否则会提示报错。</li>
+</ul>
+<ul>
+<li>2，配置身份验证。</li>
+</ul>
+<ul>
+<li>使用管理员登录portal进行查看请求：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>先按照官网配置管理员同意请求：<a href="https://learn.microsoft.com/zh-cn/entra/identity/enterprise-apps/configure-admin-consent-workflow" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/enterprise-apps/configure-admin-consent-workflow</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/app-service/quickstart-php?tabs=portal&amp;pivots=platform-linux" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/app-service/quickstart-php?tabs=portal&amp;pivots=platform-linux</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/12/12</p>
+<p>有一个工单客户有此诉求：如何注册并配置一个app，可以用来在 &quot;管理员同意请求&quot; 页面造数据?</p>
+<p>我这边做了如下测试，可供后续我们参考使用。</p>
+<p>先按照官网配置管理员同意请求：<a href="https://learn.microsoft.com/zh-cn/entra/identity/enterprise-apps/configure-admin-consent-workflow" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/entra/identity/enterprise-apps/configure-admin-consent-workflow</a></p>
+<p>按照如下文档部署一个PHP web应用。</p>
+<p><a href="https://docs.azure.cn/zh-cn/app-service/quickstart-php?tabs=portal&amp;pivots=platform-linux" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/app-service/quickstart-php?tabs=portal&amp;pivots=platform-linux</a></p>
+<p>其中注意文档中没提到或者不同的配置点：</p>
+<p>1，配置github。此步骤前需要先做第3步，否则会提示报错。</p>
+<p>2，配置身份验证。</p>
+<p>这里首次新建一个应用注册即可，其他保持默认。</p>
+<p>3，下面的配置如果不做，添加github的时候会提示报错。</p>
+<p>4，新建一个测试用户未分配任何权限，去访问url。</p>
+<p>使用管理员登录portal进行查看请求：</p>
+<p>管理员同意请求：</p>
+<p>使用用户再次访问网站。</p></article>

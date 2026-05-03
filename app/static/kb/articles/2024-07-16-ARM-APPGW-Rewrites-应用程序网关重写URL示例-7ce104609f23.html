@@ -1,0 +1,112 @@
+<article class="kb-article" data-title="[ARM-APPGW-Rewrites]应用程序网关重写URL示例"><h1>[ARM-APPGW-Rewrites]应用程序网关重写URL示例</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-16 16:07:01</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>特殊性：由于客户已有的后端设置中开启了重写主机名为后端池中的FQDN，如果在重写规则里面配置重写主机名则会产生冲突报错</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>特殊性：由于客户已有的后端设置中开启了重写主机名为后端池中的FQDN，如果在重写规则里面配置重写主机名则会产生冲突报错</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20240712</li>
+</ul>
+<ul>
+<li>需求一：如URL中包含/images/，则替换主机名为images.contentstack.io（外部域名，非现有后端池FQDN），并且将URL中的/images/去除</li>
+</ul>
+<ul>
+<li>替换主机名first.wats.xyz为xxxxxx.z3.web.core.chinacloudapi.cn，并删除URL中的/sjj/</li>
+</ul>
+<ul>
+<li>Rewrite Condition, 其中正则表达式为.*sjj/(.*)</li>
+</ul>
+<ul>
+<li>Rewrite Action , 其中URL路径值为/{var_uri_path_1}</li>
+</ul>
+<ul>
+<li>需求二：如URL中包含/files/，则替换主机名为assets.contentstack.io（外部域名，非现有后端池FQDN），并且将URL中的/files/去除</li>
+</ul>
+<ul>
+<li>和需求一类似，配置参考需求一</li>
+</ul>
+<ul>
+<li>需求三：URL结尾中如果不包含.png,.json,.css等后缀，则在URL结尾处添加/</li>
+</ul>
+<ul>
+<li>如果URL结尾中如果不包含.png或.jpg后缀，则在URL结尾处添加/</li>
+</ul>
+<ul>
+<li>Rewrite Condition, 其中正则表达式为^(?!.*\.(jpg|png)$).*$</li>
+</ul>
+<ul>
+<li>Rewrite Action , 其中URL路径值为/{var_uri_path}/</li>
+</ul>
+<ul>
+<li>需求四：如URL中包含/next/([^/]+)/zh/([^/]+)\.json，则重写为/_next/data/{0}/zh/{1}.json</li>
+</ul>
+<ul>
+<li>注：</li>
+</ul>
+<ul>
+<li>[^/]+）表示所有字符，出现了两次，表示捕获/next/和/zh/的下级目录，并存储为变量0和变量1</li>
+</ul>
+<ul>
+<li>{0}表示捕获的变量0，{1}表示捕获的变量1</li>
+</ul>
+<ul>
+<li>Rewrite Condition, 其中正则表达式为.*sjj/(.*)/zh/(.*)\.json</li>
+</ul>
+<ul>
+<li>Rewrite Action , 其中URL路径值为/sjj/data/{var_uri_path_1}/zh/{var_uri_path_2}.json</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：配置基于路径的请求规则，将URL中包含/images/的请求路由到新的后端池images.contentstack.io，配置重写规则将URL中的/images/去除</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>测试示例： <a href="https://first.wats.xyz/sjj/success.html-&gt;" target="_blank" rel="noopener">https://first.wats.xyz/sjj/success.html-&gt;</a> <a href="https://xxxxxx.z3.web.core.chinacloudapi.cn/success.html" target="_blank" rel="noopener">https://xxxxxx.z3.web.core.chinacloudapi.cn/success.html</a></li>
+</ul>
+<ul>
+<li>测试示例： <a href="https://first.wats.xyz/tanchishe" target="_blank" rel="noopener">https://first.wats.xyz/tanchishe</a> --&gt; <a href="https://first.wats.xyz/tanchishe/" target="_blank" rel="noopener">https://first.wats.xyz/tanchishe/</a></li>
+</ul>
+<ul>
+<li>测试示例： <a href="https://first.wats.xyz/sjj/zuiai/zh/storage.json" target="_blank" rel="noopener">https://first.wats.xyz/sjj/zuiai/zh/storage.json</a>  -&gt;  <a href="https://first.wats.xyz/sjj/data/zuiai/zh/storage.json" target="_blank" rel="noopener">https://first.wats.xyz/sjj/data/zuiai/zh/storage.json</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20240712</p>
+<p>需求一：如URL中包含/images/，则替换主机名为images.contentstack.io（外部域名，非现有后端池FQDN），并且将URL中的/images/去除</p>
+<p>特殊性：由于客户已有的后端设置中开启了重写主机名为后端池中的FQDN，如果在重写规则里面配置重写主机名则会产生冲突报错</p>
+<p>解决方案：配置基于路径的请求规则，将URL中包含/images/的请求路由到新的后端池images.contentstack.io，配置重写规则将URL中的/images/去除</p>
+<p>测试示例： <a href="https://first.wats.xyz/sjj/success.html-&gt;" target="_blank" rel="noopener">https://first.wats.xyz/sjj/success.html-&gt;</a> <a href="https://xxxxxx.z3.web.core.chinacloudapi.cn/success.html" target="_blank" rel="noopener">https://xxxxxx.z3.web.core.chinacloudapi.cn/success.html</a></p>
+<p>替换主机名first.wats.xyz为xxxxxx.z3.web.core.chinacloudapi.cn，并删除URL中的/sjj/</p>
+<p>Rewrite Condition, 其中正则表达式为.*sjj/(.*)</p>
+<p>Rewrite Action , 其中URL路径值为/{var_uri_path_1}</p>
+<p>需求二：如URL中包含/files/，则替换主机名为assets.contentstack.io（外部域名，非现有后端池FQDN），并且将URL中的/files/去除</p>
+<p>和需求一类似，配置参考需求一</p>
+<p>需求三：URL结尾中如果不包含.png,.json,.css等后缀，则在URL结尾处添加/</p>
+<p>测试示例： <a href="https://first.wats.xyz/tanchishe" target="_blank" rel="noopener">https://first.wats.xyz/tanchishe</a> --&gt; <a href="https://first.wats.xyz/tanchishe/" target="_blank" rel="noopener">https://first.wats.xyz/tanchishe/</a></p>
+<p>如果URL结尾中如果不包含.png或.jpg后缀，则在URL结尾处添加/</p>
+<p>Rewrite Condition, 其中正则表达式为^(?!.*\.(jpg|png)$).*$</p>
+<p>Rewrite Action , 其中URL路径值为/{var_uri_path}/</p>
+<p>需求四：如URL中包含/next/([^/]+)/zh/([^/]+)\.json，则重写为/_next/data/{0}/zh/{1}.json</p>
+<p>注：</p>
+<p>[^/]+）表示所有字符，出现了两次，表示捕获/next/和/zh/的下级目录，并存储为变量0和变量1</p>
+<p>{0}表示捕获的变量0，{1}表示捕获的变量1</p>
+<p>测试示例： <a href="https://first.wats.xyz/sjj/zuiai/zh/storage.json" target="_blank" rel="noopener">https://first.wats.xyz/sjj/zuiai/zh/storage.json</a>  -&gt;  <a href="https://first.wats.xyz/sjj/data/zuiai/zh/storage.json" target="_blank" rel="noopener">https://first.wats.xyz/sjj/data/zuiai/zh/storage.json</a></p>
+<p>Rewrite Condition, 其中正则表达式为.*sjj/(.*)/zh/(.*)\.json</p>
+<p>Rewrite Action , 其中URL路径值为/sjj/data/{var_uri_path_1}/zh/{var_uri_path_2}.json</p></article>

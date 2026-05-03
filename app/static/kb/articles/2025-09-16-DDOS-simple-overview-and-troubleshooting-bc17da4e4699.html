@@ -1,0 +1,127 @@
+<article class="kb-article" data-title="DDOS simple overview and troubleshooting"><h1>DDOS simple overview and troubleshooting</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DDOS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-16 19:54:10</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>目前，不论客户是否有DDOS protection plan, 亦或者是不同的IP SKU，我们都可以通过以下链接去检查客户在我们筛选的时间段内的流量进出情况：<a href="https://portal.microsoftgeneva.com/dashboard" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/dashboard</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>目前，不论客户是否有DDOS protection plan, 亦或者是不同的IP SKU，我们都可以通过以下链接去检查客户在我们筛选的时间段内的流量进出情况：<a href="https://portal.microsoftgeneva.com/dashboard" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/dashboard</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>这里使用之前其中一个客户的IP做为参考例子：</li>
+</ul>
+<ul>
+<li>这里为大家列出链接类型，以便后续大家进行判断：</li>
+</ul>
+<ul>
+<li>0=not under mitigation</li>
+</ul>
+<ul>
+<li>1=under mitigation.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>大家好，由于DDOS 目前处于GA状态，之后可能会有客户前来咨询相关问题，以下是简单troubleshooting步骤，请大家参考：</li>
+</ul>
+<ul>
+<li>由于政策原因，目前DDoS的IP mitigation(包括其他的DDoS chart) Jarvis似乎并没有收录AzureChina的IP list, 因此我们无法直接查看客户是否直接触发了DDoS protection plan, 这里先行使用国外版的IP给大家做为参考：</li>
+</ul>
+<ul>
+<li>这里我们可以看到对应IP是否出现了TCP/UDP/Other traffic drop 情况，以此确认是否遭受到了DDOS attack:</li>
+</ul>
+<ul>
+<li>这里有一点需要大家注意的是，Azure本身就为客户提供了默认的DDOS防护（虽然很拉），因此在这个图里，也是可以搜索到没有购买DDoS plan 的客户IP的，以此来验证攻击是否存在。</li>
+</ul>
+<ul>
+<li>提示：如果你没有看到任何的drop,那么就意味着DDoS service没有drop任何traffic, 一切正常。</li>
+</ul>
+<ul>
+<li>DDOS在部署的时候，是会触发NRP的，我们后续可以查询NRP log来检查DDoS的部署情况。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>TCP=6</li>
+</ul>
+<ul>
+<li>UDP=17</li>
+</ul>
+<ul>
+<li>GRE=47</li>
+</ul>
+<ul>
+<li>ESP=50</li>
+</ul>
+<ul>
+<li>Vxlan=251</li>
+</ul>
+<ul>
+<li>All type=255</li>
+</ul>
+<ul>
+<li>在这里有两种状态码：0和1</li>
+</ul>
+<ul>
+<li>目前我们的DDoS threshold的默认值如下（以下内容参考Global侧，后续如果确认有变化的话会更新）</li>
+</ul>
+<ul>
+<li>10k SYNs/sec</li>
+</ul>
+<ul>
+<li>20k UDP/Sec</li>
+</ul>
+<ul>
+<li>50k TCP/Sec</li>
+</ul>
+<ul>
+<li>DDoS的阈值，可以通过ICM找PG进行修改。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>目前，不论客户是否有DDOS protection plan, 亦或者是不同的IP SKU，我们都可以通过以下链接去检查客户在我们筛选的时间段内的流量进出情况：<a href="https://portal.microsoftgeneva.com/dashboard" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/dashboard</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/dashboard/CNS/DDoSSupport/IsIPUnderMitigation?overrides=[%7B%22query%22:%22//*[id%3D%27DestinationVIP%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22%7D]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/dashboard/CNS/DDoSSupport/IsIPUnderMitigation?overrides=[%7B%22query%22:%22//*[id%3D%27DestinationVIP%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22%7D]%20</a></li>
+</ul>
+<ul>
+<li>DDOS Sflow Dashboard: <a href="https://portal.microsoftgeneva.com/s/B963C1B0?overrides=[%7B%22query%22:%22//*[id=%27DestinationVIP%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22%7D]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/B963C1B0?overrides=[%7B%22query%22:%22//*[id=%27DestinationVIP%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22%7D]%20</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/8/15</p>
+<p>大家好，由于DDOS 目前处于GA状态，之后可能会有客户前来咨询相关问题，以下是简单troubleshooting步骤，请大家参考：</p>
+<p>目前，不论客户是否有DDOS protection plan, 亦或者是不同的IP SKU，我们都可以通过以下链接去检查客户在我们筛选的时间段内的流量进出情况：<a href="https://portal.microsoftgeneva.com/dashboard" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/dashboard</a></p>
+<p>这里使用之前其中一个客户的IP做为参考例子：</p>
+<p>这里为大家列出链接类型，以便后续大家进行判断：</p>
+<p>TCP=6</p>
+<p>UDP=17</p>
+<p>GRE=47</p>
+<p>ESP=50</p>
+<p>Vxlan=251</p>
+<p>All type=255</p>
+<p>由于政策原因，目前DDoS的IP mitigation(包括其他的DDoS chart) Jarvis似乎并没有收录AzureChina的IP list, 因此我们无法直接查看客户是否直接触发了DDoS protection plan, 这里先行使用国外版的IP给大家做为参考：</p>
+<p><a href="https://portal.microsoftgeneva.com/dashboard/CNS/DDoSSupport/IsIPUnderMitigation?overrides=[%7B%22query%22:%22//*[id%3D%27DestinationVIP%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22%7D]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/dashboard/CNS/DDoSSupport/IsIPUnderMitigation?overrides=[%7B%22query%22:%22//*[id%3D%27DestinationVIP%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22%7D]%20</a></p>
+<p>在这里有两种状态码：0和1</p>
+<p>0=not under mitigation</p>
+<p>1=under mitigation.</p>
+<p>DDOS Sflow Dashboard: <a href="https://portal.microsoftgeneva.com/s/B963C1B0?overrides=[%7B%22query%22:%22//*[id=%27DestinationVIP%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22%7D]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/B963C1B0?overrides=[%7B%22query%22:%22//*[id=%27DestinationVIP%27]%22,%22key%22:%22value%22,%22replacement%22:%22%22%7D]%20</a></p>
+<p>这里我们可以看到对应IP是否出现了TCP/UDP/Other traffic drop 情况，以此确认是否遭受到了DDOS attack:</p>
+<p>这里有一点需要大家注意的是，Azure本身就为客户提供了默认的DDOS防护（虽然很拉），因此在这个图里，也是可以搜索到没有购买DDoS plan 的客户IP的，以此来验证攻击是否存在。</p>
+<p>提示：如果你没有看到任何的drop,那么就意味着DDoS service没有drop任何traffic, 一切正常。</p>
+<p>DDOS在部署的时候，是会触发NRP的，我们后续可以查询NRP log来检查DDoS的部署情况。</p>
+<p>目前我们的DDoS threshold的默认值如下（以下内容参考Global侧，后续如果确认有变化的话会更新）</p>
+<p>10k SYNs/sec</p>
+<p>20k UDP/Sec</p>
+<p>50k TCP/Sec</p>
+<p>DDoS的阈值，可以通过ICM找PG进行修改。</p></article>

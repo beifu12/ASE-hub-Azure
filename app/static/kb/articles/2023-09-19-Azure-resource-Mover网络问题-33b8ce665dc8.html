@@ -1,0 +1,56 @@
+<article class="kb-article" data-title="Azure resource Mover网络问题"><h1>Azure resource Mover网络问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AzureResourceMover</li>
+<li>Section: Azure Resource Mover</li>
+<li>最近修改: 2023-09-19 14:47:03</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2021040889967 _ [MS-LED]使用Azure 资源转移器跨区迁移服务器报错</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2021040889967 _ [MS-LED]使用Azure 资源转移器跨区迁移服务器报错</li>
+</ul>
+<ul>
+<li>报错信息：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>网络问题</li>
+</ul>
+<ul>
+<li>原因分析：</li>
+</ul>
+<ul>
+<li>根据官方文档说明，在准备（移动虚拟机时）不仅会为虚拟机安装移动代理，而且会开始复制。</li>
+</ul>
+<ul>
+<li>2． 我本地也使用托管磁盘的Ubuntu 16.04 虚拟机进行了测试，虚拟机出口流量激增的时间基本为准备（移动虚拟机）完成的时间一致。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>3． 关于您saas 执行移动失败的问题，如上一封邮件中提到的，怀疑与您在虚拟机中使用Iptables reject 了到缓存存储账户（公网IP）的流量有关，建议您在虚拟机上放行缓存存储账户（公网IP），然后尝试重新移动。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>截图来源：官方文档（从资源组）跨区域移动资源 <a href="https://docs.azure.cn/zh-cn/resource-mover/move-region-within-resource-group#prepare-resources-to-move" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/resource-mover/move-region-within-resource-group#prepare-resources-to-move</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>网络问题</p>
+<p>SR_2021040889967 _ [MS-LED]使用Azure 资源转移器跨区迁移服务器报错</p>
+<p>报错信息：</p>
+<p>原因分析：</p>
+<p>根据官方文档说明，在准备（移动虚拟机时）不仅会为虚拟机安装移动代理，而且会开始复制。</p>
+<p>截图来源：官方文档（从资源组）跨区域移动资源 <a href="https://docs.azure.cn/zh-cn/resource-mover/move-region-within-resource-group#prepare-resources-to-move" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/resource-mover/move-region-within-resource-group#prepare-resources-to-move</a></p>
+<p>2． 我本地也使用托管磁盘的Ubuntu 16.04 虚拟机进行了测试，虚拟机出口流量激增的时间基本为准备（移动虚拟机）完成的时间一致。</p>
+<p>3． 关于您saas 执行移动失败的问题，如上一封邮件中提到的，怀疑与您在虚拟机中使用Iptables reject 了到缓存存储账户（公网IP）的流量有关，建议您在虚拟机上放行缓存存储账户（公网IP），然后尝试重新移动。</p></article>

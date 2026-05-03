@@ -1,0 +1,73 @@
+<article class="kb-article" data-title="New-MgDomainFederationConfiguration报403错误"><h1>New-MgDomainFederationConfiguration报403错误</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-11-20 10:34:07</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错信息如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错信息如下：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>【问题描述】</li>
+</ul>
+<ul>
+<li>该APP在进行联合登录配置前已分配对应权限</li>
+</ul>
+<ul>
+<li>【问题解决】</li>
+</ul>
+<ul>
+<li>用户登录MG的方式是自定义应用委托授权方式，对于这种方式，MG登录时，只委托&quot;Domain.ReadWrite.All&quot;,是不够的，还需要委托授权&quot;Directory.AccessAsUser.All&quot;</li>
+</ul>
+<ul>
+<li>Connect-MgGraph -ClientId xxxxxx -TenantId xxxxxxx -Environment China -Scopes &quot;Domain.ReadWrite.All&quot;, &quot;Directory.AccessAsUser.All&quot;</li>
+</ul>
+<ul>
+<li>调整后，New-MgDomainFederationConfiguration就可以顺利执行了。</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>登录命令是 Connect-MgGraph -Environment China -Scopes &quot;Domain.ReadWrite.All&quot; -ClientId &quot;73d97e40-afe0-4e46-8908-e67af8c28d5a&quot; -TenantId &quot;ae487bcc-5e13-43e5-97f9-7b3a907e04f5&quot;</li>
+</ul>
+<ul>
+<li>调整后的MG登录命令如下：</li>
+</ul>
+<ul>
+<li>Use Microsoft Graph PowerShell authentication commands | Microsoft Learn</li>
+</ul>
+<ul>
+<li>New-MgDomainFederationConfiguration (Microsoft.Graph.Identity.DirectoryManagement) | Microsoft Learn</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>【问题描述】</p>
+<p>报错信息如下：</p>
+<p>登录命令是 Connect-MgGraph -Environment China -Scopes &quot;Domain.ReadWrite.All&quot; -ClientId &quot;73d97e40-afe0-4e46-8908-e67af8c28d5a&quot; -TenantId &quot;ae487bcc-5e13-43e5-97f9-7b3a907e04f5&quot;</p>
+<p>该APP在进行联合登录配置前已分配对应权限</p>
+<p>【问题解决】</p>
+<p>用户登录MG的方式是自定义应用委托授权方式，对于这种方式，MG登录时，只委托&quot;Domain.ReadWrite.All&quot;,是不够的，还需要委托授权&quot;Directory.AccessAsUser.All&quot;</p>
+<p>调整后的MG登录命令如下：</p>
+<p>Connect-MgGraph -ClientId xxxxxx -TenantId xxxxxxx -Environment China -Scopes &quot;Domain.ReadWrite.All&quot;, &quot;Directory.AccessAsUser.All&quot;</p>
+<p>调整后，New-MgDomainFederationConfiguration就可以顺利执行了。</p>
+<p>参考文档：</p>
+<p>Use Microsoft Graph PowerShell authentication commands | Microsoft Learn</p>
+<p>New-MgDomainFederationConfiguration (Microsoft.Graph.Identity.DirectoryManagement) | Microsoft Learn</p></article>

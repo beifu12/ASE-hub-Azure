@@ -1,0 +1,219 @@
+<article class="kb-article" data-title="[ARM] 订阅Link VNET to Express Route"><h1>[ARM] 订阅Link VNET to Express Route</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-08-01 14:01:36</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>不然会有如下报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>不然会有如下报错：</li>
+</ul>
+<ul>
+<li>+ CategoryInfo          : CloseError: (:) [New-AzureRmVirt...tewayConnection], NetworkCloudException</li>
+</ul>
+<ul>
+<li>+ FullyQualifiedErrorId : Microsoft.Azure.Commands.Network.NewAzureVirtualNetworkGatewayConnectionCommand</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>跨订阅Link VNET to ER</li>
+</ul>
+<ul>
+<li>Wednesday, November 9, 2016</li>
+</ul>
+<ul>
+<li>6:54 PM</li>
+</ul>
+<ul>
+<li>#将Watstest01订阅下ASM ER线路迁移到ARM：</li>
+</ul>
+<ul>
+<li>Move-AzureRmExpressRouteCircuit -Name &quot;21VDemoSH&quot; -ResourceGroupName &quot;CraneER&quot; -Location &quot;China East&quot; -ServiceKey 14155bfe-95d1-43ff-a574-21fdfde7d7fa</li>
+</ul>
+<ul>
+<li>#启用ASM和ARM共存管理：</li>
+</ul>
+<ul>
+<li>$circuit=Get-AzureRmExpressRouteCircuit -Name &quot;21VDemoSH&quot; -ResourceGroupName &quot;CraneER&quot;</li>
+</ul>
+<ul>
+<li>$circuit.AllowClassicOperations = $trueget</li>
+</ul>
+<ul>
+<li>#创建授权：</li>
+</ul>
+<ul>
+<li>Add-AzureRmExpressRouteCircuitAuthorization -ExpressRouteCircuit $circuit -Name &quot;MyAuthorization&quot;</li>
+</ul>
+<ul>
+<li>$auth1=Get-AzureRmExpressRouteCircuitAuthorization -ExpressRouteCircuit $circuit -Name MyAuthorization</li>
+</ul>
+<ul>
+<li>Authorizations                   : [</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;Name&quot;: &quot;MyAuthorization&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Etag&quot;: &quot;W/\&quot;8eb17ebf-00ab-4ddd-a17a-cbca4157abb0\&quot;&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Id&quot;: &quot;/subscriptions/8775d62a-6741-481d-8737-73d2eba53518/resourceGroups/CraneER/providers/Microsoft.Network/expressRouteCircuits</li>
+</ul>
+<ul>
+<li>/21VDemoSH/authorizations/MyAuthorization&quot;,</li>
+</ul>
+<ul>
+<li>&quot;AuthorizationKey&quot;: &quot;d3d7375f-aa95-4a97-97bf-cd4a68278189&quot;,</li>
+</ul>
+<ul>
+<li>&quot;AuthorizationUseStatus&quot;: &quot;Available&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ProvisioningState&quot;: &quot;Succeeded&quot;</li>
+</ul>
+<ul>
+<li>#登录到另外一个订阅WATSTEST02</li>
+</ul>
+<ul>
+<li>#兑现授权：</li>
+</ul>
+<ul>
+<li>$Id= &quot;/subscriptions/8775d62a-6741-481d-8737-73d2eba53518/resourceGroups/CraneER/providers/Microsoft.Network/expressRouteCircuits/21VDemoSH/authorizations/MyAuthorization&quot;</li>
+</ul>
+<ul>
+<li>$Id= &quot;/subscriptions/8775d62a-6741-481d-8737-73d2eba53518/resourceGroups/CraneER/providers/Microsoft.Network/expressRouteCircuits/21VDemoSH&quot;</li>
+</ul>
+<ul>
+<li>$gw=Get-AzureRmVirtualNetworkGateway -Name CraneARMERtestGW -ResourceGroupName craneARMERtest</li>
+</ul>
+<ul>
+<li>注意：</li>
+</ul>
+<ul>
+<li>$ID=(Get-AzureRmExpressRouteCircuit -Name &quot;21VDemoSH&quot; -ResourceGroupName &quot;CraneER&quot;).id</li>
+</ul>
+<ul>
+<li>而不是：</li>
+</ul>
+<ul>
+<li>$ID=(Get-AzureRmExpressRouteCircuit -Name &quot;21VDemoSH&quot; -ResourceGroupName &quot;CraneER&quot;).Authorizations.id</li>
+</ul>
+<ul>
+<li>PS C:\Users\crane&gt; New-AzureRmVirtualNetworkGatewayConnection -Name ERConnection -ResourceGroupName craneARMERtest -Location &quot;China East&quot; -VirtualNetworkGateway1 $gw -PeerId $id -ConnectionType ExpressRoute -AuthorizationKey &quot;d3d7375f-aa95-4a97-97bf-cd4a68278189&quot;</li>
+</ul>
+<ul>
+<li>WARNING: The output object type of this cmdlet will be modified in a future release.</li>
+</ul>
+<ul>
+<li>StatusCode: 400</li>
+</ul>
+<ul>
+<li>ReasonPhrase: Bad Request</li>
+</ul>
+<ul>
+<li>OperationID : &#39;827b1999-b489-4278-b526-fbf0df64e64b&#39;</li>
+</ul>
+<ul>
+<li>At line:1 char:1</li>
+</ul>
+<ul>
+<li>+ New-AzureRmVirtualNetworkGatewayConnection -Name ERConnection -Resour ...</li>
+</ul>
+<ul>
+<li>+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Login-AzureRmAccount -EnvironmentName AzureChinaCloud</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>New-AzureRmResourceGroup -Name &quot;CraneER&quot; -Location &quot;China East&quot;</li>
+</ul>
+<ul>
+<li>Set-AzureRMExpressRouteCircuit -ExpressRouteCircuit $circuit</li>
+</ul>
+<ul>
+<li>Set-AzureRmExpressRouteCircuit -ExpressRouteCircuit $circuit</li>
+</ul>
+<ul>
+<li>#从以上命令中获取到的授权秘钥和状态：</li>
+</ul>
+<ul>
+<li>New-AzureRmVirtualNetworkGatewayConnection -Name ERConnection -ResourceGroupName craneARMERtest -Location &quot;China East&quot; -VirtualNetworkGateway1 $gw -PeerId $id -ConnectionType ExpressRoute -AuthorizationKey &quot;d3d7375f-aa95-4a97-97bf-cd4a68278189&quot;</li>
+</ul>
+<ul>
+<li>New-AzureRmVirtualNetworkGatewayConnection : Cannot parse the request.</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://azure.microsoft.com/en-us/documentation/articles/expressroute-howto-linkvnet-arm/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/documentation/articles/expressroute-howto-linkvnet-arm/</a></li>
+</ul>
+<ul>
+<li><a href="https://www.azure.cn/documentation/articles/expressroute-howto-linkvnet-arm/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/expressroute-howto-linkvnet-arm/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>跨订阅Link VNET to ER</p>
+<p>Wednesday, November 9, 2016</p>
+<p>6:54 PM</p>
+<p><a href="https://azure.microsoft.com/en-us/documentation/articles/expressroute-howto-linkvnet-arm/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/documentation/articles/expressroute-howto-linkvnet-arm/</a></p>
+<p><a href="https://www.azure.cn/documentation/articles/expressroute-howto-linkvnet-arm/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/expressroute-howto-linkvnet-arm/</a></p>
+<p>#将Watstest01订阅下ASM ER线路迁移到ARM：</p>
+<p>Login-AzureRmAccount -EnvironmentName AzureChinaCloud</p>
+<p>New-AzureRmResourceGroup -Name &quot;CraneER&quot; -Location &quot;China East&quot;</p>
+<p>Move-AzureRmExpressRouteCircuit -Name &quot;21VDemoSH&quot; -ResourceGroupName &quot;CraneER&quot; -Location &quot;China East&quot; -ServiceKey 14155bfe-95d1-43ff-a574-21fdfde7d7fa</p>
+<p>#启用ASM和ARM共存管理：</p>
+<p>$circuit=Get-AzureRmExpressRouteCircuit -Name &quot;21VDemoSH&quot; -ResourceGroupName &quot;CraneER&quot;</p>
+<p>$circuit.AllowClassicOperations = $trueget</p>
+<p>Set-AzureRMExpressRouteCircuit -ExpressRouteCircuit $circuit</p>
+<p>#创建授权：</p>
+<p>Add-AzureRmExpressRouteCircuitAuthorization -ExpressRouteCircuit $circuit -Name &quot;MyAuthorization&quot;</p>
+<p>Set-AzureRmExpressRouteCircuit -ExpressRouteCircuit $circuit</p>
+<p>$auth1=Get-AzureRmExpressRouteCircuitAuthorization -ExpressRouteCircuit $circuit -Name MyAuthorization</p>
+<p>#从以上命令中获取到的授权秘钥和状态：</p>
+<p>Authorizations                   : [</p>
+<p>{</p>
+<p>&quot;Name&quot;: &quot;MyAuthorization&quot;,</p>
+<p>&quot;Etag&quot;: &quot;W/\&quot;8eb17ebf-00ab-4ddd-a17a-cbca4157abb0\&quot;&quot;,</p>
+<p>&quot;Id&quot;: &quot;/subscriptions/8775d62a-6741-481d-8737-73d2eba53518/resourceGroups/CraneER/providers/Microsoft.Network/expressRouteCircuits</p>
+<p>/21VDemoSH/authorizations/MyAuthorization&quot;,</p>
+<p>&quot;AuthorizationKey&quot;: &quot;d3d7375f-aa95-4a97-97bf-cd4a68278189&quot;,</p>
+<p>&quot;AuthorizationUseStatus&quot;: &quot;Available&quot;,</p>
+<p>&quot;ProvisioningState&quot;: &quot;Succeeded&quot;</p>
+<p>#登录到另外一个订阅WATSTEST02</p>
+<p>#兑现授权：</p>
+<p>$Id= &quot;/subscriptions/8775d62a-6741-481d-8737-73d2eba53518/resourceGroups/CraneER/providers/Microsoft.Network/expressRouteCircuits/21VDemoSH/authorizations/MyAuthorization&quot;</p>
+<p>$Id= &quot;/subscriptions/8775d62a-6741-481d-8737-73d2eba53518/resourceGroups/CraneER/providers/Microsoft.Network/expressRouteCircuits/21VDemoSH&quot;</p>
+<p>$gw=Get-AzureRmVirtualNetworkGateway -Name CraneARMERtestGW -ResourceGroupName craneARMERtest</p>
+<p>New-AzureRmVirtualNetworkGatewayConnection -Name ERConnection -ResourceGroupName craneARMERtest -Location &quot;China East&quot; -VirtualNetworkGateway1 $gw -PeerId $id -ConnectionType ExpressRoute -AuthorizationKey &quot;d3d7375f-aa95-4a97-97bf-cd4a68278189&quot;</p>
+<p>注意：</p>
+<p>$ID=(Get-AzureRmExpressRouteCircuit -Name &quot;21VDemoSH&quot; -ResourceGroupName &quot;CraneER&quot;).id</p>
+<p>而不是：</p>
+<p>$ID=(Get-AzureRmExpressRouteCircuit -Name &quot;21VDemoSH&quot; -ResourceGroupName &quot;CraneER&quot;).Authorizations.id</p>
+<p>不然会有如下报错：</p>
+<p>PS C:\Users\crane&gt; New-AzureRmVirtualNetworkGatewayConnection -Name ERConnection -ResourceGroupName craneARMERtest -Location &quot;China East&quot; -VirtualNetworkGateway1 $gw -PeerId $id -ConnectionType ExpressRoute -AuthorizationKey &quot;d3d7375f-aa95-4a97-97bf-cd4a68278189&quot;</p>
+<p>WARNING: The output object type of this cmdlet will be modified in a future release.</p>
+<p>New-AzureRmVirtualNetworkGatewayConnection : Cannot parse the request.</p>
+<p>StatusCode: 400</p>
+<p>ReasonPhrase: Bad Request</p>
+<p>OperationID : &#39;827b1999-b489-4278-b526-fbf0df64e64b&#39;</p>
+<p>At line:1 char:1</p>
+<p>+ New-AzureRmVirtualNetworkGatewayConnection -Name ERConnection -Resour ...</p>
+<p>+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</p>
+<p>+ CategoryInfo          : CloseError: (:) [New-AzureRmVirt...tewayConnection], NetworkCloudException</p>
+<p>+ FullyQualifiedErrorId : Microsoft.Azure.Commands.Network.NewAzureVirtualNetworkGatewayConnectionCommand</p></article>

@@ -1,0 +1,373 @@
+<article class="kb-article" data-title="使用Rest API操作CDN"><h1>使用Rest API操作CDN</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-12 11:22:53</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>johnny</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>johnny</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>johnny</li>
+</ul>
+<ul>
+<li>2020/11/20 update</li>
+</ul>
+<ul>
+<li>==================================================================================</li>
+</ul>
+<ul>
+<li>Hi All,</li>
+</ul>
+<ul>
+<li>参考地址：</li>
+</ul>
+<ul>
+<li>========================</li>
+</ul>
+<ul>
+<li>import time</li>
+</ul>
+<ul>
+<li>import urllib</li>
+</ul>
+<ul>
+<li>import hmac, hashlib</li>
+</ul>
+<ul>
+<li>import collections</li>
+</ul>
+<ul>
+<li>from collections import OrderedDict</li>
+</ul>
+<ul>
+<li>from urllib import parse</li>
+</ul>
+<ul>
+<li>def calculate_authorization_header(request_url, request_time, key_id, key_value, http_method):</li>
+</ul>
+<ul>
+<li>&quot;&quot;&quot; Calculate the authorization header.</li>
+</ul>
+<ul>
+<li>@request_url: Complete request URL with scheme, host, path and queries</li>
+</ul>
+<ul>
+<li>@request_time: UTC request time with format yyyy-MM-dd HH:mm:ss</li>
+</ul>
+<ul>
+<li>@key_id: API key ID</li>
+</ul>
+<ul>
+<li>@key_value: API key value</li>
+</ul>
+<ul>
+<li>@http_method: Http method in upper case</li>
+</ul>
+<ul>
+<li>&quot;&quot;&quot;</li>
+</ul>
+<ul>
+<li>urlparts.path, &quot;, &quot;.join([&#39;%s:%s&#39; % (key, value[0]) for (key, value) in ordered_queries.items()]), request_time,</li>
+</ul>
+<ul>
+<li>http_method)</li>
+</ul>
+<ul>
+<li>return &quot;AzureCDN %s:%s&quot; % (key_id, digest)</li>
+</ul>
+<ul>
+<li>print(t2)</li>
+</ul>
+<ul>
+<li>print(calculate_authorization_header(request_url, request_time, key_id, key_value, http_method))</li>
+</ul>
+<ul>
+<li># print(calculate_authorization_header(</li>
+</ul>
+<ul>
+<li>#     &quot;2019-10-29 08:58:00&quot;, &quot;95c7fc7a-5279-4efe-8e43-182062e95ece&quot;, &quot;YTJmNTA0YmQtNjM4Zi00MWFiLWI5ZWItYjgwMTE4MDgwYTcx&quot;,</li>
+</ul>
+<ul>
+<li>#     &quot;GET&quot;))</li>
+</ul>
+<ul>
+<li>使用Postman工具获取CDN相关信息：</li>
+</ul>
+<ul>
+<li>Result output:</li>
+</ul>
+<ul>
+<li>[</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;EndpointId&quot;: &quot;92bc9a3a-e979-11e8-be87-0017fa000909&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Settings&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;Origin&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;Addresses&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;1.123.4.15&quot;</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;SchemePort&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;Scheme&quot;: &quot;Http&quot;,</li>
+</ul>
+<ul>
+<li>&quot;HttpPort&quot;: 80,</li>
+</ul>
+<ul>
+<li>&quot;HttpsPort&quot;: null</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;ICP&quot;: &quot;******&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ServiceType&quot;: &quot;Web&quot;,</li>
+</ul>
+<ul>
+<li>&quot;AllowedScheme&quot;: &quot;Http&quot;,</li>
+</ul>
+<ul>
+<li>&quot;CachingPolicy&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;ServiceRegion&quot;: 0</li>
+</ul>
+<ul>
+<li>&quot;Status&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;LifetimeStatus&quot;: &quot;Normal&quot;,</li>
+</ul>
+<ul>
+<li>&quot;CDNLocation&quot;: &quot;CN&quot;,</li>
+</ul>
+<ul>
+<li>&quot;CNameConfigured&quot;: false,</li>
+</ul>
+<ul>
+<li>&quot;FreeTrialExpired&quot;: false,</li>
+</ul>
+<ul>
+<li>&quot;TimeLastUpdated&quot;: &quot;2019-08-16T06:11:19+00:00&quot;</li>
+</ul>
+<ul>
+<li>&quot;HttpsMapping&quot;: null</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>Thanks.</li>
+</ul>
+<ul>
+<li>Best regards,</li>
+</ul>
+<ul>
+<li>Stone He | WATS</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在cdn管理portal中找 id 和密钥：</li>
+</ul>
+<ul>
+<li>最近有小伙伴咨询如何使用Rest API操作CDN。整理了如下步骤供大家参考：</li>
+</ul>
+<ul>
+<li>&quot;IcpVerifyStatus&quot;: &quot;IcpVerified&quot;,</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如下是python脚本输出的结果：</li>
+</ul>
+<ul>
+<li>Python 脚本也附在这里</li>
+</ul>
+<ul>
+<li>使用python脚本生成指定格式的UTC时间戳及Authorization请求头：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>urlparts = urllib.parse.urlparse(request_url)</li>
+</ul>
+<ul>
+<li>queries = urllib.parse.parse_qs(urlparts.query)</li>
+</ul>
+<ul>
+<li>ordered_queries = collections.OrderedDict(sorted(queries.items()))</li>
+</ul>
+<ul>
+<li>message = &quot;%s\r\n%s\r\n%s\r\n%s&quot; % (</li>
+</ul>
+<ul>
+<li>digest = hmac.new(bytearray(key_value, &quot;utf-8&quot;), bytearray(message, &quot;utf-8&quot;), hashlib.sha256).hexdigest().upper()</li>
+</ul>
+<ul>
+<li>t1=time.gmtime()</li>
+</ul>
+<ul>
+<li>t2 = time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;,t1)</li>
+</ul>
+<ul>
+<li>request_time = t2</li>
+</ul>
+<ul>
+<li>key_id = &quot;95c7fc7a-5279-4efe-8e43-182062e95ece&quot;</li>
+</ul>
+<ul>
+<li>key_value = &quot;YTJmNTA0YmQtNjM4Zi00MWFiLWI5ZWItYjgwMTE4MDgwYTcx&quot;</li>
+</ul>
+<ul>
+<li>http_method = &quot;GET&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>然后postman中是在header中设置值，就可以通过api查看出endpointid：</li>
+</ul>
+<ul>
+<li>&quot;Enabled&quot;: true,</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>脚本中也需要对应书写：（脚本参考如下链接: <a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-signature）" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-signature）</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-list-endpoints" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-list-endpoints</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-signature" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-signature</a></li>
+</ul>
+<ul>
+<li>request_url = &quot;<a href="https://restapi.cdn.azure.cn/subscriptions/0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9/endpoints?apiVersion=1.0&quot;" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9/endpoints?apiVersion=1.0&quot;</a></li>
+</ul>
+<ul>
+<li>#     &quot;<a href="https://restapi.cdn.azure.cn/subscriptions/0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9/endpoints?apiVersion=1.0&quot;," target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9/endpoints?apiVersion=1.0&quot;,</a></li>
+</ul>
+<ul>
+<li>&quot;CustomDomain&quot;: &quot;www.ltsstone.site&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Host&quot;: &quot;www.hlm.com&quot;,</li>
+</ul>
+<ul>
+<li>&quot;CName&quot;: &quot;www.ltsstone.site.mcchcdn.com&quot;,</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020/5/7</p>
+<p>johnny</p>
+<p>2020/11/20 update</p>
+<p>在cdn管理portal中找 id 和密钥：</p>
+<p>脚本中也需要对应书写：（脚本参考如下链接: <a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-signature）" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-signature）</a></p>
+<p>如下是python脚本输出的结果：</p>
+<p>然后postman中是在header中设置值，就可以通过api查看出endpointid：</p>
+<p>Python 脚本也附在这里</p>
+<p>==================================================================================</p>
+<p>Hi All,</p>
+<p>最近有小伙伴咨询如何使用Rest API操作CDN。整理了如下步骤供大家参考：</p>
+<p>参考地址：</p>
+<p><a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-list-endpoints" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-list-endpoints</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-signature" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-signature</a></p>
+<p>使用python脚本生成指定格式的UTC时间戳及Authorization请求头：</p>
+<p>========================</p>
+<p>import time</p>
+<p>import urllib</p>
+<p>import hmac, hashlib</p>
+<p>import collections</p>
+<p>from collections import OrderedDict</p>
+<p>from urllib import parse</p>
+<p>def calculate_authorization_header(request_url, request_time, key_id, key_value, http_method):</p>
+<p>&quot;&quot;&quot; Calculate the authorization header.</p>
+<p>@request_url: Complete request URL with scheme, host, path and queries</p>
+<p>@request_time: UTC request time with format yyyy-MM-dd HH:mm:ss</p>
+<p>@key_id: API key ID</p>
+<p>@key_value: API key value</p>
+<p>@http_method: Http method in upper case</p>
+<p>&quot;&quot;&quot;</p>
+<p>urlparts = urllib.parse.urlparse(request_url)</p>
+<p>queries = urllib.parse.parse_qs(urlparts.query)</p>
+<p>ordered_queries = collections.OrderedDict(sorted(queries.items()))</p>
+<p>message = &quot;%s\r\n%s\r\n%s\r\n%s&quot; % (</p>
+<p>urlparts.path, &quot;, &quot;.join([&#39;%s:%s&#39; % (key, value[0]) for (key, value) in ordered_queries.items()]), request_time,</p>
+<p>http_method)</p>
+<p>digest = hmac.new(bytearray(key_value, &quot;utf-8&quot;), bytearray(message, &quot;utf-8&quot;), hashlib.sha256).hexdigest().upper()</p>
+<p>return &quot;AzureCDN %s:%s&quot; % (key_id, digest)</p>
+<p>t1=time.gmtime()</p>
+<p>t2 = time.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;,t1)</p>
+<p>print(t2)</p>
+<p>request_url = &quot;<a href="https://restapi.cdn.azure.cn/subscriptions/0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9/endpoints?apiVersion=1.0&quot;" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9/endpoints?apiVersion=1.0&quot;</a></p>
+<p>request_time = t2</p>
+<p>key_id = &quot;95c7fc7a-5279-4efe-8e43-182062e95ece&quot;</p>
+<p>key_value = &quot;YTJmNTA0YmQtNjM4Zi00MWFiLWI5ZWItYjgwMTE4MDgwYTcx&quot;</p>
+<p>http_method = &quot;GET&quot;</p>
+<p>print(calculate_authorization_header(request_url, request_time, key_id, key_value, http_method))</p>
+<h1>print(calculate_authorization_header(</h1>
+<h1>&quot;<a href="https://restapi.cdn.azure.cn/subscriptions/0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9/endpoints?apiVersion=1.0&quot;," target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9/endpoints?apiVersion=1.0&quot;,</a></h1>
+<h1>&quot;2019-10-29 08:58:00&quot;, &quot;95c7fc7a-5279-4efe-8e43-182062e95ece&quot;, &quot;YTJmNTA0YmQtNjM4Zi00MWFiLWI5ZWItYjgwMTE4MDgwYTcx&quot;,</h1>
+<h1>&quot;GET&quot;))</h1>
+<p>使用Postman工具获取CDN相关信息：</p>
+<p>Result output:</p>
+<p>[</p>
+<p>{</p>
+<p>&quot;EndpointId&quot;: &quot;92bc9a3a-e979-11e8-be87-0017fa000909&quot;,</p>
+<p>&quot;Settings&quot;: {</p>
+<p>&quot;CustomDomain&quot;: &quot;www.ltsstone.site&quot;,</p>
+<p>&quot;Host&quot;: &quot;www.hlm.com&quot;,</p>
+<p>&quot;Origin&quot;: {</p>
+<p>&quot;Addresses&quot;: [</p>
+<p>&quot;1.123.4.15&quot;</p>
+<p>],</p>
+<p>&quot;SchemePort&quot;: {</p>
+<p>&quot;Scheme&quot;: &quot;Http&quot;,</p>
+<p>&quot;HttpPort&quot;: 80,</p>
+<p>&quot;HttpsPort&quot;: null</p>
+<p>}</p>
+<p>},</p>
+<p>&quot;ICP&quot;: &quot;******&quot;,</p>
+<p>&quot;ServiceType&quot;: &quot;Web&quot;,</p>
+<p>&quot;AllowedScheme&quot;: &quot;Http&quot;,</p>
+<p>&quot;CName&quot;: &quot;www.ltsstone.site.mcchcdn.com&quot;,</p>
+<p>&quot;CachingPolicy&quot;: null,</p>
+<p>&quot;ServiceRegion&quot;: 0</p>
+<p>&quot;Status&quot;: {</p>
+<p>&quot;Enabled&quot;: true,</p>
+<p>&quot;IcpVerifyStatus&quot;: &quot;IcpVerified&quot;,</p>
+<p>&quot;LifetimeStatus&quot;: &quot;Normal&quot;,</p>
+<p>&quot;CDNLocation&quot;: &quot;CN&quot;,</p>
+<p>&quot;CNameConfigured&quot;: false,</p>
+<p>&quot;FreeTrialExpired&quot;: false,</p>
+<p>&quot;TimeLastUpdated&quot;: &quot;2019-08-16T06:11:19+00:00&quot;</p>
+<p>&quot;HttpsMapping&quot;: null</p>
+<p>]</p>
+<p>Thanks.</p>
+<p>Best regards,</p>
+<p>Stone He | WATS</p></article>

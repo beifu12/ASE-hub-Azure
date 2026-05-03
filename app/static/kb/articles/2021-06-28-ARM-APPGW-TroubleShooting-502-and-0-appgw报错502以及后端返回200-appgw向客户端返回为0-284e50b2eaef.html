@@ -1,0 +1,167 @@
+<article class="kb-article" data-title="[ARM-APPGW-TroubleShooting-502 and 0]appgw报错502以及后端返回200，appgw向客户端返回为0"><h1>[ARM-APPGW-TroubleShooting-502 and 0]appgw报错502以及后端返回200，appgw向客户端返回为0</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-06-28 15:15:14</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>17:52~18:05之间，客户业务推广，大量并发请求，通过appgw访问时出现很多失败的请求</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>上述截图来自javis：</li>
+</ul>
+<ul>
+<li>访问日志</li>
+</ul>
+<ul>
+<li>2.由于目前后端公网IP地址的AKS服务在Azure的另一个虚拟网络，您也可以考虑打通两个内网环境，这样AppGW在访问后端server时就不会进行SNAT的转换，而是直接以内网IP地址进行访问。</li>
+</ul>
+<ul>
+<li>AppGW后端池支持的范围可参考：应用程序网关组件 | Azure Docs</li>
+</ul>
+<ul>
+<li>对两个虚拟网络建立peering连接可参考：Azure 虚拟网络对等互连 | Azure Docs</li>
+</ul>
+<ul>
+<li>3.通过 Azure Kubernetes 服务 (AKS) 创建和使用内部负载均衡器，那么可以将该LB的内网IP地址作为AppGW的后段池：创建内部负载均衡器 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>4.若业务允许，也可调整业务逻辑，使用长连接机制。</li>
+</ul>
+<ul>
+<li>5.您可先参考上述文档并结合实际业务对网络或业务架构进行调整，避免出现上述SNAT耗尽的情况。</li>
+</ul>
+<ul>
+<li>Client sending a reset prior to the server sending a HTTP response can result in a server response of 0</li>
+</ul>
+<ul>
+<li>Client sending a FIN on a connection used for HTTP/2 multiplexing before all requests are finished</li>
+</ul>
+<ul>
+<li>筛选了appgw_httpstatus 为0 的请求， 对比发现都是BMW+yue+xue+yuan/5.9.6+(iPhone;+iOS+14.4.2;+Scale/2.00)访问时返回的， 而同一时间user agent “Java/1.8.0_231” 的访问就是没有问题的， 所以这里比较怀疑和client有关。</li>
+</ul>
+<ul>
+<li>通过java/1.8.0_231访问没有问题：</li>
+</ul>
+<ul>
+<li>参考工单：</li>
+</ul>
+<ul>
+<li>SR_2021052899452_[S500]协助调查错误链接</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>但是上述只能看到的内存的数据是in use,所以不好判定是否达到了内存的性能瓶颈。最后通过如下dashboard，查看到其他内存使用相当低：</li>
+</ul>
+<ul>
+<li>1）先通过ASC查看appgw实例所在的平台订阅：</li>
+</ul>
+<ul>
+<li>2）通过此订阅id，查看appgw实例部署信息，然后通过gateweyid定位对应的appgw实例虚拟机：</li>
+</ul>
+<ul>
+<li>3）查看SNAT情况：</li>
+</ul>
+<ul>
+<li>排查结论：</li>
+</ul>
+<ul>
+<li>客户增加实例数量后，进行压测，排查压测时间段，不再有SNAT失败的情况。抽取访问日志发现仍有少量请求没有正常返回200ok，这些请求是后端服务器正常返回了200ok， 但是AppGW返回了status 0, 考虑到随机性和报错的量， 这应该不是performance的问题。针对https Status 0的情况做了一些研究，找到了httpstatus 0的类似案例， 一般appgw 返回status 0 有以下几种情况：</li>
+</ul>
+<ul>
+<li>Client responding too slow and the server sends a reset followed by logging status 0</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>1.从后台日志来看大量请求appgw直接返回502的情况；有部分请求后端server返回了200，但是appgw向客户端返回的状态码为空。同时可以看到appgw的连接数在问题期间一直保持较高的值</li>
+</ul>
+<ul>
+<li>2.对于上述appgw返回502的请求，客户设置的超时时间为3600s，没有超过超时时间设置。接着排查了apgpw的CPU、请求数以及吞吐量等，除了请求数明显增加外，CPU以及吞吐量都比较低，但是看到内存使用量有明显突增，因此开始怀疑是否为内存限制了appgw的处理能力，导致了上述日志中的异常状态码：</li>
+</ul>
+<ul>
+<li>3.根据后台日志，问题时间段大量的入站访问到AppGW托管的hostname: joylearning.bmw.com.cn:6625， 该侦听器对应的后端池配置为：139.217.82.178（为Azure上另一个虚拟网络中AKS集群暴露的公网IP地址）。请注意，此处由于后端池为公网IP地址，那AppGW实例在与后端建立连接时，会进行SNAT转换，将AppGW实例的内网IP地址转换为AppGW前端的公网IP地址。（对于V1 AppGW，平台会为AppGW每个实例初始分配1024个SNAT端口进行出站公网访问）。因此，查看了应用程序网关实例的SNAT情况，看到问题时间段，AppGW实例上确实出现了很多failed和pending的SNAT连接的情况，表示了当时确实有SNAT端口耗尽的情况。</li>
+</ul>
+<ul>
+<li>由于上述短时间内出现了大量的访问请求，导致AppGW实例SNAT端口耗尽，进而导致了AppGW直接返回502的情况。</li>
+</ul>
+<ul>
+<li>1.对于今天的活动，可以对AppGW实例个数进行扩容，那么总的可用SNAT端口会增加，但若果您的业务上还是有短时间内大量的请求进来，AppGW需要做SNAT来转发请求到后端公网IP地址，还是有可能会复现SNAT耗尽的情况。</li>
+</ul>
+<ul>
+<li>Client sending a down-level TLS protocol client handshake while the server only allows handshakes using TLS protocol of a higher version</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>后续建议：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/CB866E92?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/c30221f7-79e4-4da9-80bc-64f0b3a3d103/resourceGroups/JoyLearningProd/providers/Microsoft.Network/applicationGateways/JoyLearningProd-WAF&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/CB866E92?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/c30221f7-79e4-4da9-80bc-64f0b3a3d103/resourceGroups/JoyLearningProd/providers/Microsoft.Network/applicationGateways/JoyLearningProd-WAF&quot;}]%20</a></li>
+</ul>
+<ul>
+<li>上述截图来自：<a href="https://jarvis-west.dc.ad.msft.net/BE5118C2" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/BE5118C2</a></li>
+</ul>
+<ul>
+<li>上述截图来自：<a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/1EE92170?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;applicationGatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;8570a374-539c-4c0b-a44f-959f4c83f055&quot;},{&quot;query&quot;:&quot;//*[id=&#39;roleInstance&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;servicePrefix&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/1EE92170?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;applicationGatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;8570a374-539c-4c0b-a44f-959f4c83f055&quot;},{&quot;query&quot;:&quot;//*[id=&#39;roleInstance&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;servicePrefix&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20</a></li>
+</ul>
+<ul>
+<li>上述截图来自：<a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/C6AC74D0?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;applicationGatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;8570a374-539c-4c0b-a44f-959f4c83f055&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/C6AC74D0?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;applicationGatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;8570a374-539c-4c0b-a44f-959f4c83f055&quot;}]%20</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/7F192DFD?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;slbhpchinanorth2&quot;},{&quot;query&quot;:&quot;//*[id=&#39;VipAddress&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;139.217.81.36&quot;},{&quot;query&quot;:&quot;//*[id=&#39;HostAddress&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;10.250.2.80&quot;},{&quot;query&quot;:&quot;//*[id=&#39;DipAddress&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;169.254.13.30&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/7F192DFD?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;slbhpchinanorth2&quot;},{&quot;query&quot;:&quot;//*[id=&#39;VipAddress&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;139.217.81.36&quot;},{&quot;query&quot;:&quot;//*[id=&#39;HostAddress&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;10.250.2.80&quot;},{&quot;query&quot;:&quot;//*[id=&#39;DipAddress&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;169.254.13.30&quot;}]%20</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/06/24</p>
+<p>问题现象：</p>
+<p>17:52~18:05之间，客户业务推广，大量并发请求，通过appgw访问时出现很多失败的请求</p>
+<p>排查过程：</p>
+<p>1.从后台日志来看大量请求appgw直接返回502的情况；有部分请求后端server返回了200，但是appgw向客户端返回的状态码为空。同时可以看到appgw的连接数在问题期间一直保持较高的值</p>
+<p>上述截图来自javis：</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/CB866E92?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/c30221f7-79e4-4da9-80bc-64f0b3a3d103/resourceGroups/JoyLearningProd/providers/Microsoft.Network/applicationGateways/JoyLearningProd-WAF&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/CB866E92?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;ResourceId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;/subscriptions/c30221f7-79e4-4da9-80bc-64f0b3a3d103/resourceGroups/JoyLearningProd/providers/Microsoft.Network/applicationGateways/JoyLearningProd-WAF&quot;}]%20</a></p>
+<p>访问日志</p>
+<p>上述截图来自：<a href="https://jarvis-west.dc.ad.msft.net/BE5118C2" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/BE5118C2</a></p>
+<p>2.对于上述appgw返回502的请求，客户设置的超时时间为3600s，没有超过超时时间设置。接着排查了apgpw的CPU、请求数以及吞吐量等，除了请求数明显增加外，CPU以及吞吐量都比较低，但是看到内存使用量有明显突增，因此开始怀疑是否为内存限制了appgw的处理能力，导致了上述日志中的异常状态码：</p>
+<p>上述截图来自：<a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/1EE92170?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;applicationGatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;8570a374-539c-4c0b-a44f-959f4c83f055&quot;},{&quot;query&quot;:&quot;//*[id=&#39;roleInstance&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;servicePrefix&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/1EE92170?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;applicationGatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;8570a374-539c-4c0b-a44f-959f4c83f055&quot;},{&quot;query&quot;:&quot;//*[id=&#39;roleInstance&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;},{&quot;query&quot;:&quot;//*[id=&#39;servicePrefix&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;&quot;}]%20</a></p>
+<p>但是上述只能看到的内存的数据是in use,所以不好判定是否达到了内存的性能瓶颈。最后通过如下dashboard，查看到其他内存使用相当低：</p>
+<p>上述截图来自：<a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/C6AC74D0?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;applicationGatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;8570a374-539c-4c0b-a44f-959f4c83f055&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/C6AC74D0?overrides=[{&quot;query&quot;:&quot;//*[id=&#39;applicationGatewayId&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;8570a374-539c-4c0b-a44f-959f4c83f055&quot;}]%20</a></p>
+<p>3.根据后台日志，问题时间段大量的入站访问到AppGW托管的hostname: joylearning.bmw.com.cn:6625， 该侦听器对应的后端池配置为：139.217.82.178（为Azure上另一个虚拟网络中AKS集群暴露的公网IP地址）。请注意，此处由于后端池为公网IP地址，那AppGW实例在与后端建立连接时，会进行SNAT转换，将AppGW实例的内网IP地址转换为AppGW前端的公网IP地址。（对于V1 AppGW，平台会为AppGW每个实例初始分配1024个SNAT端口进行出站公网访问）。因此，查看了应用程序网关实例的SNAT情况，看到问题时间段，AppGW实例上确实出现了很多failed和pending的SNAT连接的情况，表示了当时确实有SNAT端口耗尽的情况。</p>
+<p>1）先通过ASC查看appgw实例所在的平台订阅：</p>
+<p>2）通过此订阅id，查看appgw实例部署信息，然后通过gateweyid定位对应的appgw实例虚拟机：</p>
+<p>3）查看SNAT情况：</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/7F192DFD?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;slbhpchinanorth2&quot;},{&quot;query&quot;:&quot;//*[id=&#39;VipAddress&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;139.217.81.36&quot;},{&quot;query&quot;:&quot;//*[id=&#39;HostAddress&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;10.250.2.80&quot;},{&quot;query&quot;:&quot;//*[id=&#39;DipAddress&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;169.254.13.30&quot;}]%20" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/7F192DFD?overrides=[{&quot;query&quot;:&quot;//dataSources&quot;,&quot;key&quot;:&quot;account&quot;,&quot;replacement&quot;:&quot;slbhpchinanorth2&quot;},{&quot;query&quot;:&quot;//*[id=&#39;VipAddress&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;139.217.81.36&quot;},{&quot;query&quot;:&quot;//*[id=&#39;HostAddress&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;10.250.2.80&quot;},{&quot;query&quot;:&quot;//*[id=&#39;DipAddress&#39;]&quot;,&quot;key&quot;:&quot;value&quot;,&quot;replacement&quot;:&quot;169.254.13.30&quot;}]%20</a></p>
+<p>排查结论：</p>
+<p>由于上述短时间内出现了大量的访问请求，导致AppGW实例SNAT端口耗尽，进而导致了AppGW直接返回502的情况。</p>
+<p>后续建议：</p>
+<p>1.对于今天的活动，可以对AppGW实例个数进行扩容，那么总的可用SNAT端口会增加，但若果您的业务上还是有短时间内大量的请求进来，AppGW需要做SNAT来转发请求到后端公网IP地址，还是有可能会复现SNAT耗尽的情况。</p>
+<p>2.由于目前后端公网IP地址的AKS服务在Azure的另一个虚拟网络，您也可以考虑打通两个内网环境，这样AppGW在访问后端server时就不会进行SNAT的转换，而是直接以内网IP地址进行访问。</p>
+<p>AppGW后端池支持的范围可参考：应用程序网关组件 | Azure Docs</p>
+<p>对两个虚拟网络建立peering连接可参考：Azure 虚拟网络对等互连 | Azure Docs</p>
+<p>3.通过 Azure Kubernetes 服务 (AKS) 创建和使用内部负载均衡器，那么可以将该LB的内网IP地址作为AppGW的后段池：创建内部负载均衡器 - Azure Kubernetes Service | Azure Docs</p>
+<p>4.若业务允许，也可调整业务逻辑，使用长连接机制。</p>
+<p>5.您可先参考上述文档并结合实际业务对网络或业务架构进行调整，避免出现上述SNAT耗尽的情况。</p>
+<p>客户增加实例数量后，进行压测，排查压测时间段，不再有SNAT失败的情况。抽取访问日志发现仍有少量请求没有正常返回200ok，这些请求是后端服务器正常返回了200ok， 但是AppGW返回了status 0, 考虑到随机性和报错的量， 这应该不是performance的问题。针对https Status 0的情况做了一些研究，找到了httpstatus 0的类似案例， 一般appgw 返回status 0 有以下几种情况：</p>
+<p>Client sending a down-level TLS protocol client handshake while the server only allows handshakes using TLS protocol of a higher version</p>
+<p>Client sending a reset prior to the server sending a HTTP response can result in a server response of 0</p>
+<p>Client sending a FIN on a connection used for HTTP/2 multiplexing before all requests are finished</p>
+<p>Client responding too slow and the server sends a reset followed by logging status 0</p>
+<p>筛选了appgw_httpstatus 为0 的请求， 对比发现都是BMW+yue+xue+yuan/5.9.6+(iPhone;+iOS+14.4.2;+Scale/2.00)访问时返回的， 而同一时间user agent “Java/1.8.0_231” 的访问就是没有问题的， 所以这里比较怀疑和client有关。</p>
+<p>通过java/1.8.0_231访问没有问题：</p>
+<p>参考工单：</p>
+<p>SR_2021052899452_[S500]协助调查错误链接</p></article>

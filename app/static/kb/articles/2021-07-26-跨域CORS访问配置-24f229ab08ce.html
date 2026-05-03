@@ -1,0 +1,119 @@
+<article class="kb-article" data-title="跨域CORS访问配置"><h1>跨域CORS访问配置</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-07-26 16:35:27</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>m.heyjie.cn需要跨域访问oss.heyjie.cn的资源。 其中oss.heyjie.cn是解析到微软云CDN上的。CDN回源存储账户的BLOB存储。目前存储账户的CORS设置已经设置了全部允许，但仍然访问失败。是否CDN上还要配置什么？</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>m.heyjie.cn需要跨域访问oss.heyjie.cn的资源。 其中oss.heyjie.cn是解析到微软云CDN上的。CDN回源存储账户的BLOB存储。目前存储账户的CORS设置已经设置了全部允许，但仍然访问失败。是否CDN上还要配置什么？</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_2019082347103_[MS-LED]如何添加http header的缓存规则</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>按照客户的如下要求配置CDN跨域访问后，问题解决</li>
+</ul>
+<ul>
+<li>订阅：</li>
+</ul>
+<ul>
+<li>加速域名：</li>
+</ul>
+<ul>
+<li>所需配置的URL：如果该URL是目录，是否需要向下继承？</li>
+</ul>
+<ul>
+<li>Access-Control-Allow-Origin类型：指定域名/泛域名/*（全部）</li>
+</ul>
+<ul>
+<li>1、dc64f44f-8bc9-47da-b972-166b85243922</li>
+</ul>
+<ul>
+<li>2、oss.heyjie.cn</li>
+</ul>
+<ul>
+<li>3、oss.heyjie.cn  向下继承，这个域名下的所有文件允许跨域访问</li>
+</ul>
+<ul>
+<li>4、Access-Control-Allow-Origin类型 GET HEAD  POST PUT   * 进行跨域访问</li>
+</ul>
+<ul>
+<li>备注：</li>
+</ul>
+<ul>
+<li>===</li>
+</ul>
+<ul>
+<li>CORS解释：</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>配置跨域访问，需要提供如下信息：</li>
+</ul>
+<ul>
+<li>=====================</li>
+</ul>
+<ul>
+<li>Azure订阅ID：</li>
+</ul>
+<ul>
+<li>配置跨域的加速域名（自定义域名）:</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>CORS，全称Cross-Origin Resource Sharing，是一种允许当前域（domain）的资源（比如html/js/web service）被其他域（domain）的脚本请求访问的机制，通常由于同域安全策略（the same-origin security policy）浏览器会禁止这种跨域请求。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>具体跨域需求（只能为单个域名，或者单个泛域名，或者*。即配置为Access-Control-Allow-Origin: www.auzre.cn or Access-Control-Allow-Origin: *.azure.cn or Access-Control-Allow-Origin: *）</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2019082347103_[MS-LED]如何添加http header的缓存规则</p>
+<p>问题描述：</p>
+<p>==========</p>
+<p>m.heyjie.cn需要跨域访问oss.heyjie.cn的资源。 其中oss.heyjie.cn是解析到微软云CDN上的。CDN回源存储账户的BLOB存储。目前存储账户的CORS设置已经设置了全部允许，但仍然访问失败。是否CDN上还要配置什么？</p>
+<p>解决方案：</p>
+<p>按照客户的如下要求配置CDN跨域访问后，问题解决</p>
+<p>订阅：</p>
+<p>加速域名：</p>
+<p>所需配置的URL：如果该URL是目录，是否需要向下继承？</p>
+<p>Access-Control-Allow-Origin类型：指定域名/泛域名/*（全部）</p>
+<p>1、dc64f44f-8bc9-47da-b972-166b85243922</p>
+<p>2、oss.heyjie.cn</p>
+<p>3、oss.heyjie.cn  向下继承，这个域名下的所有文件允许跨域访问</p>
+<p>4、Access-Control-Allow-Origin类型 GET HEAD  POST PUT   * 进行跨域访问</p>
+<p>备注：</p>
+<p>===</p>
+<p>CORS解释：</p>
+<p>=======</p>
+<p>CORS，全称Cross-Origin Resource Sharing，是一种允许当前域（domain）的资源（比如html/js/web service）被其他域（domain）的脚本请求访问的机制，通常由于同域安全策略（the same-origin security policy）浏览器会禁止这种跨域请求。</p>
+<p>配置跨域访问，需要提供如下信息：</p>
+<p>=====================</p>
+<p>Azure订阅ID：</p>
+<p>配置跨域的加速域名（自定义域名）:</p>
+<p>具体跨域需求（只能为单个域名，或者单个泛域名，或者*。即配置为Access-Control-Allow-Origin: www.auzre.cn or Access-Control-Allow-Origin: *.azure.cn or Access-Control-Allow-Origin: *）</p></article>

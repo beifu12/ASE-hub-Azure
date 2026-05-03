@@ -1,0 +1,135 @@
+<article class="kb-article" data-title="tcpcopy实现流量复制"><h1>tcpcopy实现流量复制</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LinuxNetIssue</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-05-19 17:07:37</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>TCPCOPY可以实现在生产环境的A端将流量复制到指定的机器B端进行准确模拟生产场景去压测即将上线的测试环境，在复制过程中通过修改源IP为其他的地址比如192.168.100.4，在机器B端上配置负载均衡，将流量负载给即将上线的环境进行压测，并且同时调整B端的路由，将其回包丢给黑洞C端，避免B端回包回到生产环境的A端.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>TCPCOPY可以实现在生产环境的A端将流量复制到指定的机器B端进行准确模拟生产场景去压测即将上线的测试环境，在复制过程中通过修改源IP为其他的地址比如192.168.100.4，在机器B端上配置负载均衡，将流量负载给即将上线的环境进行压测，并且同时调整B端的路由，将其回包丢给黑洞C端，避免B端回包回到生产环境的A端.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>配置分为两部分：Azure侧配置+虚拟机内部配置</li>
+</ul>
+<ul>
+<li>一.Azure侧的配置：</li>
+</ul>
+<ul>
+<li>1.在虚拟网络中新加地址空间192.168.100.0/24</li>
+</ul>
+<ul>
+<li>2.在该虚拟网络中添加一个新的subnet ，并且该subnet的地址空间 为192.168.100.0/25或者192.168.100.0/26都可以 。</li>
+</ul>
+<ul>
+<li>4.开启VM1的两个网卡的ip_forwarding</li>
+</ul>
+<ul>
+<li>虚拟机内部的配置：</li>
+</ul>
+<ul>
+<li>A端：10.3.0.19</li>
+</ul>
+<ul>
+<li>yum install nc gcc* -y &amp;&amp; git clone git://github.com/session-replay-tools/tcpcopy.git &amp;&amp; cd tcpcopy &amp;&amp; ./configure &amp;&amp; make &amp;&amp; make install &amp;&amp; nc -k -l 6201</li>
+</ul>
+<ul>
+<li>B端：10.3.0.20</li>
+</ul>
+<ul>
+<li>yum install pcre-* zlib* gcc* glibc* autoconf* automake* libxml* ncurses-devel* libgcrypt* libtool* bison* cmake* make* openssl* unzip* -y</li>
+</ul>
+<ul>
+<li>mv nginx-1.18.0.tar.gz /usr/local/src/</li>
+</ul>
+<ul>
+<li>tar -xf nginx-1.18.0.tar.gz &amp;&amp; cd nginx-1.18.0/</li>
+</ul>
+<ul>
+<li>./configure --prefix=/usr/local/nginx --with-http_ssl_module --with-http_stub_status_module --with-pcre --with-http_v2_module --with-http_gzip_static_module --with-ld-opt=&quot;-Wl,-E&quot; --with-stream</li>
+</ul>
+<ul>
+<li>make &amp;&amp; make install</li>
+</ul>
+<ul>
+<li>修改配置文件并启动nginx:</li>
+</ul>
+<ul>
+<li>C端：10.3.0.21</li>
+</ul>
+<ul>
+<li>yum groupinstall &quot;Development Tools&quot; -y</li>
+</ul>
+<ul>
+<li>git clone git://github.com/session-replay-tools/intercept.git &amp;&amp; cd intercept &amp;&amp; ./configure &amp;&amp; make &amp;&amp; make install</li>
+</ul>
+<ul>
+<li>测试：</li>
+</ul>
+<ul>
+<li>经过测试，可以实现将来自客户端访问生产主机A端的流量使用tcpcopy将其复制到B端，B端并将其调度至后端的测试系统。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>同样为第二块网卡配置相同的步骤。</li>
+</ul>
+<ul>
+<li>5.新建UDR并关联到步骤2新建的subnet中去</li>
+</ul>
+<ul>
+<li>./tcpcopy -x 6201-10.3.0.19:6201 -s 10.3.0.21 -c 192.168.100.4 -d -C 4 -l /tmp/tcpcopy.log</li>
+</ul>
+<ul>
+<li>./intercept -i eth0 -l /tmp/intercept.log -F &#39;tcp and src port 6201 and src host 10.3.0.19&#39;</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>TCPCOPY可以实现在生产环境的A端将流量复制到指定的机器B端进行准确模拟生产场景去压测即将上线的测试环境，在复制过程中通过修改源IP为其他的地址比如192.168.100.4，在机器B端上配置负载均衡，将流量负载给即将上线的环境进行压测，并且同时调整B端的路由，将其回包丢给黑洞C端，避免B端回包回到生产环境的A端.</li>
+</ul>
+<ul>
+<li>3.新建网卡，该网卡位于上面新建的subnet中，并将该网卡附件到VM1或者VMA（也就是安装tcpcopy的机器），在附加网卡的时候，需要将虚拟机关闭</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>wget <a href="http://nginx.org/download/nginx-1.18.0.tar.gz" target="_blank" rel="noopener">http://nginx.org/download/nginx-1.18.0.tar.gz</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/05/19</p>
+<p>TCPCOPY可以实现在生产环境的A端将流量复制到指定的机器B端进行准确模拟生产场景去压测即将上线的测试环境，在复制过程中通过修改源IP为其他的地址比如192.168.100.4，在机器B端上配置负载均衡，将流量负载给即将上线的环境进行压测，并且同时调整B端的路由，将其回包丢给黑洞C端，避免B端回包回到生产环境的A端.</p>
+<p>配置分为两部分：Azure侧配置+虚拟机内部配置</p>
+<p>一.Azure侧的配置：</p>
+<p>1.在虚拟网络中新加地址空间192.168.100.0/24</p>
+<p>2.在该虚拟网络中添加一个新的subnet ，并且该subnet的地址空间 为192.168.100.0/25或者192.168.100.0/26都可以 。</p>
+<p>3.新建网卡，该网卡位于上面新建的subnet中，并将该网卡附件到VM1或者VMA（也就是安装tcpcopy的机器），在附加网卡的时候，需要将虚拟机关闭</p>
+<p>4.开启VM1的两个网卡的ip_forwarding</p>
+<p>同样为第二块网卡配置相同的步骤。</p>
+<p>5.新建UDR并关联到步骤2新建的subnet中去</p>
+<p>虚拟机内部的配置：</p>
+<p>A端：10.3.0.19</p>
+<p>yum install nc gcc* -y &amp;&amp; git clone git://github.com/session-replay-tools/tcpcopy.git &amp;&amp; cd tcpcopy &amp;&amp; ./configure &amp;&amp; make &amp;&amp; make install &amp;&amp; nc -k -l 6201</p>
+<p>./tcpcopy -x 6201-10.3.0.19:6201 -s 10.3.0.21 -c 192.168.100.4 -d -C 4 -l /tmp/tcpcopy.log</p>
+<p>B端：10.3.0.20</p>
+<p>yum install pcre-* zlib* gcc* glibc* autoconf* automake* libxml* ncurses-devel* libgcrypt* libtool* bison* cmake* make* openssl* unzip* -y</p>
+<p>wget <a href="http://nginx.org/download/nginx-1.18.0.tar.gz" target="_blank" rel="noopener">http://nginx.org/download/nginx-1.18.0.tar.gz</a></p>
+<p>mv nginx-1.18.0.tar.gz /usr/local/src/</p>
+<p>tar -xf nginx-1.18.0.tar.gz &amp;&amp; cd nginx-1.18.0/</p>
+<p>./configure --prefix=/usr/local/nginx --with-http_ssl_module --with-http_stub_status_module --with-pcre --with-http_v2_module --with-http_gzip_static_module --with-ld-opt=&quot;-Wl,-E&quot; --with-stream</p>
+<p>make &amp;&amp; make install</p>
+<p>修改配置文件并启动nginx:</p>
+<p>C端：10.3.0.21</p>
+<p>yum groupinstall &quot;Development Tools&quot; -y</p>
+<p>git clone git://github.com/session-replay-tools/intercept.git &amp;&amp; cd intercept &amp;&amp; ./configure &amp;&amp; make &amp;&amp; make install</p>
+<p>./intercept -i eth0 -l /tmp/intercept.log -F &#39;tcp and src port 6201 and src host 10.3.0.19&#39;</p>
+<p>测试：</p>
+<p>经过测试，可以实现将来自客户端访问生产主机A端的流量使用tcpcopy将其复制到B端，B端并将其调度至后端的测试系统。</p></article>

@@ -1,0 +1,101 @@
+<article class="kb-article" data-title="Powershell制作P2S证书"><h1>Powershell制作P2S证书</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-11 16:29:23</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2016082548401----Powershell制作P2S证书</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2016082548401----Powershell制作P2S证书</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2016年9月1日</li>
+</ul>
+<ul>
+<li>18:36</li>
+</ul>
+<ul>
+<li>$root = New-SelfSignedCertificate -Subject &quot;CN=oneworld.com&quot; -KeyUsage CertSign,CRLSign,DataEncipherment,DigitalSignature,KeyAgreement,KeyEncipherment -Type Custom -KeyLength 2048 -KeySpec KeyExchange -KeyExportPolicy Exportable -CertStoreLocation Cert:\CurrentUser\My\ -HashAlgorithm SHA1 -NotAfter (Get-Date).AddMonths(240)</li>
+</ul>
+<ul>
+<li>生成客户端证书</li>
+</ul>
+<ul>
+<li>企业证书：</li>
+</ul>
+<ul>
+<li>适用于 MakeCert 的说明：如果无权访问用于生成证书的 Windows 10 或更高版本计算机，则可使用 MakeCert。 虽然 MakeCert 已弃用，但仍可使用它来生成证书。 可以将生成的证书安装在任何受支持的 P2S 客户端上。</li>
+</ul>
+<ul>
+<li>Linux：请参阅 strongSwan 或 OpenSSL 指令。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在使用点到站点连接连接到 VNet 的每台客户端计算机上，必须安装客户端证书。 请从根证书生成它，然后将它安装在每个客户端计算机上。 如果未安装有效的客户端证书，则当客户端尝试连接到 VNet 时，身份验证会失败。</li>
+</ul>
+<ul>
+<li>可以为每个客户端生成唯一证书，也可以对多个客户端使用同一证书。 生成唯一客户端证书的优势是能够吊销单个证书。 否则，如果多个客户端使用相同的客户端证书进行身份验证而你将其撤销，则需为所有使用该证书的客户端生成并安装新证书。</li>
+</ul>
+<ul>
+<li>请确保客户端证书基于“用户”证书模板，该模板将“客户端身份验证”列为用户列表中的第一项。 检查证书的方式是：双击证书，然后在“详细信息”选项卡中查看“增强型密钥用法” 。</li>
+</ul>
+<ul>
+<li>自签名根证书： 按照下述某篇 P2S 证书文章中的步骤操作，使创建的客户端证书兼容 P2S 连接。</li>
+</ul>
+<ul>
+<li>从自签名根证书生成客户端证书时，该证书会自动安装在用于生成该证书的计算机上。 如果想要在另一台客户端计算机上安装客户端证书，请以 .pfx 文件格式导出该证书以及整个证书链。 这样做会创建一个 .pfx 文件，其中包含的根证书信息是客户端进行身份验证所必需的。</li>
+</ul>
+<ul>
+<li>这些文章中的步骤可生成兼容的客户端证书，然后你可以导出和分发该证书。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>2016082548401----Powershell制作P2S证书</li>
+</ul>
+<ul>
+<li>New-SelfSignedCertificate -Subject &quot;CN=oneworld.com&quot; -KeyUsage CertSign,CRLSign,DataEncipherment,DigitalSignature,KeyAgreement,KeyEncipherment -Type Custom -KeyExportPolicy Exportable -KeySpec KeyExchange -Signer $root -HashAlgorithm SHA1 -NotAfter (Get-Date).AddMonths(240) -CertStoreLocation Cert:\CurrentUser\My\</li>
+</ul>
+<ul>
+<li>适用于 Windows 10 或更高版本 PowerShell 的说明：按照这些说明进行操作时，需要使用 Windows 10（或更高版本）和 PowerShell 来生成证书。 生成的证书可以安装在任何受支持的 P2S 客户端上。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>可以通过以下方法生成客户端证书：</li>
+</ul>
+<ul>
+<li>如果使用的是企业证书解决方案，请使用通用名称值格式 name@yourdomain.com 生成客户端证书， 而不要使用“域名\用户名”格式。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>From &lt;<a href="https://docs.azure.cn/zh-cn/vpn-gateway/point-to-site-certificate-gateway&gt;" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/point-to-site-certificate-gateway&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2016082548401----Powershell制作P2S证书</p>
+<p>2016年9月1日</p>
+<p>18:36</p>
+<p>$root = New-SelfSignedCertificate -Subject &quot;CN=oneworld.com&quot; -KeyUsage CertSign,CRLSign,DataEncipherment,DigitalSignature,KeyAgreement,KeyEncipherment -Type Custom -KeyLength 2048 -KeySpec KeyExchange -KeyExportPolicy Exportable -CertStoreLocation Cert:\CurrentUser\My\ -HashAlgorithm SHA1 -NotAfter (Get-Date).AddMonths(240)</p>
+<p>New-SelfSignedCertificate -Subject &quot;CN=oneworld.com&quot; -KeyUsage CertSign,CRLSign,DataEncipherment,DigitalSignature,KeyAgreement,KeyEncipherment -Type Custom -KeyExportPolicy Exportable -KeySpec KeyExchange -Signer $root -HashAlgorithm SHA1 -NotAfter (Get-Date).AddMonths(240) -CertStoreLocation Cert:\CurrentUser\My\</p>
+<p>生成客户端证书</p>
+<p>在使用点到站点连接连接到 VNet 的每台客户端计算机上，必须安装客户端证书。 请从根证书生成它，然后将它安装在每个客户端计算机上。 如果未安装有效的客户端证书，则当客户端尝试连接到 VNet 时，身份验证会失败。</p>
+<p>可以为每个客户端生成唯一证书，也可以对多个客户端使用同一证书。 生成唯一客户端证书的优势是能够吊销单个证书。 否则，如果多个客户端使用相同的客户端证书进行身份验证而你将其撤销，则需为所有使用该证书的客户端生成并安装新证书。</p>
+<p>可以通过以下方法生成客户端证书：</p>
+<p>企业证书：</p>
+<p>如果使用的是企业证书解决方案，请使用通用名称值格式 name@yourdomain.com 生成客户端证书， 而不要使用“域名\用户名”格式。</p>
+<p>请确保客户端证书基于“用户”证书模板，该模板将“客户端身份验证”列为用户列表中的第一项。 检查证书的方式是：双击证书，然后在“详细信息”选项卡中查看“增强型密钥用法” 。</p>
+<p>自签名根证书： 按照下述某篇 P2S 证书文章中的步骤操作，使创建的客户端证书兼容 P2S 连接。</p>
+<p>从自签名根证书生成客户端证书时，该证书会自动安装在用于生成该证书的计算机上。 如果想要在另一台客户端计算机上安装客户端证书，请以 .pfx 文件格式导出该证书以及整个证书链。 这样做会创建一个 .pfx 文件，其中包含的根证书信息是客户端进行身份验证所必需的。</p>
+<p>这些文章中的步骤可生成兼容的客户端证书，然后你可以导出和分发该证书。</p>
+<p>适用于 Windows 10 或更高版本 PowerShell 的说明：按照这些说明进行操作时，需要使用 Windows 10（或更高版本）和 PowerShell 来生成证书。 生成的证书可以安装在任何受支持的 P2S 客户端上。</p>
+<p>适用于 MakeCert 的说明：如果无权访问用于生成证书的 Windows 10 或更高版本计算机，则可使用 MakeCert。 虽然 MakeCert 已弃用，但仍可使用它来生成证书。 可以将生成的证书安装在任何受支持的 P2S 客户端上。</p>
+<p>Linux：请参阅 strongSwan 或 OpenSSL 指令。</p>
+<p>From &lt;<a href="https://docs.azure.cn/zh-cn/vpn-gateway/point-to-site-certificate-gateway&gt;" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/point-to-site-certificate-gateway&gt;</a></p></article>

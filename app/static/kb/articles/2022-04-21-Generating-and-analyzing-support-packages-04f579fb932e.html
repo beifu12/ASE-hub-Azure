@@ -1,0 +1,82 @@
+<article class="kb-article" data-title="Generating and analyzing support packages"><h1>Generating and analyzing support packages</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Data Box POD</li>
+<li>最近修改: 2022-04-21 04:29:23</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Generating support packages:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Generating support packages:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Generating support packages:</li>
+</ul>
+<ul>
+<li>In the local web UI, go to Contact Support. Optionally, select Include memory dumps. Then select Create Support package. You shouldn&#39;t select the Include memory dumps option unless Support asks for one. It takes a long time to gather a support package that includes memory dumps, and sensitive data is included.</li>
+</ul>
+<ul>
+<li>After it is created click on &quot;Download&quot; and provide customer with DTM link workspace to upload.</li>
+</ul>
+<ul>
+<li>Generate from PS (will include later)</li>
+</ul>
+<ul>
+<li>Analyzing Support packages:</li>
+</ul>
+<ul>
+<li>References:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>For all issues, check the following log files:</li>
+</ul>
+<ul>
+<li>DiagnosticsTestResults,json: Located at the top-level of the support package. Check the test status of each test to determine whether it’s passed or failed. If any test has failed, troubleshooting should start from here.</li>
+</ul>
+<ul>
+<li>hcsmgmt.Primary: Located at \\&lt;Device_Logs&gt;\SupportPackage\&lt;Device_Name&gt;\&lt;Device_Serial&gt;\hcslogs. Check for any instances of [Err].</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Get-HcsApplianceInfo.txt: Located at \\&lt;Device_Logs&gt;\SupportPackage\&lt;Device_Name&gt;\&lt;Device_Serial&gt;\cmdlets\PodCmdLets. Check the device software version. If the expected version and the version listed in this log are different, an update issue occurred on the device.</li>
+</ul>
+<ul>
+<li>Get-HcsTimeSettings.txt: Located at \\&lt;Device_Logs&gt;\SupportPackage\&lt;Device_Name&gt;\&lt;Device_Serial&gt;\cmdlets\PodCmdLets. Check the time zone. If there is a discrepancy between the expected time zone and the time one listed in this log, update the time zone via the local WebUI and try the failed operation once more. If it fails, check the time settings once again and see if the discrepancy still exists.</li>
+</ul>
+<ul>
+<li>Get-HcsNetInterface.txt: Located at \\&lt;Device_Logs&gt;\SupportPackage\&lt;Device_Name&gt;\&lt;Device_Serial&gt;\cmdlets\PodCmdLets. Check the ‘State’ of each port. If any ports show status other than ‘Up’, (Or blank, for any ports that are not connected), troubleshooting should start from here.</li>
+</ul>
+<ul>
+<li>Get-ClusterResource.txt: Located at \\&lt;Device_Logs&gt;\SupportPackage\&lt;Device_Name&gt;\&lt;Device_Serial&gt;\cmdlets\PodCmdLets. Check the ‘State’ of each resource. There are some resources that are down by design and should be in an Offline state. These can be ignored. Any resources in a Failed state should be investigated further.</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Support package video: <a href="https://msit.microsoftstream.com/video/e9e80840-98dc-997c-5824-f1eca3daf308" target="_blank" rel="noopener">https://msit.microsoftstream.com/video/e9e80840-98dc-997c-5824-f1eca3daf308</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Generating support packages:</p>
+<p>In the local web UI, go to Contact Support. Optionally, select Include memory dumps. Then select Create Support package. You shouldn&#39;t select the Include memory dumps option unless Support asks for one. It takes a long time to gather a support package that includes memory dumps, and sensitive data is included.</p>
+<p>After it is created click on &quot;Download&quot; and provide customer with DTM link workspace to upload.</p>
+<p>Generate from PS (will include later)</p>
+<p>Analyzing Support packages:</p>
+<p>For all issues, check the following log files:</p>
+<p>DiagnosticsTestResults,json: Located at the top-level of the support package. Check the test status of each test to determine whether it’s passed or failed. If any test has failed, troubleshooting should start from here.</p>
+<p>Get-HcsApplianceInfo.txt: Located at \\&lt;Device_Logs&gt;\SupportPackage\&lt;Device_Name&gt;\&lt;Device_Serial&gt;\cmdlets\PodCmdLets. Check the device software version. If the expected version and the version listed in this log are different, an update issue occurred on the device.</p>
+<p>Get-HcsTimeSettings.txt: Located at \\&lt;Device_Logs&gt;\SupportPackage\&lt;Device_Name&gt;\&lt;Device_Serial&gt;\cmdlets\PodCmdLets. Check the time zone. If there is a discrepancy between the expected time zone and the time one listed in this log, update the time zone via the local WebUI and try the failed operation once more. If it fails, check the time settings once again and see if the discrepancy still exists.</p>
+<p>Get-HcsNetInterface.txt: Located at \\&lt;Device_Logs&gt;\SupportPackage\&lt;Device_Name&gt;\&lt;Device_Serial&gt;\cmdlets\PodCmdLets. Check the ‘State’ of each port. If any ports show status other than ‘Up’, (Or blank, for any ports that are not connected), troubleshooting should start from here.</p>
+<p>Get-ClusterResource.txt: Located at \\&lt;Device_Logs&gt;\SupportPackage\&lt;Device_Name&gt;\&lt;Device_Serial&gt;\cmdlets\PodCmdLets. Check the ‘State’ of each resource. There are some resources that are down by design and should be in an Offline state. These can be ignored. Any resources in a Failed state should be investigated further.</p>
+<p>hcsmgmt.Primary: Located at \\&lt;Device_Logs&gt;\SupportPackage\&lt;Device_Name&gt;\&lt;Device_Serial&gt;\hcslogs. Check for any instances of [Err].</p>
+<p>References:</p>
+<p>Support package video: <a href="https://msit.microsoftstream.com/video/e9e80840-98dc-997c-5824-f1eca3daf308" target="_blank" rel="noopener">https://msit.microsoftstream.com/video/e9e80840-98dc-997c-5824-f1eca3daf308</a></p></article>

@@ -1,0 +1,67 @@
+<article class="kb-article" data-title="从一个ACR批量导出所有repo/tag/image到另一个ACR"><h1>从一个ACR批量导出所有repo/tag/image到另一个ACR</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: ACR</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-12-07 14:56:03</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Nancy</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Nancy</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Nancy</li>
+</ul>
+<ul>
+<li>$SourceAcrName=&quot;source ACR Name&quot;</li>
+</ul>
+<ul>
+<li>$DestinationAcrName=&quot;destination ACR Name&quot;</li>
+</ul>
+<ul>
+<li>$Repos= az acr repository list --name $SourceAcrName | ConvertFrom-Json</li>
+</ul>
+<ul>
+<li>foreach ($repo in $Repos) {</li>
+</ul>
+<ul>
+<li>$Tags = az acr repository show-tags -n $SourceAcrName --repository $repo | ConvertFrom-Json</li>
+</ul>
+<ul>
+<li>foreach ($tag in $Tags) {</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az acr import -r $SourceAcrName -n $DestinationAcrName --source &quot;${repo}:${tag}&quot; --no-wait</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>From &lt;<a href="https://stackoverflow.com/questions/67749357/how-to-import-all-images-from-an-acr-repository-to-another-acr-in-different-tena&gt;" target="_blank" rel="noopener">https://stackoverflow.com/questions/67749357/how-to-import-all-images-from-an-acr-repository-to-another-acr-in-different-tena&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Nancy</p>
+<p>$SourceAcrName=&quot;source ACR Name&quot;</p>
+<p>$DestinationAcrName=&quot;destination ACR Name&quot;</p>
+<p>$Repos= az acr repository list --name $SourceAcrName | ConvertFrom-Json</p>
+<p>foreach ($repo in $Repos) {</p>
+<p>$Tags = az acr repository show-tags -n $SourceAcrName --repository $repo | ConvertFrom-Json</p>
+<p>foreach ($tag in $Tags) {</p>
+<p>az acr import -r $SourceAcrName -n $DestinationAcrName --source &quot;${repo}:${tag}&quot; --no-wait</p>
+<p>}</p>
+<p>From &lt;<a href="https://stackoverflow.com/questions/67749357/how-to-import-all-images-from-an-acr-repository-to-another-acr-in-different-tena&gt;" target="_blank" rel="noopener">https://stackoverflow.com/questions/67749357/how-to-import-all-images-from-an-acr-repository-to-another-acr-in-different-tena&gt;</a></p></article>

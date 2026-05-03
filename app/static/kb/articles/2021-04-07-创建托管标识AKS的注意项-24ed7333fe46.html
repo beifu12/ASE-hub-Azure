@@ -1,0 +1,111 @@
+<article class="kb-article" data-title="创建托管标识AKS的注意项"><h1>创建托管标识AKS的注意项</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: K8S</li>
+<li>最近修改: 2021-04-07 15:45:57</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2：当操作1完成删除该集群后，再次使用该subnet创建一个同名集群，在创建ingress-controller或者内部负载均衡器服务时，报错如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2：当操作1完成删除该集群后，再次使用该subnet创建一个同名集群，在创建ingress-controller或者内部负载均衡器服务时，报错如下：</li>
+</ul>
+<ul>
+<li>通过在应用注册及企业应用都无法找到该object。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_2021032587173_az aks create 使用托管标识创建</li>
+</ul>
+<ul>
+<li>这个case处理过程遇到很多坑，主要是对托管标识的不理解，大家后续遇到可以参考下。</li>
+</ul>
+<ul>
+<li>1：当使用已存在的subnet第一次创建托管标识的集群时，集群可以运行正常，且创建ingress-controller或者内部负载均衡器都能正常分配IP地址。</li>
+</ul>
+<ul>
+<li>至此，还需要等待一些时间才能生效，测试差不多5分钟，至此解决问题。</li>
+</ul>
+<ul>
+<li>在 Azure Kubernetes 服务中使用托管标识 | Azure Docs</li>
+</ul>
+<ul>
+<li>坑点：在企业应用，只能通过appid筛选，通过名字或者对象id都查不到任何内容。</li>
+</ul>
+<ul>
+<li>通过应用名称筛选：</li>
+</ul>
+<ul>
+<li>通过对象id筛选：</li>
+</ul>
+<ul>
+<li>而平台创建的托管标识如下：（发现平台创建的系统托管标识和用户创建的托管标识，在前台和后台都叫做用户分配的托管标识）</li>
+</ul>
+<ul>
+<li>所以可以看到托管标识和应用注册没有重叠的id，且实际授权还是用的服务主体，托管标识在集群、节点和子网下实际都没有设置权限。</li>
+</ul>
+<ul>
+<li>展示一个正常托管标识集群的权限设置：</li>
+</ul>
+<ul>
+<li>Worknode的资源组下：</li>
+</ul>
+<ul>
+<li>虚拟网络子网的权限设置：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>坑点：步骤2创建完后，会发现在子网的访问控制中默认并未授予任何和aks相关的权限，所以报错如上。但是首次创建AKS平台会自动给授权。</li>
+</ul>
+<ul>
+<li>查看企业应用程序属性，它的对象id就是先前报错的principleid：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az aks create --resource-group &quot;rg_SCTS_Dev2&quot; --name &quot;41archiAKSCluster222&quot; --node-count 1 --network-plugin kubenet --network-policy calico --service-cidr 10.76.224.0/20 --dns-service-ip 10.76.224.10 --pod-cidr 10.76.240.0/20 --docker-bridge-address 172.17.0.1/16 --vnet-subnet-id  &quot;/subscriptions/57e04838-4957-440a-a88d-41d73c5154c0/resourceGroups/aksnewtest/providers/Microsoft.Network/virtualNetworks/aksnewtest-vnet/subnets/default&quot;  --load-balancer-sku &quot;standard&quot; --enable-private-cluster --enable-managed-identity --enable-addons monitoring</li>
+</ul>
+<ul>
+<li>使用如下命令，发现报错中的objectid是principleid。</li>
+</ul>
+<ul>
+<li>az role assignment create --assignee &lt;appId&gt; --scope &lt;resourceScope&gt; --role Contributor  #这里的&lt;appId&gt;需要设置为principleid，即报错中的id，&lt;resourceScope&gt;需要设置报错中的子网。</li>
+</ul>
+<ul>
+<li>上述命令执行完后，会发现在子网下出现如下权限，注意这下面并不需要添加托管标识权限。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>通过命令：<a href="https://docs.microsoft.com/zh-cn/azure/aks/kubernetes-service-principal#delegate-access-to-other-azure-resources" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/kubernetes-service-principal#delegate-access-to-other-azure-resources</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2021032587173_az aks create 使用托管标识创建</p>
+<p>这个case处理过程遇到很多坑，主要是对托管标识的不理解，大家后续遇到可以参考下。</p>
+<p>1：当使用已存在的subnet第一次创建托管标识的集群时，集群可以运行正常，且创建ingress-controller或者内部负载均衡器都能正常分配IP地址。</p>
+<p>az aks create --resource-group &quot;rg_SCTS_Dev2&quot; --name &quot;41archiAKSCluster222&quot; --node-count 1 --network-plugin kubenet --network-policy calico --service-cidr 10.76.224.0/20 --dns-service-ip 10.76.224.10 --pod-cidr 10.76.240.0/20 --docker-bridge-address 172.17.0.1/16 --vnet-subnet-id  &quot;/subscriptions/57e04838-4957-440a-a88d-41d73c5154c0/resourceGroups/aksnewtest/providers/Microsoft.Network/virtualNetworks/aksnewtest-vnet/subnets/default&quot;  --load-balancer-sku &quot;standard&quot; --enable-private-cluster --enable-managed-identity --enable-addons monitoring</p>
+<p>2：当操作1完成删除该集群后，再次使用该subnet创建一个同名集群，在创建ingress-controller或者内部负载均衡器服务时，报错如下：</p>
+<p>通过在应用注册及企业应用都无法找到该object。</p>
+<p>使用如下命令，发现报错中的objectid是principleid。</p>
+<p>坑点：步骤2创建完后，会发现在子网的访问控制中默认并未授予任何和aks相关的权限，所以报错如上。但是首次创建AKS平台会自动给授权。</p>
+<p>通过命令：<a href="https://docs.microsoft.com/zh-cn/azure/aks/kubernetes-service-principal#delegate-access-to-other-azure-resources" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/kubernetes-service-principal#delegate-access-to-other-azure-resources</a></p>
+<p>az role assignment create --assignee &lt;appId&gt; --scope &lt;resourceScope&gt; --role Contributor  #这里的&lt;appId&gt;需要设置为principleid，即报错中的id，&lt;resourceScope&gt;需要设置报错中的子网。</p>
+<p>至此，还需要等待一些时间才能生效，测试差不多5分钟，至此解决问题。</p>
+<p>在 Azure Kubernetes 服务中使用托管标识 | Azure Docs</p>
+<p>上述命令执行完后，会发现在子网下出现如下权限，注意这下面并不需要添加托管标识权限。</p>
+<p>查看企业应用程序属性，它的对象id就是先前报错的principleid：</p>
+<p>坑点：在企业应用，只能通过appid筛选，通过名字或者对象id都查不到任何内容。</p>
+<p>通过应用名称筛选：</p>
+<p>通过对象id筛选：</p>
+<p>而平台创建的托管标识如下：（发现平台创建的系统托管标识和用户创建的托管标识，在前台和后台都叫做用户分配的托管标识）</p>
+<p>所以可以看到托管标识和应用注册没有重叠的id，且实际授权还是用的服务主体，托管标识在集群、节点和子网下实际都没有设置权限。</p>
+<p>展示一个正常托管标识集群的权限设置：</p>
+<p>Worknode的资源组下：</p>
+<p>虚拟网络子网的权限设置：</p></article>

@@ -1,0 +1,134 @@
+<article class="kb-article" data-title="关于VM安全防护的相关咨询"><h1>关于VM安全防护的相关咨询</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: 标准话术</li>
+<li>最近修改: 2024-03-22 17:36:42</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>DDoS 保护：DDoS 保护是一个 Azure 物理网络层，可防范 Azure 平台本身受到大规模的基于 Internet 的攻击。这些攻击利用多个“傀儡”节点尝试瘫痪 Internet 服务。Azure 使用一个强大的 DDoS 保护网来检测所有入站 Internet 连接。此 DDoS 保护层没有用户可配置的属性，客户也无法对其进行访问。这可以防止 Azure 平台受到大规模攻击，但不直接保护单个客户应用程序。客户可以配置额外的弹性层来防止局部攻击。例如，如果客户 A 在公共终结点上遭到大规模 DDoS 攻击...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>DDoS 保护：DDoS 保护是一个 Azure 物理网络层，可防范 Azure 平台本身受到大规模的基于 Internet 的攻击。这些攻击利用多个“傀儡”节点尝试瘫痪 Internet 服务。Azure 使用一个强大的 DDoS 保护网来检测所有入站 Internet 连接。此 DDoS 保护层没有用户可配置的属性，客户也无法对其进行访问。这可以防止 Azure 平台受到大规模攻击，但不直接保护单个客户应用程序。客户可以配置额外的弹性层来防止局部攻击。例如，如果客户 A 在公共终结点上遭到大规模 DDoS 攻击，Azure 将封锁该服务的连接。客户 A 可以故障转移到另一个未遭受攻击的虚拟网络或服务终结点，以还原服务。请注意，当客户 A 在该终结点上受到影响时，该终结点以外的其他任何服务不会受到影响。此外，其他客户和服务也不会受到此攻击的影响。</li>
+</ul>
+<ul>
+<li>流量隔离：虚拟网络是 Azure 平台上的流量隔离边界。一个虚拟网络中的虚拟机 (VM) 无法与不同虚拟网络中的 VM 直接通信，即使这两个虚拟网络是由同一个客户所创建。这是一个非常关键的属性，可确保客户 VM 与通信在虚拟网络中保持私密性。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>如下关于安全防护相关的相关介绍供您参考：</li>
+</ul>
+<ul>
+<li>1.在 Internet 流量进入 Azure 虚拟网络之前，Azure 平台本身将实施两层安全性：</li>
+</ul>
+<ul>
+<li>2.流量进入虚拟网络后，有许多功能将派上用场。Azure 虚拟网络是客户连接其工作负荷的基础，也是应用基本网络层安全性的所在之处。它是客户在 Azure 中的专用网络（虚拟网络覆盖），并具有以下功能和特性：</li>
+</ul>
+<ul>
+<li>多层拓扑：虚拟网络允许客户通过分配子网并为工作负荷的不同元素或“层”指定独立地址空间，来定义多层拓扑。这些逻辑分组和拓扑可让客户根据工作负荷类型来定义不同的访问策略，以及控制各层之间的流量。</li>
+</ul>
+<ul>
+<li>跨界连接：客户可以在虚拟网络和多个本地站点或 Azure 中的其他虚拟网络之间创建跨界连接。为此，客户可以使用 Azure VPN 网关或第三方网络虚拟设备。Azure 支持使用标准 IPsec/IKE 协议和 ExpressRoute 专用连接的站点到站点 (S2S) VPN。</li>
+</ul>
+<ul>
+<li>NSG 允许客户根据所需的粒度（网络接口、单个 VM 或虚拟子网）创建规则 (ACL)。客户可以从客户网络上的系统，通过跨界连接或直接 Internet 通信来允许或拒绝虚拟网络内的工作负荷，以控制访问。</li>
+</ul>
+<ul>
+<li>Azure 映像应用商店中的网络虚拟设备：Azure 应用商店和 VM 映像库中提供了防火墙、负载均衡器和 IDS/IPS 等安全设备。客户可将这些设备部署到其虚拟网络，特别是安全边界（包括外围网络子网），以实现多层安全网络环境</li>
+</ul>
+<ul>
+<li>3.虚拟机安全</li>
+</ul>
+<ul>
+<li>系统作为最终承载用户应用的环境，是最后一道攻破应用的安全防线，同样需要进行严谨的设计和管理，特别是公有云环境中的系统。</li>
+</ul>
+<ul>
+<li>2)在创建管理系统时，严格设置和管理用户密码，如复杂度，有效期，离职人员账号及时删除，admin权限赋予等。</li>
+</ul>
+<ul>
+<li>4)在应用层面，相关的应用管理人员，如数据库管理员，应该具有强烈的安全意识，在配置应用时，开启相关的安全规则。安装软件时，应该从官方渠道下载，避免受到带毒安装包的影响。</li>
+</ul>
+<ul>
+<li>4.关于IPS,IDS</li>
+</ul>
+<ul>
+<li>如电话中所沟通，关于第三方镜像，您需要根据页面中提供的联系方式直接联系各厂商获得技术支持。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>UDR 和 IP 转发允许客户定义虚拟网络中不同层之间的通信路径。客户可以部署防火墙、IDS/IPS 和其他虚拟设备，并通过这些安全设备来路由网络流量，以实施安全边界策略、审核和检查。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>服务终结点：终结点可让云服务或资源组公开公共 Internet IP 地址和端口。终结点使用网络地址转换 (NAT) 将流量路由到 Azure 虚拟网络上的内部地址和端口。这是外部流量进入虚拟网络的主要路径。用户可以配置服务终结点，以确定可以传入哪些流量、如何在虚拟网络上转换该流量以及要将它路由到何处。</li>
+</ul>
+<ul>
+<li>1)在系统架构设计上，将不同功能放置在不同的虚拟机上。按功能对虚拟机划分安全组，设置访问控制规则。对不需要外网访问的端口或虚拟机，如后端数据库，不开放外网访问端口。或者对所有内部虚拟机的访问，都通过跳板机发方式进行，将重要功能虚拟机被直接入侵的几率降低为零。</li>
+</ul>
+<ul>
+<li>3)在系统层面，通过开启防火墙，设置服务允许拒绝规则等，防止非法的访问。在Linux上，可以通过tcp_wrappers等实现。同时，根据最少服务原则，在安装配置系统时，安装应用需要的最少的包，开启最少的服务，达到让黑客无法通过不在控制范围内的端口入侵。并定期更新系统，打补丁，减少安全隐患。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>关于虚拟机内部安全，提供如下建议，仅供贵方参考：</li>
+</ul>
+<ul>
+<li>5)在新建虚拟机的时候建议安装杀毒软件以增强对虚拟机的保护。</li>
+</ul>
+<ul>
+<li>关于第三方安全解决方案IPS/IDS，您需要在azure市场中自行搜索，选择适当的产品，比如如下：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Azure网络安全最佳实践：<a href="https://docs.azure.cn/zh-cn/security/azure-security-network-security-best-practices" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/security/azure-security-network-security-best-practices</a></li>
+</ul>
+<ul>
+<li>Azure网络安全概述：<a href="https://docs.azure.cn/zh-cn/security/security-network-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/security/security-network-overview</a></li>
+</ul>
+<ul>
+<li>云服务管理员对其IaaS的虚拟机及其他产品享有完全的控制权，因此也需要负责虚拟机及其上层的数据安全。 请参考该文档了解具体的安全责任划分：<a href="https://www.azure.cn/support/announcement/shared-responsibility/" target="_blank" rel="noopener">https://www.azure.cn/support/announcement/shared-responsibility/</a> 。对于Iaas的虚拟机，平台层面目前不提供第七层（应用层）的安全防护。</li>
+</ul>
+<ul>
+<li>保护 Web 应用程序，使其免受常见 Web 攻击的威胁，您可参考使用Application Gateway WAF. <a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-web-application-firewall-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-web-application-firewall-portal</a></li>
+</ul>
+<ul>
+<li>6)定期备份数据或虚拟机，防止数据一旦损坏或丢失，造成数据不可用。这里附上Azure备份的相关连接，请参考： <a href="https://www.azure.cn/documentation/articles/backup-azure-manage-windows-server-classic/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/backup-azure-manage-windows-server-classic/</a></li>
+</ul>
+<ul>
+<li>以上截图来自：<a href="https://docs.azure.cn/zh-cn/cloud-services/cloud-services-configuration-and-management-faq#what-are-the-features-and-capabilities-that-azure-basic-ipsids-and-ddos-provides" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cloud-services/cloud-services-configuration-and-management-faq#what-are-the-features-and-capabilities-that-azure-basic-ipsids-and-ddos-provides</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>如下关于安全防护相关的相关介绍供您参考：</p>
+<p>1.在 Internet 流量进入 Azure 虚拟网络之前，Azure 平台本身将实施两层安全性：</p>
+<p>DDoS 保护：DDoS 保护是一个 Azure 物理网络层，可防范 Azure 平台本身受到大规模的基于 Internet 的攻击。这些攻击利用多个“傀儡”节点尝试瘫痪 Internet 服务。Azure 使用一个强大的 DDoS 保护网来检测所有入站 Internet 连接。此 DDoS 保护层没有用户可配置的属性，客户也无法对其进行访问。这可以防止 Azure 平台受到大规模攻击，但不直接保护单个客户应用程序。客户可以配置额外的弹性层来防止局部攻击。例如，如果客户 A 在公共终结点上遭到大规模 DDoS 攻击，Azure 将封锁该服务的连接。客户 A 可以故障转移到另一个未遭受攻击的虚拟网络或服务终结点，以还原服务。请注意，当客户 A 在该终结点上受到影响时，该终结点以外的其他任何服务不会受到影响。此外，其他客户和服务也不会受到此攻击的影响。</p>
+<p>服务终结点：终结点可让云服务或资源组公开公共 Internet IP 地址和端口。终结点使用网络地址转换 (NAT) 将流量路由到 Azure 虚拟网络上的内部地址和端口。这是外部流量进入虚拟网络的主要路径。用户可以配置服务终结点，以确定可以传入哪些流量、如何在虚拟网络上转换该流量以及要将它路由到何处。</p>
+<p>2.流量进入虚拟网络后，有许多功能将派上用场。Azure 虚拟网络是客户连接其工作负荷的基础，也是应用基本网络层安全性的所在之处。它是客户在 Azure 中的专用网络（虚拟网络覆盖），并具有以下功能和特性：</p>
+<p>流量隔离：虚拟网络是 Azure 平台上的流量隔离边界。一个虚拟网络中的虚拟机 (VM) 无法与不同虚拟网络中的 VM 直接通信，即使这两个虚拟网络是由同一个客户所创建。这是一个非常关键的属性，可确保客户 VM 与通信在虚拟网络中保持私密性。</p>
+<p>多层拓扑：虚拟网络允许客户通过分配子网并为工作负荷的不同元素或“层”指定独立地址空间，来定义多层拓扑。这些逻辑分组和拓扑可让客户根据工作负荷类型来定义不同的访问策略，以及控制各层之间的流量。</p>
+<p>跨界连接：客户可以在虚拟网络和多个本地站点或 Azure 中的其他虚拟网络之间创建跨界连接。为此，客户可以使用 Azure VPN 网关或第三方网络虚拟设备。Azure 支持使用标准 IPsec/IKE 协议和 ExpressRoute 专用连接的站点到站点 (S2S) VPN。</p>
+<p>NSG 允许客户根据所需的粒度（网络接口、单个 VM 或虚拟子网）创建规则 (ACL)。客户可以从客户网络上的系统，通过跨界连接或直接 Internet 通信来允许或拒绝虚拟网络内的工作负荷，以控制访问。</p>
+<p>UDR 和 IP 转发允许客户定义虚拟网络中不同层之间的通信路径。客户可以部署防火墙、IDS/IPS 和其他虚拟设备，并通过这些安全设备来路由网络流量，以实施安全边界策略、审核和检查。</p>
+<p>Azure 映像应用商店中的网络虚拟设备：Azure 应用商店和 VM 映像库中提供了防火墙、负载均衡器和 IDS/IPS 等安全设备。客户可将这些设备部署到其虚拟网络，特别是安全边界（包括外围网络子网），以实现多层安全网络环境</p>
+<p>Azure网络安全最佳实践：<a href="https://docs.azure.cn/zh-cn/security/azure-security-network-security-best-practices" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/security/azure-security-network-security-best-practices</a></p>
+<p>Azure网络安全概述：<a href="https://docs.azure.cn/zh-cn/security/security-network-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/security/security-network-overview</a></p>
+<p>3.虚拟机安全</p>
+<p>系统作为最终承载用户应用的环境，是最后一道攻破应用的安全防线，同样需要进行严谨的设计和管理，特别是公有云环境中的系统。</p>
+<p>云服务管理员对其IaaS的虚拟机及其他产品享有完全的控制权，因此也需要负责虚拟机及其上层的数据安全。 请参考该文档了解具体的安全责任划分：<a href="https://www.azure.cn/support/announcement/shared-responsibility/" target="_blank" rel="noopener">https://www.azure.cn/support/announcement/shared-responsibility/</a> 。对于Iaas的虚拟机，平台层面目前不提供第七层（应用层）的安全防护。</p>
+<p>保护 Web 应用程序，使其免受常见 Web 攻击的威胁，您可参考使用Application Gateway WAF. <a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-web-application-firewall-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-web-application-firewall-portal</a></p>
+<p>关于虚拟机内部安全，提供如下建议，仅供贵方参考：</p>
+<p>1)在系统架构设计上，将不同功能放置在不同的虚拟机上。按功能对虚拟机划分安全组，设置访问控制规则。对不需要外网访问的端口或虚拟机，如后端数据库，不开放外网访问端口。或者对所有内部虚拟机的访问，都通过跳板机发方式进行，将重要功能虚拟机被直接入侵的几率降低为零。</p>
+<p>2)在创建管理系统时，严格设置和管理用户密码，如复杂度，有效期，离职人员账号及时删除，admin权限赋予等。</p>
+<p>3)在系统层面，通过开启防火墙，设置服务允许拒绝规则等，防止非法的访问。在Linux上，可以通过tcp_wrappers等实现。同时，根据最少服务原则，在安装配置系统时，安装应用需要的最少的包，开启最少的服务，达到让黑客无法通过不在控制范围内的端口入侵。并定期更新系统，打补丁，减少安全隐患。</p>
+<p>4)在应用层面，相关的应用管理人员，如数据库管理员，应该具有强烈的安全意识，在配置应用时，开启相关的安全规则。安装软件时，应该从官方渠道下载，避免受到带毒安装包的影响。</p>
+<p>5)在新建虚拟机的时候建议安装杀毒软件以增强对虚拟机的保护。</p>
+<p>6)定期备份数据或虚拟机，防止数据一旦损坏或丢失，造成数据不可用。这里附上Azure备份的相关连接，请参考： <a href="https://www.azure.cn/documentation/articles/backup-azure-manage-windows-server-classic/" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/backup-azure-manage-windows-server-classic/</a></p>
+<p>4.关于IPS,IDS</p>
+<p>以上截图来自：<a href="https://docs.azure.cn/zh-cn/cloud-services/cloud-services-configuration-and-management-faq#what-are-the-features-and-capabilities-that-azure-basic-ipsids-and-ddos-provides" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cloud-services/cloud-services-configuration-and-management-faq#what-are-the-features-and-capabilities-that-azure-basic-ipsids-and-ddos-provides</a></p>
+<p>关于第三方安全解决方案IPS/IDS，您需要在azure市场中自行搜索，选择适当的产品，比如如下：</p>
+<p>如电话中所沟通，关于第三方镜像，您需要根据页面中提供的联系方式直接联系各厂商获得技术支持。</p></article>

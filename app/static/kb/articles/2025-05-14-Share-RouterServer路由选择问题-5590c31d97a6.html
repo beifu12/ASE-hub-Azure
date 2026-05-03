@@ -1,0 +1,72 @@
+<article class="kb-article" data-title="[Share]RouterServer路由选择问题"><h1>[Share]RouterServer路由选择问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2025-05-14 20:40:47</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户的本地网络，通过Express和静态VPN连接Azure，同时客户开启了路由服务器 分支-分支 交换路由信息</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户的本地网络，通过Express和静态VPN连接Azure，同时客户开启了路由服务器 分支-分支 交换路由信息</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>客户的本地网络，通过Express和静态VPN连接Azure，同时客户开启了路由服务器 分支-分支 交换路由信息</li>
+</ul>
+<ul>
+<li>根据官网文档：</li>
+</ul>
+<ul>
+<li>后续由于客户扩展Azure虚拟网络结构，出现如下图所示网络</li>
+</ul>
+<ul>
+<li>可以看到，客户为了扩展虚拟网络在北部区域创建了虚拟网络，同时创建了Azure VPN网关</li>
+</ul>
+<ul>
+<li>与东部的VPN网关建立IpsecVPN开启了BGP Peer传递路由</li>
+</ul>
+<ul>
+<li>在实际测试中，我们发现，当北部的数据包到达东部虚拟网络网关时，并没有按照文档所述，从AzureVPN传递给ExpressRoute达到本地</li>
+</ul>
+<ul>
+<li>而是直接通过AzureVPN网关传递回本地</li>
+</ul>
+<ul>
+<li>后续查阅文档，官网的最佳实践是，本地网络到达AzureVPN网关也需同样开启BGP</li>
+</ul>
+<ul>
+<li>如果遇到类似拓扑可以注意一下</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>客户路由首选项优选ExpressRoute路由，在检查中，我们也证实了虚拟网络中的虚拟机会优选ExpressRoute</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/route-server/hub-routing-preference" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/route-server/hub-routing-preference</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/05/14</p>
+<p>客户的本地网络，通过Express和静态VPN连接Azure，同时客户开启了路由服务器 分支-分支 交换路由信息</p>
+<p>根据官网文档：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/route-server/hub-routing-preference" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/route-server/hub-routing-preference</a></p>
+<p>客户路由首选项优选ExpressRoute路由，在检查中，我们也证实了虚拟网络中的虚拟机会优选ExpressRoute</p>
+<p>后续由于客户扩展Azure虚拟网络结构，出现如下图所示网络</p>
+<p>可以看到，客户为了扩展虚拟网络在北部区域创建了虚拟网络，同时创建了Azure VPN网关</p>
+<p>与东部的VPN网关建立IpsecVPN开启了BGP Peer传递路由</p>
+<p>在实际测试中，我们发现，当北部的数据包到达东部虚拟网络网关时，并没有按照文档所述，从AzureVPN传递给ExpressRoute达到本地</p>
+<p>而是直接通过AzureVPN网关传递回本地</p>
+<p>后续查阅文档，官网的最佳实践是，本地网络到达AzureVPN网关也需同样开启BGP</p>
+<p>如果遇到类似拓扑可以注意一下</p></article>

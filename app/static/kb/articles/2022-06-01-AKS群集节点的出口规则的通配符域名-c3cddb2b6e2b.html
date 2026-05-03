@@ -1,0 +1,211 @@
+<article class="kb-article" data-title="AKS群集节点的出口规则的通配符域名"><h1>AKS群集节点的出口规则的通配符域名</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-06-01 16:26:48</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>防火墙手动添加如下规则：（很多service开启了CDN，我们无法得知具体CDN的endpoint，所以以下配置中， 不包含任何CDN 策略，可能会导致集群升级或者scale速度有所下降）</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>防火墙手动添加如下规则：（很多service开启了CDN，我们无法得知具体CDN的endpoint，所以以下配置中， 不包含任何CDN 策略，可能会导致集群升级或者scale速度有所下降）</li>
+</ul>
+<ul>
+<li>对于在集群中安装扩展代理时访问的*.data.mcr.azk8s.cn泛域名，这个service的基础架构是依托于CDN服务的，用于请求安装扩展时需要的容器镜像，我们无法得知具体CDN的endpoint。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Case ID: 20211206136084</li>
+</ul>
+<ul>
+<li>但是这里面有一个问题，就是有一些防火墙是不支持通配符域名的，只支持FQDN。而上述文档是有一些通配符域名的，例如*.azk8s.cn</li>
+</ul>
+<ul>
+<li>如下是css给的变通方案。注意此变通方案不能保证永久有效，需要客户实际测试。</li>
+</ul>
+<ul>
+<li>Azure上各个service的IP不是一成不变的，同时不是所有的service都有统一的endpoint。AKS官方发布指出，平滑使用AKS需要添加官方文档里描述的所有fqdn以及NSG规则。</li>
+</ul>
+<ul>
+<li>假设api server的IP地址假如是4.4.4.4，那么需要在防火墙上添加如下的内容：</li>
+</ul>
+<ul>
+<li>4.4.4.4:1194</li>
+</ul>
+<ul>
+<li>4.4.4.4:9000</li>
+</ul>
+<ul>
+<li>4.4.4.4:22</li>
+</ul>
+<ul>
+<li>4.4.4.4:443</li>
+</ul>
+<ul>
+<li>CustomDNS IP:53</li>
+</ul>
+<ul>
+<li>ntp.ubuntu.com:123</li>
+</ul>
+<ul>
+<li>management.chinacloudapi.cn</li>
+</ul>
+<ul>
+<li>packages.microsoft.com</li>
+</ul>
+<ul>
+<li>mcr.azk8s.cn</li>
+</ul>
+<ul>
+<li>gcr.azk8s.cn</li>
+</ul>
+<ul>
+<li>k8sgcr.azk8s.cn</li>
+</ul>
+<ul>
+<li>如果开启了比如monitor或者policy等其他功能时，请按照以下文档再额外添加：</li>
+</ul>
+<ul>
+<li>data.policy.azure.cn  443</li>
+</ul>
+<ul>
+<li>store.policy.azure.cn  443</li>
+</ul>
+<ul>
+<li>Azure Monitor这个service tag对应的所有IP</li>
+</ul>
+<ul>
+<li>China Azure Service Tag下载地址：</li>
+</ul>
+<ul>
+<li>根据我们的测试，配置了以上策略之后，集群可以扩容和升级。</li>
+</ul>
+<ul>
+<li>以下是另一个工单css的回复：</li>
+</ul>
+<ul>
+<li>=================================================</li>
+</ul>
+<ul>
+<li>涉及的通配域名：</li>
+</ul>
+<ul>
+<li>*.data.mcr.azk8s.cn</li>
+</ul>
+<ul>
+<li>*.azk8s.cn</li>
+</ul>
+<ul>
+<li>*.ods.opinsights.azure.cn</li>
+</ul>
+<ul>
+<li>*.oms.opinsights.azure.cn</li>
+</ul>
+<ul>
+<li>根据之前工单中的经验，我们是没有这些通配域名的所有子域名信息的，对于托管的AKS集群，各个service的IP不是一成不变的，同时不是所有的service都有统一的endpoint。因此，</li>
+</ul>
+<ul>
+<li>在之前的测试中，我们仅针对未开启额外的addon的feature，比如monitor，policy，或安装集群扩展时需要拉取特定的容器镜像等情况（*.data.mcr.azk8s.cn）。测试中，我们针对泛域名*.azk8s.cn添加了如下的FQDN时， 我们满足基本功能的AKS cluster 是可以正常进行升级，扩容等操作的：</li>
+</ul>
+<ul>
+<li>对于*.ods.opinsights.azure.cn，和*.oms.opinsights.azure.cn，我搜集了相关service 的一些文档，针对这两个泛域名，您可尝试添加如下FQDN:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>首先您使用nslookup确认您AKS api server的地址：</li>
+</ul>
+<ul>
+<li>login.chinacloudapi.cn</li>
+</ul>
+<ul>
+<li>问题描述：客户需要对AKS集群的出站流量经防火墙做限制，但防火墙不支持通配符域名，需要确认是否能提供通配符域名下所有的子域名。</li>
+</ul>
+<ul>
+<li>&lt;your-log-analytics-workspace-id&gt;.ods.opinsights.azure.cn</li>
+</ul>
+<ul>
+<li>&lt;your-log-analytics-workspace-id&gt;.oms.opinsights.azure.cn</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>根据我们AKS产品组最新反馈，提供给您如下不使用通配符域名的workaround，请参考：</li>
+</ul>
+<ul>
+<li>考虑到您的防火墙（非Azure防火墙）不允许添加通配符域名的FQDN，我们尝试做了一下测试，尝试看是否可以找到workaround，协助您缓解当前问题。</li>
+</ul>
+<ul>
+<li>请注意，我们的防火墙是Azure防火墙，并且该AKS未开启额外的addon的feature，比如monitor，policy等，下属步骤和测试仅仅供您参考。针对当前问题，我们强烈建议按照官方文档，看是否可以修改防火墙，添加泛域名的FQDN。</li>
+</ul>
+<ul>
+<li>针对当前问题，我们强烈建议按照官方文档，看是否可以修改防火墙，添加泛域名的FQDN。</li>
+</ul>
+<ul>
+<li>以下我们也基于之前工单中的经验提供一些测试参考信息，希望能够有所帮助。但是请注意，下属测试和research信息仅仅供您参考。最终的建议方案还是按照官方文档，添加泛域名FQDN的防火墙规则。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>某些客户对AKS的出向流量有安全需求，需要加以限制而不是允许所有出站流量。这个时候就需要根据文档<a href="https://docs.azure.cn/zh-cn/aks/limit-egress-traffic来配置防火墙。" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/limit-egress-traffic来配置防火墙。</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/aks/limit-egress-traffic#azure-china-21vianet-required-network-rules" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/limit-egress-traffic#azure-china-21vianet-required-network-rules</a></li>
+</ul>
+<ul>
+<li><a href="https://www.microsoft.com/en-us/download/details.aspx?id=57062" target="_blank" rel="noopener">https://www.microsoft.com/en-us/download/details.aspx?id=57062</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Case ID: 20211206136084</p>
+<p>某些客户对AKS的出向流量有安全需求，需要加以限制而不是允许所有出站流量。这个时候就需要根据文档<a href="https://docs.azure.cn/zh-cn/aks/limit-egress-traffic来配置防火墙。" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/limit-egress-traffic来配置防火墙。</a></p>
+<p>但是这里面有一个问题，就是有一些防火墙是不支持通配符域名的，只支持FQDN。而上述文档是有一些通配符域名的，例如*.azk8s.cn</p>
+<p>如下是css给的变通方案。注意此变通方案不能保证永久有效，需要客户实际测试。</p>
+<p>根据我们AKS产品组最新反馈，提供给您如下不使用通配符域名的workaround，请参考：</p>
+<p>Azure上各个service的IP不是一成不变的，同时不是所有的service都有统一的endpoint。AKS官方发布指出，平滑使用AKS需要添加官方文档里描述的所有fqdn以及NSG规则。</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/aks/limit-egress-traffic#azure-china-21vianet-required-network-rules" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/limit-egress-traffic#azure-china-21vianet-required-network-rules</a></p>
+<p>考虑到您的防火墙（非Azure防火墙）不允许添加通配符域名的FQDN，我们尝试做了一下测试，尝试看是否可以找到workaround，协助您缓解当前问题。</p>
+<p>请注意，我们的防火墙是Azure防火墙，并且该AKS未开启额外的addon的feature，比如monitor，policy等，下属步骤和测试仅仅供您参考。针对当前问题，我们强烈建议按照官方文档，看是否可以修改防火墙，添加泛域名的FQDN。</p>
+<p>防火墙手动添加如下规则：（很多service开启了CDN，我们无法得知具体CDN的endpoint，所以以下配置中， 不包含任何CDN 策略，可能会导致集群升级或者scale速度有所下降）</p>
+<p>首先您使用nslookup确认您AKS api server的地址：</p>
+<p>假设api server的IP地址假如是4.4.4.4，那么需要在防火墙上添加如下的内容：</p>
+<p>4.4.4.4:1194</p>
+<p>4.4.4.4:9000</p>
+<p>4.4.4.4:22</p>
+<p>4.4.4.4:443</p>
+<p>CustomDNS IP:53</p>
+<p>ntp.ubuntu.com:123</p>
+<p>management.chinacloudapi.cn</p>
+<p>login.chinacloudapi.cn</p>
+<p>packages.microsoft.com</p>
+<p>mcr.azk8s.cn</p>
+<p>gcr.azk8s.cn</p>
+<p>k8sgcr.azk8s.cn</p>
+<p>如果开启了比如monitor或者policy等其他功能时，请按照以下文档再额外添加：</p>
+<p>data.policy.azure.cn  443</p>
+<p>store.policy.azure.cn  443</p>
+<p>Azure Monitor这个service tag对应的所有IP</p>
+<p>China Azure Service Tag下载地址：</p>
+<p><a href="https://www.microsoft.com/en-us/download/details.aspx?id=57062" target="_blank" rel="noopener">https://www.microsoft.com/en-us/download/details.aspx?id=57062</a></p>
+<p>根据我们的测试，配置了以上策略之后，集群可以扩容和升级。</p>
+<p>以下是另一个工单css的回复：</p>
+<p>=================================================</p>
+<p>问题描述：客户需要对AKS集群的出站流量经防火墙做限制，但防火墙不支持通配符域名，需要确认是否能提供通配符域名下所有的子域名。</p>
+<p>涉及的通配域名：</p>
+<p>*.data.mcr.azk8s.cn</p>
+<p>*.azk8s.cn</p>
+<p>*.ods.opinsights.azure.cn</p>
+<p>*.oms.opinsights.azure.cn</p>
+<p>根据之前工单中的经验，我们是没有这些通配域名的所有子域名信息的，对于托管的AKS集群，各个service的IP不是一成不变的，同时不是所有的service都有统一的endpoint。因此，</p>
+<p>针对当前问题，我们强烈建议按照官方文档，看是否可以修改防火墙，添加泛域名的FQDN。</p>
+<p>以下我们也基于之前工单中的经验提供一些测试参考信息，希望能够有所帮助。但是请注意，下属测试和research信息仅仅供您参考。最终的建议方案还是按照官方文档，添加泛域名FQDN的防火墙规则。</p>
+<p>对于在集群中安装扩展代理时访问的*.data.mcr.azk8s.cn泛域名，这个service的基础架构是依托于CDN服务的，用于请求安装扩展时需要的容器镜像，我们无法得知具体CDN的endpoint。</p>
+<p>在之前的测试中，我们仅针对未开启额外的addon的feature，比如monitor，policy，或安装集群扩展时需要拉取特定的容器镜像等情况（*.data.mcr.azk8s.cn）。测试中，我们针对泛域名*.azk8s.cn添加了如下的FQDN时， 我们满足基本功能的AKS cluster 是可以正常进行升级，扩容等操作的：</p>
+<p>对于*.ods.opinsights.azure.cn，和*.oms.opinsights.azure.cn，我搜集了相关service 的一些文档，针对这两个泛域名，您可尝试添加如下FQDN:</p>
+<p>&lt;your-log-analytics-workspace-id&gt;.ods.opinsights.azure.cn</p>
+<p>&lt;your-log-analytics-workspace-id&gt;.oms.opinsights.azure.cn</p></article>

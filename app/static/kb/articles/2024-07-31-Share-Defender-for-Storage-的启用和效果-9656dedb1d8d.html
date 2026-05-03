@@ -1,0 +1,146 @@
+<article class="kb-article" data-title="【Share】Defender for Storage 的启用和效果"><h1>【Share】Defender for Storage 的启用和效果</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Microsoft Defender for Cloud(安全中心).one</li>
+<li>Section: Microsoft Defender for Cloud(安全中心)</li>
+<li>最近修改: 2024-07-31 13:37:54</li>
+<li>JD 相关性: Defender/Sentinel/安全; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>注：请将测试存储账户的TLS最低版本调整为1.0，否则无法成功捕获blob。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>注：请将测试存储账户的TLS最低版本调整为1.0，否则无法成功捕获blob。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>【Share】Defender for Storage 的启用和效果</li>
+</ul>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Hana Liu</li>
+</ul>
+<ul>
+<li>Hi All:</li>
+</ul>
+<ul>
+<li>参考工单：SR_20240712304312_Defender for Storage 中国区北3可以用吗？如果可以，如何开启？以及相关费用</li>
+</ul>
+<ul>
+<li>根据Global Azure 官方文档，Defender for Storage（经典版）会不断分析 Azure Blob 存储、Azure 文件存储和 Azure Data Lake Storage 服务生成的数据流。 当检测到潜在的恶意活动时，将生成安全警报。</li>
+</ul>
+<ul>
+<li>从github链接中下载相关模块</li>
+</ul>
+<ul>
+<li>MicroBurst.psm1</li>
+</ul>
+<ul>
+<li>MicroBurst-Az.psm1</li>
+</ul>
+<ul>
+<li>MicroBurst-AzureAD.psm1</li>
+</ul>
+<ul>
+<li>MicroBurst-MSOL.psm1</li>
+</ul>
+<ul>
+<li>MicroBurst-Misc.psm1</li>
+</ul>
+<ul>
+<li>MicroBurst-AzureREST.psm1</li>
+</ul>
+<ul>
+<li>下载或自定义permutations.txt（类似一个字典，后续将参考该文件扫描存储账户下的contianer，如果字典中没有你测试的contianer 名称，请手动添加上）</li>
+</ul>
+<ul>
+<li>导入MicroBurst.psm1</li>
+</ul>
+<ul>
+<li>Import-Module .\MicroBurst.psm1</li>
+</ul>
+<ul>
+<li>#本地测试情况#</li>
+</ul>
+<ul>
+<li>#生成的安全警报情况#</li>
+</ul>
+<ul>
+<li>Hana Liu (刘欢) | Azure VM+SCIM Support Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>关于如何验证Defender For Cloud 经典版的效果，请参考如下：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>产品组已经确认当前Defender for Storage (经典版)在中国区已经可用，但需要通过Azure Powershell 或Azure CLI 来启用，但是在门户（无论是Defender For Cloud 下还是在存储账户下）都看不到对应的选项。就如何开启以及开启后的效果，请参考如下：</li>
+</ul>
+<ul>
+<li>修改附件中脚本的permutations.txt 路径和存储账户名称,并运行脚本</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>测试可以通过MicroBurst 对特定的存储账户名称进行blob-hunting 攻击，可以捕获到攻击字典中的公共访问级别是容器下的Blob。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>关于如何启用请参考Global Azure 官方文档  <a href="https://learn.microsoft.com/zh-cn/azure/defender-for-cloud/defender-for-storage-classic-enable" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/defender-for-cloud/defender-for-storage-classic-enable</a> 。</li>
+</ul>
+<ul>
+<li>截图来源：Global Azure 官方文档 <a href="https://learn.microsoft.com/zh-cn/azure/defender-for-cloud/defender-for-storage-classic" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/defender-for-cloud/defender-for-storage-classic</a></li>
+</ul>
+<ul>
+<li>参考文档： <a href="https://techcommunity.microsoft.com/t5/microsoft-defender-for-cloud/protect-your-storage-resources-against-blob-hunting/ba-p/3735238" target="_blank" rel="noopener">https://techcommunity.microsoft.com/t5/microsoft-defender-for-cloud/protect-your-storage-resources-against-blob-hunting/ba-p/3735238</a></li>
+</ul>
+<ul>
+<li>关于MicroBurst 的更多信息，请参考github 链接 <a href="https://github.com/NetSPI/MicroBurst。" target="_blank" rel="noopener">https://github.com/NetSPI/MicroBurst。</a></li>
+</ul>
+<ul>
+<li>Support direct line: 010-56060132   Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></li>
+</ul>
+<ul>
+<li>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>【Share】Defender for Storage 的启用和效果</p>
+<p>Update</p>
+<p>Hana Liu</p>
+<p>Hi All:</p>
+<p>产品组已经确认当前Defender for Storage (经典版)在中国区已经可用，但需要通过Azure Powershell 或Azure CLI 来启用，但是在门户（无论是Defender For Cloud 下还是在存储账户下）都看不到对应的选项。就如何开启以及开启后的效果，请参考如下：</p>
+<p>参考工单：SR_20240712304312_Defender for Storage 中国区北3可以用吗？如果可以，如何开启？以及相关费用</p>
+<p>关于如何启用请参考Global Azure 官方文档  <a href="https://learn.microsoft.com/zh-cn/azure/defender-for-cloud/defender-for-storage-classic-enable" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/defender-for-cloud/defender-for-storage-classic-enable</a> 。</p>
+<p>关于如何验证Defender For Cloud 经典版的效果，请参考如下：</p>
+<p>根据Global Azure 官方文档，Defender for Storage（经典版）会不断分析 Azure Blob 存储、Azure 文件存储和 Azure Data Lake Storage 服务生成的数据流。 当检测到潜在的恶意活动时，将生成安全警报。</p>
+<p>截图来源：Global Azure 官方文档 <a href="https://learn.microsoft.com/zh-cn/azure/defender-for-cloud/defender-for-storage-classic" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/defender-for-cloud/defender-for-storage-classic</a></p>
+<p>测试可以通过MicroBurst 对特定的存储账户名称进行blob-hunting 攻击，可以捕获到攻击字典中的公共访问级别是容器下的Blob。</p>
+<p>注：请将测试存储账户的TLS最低版本调整为1.0，否则无法成功捕获blob。</p>
+<p>参考文档： <a href="https://techcommunity.microsoft.com/t5/microsoft-defender-for-cloud/protect-your-storage-resources-against-blob-hunting/ba-p/3735238" target="_blank" rel="noopener">https://techcommunity.microsoft.com/t5/microsoft-defender-for-cloud/protect-your-storage-resources-against-blob-hunting/ba-p/3735238</a></p>
+<p>关于MicroBurst 的更多信息，请参考github 链接 <a href="https://github.com/NetSPI/MicroBurst。" target="_blank" rel="noopener">https://github.com/NetSPI/MicroBurst。</a></p>
+<p>从github链接中下载相关模块</p>
+<p>MicroBurst.psm1</p>
+<p>MicroBurst-Az.psm1</p>
+<p>MicroBurst-AzureAD.psm1</p>
+<p>MicroBurst-MSOL.psm1</p>
+<p>MicroBurst-Misc.psm1</p>
+<p>MicroBurst-AzureREST.psm1</p>
+<p>下载或自定义permutations.txt（类似一个字典，后续将参考该文件扫描存储账户下的contianer，如果字典中没有你测试的contianer 名称，请手动添加上）</p>
+<p>导入MicroBurst.psm1</p>
+<p>Import-Module .\MicroBurst.psm1</p>
+<p>修改附件中脚本的permutations.txt 路径和存储账户名称,并运行脚本</p>
+<p>#本地测试情况#</p>
+<p>#生成的安全警报情况#</p>
+<p>Hana Liu (刘欢) | Azure VM+SCIM Support Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060132   Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></p>
+<p>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</p></article>

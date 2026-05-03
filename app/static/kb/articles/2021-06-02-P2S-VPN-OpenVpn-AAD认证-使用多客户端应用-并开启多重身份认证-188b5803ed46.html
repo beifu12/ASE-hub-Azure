@@ -1,0 +1,192 @@
+<article class="kb-article" data-title="P2S VPN -- OpenVpn   AAD认证--使用多客户端应用，并开启多重身份认证"><h1>P2S VPN -- OpenVpn   AAD认证--使用多客户端应用，并开启多重身份认证</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-06-02 15:36:53</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20200401</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20200401</li>
+</ul>
+<ul>
+<li>点击连接报错：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>一、Azure AD相关配置：</li>
+</ul>
+<ul>
+<li>1、创建Azure AD租户：</li>
+</ul>
+<ul>
+<li>2、创建Azure AD租户用户</li>
+</ul>
+<ul>
+<li>至少创建两个用户，一个是Global administrator，一个是User</li>
+</ul>
+<ul>
+<li>3、在创建的AAD租户的属性中可以看到Directory ID，后续配置VPN网关时会用到：</li>
+</ul>
+<ul>
+<li>4、用全局管理员身份登录到Azure门户，做出管理员许可。</li>
+</ul>
+<ul>
+<li>在浏览器的地址栏中复制并粘贴与部署位置相关的 URL：</li>
+</ul>
+<ul>
+<li>使用全局管理员登陆，出现提示是选择“接受”</li>
+</ul>
+<ul>
+<li>5、为各个用户/组注册其他应用程序</li>
+</ul>
+<ul>
+<li>在 Azure Active Directory 下，依次单击“应用注册”、“+ 新建注册”</li>
+</ul>
+<ul>
+<li>在“注册应用程序”边栏选项卡中输入“名称”字段，选择所需的“支持的帐户类型”，然后单击“注册”</li>
+</ul>
+<ul>
+<li>注册新应用后，单击应用边栏选项卡下的“公开 API”，单击“+ 添加范围”，保留默认的“应用程序 ID URI”，并单击“保存并继续”。</li>
+</ul>
+<ul>
+<li>填写必填字段，确保“状态”为“已启用”。 单击“添加范围”</li>
+</ul>
+<ul>
+<li>依次单击“公开 API”、“+ 添加客户端应用程序”。 对于“客户端 ID”，请根据云输入以下值：</li>
+</ul>
+<ul>
+<li>对于“Azure 中国世纪互联”，请输入 49f817b6-84ae-4cc0-928c-73f27289b3aa</li>
+</ul>
+<ul>
+<li>复制“概述”页中的“应用程序(客户端) ID”。 需要使用此 ID 来配置 VPN 网关，也就是配置后面VPN网关时需要填写的“受众”--AadAudienceId</li>
+</ul>
+<ul>
+<li>6、将用户分配到应用程序</li>
+</ul>
+<ul>
+<li>在 Azure AD 下的“企业应用程序”中，选择新注册的应用程序并单击“属性”。 确保“需要用户分配?”设置为“是”。 单击“保存”</li>
+</ul>
+<ul>
+<li>在应用页上，依次单击“用户和组”、“添加用户”</li>
+</ul>
+<ul>
+<li>在“添加分配”下，单击“用户和组”。 选择希望其能够访问此 VPN 应用程序的用户。 单击“选择”</li>
+</ul>
+<ul>
+<li>下载P2S VPN客户端</li>
+</ul>
+<ul>
+<li>三、配置客户端，目前只支持Windows 10 version17763.0 or higher</li>
+</ul>
+<ul>
+<li>测试：在azure上创建了一台Win10虚拟机，下载Azure vpn client</li>
+</ul>
+<ul>
+<li>选择导入的配置文件：</li>
+</ul>
+<ul>
+<li>保存如下配置：</li>
+</ul>
+<ul>
+<li>点击连接，输入user的名称和密码：</li>
+</ul>
+<ul>
+<li>启用了MFA:</li>
+</ul>
+<ul>
+<li>四、配置不同的用户使用不同的VPN网关</li>
+</ul>
+<ul>
+<li>1、测试，再创建一个IT VPN，添加User ITUser1</li>
+</ul>
+<ul>
+<li>注意：要在Azure VPN中增加这个新用户</li>
+</ul>
+<ul>
+<li>2、创建并配置一个新的VPN网关，</li>
+</ul>
+<ul>
+<li>3、配置客户端：</li>
+</ul>
+<ul>
+<li>最终可以实现不同的用户接入不同的VPN</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>7、开启多重身份验证MFA:</li>
+</ul>
+<ul>
+<li>登录到 Azure 门户,导航到“Azure Active Directory”-&gt;“所有用户”，选择“多重身份验证” 以打开“多重身份验证”页。</li>
+</ul>
+<ul>
+<li>二、配置P2S VPN网关，启用AAD身份验证：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考官方文档：<a href="https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-tenant-multi-app" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-tenant-multi-app</a></li>
+</ul>
+<ul>
+<li><a href="https://login.chinacloudapi.cn/common/oauth2/authorize?client_id=49f817b6-84ae-4cc0-928c-73f27289b3aa&amp;response_type=code&amp;redirect_uri=https://portal.azure.cn&amp;nonce=1234&amp;prompt=admin_consent" target="_blank" rel="noopener">https://login.chinacloudapi.cn/common/oauth2/authorize?client_id=49f817b6-84ae-4cc0-928c-73f27289b3aa&amp;response_type=code&amp;redirect_uri=https://portal.azure.cn&amp;nonce=1234&amp;prompt=admin_consent</a></li>
+</ul>
+<ul>
+<li>注意租户应该填写：<a href="https://login.chinacloudapi.cn/&lt;your" target="_blank" rel="noopener">https://login.chinacloudapi.cn/&lt;your</a> Directory ID&gt;   官网文档是Global azure的：&quot;<a href="https://login.partner.microsoftonline.cn/&lt;your" target="_blank" rel="noopener">https://login.partner.microsoftonline.cn/&lt;your</a> Directory ID&gt;&quot;</li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-client" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-client</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20200401</p>
+<p>参考官方文档：<a href="https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-tenant-multi-app" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-tenant-multi-app</a></p>
+<p>一、Azure AD相关配置：</p>
+<p>1、创建Azure AD租户：</p>
+<p>2、创建Azure AD租户用户</p>
+<p>至少创建两个用户，一个是Global administrator，一个是User</p>
+<p>3、在创建的AAD租户的属性中可以看到Directory ID，后续配置VPN网关时会用到：</p>
+<p>4、用全局管理员身份登录到Azure门户，做出管理员许可。</p>
+<p>在浏览器的地址栏中复制并粘贴与部署位置相关的 URL：</p>
+<p><a href="https://login.chinacloudapi.cn/common/oauth2/authorize?client_id=49f817b6-84ae-4cc0-928c-73f27289b3aa&amp;response_type=code&amp;redirect_uri=https://portal.azure.cn&amp;nonce=1234&amp;prompt=admin_consent" target="_blank" rel="noopener">https://login.chinacloudapi.cn/common/oauth2/authorize?client_id=49f817b6-84ae-4cc0-928c-73f27289b3aa&amp;response_type=code&amp;redirect_uri=https://portal.azure.cn&amp;nonce=1234&amp;prompt=admin_consent</a></p>
+<p>使用全局管理员登陆，出现提示是选择“接受”</p>
+<p>5、为各个用户/组注册其他应用程序</p>
+<p>在 Azure Active Directory 下，依次单击“应用注册”、“+ 新建注册”</p>
+<p>在“注册应用程序”边栏选项卡中输入“名称”字段，选择所需的“支持的帐户类型”，然后单击“注册”</p>
+<p>注册新应用后，单击应用边栏选项卡下的“公开 API”，单击“+ 添加范围”，保留默认的“应用程序 ID URI”，并单击“保存并继续”。</p>
+<p>填写必填字段，确保“状态”为“已启用”。 单击“添加范围”</p>
+<p>依次单击“公开 API”、“+ 添加客户端应用程序”。 对于“客户端 ID”，请根据云输入以下值：</p>
+<p>对于“Azure 中国世纪互联”，请输入 49f817b6-84ae-4cc0-928c-73f27289b3aa</p>
+<p>复制“概述”页中的“应用程序(客户端) ID”。 需要使用此 ID 来配置 VPN 网关，也就是配置后面VPN网关时需要填写的“受众”--AadAudienceId</p>
+<p>6、将用户分配到应用程序</p>
+<p>在 Azure AD 下的“企业应用程序”中，选择新注册的应用程序并单击“属性”。 确保“需要用户分配?”设置为“是”。 单击“保存”</p>
+<p>在应用页上，依次单击“用户和组”、“添加用户”</p>
+<p>在“添加分配”下，单击“用户和组”。 选择希望其能够访问此 VPN 应用程序的用户。 单击“选择”</p>
+<p>7、开启多重身份验证MFA:</p>
+<p>登录到 Azure 门户,导航到“Azure Active Directory”-&gt;“所有用户”，选择“多重身份验证” 以打开“多重身份验证”页。</p>
+<p>二、配置P2S VPN网关，启用AAD身份验证：</p>
+<p>注意租户应该填写：<a href="https://login.chinacloudapi.cn/&lt;your" target="_blank" rel="noopener">https://login.chinacloudapi.cn/&lt;your</a> Directory ID&gt;   官网文档是Global azure的：&quot;<a href="https://login.partner.microsoftonline.cn/&lt;your" target="_blank" rel="noopener">https://login.partner.microsoftonline.cn/&lt;your</a> Directory ID&gt;&quot;</p>
+<p>下载P2S VPN客户端</p>
+<p>三、配置客户端，目前只支持Windows 10 version17763.0 or higher</p>
+<p>测试：在azure上创建了一台Win10虚拟机，下载Azure vpn client</p>
+<p><a href="https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-client" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/vpn-gateway/openvpn-azure-ad-client</a></p>
+<p>选择导入的配置文件：</p>
+<p>保存如下配置：</p>
+<p>点击连接，输入user的名称和密码：</p>
+<p>启用了MFA:</p>
+<p>四、配置不同的用户使用不同的VPN网关</p>
+<p>1、测试，再创建一个IT VPN，添加User ITUser1</p>
+<p>注意：要在Azure VPN中增加这个新用户</p>
+<p>2、创建并配置一个新的VPN网关，</p>
+<p>3、配置客户端：</p>
+<p>最终可以实现不同的用户接入不同的VPN</p>
+<p>点击连接报错：</p></article>

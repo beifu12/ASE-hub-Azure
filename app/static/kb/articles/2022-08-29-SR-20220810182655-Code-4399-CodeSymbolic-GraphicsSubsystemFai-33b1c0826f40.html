@@ -1,0 +1,45 @@
+<article class="kb-article" data-title="SR_20220810182655 _ [{&quot;Code&quot;:4399,&quot;CodeSymbolic&quot;:&quot;GraphicsSubsystemFailed&quot;,&quot;Time&quot;:&quot;2022-08-10T08:45:23.2790000Z&quot;,&quot;Message&quot;:&quot;Disconnect due to a failure in graphics subsystem.&quot;,&quot;ServiceError&quot;:true,&quot;Source&quot;:&quot;RDSt"><h1>SR_20220810182655 _ [{&quot;Code&quot;:4399,&quot;CodeSymbolic&quot;:&quot;GraphicsSubsystemFailed&quot;,&quot;Time&quot;:&quot;2022-08-10T08:45:23.2790000Z&quot;,&quot;Message&quot;:&quot;Disconnect due to a failure in graphics subsystem.&quot;,&quot;ServiceError&quot;:true,&quot;Source&quot;:&quot;RDSt</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Microsoft Sentinel</li>
+<li>Section: Azure VD</li>
+<li>最近修改: 2022-08-29 11:47:36</li>
+<li>JD 相关性: Defender/Sentinel/安全</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>About the error &quot;Disconnect due to a failure in graphics subsystem”: The reason it occurred in this case is that the graphics subsystem needs to allocate fairly large buffers while it encodes the remote screen contents to send to the client and this allocation...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>About the error &quot;Disconnect due to a failure in graphics subsystem”: The reason it occurred in this case is that the graphics subsystem needs to allocate fairly large buffers while it encodes the remote screen contents to send to the client and this allocation attempt failed because the VM was so low in available memory.</li>
+</ul>
+<ul>
+<li>Memory management in the OS is a complicated matter. Some memory can be paged out, some memory can be compressed or cache. Some memory may be released back after the error happened. It’s impossible for us to speculate how the customer was using OS memory to determine what part of the OS thought was out of memory without a full dump of the machine, and even if we had that, it&#39;s likely that the memory usage was expected. We suggest the customer increases the size of RAM in the VM to mitigate this.</li>
+</ul>
+<h2>背景信息</h2>
+<p>未从原文中明确识别。</p>
+<h2>排查思路</h2>
+<ul>
+<li>客户看到portal报错如题，但是客户指标显示内存充足，如下图：</li>
+</ul>
+<ul>
+<li>Normally you could check the following doc. Session host virtual machine sizing guidelines for Azure Virtual Desktop and Remote Desktop Services | Microsoft Docs</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案及解释口径：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>客户看到portal报错如题，但是客户指标显示内存充足，如下图：</p>
+<p>解决方案及解释口径：</p>
+<p>About the error &quot;Disconnect due to a failure in graphics subsystem”: The reason it occurred in this case is that the graphics subsystem needs to allocate fairly large buffers while it encodes the remote screen contents to send to the client and this allocation attempt failed because the VM was so low in available memory.</p>
+<p>Memory management in the OS is a complicated matter. Some memory can be paged out, some memory can be compressed or cache. Some memory may be released back after the error happened. It’s impossible for us to speculate how the customer was using OS memory to determine what part of the OS thought was out of memory without a full dump of the machine, and even if we had that, it&#39;s likely that the memory usage was expected. We suggest the customer increases the size of RAM in the VM to mitigate this.</p>
+<p>Normally you could check the following doc. Session host virtual machine sizing guidelines for Azure Virtual Desktop and Remote Desktop Services | Microsoft Docs</p></article>

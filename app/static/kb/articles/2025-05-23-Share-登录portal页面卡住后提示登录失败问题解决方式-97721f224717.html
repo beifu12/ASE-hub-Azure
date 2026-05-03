@@ -1,0 +1,107 @@
+<article class="kb-article" data-title="[Share]登录portal页面卡住后提示登录失败问题解决方式"><h1>[Share]登录portal页面卡住后提示登录失败问题解决方式</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-05-23 17:03:23</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2025- 05-23</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2025- 05-23</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025- 05-23</li>
+</ul>
+<ul>
+<li>case：20250521354373</li>
+</ul>
+<ul>
+<li>问题背景：</li>
+</ul>
+<ul>
+<li>实际用户管理员在Entra ID的登录日志中也能看到。</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>解决方式：</li>
+</ul>
+<ul>
+<li>PG给的workround为：</li>
+</ul>
+<ul>
+<li>administrator changes the default auth method of the user, or</li>
+</ul>
+<ul>
+<li>administrator removes phone method of the user, user re-registers it and it will be saved with the correct default method.</li>
+</ul>
+<ul>
+<li>之后用户输入完用户名密码后就可以正常跳转到MFA注册页面，完成登录。如果以后不需要MFA，再让管理员给该用户禁用MFA即可，不影响用户后续登录。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题多发生在用户账户长时间未登录或者是到了账户身份验证的周期时以及管理员为其重置密码后再次登录时需要进行身份校验。</li>
+</ul>
+<ul>
+<li>现象是输入用户名密码后会提示需要更多验证，然后跳转页面网页一直转圈无法展示，最后提示如下页面。无限循环。</li>
+</ul>
+<ul>
+<li>问题确认方式：</li>
+</ul>
+<ul>
+<li>在ASC中查看用户登录日志，会看到登录失败报错代码为50072的日志记录。</li>
+</ul>
+<ul>
+<li>此类身份验证需要通过MFA的方式进行二次验证，但是用户实际并未使用MFA，导致功能页面逻辑冲突，业务无法展示。</li>
+</ul>
+<ul>
+<li>根据以上PG给的方式实在不具备操作性，特此整理我的解决步骤。</li>
+</ul>
+<ul>
+<li>首先把每用户MFA中的验证方式能选的全选上，保证不能登录的用户在“每用户MFA”中的MFA是启用状态。</li>
+</ul>
+<ul>
+<li>在密码重置》身份验证方法，中任选一种，把图中的4种方式都选上</li>
+</ul>
+<ul>
+<li>找到不能登录的用户，先将全部的身份验证方法删除，然后点击“需要重新注册多重身份验证”</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>administrator enables voice as authentication method, or</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025- 05-23</p>
+<p>case：20250521354373</p>
+<p>问题背景：</p>
+<p>问题多发生在用户账户长时间未登录或者是到了账户身份验证的周期时以及管理员为其重置密码后再次登录时需要进行身份校验。</p>
+<p>现象是输入用户名密码后会提示需要更多验证，然后跳转页面网页一直转圈无法展示，最后提示如下页面。无限循环。</p>
+<p>问题确认方式：</p>
+<p>在ASC中查看用户登录日志，会看到登录失败报错代码为50072的日志记录。</p>
+<p>实际用户管理员在Entra ID的登录日志中也能看到。</p>
+<p>问题原因：</p>
+<p>此类身份验证需要通过MFA的方式进行二次验证，但是用户实际并未使用MFA，导致功能页面逻辑冲突，业务无法展示。</p>
+<p>解决方式：</p>
+<p>PG给的workround为：</p>
+<p>administrator enables voice as authentication method, or</p>
+<p>administrator changes the default auth method of the user, or</p>
+<p>administrator removes phone method of the user, user re-registers it and it will be saved with the correct default method.</p>
+<p>根据以上PG给的方式实在不具备操作性，特此整理我的解决步骤。</p>
+<p>首先把每用户MFA中的验证方式能选的全选上，保证不能登录的用户在“每用户MFA”中的MFA是启用状态。</p>
+<p>在密码重置》身份验证方法，中任选一种，把图中的4种方式都选上</p>
+<p>找到不能登录的用户，先将全部的身份验证方法删除，然后点击“需要重新注册多重身份验证”</p>
+<p>之后用户输入完用户名密码后就可以正常跳转到MFA注册页面，完成登录。如果以后不需要MFA，再让管理员给该用户禁用MFA即可，不影响用户后续登录。</p></article>

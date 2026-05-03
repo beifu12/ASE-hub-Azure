@@ -1,0 +1,58 @@
+<article class="kb-article" data-title="AKS使用Blobfuse挂载存储，无法创建文件夹，报错mkdir: cannot create directory &#39;aa&#39;: No such file or directory"><h1>AKS使用Blobfuse挂载存储，无法创建文件夹，报错mkdir: cannot create directory &#39;aa&#39;: No such file or directory</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: Bug</li>
+<li>最近修改: 2023-08-11 11:22:53</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户使用AKS使用Blobfuse挂载存储，无法创建文件夹，报错mkdir: cannot create directory &#39;aa&#39;: No such file or directoryAKS使用Blobfuse挂载存储，无法创建文件夹，报错mkdir: cannot create directory &#39;aa&#39;: No such file or directory</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户使用AKS使用Blobfuse挂载存储，无法创建文件夹，报错mkdir: cannot create directory &#39;aa&#39;: No such file or directoryAKS使用Blobfuse挂载存储，无法创建文件夹，报错mkdir: cannot create directory &#39;aa&#39;: No such file or directory</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题：</li>
+</ul>
+<ul>
+<li>但是可以在存储中看到创建的文件夹。</li>
+</ul>
+<ul>
+<li>问题原因</li>
+</ul>
+<ul>
+<li>存储账户如果启动了ADLS,需要加上--use-adls=true的选项。</li>
+</ul>
+<ul>
+<li>测试截图：</li>
+</ul>
+<ul>
+<li>另外，虽然存储类显示的是premium,但从客户的反馈来看，使用标准存储账户也是没有问题的。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>根据文档：<a href="https://learn.microsoft.com/ZH-CN/azure/aks/azure-csi-blob-storage-provision?tabs=mount-nfs%2Csecret" target="_blank" rel="noopener">https://learn.microsoft.com/ZH-CN/azure/aks/azure-csi-blob-storage-provision?tabs=mount-nfs%2Csecret</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/08/11</p>
+<p>问题：</p>
+<p>客户使用AKS使用Blobfuse挂载存储，无法创建文件夹，报错mkdir: cannot create directory &#39;aa&#39;: No such file or directoryAKS使用Blobfuse挂载存储，无法创建文件夹，报错mkdir: cannot create directory &#39;aa&#39;: No such file or directory</p>
+<p>但是可以在存储中看到创建的文件夹。</p>
+<p>问题原因</p>
+<p>根据文档：<a href="https://learn.microsoft.com/ZH-CN/azure/aks/azure-csi-blob-storage-provision?tabs=mount-nfs%2Csecret" target="_blank" rel="noopener">https://learn.microsoft.com/ZH-CN/azure/aks/azure-csi-blob-storage-provision?tabs=mount-nfs%2Csecret</a></p>
+<p>存储账户如果启动了ADLS,需要加上--use-adls=true的选项。</p>
+<p>测试截图：</p>
+<p>另外，虽然存储类显示的是premium,但从客户的反馈来看，使用标准存储账户也是没有问题的。</p></article>

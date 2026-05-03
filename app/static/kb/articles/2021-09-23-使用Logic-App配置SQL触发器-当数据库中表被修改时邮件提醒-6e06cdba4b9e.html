@@ -1,0 +1,124 @@
+<article class="kb-article" data-title="使用Logic App配置SQL触发器，当数据库中表被修改时邮件提醒"><h1>使用Logic App配置SQL触发器，当数据库中表被修改时邮件提醒</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: logic app</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-09-23 11:21:54</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>相关案例：SR_2021040789640_[MS-LED]配置SQL触发器,运行失败</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>相关案例：SR_2021040789640_[MS-LED]配置SQL触发器,运行失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>创建包含rowversion 和 identity的表</li>
+</ul>
+<ul>
+<li>create table table0422</li>
+</ul>
+<ul>
+<li>(</li>
+</ul>
+<ul>
+<li>sid int primary key identity (1,1),</li>
+</ul>
+<ul>
+<li>rv rowversion not null,</li>
+</ul>
+<ul>
+<li>fname varchar(255)</li>
+</ul>
+<ul>
+<li>)</li>
+</ul>
+<ul>
+<li>添加触发器</li>
+</ul>
+<ul>
+<li>在数据库中插入数据</li>
+</ul>
+<ul>
+<li>insert into dbo.table0422(fname) values(&#39;test&#39;)</li>
+</ul>
+<ul>
+<li>触发器记录显示成功</li>
+</ul>
+<ul>
+<li>配置邮件操作</li>
+</ul>
+<ul>
+<li>保存</li>
+</ul>
+<ul>
+<li>测试</li>
+</ul>
+<ul>
+<li>在表中插入数据</li>
+</ul>
+<ul>
+<li>触发器历史状态成功</li>
+</ul>
+<ul>
+<li>收到邮件提醒</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>经过调查，发现Logic App 添加SQL触发器有一些已知问题和局限性，如下：</li>
+</ul>
+<ul>
+<li>按照文档要求，创建包含rowversion 和 identity的SQL表，然后用Logic App添加SQL触发器。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>需要配置一个拥有Office 365 邮件服务的账号并授权。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>添加SQL触发器： <a href="https://docs.azure.cn/zh-cn/connectors/connectors-create-api-sqlazure#add-a-sql-trigger" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/connectors/connectors-create-api-sqlazure#add-a-sql-trigger</a></li>
+</ul>
+<ul>
+<li>已知问题和局限性：<a href="https://docs.microsoft.com/zh-cn/connectors/sql/#known-issues-and-limitations" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/connectors/sql/#known-issues-and-limitations</a></li>
+</ul>
+<ul>
+<li>注：关于触发器历史状态的说明请参考<a href="https://docs.azure.cn/zh-cn/logic-apps/monitor-logic-apps#review-trigger-history" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/logic-apps/monitor-logic-apps#review-trigger-history</a></li>
+</ul>
+<ul>
+<li>接下来，在触发器之后添加操作，这里我设置的是Office365邮件通知 <a href="https://docs.azure.cn/zh-cn/connectors/connectors-create-api-office365-outlook#add-an-action" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/connectors/connectors-create-api-office365-outlook#add-an-action</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/05/15</p>
+<p>相关案例：SR_2021040789640_[MS-LED]配置SQL触发器,运行失败</p>
+<p>经过调查，发现Logic App 添加SQL触发器有一些已知问题和局限性，如下：</p>
+<p>添加SQL触发器： <a href="https://docs.azure.cn/zh-cn/connectors/connectors-create-api-sqlazure#add-a-sql-trigger" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/connectors/connectors-create-api-sqlazure#add-a-sql-trigger</a></p>
+<p>已知问题和局限性：<a href="https://docs.microsoft.com/zh-cn/connectors/sql/#known-issues-and-limitations" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/connectors/sql/#known-issues-and-limitations</a></p>
+<p>按照文档要求，创建包含rowversion 和 identity的SQL表，然后用Logic App添加SQL触发器。</p>
+<p>创建包含rowversion 和 identity的表</p>
+<p>create table table0422</p>
+<p>(</p>
+<p>sid int primary key identity (1,1),</p>
+<p>rv rowversion not null,</p>
+<p>fname varchar(255)</p>
+<p>)</p>
+<p>添加触发器</p>
+<p>在数据库中插入数据</p>
+<p>insert into dbo.table0422(fname) values(&#39;test&#39;)</p>
+<p>触发器记录显示成功</p>
+<p>注：关于触发器历史状态的说明请参考<a href="https://docs.azure.cn/zh-cn/logic-apps/monitor-logic-apps#review-trigger-history" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/logic-apps/monitor-logic-apps#review-trigger-history</a></p>
+<p>接下来，在触发器之后添加操作，这里我设置的是Office365邮件通知 <a href="https://docs.azure.cn/zh-cn/connectors/connectors-create-api-office365-outlook#add-an-action" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/connectors/connectors-create-api-office365-outlook#add-an-action</a></p>
+<p>需要配置一个拥有Office 365 邮件服务的账号并授权。</p>
+<p>配置邮件操作</p>
+<p>保存</p>
+<p>测试</p>
+<p>在表中插入数据</p>
+<p>触发器历史状态成功</p>
+<p>收到邮件提醒</p></article>

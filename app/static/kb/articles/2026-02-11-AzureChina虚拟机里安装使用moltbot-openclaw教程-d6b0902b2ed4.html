@@ -1,0 +1,252 @@
+<article class="kb-article" data-title="AzureChina虚拟机里安装使用moltbot/openclaw教程"><h1>AzureChina虚拟机里安装使用moltbot/openclaw教程</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2026-02-11 20:50:12</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>提升云竞争力的办法， 就是拥抱新时代！</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>提升云竞争力的办法， 就是拥抱新时代！</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>提升云竞争力的办法， 就是拥抱新时代！</li>
+</ul>
+<ul>
+<li>以下是我总结出如何在Azure虚拟机中（Linux机器）安装openclaw的教程：</li>
+</ul>
+<ul>
+<li>首先我们准备一个Ubuntu 24.04的gen2的机器。</li>
+</ul>
+<ul>
+<li>由于AI的原因，为了方便使用web页面我们可能需要准备一个可视化工具插件，我使用的是VNC：Download VNC Server by RealVNC®</li>
+</ul>
+<ul>
+<li>登录进虚拟机的时候，我们需要提前设置一下VNC的环境</li>
+</ul>
+<ul>
+<li>sudo apt clean all &amp;&amp; sudo apt update</li>
+</ul>
+<ul>
+<li>sudo apt install xfce4 xfce4-goodies dbus-x11</li>
+</ul>
+<ul>
+<li>sudo apt install tightvncserver</li>
+</ul>
+<ul>
+<li>注意：</li>
+</ul>
+<ul>
+<li>一般 VNC 服务器密码最大长度是8位，所以这里不能设置超过8位的密码。</li>
+</ul>
+<ul>
+<li>vncserver</li>
+</ul>
+<ul>
+<li>vi ~/.vnc/xstartup</li>
+</ul>
+<ul>
+<li>#!/bin/sh</li>
+</ul>
+<ul>
+<li></li>
+</ul>
+<ul>
+<li>xrdb &quot;$HOME/.Xresources&quot;</li>
+</ul>
+<ul>
+<li>xsetroot -solid grey</li>
+</ul>
+<ul>
+<li>#x-terminal-emulator -geometry 80x24+10+10 -ls -title &quot;$VNCDESKTOP Desktop&quot; &amp;</li>
+</ul>
+<ul>
+<li>#x-window-manager &amp;</li>
+</ul>
+<ul>
+<li># Fix to make GNOME work</li>
+</ul>
+<ul>
+<li>/etc/X11/Xsession</li>
+</ul>
+<ul>
+<li>startxfce4 &amp;</li>
+</ul>
+<ul>
+<li>按 Esc，输入 :wq，保存文件并返回。</li>
+</ul>
+<ul>
+<li>在 VNC Viewer 软件中，输入 云服务器的 IP 地址:1，按 Enter。</li>
+</ul>
+<ul>
+<li>Npm prefix -g #找到全局的npm前缀</li>
+</ul>
+<ul>
+<li>将全局的npm bin目录添加到shell启动文件：</li>
+</ul>
+<ul>
+<li># macOS / Linux</li>
+</ul>
+<ul>
+<li>然后打开新终端或者在bash上运行hash -r</li>
+</ul>
+<ul>
+<li>安装成功之后，如果之前的安装未结束，直接使用：openclaw-cn onboard --install-daemon</li>
+</ul>
+<ul>
+<li>开始使用 | OpenClaw 中文版 - 开源免费 AI 助手 | WhatsApp/Telegram/微信自动化</li>
+</ul>
+<ul>
+<li>按照流程逐步配置。</li>
+</ul>
+<ul>
+<li>关于API的问题，由于我们是Azure China区，受限于长城防火墙，最好使用国内的API</li>
+</ul>
+<ul>
+<li>在安装的时候，默认情况使用的是国外的API，我们需要手动跳转到国内。</li>
+</ul>
+<ul>
+<li>输入以下指令： vi ~/.openclaw/openclaw.json</li>
+</ul>
+<ul>
+<li>我使用的是moonshot AI的API，国外版本的是api.moonshot.ai/v1, 国内则需要使用api.moonshot.cn/v1</li>
+</ul>
+<ul>
+<li>找到对应的URL： 首先输入i 键，然后URL修改之后，按ESC，然后输入:wq保存退出。</li>
+</ul>
+<ul>
+<li>之后重启OpenClaw的gateway： openclaw-cn gateway restart</li>
+</ul>
+<ul>
+<li>配置过后，如果你的API有订阅的话，那么直接输入openclaw-cn tui触发就可以正常使用了。</li>
+</ul>
+<ul>
+<li>我目前给大家成功部署出了可一键部署的镜像，放在Azure Compute Gallery上了，大家自己有token的可以去试试。</li>
+</ul>
+<ul>
+<li>/subscriptions/fe456b35-63d2-4b94-a30a-cf03b5433907/resourceGroups/AKSlearning/providers/Microsoft.Compute/galleries/OpenClawLinuxOS</li>
+</ul>
+<ul>
+<li>如用上面的镜像，请直接  openclaw-cn onboard</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>执行以下命令，清空缓存，更新您的软件包列表。</li>
+</ul>
+<ul>
+<li>执行以下命令，安装桌面环境所需软件包。</li>
+</ul>
+<ul>
+<li>执行以下命令，安装 VNC。</li>
+</ul>
+<ul>
+<li>执行以下命令，启动 VNC 服务，并设置 VNC 的密码。</li>
+</ul>
+<ul>
+<li>执行以下命令，打开 VNC 配置文件。</li>
+</ul>
+<ul>
+<li>执行以下命令，重启桌面进程。</li>
+</ul>
+<ul>
+<li>vncserver -kill :1 #杀掉原桌面进程，输入命令（其中的:1是桌面号）</li>
+</ul>
+<ul>
+<li>运行此命令，来进行安装npm等一系列组件：</li>
+</ul>
+<ul>
+<li>安装完成之后，有可能会出现npm的对应报错，npm的报错90%的原因为路径不对，请参考以下命令：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>export XKL_XMODMAP_DISABLE=1</li>
+</ul>
+<ul>
+<li>目前进行到这里是不通的，因为我们有默认的NSG，我们需要在NSG上添加对应的规则，VNC使用的端口是5900，桌面进程会+1，因此我建议NSG直接建立为5900-5910.</li>
+</ul>
+<ul>
+<li>export PATH=&quot;/path/from/npm/prefix/bin:$PATH&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>目前Gemini3有免费的额度，大家有visa/mastercard即可使用。.</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>按 i 切换至编辑模式，并将配置文件替换为如下内容。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>curl -fsSL <a href="https://clawd.org.cn/install.sh" target="_blank" rel="noopener">https://clawd.org.cn/install.sh</a> |sudo bash -s -- --registry <a href="https://registry.npmmirror.com" target="_blank" rel="noopener">https://registry.npmmirror.com</a></li>
+</ul>
+<ul>
+<li>使用 sudo npm install -g openclaw-cn@latest --registry <a href="https://registry.npmmirror.com" target="_blank" rel="noopener">https://registry.npmmirror.com</a></li>
+</ul>
+<ul>
+<li>接下来配置的是飞书的控制插件：参考：<a href="https://cloud.tencent.com/developer/article/2626160#:~:text=%E4%BA%94%E3%80%81-,%E6%8E%A5%E5%85%A5%E9%A3%9E%E4%B9%A6%E6%9C%BA%E5%99%A8%E4%BA%BA,-%E6%88%91%E4%BB%AC%E9%9C%80%E8%A6%81%E5%85%88%E5%88%B0" target="_blank" rel="noopener">https://cloud.tencent.com/developer/article/2626160#:~:text=%E4%BA%94%E3%80%81-,%E6%8E%A5%E5%85%A5%E9%A3%9E%E4%B9%A6%E6%9C%BA%E5%99%A8%E4%BA%BA,-%E6%88%91%E4%BB%AC%E9%9C%80%E8%A6%81%E5%85%88%E5%88%B0</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026/02/04</p>
+<p>提升云竞争力的办法， 就是拥抱新时代！</p>
+<p>以下是我总结出如何在Azure虚拟机中（Linux机器）安装openclaw的教程：</p>
+<p>首先我们准备一个Ubuntu 24.04的gen2的机器。</p>
+<p>由于AI的原因，为了方便使用web页面我们可能需要准备一个可视化工具插件，我使用的是VNC：Download VNC Server by RealVNC®</p>
+<p>登录进虚拟机的时候，我们需要提前设置一下VNC的环境</p>
+<p>执行以下命令，清空缓存，更新您的软件包列表。</p>
+<p>sudo apt clean all &amp;&amp; sudo apt update</p>
+<p>执行以下命令，安装桌面环境所需软件包。</p>
+<p>sudo apt install xfce4 xfce4-goodies dbus-x11</p>
+<p>执行以下命令，安装 VNC。</p>
+<p>sudo apt install tightvncserver</p>
+<p>执行以下命令，启动 VNC 服务，并设置 VNC 的密码。</p>
+<p>注意：</p>
+<p>一般 VNC 服务器密码最大长度是8位，所以这里不能设置超过8位的密码。</p>
+<p>vncserver</p>
+<p>执行以下命令，打开 VNC 配置文件。</p>
+<p>vi ~/.vnc/xstartup</p>
+<p>按 i 切换至编辑模式，并将配置文件替换为如下内容。</p>
+<p>#!/bin/sh</p>
+<p>xrdb &quot;$HOME/.Xresources&quot;</p>
+<p>xsetroot -solid grey</p>
+<p>#x-terminal-emulator -geometry 80x24+10+10 -ls -title &quot;$VNCDESKTOP Desktop&quot; &amp;</p>
+<p>#x-window-manager &amp;</p>
+<h1>Fix to make GNOME work</h1>
+<p>export XKL_XMODMAP_DISABLE=1</p>
+<p>/etc/X11/Xsession</p>
+<p>startxfce4 &amp;</p>
+<p>按 Esc，输入 :wq，保存文件并返回。</p>
+<p>执行以下命令，重启桌面进程。</p>
+<p>vncserver -kill :1 #杀掉原桌面进程，输入命令（其中的:1是桌面号）</p>
+<p>在 VNC Viewer 软件中，输入 云服务器的 IP 地址:1，按 Enter。</p>
+<p>目前进行到这里是不通的，因为我们有默认的NSG，我们需要在NSG上添加对应的规则，VNC使用的端口是5900，桌面进程会+1，因此我建议NSG直接建立为5900-5910.</p>
+<p>运行此命令，来进行安装npm等一系列组件：</p>
+<p>curl -fsSL <a href="https://clawd.org.cn/install.sh" target="_blank" rel="noopener">https://clawd.org.cn/install.sh</a> |sudo bash -s -- --registry <a href="https://registry.npmmirror.com" target="_blank" rel="noopener">https://registry.npmmirror.com</a></p>
+<p>安装完成之后，有可能会出现npm的对应报错，npm的报错90%的原因为路径不对，请参考以下命令：</p>
+<p>Npm prefix -g #找到全局的npm前缀</p>
+<p>将全局的npm bin目录添加到shell启动文件：</p>
+<h1>macOS / Linux</h1>
+<p>export PATH=&quot;/path/from/npm/prefix/bin:$PATH&quot;</p>
+<p>然后打开新终端或者在bash上运行hash -r</p>
+<p>使用 sudo npm install -g openclaw-cn@latest --registry <a href="https://registry.npmmirror.com" target="_blank" rel="noopener">https://registry.npmmirror.com</a></p>
+<p>安装成功之后，如果之前的安装未结束，直接使用：openclaw-cn onboard --install-daemon</p>
+<p>开始使用 | OpenClaw 中文版 - 开源免费 AI 助手 | WhatsApp/Telegram/微信自动化</p>
+<p>按照流程逐步配置。</p>
+<p>关于API的问题，由于我们是Azure China区，受限于长城防火墙，最好使用国内的API</p>
+<p>在安装的时候，默认情况使用的是国外的API，我们需要手动跳转到国内。</p>
+<p>输入以下指令： vi ~/.openclaw/openclaw.json</p>
+<p>我使用的是moonshot AI的API，国外版本的是api.moonshot.ai/v1, 国内则需要使用api.moonshot.cn/v1</p>
+<p>找到对应的URL： 首先输入i 键，然后URL修改之后，按ESC，然后输入:wq保存退出。</p>
+<p>接下来配置的是飞书的控制插件：参考：<a href="https://cloud.tencent.com/developer/article/2626160#:~:text=%E4%BA%94%E3%80%81-,%E6%8E%A5%E5%85%A5%E9%A3%9E%E4%B9%A6%E6%9C%BA%E5%99%A8%E4%BA%BA,-%E6%88%91%E4%BB%AC%E9%9C%80%E8%A6%81%E5%85%88%E5%88%B0" target="_blank" rel="noopener">https://cloud.tencent.com/developer/article/2626160#:~:text=%E4%BA%94%E3%80%81-,%E6%8E%A5%E5%85%A5%E9%A3%9E%E4%B9%A6%E6%9C%BA%E5%99%A8%E4%BA%BA,-%E6%88%91%E4%BB%AC%E9%9C%80%E8%A6%81%E5%85%88%E5%88%B0</a></p>
+<p>之后重启OpenClaw的gateway： openclaw-cn gateway restart</p>
+<p>配置过后，如果你的API有订阅的话，那么直接输入openclaw-cn tui触发就可以正常使用了。</p>
+<p>目前Gemini3有免费的额度，大家有visa/mastercard即可使用。.</p>
+<p>我目前给大家成功部署出了可一键部署的镜像，放在Azure Compute Gallery上了，大家自己有token的可以去试试。</p>
+<p>/subscriptions/fe456b35-63d2-4b94-a30a-cf03b5433907/resourceGroups/AKSlearning/providers/Microsoft.Compute/galleries/OpenClawLinuxOS</p>
+<p>如用上面的镜像，请直接  openclaw-cn onboard</p></article>

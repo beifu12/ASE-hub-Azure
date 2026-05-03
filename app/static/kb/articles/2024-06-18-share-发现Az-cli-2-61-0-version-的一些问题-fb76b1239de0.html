@@ -1,0 +1,179 @@
+<article class="kb-article" data-title="【share】发现Az cli 2.61.0 version 的一些问题"><h1>【share】发现Az cli 2.61.0 version 的一些问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-18 00:21:55</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>由于在windows上使用 Web 帐户管理器（WAM）的认证方式, 部分客户会出现以下两种报错情况.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>由于在windows上使用 Web 帐户管理器（WAM）的认证方式,  部分客户会出现以下两种报错情况.</li>
+</ul>
+<ul>
+<li>报错截图:</li>
+</ul>
+<ul>
+<li>报错截图文本:</li>
+</ul>
+<ul>
+<li>If you encounter any issue and want to revert to the previous browser-based authentication method, run the following script:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Create</li>
+</ul>
+<ul>
+<li>=&gt;   遇到的案例</li>
+</ul>
+<ul>
+<li>====================================</li>
+</ul>
+<ul>
+<li>=&gt; 分析测试</li>
+</ul>
+<ul>
+<li>===========================</li>
+</ul>
+<ul>
+<li>AADSTS51004 : The user account XXXX does not exits in the XXXX directory.</li>
+</ul>
+<ul>
+<li>===============================</li>
+</ul>
+<ul>
+<li>=&gt;  此问题涉及的文档</li>
+</ul>
+<ul>
+<li>=&gt; 补充</li>
+</ul>
+<ul>
+<li>============================</li>
+</ul>
+<ul>
+<li>1，2.61.0 的正常情况登录页面 : 如下.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>最近接了几个关于az cli 的问题,  经过排查和测试发现问题的原因都是由于升级了az cli到最新的2.61.0 版本的问题,  分享一下我这边的测试和发现 :</li>
+</ul>
+<ul>
+<li>We have test az login and also find the error bellowing:</li>
+</ul>
+<ul>
+<li>1,  输入az cloud set -n AzureChinaCloud 之后 az login 会出现以下报错:  直接出现报错不会弹出选择账号的窗口.</li>
+</ul>
+<ul>
+<li>2,  可以弹出选择账号的窗口,  但是没有需要选择的账户,  只有选择2个跳转到global验证的账号页面</li>
+</ul>
+<ul>
+<li>如选择并输入账号之后会跳转到global验证并报错 ：</li>
+</ul>
+<ul>
+<li>出现以上报错情况,  根据文档描述可以还原到以前的基于浏览器的身份验证方法 ：</li>
+</ul>
+<ul>
+<li>经测试，还原为基于浏览器的身份验证方法之后客户可以正常登录</li>
+</ul>
+<ul>
+<li>Unable to log in interactivelly on 2.61.0: User cancelled the Accounts Control Operation #28997 : Unable to log in interactivelly on 2.61.0: User cancelled the Accounts Control Operation · Issue #28997 · Azure/azure-cli · GitHub</li>
+</ul>
+<ul>
+<li>2，如果客户账号没有开启MFA,  可以使用az login --user &lt;username&gt; --password &lt;password&gt;  的方式 login</li>
+</ul>
+<ul>
+<li>测试发现即便选择的窗口中没有21v 云环境的账号以供选择,  只要使用az login --user &lt;username&gt; --password &lt;password&gt;  的方式 是可以到中国区验证的,  前提是使用的user没有开启MFA 否则会报错 ，因为此种验证方式只可以是非交互式的</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>案例 1:  SR_20240610297948_China Azure CLI Issue</li>
+</ul>
+<ul>
+<li>客户问题描述:  Azure CLI is not available on Azure Portal. I installed Azure CLI on Windows 11 desktop. I tried to run az login command but it not moving further and stuck on same screen. I want to know whether azure CLI work on azure china cloud or not. If yes the how I can use this.</li>
+</ul>
+<ul>
+<li>案例 2 : SR_20240613298597 _ Azure CLI无法连接到Azure China portal</li>
+</ul>
+<ul>
+<li>笔记本上的Azure CLI无法连接到Azure China portal</li>
+</ul>
+<ul>
+<li>Az cli 升级到最新的2.61.0版本,  从 Azure CLI 版本 2.61.0 开始，Azure CLI 在 Windows 上使用 Web 帐户管理器（WAM），默认情况下在 Linux 和 macOS 上使用基于浏览器的登录名</li>
+</ul>
+<ul>
+<li>If we upgrade the az cli version to 2.61.0 , the most different is Beginning with Azure CLI version 2.61.0, Web Account Manager (WAM) is now the default authentication method on Windows.</li>
+</ul>
+<ul>
+<li>3, 可以弹出选择账号的页面，但是点击账号之后，会长时间没有反应, 无法弹出下一步的窗口，关闭powershell在重新打开依然如此，重启机器后也无法缓解.</li>
+</ul>
+<ul>
+<li>az account clear</li>
+</ul>
+<ul>
+<li>az config set core.enable_broker_on_windows=false</li>
+</ul>
+<ul>
+<li>az login</li>
+</ul>
+<ul>
+<li>使用 Azure CLI 以交互方式登录 : 在命令行中使用 Azure CLI 登录 | Microsoft Learn</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>ERROR: User cancelled the Accounts Control Operation.. Status: Response_Status.Status_UserCanceled, Error code: 0, Tag: 528315210</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>=&gt;  解决方案</li>
+</ul>
+<ul>
+<li>You can following the solution mentioned in the bellowing to try :</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Create</p>
+<p>2024-06-18</p>
+<p>最近接了几个关于az cli 的问题,  经过排查和测试发现问题的原因都是由于升级了az cli到最新的2.61.0 版本的问题,  分享一下我这边的测试和发现 :</p>
+<p>=&gt;   遇到的案例</p>
+<p>====================================</p>
+<p>案例 1:  SR_20240610297948_China Azure CLI Issue</p>
+<p>客户问题描述:  Azure CLI is not available on Azure Portal. I installed Azure CLI on Windows 11 desktop. I tried to run az login command but it not moving further and stuck on same screen. I want to know whether azure CLI work on azure china cloud or not. If yes the how I can use this.</p>
+<p>案例 2 : SR_20240613298597 _ Azure CLI无法连接到Azure China portal</p>
+<p>笔记本上的Azure CLI无法连接到Azure China portal</p>
+<p>=&gt; 分析测试</p>
+<p>===========================</p>
+<p>Az cli 升级到最新的2.61.0版本,  从 Azure CLI 版本 2.61.0 开始，Azure CLI 在 Windows 上使用 Web 帐户管理器（WAM），默认情况下在 Linux 和 macOS 上使用基于浏览器的登录名</p>
+<p>If we upgrade the az cli version to 2.61.0 , the most different is Beginning with Azure CLI version 2.61.0, Web Account Manager (WAM) is now the default authentication method on Windows.</p>
+<p>We have test az login and also find the error bellowing:</p>
+<p>由于在windows上使用 Web 帐户管理器（WAM）的认证方式,  部分客户会出现以下两种报错情况.</p>
+<p>1,  输入az cloud set -n AzureChinaCloud 之后 az login 会出现以下报错:  直接出现报错不会弹出选择账号的窗口.</p>
+<p>报错截图:</p>
+<p>报错截图文本:</p>
+<p>ERROR: User cancelled the Accounts Control Operation.. Status: Response_Status.Status_UserCanceled, Error code: 0, Tag: 528315210</p>
+<p>2,  可以弹出选择账号的窗口,  但是没有需要选择的账户,  只有选择2个跳转到global验证的账号页面</p>
+<p>如选择并输入账号之后会跳转到global验证并报错 ：</p>
+<p>AADSTS51004 : The user account XXXX does not exits in the XXXX directory.</p>
+<p>3, 可以弹出选择账号的页面，但是点击账号之后，会长时间没有反应, 无法弹出下一步的窗口，关闭powershell在重新打开依然如此，重启机器后也无法缓解.</p>
+<p>=&gt;  解决方案</p>
+<p>===============================</p>
+<p>出现以上报错情况,  根据文档描述可以还原到以前的基于浏览器的身份验证方法 ：</p>
+<p>经测试，还原为基于浏览器的身份验证方法之后客户可以正常登录</p>
+<p>You can following the solution mentioned in the bellowing to try :</p>
+<p>If you encounter any issue and want to revert to the previous browser-based authentication method, run the following script:</p>
+<p>az account clear</p>
+<p>az config set core.enable_broker_on_windows=false</p>
+<p>az login</p>
+<p>=&gt;  此问题涉及的文档</p>
+<p>使用 Azure CLI 以交互方式登录 : 在命令行中使用 Azure CLI 登录 | Microsoft Learn</p>
+<p>Unable to log in interactivelly on 2.61.0: User cancelled the Accounts Control Operation #28997 : Unable to log in interactivelly on 2.61.0: User cancelled the Accounts Control Operation · Issue #28997 · Azure/azure-cli · GitHub</p>
+<p>=&gt; 补充</p>
+<p>============================</p>
+<p>1，2.61.0 的正常情况登录页面 : 如下.</p>
+<p>2，如果客户账号没有开启MFA,  可以使用az login --user &lt;username&gt; --password &lt;password&gt;  的方式 login</p>
+<p>测试发现即便选择的窗口中没有21v 云环境的账号以供选择,  只要使用az login --user &lt;username&gt; --password &lt;password&gt;  的方式 是可以到中国区验证的,  前提是使用的user没有开启MFA 否则会报错 ，因为此种验证方式只可以是非交互式的</p></article>

@@ -1,0 +1,103 @@
+<article class="kb-article" data-title="【Share】顾问中建议导出的资源名称显示异常的workaround"><h1>【Share】顾问中建议导出的资源名称显示异常的workaround</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Advisory Policy</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-09-26 08:24:40</li>
+<li>JD 相关性: Defender/Sentinel/安全; Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Hi All:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Hi All:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi All:</li>
+</ul>
+<ul>
+<li>Advisorresources</li>
+</ul>
+<ul>
+<li>| where subscriptionId == &quot;1447ccf1-xxxx-xxxx-xxxx-2f370d142fa6&quot;</li>
+</ul>
+<ul>
+<li>//| where properties.category == &quot;Security&quot;</li>
+</ul>
+<ul>
+<li>| extend ResourceID = tostring(split(id,&#39;/providers/Microsoft.Security&#39;)[0])</li>
+</ul>
+<ul>
+<li>| extend SplitedResourceID = split(ResourceID,&#39;/&#39;)</li>
+</ul>
+<ul>
+<li>| extend Resource = SplitedResourceID[array_length(SplitedResourceID) - 1]</li>
+</ul>
+<ul>
+<li>| extend Impactlevel = properties.impact</li>
+</ul>
+<ul>
+<li>| extend LastUpdatedDate = properties.lastUpdated</li>
+</ul>
+<ul>
+<li>| extend ImpactedField = properties.impactedField</li>
+</ul>
+<ul>
+<li>| project Impactlevel, Advise, subscriptionId, ImpactedField, resourceGroup, Resource, LastUpdatedDate</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#示例查询#</li>
+</ul>
+<ul>
+<li>注：如果希望查看所有订阅的情况，可以把第二行（| where subscriptionId == &quot;1447ccf1-xxxx-xxxx-xxxx-2f370d142fa6&quot;）删除。</li>
+</ul>
+<ul>
+<li>#将查询结果以csv格式进行导出#</li>
+</ul>
+<ul>
+<li>#以上查询结果导出的CSV#</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>当前顾问à所有建议导出的CSV 文件资源名称显示的不是具体的资源名称，而是一长串莫名字符串的问题，这个问题是一个平台问题，Zhenjiang 8 月已经升级了ICM (521461984)，但是目前还没有ETA。</li>
+</ul>
+<ul>
+<li>#顾问中安全建议部分导出的CSV#</li>
+</ul>
+<ul>
+<li>我发现从顾问à所有建议导出的CSV文件中对应的ID在被评估资源ID后面被加上了额外的providers/Microsoft.Security/assessments/xxxxxxx，作为workaround，可以在Azure Resource Graph 浏览器中运行如下的示例查询，将providers/Microsoft.Security之前的部分作为资源ID拿出来，再根据/进行拆分，然后使用拆分后资源ID的最后一部分作为资源名称来显示，最后可以将查询结果以csv格式进行导出。</li>
+</ul>
+<ul>
+<li>| extend Advise = properties.shortDescription.solution</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi All:</p>
+<p>当前顾问à所有建议导出的CSV 文件资源名称显示的不是具体的资源名称，而是一长串莫名字符串的问题，这个问题是一个平台问题，Zhenjiang 8 月已经升级了ICM (521461984)，但是目前还没有ETA。</p>
+<p>#顾问中安全建议部分导出的CSV#</p>
+<p>我发现从顾问à所有建议导出的CSV文件中对应的ID在被评估资源ID后面被加上了额外的providers/Microsoft.Security/assessments/xxxxxxx，作为workaround，可以在Azure Resource Graph 浏览器中运行如下的示例查询，将providers/Microsoft.Security之前的部分作为资源ID拿出来，再根据/进行拆分，然后使用拆分后资源ID的最后一部分作为资源名称来显示，最后可以将查询结果以csv格式进行导出。</p>
+<p>#示例查询#</p>
+<p>Advisorresources</p>
+<p>| where subscriptionId == &quot;1447ccf1-xxxx-xxxx-xxxx-2f370d142fa6&quot;</p>
+<p>//| where properties.category == &quot;Security&quot;</p>
+<p>| extend ResourceID = tostring(split(id,&#39;/providers/Microsoft.Security&#39;)[0])</p>
+<p>| extend SplitedResourceID = split(ResourceID,&#39;/&#39;)</p>
+<p>| extend Resource = SplitedResourceID[array_length(SplitedResourceID) - 1]</p>
+<p>| extend Impactlevel = properties.impact</p>
+<p>| extend Advise = properties.shortDescription.solution</p>
+<p>| extend LastUpdatedDate = properties.lastUpdated</p>
+<p>| extend ImpactedField = properties.impactedField</p>
+<p>| project Impactlevel, Advise, subscriptionId, ImpactedField, resourceGroup, Resource, LastUpdatedDate</p>
+<p>注：如果希望查看所有订阅的情况，可以把第二行（| where subscriptionId == &quot;1447ccf1-xxxx-xxxx-xxxx-2f370d142fa6&quot;）删除。</p>
+<p>#将查询结果以csv格式进行导出#</p>
+<p>#以上查询结果导出的CSV#</p></article>

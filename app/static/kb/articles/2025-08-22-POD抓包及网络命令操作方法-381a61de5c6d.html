@@ -1,0 +1,249 @@
+<article class="kb-article" data-title="POD抓包及网络命令操作方法"><h1>POD抓包及网络命令操作方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-08-22 15:46:07</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20200901</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20200901</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20200901</li>
+</ul>
+<ul>
+<li>Update: fuzhangliang</li>
+</ul>
+<ul>
+<li>#kubectl run --generator=run-pod/v1 -it --rm aks-ssh1 --image=debian</li>
+</ul>
+<ul>
+<li>#kubectl run --generator=run-pod/v1 -it --rm aks-ssh2 --image=debian</li>
+</ul>
+<ul>
+<li>#kubectl run --generator=run-pod/v1 -it --rm aks-ssh3 --image=debian</li>
+</ul>
+<ul>
+<li>#kubectl describe pod xxxx  (这个POD可以是Core DNS POD也可以是业务POD)</li>
+</ul>
+<ul>
+<li>#docker inspect --format &quot;{{.State.Pid}}&quot;  xxxx(上一步中获取的POD的Containter ID)</li>
+</ul>
+<ul>
+<li>或者  Crictl inspect xxxx(上一步中获取的POD的Containter ID)</li>
+</ul>
+<ul>
+<li>#也可以使用如下指令获取container ID</li>
+</ul>
+<ul>
+<li>#使用如下指令打印出POD PID</li>
+</ul>
+<ul>
+<li>sudo crictl inspect &lt;container-id&gt; | jq &#39;.info.pid&#39;</li>
+</ul>
+<ul>
+<li>#再使用如下指令进入相应的网络Namespace:</li>
+</ul>
+<ul>
+<li>sudo nsenter -t &lt;pod-PID&gt; -n sh</li>
+</ul>
+<ul>
+<li># Download crictl</li>
+</ul>
+<ul>
+<li>tar -xzf- -C /usr/local/bin/</li>
+</ul>
+<ul>
+<li># Setup CRI endpoint</li>
+</ul>
+<ul>
+<li># Find your container</li>
+</ul>
+<ul>
+<li>crictl ps | grep kube-apiserver</li>
+</ul>
+<ul>
+<li>#3ff4626a9f10e       e7972205b6614       6 hours ago         Running             kube-apiserver         0                   215107b47bd7e       kube-apiserver-talos-rzq-nkg</li>
+</ul>
+<ul>
+<li># Find pid of the container</li>
+</ul>
+<ul>
+<li>crictl inspect 3ff4626a9f10e | grep pid</li>
+</ul>
+<ul>
+<li>#    &quot;pid&quot;: 2152,</li>
+</ul>
+<ul>
+<li>#            &quot;pid&quot;: 1</li>
+</ul>
+<ul>
+<li>#            &quot;type&quot;: &quot;pid&quot;</li>
+</ul>
+<ul>
+<li>#                &quot;getpid&quot;,</li>
+</ul>
+<ul>
+<li>#                &quot;getppid&quot;,</li>
+</ul>
+<ul>
+<li>#                &quot;pidfd_open&quot;,</li>
+</ul>
+<ul>
+<li>#                &quot;pidfd_send_signal&quot;,</li>
+</ul>
+<ul>
+<li>#                &quot;waitpid&quot;,</li>
+</ul>
+<ul>
+<li># Go to network namespace of the pid, but keep mount namespace of the debug container</li>
+</ul>
+<ul>
+<li>nsenter -t 2152 -n</li>
+</ul>
+<ul>
+<li>在node上进入此容器的网络Namespace：</li>
+</ul>
+<ul>
+<li>#nsenter -n -t  6013</li>
+</ul>
+<ul>
+<li>#tcpdump -i eth0 udp dst port 53 | grep xxxx</li>
+</ul>
+<ul>
+<li>#ip link</li>
+</ul>
+<ul>
+<li>#ifconfig</li>
+</ul>
+<ul>
+<li>#./paping x.x.x.x -c 10 -p 80</li>
+</ul>
+<ul>
+<li>#ping x.x.x.x</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查看容器 crictl ps</li>
+</ul>
+<ul>
+<li>查看容器详细信息：crictl inspect [ContainerID]</li>
+</ul>
+<ul>
+<li>查看容器的container ID：</li>
+</ul>
+<ul>
+<li>分析抓取的数据包，确实是对应POD内的抓包。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>注意：现在新版本的集群比如1.18+后的集群，容器运行时已经从Docker升级为containerd了，Node上已经没有docker命令，在Node上查看Container使用crictl命令，简单的说，就是将docker命令统一替换成crictl命令</li>
+</ul>
+<ul>
+<li>相当多的容器为了轻量级，是不包含较为基础的命令的，比如说ip address，ping，telnet，ss，tcpdump等等命令，这就给调试容器网络带来相当大的困扰，可以通过如下方式在node上来对POD进行操作：</li>
+</ul>
+<ul>
+<li>如果想连接多个node，可以通过如下命令创建更多的SSH POD</li>
+</ul>
+<ul>
+<li>找到容器ID后，在Node上运行如下命令打印它的NS ID:</li>
+</ul>
+<ul>
+<li>kubectl get pod &lt;pod-name&gt; -n &lt;namespace&gt; -o=jsonpath=&#39;{.status.containerStatuses[].containerID}&#39; | cut -exid&#39;/&#39; -f3</li>
+</ul>
+<ul>
+<li>kubectl node-shell -x &lt;node&gt;</li>
+</ul>
+<ul>
+<li>运行如下命令抓包，此时会抓取对应pod的包，并保存在node的文件系统下：“</li>
+</ul>
+<ul>
+<li>也可以运行其它进入POD后运行不了的命令，比如：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>export CONTAINER_RUNTIME_ENDPOINT=unix:///host/run/containerd/containerd.sock</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>通过文档中的方法登陆node：<a href="https://docs.azure.cn/zh-cn/aks/ssh" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/ssh</a></li>
+</ul>
+<ul>
+<li>#20240905 <a href="https://github.com/kvaps/kubectl-node-shell" target="_blank" rel="noopener">https://github.com/kvaps/kubectl-node-shell</a>  这样子去获取container PID也是个办法，第2、3步不用在AKS中不用执行：</li>
+</ul>
+<ul>
+<li>wget <a href="https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.28.0/crictl-v1.28.0-linux-amd64.tar.gz" target="_blank" rel="noopener">https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.28.0/crictl-v1.28.0-linux-amd64.tar.gz</a> -O- | \</li>
+</ul>
+<ul>
+<li><a href="https://staight.github.io/2019/09/23/nsenter%E5%91%BD%E4%BB%A4%E7%AE%80%E4%BB%8B/" target="_blank" rel="noopener">https://staight.github.io/2019/09/23/nsenter%E5%91%BD%E4%BB%A4%E7%AE%80%E4%BB%8B/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20200901</p>
+<p>Update: fuzhangliang</p>
+<p>注意：现在新版本的集群比如1.18+后的集群，容器运行时已经从Docker升级为containerd了，Node上已经没有docker命令，在Node上查看Container使用crictl命令，简单的说，就是将docker命令统一替换成crictl命令</p>
+<p>查看容器 crictl ps</p>
+<p>查看容器详细信息：crictl inspect [ContainerID]</p>
+<p>相当多的容器为了轻量级，是不包含较为基础的命令的，比如说ip address，ping，telnet，ss，tcpdump等等命令，这就给调试容器网络带来相当大的困扰，可以通过如下方式在node上来对POD进行操作：</p>
+<p>通过文档中的方法登陆node：<a href="https://docs.azure.cn/zh-cn/aks/ssh" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/ssh</a></p>
+<p>如果想连接多个node，可以通过如下命令创建更多的SSH POD</p>
+<p>#kubectl run --generator=run-pod/v1 -it --rm aks-ssh1 --image=debian</p>
+<p>#kubectl run --generator=run-pod/v1 -it --rm aks-ssh2 --image=debian</p>
+<p>#kubectl run --generator=run-pod/v1 -it --rm aks-ssh3 --image=debian</p>
+<p>查看容器的container ID：</p>
+<p>#kubectl describe pod xxxx  (这个POD可以是Core DNS POD也可以是业务POD)</p>
+<p>找到容器ID后，在Node上运行如下命令打印它的NS ID:</p>
+<p>#docker inspect --format &quot;{{.State.Pid}}&quot;  xxxx(上一步中获取的POD的Containter ID)</p>
+<p>或者  Crictl inspect xxxx(上一步中获取的POD的Containter ID)</p>
+<p>#也可以使用如下指令获取container ID</p>
+<p>kubectl get pod &lt;pod-name&gt; -n &lt;namespace&gt; -o=jsonpath=&#39;{.status.containerStatuses[].containerID}&#39; | cut -exid&#39;/&#39; -f3</p>
+<p>#使用如下指令打印出POD PID</p>
+<p>sudo crictl inspect &lt;container-id&gt; | jq &#39;.info.pid&#39;</p>
+<p>#再使用如下指令进入相应的网络Namespace:</p>
+<p>sudo nsenter -t &lt;pod-PID&gt; -n sh</p>
+<p>#20240905 <a href="https://github.com/kvaps/kubectl-node-shell" target="_blank" rel="noopener">https://github.com/kvaps/kubectl-node-shell</a>  这样子去获取container PID也是个办法，第2、3步不用在AKS中不用执行：</p>
+<p>kubectl node-shell -x &lt;node&gt;</p>
+<h1>Download crictl</h1>
+<p>wget <a href="https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.28.0/crictl-v1.28.0-linux-amd64.tar.gz" target="_blank" rel="noopener">https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.28.0/crictl-v1.28.0-linux-amd64.tar.gz</a> -O- | \</p>
+<p>tar -xzf- -C /usr/local/bin/</p>
+<h1>Setup CRI endpoint</h1>
+<p>export CONTAINER_RUNTIME_ENDPOINT=unix:///host/run/containerd/containerd.sock</p>
+<h1>Find your container</h1>
+<p>crictl ps | grep kube-apiserver</p>
+<p>#3ff4626a9f10e       e7972205b6614       6 hours ago         Running             kube-apiserver         0                   215107b47bd7e       kube-apiserver-talos-rzq-nkg</p>
+<h1>Find pid of the container</h1>
+<p>crictl inspect 3ff4626a9f10e | grep pid</p>
+<h1>&quot;pid&quot;: 2152,</h1>
+<h1>&quot;pid&quot;: 1</h1>
+<h1>&quot;type&quot;: &quot;pid&quot;</h1>
+<h1>&quot;getpid&quot;,</h1>
+<h1>&quot;getppid&quot;,</h1>
+<h1>&quot;pidfd_open&quot;,</h1>
+<h1>&quot;pidfd_send_signal&quot;,</h1>
+<h1>&quot;waitpid&quot;,</h1>
+<h1>Go to network namespace of the pid, but keep mount namespace of the debug container</h1>
+<p>nsenter -t 2152 -n</p>
+<p>在node上进入此容器的网络Namespace：</p>
+<p>#nsenter -n -t  6013</p>
+<p>运行如下命令抓包，此时会抓取对应pod的包，并保存在node的文件系统下：“</p>
+<p>#tcpdump -i eth0 udp dst port 53 | grep xxxx</p>
+<p>分析抓取的数据包，确实是对应POD内的抓包。</p>
+<p>也可以运行其它进入POD后运行不了的命令，比如：</p>
+<p>#ip link</p>
+<p>#ifconfig</p>
+<p>#./paping x.x.x.x -c 10 -p 80</p>
+<p>#ping x.x.x.x</p>
+<p>参考文档：</p>
+<p><a href="https://staight.github.io/2019/09/23/nsenter%E5%91%BD%E4%BB%A4%E7%AE%80%E4%BB%8B/" target="_blank" rel="noopener">https://staight.github.io/2019/09/23/nsenter%E5%91%BD%E4%BB%A4%E7%AE%80%E4%BB%8B/</a></p></article>

@@ -1,0 +1,327 @@
+<article class="kb-article" data-title="ILB导致外网无法访问local port"><h1>ILB导致外网无法访问local port</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LB</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-07-25 12:19:43</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>&quot;idleTimeoutInMinutes&quot;: 4,</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>&quot;idleTimeoutInMinutes&quot;: 4,</li>
+</ul>
+<ul>
+<li>如果能正常访问，则证明之前确实是由这条VFP rule导致公网无法访问。用户则需要对此进行取舍：不使用ILB（可以使用面向公网的SLB），或者放弃公网访问。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_2017050986518_[MS-LED]虚拟机网络问题</li>
+</ul>
+<ul>
+<li>MS_117051015713610</li>
+</ul>
+<ul>
+<li>Kyle分析过程如下：</li>
+</ul>
+<ul>
+<li>====================================================================</li>
+</ul>
+<ul>
+<li>从这台虚拟机的VFP rule中能看到以下两条规则：</li>
+</ul>
+<ul>
+<li>RULE : _lb01-pre_73881496-ffa4-40a7-bbe2-a3ef7d26bd68_SystemAllowCNET_434f9a7c-2cfd-412d-a710-3d460db28abc</li>
+</ul>
+<ul>
+<li>Friendly name : _lb01-pre_73881496-ffa4-40a7-bbe2-a3ef7d26bd68_SystemAllowCNET_434f9a7c-2cfd-412d-a710-3d460db28abc</li>
+</ul>
+<ul>
+<li>Priority : 1000</li>
+</ul>
+<ul>
+<li>Flags : 0</li>
+</ul>
+<ul>
+<li>Type : allow</li>
+</ul>
+<ul>
+<li>Conditions:</li>
+</ul>
+<ul>
+<li>Destination ports : 8081-8081</li>
+</ul>
+<ul>
+<li>Source IP : 172.18.0.0/16,10.0.0.0/16,168.63.129.16/32</li>
+</ul>
+<ul>
+<li>Flow TTL: 0</li>
+</ul>
+<ul>
+<li>RULE : _lb01-pre_73881496-ffa4-40a7-bbe2-a3ef7d26bd68_SystemDenyAll_b501b7b6-ef21-42d2-a27c-646b0cd16ff4</li>
+</ul>
+<ul>
+<li>Friendly name : _lb01-pre_73881496-ffa4-40a7-bbe2-a3ef7d26bd68_SystemDenyAll_b501b7b6-ef21-42d2-a27c-646b0cd16ff4</li>
+</ul>
+<ul>
+<li>Priority : 1002</li>
+</ul>
+<ul>
+<li>Flags : 1 terminating</li>
+</ul>
+<ul>
+<li>Type : block</li>
+</ul>
+<ul>
+<li>根据标黄的resource guid查知，这两条规则属于LB LBiner01-pre的前端：</li>
+</ul>
+<ul>
+<li>&quot;frontendIPConfigurations&quot;: [</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;LoadBalancerFrontEnd&quot;,</li>
+</ul>
+<ul>
+<li>&quot;resourceGuid&quot;: &quot;73881496-ffa4-40a7-bbe2-a3ef7d26bd68&quot;,</li>
+</ul>
+<ul>
+<li>&quot;etag&quot;: &quot;bd8b34c8-b7e8-457c-bb6d-44152b978471&quot;,</li>
+</ul>
+<ul>
+<li>&quot;groupName&quot;: &quot;daxiang&quot;,</li>
+</ul>
+<ul>
+<li>&quot;subscriptionId&quot;: &quot;bb4c7f0a-e47d-450f-b773-59e97a3a22c0&quot;,</li>
+</ul>
+<ul>
+<li>&quot;fullName&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;LBiner01-pre&quot;,</li>
+</ul>
+<ul>
+<li>&quot;LoadBalancerFrontEnd&quot;</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;lastOperationId&quot;: &quot;fa55a4a2-4fc6-46e8-99c7-7c49d974810d&quot;,</li>
+</ul>
+<ul>
+<li>&quot;lastModifiedTime&quot;: &quot;2017-05-09T02:07:16.9311407Z&quot;,</li>
+</ul>
+<ul>
+<li>&quot;createdTime&quot;: &quot;2017-04-20T04:46:48.7718676Z&quot;,</li>
+</ul>
+<ul>
+<li>&quot;properties&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;provisioningState&quot;: &quot;Succeeded&quot;,</li>
+</ul>
+<ul>
+<li>&quot;privateIPAddress&quot;: &quot;172.18.1.88&quot;,</li>
+</ul>
+<ul>
+<li>&quot;privateIPAllocationMethod&quot;: &quot;Static&quot;,</li>
+</ul>
+<ul>
+<li>&quot;subnet&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/bb4c7f0a-e47d-450f-b773-59e97a3a22c0/resourceGroups/daxiang/providers/Microsoft.Network/virtualNetworks/dxnetwork/subnets/dx-pre&quot;</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;previousSubnetIPAddresses&quot;: {},</li>
+</ul>
+<ul>
+<li>&quot;allocationCommittedPrivateIP&quot;: &quot;172.18.1.88&quot;,</li>
+</ul>
+<ul>
+<li>&quot;allocationGoalPrivateIP&quot;: &quot;172.18.1.88&quot;,</li>
+</ul>
+<ul>
+<li>&quot;previousAllocationGoalsPrivateIPs&quot;: [],</li>
+</ul>
+<ul>
+<li>&quot;allocationId&quot;: &quot;00000000-0000-0000-0000-000000000000&quot;,</li>
+</ul>
+<ul>
+<li>&quot;loadBalancingRules&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/bb4c7f0a-e47d-450f-b773-59e97a3a22c0/resourceGroups/daxiang/providers/Microsoft.Network/loadBalancers/LBiner01-pre/loadBalancingRules/lb01-pre&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>&quot;slbVersion&quot;: &quot;V1&quot;</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;lb01-pre&quot;,</li>
+</ul>
+<ul>
+<li>&quot;resourceGuid&quot;: &quot;3baf85aa-afb6-4ab7-8c55-8f9bbda946a9&quot;,</li>
+</ul>
+<ul>
+<li>&quot;lb01-pre&quot;</li>
+</ul>
+<ul>
+<li>&quot;createdTime&quot;: &quot;0001-01-01T00:00:00&quot;,</li>
+</ul>
+<ul>
+<li>&quot;frontendIPConfiguration&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/bb4c7f0a-e47d-450f-b773-59e97a3a22c0/resourceGroups/daxiang/providers/Microsoft.Network/loadBalancers/LBiner01-pre/frontendIPConfigurations/LoadBalancerFrontEnd&quot;</li>
+</ul>
+<ul>
+<li>&quot;frontendPort&quot;: 8081,</li>
+</ul>
+<ul>
+<li>&quot;backendPort&quot;: 8081,</li>
+</ul>
+<ul>
+<li>&quot;loadDistribution&quot;: &quot;Default&quot;,</li>
+</ul>
+<ul>
+<li>&quot;backendAddressPool&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/bb4c7f0a-e47d-450f-b773-59e97a3a22c0/resourceGroups/daxiang/providers/Microsoft.Network/loadBalancers/LBiner01-pre/backendAddressPools/pool01-pre&quot;</li>
+</ul>
+<ul>
+<li>&quot;probe&quot;: {</li>
+</ul>
+<ul>
+<li>虽然在我的ILB配置中没有复现这个VFP rule，但是基于以上分析，我有理由猜测这条VFP rule由ILB配置自动生成。</li>
+</ul>
+<ul>
+<li>供大家参考。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>&quot;lastOperationType&quot;: &quot;Microsoft.WindowsAzure.Networking.Nrp.Frontend.Operations.Csm.PutLoadBalancerOperation&quot;,</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/bb4c7f0a-e47d-450f-b773-59e97a3a22c0/resourceGroups/daxiang/providers/Microsoft.Network/loadBalancers/LBiner01-pre/probes/healthCheck01-pre&quot;</li>
+</ul>
+<ul>
+<li>小兵复现了这个问题，并且最终客户也确认是这个问题，将虚拟机移出后端池后可以成功访问。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>概况介绍：客户虚拟机及子网并未关联NSG，也未设置ACL，防火墙也已经关闭。通过内网访问，8081端口可以连通，但通过外网访问，无法连通。VFP中可见8081规则，显示BLOCK，只允许内网访问。</li>
+</ul>
+<ul>
+<li>经查询，客户针对虚拟机的8081端口配置了ILB。ILB会添加规则限制外网访问已经设置负载均衡的端口。</li>
+</ul>
+<ul>
+<li>Protocols : 6</li>
+</ul>
+<ul>
+<li>进而由这个LB的IP配置得知，它属于ILB。从ILB的配置来看，ILB的rule也使用了8081端口。</li>
+</ul>
+<ul>
+<li>&quot;protocol&quot;: &quot;Tcp&quot;,</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>&quot;enableFloatingIP&quot;: false,</li>
+</ul>
+<ul>
+<li>建议用户将这台虚拟机移除出ILB的Pool，然后再次尝试从外网连接。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2017050986518_[MS-LED]虚拟机网络问题</p>
+<p>MS_117051015713610</p>
+<p>概况介绍：客户虚拟机及子网并未关联NSG，也未设置ACL，防火墙也已经关闭。通过内网访问，8081端口可以连通，但通过外网访问，无法连通。VFP中可见8081规则，显示BLOCK，只允许内网访问。</p>
+<p>经查询，客户针对虚拟机的8081端口配置了ILB。ILB会添加规则限制外网访问已经设置负载均衡的端口。</p>
+<p>Kyle分析过程如下：</p>
+<p>====================================================================</p>
+<p>从这台虚拟机的VFP rule中能看到以下两条规则：</p>
+<p>RULE : _lb01-pre_73881496-ffa4-40a7-bbe2-a3ef7d26bd68_SystemAllowCNET_434f9a7c-2cfd-412d-a710-3d460db28abc</p>
+<p>Friendly name : _lb01-pre_73881496-ffa4-40a7-bbe2-a3ef7d26bd68_SystemAllowCNET_434f9a7c-2cfd-412d-a710-3d460db28abc</p>
+<p>Priority : 1000</p>
+<p>Flags : 0</p>
+<p>Type : allow</p>
+<p>Conditions:</p>
+<p>Protocols : 6</p>
+<p>Destination ports : 8081-8081</p>
+<p>Source IP : 172.18.0.0/16,10.0.0.0/16,168.63.129.16/32</p>
+<p>Flow TTL: 0</p>
+<p>RULE : _lb01-pre_73881496-ffa4-40a7-bbe2-a3ef7d26bd68_SystemDenyAll_b501b7b6-ef21-42d2-a27c-646b0cd16ff4</p>
+<p>Friendly name : _lb01-pre_73881496-ffa4-40a7-bbe2-a3ef7d26bd68_SystemDenyAll_b501b7b6-ef21-42d2-a27c-646b0cd16ff4</p>
+<p>Priority : 1002</p>
+<p>Flags : 1 terminating</p>
+<p>Type : block</p>
+<p>根据标黄的resource guid查知，这两条规则属于LB LBiner01-pre的前端：</p>
+<p>&quot;frontendIPConfigurations&quot;: [</p>
+<p>{</p>
+<p>&quot;name&quot;: &quot;LoadBalancerFrontEnd&quot;,</p>
+<p>&quot;resourceGuid&quot;: &quot;73881496-ffa4-40a7-bbe2-a3ef7d26bd68&quot;,</p>
+<p>&quot;etag&quot;: &quot;bd8b34c8-b7e8-457c-bb6d-44152b978471&quot;,</p>
+<p>&quot;groupName&quot;: &quot;daxiang&quot;,</p>
+<p>&quot;subscriptionId&quot;: &quot;bb4c7f0a-e47d-450f-b773-59e97a3a22c0&quot;,</p>
+<p>&quot;fullName&quot;: [</p>
+<p>&quot;LBiner01-pre&quot;,</p>
+<p>&quot;LoadBalancerFrontEnd&quot;</p>
+<p>],</p>
+<p>&quot;lastOperationId&quot;: &quot;fa55a4a2-4fc6-46e8-99c7-7c49d974810d&quot;,</p>
+<p>&quot;lastOperationType&quot;: &quot;Microsoft.WindowsAzure.Networking.Nrp.Frontend.Operations.Csm.PutLoadBalancerOperation&quot;,</p>
+<p>&quot;lastModifiedTime&quot;: &quot;2017-05-09T02:07:16.9311407Z&quot;,</p>
+<p>&quot;createdTime&quot;: &quot;2017-04-20T04:46:48.7718676Z&quot;,</p>
+<p>&quot;properties&quot;: {</p>
+<p>&quot;provisioningState&quot;: &quot;Succeeded&quot;,</p>
+<p>&quot;privateIPAddress&quot;: &quot;172.18.1.88&quot;,</p>
+<p>&quot;privateIPAllocationMethod&quot;: &quot;Static&quot;,</p>
+<p>&quot;subnet&quot;: {</p>
+<p>&quot;id&quot;: &quot;/subscriptions/bb4c7f0a-e47d-450f-b773-59e97a3a22c0/resourceGroups/daxiang/providers/Microsoft.Network/virtualNetworks/dxnetwork/subnets/dx-pre&quot;</p>
+<p>},</p>
+<p>&quot;previousSubnetIPAddresses&quot;: {},</p>
+<p>&quot;allocationCommittedPrivateIP&quot;: &quot;172.18.1.88&quot;,</p>
+<p>&quot;allocationGoalPrivateIP&quot;: &quot;172.18.1.88&quot;,</p>
+<p>&quot;previousAllocationGoalsPrivateIPs&quot;: [],</p>
+<p>&quot;allocationId&quot;: &quot;00000000-0000-0000-0000-000000000000&quot;,</p>
+<p>&quot;loadBalancingRules&quot;: [</p>
+<p>&quot;id&quot;: &quot;/subscriptions/bb4c7f0a-e47d-450f-b773-59e97a3a22c0/resourceGroups/daxiang/providers/Microsoft.Network/loadBalancers/LBiner01-pre/loadBalancingRules/lb01-pre&quot;</p>
+<p>}</p>
+<p>&quot;slbVersion&quot;: &quot;V1&quot;</p>
+<p>进而由这个LB的IP配置得知，它属于ILB。从ILB的配置来看，ILB的rule也使用了8081端口。</p>
+<p>&quot;name&quot;: &quot;lb01-pre&quot;,</p>
+<p>&quot;resourceGuid&quot;: &quot;3baf85aa-afb6-4ab7-8c55-8f9bbda946a9&quot;,</p>
+<p>&quot;lb01-pre&quot;</p>
+<p>&quot;createdTime&quot;: &quot;0001-01-01T00:00:00&quot;,</p>
+<p>&quot;frontendIPConfiguration&quot;: {</p>
+<p>&quot;id&quot;: &quot;/subscriptions/bb4c7f0a-e47d-450f-b773-59e97a3a22c0/resourceGroups/daxiang/providers/Microsoft.Network/loadBalancers/LBiner01-pre/frontendIPConfigurations/LoadBalancerFrontEnd&quot;</p>
+<p>&quot;frontendPort&quot;: 8081,</p>
+<p>&quot;backendPort&quot;: 8081,</p>
+<p>&quot;enableFloatingIP&quot;: false,</p>
+<p>&quot;idleTimeoutInMinutes&quot;: 4,</p>
+<p>&quot;protocol&quot;: &quot;Tcp&quot;,</p>
+<p>&quot;loadDistribution&quot;: &quot;Default&quot;,</p>
+<p>&quot;backendAddressPool&quot;: {</p>
+<p>&quot;id&quot;: &quot;/subscriptions/bb4c7f0a-e47d-450f-b773-59e97a3a22c0/resourceGroups/daxiang/providers/Microsoft.Network/loadBalancers/LBiner01-pre/backendAddressPools/pool01-pre&quot;</p>
+<p>&quot;probe&quot;: {</p>
+<p>&quot;id&quot;: &quot;/subscriptions/bb4c7f0a-e47d-450f-b773-59e97a3a22c0/resourceGroups/daxiang/providers/Microsoft.Network/loadBalancers/LBiner01-pre/probes/healthCheck01-pre&quot;</p>
+<p>虽然在我的ILB配置中没有复现这个VFP rule，但是基于以上分析，我有理由猜测这条VFP rule由ILB配置自动生成。</p>
+<p>建议用户将这台虚拟机移除出ILB的Pool，然后再次尝试从外网连接。</p>
+<p>如果能正常访问，则证明之前确实是由这条VFP rule导致公网无法访问。用户则需要对此进行取舍：不使用ILB（可以使用面向公网的SLB），或者放弃公网访问。</p>
+<p>小兵复现了这个问题，并且最终客户也确认是这个问题，将虚拟机移出后端池后可以成功访问。</p>
+<p>供大家参考。</p></article>

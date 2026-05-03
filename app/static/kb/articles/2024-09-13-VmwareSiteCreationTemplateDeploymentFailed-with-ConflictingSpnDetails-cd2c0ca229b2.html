@@ -1,0 +1,78 @@
+<article class="kb-article" data-title="VmwareSiteCreationTemplateDeploymentFailed with ConflictingSpnDetails"><h1>VmwareSiteCreationTemplateDeploymentFailed with ConflictingSpnDetails</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-09-13 09:46:06</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>VMware site creation has failed.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>VMware site creation has failed.</li>
+</ul>
+<ul>
+<li>Details: Deployment ErrorCode ConflictingSpnDetaiIs Error Message: The given spn details do not match the details already present for this site. Detailed Error Message</li>
+</ul>
+<ul>
+<li>If Appliance configuration fails with below error, please follow the below mentioned remediation steps:</li>
+</ul>
+<ul>
+<li>Error Message</li>
+</ul>
+<ul>
+<li>{&quot;ScenarioName&quot;:&quot;Configuration&quot;,&quot;OperationName&quot;:&quot;RegisterVMwareAppliance&quot;,&quot;Result&quot;:&quot;Error&quot;,&quot;ErrorCode&quot;:60214,&quot;ErrorCodeName&quot;:&quot;VmwareSiteCreationTemplateDeploymentFailed&quot;,&quot;Message&quot;:&quot;VMware site creation has failed. \n\r\nUnable to create resource &quot;vmwaresite&quot; of type &quot;Microsoft.OffAzure/VMwareSites&quot; required to start discovery. \n\r\nStatusCode: &quot;BadRequest&quot; \n\r\nDetails: &quot;Deployment ErrorCode: ConflictingSpnDetails Error Message: The given spn details do not match the details already present for this site.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>------</li>
+</ul>
+<ul>
+<li>Possible Causes</li>
+</ul>
+<ul>
+<li>This can happen if the appliance configuration fails in-between and Vmware/Physical site got created by that time and before retrying configuration, if the customer deletes the AAD apps then we try to update the Vmware/Physical site with new AAD app details resulting in conflicting SPN details.</li>
+</ul>
+<ul>
+<li>Remediation Steps</li>
+</ul>
+<ul>
+<li>Please create a new Recovery Services Vault</li>
+</ul>
+<ul>
+<li>Cleanup the browser cache in the appliance</li>
+</ul>
+<ul>
+<li>Copy the Appliance key from the newly created Recovery Services Vault</li>
+</ul>
+<ul>
+<li>Proceed with Appliance configuration with the copied Appliance key</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>VMware site creation has failed.</p>
+<p>Details: Deployment ErrorCode ConflictingSpnDetaiIs Error Message: The given spn details do not match the details already present for this site. Detailed Error Message</p>
+<p>------</p>
+<p>If Appliance configuration fails with below error, please follow the below mentioned remediation steps:</p>
+<p>Error Message</p>
+<p>{&quot;ScenarioName&quot;:&quot;Configuration&quot;,&quot;OperationName&quot;:&quot;RegisterVMwareAppliance&quot;,&quot;Result&quot;:&quot;Error&quot;,&quot;ErrorCode&quot;:60214,&quot;ErrorCodeName&quot;:&quot;VmwareSiteCreationTemplateDeploymentFailed&quot;,&quot;Message&quot;:&quot;VMware site creation has failed. \n\r\nUnable to create resource &quot;vmwaresite&quot; of type &quot;Microsoft.OffAzure/VMwareSites&quot; required to start discovery. \n\r\nStatusCode: &quot;BadRequest&quot; \n\r\nDetails: &quot;Deployment ErrorCode: ConflictingSpnDetails Error Message: The given spn details do not match the details already present for this site.</p>
+<p>Possible Causes</p>
+<p>This can happen if the appliance configuration fails in-between and Vmware/Physical site got created by that time and before retrying configuration, if the customer deletes the AAD apps then we try to update the Vmware/Physical site with new AAD app details resulting in conflicting SPN details.</p>
+<p>Remediation Steps</p>
+<p>Please create a new Recovery Services Vault</p>
+<p>Cleanup the browser cache in the appliance</p>
+<p>Copy the Appliance key from the newly created Recovery Services Vault</p>
+<p>Proceed with Appliance configuration with the copied Appliance key</p></article>

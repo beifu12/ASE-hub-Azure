@@ -1,0 +1,64 @@
+<article class="kb-article" data-title="如何从后台确认VM是否禁用了超线程"><h1>如何从后台确认VM是否禁用了超线程</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Performance</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-23 14:16:39</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhanglihong</li>
+</ul>
+<ul>
+<li>客户发现订阅中超线程Size的VM，核心数与Size声明的核心数不同。</li>
+</ul>
+<ul>
+<li>发现物理核心数与逻辑核心数相同，多台VM都有同样的问题。</li>
+</ul>
+<ul>
+<li>见如下客户提供的截图：</li>
+</ul>
+<ul>
+<li>如果VM被禁用了超线程，则HA中会显示16Core</li>
+</ul>
+<ul>
+<li>参考工单：SR_20210908120305_[S500]vcpu数与实际核心数不匹配</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>与CSS确认了下，可以从HA中查看实际使用的核心数。如以下是一台32Core的VM，HA中看到是32个Core在用。</li>
+</ul>
+<ul>
+<li>此问题后来客户确认应该是他们的组策略引起的。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>指导客户在虚拟机的命令行中键入 wmic 以进入交互式界面。 然后键入以下命令来查看 下VM 上的物理和逻辑处理器数量CPU Get NumberOfCores,NumberOfLogicalProcessors /Format:List</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhanglihong</p>
+<p>问题现象:</p>
+<p>客户发现订阅中超线程Size的VM，核心数与Size声明的核心数不同。</p>
+<p>指导客户在虚拟机的命令行中键入 wmic 以进入交互式界面。 然后键入以下命令来查看 下VM 上的物理和逻辑处理器数量CPU Get NumberOfCores,NumberOfLogicalProcessors /Format:List</p>
+<p>发现物理核心数与逻辑核心数相同，多台VM都有同样的问题。</p>
+<p>见如下客户提供的截图：</p>
+<p>与CSS确认了下，可以从HA中查看实际使用的核心数。如以下是一台32Core的VM，HA中看到是32个Core在用。</p>
+<p>如果VM被禁用了超线程，则HA中会显示16Core</p>
+<p>此问题后来客户确认应该是他们的组策略引起的。</p>
+<p>参考工单：SR_20210908120305_[S500]vcpu数与实际核心数不匹配</p></article>

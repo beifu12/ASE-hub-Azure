@@ -1,0 +1,61 @@
+<article class="kb-article" data-title="[Share]AppGateway Metrics中 healthy host count和Unhealthy host count对后端池FQDN的Host计数规则"><h1>[Share]AppGateway Metrics中 healthy host count和Unhealthy host count对后端池FQDN的Host计数规则</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-15 16:40:43</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2025.7.24</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2025.7.24</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025.7.24</li>
+</ul>
+<ul>
+<li>参考工单：20250724364657</li>
+</ul>
+<ul>
+<li>客户门户中后端运行状态全部为健康：</li>
+</ul>
+<ul>
+<li>但是Unhealthy host count并不为0：</li>
+</ul>
+<ul>
+<li>原因：客户在后端池中添加了唯一的一个FQDN：dnaadmin-cn-q-sr.signalr.azure.cn，该FQDN会解析出一个IPV6地址和一个IPV4地址，在Metrics中对于后端池中FQDN Host数量的判断是依据DNS解析出的IP数量，但是却不支持对IPV6的探测，这导致：</li>
+</ul>
+<ul>
+<li>healthy host count：1（ipv4）</li>
+</ul>
+<ul>
+<li>Unhealthy host count：1（ipv6）</li>
+</ul>
+<ul>
+<li>总计Host数：2</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025.7.24</p>
+<p>参考工单：20250724364657</p>
+<p>客户门户中后端运行状态全部为健康：</p>
+<p>但是Unhealthy host count并不为0：</p>
+<p>原因：客户在后端池中添加了唯一的一个FQDN：dnaadmin-cn-q-sr.signalr.azure.cn，该FQDN会解析出一个IPV6地址和一个IPV4地址，在Metrics中对于后端池中FQDN Host数量的判断是依据DNS解析出的IP数量，但是却不支持对IPV6的探测，这导致：</p>
+<p>healthy host count：1（ipv4）</p>
+<p>Unhealthy host count：1（ipv6）</p>
+<p>总计Host数：2</p></article>

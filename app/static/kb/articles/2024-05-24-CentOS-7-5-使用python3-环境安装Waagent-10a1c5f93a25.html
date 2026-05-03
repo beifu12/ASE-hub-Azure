@@ -1,0 +1,242 @@
+<article class="kb-article" data-title="CentOS 7.5 使用python3 环境安装Waagent"><h1>CentOS 7.5 使用python3 环境安装Waagent</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-05-24 17:07:29</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>升级后会报错</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>升级后会报错</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20190910</li>
+</ul>
+<ul>
+<li>Python 2.7 到2020年会End Of Life，由于有些系统的waagent使用的是python2 的版本。届时估计会有升级需求吧。</li>
+</ul>
+<ul>
+<li>之前使用setup.py方式安装第三方库的方式测试安装Waagent，如果系统环境为python2 ，waagent则会使用python2运行。如果为python3，Waagent则会通过python3 运行。</li>
+</ul>
+<ul>
+<li>OneNote 链接：使用NVidia官方链接提供方法为CentOS 系统安装NVidia驱动</li>
+</ul>
+<ul>
+<li>经过测试，通过手动使用python3进行升级安装waagent.  waagent会使用Python3运行。我的测试过程如下：</li>
+</ul>
+<ul>
+<li>当前环境python配置：</li>
+</ul>
+<ul>
+<li>编译安装python3.5</li>
+</ul>
+<ul>
+<li>$ sudo yum install yum-utils</li>
+</ul>
+<ul>
+<li>$ sudo yum-builddep python</li>
+</ul>
+<ul>
+<li>$ tar xf Python-3.5.0.tgz</li>
+</ul>
+<ul>
+<li>$ cd Python-3.5.0</li>
+</ul>
+<ul>
+<li>$ ./configure</li>
+</ul>
+<ul>
+<li>$ make</li>
+</ul>
+<ul>
+<li>$ sudo make install</li>
+</ul>
+<ul>
+<li>$ python3 –version</li>
+</ul>
+<ul>
+<li>安装路径为/usr/local/bin/python3.5</li>
+</ul>
+<ul>
+<li>安装后下载waagent安装文件，并修改默认的python 路径</li>
+</ul>
+<ul>
+<li>sudo ln -sf /usr/local/bin/python3/python3.6 /usr/bin/python</li>
+</ul>
+<ul>
+<li>cd WALinuxAgent/</li>
+</ul>
+<ul>
+<li>python setup.py install</li>
+</ul>
+<ul>
+<li>sudo service waagent restart</li>
+</ul>
+<ul>
+<li>升级后重启waagent服务</li>
+</ul>
+<ul>
+<li>这时waagent的python版本已经变成3.5</li>
+</ul>
+<ul>
+<li>安装后需要去设置为自动更新</li>
+</ul>
+<ul>
+<li>更新后的版本，和yum源的最新版本一致</li>
+</ul>
+<ul>
+<li>Guest Agent Status  X             Ready</li>
+</ul>
+<ul>
+<li>Guest Agent Message  X    Guest Agent is running</li>
+</ul>
+<ul>
+<li>Guest Agent Version            2.2.42</li>
+</ul>
+<ul>
+<li>系统内部的情况：</li>
+</ul>
+<ul>
+<li>如下是这台测试虚拟机的2次备份，均已成功：</li>
+</ul>
+<ul>
+<li>另外该方法在官网中提到，相关链接如下：</li>
+</ul>
+<ul>
+<li>安装包时出错</li>
+</ul>
+<ul>
+<li>确定当前Python环境中的site-packages目录位置</li>
+</ul>
+<ul>
+<li>python -c &quot;from distutils.sysconfig import get_python_lib; print (get_python_lib())&quot;</li>
+</ul>
+<ul>
+<li>cp -r /usr/lib/python2.7/site-packages/azurelinuxagent /usr/local/lib/python3.5/site-packages/</li>
+</ul>
+<ul>
+<li>升级后的测试如下：</li>
+</ul>
+<ul>
+<li>如果在安装Python3后，使用yum进行安装，目前测试site-packages目录在使用yum安装时不会自动找到 python3的位置/这个还有待研究。</li>
+</ul>
+<ul>
+<li>python -u /usr/sbin/waagent -run-exthandlers</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查看运行进程以及日志，未发现异常。</li>
+</ul>
+<ul>
+<li>经过测试，我的虚拟机升级Agent后后台查看虚拟机的代理的状态信息如下：</li>
+</ul>
+<ul>
+<li>额外的验证：</li>
+</ul>
+<ul>
+<li>拷贝python 库文件到3.5下后。 查看waagent 的版本信息，看到python已经变成3.5</li>
+</ul>
+<ul>
+<li>经过进一步测试，同时使用系统为python2的CentOS的yum升级验证，更新后仍然使用python2：</li>
+</ul>
+<ul>
+<li>由此可以验证，waagent安装时会自动选择Python版本。如果当前系统中为Python2，则为python2,为python3 则亦然。</li>
+</ul>
+<ul>
+<li>查看使用setup.py安装的相关版本信息如下：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用入下命令升级waagent</li>
+</ul>
+<ul>
+<li>这种情况可以修改/usr/sbin/waagent 脚本</li>
+</ul>
+<ul>
+<li>通过脚本添加环境变量中没有的搜索python2的路径，以保证如下进程能够顺利运行</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>继续验证使用yum的方式进行安装。更新默认的python为3后，CentOS更新Python版本，需要修复yum不能使用的问题</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://www.python.org/dev/peps/pep-0373/" target="_blank" rel="noopener">https://www.python.org/dev/peps/pep-0373/</a></li>
+</ul>
+<ul>
+<li>$ curl -O <a href="https://www.python.org/ftp/python/3.5.0/Python-3.sys5.0.tgz" target="_blank" rel="noopener">https://www.python.org/ftp/python/3.5.0/Python-3.sys5.0.tgz</a></li>
+</ul>
+<ul>
+<li>本篇文章来源于 Linux公社网站(www.linuxidc.com)  原文链接：<a href="https://www.linuxidc.com/Linux/2017-04/142916.htm" target="_blank" rel="noopener">https://www.linuxidc.com/Linux/2017-04/142916.htm</a></li>
+</ul>
+<ul>
+<li>git clone <a href="https://github.com/Azure/WALinuxAgent.git" target="_blank" rel="noopener">https://github.com/Azure/WALinuxAgent.git</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/extensions/update-linux-agent#2-install-the-azure-linux-agent" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/extensions/update-linux-agent#2-install-the-azure-linux-agent</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20190910</p>
+<p>Python 2.7 到2020年会End Of Life，由于有些系统的waagent使用的是python2 的版本。届时估计会有升级需求吧。</p>
+<p><a href="https://www.python.org/dev/peps/pep-0373/" target="_blank" rel="noopener">https://www.python.org/dev/peps/pep-0373/</a></p>
+<p>之前使用setup.py方式安装第三方库的方式测试安装Waagent，如果系统环境为python2 ，waagent则会使用python2运行。如果为python3，Waagent则会通过python3 运行。</p>
+<p>OneNote 链接：使用NVidia官方链接提供方法为CentOS 系统安装NVidia驱动</p>
+<p>经过测试，通过手动使用python3进行升级安装waagent.  waagent会使用Python3运行。我的测试过程如下：</p>
+<p>当前环境python配置：</p>
+<p>编译安装python3.5</p>
+<p>$ sudo yum install yum-utils</p>
+<p>$ sudo yum-builddep python</p>
+<p>$ curl -O <a href="https://www.python.org/ftp/python/3.5.0/Python-3.sys5.0.tgz" target="_blank" rel="noopener">https://www.python.org/ftp/python/3.5.0/Python-3.sys5.0.tgz</a></p>
+<p>$ tar xf Python-3.5.0.tgz</p>
+<p>$ cd Python-3.5.0</p>
+<p>$ ./configure</p>
+<p>$ make</p>
+<p>$ sudo make install</p>
+<p>$ python3 –version</p>
+<p>安装路径为/usr/local/bin/python3.5</p>
+<p>安装后下载waagent安装文件，并修改默认的python 路径</p>
+<p>sudo ln -sf /usr/local/bin/python3/python3.6 /usr/bin/python</p>
+<p>本篇文章来源于 Linux公社网站(www.linuxidc.com)  原文链接：<a href="https://www.linuxidc.com/Linux/2017-04/142916.htm" target="_blank" rel="noopener">https://www.linuxidc.com/Linux/2017-04/142916.htm</a></p>
+<p>使用入下命令升级waagent</p>
+<p>git clone <a href="https://github.com/Azure/WALinuxAgent.git" target="_blank" rel="noopener">https://github.com/Azure/WALinuxAgent.git</a></p>
+<p>cd WALinuxAgent/</p>
+<p>python setup.py install</p>
+<p>sudo service waagent restart</p>
+<p>升级后重启waagent服务</p>
+<p>这时waagent的python版本已经变成3.5</p>
+<p>查看运行进程以及日志，未发现异常。</p>
+<p>安装后需要去设置为自动更新</p>
+<p>更新后的版本，和yum源的最新版本一致</p>
+<p>经过测试，我的虚拟机升级Agent后后台查看虚拟机的代理的状态信息如下：</p>
+<p>Guest Agent Status  X             Ready</p>
+<p>Guest Agent Message  X    Guest Agent is running</p>
+<p>Guest Agent Version            2.2.42</p>
+<p>系统内部的情况：</p>
+<p>如下是这台测试虚拟机的2次备份，均已成功：</p>
+<p>另外该方法在官网中提到，相关链接如下：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/extensions/update-linux-agent#2-install-the-azure-linux-agent" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/extensions/update-linux-agent#2-install-the-azure-linux-agent</a></p>
+<p>额外的验证：</p>
+<p>继续验证使用yum的方式进行安装。更新默认的python为3后，CentOS更新Python版本，需要修复yum不能使用的问题</p>
+<p>安装包时出错</p>
+<p>升级后会报错</p>
+<p>确定当前Python环境中的site-packages目录位置</p>
+<p>python -c &quot;from distutils.sysconfig import get_python_lib; print (get_python_lib())&quot;</p>
+<p>cp -r /usr/lib/python2.7/site-packages/azurelinuxagent /usr/local/lib/python3.5/site-packages/</p>
+<p>拷贝python 库文件到3.5下后。 查看waagent 的版本信息，看到python已经变成3.5</p>
+<p>升级后的测试如下：</p>
+<p>经过进一步测试，同时使用系统为python2的CentOS的yum升级验证，更新后仍然使用python2：</p>
+<p>由此可以验证，waagent安装时会自动选择Python版本。如果当前系统中为Python2，则为python2,为python3 则亦然。</p>
+<p>如果在安装Python3后，使用yum进行安装，目前测试site-packages目录在使用yum安装时不会自动找到 python3的位置/这个还有待研究。</p>
+<p>查看使用setup.py安装的相关版本信息如下：</p>
+<p>这种情况可以修改/usr/sbin/waagent 脚本</p>
+<p>通过脚本添加环境变量中没有的搜索python2的路径，以保证如下进程能够顺利运行</p>
+<p>python -u /usr/sbin/waagent -run-exthandlers</p></article>

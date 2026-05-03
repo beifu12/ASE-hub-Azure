@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="查询VPN实例的IP信息"><h1>查询VPN实例的IP信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-06-18 19:50:42</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>关联工单：20220919189503</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>关联工单：20220919189503</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>//| where tenantName == &quot;319b67d5-4c1c-4bc4-acf7-48bd007e3f87&quot;</li>
+</ul>
+<ul>
+<li>//| where subscriptionId has &quot;449d478a-8b31-4478-b247-22a8874fb62b&quot;</li>
+</ul>
+<ul>
+<li>//|  where (TIMESTAMP &gt;= datetime(2021-09-25T16:00:00Z) and TIMESTAMP &lt; datetime(2021-09-26T16:00:00Z))</li>
+</ul>
+<ul>
+<li>| where (TIMESTAMP ) &gt;= ago(3d)</li>
+</ul>
+<ul>
+<li>//| where RegionFriendlyName == &quot;chinaeast2&quot;</li>
+</ul>
+<ul>
+<li>| where tenantName == &quot;f6538d4e51ad459b9e6ec11a0fd4f2dd&quot;</li>
+</ul>
+<ul>
+<li>//| where roleInstanceName has &quot;T-MAA3-DRUID-03&quot;</li>
+</ul>
+<ul>
+<li>//| where roleInstanceName has &quot;&quot;</li>
+</ul>
+<ul>
+<li>//|where virtualMachineUniqueId == &quot;4f15bfe2-750b-4aef-b4a1-3556d939eb92&quot;</li>
+</ul>
+<ul>
+<li>//| where Tenant has &quot;bjs20prdapp06&quot;</li>
+</ul>
+<ul>
+<li>//| project TIMESTAMP+8h, nodeId, containerId, containerType, creationTime, roleInstanceName,Tenant,virtualMachineUniqueId,tenantName,RegionFriendlyName</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在ASC中根据用户VPN GW的资源ID找到Gateway Deployment Id如：f6538d4e51ad459b9e6ec11a0fd4f2dd</li>
+</ul>
+<ul>
+<li>LogContainerSnapshot</li>
+</ul>
+<ul>
+<li>在ASC中根据上一步的平台subscription ID进行进一步查找，利用VPN GW的Gateway Id        如b7250049-e4bc-4f13-9e6f-731f0e8545e7进行过滤，可以进一步展开，查询实例更多的信息：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>VPN实例IP查询方法（如VPN gw没有启用active-active模式，直接根据资源ID在用户订阅中看不到实例的IP，如果启用了active-active则可以看到实例的IP信息（应该没记错）。不能直接在用户订阅中查询到实例IP时可以通过如下方法查询：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>利用Kusto Explorer查询对应的VM部署信息，找到部署这一VM的平台subscription ID, kusto连接：<a href="https://azurecm.chinanorth2.kusto.chinacloudapi.cn" target="_blank" rel="noopener">https://azurecm.chinanorth2.kusto.chinacloudapi.cn</a> ：  #这一步可以不用，部署VPN GW 实例VM的subscription ID可以在ASC中找到</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>关联工单：20220919189503</p>
+<p>VPN实例IP查询方法（如VPN gw没有启用active-active模式，直接根据资源ID在用户订阅中看不到实例的IP，如果启用了active-active则可以看到实例的IP信息（应该没记错）。不能直接在用户订阅中查询到实例IP时可以通过如下方法查询：</p>
+<p>在ASC中根据用户VPN GW的资源ID找到Gateway Deployment Id如：f6538d4e51ad459b9e6ec11a0fd4f2dd</p>
+<p>利用Kusto Explorer查询对应的VM部署信息，找到部署这一VM的平台subscription ID, kusto连接：<a href="https://azurecm.chinanorth2.kusto.chinacloudapi.cn" target="_blank" rel="noopener">https://azurecm.chinanorth2.kusto.chinacloudapi.cn</a> ：  #这一步可以不用，部署VPN GW 实例VM的subscription ID可以在ASC中找到</p>
+<p>LogContainerSnapshot</p>
+<p>//| where tenantName == &quot;319b67d5-4c1c-4bc4-acf7-48bd007e3f87&quot;</p>
+<p>//| where subscriptionId has &quot;449d478a-8b31-4478-b247-22a8874fb62b&quot;</p>
+<p>//|  where (TIMESTAMP &gt;= datetime(2021-09-25T16:00:00Z) and TIMESTAMP &lt; datetime(2021-09-26T16:00:00Z))</p>
+<p>| where (TIMESTAMP ) &gt;= ago(3d)</p>
+<p>//| where RegionFriendlyName == &quot;chinaeast2&quot;</p>
+<p>| where tenantName == &quot;f6538d4e51ad459b9e6ec11a0fd4f2dd&quot;</p>
+<p>//| where roleInstanceName has &quot;T-MAA3-DRUID-03&quot;</p>
+<p>//| where roleInstanceName has &quot;&quot;</p>
+<p>//|where virtualMachineUniqueId == &quot;4f15bfe2-750b-4aef-b4a1-3556d939eb92&quot;</p>
+<p>//| where Tenant has &quot;bjs20prdapp06&quot;</p>
+<p>//| project TIMESTAMP+8h, nodeId, containerId, containerType, creationTime, roleInstanceName,Tenant,virtualMachineUniqueId,tenantName,RegionFriendlyName</p>
+<p>在ASC中根据上一步的平台subscription ID进行进一步查找，利用VPN GW的Gateway Id        如b7250049-e4bc-4f13-9e6f-731f0e8545e7进行过滤，可以进一步展开，查询实例更多的信息：</p></article>

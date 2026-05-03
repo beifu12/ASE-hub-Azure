@@ -1,0 +1,152 @@
+<article class="kb-article" data-title="[Share] AKS 集群启用托管Prometheus 和 Grafana后使用Azure 专用链接范围（AMPLS）配置的注意事项"><h1>[Share] AKS 集群启用托管Prometheus 和 Grafana后使用Azure 专用链接范围（AMPLS）配置的注意事项</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-11-19 15:46:59</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>此时数据出现异常。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>此时数据出现异常。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>客户问题：</li>
+</ul>
+<ul>
+<li>客户在开启了AMPLS以私有的方式收集所有的DCR数据时出现了在Prometheus 或者  Grafana中没有数据的情况。</li>
+</ul>
+<ul>
+<li>测试过程：</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>对于不同区域prometheus将不起作用。</li>
+</ul>
+<ul>
+<li>文档中表明不同区域时需要特殊配置。</li>
+</ul>
+<ul>
+<li>建一个east 2的AKS集群。</li>
+</ul>
+<ul>
+<li>创建一个新的 AMW 和 Managed Grafana 并链接到AKS。</li>
+</ul>
+<ul>
+<li>此时数据已经在写入。</li>
+</ul>
+<ul>
+<li>创建AMPLS。</li>
+</ul>
+<ul>
+<li>添加和AMW同名的DCE。</li>
+</ul>
+<ul>
+<li>配置好所有的PE链接。</li>
+</ul>
+<ul>
+<li>创建一个同一区域的DCE。</li>
+</ul>
+<ul>
+<li>删除之前的link。添加之前自建的终结点。</li>
+</ul>
+<ul>
+<li>删除不同区域的DCE配置。</li>
+</ul>
+<ul>
+<li>此时数据恢复</li>
+</ul>
+<ul>
+<li>首先根据文档中关于多区域的提示，要保证AMW使用的DCR中的配置的DCE也在AMPLS中。同时经过我的测试，AMW本身的DCE也应该在AMPLS中。</li>
+</ul>
+<ul>
+<li>在配置中要保证以下的两个DCE加入到AMPLS中。</li>
+</ul>
+<ul>
+<li>下方是按照文档链接的一个新的同区域的DCE。</li>
+</ul>
+<ul>
+<li>添加后数据回传正常。</li>
+</ul>
+<ul>
+<li>补充：</li>
+</ul>
+<ul>
+<li>测试过程中如果只保留DCR上的DCE。</li>
+</ul>
+<ul>
+<li>会有POD错误。</li>
+</ul>
+<ul>
+<li>但是此时数据回传仍然正常。</li>
+</ul>
+<ul>
+<li>数据完全恢复正常。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>进过查看，客户的AKS和Azure monitor workspace不在同一个区域。因为Azure monitor workspace 无法在北三建立。</li>
+</ul>
+<ul>
+<li>此时查看 AMW中可以看到对应的AKS资源。在跨区域的过程中不影响其访问。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>将原本的DCE重新添加。改回原有的配置。</li>
+</ul>
+<ul>
+<li>问题解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/azure-monitor/containers/kubernetes-monitoring-enable?tabs=cli#enable-prometheus-and-grafana" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/containers/kubernetes-monitoring-enable?tabs=cli#enable-prometheus-and-grafana</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/azure-monitor/containers/kubernetes-monitoring-private-link" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/containers/kubernetes-monitoring-private-link</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/09/04</p>
+<p>客户问题：</p>
+<p>客户在开启了AMPLS以私有的方式收集所有的DCR数据时出现了在Prometheus 或者  Grafana中没有数据的情况。</p>
+<p>进过查看，客户的AKS和Azure monitor workspace不在同一个区域。因为Azure monitor workspace 无法在北三建立。</p>
+<p>测试过程：</p>
+<p>参考文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/azure-monitor/containers/kubernetes-monitoring-enable?tabs=cli#enable-prometheus-and-grafana" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/containers/kubernetes-monitoring-enable?tabs=cli#enable-prometheus-and-grafana</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/azure-monitor/containers/kubernetes-monitoring-private-link" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/containers/kubernetes-monitoring-private-link</a></p>
+<p>对于不同区域prometheus将不起作用。</p>
+<p>文档中表明不同区域时需要特殊配置。</p>
+<p>建一个east 2的AKS集群。</p>
+<p>创建一个新的 AMW 和 Managed Grafana 并链接到AKS。</p>
+<p>此时查看 AMW中可以看到对应的AKS资源。在跨区域的过程中不影响其访问。</p>
+<p>此时数据已经在写入。</p>
+<p>创建AMPLS。</p>
+<p>添加和AMW同名的DCE。</p>
+<p>配置好所有的PE链接。</p>
+<p>创建一个同一区域的DCE。</p>
+<p>删除之前的link。添加之前自建的终结点。</p>
+<p>此时数据出现异常。</p>
+<p>将原本的DCE重新添加。改回原有的配置。</p>
+<p>删除不同区域的DCE配置。</p>
+<p>此时数据恢复</p>
+<p>问题解决方案：</p>
+<p>首先根据文档中关于多区域的提示，要保证AMW使用的DCR中的配置的DCE也在AMPLS中。同时经过我的测试，AMW本身的DCE也应该在AMPLS中。</p>
+<p>在配置中要保证以下的两个DCE加入到AMPLS中。</p>
+<p>下方是按照文档链接的一个新的同区域的DCE。</p>
+<p>添加后数据回传正常。</p>
+<p>补充：</p>
+<p>测试过程中如果只保留DCR上的DCE。</p>
+<p>会有POD错误。</p>
+<p>但是此时数据回传仍然正常。</p>
+<p>数据完全恢复正常。</p></article>

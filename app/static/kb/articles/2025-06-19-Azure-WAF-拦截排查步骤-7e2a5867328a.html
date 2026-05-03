@@ -1,0 +1,156 @@
+<article class="kb-article" data-title="Azure WAF 拦截排查步骤"><h1>Azure WAF 拦截排查步骤</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: TSG</li>
+<li>最近修改: 2025-06-19 14:07:45</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>如果请求返回的HTTP Code是403，并且Response Header是HTTP/1.1 403 ModSecurity Action，则代表这个请求被WAF阻挡。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>如果请求返回的HTTP Code是403，并且Response Header是HTTP/1.1 403 ModSecurity Action，则代表这个请求被WAF阻挡。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>如何快速定位应用程序网关 WAF 功能拦截问题</li>
+</ul>
+<ul>
+<li>说明</li>
+</ul>
+<ul>
+<li>以下方法适用于大多数OWASP规则，但不排除有部分规则不适用。</li>
+</ul>
+<ul>
+<li>从Fiddler选取需要分析的被拦截的请求，记录请求的URI和请求时间。</li>
+</ul>
+<ul>
+<li>如上一步截图中的的规则为942370，对应网址为：</li>
+</ul>
+<ul>
+<li>{&quot;instanceId&quot;:&quot;appgw_3&quot;,&quot;clientIp&quot;:&quot;223.223.181.211&quot;,&quot;clientPort&quot;:&quot;&quot;,&quot;requestUri&quot;:&quot;\/wp-admin\/post.php&quot;,&quot;ruleSetType&quot;:&quot;OWASP_CRS&quot;,&quot;ruleSetVersion&quot;:&quot;3.0.0&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ruleId&quot;:&quot;941120&quot;,&quot;message&quot;:&quot;XSS Filter - Category 2: Event Handler Vector&quot;,&quot;action&quot;:&quot;Matched&quot;,&quot;site&quot;:&quot;Global&quot;,&quot;details&quot;:{&quot;message&quot;:&quot;Warning.</li>
+</ul>
+<ul>
+<li>Pattern match \\\&quot;(?i)([\\\\s\\\&quot;&#39;`;\\\\\/0-9\\\\=\\\\x0B\\\\x09\\\\x0C\\\\x3B\\\\x2C\\\\x28\\\\x3B]+on\\\\w+[\\\\s\\\\x0B\\\\x09\\\\x0C\\\\x3B\\\\x2C\\\\x28\\\\x3B]*?=)\\\&quot; at ARGS:acf[field_5e37a5bfa48ed] .... &quot;,</li>
+</ul>
+<ul>
+<li>&quot;data&quot;:&quot;Matched Data: =\\\\x22\\\\x22 oncanplaythrough= found within ARGS:acf[field_5e37a5bfa48e&quot;,&quot;file&quot;:&quot;rules\/REQUEST-941-APPLICATION-ATTACK-XSS.conf&quot;,&quot;line&quot;:&quot;123&quot;},</li>
+</ul>
+<ul>
+<li>&quot;hostname&quot;:&quot;canaan-creative.com&quot;,&quot;transactionId&quot;:&quot;a38f468180b13c011c64e987d6adfd6f&quot;,&quot;policyId&quot;:&quot;default&quot;,&quot;policyScope&quot;:&quot;Global&quot;,&quot;policyScopeName&quot;:&quot;Global&quot;}</li>
+</ul>
+<ul>
+<li>点击上图中的规则ID，进入到Github对于规则的详细介绍</li>
+</ul>
+<ul>
+<li>training视频地址</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>测试步骤</li>
+</ul>
+<ul>
+<li>对WAF启用诊断日志。</li>
+</ul>
+<ul>
+<li>对WAF进行访问测试，并在测试机上使用Fiddler抓包。</li>
+</ul>
+<ul>
+<li>使用Azure Storage Explorer下载并查看第一步配置的存储账号中的防火墙日志。</li>
+</ul>
+<ul>
+<li>分析步骤</li>
+</ul>
+<ul>
+<li>在防火墙日志中找到对应时间点，对应请求触发的规则6位数编号。有可能一个请求同时触发了多条规则，需要将所有规则都记录下来。其中，Log中显示的时间为UTC时间。</li>
+</ul>
+<ul>
+<li>在规则定义中找到其使用的正则表达式。正则表达式可能较长，Github页面不能完整显示。可以将此规则定义的所有行拷贝到文本编辑器，以便完整查看其正则表达式。如下图第一行被灰色选中的部分。（由第一个引号”后面的括号(开始，到最后” \之前）。</li>
+</ul>
+<ul>
+<li>回复: 120111726001120/NET/Hangzhou Canaan Intelligence Information Technology Co.,Ltd/SR_2020102258547_[MS-LED]How to get the part which matched the WAF rule and then set up the custom rules on AppGW</li>
+</ul>
+<ul>
+<li>以下为查找请求中被WAF拦截字段的方法（以其中一条拦截日志为例），用户参考上述步骤可以根据日志逐条找出被匹配的所有字段：</li>
+</ul>
+<ul>
+<li>&lt;\\172.31.100.127\share$\Training-Related PoD\Network POD\Kyle&gt; WAF APPGW troubleshooting培训</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="http://f2ex.cn/modsecurity-crs-3-list/" target="_blank" rel="noopener">http://f2ex.cn/modsecurity-crs-3-list/</a></li>
+</ul>
+<ul>
+<li>参考：<a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-diagnostics，通过" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-diagnostics，通过</a> PowerShell 启用日志记录。</li>
+</ul>
+<ul>
+<li>Fiddler下载地址：<a href="https://www.telerik.com/download/fiddler" target="_blank" rel="noopener">https://www.telerik.com/download/fiddler</a></li>
+</ul>
+<ul>
+<li>到Github页面（<a href="https://github.com/SpiderLabs/owasp-modsecurity-crs/tree/v3.0/master/rules）上找到对应规则的定义。" target="_blank" rel="noopener">https://github.com/SpiderLabs/owasp-modsecurity-crs/tree/v3.0/master/rules）上找到对应规则的定义。</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/SpiderLabs/owasp-modsecurity-crs/blob/17d4317dcd86a20854100b877476d47ecb854d53/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf#L819-L845" target="_blank" rel="noopener">https://github.com/SpiderLabs/owasp-modsecurity-crs/blob/17d4317dcd86a20854100b877476d47ecb854d53/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf#L819-L845</a></li>
+</ul>
+<ul>
+<li>使用<a href="https://regex101.com/，验证Fiddler抓取到的请求（Header和Body，encode和decode都需要）与正则表达式的匹配情况。若有匹配时，页面上会显示是哪个字符(串)匹配了这个正则表达式。从而可以指导开发人员快速定位并修复。" target="_blank" rel="noopener">https://regex101.com/，验证Fiddler抓取到的请求（Header和Body，encode和decode都需要）与正则表达式的匹配情况。若有匹配时，页面上会显示是哪个字符(串)匹配了这个正则表达式。从而可以指导开发人员快速定位并修复。</a></li>
+</ul>
+<ul>
+<li>在<a href="http://f2ex.cn/modsecurity-crs-3-list/中找到对应的规则ID，这里为941120，威胁类型为XSS" target="_blank" rel="noopener">http://f2ex.cn/modsecurity-crs-3-list/中找到对应的规则ID，这里为941120，威胁类型为XSS</a> Filter – Category 2: Event Handler Vector</li>
+</ul>
+<ul>
+<li>将该规则的正则表达式（两个引号之间的内容）复制出来，贴到<a href="https://regex101.com/" target="_blank" rel="noopener">https://regex101.com/</a> 中。</li>
+</ul>
+<ul>
+<li>将日志中的Matched Data：=和found within中间的内容复制出来，粘贴到链接<a href="https://regex101.com/的Test" target="_blank" rel="noopener">https://regex101.com/的Test</a> String中，将会在页面的右侧的Match Information中显示是哪一部份字段匹配了该规则，规则的具体解释请参考界面中的EXPLANATION</li>
+</ul>
+<ul>
+<li>日志中found within ARG是表示被匹配出来的字段在请求的这个参数中，我们可以在Fiddler的抓包中找到对应的参数，可能在Header或者Body中，这条日志中的对应的是Body中的acf[field_5e37a5bfa48e，我们可以在Fiddler抓包中找到这个参数，并且找到对应的解码之后的字段，可以参考此链接进行解码<a href="http://ddecode.com/hexdecoder/" target="_blank" rel="noopener">http://ddecode.com/hexdecoder/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>如何快速定位应用程序网关 WAF 功能拦截问题</p>
+<p><a href="http://f2ex.cn/modsecurity-crs-3-list/" target="_blank" rel="noopener">http://f2ex.cn/modsecurity-crs-3-list/</a></p>
+<p>说明</p>
+<p>以下方法适用于大多数OWASP规则，但不排除有部分规则不适用。</p>
+<p>测试步骤</p>
+<p>对WAF启用诊断日志。</p>
+<p>参考：<a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-diagnostics，通过" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-diagnostics，通过</a> PowerShell 启用日志记录。</p>
+<p>对WAF进行访问测试，并在测试机上使用Fiddler抓包。</p>
+<p>Fiddler下载地址：<a href="https://www.telerik.com/download/fiddler" target="_blank" rel="noopener">https://www.telerik.com/download/fiddler</a></p>
+<p>如果请求返回的HTTP Code是403，并且Response Header是HTTP/1.1 403 ModSecurity Action，则代表这个请求被WAF阻挡。</p>
+<p>使用Azure Storage Explorer下载并查看第一步配置的存储账号中的防火墙日志。</p>
+<p>分析步骤</p>
+<p>从Fiddler选取需要分析的被拦截的请求，记录请求的URI和请求时间。</p>
+<p>在防火墙日志中找到对应时间点，对应请求触发的规则6位数编号。有可能一个请求同时触发了多条规则，需要将所有规则都记录下来。其中，Log中显示的时间为UTC时间。</p>
+<p>到Github页面（<a href="https://github.com/SpiderLabs/owasp-modsecurity-crs/tree/v3.0/master/rules）上找到对应规则的定义。" target="_blank" rel="noopener">https://github.com/SpiderLabs/owasp-modsecurity-crs/tree/v3.0/master/rules）上找到对应规则的定义。</a></p>
+<p>如上一步截图中的的规则为942370，对应网址为：</p>
+<p><a href="https://github.com/SpiderLabs/owasp-modsecurity-crs/blob/17d4317dcd86a20854100b877476d47ecb854d53/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf#L819-L845" target="_blank" rel="noopener">https://github.com/SpiderLabs/owasp-modsecurity-crs/blob/17d4317dcd86a20854100b877476d47ecb854d53/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf#L819-L845</a></p>
+<p>在规则定义中找到其使用的正则表达式。正则表达式可能较长，Github页面不能完整显示。可以将此规则定义的所有行拷贝到文本编辑器，以便完整查看其正则表达式。如下图第一行被灰色选中的部分。（由第一个引号”后面的括号(开始，到最后” \之前）。</p>
+<p>使用<a href="https://regex101.com/，验证Fiddler抓取到的请求（Header和Body，encode和decode都需要）与正则表达式的匹配情况。若有匹配时，页面上会显示是哪个字符(串)匹配了这个正则表达式。从而可以指导开发人员快速定位并修复。" target="_blank" rel="noopener">https://regex101.com/，验证Fiddler抓取到的请求（Header和Body，encode和decode都需要）与正则表达式的匹配情况。若有匹配时，页面上会显示是哪个字符(串)匹配了这个正则表达式。从而可以指导开发人员快速定位并修复。</a></p>
+<p>回复: 120111726001120/NET/Hangzhou Canaan Intelligence Information Technology Co.,Ltd/SR_2020102258547_[MS-LED]How to get the part which matched the WAF rule and then set up the custom rules on AppGW</p>
+<p>以下为查找请求中被WAF拦截字段的方法（以其中一条拦截日志为例），用户参考上述步骤可以根据日志逐条找出被匹配的所有字段：</p>
+<p>{&quot;instanceId&quot;:&quot;appgw_3&quot;,&quot;clientIp&quot;:&quot;223.223.181.211&quot;,&quot;clientPort&quot;:&quot;&quot;,&quot;requestUri&quot;:&quot;\/wp-admin\/post.php&quot;,&quot;ruleSetType&quot;:&quot;OWASP_CRS&quot;,&quot;ruleSetVersion&quot;:&quot;3.0.0&quot;,</p>
+<p>&quot;ruleId&quot;:&quot;941120&quot;,&quot;message&quot;:&quot;XSS Filter - Category 2: Event Handler Vector&quot;,&quot;action&quot;:&quot;Matched&quot;,&quot;site&quot;:&quot;Global&quot;,&quot;details&quot;:{&quot;message&quot;:&quot;Warning.</p>
+<p>Pattern match \\\&quot;(?i)([\\\\s\\\&quot;&#39;`;\\\\\/0-9\\\\=\\\\x0B\\\\x09\\\\x0C\\\\x3B\\\\x2C\\\\x28\\\\x3B]+on\\\\w+[\\\\s\\\\x0B\\\\x09\\\\x0C\\\\x3B\\\\x2C\\\\x28\\\\x3B]*?=)\\\&quot; at ARGS:acf[field_5e37a5bfa48ed] .... &quot;,</p>
+<p>&quot;data&quot;:&quot;Matched Data: =\\\\x22\\\\x22 oncanplaythrough= found within ARGS:acf[field_5e37a5bfa48e&quot;,&quot;file&quot;:&quot;rules\/REQUEST-941-APPLICATION-ATTACK-XSS.conf&quot;,&quot;line&quot;:&quot;123&quot;},</p>
+<p>&quot;hostname&quot;:&quot;canaan-creative.com&quot;,&quot;transactionId&quot;:&quot;a38f468180b13c011c64e987d6adfd6f&quot;,&quot;policyId&quot;:&quot;default&quot;,&quot;policyScope&quot;:&quot;Global&quot;,&quot;policyScopeName&quot;:&quot;Global&quot;}</p>
+<p>在<a href="http://f2ex.cn/modsecurity-crs-3-list/中找到对应的规则ID，这里为941120，威胁类型为XSS" target="_blank" rel="noopener">http://f2ex.cn/modsecurity-crs-3-list/中找到对应的规则ID，这里为941120，威胁类型为XSS</a> Filter – Category 2: Event Handler Vector</p>
+<p>点击上图中的规则ID，进入到Github对于规则的详细介绍</p>
+<p>将该规则的正则表达式（两个引号之间的内容）复制出来，贴到<a href="https://regex101.com/" target="_blank" rel="noopener">https://regex101.com/</a> 中。</p>
+<p>将日志中的Matched Data：=和found within中间的内容复制出来，粘贴到链接<a href="https://regex101.com/的Test" target="_blank" rel="noopener">https://regex101.com/的Test</a> String中，将会在页面的右侧的Match Information中显示是哪一部份字段匹配了该规则，规则的具体解释请参考界面中的EXPLANATION</p>
+<p>日志中found within ARG是表示被匹配出来的字段在请求的这个参数中，我们可以在Fiddler的抓包中找到对应的参数，可能在Header或者Body中，这条日志中的对应的是Body中的acf[field_5e37a5bfa48e，我们可以在Fiddler抓包中找到这个参数，并且找到对应的解码之后的字段，可以参考此链接进行解码<a href="http://ddecode.com/hexdecoder/" target="_blank" rel="noopener">http://ddecode.com/hexdecoder/</a></p>
+<p>training视频地址</p>
+<p>&lt;\\172.31.100.127\share$\Training-Related PoD\Network POD\Kyle&gt; WAF APPGW troubleshooting培训</p></article>

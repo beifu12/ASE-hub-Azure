@@ -1,0 +1,287 @@
+<article class="kb-article" data-title="AFD解析不到正确的pop IP问题"><h1>AFD解析不到正确的pop IP问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AFD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-18 14:18:50</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>现象：客户使用南方IP去访问AFD，但是解析到了AFD的北三pop IP而不是东三的pop IP</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>现象：客户使用南方IP去访问AFD，但是解析到了AFD的北三pop IP而不是东三的pop IP</li>
+</ul>
+<ul>
+<li>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 34274</li>
+</ul>
+<ul>
+<li>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 41004</li>
+</ul>
+<ul>
+<li>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 14922</li>
+</ul>
+<ul>
+<li>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 58878</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025.12.17</li>
+</ul>
+<ul>
+<li>客户IP：153.34.213.109 位于江苏南京，理论上应该解析到东三的pop IP,但是实际上解析出来的是北三的pop IP</li>
+</ul>
+<ul>
+<li>因为AFD是依靠ATM进行DNS的负载均衡，所以主要关注ATM是否提供了正确的解析</li>
+</ul>
+<ul>
+<li>首先让客户跑一下以下指令，这个指令可以看到客户的LDNS IP：</li>
+</ul>
+<ul>
+<li>dig +short TXT whoami.ds.akahelp.net</li>
+</ul>
+<ul>
+<li>msstore@DESKTOP-CN6HNIT:~$ dig +short TXT whoami.ds.akahelp.net</li>
+</ul>
+<ul>
+<li>&quot;ns&quot; &quot;112.81.16.154&quot;</li>
+</ul>
+<ul>
+<li>; (1 server found)</li>
+</ul>
+<ul>
+<li>;; global options: +cmd</li>
+</ul>
+<ul>
+<li>;; Got answer:</li>
+</ul>
+<ul>
+<li>;; flags: qr aa rd ad; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1</li>
+</ul>
+<ul>
+<li>;; WARNING: recursion requested but not available</li>
+</ul>
+<ul>
+<li>;; OPT PSEUDOSECTION:</li>
+</ul>
+<ul>
+<li>; EDNS: version: 0, flags:; udp: 1232</li>
+</ul>
+<ul>
+<li>; CLIENT-SUBNET: 112.81.16.0/24/24</li>
+</ul>
+<ul>
+<li>;; QUESTION SECTION:</li>
+</ul>
+<ul>
+<li>;; Query time: 217 msec</li>
+</ul>
+<ul>
+<li>;; SERVER: 40.73.208.240#53(40.73.208.240)</li>
+</ul>
+<ul>
+<li>;; WHEN: Tue Dec 09 18:43:25 UTC 2025</li>
+</ul>
+<ul>
+<li>;; MSG SIZE  rcvd: 168</li>
+</ul>
+<ul>
+<li>;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1</li>
+</ul>
+<ul>
+<li>; EDNS: version: 0, flags:; udp: 512</li>
+</ul>
+<ul>
+<li>;; Query time: 478 msec</li>
+</ul>
+<ul>
+<li>;; SERVER: 8.8.8.8#53(8.8.8.8)</li>
+</ul>
+<ul>
+<li>;; WHEN: Tue Dec 09 18:41:53 UTC 2025</li>
+</ul>
+<ul>
+<li>;; MSG SIZE  rcvd: 184</li>
+</ul>
+<ul>
+<li>; &lt;&lt;&gt;&gt; DiG diggui.com &lt;&lt;&gt;&gt; +subnet=112.81.16.0/24 @8.8.8.8 storeapp-cdn.uat.microsoftstore.com.cn A</li>
+</ul>
+<ul>
+<li>;; flags: qr rd ra; QUERY: 1, ANSWER: 5, AUTHORITY: 0, ADDITIONAL: 1</li>
+</ul>
+<ul>
+<li>;storeapp-cdn.uat.microsoftstore.com.cn.             IN A</li>
+</ul>
+<ul>
+<li>;; ANSWER SECTION:</li>
+</ul>
+<ul>
+<li>storeapp-cdn.uat.microsoftstore.com.cn.               3600 IN              CNAME storeappcdnuat-hpb0fmakcmaag8gh.z01.frontdoor.azure.cn.</li>
+</ul>
+<ul>
+<li>storeappcdnuat-hpb0fmakcmaag8gh.z01.frontdoor.azure.cn. 3600 IN              CNAME afd-global-mooncake-sni-default.elasticafd.frontdoor.azure.cn.</li>
+</ul>
+<ul>
+<li>eafd-mc-cne3r9a2-roxy-default-sni.elasticafd.frontdoor.azure.cn. 60 IN A 163.228.102.89</li>
+</ul>
+<ul>
+<li>;; Query time: 1365 msec</li>
+</ul>
+<ul>
+<li>;; WHEN: Tue Dec 09 18:59:41 UTC 2025</li>
+</ul>
+<ul>
+<li>;; MSG SIZE  rcvd: 330</li>
+</ul>
+<ul>
+<li>; &lt;&lt;&gt;&gt; DiG diggui.com &lt;&lt;&gt;&gt; +subnet=112.81.16.0/24 @223.6.6.6 storeapp-cdn.uat.microsoftstore.com.cn A</li>
+</ul>
+<ul>
+<li>storeappcdnuat-hpb0fmakcmaag8gh.z01.frontdoor.azure.cn. 3599 IN              CNAME afd-global-mooncake-sni-default.elasticafd.frontdoor.azure.cn.</li>
+</ul>
+<ul>
+<li>eafd-mc-cnn3r9a1-roxy-default-sni.elasticafd.frontdoor.azure.cn. 1 IN A          159.27.255.225</li>
+</ul>
+<ul>
+<li>;; Query time: 2972 msec</li>
+</ul>
+<ul>
+<li>;; SERVER: 223.6.6.6#53(223.6.6.6)</li>
+</ul>
+<ul>
+<li>;; WHEN: Tue Dec 09 19:06:51 UTC 2025</li>
+</ul>
+<ul>
+<li>如果发现这些解析没有问题，那么问题应该是客户的本地DNS在转发DNS请求时没有携带ECS 或者LDNS导致没有正确的解析出pop IP ,需要客户联系本地ISP处理</li>
+</ul>
+<ul>
+<li>如果客户使用的是自建的ATM，也可以参考以下文档主动override subnet：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>; &lt;&lt;&gt;&gt; DiG diggui.com &lt;&lt;&gt;&gt; +subnet=112.81.16.0/24 @40.73.208.240 afd-global-mooncake-sni-default-atm.trafficmanager.cn A</li>
+</ul>
+<ul>
+<li>;afd-global-mooncake-sni-default-atm.trafficmanager.cn. IN A</li>
+</ul>
+<ul>
+<li>;; ANSWER SECTION:afd-global-mooncake-sni-default-atm.trafficmanager.cn. 300 IN CNAME eafd-mc-cne3r9a1-roxy-default-sni.elasticafd.frontdoor.azure.cn.</li>
+</ul>
+<ul>
+<li>; &lt;&lt;&gt;&gt; DiG diggui.com &lt;&lt;&gt;&gt; +subnet=112.81.16.0/24 @8.8.8.8 afd-global-mooncake-sni-default-atm.trafficmanager.cn A</li>
+</ul>
+<ul>
+<li>;; ANSWER SECTION:afd-global-mooncake-sni-default-atm.trafficmanager.cn. 300 IN CNAME eafd-mc-cne3r9a2-roxy-default-sni.elasticafd.frontdoor.azure.cn.eafd-mc-cne3r9a2-roxy-default-sni.elasticafd.frontdoor.azure.cn. 60 IN A 163.228.102.89</li>
+</ul>
+<ul>
+<li>afd-global-mooncake-sni-default.elasticafd.frontdoor.azure.cn. 3503 IN CNAME afd-global-mooncake-sni-default-atm.trafficmanager.cn.</li>
+</ul>
+<ul>
+<li>afd-global-mooncake-sni-default-atm.trafficmanager.cn. 300 IN CNAME eafd-mc-cne3r9a2-roxy-default-sni.elasticafd.frontdoor.azure.cn.</li>
+</ul>
+<ul>
+<li>afd-global-mooncake-sni-default.elasticafd.frontdoor.azure.cn. 1 IN CNAME afd-global-mooncake-sni-default-atm.trafficmanager.cn.</li>
+</ul>
+<ul>
+<li>afd-global-mooncake-sni-default-atm.trafficmanager.cn. 298 IN CNAME eafd-mc-cnn3r9a1-roxy-default-sni.elasticafd.frontdoor.azure.cn.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Azure Traffic Manager subnet override using Azure PowerShell | Microsoft Learn</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>这个时候可以通过以下指令查看一下通过Azure或者其他DNS服务器如Google （8.8.8.8）或者阿里（233.6.6.6）是否也有解析问题</li>
+</ul>
+<ul>
+<li>With Azure resolver:</li>
+</ul>
+<ul>
+<li>With external resolver (Google):</li>
+</ul>
+<ul>
+<li>For the original qfdn storeapp-cdn.uat.microsoftstore.com.cn - we have provided multiple examples with the Azure DNS resolvers but with 3rd party resolvers as well the resolution is correct for the client range of IP addresses.</li>
+</ul>
+<ul>
+<li>Using Public resolver:</li>
+</ul>
+<ul>
+<li>Via AliBaba resolvers:</li>
+</ul>
+<ul>
+<li>如果此时发现这些解析也有问题，那可以提交ICM让ATM产品组进行修复</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025.12.17</p>
+<p>现象：客户使用南方IP去访问AFD，但是解析到了AFD的北三pop IP而不是东三的pop IP</p>
+<p>客户IP：153.34.213.109 位于江苏南京，理论上应该解析到东三的pop IP,但是实际上解析出来的是北三的pop IP</p>
+<p>因为AFD是依靠ATM进行DNS的负载均衡，所以主要关注ATM是否提供了正确的解析</p>
+<p>首先让客户跑一下以下指令，这个指令可以看到客户的LDNS IP：</p>
+<p>dig +short TXT whoami.ds.akahelp.net</p>
+<p>msstore@DESKTOP-CN6HNIT:~$ dig +short TXT whoami.ds.akahelp.net</p>
+<p>&quot;ns&quot; &quot;112.81.16.154&quot;</p>
+<p>这个时候可以通过以下指令查看一下通过Azure或者其他DNS服务器如Google （8.8.8.8）或者阿里（233.6.6.6）是否也有解析问题</p>
+<p>With Azure resolver:</p>
+<p>; &lt;&lt;&gt;&gt; DiG diggui.com &lt;&lt;&gt;&gt; +subnet=112.81.16.0/24 @40.73.208.240 afd-global-mooncake-sni-default-atm.trafficmanager.cn A</p>
+<p>; (1 server found)</p>
+<p>;; global options: +cmd</p>
+<p>;; Got answer:</p>
+<p>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 34274</p>
+<p>;; flags: qr aa rd ad; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1</p>
+<p>;; WARNING: recursion requested but not available</p>
+<p>;; OPT PSEUDOSECTION:</p>
+<p>; EDNS: version: 0, flags:; udp: 1232</p>
+<p>; CLIENT-SUBNET: 112.81.16.0/24/24</p>
+<p>;; QUESTION SECTION:</p>
+<p>;afd-global-mooncake-sni-default-atm.trafficmanager.cn. IN A</p>
+<p>;; ANSWER SECTION:afd-global-mooncake-sni-default-atm.trafficmanager.cn. 300 IN CNAME eafd-mc-cne3r9a1-roxy-default-sni.elasticafd.frontdoor.azure.cn.</p>
+<p>;; Query time: 217 msec</p>
+<p>;; SERVER: 40.73.208.240#53(40.73.208.240)</p>
+<p>;; WHEN: Tue Dec 09 18:43:25 UTC 2025</p>
+<p>;; MSG SIZE  rcvd: 168</p>
+<p>With external resolver (Google):</p>
+<p>; &lt;&lt;&gt;&gt; DiG diggui.com &lt;&lt;&gt;&gt; +subnet=112.81.16.0/24 @8.8.8.8 afd-global-mooncake-sni-default-atm.trafficmanager.cn A</p>
+<p>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 41004</p>
+<p>;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1</p>
+<p>; EDNS: version: 0, flags:; udp: 512</p>
+<p>;; ANSWER SECTION:afd-global-mooncake-sni-default-atm.trafficmanager.cn. 300 IN CNAME eafd-mc-cne3r9a2-roxy-default-sni.elasticafd.frontdoor.azure.cn.eafd-mc-cne3r9a2-roxy-default-sni.elasticafd.frontdoor.azure.cn. 60 IN A 163.228.102.89</p>
+<p>;; Query time: 478 msec</p>
+<p>;; SERVER: 8.8.8.8#53(8.8.8.8)</p>
+<p>;; WHEN: Tue Dec 09 18:41:53 UTC 2025</p>
+<p>;; MSG SIZE  rcvd: 184</p>
+<p>For the original qfdn storeapp-cdn.uat.microsoftstore.com.cn - we have provided multiple examples with the Azure DNS resolvers but with 3rd party resolvers as well the resolution is correct for the client range of IP addresses.</p>
+<p>Using Public resolver:</p>
+<p>; &lt;&lt;&gt;&gt; DiG diggui.com &lt;&lt;&gt;&gt; +subnet=112.81.16.0/24 @8.8.8.8 storeapp-cdn.uat.microsoftstore.com.cn A</p>
+<p>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 14922</p>
+<p>;; flags: qr rd ra; QUERY: 1, ANSWER: 5, AUTHORITY: 0, ADDITIONAL: 1</p>
+<p>;storeapp-cdn.uat.microsoftstore.com.cn.             IN A</p>
+<p>;; ANSWER SECTION:</p>
+<p>storeapp-cdn.uat.microsoftstore.com.cn.               3600 IN              CNAME storeappcdnuat-hpb0fmakcmaag8gh.z01.frontdoor.azure.cn.</p>
+<p>storeappcdnuat-hpb0fmakcmaag8gh.z01.frontdoor.azure.cn. 3600 IN              CNAME afd-global-mooncake-sni-default.elasticafd.frontdoor.azure.cn.</p>
+<p>afd-global-mooncake-sni-default.elasticafd.frontdoor.azure.cn. 3503 IN CNAME afd-global-mooncake-sni-default-atm.trafficmanager.cn.</p>
+<p>afd-global-mooncake-sni-default-atm.trafficmanager.cn. 300 IN CNAME eafd-mc-cne3r9a2-roxy-default-sni.elasticafd.frontdoor.azure.cn.</p>
+<p>eafd-mc-cne3r9a2-roxy-default-sni.elasticafd.frontdoor.azure.cn. 60 IN A 163.228.102.89</p>
+<p>;; Query time: 1365 msec</p>
+<p>;; WHEN: Tue Dec 09 18:59:41 UTC 2025</p>
+<p>;; MSG SIZE  rcvd: 330</p>
+<p>Via AliBaba resolvers:</p>
+<p>; &lt;&lt;&gt;&gt; DiG diggui.com &lt;&lt;&gt;&gt; +subnet=112.81.16.0/24 @223.6.6.6 storeapp-cdn.uat.microsoftstore.com.cn A</p>
+<p>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 58878</p>
+<p>storeappcdnuat-hpb0fmakcmaag8gh.z01.frontdoor.azure.cn. 3599 IN              CNAME afd-global-mooncake-sni-default.elasticafd.frontdoor.azure.cn.</p>
+<p>afd-global-mooncake-sni-default.elasticafd.frontdoor.azure.cn. 1 IN CNAME afd-global-mooncake-sni-default-atm.trafficmanager.cn.</p>
+<p>afd-global-mooncake-sni-default-atm.trafficmanager.cn. 298 IN CNAME eafd-mc-cnn3r9a1-roxy-default-sni.elasticafd.frontdoor.azure.cn.</p>
+<p>eafd-mc-cnn3r9a1-roxy-default-sni.elasticafd.frontdoor.azure.cn. 1 IN A          159.27.255.225</p>
+<p>;; Query time: 2972 msec</p>
+<p>;; SERVER: 223.6.6.6#53(223.6.6.6)</p>
+<p>;; WHEN: Tue Dec 09 19:06:51 UTC 2025</p>
+<p>如果此时发现这些解析也有问题，那可以提交ICM让ATM产品组进行修复</p>
+<p>如果发现这些解析没有问题，那么问题应该是客户的本地DNS在转发DNS请求时没有携带ECS 或者LDNS导致没有正确的解析出pop IP ,需要客户联系本地ISP处理</p>
+<p>如果客户使用的是自建的ATM，也可以参考以下文档主动override subnet：</p>
+<p>Azure Traffic Manager subnet override using Azure PowerShell | Microsoft Learn</p></article>

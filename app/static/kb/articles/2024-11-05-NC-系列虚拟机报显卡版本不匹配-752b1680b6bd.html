@@ -1,0 +1,116 @@
+<article class="kb-article" data-title="NC 系列虚拟机报显卡版本不匹配"><h1>NC 系列虚拟机报显卡版本不匹配</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-05 14:14:31</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错：</li>
+</ul>
+<ul>
+<li>Failed to initialize NVML: Driver/library version mismatch</li>
+</ul>
+<ul>
+<li>具体会有如下报错：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>ecommbau@Nicole-Nlp-bk:~$ nvidia-smi</li>
+</ul>
+<ul>
+<li>如重启不能解决就卸载驱动重装：</li>
+</ul>
+<ul>
+<li>但是这里有个坑，如果客户使用的是科学计算镜像，默认就有cuda的apt 源文件</li>
+</ul>
+<ul>
+<li>安装cuda驱动会造成apt 源文件冲突：</li>
+</ul>
+<ul>
+<li>会添加这个源文件：cuda-ubuntu2004-x86_64.list</li>
+</ul>
+<ul>
+<li>具体对比非科学计算镜像的Ubuntu 源：</li>
+</ul>
+<ul>
+<li>科学计算的Ubuntu镜像源：</li>
+</ul>
+<ul>
+<li>且 cuda.list 中也没有指定key：</li>
+</ul>
+<ul>
+<li>也就是说科学计算中cuda源默认使用的是cuda.list不是cuda-ubuntu2004-x86_64.list。</li>
+</ul>
+<ul>
+<li>这两个文件冲突了。</li>
+</ul>
+<ul>
+<li>解压方法： tar zxvf apt.tar.gz.</li>
+</ul>
+<ul>
+<li>==============================</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>重启查看内核和驱动版本是匹配的：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法1 重启：</li>
+</ul>
+<ul>
+<li>解决方法将整个apt目录打包，先将apt目前备份到其他位置，然后将apt.tar.gz目录解压到源位置：</li>
+</ul>
+<ul>
+<li>另外，由于您当前的apt源是正常的建议，您先尝试直接更新cuda驱动：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://blog.csdn.net/ccsodefhy/article/details/122846921" target="_blank" rel="noopener">https://blog.csdn.net/ccsodefhy/article/details/122846921</a></li>
+</ul>
+<ul>
+<li>如果在按照官方文档 <a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/n-series-driver-setup#ubuntu" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/n-series-driver-setup#ubuntu</a></li>
+</ul>
+<ul>
+<li>E: Conflicting values set for option Signed-By regarding source <a href="https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/" target="_blank" rel="noopener">https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/</a> /: /usr/share/keyrings/cuda-archive-keyring.gpg !=</li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/n-series-driver-setup#ubuntu" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/n-series-driver-setup#ubuntu</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023-02-06</p>
+<p>报错：</p>
+<p>ecommbau@Nicole-Nlp-bk:~$ nvidia-smi</p>
+<p>Failed to initialize NVML: Driver/library version mismatch</p>
+<p>解决方法1 重启：</p>
+<p><a href="https://blog.csdn.net/ccsodefhy/article/details/122846921" target="_blank" rel="noopener">https://blog.csdn.net/ccsodefhy/article/details/122846921</a></p>
+<p>如重启不能解决就卸载驱动重装：</p>
+<p>但是这里有个坑，如果客户使用的是科学计算镜像，默认就有cuda的apt 源文件</p>
+<p>如果在按照官方文档 <a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/n-series-driver-setup#ubuntu" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/n-series-driver-setup#ubuntu</a></p>
+<p>安装cuda驱动会造成apt 源文件冲突：</p>
+<p>会添加这个源文件：cuda-ubuntu2004-x86_64.list</p>
+<p>具体会有如下报错：</p>
+<p>E: Conflicting values set for option Signed-By regarding source <a href="https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/" target="_blank" rel="noopener">https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/</a> /: /usr/share/keyrings/cuda-archive-keyring.gpg !=</p>
+<p>具体对比非科学计算镜像的Ubuntu 源：</p>
+<p>科学计算的Ubuntu镜像源：</p>
+<p>且 cuda.list 中也没有指定key：</p>
+<p>也就是说科学计算中cuda源默认使用的是cuda.list不是cuda-ubuntu2004-x86_64.list。</p>
+<p>这两个文件冲突了。</p>
+<p>解决方法将整个apt目录打包，先将apt目前备份到其他位置，然后将apt.tar.gz目录解压到源位置：</p>
+<p>解压方法： tar zxvf apt.tar.gz.</p>
+<p>==============================</p>
+<p>另外，由于您当前的apt源是正常的建议，您先尝试直接更新cuda驱动：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/n-series-driver-setup#ubuntu" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/n-series-driver-setup#ubuntu</a></p>
+<p>重启查看内核和驱动版本是匹配的：</p></article>

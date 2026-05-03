@@ -1,0 +1,309 @@
+<article class="kb-article" data-title="Log Analytics 未按预期触发警报"><h1>Log Analytics 未按预期触发警报</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-06-14 09:55:34</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>#在官方文档统计AKS 失败Pod数的基础上，筛选失败Pod 数大于1的情况#</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>#在官方文档统计AKS 失败Pod数的基础上，筛选失败Pod 数大于1的情况#</li>
+</ul>
+<ul>
+<li>| extend UnknownCount = TotalCount - PendingCount - RunningCount - SucceededCount - FailedCount</li>
+</ul>
+<ul>
+<li>| summarize AggregatedValue = avg(FailedCount) by bin(TimeGenerated, trendBinSize)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hana Liu</li>
+</ul>
+<ul>
+<li>具体工单：</li>
+</ul>
+<ul>
+<li>=======================</li>
+</ul>
+<ul>
+<li>#警报逻辑#</li>
+</ul>
+<ul>
+<li>#数据趋势图#</li>
+</ul>
+<ul>
+<li>| extend success=toint(jstr.success),time_consume_ms=toint(jstr.time_consume_ms), channel=tostring(jstr.partner),openid=tostring(jstr.openid)</li>
+</ul>
+<ul>
+<li>| where success==0</li>
+</ul>
+<ul>
+<li>| distinct openid</li>
+</ul>
+<ul>
+<li>KubePodInventory</li>
+</ul>
+<ul>
+<li>| where TimeGenerated &lt; endDateTime</li>
+</ul>
+<ul>
+<li>| where TimeGenerated &gt;= startDateTime</li>
+</ul>
+<ul>
+<li>| where ClusterName == clusterName</li>
+</ul>
+<ul>
+<li>| distinct ClusterName, TimeGenerated</li>
+</ul>
+<ul>
+<li>| summarize ClusterSnapshotCount = count() by bin(TimeGenerated, trendBinSize), ClusterName</li>
+</ul>
+<ul>
+<li>| join hint.strategy=broadcast (</li>
+</ul>
+<ul>
+<li>| summarize PodStatus=any(PodStatus) by TimeGenerated, PodUid, ClusterName</li>
+</ul>
+<ul>
+<li>| summarize TotalCount = count(),</li>
+</ul>
+<ul>
+<li>by ClusterName, bin(TimeGenerated, trendBinSize)</li>
+</ul>
+<ul>
+<li>) on ClusterName, TimeGenerated</li>
+</ul>
+<ul>
+<li>| project TimeGenerated,</li>
+</ul>
+<ul>
+<li>| where AggregatedValue &gt; 1</li>
+</ul>
+<ul>
+<li>补充更新：</li>
+</ul>
+<ul>
+<li>=================================================</li>
+</ul>
+<ul>
+<li>量单位”（官方文档中也称之为“指标度量”）做为警报的判定条件。</li>
+</ul>
+<ul>
+<li>关于基于“公制度量单位”警报触发的条件中连续违规和违规总计。</li>
+</ul>
+<ul>
+<li>根据官方文档，Azure 的日志警报也是没有状态的，每次满足条件时，都会触发警报，即使之前已触发过。触发的警报不会解决。</li>
+</ul>
+<ul>
+<li>举例来说，设置聚合值粒度为10分钟，警报逻辑的期限为30分钟，频率为15分钟。则按照如下的趋势图，警报触发时我的邮箱每15分钟收到3（30/10）封邮件。</li>
+</ul>
+<ul>
+<li>此外，Azure 有一个小时内最多100封邮件的速率限制。当超过邮件限制时，会受到如下的告知邮件。</li>
+</ul>
+<ul>
+<li>#邮件暂停通知#</li>
+</ul>
+<ul>
+<li>Hana Liu (刘 欢) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>最近遇到两个关于Log Analytics 警报的问题，给大家分享一下。</li>
+</ul>
+<ul>
+<li>SR_2021020278337_[S500]使用LogA统计AKS容器日志定义报警规则，警报未触发</li>
+</ul>
+<ul>
+<li>SR_2021022380995_[MS-LED]通过警报在LogA设置AKS pod状态告警</li>
+</ul>
+<ul>
+<li>注：一般情况下，为了在日志中更清楚的显示查询结果，查询的最后一句，通常为| summarize *，这个语句会将查询的结果以统计的形式输出，但是对于Log Analytics 的警报来说就不太适</li>
+</ul>
+<ul>
+<li>了。我们可以根据客户对于警报的具体需求，对警报的自定义查询进行筛选（where）或者去重(distinct)。</li>
+</ul>
+<ul>
+<li>ContainerLog</li>
+</ul>
+<ul>
+<li>| where LogEntry contains &#39;&quot;type&quot;:&quot;receive&quot;&#39;</li>
+</ul>
+<ul>
+<li>| extend start_index=indexof(LogEntry,&#39;{&#39;)</li>
+</ul>
+<ul>
+<li>| extend jstr= parse_json(substring(LogEntry,start_index))</li>
+</ul>
+<ul>
+<li>继续在这个基础上，给大家分享一下，对于Log Analytics 警报的测试结果和发现。</li>
+</ul>
+<ul>
+<li>对于警报的自定义查询中包含用于指标警报类型的 &quot;AggregatedValue&quot; 和 &quot;bin(TimeGenerated, [roundTo])&quot;的查询语句（如 summarize AggregatedValue = avg(RunningCount) by bin(TimeGenerated, 5m)），也可以使用“公制</li>
+</ul>
+<ul>
+<li>#对于基于公制度量单位，自定义查询语句必须包含用于指标警报类型的 &quot;AggregatedValue&quot; 和 &quot;bin(TimeGenerated, [roundTo])&quot;#</li>
+</ul>
+<ul>
+<li>关于自定义查询中的聚合值中的聚合粒度（summarize AggregatedValue = avg(RunningCount) by bin(TimeGenerated, 5m)）和警报逻辑中的频率。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>let endDateTime = now();</li>
+</ul>
+<ul>
+<li>let startDateTime = ago(1h);</li>
+</ul>
+<ul>
+<li>let trendBinSize = 1m;</li>
+</ul>
+<ul>
+<li>let clusterName = &#39;&lt;your-cluster-name&gt;&#39;;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>两个工单，一个客户反馈达到了阈值但是一直不触发警报，另外一个反馈，没有达到阈值，但是一直触发警报。其关键点是，Log Analytics 工作区的警报中警报逻辑中的结果数，其实指的是自定义查询的结果计数（即查询结果的行数，记录数），而不是输出中统计的数值（比如如下所示的AggregatedValue）。建议客户在配置警报逻辑时，注意参考数据趋势图，一般情况下，结果计数是以蓝色的柱状显示，阈值是一条红色的横线。</li>
+</ul>
+<ul>
+<li>PendingCount = sumif(1, PodStatus =~ &#39;Pending&#39;),</li>
+</ul>
+<ul>
+<li>RunningCount = sumif(1, PodStatus =~ &#39;Running&#39;),</li>
+</ul>
+<ul>
+<li>SucceededCount = sumif(1, PodStatus =~ &#39;Succeeded&#39;),</li>
+</ul>
+<ul>
+<li>FailedCount = sumif(1, PodStatus =~ &#39;Failed&#39;)</li>
+</ul>
+<ul>
+<li>TotalCount = todouble(TotalCount) / ClusterSnapshotCount,</li>
+</ul>
+<ul>
+<li>PendingCount = todouble(PendingCount) / ClusterSnapshotCount,</li>
+</ul>
+<ul>
+<li>RunningCount = todouble(RunningCount) / ClusterSnapshotCount,</li>
+</ul>
+<ul>
+<li>SucceededCount = todouble(SucceededCount) / ClusterSnapshotCount,</li>
+</ul>
+<ul>
+<li>FailedCount = todouble(FailedCount) / ClusterSnapshotCount,</li>
+</ul>
+<ul>
+<li>UnknownCount = todouble(UnknownCount) / ClusterSnapshotCount</li>
+</ul>
+<ul>
+<li>测试发现，尽管查询结果和趋势图显示一直高于阈值，但是当设置连续违规或违规合计大于1时触发警报，却一直没有触发警报。</li>
+</ul>
+<ul>
+<li>我是这样理解的基于“公制度量单位”的违规触发机制，与经典警报的指标警报触发机制是一样的，是一个类似阶跃的机制，即当从没有超过阈值到超过阈值触发违规，而一直处于超过阈值状态的时候则不会再触发违规。如果想要出现连续违规的情况，则对应的趋势图应该是一个有起伏波动的图表。所以对于连续违规的阈值，需要注意一下。</li>
+</ul>
+<ul>
+<li>经测试发现，警报逻辑中的频率为警报触发的频率。超过阈值的聚合值的次数（趋势图中柱状图达到触发警报条件的次数）为对应警报触发的邮件的封数。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>#将客户原警告自定义查询语句的最后一行summarize dcount(openid) 修改为 distinct openid，使得结果数显示所有不同的openid，进而实现客户当dcount(openid) 值大于2时触发警报的需求。#</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>截图来源：官方文档《Azure Monitor 中的日志警报》<a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-unified-log#aggregation-type" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-unified-log#aggregation-type</a></li>
+</ul>
+<ul>
+<li>截图来源：官方文档《Azure Monitor 中的日志警报》<a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-unified-log#state-and-resolving-alerts" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-unified-log#state-and-resolving-alerts</a></li>
+</ul>
+<ul>
+<li>截图来源：官方文档《Azure Monitor 中的日志警报》<a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-unified-log#aggregation-granularity" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-unified-log#aggregation-granularity</a></li>
+</ul>
+<ul>
+<li>截图来源：官方文档《语音、短信、电子邮件、Azure 应用推送通知和 webhook 帖子的速率限制》<a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-rate-limiting" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-rate-limiting</a></li>
+</ul>
+<ul>
+<li>Support direct line: 010-56060132   Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></li>
+</ul>
+<ul>
+<li>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hana Liu</p>
+<p>最近遇到两个关于Log Analytics 警报的问题，给大家分享一下。</p>
+<p>具体工单：</p>
+<p>=======================</p>
+<p>SR_2021020278337_[S500]使用LogA统计AKS容器日志定义报警规则，警报未触发</p>
+<p>SR_2021022380995_[MS-LED]通过警报在LogA设置AKS pod状态告警</p>
+<p>两个工单，一个客户反馈达到了阈值但是一直不触发警报，另外一个反馈，没有达到阈值，但是一直触发警报。其关键点是，Log Analytics 工作区的警报中警报逻辑中的结果数，其实指的是自定义查询的结果计数（即查询结果的行数，记录数），而不是输出中统计的数值（比如如下所示的AggregatedValue）。建议客户在配置警报逻辑时，注意参考数据趋势图，一般情况下，结果计数是以蓝色的柱状显示，阈值是一条红色的横线。</p>
+<p>#警报逻辑#</p>
+<p>#数据趋势图#</p>
+<p>注：一般情况下，为了在日志中更清楚的显示查询结果，查询的最后一句，通常为| summarize *，这个语句会将查询的结果以统计的形式输出，但是对于Log Analytics 的警报来说就不太适</p>
+<p>了。我们可以根据客户对于警报的具体需求，对警报的自定义查询进行筛选（where）或者去重(distinct)。</p>
+<p>#将客户原警告自定义查询语句的最后一行summarize dcount(openid) 修改为 distinct openid，使得结果数显示所有不同的openid，进而实现客户当dcount(openid) 值大于2时触发警报的需求。#</p>
+<p>ContainerLog</p>
+<p>| where LogEntry contains &#39;&quot;type&quot;:&quot;receive&quot;&#39;</p>
+<p>| extend start_index=indexof(LogEntry,&#39;{&#39;)</p>
+<p>| extend jstr= parse_json(substring(LogEntry,start_index))</p>
+<p>| extend success=toint(jstr.success),time_consume_ms=toint(jstr.time_consume_ms), channel=tostring(jstr.partner),openid=tostring(jstr.openid)</p>
+<p>| where success==0</p>
+<p>| distinct openid</p>
+<p>#在官方文档统计AKS 失败Pod数的基础上，筛选失败Pod 数大于1的情况#</p>
+<p>let endDateTime = now();</p>
+<p>let startDateTime = ago(1h);</p>
+<p>let trendBinSize = 1m;</p>
+<p>let clusterName = &#39;&lt;your-cluster-name&gt;&#39;;</p>
+<p>KubePodInventory</p>
+<p>| where TimeGenerated &lt; endDateTime</p>
+<p>| where TimeGenerated &gt;= startDateTime</p>
+<p>| where ClusterName == clusterName</p>
+<p>| distinct ClusterName, TimeGenerated</p>
+<p>| summarize ClusterSnapshotCount = count() by bin(TimeGenerated, trendBinSize), ClusterName</p>
+<p>| join hint.strategy=broadcast (</p>
+<p>| summarize PodStatus=any(PodStatus) by TimeGenerated, PodUid, ClusterName</p>
+<p>| summarize TotalCount = count(),</p>
+<p>PendingCount = sumif(1, PodStatus =~ &#39;Pending&#39;),</p>
+<p>RunningCount = sumif(1, PodStatus =~ &#39;Running&#39;),</p>
+<p>SucceededCount = sumif(1, PodStatus =~ &#39;Succeeded&#39;),</p>
+<p>FailedCount = sumif(1, PodStatus =~ &#39;Failed&#39;)</p>
+<p>by ClusterName, bin(TimeGenerated, trendBinSize)</p>
+<p>) on ClusterName, TimeGenerated</p>
+<p>| extend UnknownCount = TotalCount - PendingCount - RunningCount - SucceededCount - FailedCount</p>
+<p>| project TimeGenerated,</p>
+<p>TotalCount = todouble(TotalCount) / ClusterSnapshotCount,</p>
+<p>PendingCount = todouble(PendingCount) / ClusterSnapshotCount,</p>
+<p>RunningCount = todouble(RunningCount) / ClusterSnapshotCount,</p>
+<p>SucceededCount = todouble(SucceededCount) / ClusterSnapshotCount,</p>
+<p>FailedCount = todouble(FailedCount) / ClusterSnapshotCount,</p>
+<p>UnknownCount = todouble(UnknownCount) / ClusterSnapshotCount</p>
+<p>| summarize AggregatedValue = avg(FailedCount) by bin(TimeGenerated, trendBinSize)</p>
+<p>| where AggregatedValue &gt; 1</p>
+<p>补充更新：</p>
+<p>=================================================</p>
+<p>继续在这个基础上，给大家分享一下，对于Log Analytics 警报的测试结果和发现。</p>
+<p>对于警报的自定义查询中包含用于指标警报类型的 &quot;AggregatedValue&quot; 和 &quot;bin(TimeGenerated, [roundTo])&quot;的查询语句（如 summarize AggregatedValue = avg(RunningCount) by bin(TimeGenerated, 5m)），也可以使用“公制</p>
+<p>量单位”（官方文档中也称之为“指标度量”）做为警报的判定条件。</p>
+<p>截图来源：官方文档《Azure Monitor 中的日志警报》<a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-unified-log#aggregation-type" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-unified-log#aggregation-type</a></p>
+<p>#对于基于公制度量单位，自定义查询语句必须包含用于指标警报类型的 &quot;AggregatedValue&quot; 和 &quot;bin(TimeGenerated, [roundTo])&quot;#</p>
+<p>关于基于“公制度量单位”警报触发的条件中连续违规和违规总计。</p>
+<p>测试发现，尽管查询结果和趋势图显示一直高于阈值，但是当设置连续违规或违规合计大于1时触发警报，却一直没有触发警报。</p>
+<p>根据官方文档，Azure 的日志警报也是没有状态的，每次满足条件时，都会触发警报，即使之前已触发过。触发的警报不会解决。</p>
+<p>截图来源：官方文档《Azure Monitor 中的日志警报》<a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-unified-log#state-and-resolving-alerts" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-unified-log#state-and-resolving-alerts</a></p>
+<p>我是这样理解的基于“公制度量单位”的违规触发机制，与经典警报的指标警报触发机制是一样的，是一个类似阶跃的机制，即当从没有超过阈值到超过阈值触发违规，而一直处于超过阈值状态的时候则不会再触发违规。如果想要出现连续违规的情况，则对应的趋势图应该是一个有起伏波动的图表。所以对于连续违规的阈值，需要注意一下。</p>
+<p>关于自定义查询中的聚合值中的聚合粒度（summarize AggregatedValue = avg(RunningCount) by bin(TimeGenerated, 5m)）和警报逻辑中的频率。</p>
+<p>截图来源：官方文档《Azure Monitor 中的日志警报》<a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-unified-log#aggregation-granularity" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-unified-log#aggregation-granularity</a></p>
+<p>经测试发现，警报逻辑中的频率为警报触发的频率。超过阈值的聚合值的次数（趋势图中柱状图达到触发警报条件的次数）为对应警报触发的邮件的封数。</p>
+<p>举例来说，设置聚合值粒度为10分钟，警报逻辑的期限为30分钟，频率为15分钟。则按照如下的趋势图，警报触发时我的邮箱每15分钟收到3（30/10）封邮件。</p>
+<p>此外，Azure 有一个小时内最多100封邮件的速率限制。当超过邮件限制时，会受到如下的告知邮件。</p>
+<p>截图来源：官方文档《语音、短信、电子邮件、Azure 应用推送通知和 webhook 帖子的速率限制》<a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-rate-limiting" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-rate-limiting</a></p>
+<p>#邮件暂停通知#</p>
+<p>Hana Liu (刘 欢) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060132   Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></p>
+<p>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</p></article>

@@ -1,0 +1,49 @@
+<article class="kb-article" data-title="查看Azure VM备份的报告信息"><h1>查看Azure VM备份的报告信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure VM backup</li>
+<li>Section: Kusto Jarvis常用命令</li>
+<li>最近修改: 2023-04-03 15:27:32</li>
+<li>JD 相关性: 自动化/命令工具; 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>zuoteng</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>zuoteng</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zuoteng</li>
+</ul>
+<ul>
+<li>AzureBackupReportingData</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt;= datetime(2023-02-10T12:00:00.0000000Z) and TIMESTAMP &lt;= datetime(2023-02-27T00:00:00.0000000Z)</li>
+</ul>
+<ul>
+<li>| where ((* has @&#39;dfcf0995-d03a-47b5-a940-1bd124a6464f&#39; and * has @&#39;FerreroTPMVault&#39;) and * has @&#39;SqlServerWriter&#39;)</li>
+</ul>
+<ul>
+<li>| limit 10000</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zuoteng</p>
+<p>AzureBackupReportingData</p>
+<p>| where TIMESTAMP &gt;= datetime(2023-02-10T12:00:00.0000000Z) and TIMESTAMP &lt;= datetime(2023-02-27T00:00:00.0000000Z)</p>
+<p>| where ((* has @&#39;dfcf0995-d03a-47b5-a940-1bd124a6464f&#39; and * has @&#39;FerreroTPMVault&#39;) and * has @&#39;SqlServerWriter&#39;)</p>
+<p>| limit 10000</p></article>

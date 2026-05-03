@@ -1,0 +1,72 @@
+<article class="kb-article" data-title="AVD主机池启用连接时启动VM时无法找到服务主体"><h1>AVD主机池启用连接时启动VM时无法找到服务主体</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Microsoft Sentinel</li>
+<li>Section: Azure VD</li>
+<li>最近修改: 2025-06-09 13:18:22</li>
+<li>JD 相关性: Defender/Sentinel/安全</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>但创建时遇到唯一性违规报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>但创建时遇到唯一性违规报错：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考CASE：20221123200569</li>
+</ul>
+<ul>
+<li>通常情况下，我们在AAD中可以搜搜到AVD的内置服务主体，ID是：9cdead84-a844-4324-93f2-b2e6bb768d07</li>
+</ul>
+<ul>
+<li>在客户环境中，按照文档配置AVD主机池连接时启动VM时，客户的AAD环境中并没有ID为9cdead84-a844-4324-93f2-b2e6bb768d07的AVD服务主体。</li>
+</ul>
+<ul>
+<li>据客户反馈，重启注册过程中，未影响到AVD session登录使用。</li>
+</ul>
+<ul>
+<li>等待一段时间，隔天后，客户AAD中客户看到AVD的服务主体ID9cdead84-a844-4324-93f2-b2e6bb768d07</li>
+</ul>
+<ul>
+<li>参照下面连接，可正常完成AVD主机池连接时启动VM的配置。</li>
+</ul>
+<ul>
+<li>Set up Start VM on Connect for Azure Virtual Desktop | Azure Docs</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>尝试使用命令手动创建服务主体：</li>
+</ul>
+<ul>
+<li>New-MsolServicePrincipal -AppPrincipalId &quot;9cdead84-a844-4324-93f2-b2e6bb768d07&quot; -DisplayName &quot;Azure Virtual Desktop&quot;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>之后建议客户在订阅的资源提供程序中将AVD的提供程序“Microsoft.DesktopVirtualization”重新注册：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>From &lt;<a href="https://docs.azure.cn/en-us/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal#assign-the-desktop-virtualization-power-on-contributor-role-with-the-azure-portal&gt;" target="_blank" rel="noopener">https://docs.azure.cn/en-us/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal#assign-the-desktop-virtualization-power-on-contributor-role-with-the-azure-portal&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022-12-29</p>
+<p>参考CASE：20221123200569</p>
+<p>通常情况下，我们在AAD中可以搜搜到AVD的内置服务主体，ID是：9cdead84-a844-4324-93f2-b2e6bb768d07</p>
+<p>From &lt;<a href="https://docs.azure.cn/en-us/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal#assign-the-desktop-virtualization-power-on-contributor-role-with-the-azure-portal&gt;" target="_blank" rel="noopener">https://docs.azure.cn/en-us/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal#assign-the-desktop-virtualization-power-on-contributor-role-with-the-azure-portal&gt;</a></p>
+<p>在客户环境中，按照文档配置AVD主机池连接时启动VM时，客户的AAD环境中并没有ID为9cdead84-a844-4324-93f2-b2e6bb768d07的AVD服务主体。</p>
+<p>尝试使用命令手动创建服务主体：</p>
+<p>New-MsolServicePrincipal -AppPrincipalId &quot;9cdead84-a844-4324-93f2-b2e6bb768d07&quot; -DisplayName &quot;Azure Virtual Desktop&quot;</p>
+<p>但创建时遇到唯一性违规报错：</p>
+<p>之后建议客户在订阅的资源提供程序中将AVD的提供程序“Microsoft.DesktopVirtualization”重新注册：</p>
+<p>据客户反馈，重启注册过程中，未影响到AVD session登录使用。</p>
+<p>等待一段时间，隔天后，客户AAD中客户看到AVD的服务主体ID9cdead84-a844-4324-93f2-b2e6bb768d07</p>
+<p>参照下面连接，可正常完成AVD主机池连接时启动VM的配置。</p>
+<p>Set up Start VM on Connect for Azure Virtual Desktop | Azure Docs</p></article>

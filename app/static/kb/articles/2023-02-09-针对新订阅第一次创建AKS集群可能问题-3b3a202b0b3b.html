@@ -1,0 +1,153 @@
+<article class="kb-article" data-title="针对新订阅第一次创建AKS集群可能问题"><h1>针对新订阅第一次创建AKS集群可能问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-02-09 17:05:04</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>今天Azure AKS已经public preview，上午尝试在中国区创建AKS集群时遇到以下报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>今天Azure AKS已经public preview，上午尝试在中国区创建AKS集群时遇到以下报错：</li>
+</ul>
+<ul>
+<li>Error message ：The resource type could not be found in the namespace &#39;Microsoft.ContainerService&#39; for api version &#39;2018-03-31&#39;.  【提示找不到相应API版本】</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zuoteng</li>
+</ul>
+<ul>
+<li>C:\Users\zuo.teng&gt;az aks create --resource-group akstest01 --name akstest01 --node-count 1 --generate-ssh-keys</li>
+</ul>
+<ul>
+<li>C:\Users\zuo.teng&gt;az provider show -n Microsoft.ContainerService</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;authorization&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;applicationId&quot;: &quot;7319c514-987d-4e9b-ac3d-d38c4f427f4c&quot;,</li>
+</ul>
+<ul>
+<li>&quot;managedByRoleDefinitionId&quot;: &quot;8e3af657-a8ff-443c-a75c-2fe8c4bcb635&quot;,</li>
+</ul>
+<ul>
+<li>&quot;roleDefinitionId&quot;: &quot;1b4a0c7f-2217-416f-acfa-cf73452fdc1c&quot;</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/e215f72c-02a5-4e2a-8a6e-1469ce59478d/providers/Microsoft.ContainerService&quot;,</li>
+</ul>
+<ul>
+<li>&quot;namespace&quot;: &quot;Microsoft.ContainerService&quot;,</li>
+</ul>
+<ul>
+<li>&quot;registrationState&quot;: &quot;Registered&quot;,</li>
+</ul>
+<ul>
+<li>&quot;resourceTypes&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;aliases&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;apiVersions&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;2018-03-31&quot;,</li>
+</ul>
+<ul>
+<li>&quot;2017-08-31&quot;,</li>
+</ul>
+<ul>
+<li>&quot;2017-07-01&quot;,</li>
+</ul>
+<ul>
+<li>&quot;2017-01-31&quot;,</li>
+</ul>
+<ul>
+<li>&quot;2016-09-30&quot;,</li>
+</ul>
+<ul>
+<li>&quot;2016-03-30&quot;,</li>
+</ul>
+<ul>
+<li>&quot;2015-11-01-preview&quot;</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;locations&quot;: [],</li>
+</ul>
+<ul>
+<li>&quot;properties&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;resourceType&quot;: &quot;operations&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>后续，我找css同事对比他们内测订阅的输出结果，比咱们的多订阅了好多资源。后续通过再次注销该provider [Microsoft.ContainerService]后，重新再注册该provider后，问题解决，如果后续有小伙伴处理工单遇到该问题，请周知。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>但是查看相应provider的信息，里面已经包含相应的API版本</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zuoteng</p>
+<p>今天Azure AKS已经public preview，上午尝试在中国区创建AKS集群时遇到以下报错：</p>
+<p>C:\Users\zuo.teng&gt;az aks create --resource-group akstest01 --name akstest01 --node-count 1 --generate-ssh-keys</p>
+<p>Error message ：The resource type could not be found in the namespace &#39;Microsoft.ContainerService&#39; for api version &#39;2018-03-31&#39;.  【提示找不到相应API版本】</p>
+<p>但是查看相应provider的信息，里面已经包含相应的API版本</p>
+<p>C:\Users\zuo.teng&gt;az provider show -n Microsoft.ContainerService</p>
+<p>{</p>
+<p>&quot;authorization&quot;: {</p>
+<p>&quot;applicationId&quot;: &quot;7319c514-987d-4e9b-ac3d-d38c4f427f4c&quot;,</p>
+<p>&quot;managedByRoleDefinitionId&quot;: &quot;8e3af657-a8ff-443c-a75c-2fe8c4bcb635&quot;,</p>
+<p>&quot;roleDefinitionId&quot;: &quot;1b4a0c7f-2217-416f-acfa-cf73452fdc1c&quot;</p>
+<p>},</p>
+<p>&quot;id&quot;: &quot;/subscriptions/e215f72c-02a5-4e2a-8a6e-1469ce59478d/providers/Microsoft.ContainerService&quot;,</p>
+<p>&quot;namespace&quot;: &quot;Microsoft.ContainerService&quot;,</p>
+<p>&quot;registrationState&quot;: &quot;Registered&quot;,</p>
+<p>&quot;resourceTypes&quot;: [</p>
+<p>&quot;aliases&quot;: null,</p>
+<p>&quot;apiVersions&quot;: [</p>
+<p>&quot;2018-03-31&quot;,</p>
+<p>&quot;2017-08-31&quot;,</p>
+<p>&quot;2017-07-01&quot;,</p>
+<p>&quot;2017-01-31&quot;,</p>
+<p>&quot;2016-09-30&quot;,</p>
+<p>&quot;2016-03-30&quot;,</p>
+<p>&quot;2015-11-01-preview&quot;</p>
+<p>],</p>
+<p>&quot;locations&quot;: [],</p>
+<p>&quot;properties&quot;: null,</p>
+<p>&quot;resourceType&quot;: &quot;operations&quot;</p>
+<p>}</p>
+<p>]</p>
+<p>后续，我找css同事对比他们内测订阅的输出结果，比咱们的多订阅了好多资源。后续通过再次注销该provider [Microsoft.ContainerService]后，重新再注册该provider后，问题解决，如果后续有小伙伴处理工单遇到该问题，请周知。</p></article>

@@ -1,0 +1,84 @@
+<article class="kb-article" data-title="AKS Support TSG update 2020/6/19"><h1>AKS Support TSG update 2020/6/19</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: AKS Operation guideline</li>
+<li>最近修改: 2022-04-15 13:45:03</li>
+<li>JD 相关性: 交付流程/客户支持; AKS/容器; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Here’s the update for this week.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Here’s the update for this week.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Here’s the update for this week.</li>
+</ul>
+<ul>
+<li>Security Center recommends enabling VM monitoring extension</li>
+</ul>
+<ul>
+<li>&gt; --&gt; to stop detections for AKS cluster [still on discussion]</li>
+</ul>
+<ul>
+<li>&gt; Some extensions may work with other components such as loadBalancers, so it may not work.</li>
+</ul>
+<ul>
+<li>Monitoring IO for customer since monitoring extension for VM isn&#39;t available, and AKS monitoirng addon doesn&#39;t include VM metrics out-of-box.</li>
+</ul>
+<ul>
+<li>&gt; Possible monitoring approaches: command line TS: iostats, htop, etc; prometheus node-exporter;</li>
+</ul>
+<ul>
+<li>&gt; Mitigation approaches: knode by Juan-Lee</li>
+</ul>
+<ul>
+<li>&gt;&gt; Future: tmp drive for /var/lib/container</li>
+</ul>
+<ul>
+<li>&gt;&gt; Future: ephemeral OS disk</li>
+</ul>
+<ul>
+<li>Cluster autoscaling, not scaled even when node highly utilized / scaled when node is not so utilized. 2.</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>&gt; background: <a href="https://docs.microsoft.com/en-us/azure/aks/faq#can-i-use-custom-vm-extensions" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/faq#can-i-use-custom-vm-extensions</a></li>
+</ul>
+<ul>
+<li>&gt; <a href="https://github.com/Azure/AKS/issues/1373" target="_blank" rel="noopener">https://github.com/Azure/AKS/issues/1373</a></li>
+</ul>
+<ul>
+<li>&gt; CA FAQ introduces internals: <a href="https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md" target="_blank" rel="noopener">https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md</a></li>
+</ul>
+<ul>
+<li>&gt; AKS has customizable flags: <a href="https://docs.microsoft.com/en-us/azure/aks/cluster-autoscaler#using-the-autoscaler-profile" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/cluster-autoscaler#using-the-autoscaler-profile</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Here’s the update for this week.</p>
+<p>Security Center recommends enabling VM monitoring extension</p>
+<p>&gt; --&gt; to stop detections for AKS cluster [still on discussion]</p>
+<p>&gt; background: <a href="https://docs.microsoft.com/en-us/azure/aks/faq#can-i-use-custom-vm-extensions" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/faq#can-i-use-custom-vm-extensions</a></p>
+<p>&gt; Some extensions may work with other components such as loadBalancers, so it may not work.</p>
+<p>Monitoring IO for customer since monitoring extension for VM isn&#39;t available, and AKS monitoirng addon doesn&#39;t include VM metrics out-of-box.</p>
+<p>&gt; Possible monitoring approaches: command line TS: iostats, htop, etc; prometheus node-exporter;</p>
+<p>&gt; <a href="https://github.com/Azure/AKS/issues/1373" target="_blank" rel="noopener">https://github.com/Azure/AKS/issues/1373</a></p>
+<p>&gt; Mitigation approaches: knode by Juan-Lee</p>
+<p>&gt;&gt; Future: tmp drive for /var/lib/container</p>
+<p>&gt;&gt; Future: ephemeral OS disk</p>
+<p>Cluster autoscaling, not scaled even when node highly utilized / scaled when node is not so utilized. 2.</p>
+<p>&gt; CA FAQ introduces internals: <a href="https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md" target="_blank" rel="noopener">https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md</a></p>
+<p>&gt; AKS has customizable flags: <a href="https://docs.microsoft.com/en-us/azure/aks/cluster-autoscaler#using-the-autoscaler-profile" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/cluster-autoscaler#using-the-autoscaler-profile</a></p></article>

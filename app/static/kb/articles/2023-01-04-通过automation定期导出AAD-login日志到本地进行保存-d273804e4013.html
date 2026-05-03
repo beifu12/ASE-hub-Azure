@@ -1,0 +1,173 @@
+<article class="kb-article" data-title="通过automation定期导出AAD login日志到本地进行保存"><h1>通过automation定期导出AAD login日志到本地进行保存</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Automation</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-01-04 13:27:18</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Nancy</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Nancy</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Nancy</li>
+</ul>
+<ul>
+<li>大致操作分为：</li>
+</ul>
+<ul>
+<li>1．需要将本地或者虚拟机注册到automation的混合辅助角色组</li>
+</ul>
+<ul>
+<li>3．编辑automation的runbook</li>
+</ul>
+<ul>
+<li>4．测试运行</li>
+</ul>
+<ul>
+<li>详细操作(我测试使用的虚拟机)：</li>
+</ul>
+<ul>
+<li>Heartbeat</li>
+</ul>
+<ul>
+<li>| where Category == &quot;Direct Agent&quot;</li>
+</ul>
+<ul>
+<li>| where TimeGenerated &gt; ago(30m)</li>
+</ul>
+<ul>
+<li>3）然后到虚拟机内部，进行hybrid registration。</li>
+</ul>
+<ul>
+<li>浏览到 C:\Program Files\Microsoft Monitoring Agent\Agent\AzureAutomation\ 并注意 version 子文件夹。</li>
+</ul>
+<ul>
+<li>cd &quot;C:\Program Files\Microsoft Monitoring Agent\Agent\AzureAutomation\&lt;version&gt;\HybridRegistration&quot;</li>
+</ul>
+<ul>
+<li>Import-Module .\HybridRegistration.psd1</li>
+</ul>
+<ul>
+<li>##Url和Key到自动化账户的“键”页面获取。</li>
+</ul>
+<ul>
+<li>可以看到已经注册完成。</li>
+</ul>
+<ul>
+<li>安装测试需要用到模块。</li>
+</ul>
+<ul>
+<li>我这里安装了az和AADpreview模块。</li>
+</ul>
+<ul>
+<li>也可以从本地拷贝模块到虚拟机然后导入使用。</li>
+</ul>
+<ul>
+<li>1）先在自动化账户创建好凭据</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>$Cred = Get-AutomationPSCredential -Name &quot;zhangnan&quot;;</li>
+</ul>
+<ul>
+<li>Connect-AzureAD -Credential $Cred -AzureEnvironmentName AzureChinaCloud;</li>
+</ul>
+<ul>
+<li>$name=(get-date).AddHours(8).ToString(&quot;yyyy-MM-dd-HH-mm&quot;)</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>链接到计划：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>需求：通过automation定期导出AAD login日志到本地进行保存。</li>
+</ul>
+<ul>
+<li>2）连接虚拟机到log analytics。</li>
+</ul>
+<ul>
+<li>然后到log analytics中查询是否存在该虚拟机的心跳，如果存在说明连接已经成功。</li>
+</ul>
+<ul>
+<li>workflow exportaadloginlog</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>2．将本地或者虚拟机安装对应powershell模块</li>
+</ul>
+<ul>
+<li>在管理员模式下打开 PowerShell 会话，并运行以下命令以导入模块。</li>
+</ul>
+<ul>
+<li>然后执行注册命令：</li>
+</ul>
+<ul>
+<li>2）创建powershell工作流，然后编辑如下内容，定期保存到根据日期区分的文件中。</li>
+</ul>
+<ul>
+<li>Get-AzureADAuditSignInLogs -All $true | Export-CSV &quot;C:\AzureADAuditSignInLogs$name.CSV&quot; -NoTypeInformation -Encoding UTF8</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>为log analytics开启自动化账户解决方案。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>1）详细参考文档：<a href="https://docs.azure.cn/zh-cn/automation/automation-windows-hrw-install#manual-deployment" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/automation-windows-hrw-install#manual-deployment</a></li>
+</ul>
+<ul>
+<li>Add-HybridRunbookWorker –GroupName &quot;nancytest&quot; -Url &quot;<a href="https://ab76be4d-a22b-40c5-8fad-0d46dxxxx.agentsvc.sha2.azure-automation.cn/accounts/ab76be4d-a22b-40c5-8fad-0d46db33f68a&quot;" target="_blank" rel="noopener">https://ab76be4d-a22b-40c5-8fad-0d46dxxxx.agentsvc.sha2.azure-automation.cn/accounts/ab76be4d-a22b-40c5-8fad-0d46db33f68a&quot;</a> -Key &quot;zl2P4tXNUeKywYQYGFexH782wYEyUA50xxxxxo+QwEzBntB+rGpTGxqDFl+eMqiXqwIE2j505lg==&quot;</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Nancy</p>
+<p>需求：通过automation定期导出AAD login日志到本地进行保存。</p>
+<p>大致操作分为：</p>
+<p>1．需要将本地或者虚拟机注册到automation的混合辅助角色组</p>
+<p>2．将本地或者虚拟机安装对应powershell模块</p>
+<p>3．编辑automation的runbook</p>
+<p>4．测试运行</p>
+<p>详细操作(我测试使用的虚拟机)：</p>
+<p>1）详细参考文档：<a href="https://docs.azure.cn/zh-cn/automation/automation-windows-hrw-install#manual-deployment" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/automation-windows-hrw-install#manual-deployment</a></p>
+<p>为log analytics开启自动化账户解决方案。</p>
+<p>2）连接虚拟机到log analytics。</p>
+<p>然后到log analytics中查询是否存在该虚拟机的心跳，如果存在说明连接已经成功。</p>
+<p>Heartbeat</p>
+<p>| where Category == &quot;Direct Agent&quot;</p>
+<p>| where TimeGenerated &gt; ago(30m)</p>
+<p>3）然后到虚拟机内部，进行hybrid registration。</p>
+<p>浏览到 C:\Program Files\Microsoft Monitoring Agent\Agent\AzureAutomation\ 并注意 version 子文件夹。</p>
+<p>在管理员模式下打开 PowerShell 会话，并运行以下命令以导入模块。</p>
+<p>cd &quot;C:\Program Files\Microsoft Monitoring Agent\Agent\AzureAutomation\&lt;version&gt;\HybridRegistration&quot;</p>
+<p>Import-Module .\HybridRegistration.psd1</p>
+<p>然后执行注册命令：</p>
+<p>Add-HybridRunbookWorker –GroupName &quot;nancytest&quot; -Url &quot;<a href="https://ab76be4d-a22b-40c5-8fad-0d46dxxxx.agentsvc.sha2.azure-automation.cn/accounts/ab76be4d-a22b-40c5-8fad-0d46db33f68a&quot;" target="_blank" rel="noopener">https://ab76be4d-a22b-40c5-8fad-0d46dxxxx.agentsvc.sha2.azure-automation.cn/accounts/ab76be4d-a22b-40c5-8fad-0d46db33f68a&quot;</a> -Key &quot;zl2P4tXNUeKywYQYGFexH782wYEyUA50xxxxxo+QwEzBntB+rGpTGxqDFl+eMqiXqwIE2j505lg==&quot;</p>
+<p>##Url和Key到自动化账户的“键”页面获取。</p>
+<p>可以看到已经注册完成。</p>
+<p>安装测试需要用到模块。</p>
+<p>我这里安装了az和AADpreview模块。</p>
+<p>也可以从本地拷贝模块到虚拟机然后导入使用。</p>
+<p>1）先在自动化账户创建好凭据</p>
+<p>2）创建powershell工作流，然后编辑如下内容，定期保存到根据日期区分的文件中。</p>
+<p>workflow exportaadloginlog</p>
+<p>{</p>
+<p>$Cred = Get-AutomationPSCredential -Name &quot;zhangnan&quot;;</p>
+<p>Connect-AzureAD -Credential $Cred -AzureEnvironmentName AzureChinaCloud;</p>
+<p>$name=(get-date).AddHours(8).ToString(&quot;yyyy-MM-dd-HH-mm&quot;)</p>
+<p>Get-AzureADAuditSignInLogs -All $true | Export-CSV &quot;C:\AzureADAuditSignInLogs$name.CSV&quot; -NoTypeInformation -Encoding UTF8</p>
+<p>}</p>
+<p>链接到计划：</p></article>

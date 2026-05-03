@@ -1,0 +1,47 @@
+<article class="kb-article" data-title="Ubuntu 20.04安装诊断扩展报错/usr/bin/env: ‘python’: No such file or directory"><h1>Ubuntu 20.04安装诊断扩展报错/usr/bin/env: ‘python’: No such file or directory</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-05-18 13:25:47</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Ubuntu 20.04已经使用 Python 3.8，并删除了Python的旧版入口点/usr/bin/python，目前的诊断扩展需要使用/usr/bin/python为入口点，因此安装诊断扩展时产生了报错。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Ubuntu 20.04已经使用 Python 3.8，并删除了Python的旧版入口点/usr/bin/python，目前的诊断扩展需要使用/usr/bin/python为入口点，因此安装诊断扩展时产生了报错。</li>
+</ul>
+<h2>背景信息</h2>
+<p>未从原文中明确识别。</p>
+<h2>排查思路</h2>
+<ul>
+<li>Ubuntu 20.04已经使用 Python 3.8，并删除了Python的旧版入口点/usr/bin/python，目前的诊断扩展需要使用/usr/bin/python为入口点，因此安装诊断扩展时产生了报错。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>执行sudo apt update &amp;&amp; sudo apt install python-is-python2命令前：</li>
+</ul>
+<ul>
+<li>执行命令后</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>以下官方文档中给出了当前临时的解决方法。参考该文档，我测试创建VM时，先不启用诊断扩展，创建成功后，SSH登陆，运行sudo apt update &amp;&amp; sudo apt install python-is-python2，然后可以正常启用来宾级别诊断，扩展安装也是成功的。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/extensions/issues-using-vm-extensions-python-3" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/extensions/issues-using-vm-extensions-python-3</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020-09-22</p>
+<p>Ubuntu 20.04已经使用 Python 3.8，并删除了Python的旧版入口点/usr/bin/python，目前的诊断扩展需要使用/usr/bin/python为入口点，因此安装诊断扩展时产生了报错。</p>
+<p>以下官方文档中给出了当前临时的解决方法。参考该文档，我测试创建VM时，先不启用诊断扩展，创建成功后，SSH登陆，运行sudo apt update &amp;&amp; sudo apt install python-is-python2，然后可以正常启用来宾级别诊断，扩展安装也是成功的。</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/extensions/issues-using-vm-extensions-python-3" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/extensions/issues-using-vm-extensions-python-3</a></p>
+<p>执行sudo apt update &amp;&amp; sudo apt install python-is-python2命令前：</p>
+<p>执行命令后</p></article>

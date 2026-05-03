@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="Private Endpoint与NSG"><h1>Private Endpoint与NSG</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Private Endpoint</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-11-30 16:23:06</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>尝试在中国区启用（注册这一功能）时，会报错如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>尝试在中国区启用（注册这一功能）时，会报错如下：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2021.11.2</li>
+</ul>
+<ul>
+<li>相关的工单：SR_20211021127396、SR_20210609101740、SR_2021052799237</li>
+</ul>
+<ul>
+<li>截止2021.11.2 中国区Azure Private Endpoint所连接的Vnet/Subnet仍然不支持通过NSG规则来实现对Private Endpoint的访问控制。之前有过几个工单用户咨询Private Endpoint能否通过NSG实现更精细的访问控制。比如：</li>
+</ul>
+<ul>
+<li>关于这一新功能，官网上的说明如下：</li>
+</ul>
+<ul>
+<li>对于Public Azure，NSG作用于Private Link处于preview阶段：Public preview of Private Link Network Security Group Support | Azure updates | Microsoft Azure</li>
+</ul>
+<ul>
+<li>Public preview of Private Link Network Security Group Support</li>
+</ul>
+<ul>
+<li>Published date: September 02, 2021</li>
+</ul>
+<ul>
+<li>At this time, Private Link NSG Support is available in the following regions:</li>
+</ul>
+<ul>
+<li>UsEast2Euap, UsCentralEuap, WestCentralUS, WestUS, WestUS2, EastUS, EastUS2, Asiaeast, Australiaeast, Japaneast, Canadacentral, Europenorth, Koreacentral, Brazilsouth, Uksouth, US South, US North, France Central</li>
+</ul>
+<ul>
+<li>如果能够成功注册上述2个功能，则关联到Private Endpoint的NSG就能够发挥作用了。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>用户给Azure MySQL Paas配置了Private Endpoint，这时用户Virtual Network里，如果用户想禁止某些虚拟机去访问Private Endpoint Network Interface私网ip及相应端口，他可以在Private Endpoint所属Subnet中配置相应的NSG规则，但是这一规则对于这个Private Endpoint并不会生效，仍然是只要能够跟Private Endpoint专用ip路由通的，都可以直接访问它。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Private Endpoint support for Network Security Groups (NSGs) is now in public preview. This feature enhancement will provide you with the ability to enable advanced security controls on traffic destined to a private endpoint. In order to leverage this feature, you will need to set a specific subnet level property, called PrivateEndpointNetworkPolicies, to Enabled. In addition to toggling this property, you will need to also register for the Microsoft.Network/AllowPrivateEndpointNSG feature (note that registation time may take up to 15mins).</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>之前微软官网文档（<a href="https://docs.microsoft.com/zh-cn/azure/private-link/private-endpoint-overview#limitations）上明确有写明：开启Private" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/private-link/private-endpoint-overview#limitations）上明确有写明：开启Private</a> endpoint后会禁用网络策略，NSG规则不对它生效，但对同Subnet的其它节点仍然有效。不能在Private Endpoint侧的NSG上实现更精细的控制，只能从访问源那一侧的NSG上进行限制或者使用其它方式。但这样对于源头多的网络环境配置起来不方便，之前有用户有抱怨和质疑。现在官网文档上已经去掉了这些说明，因为在Public Azure上已经可以启用Private Endpoint支持NSG功能了。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021.11.2</p>
+<p>相关的工单：SR_20211021127396、SR_20210609101740、SR_2021052799237</p>
+<p>截止2021.11.2 中国区Azure Private Endpoint所连接的Vnet/Subnet仍然不支持通过NSG规则来实现对Private Endpoint的访问控制。之前有过几个工单用户咨询Private Endpoint能否通过NSG实现更精细的访问控制。比如：</p>
+<p>用户给Azure MySQL Paas配置了Private Endpoint，这时用户Virtual Network里，如果用户想禁止某些虚拟机去访问Private Endpoint Network Interface私网ip及相应端口，他可以在Private Endpoint所属Subnet中配置相应的NSG规则，但是这一规则对于这个Private Endpoint并不会生效，仍然是只要能够跟Private Endpoint专用ip路由通的，都可以直接访问它。</p>
+<p>之前微软官网文档（<a href="https://docs.microsoft.com/zh-cn/azure/private-link/private-endpoint-overview#limitations）上明确有写明：开启Private" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/private-link/private-endpoint-overview#limitations）上明确有写明：开启Private</a> endpoint后会禁用网络策略，NSG规则不对它生效，但对同Subnet的其它节点仍然有效。不能在Private Endpoint侧的NSG上实现更精细的控制，只能从访问源那一侧的NSG上进行限制或者使用其它方式。但这样对于源头多的网络环境配置起来不方便，之前有用户有抱怨和质疑。现在官网文档上已经去掉了这些说明，因为在Public Azure上已经可以启用Private Endpoint支持NSG功能了。</p>
+<p>关于这一新功能，官网上的说明如下：</p>
+<p>对于Public Azure，NSG作用于Private Link处于preview阶段：Public preview of Private Link Network Security Group Support | Azure updates | Microsoft Azure</p>
+<p>Public preview of Private Link Network Security Group Support</p>
+<p>Published date: September 02, 2021</p>
+<p>Private Endpoint support for Network Security Groups (NSGs) is now in public preview. This feature enhancement will provide you with the ability to enable advanced security controls on traffic destined to a private endpoint. In order to leverage this feature, you will need to set a specific subnet level property, called PrivateEndpointNetworkPolicies, to Enabled. In addition to toggling this property, you will need to also register for the Microsoft.Network/AllowPrivateEndpointNSG feature (note that registation time may take up to 15mins).</p>
+<p>At this time, Private Link NSG Support is available in the following regions:</p>
+<p>UsEast2Euap, UsCentralEuap, WestCentralUS, WestUS, WestUS2, EastUS, EastUS2, Asiaeast, Australiaeast, Japaneast, Canadacentral, Europenorth, Koreacentral, Brazilsouth, Uksouth, US South, US North, France Central</p>
+<p>尝试在中国区启用（注册这一功能）时，会报错如下：</p>
+<p>如果能够成功注册上述2个功能，则关联到Private Endpoint的NSG就能够发挥作用了。</p></article>

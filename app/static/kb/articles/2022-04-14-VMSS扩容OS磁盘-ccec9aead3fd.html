@@ -1,0 +1,55 @@
+<article class="kb-article" data-title="VMSS扩容OS磁盘"><h1>VMSS扩容OS磁盘</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VMSS</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-04-14 13:25:30</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考命令</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考命令</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>设置后，新扩容的节点磁盘大小是扩容后的大小。</li>
+</ul>
+<ul>
+<li>现有节点需要 重置映像 后才能生效。</li>
+</ul>
+<ul>
+<li>由于重置映像本地数据会丢失，实例会重启。请先排空节点业务，然后再进行操作。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>参考命令</li>
+</ul>
+<ul>
+<li>az vmss update --name zlhvmss --resource-group vmss --set virtualMachineProfile.storageProfile.osDisk.diskSizeGb=40</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>建议先升级到最新模型，然后重置映像。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：<a href="https://docs.microsoft.com/en-us/cli/azure/vmss?view=azure-cli-latest#az-vmss-update" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/cli/azure/vmss?view=azure-cli-latest#az-vmss-update</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022-04-14</p>
+<p>参考命令</p>
+<p>az vmss update --name zlhvmss --resource-group vmss --set virtualMachineProfile.storageProfile.osDisk.diskSizeGb=40</p>
+<p>设置后，新扩容的节点磁盘大小是扩容后的大小。</p>
+<p>现有节点需要 重置映像 后才能生效。</p>
+<p>建议先升级到最新模型，然后重置映像。</p>
+<p>由于重置映像本地数据会丢失，实例会重启。请先排空节点业务，然后再进行操作。</p>
+<p>参考文档：<a href="https://docs.microsoft.com/en-us/cli/azure/vmss?view=azure-cli-latest#az-vmss-update" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/cli/azure/vmss?view=azure-cli-latest#az-vmss-update</a></p></article>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WATS KB</title>
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark">KB</div>
+        <div>
+          <h1>WATS KB</h1>
+          <p>NET / VM structured knowledge base</p>
+        </div>
+      </div>
+      <div class="search">
+        <input id="searchInput" type="search" placeholder="搜索标题、服务、命令、错误码..." autocomplete="off">
+      </div>
+      <div class="filters">
+        <button class="filter active" data-domain="ALL">全部</button>
+        <button class="filter" data-domain="NET">NET</button>
+        <button class="filter" data-domain="VM">VM</button>
+      </div>
+      <div id="serviceList" class="service-list"></div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div id="resultCount" class="result-count">Loading...</div>
+          <div id="activeHint" class="active-hint">选择一篇 KB 查看内容</div>
+        </div>
+        <button id="copyLink" class="ghost" type="button">复制链接</button>
+      </header>
+      <div class="content-shell">
+        <section id="resultList" class="result-list"></section>
+        <section class="reader">
+          <div id="articleMeta" class="article-meta"></div>
+          <div id="articleBody" class="article-body empty">
+            <h2>选择一篇 KB</h2>
+            <p>左侧搜索或按服务筛选，右侧会显示结构化内容。网页内文本可以直接选择复制。</p>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<article class="kb-article" data-title="【share】日志告警使用多个条件来判断(内存提交率和可用内存量)"><h1>【share】日志告警使用多个条件来判断(内存提交率和可用内存量)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-03-18 14:27:31</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>背景，客户向针对于自定义日志来设置 同时满足% Committed Bytes In Use 大于 多少且 Available Mbytes 小于多少时告警</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>背景，客户向针对于自定义日志来设置 同时满足% Committed Bytes In Use   大于  多少且 Available Mbytes 小于多少时告警</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>背景，客户向针对于自定义日志来设置 同时满足% Committed Bytes In Use   大于  多少且 Available Mbytes 小于多少时告警</li>
+</ul>
+<ul>
+<li>以下只是示例，请根据您的实际情况来设置测试</li>
+</ul>
+<ul>
+<li>例如：</li>
+</ul>
+<ul>
+<li>我为了测试方便。您可以根据实际需求来调整标黄的数值</li>
+</ul>
+<ul>
+<li>Perf</li>
+</ul>
+<ul>
+<li>| where ObjectName == &quot;Memory&quot;</li>
+</ul>
+<ul>
+<li>| where CounterName in (&quot;% Committed Bytes In Use&quot;, &quot;Available Bytes&quot;)</li>
+</ul>
+<ul>
+<li>| summarize</li>
+</ul>
+<ul>
+<li>by _ResourceId, Computer, bin(TimeGenerated, 5m)</li>
+</ul>
+<ul>
+<li>| where MaxCommittedBytes &gt; 20 and MinAvailableBytes &lt; 6703919104</li>
+</ul>
+<ul>
+<li>| order by TimeGenerated desc</li>
+</ul>
+<ul>
+<li>预览显示在CST 10:30-10:50 符合 % Committed Bytes In Use &gt;20 且Available Bytes &lt;6703919104</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>MaxCommittedBytes=maxif(CounterValue, CounterName == &quot;% Committed Bytes In Use&quot;),</li>
+</ul>
+<ul>
+<li>MinAvailableBytes=minif(CounterValue, CounterName == &quot;Available Bytes&quot;)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>背景，客户向针对于自定义日志来设置 同时满足% Committed Bytes In Use   大于  多少且 Available Mbytes 小于多少时告警</p>
+<p>以下只是示例，请根据您的实际情况来设置测试</p>
+<p>例如：</p>
+<p>我为了测试方便。您可以根据实际需求来调整标黄的数值</p>
+<p>Perf</p>
+<p>| where ObjectName == &quot;Memory&quot;</p>
+<p>| where CounterName in (&quot;% Committed Bytes In Use&quot;, &quot;Available Bytes&quot;)</p>
+<p>| summarize</p>
+<p>MaxCommittedBytes=maxif(CounterValue, CounterName == &quot;% Committed Bytes In Use&quot;),</p>
+<p>MinAvailableBytes=minif(CounterValue, CounterName == &quot;Available Bytes&quot;)</p>
+<p>by _ResourceId, Computer, bin(TimeGenerated, 5m)</p>
+<p>| where MaxCommittedBytes &gt; 20 and MinAvailableBytes &lt; 6703919104</p>
+<p>| order by TimeGenerated desc</p>
+<p>预览显示在CST 10:30-10:50 符合 % Committed Bytes In Use &gt;20 且Available Bytes &lt;6703919104</p></article>

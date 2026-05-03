@@ -1,0 +1,292 @@
+<article class="kb-article" data-title="【share】ingress nginx tcp代理"><h1>【share】ingress nginx tcp代理</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-12-05 14:24:32</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>测试完成以后发现前一个部署的tcp应用（mysql）无法通信，但新部署的tomcat 8080可以正常通信，因此猜测ingress-nginx 只能识别一个且最新的--tcp-services-configmap</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>测试完成以后发现前一个部署的tcp应用（mysql）无法通信，但新部署的tomcat 8080可以正常通信，因此猜测ingress-nginx 只能识别一个且最新的--tcp-services-configmap</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>客户需求</li>
+</ul>
+<ul>
+<li>一般情况下，ingress-nginx基于http/https协议进行转发，mysql访问需要使用tcp协议</li>
+</ul>
+<ul>
+<li>使能ingress-nginx支持tcp协议（deployment进行修改）</li>
+</ul>
+<ul>
+<li>配置对应的configmag，替代ingress规则</li>
+</ul>
+<ul>
+<li>经以上测试，测试部署的两个应用均能正常访问，同步到客户后，问题也得到解决</li>
+</ul>
+<ul>
+<li>总结：</li>
+</ul>
+<ul>
+<li>ingress-nginx支持tcp(两个应用进行的配置)</li>
+</ul>
+<ul>
+<li>Ingress-nginx deployment</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>containers:</li>
+</ul>
+<ul>
+<li>- args:</li>
+</ul>
+<ul>
+<li>- /nginx-ingress-controller</li>
+</ul>
+<ul>
+<li>- --publish-service=$(POD_NAMESPACE)/ingress-nginx-controller</li>
+</ul>
+<ul>
+<li>- --election-id=ingress-controller-leader</li>
+</ul>
+<ul>
+<li>- --controller-class=k8s.io/ingress-nginx</li>
+</ul>
+<ul>
+<li>- --ingress-class=nginx</li>
+</ul>
+<ul>
+<li>- --tcp-services-configmap=ingress-nginx/tcp-service</li>
+</ul>
+<ul>
+<li>Configmap，一般情况下直接新建即可，如有旧的，可以加一行data</li>
+</ul>
+<ul>
+<li>Configmap yaml</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: ConfigMap</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: tcp-service</li>
+</ul>
+<ul>
+<li>namespace: ingress-nginx</li>
+</ul>
+<ul>
+<li>data:</li>
+</ul>
+<ul>
+<li>8080: &quot;tomcat/tomcat:8080&quot;</li>
+</ul>
+<ul>
+<li>3306: &quot;ingress-nginx/mysql-svc:3306&quot;</li>
+</ul>
+<ul>
+<li>&lt;service port&gt;:&lt;namespace/service name&gt;:[PROXY]:[PROXY]</li>
+</ul>
+<ul>
+<li>Ingress-nginx svc</li>
+</ul>
+<ul>
+<li>ports:</li>
+</ul>
+<ul>
+<li>name: http</li>
+</ul>
+<ul>
+<li>nodePort: 31103</li>
+</ul>
+<ul>
+<li>port: 80</li>
+</ul>
+<ul>
+<li>targetPort: http</li>
+</ul>
+<ul>
+<li>name: https</li>
+</ul>
+<ul>
+<li>nodePort: 31578</li>
+</ul>
+<ul>
+<li>port: 443</li>
+</ul>
+<ul>
+<li>targetPort: https</li>
+</ul>
+<ul>
+<li>- name: tcp-services-3306</li>
+</ul>
+<ul>
+<li>nodePort: 30571</li>
+</ul>
+<ul>
+<li>port: 3306</li>
+</ul>
+<ul>
+<li>targetPort: 3306</li>
+</ul>
+<ul>
+<li>- name: tcp-services-8080</li>
+</ul>
+<ul>
+<li>nodePort: 31573</li>
+</ul>
+<ul>
+<li>port: 8080</li>
+</ul>
+<ul>
+<li>targetPort: 8080</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>麻烦排查下是因为什么情况造成的</li>
+</ul>
+<ul>
+<li>查看官网ingress-nginx支持tcp/udp: ingress-nginx/docs/user-guide/exposing-tcp-udp-services.md at main · kubernetes/ingress-nginx · GitHub</li>
+</ul>
+<ul>
+<li>配置步骤</li>
+</ul>
+<ul>
+<li>检查了下客户配置是没有问题的，注意到客户其实配置了两个tcp服务，在ingress-nginx deployment中添加了两行--tcp-services-configmap，然后重复以上步骤再次配置了一个tcp配置，（tomcat 8080）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>kubectl edit deployment ingress-nginx-controller -n ingress-nginx</li>
+</ul>
+<ul>
+<li>kubectl edit  svc ingress-nginx-controller  -n ingress-nginx</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>SR_20231129265465_通过外网无法连接到集群内部mysql (ingress-nginx已经增加相关端口配置)</li>
+</ul>
+<ul>
+<li>在ingress-nginx中已经增加相关部署和对应的3306端口</li>
+</ul>
+<ul>
+<li>ingress-nginx svc添加监听tcp端口</li>
+</ul>
+<ul>
+<li>Nginx-ingress svc 监听端口: 对应应用所在的命名空间/对应应用svc名称：应用监听端口</li>
+</ul>
+<ul>
+<li>- appProtocol: http</li>
+</ul>
+<ul>
+<li>protocol: TCP</li>
+</ul>
+<ul>
+<li>- appProtocol: https</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>但通过外网无法连接到集群内部mysql，相同的方式增加了rabbitmq 15672，就可以通过外网连接</li>
+</ul>
+<ul>
+<li>解决方案：ingress-nginx deployment中配置一个tcp configmag，在同一个configmap中配置多个data，</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>客户需求</p>
+<p>SR_20231129265465_通过外网无法连接到集群内部mysql (ingress-nginx已经增加相关端口配置)</p>
+<p>在ingress-nginx中已经增加相关部署和对应的3306端口</p>
+<p>但通过外网无法连接到集群内部mysql，相同的方式增加了rabbitmq 15672，就可以通过外网连接</p>
+<p>麻烦排查下是因为什么情况造成的</p>
+<p>一般情况下，ingress-nginx基于http/https协议进行转发，mysql访问需要使用tcp协议</p>
+<p>查看官网ingress-nginx支持tcp/udp: ingress-nginx/docs/user-guide/exposing-tcp-udp-services.md at main · kubernetes/ingress-nginx · GitHub</p>
+<p>配置步骤</p>
+<p>使能ingress-nginx支持tcp协议（deployment进行修改）</p>
+<p>配置对应的configmag，替代ingress规则</p>
+<p>ingress-nginx svc添加监听tcp端口</p>
+<p>检查了下客户配置是没有问题的，注意到客户其实配置了两个tcp服务，在ingress-nginx deployment中添加了两行--tcp-services-configmap，然后重复以上步骤再次配置了一个tcp配置，（tomcat 8080）</p>
+<p>测试完成以后发现前一个部署的tcp应用（mysql）无法通信，但新部署的tomcat 8080可以正常通信，因此猜测ingress-nginx 只能识别一个且最新的--tcp-services-configmap</p>
+<p>解决方案：ingress-nginx deployment中配置一个tcp configmag，在同一个configmap中配置多个data，</p>
+<p>经以上测试，测试部署的两个应用均能正常访问，同步到客户后，问题也得到解决</p>
+<p>总结：</p>
+<p>ingress-nginx支持tcp(两个应用进行的配置)</p>
+<p>Ingress-nginx deployment</p>
+<p>kubectl edit deployment ingress-nginx-controller -n ingress-nginx</p>
+<p>spec:</p>
+<p>containers:</p>
+<ul>
+<li>args:</li>
+</ul>
+<ul>
+<li>/nginx-ingress-controller</li>
+</ul>
+<ul>
+<li>--publish-service=$(POD_NAMESPACE)/ingress-nginx-controller</li>
+</ul>
+<ul>
+<li>--election-id=ingress-controller-leader</li>
+</ul>
+<ul>
+<li>--controller-class=k8s.io/ingress-nginx</li>
+</ul>
+<ul>
+<li>--ingress-class=nginx</li>
+</ul>
+<ul>
+<li>--tcp-services-configmap=ingress-nginx/tcp-service</li>
+</ul>
+<p>Configmap，一般情况下直接新建即可，如有旧的，可以加一行data</p>
+<p>Configmap yaml</p>
+<p>apiVersion: v1</p>
+<p>kind: ConfigMap</p>
+<p>metadata:</p>
+<p>name: tcp-service</p>
+<p>namespace: ingress-nginx</p>
+<p>data:</p>
+<p>8080: &quot;tomcat/tomcat:8080&quot;</p>
+<p>3306: &quot;ingress-nginx/mysql-svc:3306&quot;</p>
+<p>&lt;service port&gt;:&lt;namespace/service name&gt;:[PROXY]:[PROXY]</p>
+<p>Nginx-ingress svc 监听端口: 对应应用所在的命名空间/对应应用svc名称：应用监听端口</p>
+<p>Ingress-nginx svc</p>
+<p>kubectl edit  svc ingress-nginx-controller  -n ingress-nginx</p>
+<p>ports:</p>
+<ul>
+<li>appProtocol: http</li>
+</ul>
+<p>name: http</p>
+<p>nodePort: 31103</p>
+<p>port: 80</p>
+<p>protocol: TCP</p>
+<p>targetPort: http</p>
+<ul>
+<li>appProtocol: https</li>
+</ul>
+<p>name: https</p>
+<p>nodePort: 31578</p>
+<p>port: 443</p>
+<p>targetPort: https</p>
+<ul>
+<li>name: tcp-services-3306</li>
+</ul>
+<p>nodePort: 30571</p>
+<p>port: 3306</p>
+<p>targetPort: 3306</p>
+<ul>
+<li>name: tcp-services-8080</li>
+</ul>
+<p>nodePort: 31573</p>
+<p>port: 8080</p>
+<p>targetPort: 8080</p></article>

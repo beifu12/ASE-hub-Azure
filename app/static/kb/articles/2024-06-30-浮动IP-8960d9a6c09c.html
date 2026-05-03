@@ -1,0 +1,194 @@
+<article class="kb-article" data-title="浮动IP"><h1>浮动IP</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LB</li>
+<li>Section: 标准话术</li>
+<li>最近修改: 2024-06-30 14:35:00</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>smtp_connect_timeout 30</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>smtp_connect_timeout 30</li>
+</ul>
+<ul>
+<li>但是这个虚拟出来的Ip地址，不会被平台识别，其他虚拟机无法ping通该IP。我在另外一台虚拟机上做了测试</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>同时，官方在Github上也有类似文章。这个相对复杂一点，在应用的前端使用keepalived+HAProxy, 应用服务放在HAProxy之后。</li>
+</ul>
+<ul>
+<li>下面的连接是Fred在官方的repo中做了一定修改的版本，供参考：</li>
+</ul>
+<ul>
+<li>关于Keepalived+Apache的简单示例：</li>
+</ul>
+<ul>
+<li>两台虚拟机的内网地址是192.168.10.6和192.168.10.7</li>
+</ul>
+<ul>
+<li>1、对于CentOS 6.x可以yum安装keepalived</li>
+</ul>
+<ul>
+<li>yum install -y keepalived</li>
+</ul>
+<ul>
+<li>2、安装完成之后，在/ect/keepalived/下有配置文件keepalived.conf。。主要部分修改如下：</li>
+</ul>
+<ul>
+<li>! Configuration File for keepalived</li>
+</ul>
+<ul>
+<li>global_defs {</li>
+</ul>
+<ul>
+<li>notification_email {</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>notification_email_from Alexandre.Cassen@firewall.loc</li>
+</ul>
+<ul>
+<li>smtp_server 192.168.200.1</li>
+</ul>
+<ul>
+<li>router_id fuzlhavm01  #router id每个成员必须使用一个唯一值</li>
+</ul>
+<ul>
+<li>vrrp_instance VI_1 {</li>
+</ul>
+<ul>
+<li>state MASTER</li>
+</ul>
+<ul>
+<li>interface eth0</li>
+</ul>
+<ul>
+<li>virtual_router_id 51</li>
+</ul>
+<ul>
+<li>priority 100</li>
+</ul>
+<ul>
+<li>advert_int 1</li>
+</ul>
+<ul>
+<li>authentication {</li>
+</ul>
+<ul>
+<li>auth_type PASS</li>
+</ul>
+<ul>
+<li>auth_pass 1111</li>
+</ul>
+<ul>
+<li>unicast_src_ip 192.168.10.6</li>
+</ul>
+<ul>
+<li>unicast_peer {</li>
+</ul>
+<ul>
+<li>192.168.10.7</li>
+</ul>
+<ul>
+<li>}                                              /由于Azure Vnet不支持组播和广播，因此需要将VRRP的通告信息改为单播发送</li>
+</ul>
+<ul>
+<li>virtual_ipaddress {</li>
+</ul>
+<ul>
+<li>192.168.10.220/24   dev eth0 label eth0:0          /定义的虚拟浮动IP地址</li>
+</ul>
+<ul>
+<li>3、在两台机器上安装完成之后，可以看到一主一从,已经能实现虚拟IP的转移</li>
+</ul>
+<ul>
+<li>其中fuzlhavm01为主服务器，fuzlhavm02为备用服务器</li>
+</ul>
+<ul>
+<li>配置负载均衡器的探测：</li>
+</ul>
+<ul>
+<li>负载均衡器规则需要启用服务器返回</li>
+</ul>
+<ul>
+<li>如果Azure的探测认为Baclkup上的服务状态是down的,那么ILB就不会将客户端的请求转发到Backup节点，只会转发到Master节点，这就是正常的。</li>
+</ul>
+<ul>
+<li>5、在客户端访问ILB的地址。得到master的页面。</li>
+</ul>
+<ul>
+<li>当master 变成down后，keepalived 转移Floating IP到backup节点，并启动backup上的服务。得到backup上的页面。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>至于为什么需要让Azure的探测认为Baclkup上的服务状态是down的？这得从ILB的探测机制说起，ILB会采用Http和TCP进行探测，该探测会检查后端地址池虚拟机的服务状态。如果Backup（s）节点服务也是UP的，因此ILB会认为您的Backup(S)节点也是OK的，这就造成ILB会将客户端请求的流量转发到S。但是backup（S）上是没有浮动IP的，因此会造成ILB访问backup(S)节点失败。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>注意：我们的服务需要在master上运行，在backup上不能运行（主要是需要让Azure的探测认为Baclkup上的服务状态是down的）。当备用节点探测到主节点down时，Keepalived 的配置自动迁移Floating IP和启动backup上服务的脚本，均需要在虚拟机上自行配置，比如可以使用脚本来完成转移。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>4、在ILB上将ILB的地址配置为192.168.10.220,就可以用ILB来访问部署的服务。需要启用负载平衡规则的服务器返回选项</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>很高兴和您电话沟通，经过刚才的沟通，我们了解到您目前是想寻求使用Azure的SLB，同时实现后端虚拟机上的服务一主一备的方法。经我们研究后，发现可以通过开启SLB的DSR（Direct Server Return，ARM的负载均衡器中叫“浮动IP”），结合在后端机器上配置keepalived来实现。Keepalived在这里的主要功能是将浮动IP绑定到虚拟机上，并通过一定的探测机制，来决定主备关系。以下是网上的相关文章，使用的是keepalived+Apache，供参考。您也可以参考我们下面的测试。<a href="http://www.cnblogs.com/hunterxue/archive/2016/05/06/5464879.html" target="_blank" rel="noopener">http://www.cnblogs.com/hunterxue/archive/2016/05/06/5464879.html</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/xianl/Mooncake/tree/master/haproxy-redundant-floatingip-ubuntu" target="_blank" rel="noopener">https://github.com/xianl/Mooncake/tree/master/haproxy-redundant-floatingip-ubuntu</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>很高兴和您电话沟通，经过刚才的沟通，我们了解到您目前是想寻求使用Azure的SLB，同时实现后端虚拟机上的服务一主一备的方法。经我们研究后，发现可以通过开启SLB的DSR（Direct Server Return，ARM的负载均衡器中叫“浮动IP”），结合在后端机器上配置keepalived来实现。Keepalived在这里的主要功能是将浮动IP绑定到虚拟机上，并通过一定的探测机制，来决定主备关系。以下是网上的相关文章，使用的是keepalived+Apache，供参考。您也可以参考我们下面的测试。<a href="http://www.cnblogs.com/hunterxue/archive/2016/05/06/5464879.html" target="_blank" rel="noopener">http://www.cnblogs.com/hunterxue/archive/2016/05/06/5464879.html</a></p>
+<p>同时，官方在Github上也有类似文章。这个相对复杂一点，在应用的前端使用keepalived+HAProxy, 应用服务放在HAProxy之后。</p>
+<p>下面的连接是Fred在官方的repo中做了一定修改的版本，供参考：</p>
+<p><a href="https://github.com/xianl/Mooncake/tree/master/haproxy-redundant-floatingip-ubuntu" target="_blank" rel="noopener">https://github.com/xianl/Mooncake/tree/master/haproxy-redundant-floatingip-ubuntu</a></p>
+<p>关于Keepalived+Apache的简单示例：</p>
+<p>两台虚拟机的内网地址是192.168.10.6和192.168.10.7</p>
+<p>1、对于CentOS 6.x可以yum安装keepalived</p>
+<p>yum install -y keepalived</p>
+<p>2、安装完成之后，在/ect/keepalived/下有配置文件keepalived.conf。。主要部分修改如下：</p>
+<p>! Configuration File for keepalived</p>
+<p>global_defs {</p>
+<p>notification_email {</p>
+<p>}</p>
+<p>notification_email_from Alexandre.Cassen@firewall.loc</p>
+<p>smtp_server 192.168.200.1</p>
+<p>smtp_connect_timeout 30</p>
+<p>router_id fuzlhavm01  #router id每个成员必须使用一个唯一值</p>
+<p>vrrp_instance VI_1 {</p>
+<p>state MASTER</p>
+<p>interface eth0</p>
+<p>virtual_router_id 51</p>
+<p>priority 100</p>
+<p>advert_int 1</p>
+<p>authentication {</p>
+<p>auth_type PASS</p>
+<p>auth_pass 1111</p>
+<p>unicast_src_ip 192.168.10.6</p>
+<p>unicast_peer {</p>
+<p>192.168.10.7</p>
+<p>}                                              /由于Azure Vnet不支持组播和广播，因此需要将VRRP的通告信息改为单播发送</p>
+<p>virtual_ipaddress {</p>
+<p>192.168.10.220/24   dev eth0 label eth0:0          /定义的虚拟浮动IP地址</p>
+<p>3、在两台机器上安装完成之后，可以看到一主一从,已经能实现虚拟IP的转移</p>
+<p>其中fuzlhavm01为主服务器，fuzlhavm02为备用服务器</p>
+<p>但是这个虚拟出来的Ip地址，不会被平台识别，其他虚拟机无法ping通该IP。我在另外一台虚拟机上做了测试</p>
+<p>4、在ILB上将ILB的地址配置为192.168.10.220,就可以用ILB来访问部署的服务。需要启用负载平衡规则的服务器返回选项</p>
+<p>配置负载均衡器的探测：</p>
+<p>负载均衡器规则需要启用服务器返回</p>
+<p>注意：我们的服务需要在master上运行，在backup上不能运行（主要是需要让Azure的探测认为Baclkup上的服务状态是down的）。当备用节点探测到主节点down时，Keepalived 的配置自动迁移Floating IP和启动backup上服务的脚本，均需要在虚拟机上自行配置，比如可以使用脚本来完成转移。</p>
+<p>至于为什么需要让Azure的探测认为Baclkup上的服务状态是down的？这得从ILB的探测机制说起，ILB会采用Http和TCP进行探测，该探测会检查后端地址池虚拟机的服务状态。如果Backup（s）节点服务也是UP的，因此ILB会认为您的Backup(S)节点也是OK的，这就造成ILB会将客户端请求的流量转发到S。但是backup（S）上是没有浮动IP的，因此会造成ILB访问backup(S)节点失败。</p>
+<p>如果Azure的探测认为Baclkup上的服务状态是down的,那么ILB就不会将客户端的请求转发到Backup节点，只会转发到Master节点，这就是正常的。</p>
+<p>5、在客户端访问ILB的地址。得到master的页面。</p>
+<p>当master 变成down后，keepalived 转移Floating IP到backup节点，并启动backup上的服务。得到backup上的页面。</p></article>

@@ -1,0 +1,118 @@
+<article class="kb-article" data-title="【Share】openclaw的手足——Skills的安装和使用"><h1>【Share】openclaw的手足——Skills的安装和使用</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2026-03-11 13:43:00</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>如果将大模型比作头脑，openclaw就算是给这个头脑匹配了一个可以行动的身体，而Skills就是Openclaw真正进行行动的手足了。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>如果将大模型比作头脑，openclaw就算是给这个头脑匹配了一个可以行动的身体，而Skills就是Openclaw真正进行行动的手足了。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>如果将大模型比作头脑，openclaw就算是给这个头脑匹配了一个可以行动的身体，而Skills就是Openclaw真正进行行动的手足了。</li>
+</ul>
+<ul>
+<li>我将分享Skills的获取和安装，以及skills能够达成什么样的效果。</li>
+</ul>
+<ul>
+<li>注意！openclaw的强大在于它能够获取足够高的权限操作您的机器，如果给它联网还提供了您的个人信息，它也有可能会危害到您的个人信息或者财产安全。</li>
+</ul>
+<ul>
+<li>Skills的开发目前也缺少权威的安全审计，请尽量保持运行环境的封闭</li>
+</ul>
+<ul>
+<li>这个仓库是 OpenClaw（原 Clawdbot/Moltbot）的公共技能仓库，它提供免费服务，支持用户通过网页或 CLI 工具便捷浏览、搜索、安装、更新和发布以 SKILL.md 为核心的文本技能包，实现 AI 能力扩展</li>
+</ul>
+<ul>
+<li>安装clawhub：npm i -g clawhub</li>
+</ul>
+<ul>
+<li>请注意，比如大家想接入outlook发送邮件，发现有两个同名的Skills，一定要根据后面的“/&lt;skill-slug&gt;”区分</li>
+</ul>
+<ul>
+<li>这样也是防止下到同名恶意skills。</li>
+</ul>
+<ul>
+<li>也可以clawhub search搜索</li>
+</ul>
+<ul>
+<li>这里也推荐这两个SKills：find-skills和skill-creator，非常好用</li>
+</ul>
+<ul>
+<li>安装和使用：clawhub install &lt;skill-slug&gt;</li>
+</ul>
+<ul>
+<li>然后就可以问提示词来调用这些skills喽：</li>
+</ul>
+<ul>
+<li>问题来了，openclaw如何联网呢？</li>
+</ul>
+<ul>
+<li>我实际测试了一下，它默认支持的brave search api需要绑定信用卡，每个月提供2000免费搜索额度，但可惜的是目前已经被墙了</li>
+</ul>
+<ul>
+<li>可以使用skills：/tavily-search 来联网，每个月1000免费额度</li>
+</ul>
+<ul>
+<li>对了，推荐一下阿里云百炼，注册即送100+大模型的免费额度，包括qwen3-max、deepseek-v3.2等，每个模型都有一百万额度（虽然也不够用），想白嫖的话记得打开免费额度用完即停</li>
+</ul>
+<ul>
+<li>问问您的大模型：</li>
+</ul>
+<ul>
+<li>如果我想洗车，洗车店离我50m，我应该走过去还是开车去？</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>用clawhub list可以查看当前你安装的skills</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>搜索想要安装的skills：可以点击browse skills去搜索Skills（建议按安装量排序）：</li>
+</ul>
+<ul>
+<li>建议安装在.openclaw文件夹下，这样它会自动创建.openclaw/skills文件夹，以更高优先级调用。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>首先介绍一个Skills仓库ClawHub：<a href="https://clawhub.ai/" target="_blank" rel="noopener">https://clawhub.ai/</a></li>
+</ul>
+<ul>
+<li>也推荐一个github，它精选了clawhub中的skills，并根据用途进行了分类：<a href="https://github.com/VoltAgent/awesome-openclaw-skills" target="_blank" rel="noopener">https://github.com/VoltAgent/awesome-openclaw-skills</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>如果将大模型比作头脑，openclaw就算是给这个头脑匹配了一个可以行动的身体，而Skills就是Openclaw真正进行行动的手足了。</p>
+<p>我将分享Skills的获取和安装，以及skills能够达成什么样的效果。</p>
+<p>注意！openclaw的强大在于它能够获取足够高的权限操作您的机器，如果给它联网还提供了您的个人信息，它也有可能会危害到您的个人信息或者财产安全。</p>
+<p>Skills的开发目前也缺少权威的安全审计，请尽量保持运行环境的封闭</p>
+<p>首先介绍一个Skills仓库ClawHub：<a href="https://clawhub.ai/" target="_blank" rel="noopener">https://clawhub.ai/</a></p>
+<p>这个仓库是 OpenClaw（原 Clawdbot/Moltbot）的公共技能仓库，它提供免费服务，支持用户通过网页或 CLI 工具便捷浏览、搜索、安装、更新和发布以 SKILL.md 为核心的文本技能包，实现 AI 能力扩展</p>
+<p>也推荐一个github，它精选了clawhub中的skills，并根据用途进行了分类：<a href="https://github.com/VoltAgent/awesome-openclaw-skills" target="_blank" rel="noopener">https://github.com/VoltAgent/awesome-openclaw-skills</a></p>
+<p>安装clawhub：npm i -g clawhub</p>
+<p>搜索想要安装的skills：可以点击browse skills去搜索Skills（建议按安装量排序）：</p>
+<p>请注意，比如大家想接入outlook发送邮件，发现有两个同名的Skills，一定要根据后面的“/&lt;skill-slug&gt;”区分</p>
+<p>这样也是防止下到同名恶意skills。</p>
+<p>也可以clawhub search搜索</p>
+<p>用clawhub list可以查看当前你安装的skills</p>
+<p>这里也推荐这两个SKills：find-skills和skill-creator，非常好用</p>
+<p>安装和使用：clawhub install &lt;skill-slug&gt;</p>
+<p>建议安装在.openclaw文件夹下，这样它会自动创建.openclaw/skills文件夹，以更高优先级调用。</p>
+<p>然后就可以问提示词来调用这些skills喽：</p>
+<p>问题来了，openclaw如何联网呢？</p>
+<p>我实际测试了一下，它默认支持的brave search api需要绑定信用卡，每个月提供2000免费搜索额度，但可惜的是目前已经被墙了</p>
+<p>可以使用skills：/tavily-search 来联网，每个月1000免费额度</p>
+<p>对了，推荐一下阿里云百炼，注册即送100+大模型的免费额度，包括qwen3-max、deepseek-v3.2等，每个模型都有一百万额度（虽然也不够用），想白嫖的话记得打开免费额度用完即停</p>
+<p>问问您的大模型：</p>
+<p>如果我想洗车，洗车店离我50m，我应该走过去还是开车去？</p></article>

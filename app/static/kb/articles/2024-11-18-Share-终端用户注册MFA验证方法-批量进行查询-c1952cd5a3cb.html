@@ -1,0 +1,130 @@
+<article class="kb-article" data-title="[Share] | 终端用户注册MFA验证方法，批量进行查询"><h1>[Share] | 终端用户注册MFA验证方法，批量进行查询</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-18 13:25:42</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>终端用户如何自主注册MFA</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>++++++++++++++++++++++++++++++++++++++++++++++++++</li>
+</ul>
+<ul>
+<li>Install-Module MSOnline -Force</li>
+</ul>
+<ul>
+<li>Connect-MsolService -AzureEnvironment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>$Users = Get-MsolUser</li>
+</ul>
+<ul>
+<li>foreach ( $user in $Users ) {</li>
+</ul>
+<ul>
+<li>$StrongMethods = $user.StrongAuthenticationMethods.MethodType</li>
+</ul>
+<ul>
+<li>foreach($Method in $StrongMethods) { $user.UserPrincipalName + &quot;  :  &quot;+ $Method }</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</li>
+</ul>
+<ul>
+<li>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</li>
+</ul>
+<ul>
+<li>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</li>
+</ul>
+<ul>
+<li>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</li>
+</ul>
+<ul>
+<li>###统计账号数量：</li>
+</ul>
+<ul>
+<li>PS C:\Users\leo&gt; Get-MsolUser | Measure-Object -Line | Select-Object -expandProperty Lines</li>
+</ul>
+<ul>
+<li>410</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>通过下方Powershell脚本命令导出的结果报告中可看到用户具体注册的MFA方法。</li>
+</ul>
+<ul>
+<li>该命令会导出组织内所有用户的注册的MFA认证方式，如下方截图用户注册了3种方式：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<ul>
+<li>当前Azure China还不支持终端用户自主启用MFA. 您可建议终端用户可以通过下方连接使用O365账号登录后，提前添加用于MFA认证的登录方式：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://account.activedirectory.windowsazure.cn/proofup.aspx?proofup=1" target="_blank" rel="noopener">https://account.activedirectory.windowsazure.cn/proofup.aspx?proofup=1</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Jia.Xiaolei</p>
+<p>问题描述：</p>
+<p>=======</p>
+<p>终端用户如何自主注册MFA</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>当前Azure China还不支持终端用户自主启用MFA. 您可建议终端用户可以通过下方连接使用O365账号登录后，提前添加用于MFA认证的登录方式：</p>
+<p><a href="https://account.activedirectory.windowsazure.cn/proofup.aspx?proofup=1" target="_blank" rel="noopener">https://account.activedirectory.windowsazure.cn/proofup.aspx?proofup=1</a></p>
+<p>通过下方Powershell脚本命令导出的结果报告中可看到用户具体注册的MFA方法。</p>
+<p>++++++++++++++++++++++++++++++++++++++++++++++++++</p>
+<p>Install-Module MSOnline -Force</p>
+<p>Connect-MsolService -AzureEnvironment AzureChinaCloud</p>
+<p>$Users = Get-MsolUser</p>
+<p>foreach ( $user in $Users ) {</p>
+<p>$StrongMethods = $user.StrongAuthenticationMethods.MethodType</p>
+<p>foreach($Method in $StrongMethods) { $user.UserPrincipalName + &quot;  :  &quot;+ $Method }</p>
+<p>}</p>
+<p>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</p>
+<p>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</p>
+<p>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</p>
+<p>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</p>
+<p>该命令会导出组织内所有用户的注册的MFA认证方式，如下方截图用户注册了3种方式：</p>
+<p>###统计账号数量：</p>
+<p>PS C:\Users\leo&gt; Get-MsolUser | Measure-Object -Line | Select-Object -expandProperty Lines</p>
+<p>410</p></article>

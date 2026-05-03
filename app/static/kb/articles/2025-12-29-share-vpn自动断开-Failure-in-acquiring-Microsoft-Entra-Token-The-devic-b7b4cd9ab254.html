@@ -1,0 +1,113 @@
+<article class="kb-article" data-title="【share】vpn自动断开 - Failure in acquiring Microsoft Entra Token. The device that is required by this cyptographic provider is not ready for use"><h1>【share】vpn自动断开 - Failure in acquiring Microsoft Entra Token. The device that is required by this cyptographic provider is not ready for use</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-29 19:52:09</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户在P2S连接成功后(采用entra登陆方式)，过不了多久就会出现自动断连的现象，断连后client报错信息： Failure in acquiring Microsoft Entra Token. The device that is required by this cyptographic provider is not ready for use</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户在P2S连接成功后(采用entra登陆方式)，过不了多久就会出现自动断连的现象，断连后client报错信息： Failure in acquiring Microsoft Entra Token. The device that is required by this cyptographic provider is not ready for use</li>
+</ul>
+<ul>
+<li>协助客户进行VPN客户端信息的重新导入，再次连接后发生TPM报错，判断主要是客户端没有在BIOS开启该功能。相关介绍：排除 TPM 故障 | Microsoft Learn</li>
+</ul>
+<ul>
+<li>PipeServer: Message from client: {&quot;PipeCommand&quot;:0,&quot;PipeData&quot;:&quot;{\&quot;ProfileName\&quot;:\&quot;HUB-VNET-CN3-PRD\&quot;,\&quot;FailureReason\&quot;:\&quot;Failure in acquiring Microsoft Entra Token: Keyset does not exist\&quot;,\&quot;FailureErrorCode\&quot;:-2146893802,\&quot;FailureCategory\&quot;:\&quot;Authentication\&quot;,\&quot;ConnectionStatus\&quot;:14,\&quot;AssignedIP\&quot;:\&quot;172.16.248.3\&quot;,\&quot;ConnectTriggerTimeStamp\&quot;:1.3408683289963424E+17,\&quot;GatewayVip\&quot;:\&quot;159.27.118.115\&quot;,\&quot;RouteList\&quot;:\&quot;172.16.32.0/21\\r\\n10.224.229.0/24\\r\\n172.16.8.0/21\\r\\n172.16.0.0/21\\r\\n172.16.16.0/21\\r\\n172.16.248.0/24\\r\\n\&quot;,\&quot;DNSServerList\&quot;:\&quot;\&quot;,\&quot;ConnectionId\&quot;:\&quot;{81c0294a-956e-447d-b4d8-8ed463e2ec72}\&quot;}&quot;}</li>
+</ul>
+<ul>
+<li>针对于这个报错，官方也给出了相应的描述，</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考工单：SR_20251124383913_vpn总是自动断开</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>开启TPM后，虽然恢复了一阵连接，但是后续再次复现问题。</li>
+</ul>
+<ul>
+<li>删除并重建用户级别 DPAPI 密钥缓存</li>
+</ul>
+<ul>
+<li>打开 Credential Manager（凭据管理器）</li>
+</ul>
+<ul>
+<li>打开“设置 → 账户 → 访问工作或学校”</li>
+</ul>
+<ul>
+<li>找到你的工作帐户（Azure AD）点击 断开连接</li>
+</ul>
+<ul>
+<li>Azure VPN Client重新登录并重新导入连接配置</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查步骤：</li>
+</ul>
+<ul>
+<li>确认其他用户是否有该问题情况，经过测试，确认没有复现客户问题。</li>
+</ul>
+<ul>
+<li>确认客户的其他设备进行连接没有出现该问题，因此判断主要问题出于问题设备下。</li>
+</ul>
+<ul>
+<li>根据报错信息，判断与entra token的缓存存在联系，因此排查了客户用于缓存token的相关系统配置。</li>
+</ul>
+<ul>
+<li>收集客户的P2S 客户端信息，查看到日志中有新的报错内容：</li>
+</ul>
+<ul>
+<li>由于目前您的TPM已经开启，则需要检查一下本地的登陆账号情况，可以先检查一下对应的Azure 账户是否有添加到本机的work or school account当中。如果没有，请先手动connect上对应的azure 账户。</li>
+</ul>
+<ul>
+<li>客户确认账号是有正常添加的，并且重新进行了connect，但是没有缓解问题的情况。</li>
+</ul>
+<ul>
+<li>删除与 Azure VPN 客户端相关的所有凭据(与azure portal账号相关项)</li>
+</ul>
+<ul>
+<li>最终客户确认，采用删除Windows Credential的方式，在重新在连接P2S时，重新进行登陆后，恢复了正常，不再复现断连问题。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>为了进一步确认相关的缓存信息没有进行影响，建议客户：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/29</p>
+<p>参考工单：SR_20251124383913_vpn总是自动断开</p>
+<p>问题描述：</p>
+<p>客户在P2S连接成功后(采用entra登陆方式)，过不了多久就会出现自动断连的现象，断连后client报错信息： Failure in acquiring Microsoft Entra Token. The device that is required by this cyptographic provider is not ready for use</p>
+<p>排查步骤：</p>
+<p>确认其他用户是否有该问题情况，经过测试，确认没有复现客户问题。</p>
+<p>确认客户的其他设备进行连接没有出现该问题，因此判断主要问题出于问题设备下。</p>
+<p>根据报错信息，判断与entra token的缓存存在联系，因此排查了客户用于缓存token的相关系统配置。</p>
+<p>协助客户进行VPN客户端信息的重新导入，再次连接后发生TPM报错，判断主要是客户端没有在BIOS开启该功能。相关介绍：排除 TPM 故障 | Microsoft Learn</p>
+<p>开启TPM后，虽然恢复了一阵连接，但是后续再次复现问题。</p>
+<p>收集客户的P2S 客户端信息，查看到日志中有新的报错内容：</p>
+<p>PipeServer: Message from client: {&quot;PipeCommand&quot;:0,&quot;PipeData&quot;:&quot;{\&quot;ProfileName\&quot;:\&quot;HUB-VNET-CN3-PRD\&quot;,\&quot;FailureReason\&quot;:\&quot;Failure in acquiring Microsoft Entra Token: Keyset does not exist\&quot;,\&quot;FailureErrorCode\&quot;:-2146893802,\&quot;FailureCategory\&quot;:\&quot;Authentication\&quot;,\&quot;ConnectionStatus\&quot;:14,\&quot;AssignedIP\&quot;:\&quot;172.16.248.3\&quot;,\&quot;ConnectTriggerTimeStamp\&quot;:1.3408683289963424E+17,\&quot;GatewayVip\&quot;:\&quot;159.27.118.115\&quot;,\&quot;RouteList\&quot;:\&quot;172.16.32.0/21\\r\\n10.224.229.0/24\\r\\n172.16.8.0/21\\r\\n172.16.0.0/21\\r\\n172.16.16.0/21\\r\\n172.16.248.0/24\\r\\n\&quot;,\&quot;DNSServerList\&quot;:\&quot;\&quot;,\&quot;ConnectionId\&quot;:\&quot;{81c0294a-956e-447d-b4d8-8ed463e2ec72}\&quot;}&quot;}</p>
+<p>针对于这个报错，官方也给出了相应的描述，</p>
+<p>由于目前您的TPM已经开启，则需要检查一下本地的登陆账号情况，可以先检查一下对应的Azure 账户是否有添加到本机的work or school account当中。如果没有，请先手动connect上对应的azure 账户。</p>
+<p>客户确认账号是有正常添加的，并且重新进行了connect，但是没有缓解问题的情况。</p>
+<p>为了进一步确认相关的缓存信息没有进行影响，建议客户：</p>
+<p>删除并重建用户级别 DPAPI 密钥缓存</p>
+<p>打开 Credential Manager（凭据管理器）</p>
+<p>删除与 Azure VPN 客户端相关的所有凭据(与azure portal账号相关项)</p>
+<p>打开“设置 → 账户 → 访问工作或学校”</p>
+<p>找到你的工作帐户（Azure AD）点击 断开连接</p>
+<p>Azure VPN Client重新登录并重新导入连接配置</p>
+<p>最终客户确认，采用删除Windows Credential的方式，在重新在连接P2S时，重新进行登陆后，恢复了正常，不再复现断连问题。</p></article>

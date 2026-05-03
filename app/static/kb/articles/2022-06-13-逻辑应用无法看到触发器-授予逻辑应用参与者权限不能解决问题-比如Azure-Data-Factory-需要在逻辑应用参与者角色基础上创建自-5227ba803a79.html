@@ -1,0 +1,112 @@
+<article class="kb-article" data-title="逻辑应用无法看到触发器，授予逻辑应用参与者权限不能解决问题，比如Azure Data Factory。需要在逻辑应用参与者角色基础上创建自定义角色"><h1>逻辑应用无法看到触发器，授予逻辑应用参与者权限不能解决问题，比如Azure Data Factory。需要在逻辑应用参与者角色基础上创建自定义角色</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: logic app</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-06-13 15:54:19</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户在查看连接器的Triggers和Actions时，提示We couldn’t find any actions。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户在查看连接器的Triggers和Actions时，提示We couldn’t find any actions。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>客户是资源组的参与者。</li>
+</ul>
+<ul>
+<li>根据我们的支持经验，账户如果需要使用逻辑应用，至少需要在订阅层面分配给账户逻辑应用参与者的角色。</li>
+</ul>
+<ul>
+<li>因此，在逻辑应用参与者角色的基础上添加另外的一些权限，创建一个自定义角色，并在订阅层面赋予相应的账户。</li>
+</ul>
+<ul>
+<li>该账户才能搜索Triggers和Actions。</li>
+</ul>
+<ul>
+<li>创建自定义角色的过程如下：</li>
+</ul>
+<ul>
+<li>1．在门户中搜索 订阅，然后点击 访问控制 - 添加 - 添加自定义角色。</li>
+</ul>
+<ul>
+<li>基于权限，选择 克隆角色</li>
+</ul>
+<ul>
+<li>要克隆的角色，选择 逻辑应用参与者</li>
+</ul>
+<ul>
+<li>然后  点击 下一步</li>
+</ul>
+<ul>
+<li>3．选择 +添加权限</li>
+</ul>
+<ul>
+<li>4．搜索managedapis</li>
+</ul>
+<ul>
+<li>5.  参考下图选择权限，然后添加</li>
+</ul>
+<ul>
+<li>6．跟随提示创建，会有如下提示。</li>
+</ul>
+<ul>
+<li>7． 根据提示的内容，返回并删除Microsoft.Support/*，然后跟随提示继续创建即可。</li>
+</ul>
+<ul>
+<li>8．等待几分钟后，就可以在门户中找到此角色。</li>
+</ul>
+<ul>
+<li>接下来，</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>客户在查看连接器的Triggers和Actions时，提示We couldn’t find any actions。</li>
+</ul>
+<ul>
+<li>根据您的需求，您需要使用Azure Date Factory连接器。我们查看使用该连接器还需要权限Microsoft.Web/locations</li>
+</ul>
+<ul>
+<li>2．输入自定义角色名称，以logicapptrigger为例。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>分配角色，请您参考：<a href="https://docs.azure.cn/zh-cn/role-based-access-control/role-assignments-portal?tabs=current" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/role-based-access-control/role-assignments-portal?tabs=current</a></li>
+</ul>
+<ul>
+<li>其他参考：逻辑应用参与者角色权限<a href="https://docs.azure.cn/zh-cn/role-based-access-control/built-in-roles#logic-app-contributor" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/role-based-access-control/built-in-roles#logic-app-contributor</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022/06/13</p>
+<p>客户在查看连接器的Triggers和Actions时，提示We couldn’t find any actions。</p>
+<p>客户是资源组的参与者。</p>
+<p>根据我们的支持经验，账户如果需要使用逻辑应用，至少需要在订阅层面分配给账户逻辑应用参与者的角色。</p>
+<p>根据您的需求，您需要使用Azure Date Factory连接器。我们查看使用该连接器还需要权限Microsoft.Web/locations</p>
+<p>因此，在逻辑应用参与者角色的基础上添加另外的一些权限，创建一个自定义角色，并在订阅层面赋予相应的账户。</p>
+<p>该账户才能搜索Triggers和Actions。</p>
+<p>创建自定义角色的过程如下：</p>
+<p>1．在门户中搜索 订阅，然后点击 访问控制 - 添加 - 添加自定义角色。</p>
+<p>2．输入自定义角色名称，以logicapptrigger为例。</p>
+<p>基于权限，选择 克隆角色</p>
+<p>要克隆的角色，选择 逻辑应用参与者</p>
+<p>然后  点击 下一步</p>
+<p>3．选择 +添加权限</p>
+<p>4．搜索managedapis</p>
+<p>5.  参考下图选择权限，然后添加</p>
+<p>6．跟随提示创建，会有如下提示。</p>
+<p>7． 根据提示的内容，返回并删除Microsoft.Support/*，然后跟随提示继续创建即可。</p>
+<p>8．等待几分钟后，就可以在门户中找到此角色。</p>
+<p>接下来，</p>
+<p>分配角色，请您参考：<a href="https://docs.azure.cn/zh-cn/role-based-access-control/role-assignments-portal?tabs=current" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/role-based-access-control/role-assignments-portal?tabs=current</a></p>
+<p>其他参考：逻辑应用参与者角色权限<a href="https://docs.azure.cn/zh-cn/role-based-access-control/built-in-roles#logic-app-contributor" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/role-based-access-control/built-in-roles#logic-app-contributor</a></p></article>

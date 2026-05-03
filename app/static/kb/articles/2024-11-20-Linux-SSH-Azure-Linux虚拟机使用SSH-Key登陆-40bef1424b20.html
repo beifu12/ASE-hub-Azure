@@ -1,0 +1,119 @@
+<article class="kb-article" data-title="[Linux][SSH] Azure Linux虚拟机使用SSH Key登陆"><h1>[Linux][SSH] Azure Linux虚拟机使用SSH Key登陆</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-20 09:53:46</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>这里以CentOS 6.8为例，首先创建一个CentOS 6.8的虚拟机，先配置使用密码的方式进行登陆：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>这里以CentOS 6.8为例，首先创建一个CentOS 6.8的虚拟机，先配置使用密码的方式进行登陆：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>这里以CentOS 6.8为例，首先创建一个CentOS 6.8的虚拟机，先配置使用密码的方式进行登陆：</li>
+</ul>
+<ul>
+<li>首先在Tools中找到New User Key Wizard...：</li>
+</ul>
+<ul>
+<li>为key制定一个加密的passphrase：</li>
+</ul>
+<ul>
+<li>在最后一步完成前，可以将生成的公钥保存到文件（Save as a file...）：</li>
+</ul>
+<ul>
+<li>#RSAAuthentication yes</li>
+</ul>
+<ul>
+<li>#PubkeyAuthentication yes</li>
+</ul>
+<ul>
+<li>#AuthorizedKeysFile      .ssh/authorized_keys</li>
+</ul>
+<ul>
+<li>接着在/home/&lt;username&gt;/.ssh下面创建一个authorized_keys文件（&lt;username&gt;换成需要使用key进行登陆的用户名），如果没有这个目录，就创建一个，将之前生成的公钥的内容拷贝到其中：</li>
+</ul>
+<ul>
+<li>保存后，使用xshell登陆，首先输入用户名：</li>
+</ul>
+<ul>
+<li>选择公钥登陆的方式，User Key选择我们之前创建的私钥，并填写创建时指定的passphrase：</li>
+</ul>
+<ul>
+<li>确定后即可登录成功。</li>
+</ul>
+<ul>
+<li>对于同一个用户，可以为其配置多组公钥/私钥对儿，将所有的公钥都放在对应用户目录下的authorized_keys文件中即可，这样同一个用户可以用不同的私钥来登陆。</li>
+</ul>
+<ul>
+<li>要为root用户配置公钥登陆方式，首先还是要修改/etc/ssh/sshd_config文件，将下面语句取消注释：</li>
+</ul>
+<ul>
+<li>接着在/root/.ssh下面创建一个authorized_keys文件（如果目录不存在，则创建出来）：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 ssh]# cd ~/.ssh/</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 .ssh]# vim authorized_keys</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>创建成功后，需要首先使用工具创建一个“公钥/私钥”对用于认证，可以使用openssl，putty或者xshell生成公钥和私钥，下面是使用xshell的步骤：</li>
+</ul>
+<ul>
+<li>完成创建后，可以在Tools -&gt; User Key Manager…中查看刚刚创建好的私钥：</li>
+</ul>
+<ul>
+<li>属性中可以查看其对应的公钥：</li>
+</ul>
+<ul>
+<li>#PermitRootLogin yes</li>
+</ul>
+<ul>
+<li>然后与前面的步骤一样，使用xshell生成一对儿“公钥/私钥”，将公钥拷贝到刚刚创建的authorized_keys文件中，然后就可以使用root的私钥登陆了。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>这个步骤中尽量选择RSA加密算法（虽然DSA也可以用，但是Azure上建议使用RSA）：</li>
+</ul>
+<ul>
+<li>完成公钥和私钥创建后，登陆到虚拟机内（使用用户名和密码的方式），修改/etc/ssh/sshd_config，将下面三条配置取消注释：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>这里以CentOS 6.8为例，首先创建一个CentOS 6.8的虚拟机，先配置使用密码的方式进行登陆：</p>
+<p>创建成功后，需要首先使用工具创建一个“公钥/私钥”对用于认证，可以使用openssl，putty或者xshell生成公钥和私钥，下面是使用xshell的步骤：</p>
+<p>首先在Tools中找到New User Key Wizard...：</p>
+<p>这个步骤中尽量选择RSA加密算法（虽然DSA也可以用，但是Azure上建议使用RSA）：</p>
+<p>为key制定一个加密的passphrase：</p>
+<p>在最后一步完成前，可以将生成的公钥保存到文件（Save as a file...）：</p>
+<p>完成创建后，可以在Tools -&gt; User Key Manager…中查看刚刚创建好的私钥：</p>
+<p>属性中可以查看其对应的公钥：</p>
+<p>完成公钥和私钥创建后，登陆到虚拟机内（使用用户名和密码的方式），修改/etc/ssh/sshd_config，将下面三条配置取消注释：</p>
+<p>#RSAAuthentication yes</p>
+<p>#PubkeyAuthentication yes</p>
+<p>#AuthorizedKeysFile      .ssh/authorized_keys</p>
+<p>接着在/home/&lt;username&gt;/.ssh下面创建一个authorized_keys文件（&lt;username&gt;换成需要使用key进行登陆的用户名），如果没有这个目录，就创建一个，将之前生成的公钥的内容拷贝到其中：</p>
+<p>保存后，使用xshell登陆，首先输入用户名：</p>
+<p>选择公钥登陆的方式，User Key选择我们之前创建的私钥，并填写创建时指定的passphrase：</p>
+<p>确定后即可登录成功。</p>
+<p>对于同一个用户，可以为其配置多组公钥/私钥对儿，将所有的公钥都放在对应用户目录下的authorized_keys文件中即可，这样同一个用户可以用不同的私钥来登陆。</p>
+<p>要为root用户配置公钥登陆方式，首先还是要修改/etc/ssh/sshd_config文件，将下面语句取消注释：</p>
+<p>#PermitRootLogin yes</p>
+<p>接着在/root/.ssh下面创建一个authorized_keys文件（如果目录不存在，则创建出来）：</p>
+<p>[root@DanCentOS65 ssh]# cd ~/.ssh/</p>
+<p>[root@DanCentOS65 .ssh]# vim authorized_keys</p>
+<p>然后与前面的步骤一样，使用xshell生成一对儿“公钥/私钥”，将公钥拷贝到刚刚创建的authorized_keys文件中，然后就可以使用root的私钥登陆了。</p></article>

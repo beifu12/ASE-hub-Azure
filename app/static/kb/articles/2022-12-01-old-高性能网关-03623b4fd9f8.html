@@ -1,0 +1,114 @@
+<article class="kb-article" data-title="【old】高性能网关"><h1>【old】高性能网关</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-12-01 18:31:35</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>高性能网关</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>高性能网关</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>高性能网关</li>
+</ul>
+<ul>
+<li>Monday, April 13, 2015</li>
+</ul>
+<ul>
+<li>15:25</li>
+</ul>
+<ul>
+<li>陈先生您好，</li>
+</ul>
+<ul>
+<li>关于高性能网关的说明请参考如下：</li>
+</ul>
+<ul>
+<li>3.相关的其他链接：</li>
+</ul>
+<ul>
+<li>尊敬的刘先生：</li>
+</ul>
+<ul>
+<li>您好!</li>
+</ul>
+<ul>
+<li>解答之前咱们讨论的两个问题：</li>
+</ul>
+<ul>
+<li>一、如何监控Azure VPN与本地交互的流量</li>
+</ul>
+<ul>
+<li>二、高性能网关</li>
+</ul>
+<ul>
+<li>关于高性能网关的参数参考：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Get-AzureVNetConnection 的Azure Powershell 命令可以获取对应的输出/输入流量。如果想要获取阶段性的流量，您可以开发对应的脚本。例如每十分钟的输入/输出流量，您可以每十分钟通过这条命令获取数值，作减法即可，开发脚本输出表格是比较合适的解决方案。脚本开发需要您自己联系开发人员进行开发。</li>
+</ul>
+<ul>
+<li>您可以使用Azure Powershell来创建高性能网关或者将现有网关调整为高性能，参考命令：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>新建高性能网关：New-AzureVNetGateway –VNetName “MyVNET” –GatewayType DynamicRouting –GatewaySKU HighPerformance</li>
+</ul>
+<ul>
+<li>调整已有网关：  Resize-AzureVNetGateway –VNetName “MyVNET” –GatewaySKU HighPerformance</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>1.<a href="http://www.windowsazure.cn/blog/2015/03/13/azure-virtual-network-gateway-improvements" target="_blank" rel="noopener">http://www.windowsazure.cn/blog/2015/03/13/azure-virtual-network-gateway-improvements</a></li>
+</ul>
+<ul>
+<li>2.<a href="https://msdn.microsoft.com/zh-cn/library/azure/jj156075.aspx#bkmk_Gateways" target="_blank" rel="noopener">https://msdn.microsoft.com/zh-cn/library/azure/jj156075.aspx#bkmk_Gateways</a></li>
+</ul>
+<ul>
+<li>关于高性能网关的定价信息：<a href="http://www.windowsazure.cn/pricing/details/networking/" target="_blank" rel="noopener">http://www.windowsazure.cn/pricing/details/networking/</a></li>
+</ul>
+<ul>
+<li>高性能网关的性能参考：<a href="http://azure.microsoft.com/blog/2014/12/02/azure-virtual-network-gateway-improvements" target="_blank" rel="noopener">http://azure.microsoft.com/blog/2014/12/02/azure-virtual-network-gateway-improvements</a></li>
+</ul>
+<ul>
+<li><a href="https://msdn.microsoft.com/en-us/library/azure/jj156075.aspx#bkmk_KnownCompatibleVPN" target="_blank" rel="noopener">https://msdn.microsoft.com/en-us/library/azure/jj156075.aspx#bkmk_KnownCompatibleVPN</a></li>
+</ul>
+<ul>
+<li>(参考链接：<a href="https://msdn.microsoft.com/en-us/library/azure/jj156075.aspx#bkmk_KnownCompatibleVPN)" target="_blank" rel="noopener">https://msdn.microsoft.com/en-us/library/azure/jj156075.aspx#bkmk_KnownCompatibleVPN)</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>高性能网关</p>
+<p>Monday, April 13, 2015</p>
+<p>15:25</p>
+<p>陈先生您好，</p>
+<p>关于高性能网关的说明请参考如下：</p>
+<p>1.<a href="http://www.windowsazure.cn/blog/2015/03/13/azure-virtual-network-gateway-improvements" target="_blank" rel="noopener">http://www.windowsazure.cn/blog/2015/03/13/azure-virtual-network-gateway-improvements</a></p>
+<p>2.<a href="https://msdn.microsoft.com/zh-cn/library/azure/jj156075.aspx#bkmk_Gateways" target="_blank" rel="noopener">https://msdn.microsoft.com/zh-cn/library/azure/jj156075.aspx#bkmk_Gateways</a></p>
+<p>3.相关的其他链接：</p>
+<p>关于高性能网关的定价信息：<a href="http://www.windowsazure.cn/pricing/details/networking/" target="_blank" rel="noopener">http://www.windowsazure.cn/pricing/details/networking/</a></p>
+<p>高性能网关的性能参考：<a href="http://azure.microsoft.com/blog/2014/12/02/azure-virtual-network-gateway-improvements" target="_blank" rel="noopener">http://azure.microsoft.com/blog/2014/12/02/azure-virtual-network-gateway-improvements</a></p>
+<p><a href="https://msdn.microsoft.com/en-us/library/azure/jj156075.aspx#bkmk_KnownCompatibleVPN" target="_blank" rel="noopener">https://msdn.microsoft.com/en-us/library/azure/jj156075.aspx#bkmk_KnownCompatibleVPN</a></p>
+<p>尊敬的刘先生：</p>
+<p>您好!</p>
+<p>解答之前咱们讨论的两个问题：</p>
+<p>一、如何监控Azure VPN与本地交互的流量</p>
+<p>Get-AzureVNetConnection 的Azure Powershell 命令可以获取对应的输出/输入流量。如果想要获取阶段性的流量，您可以开发对应的脚本。例如每十分钟的输入/输出流量，您可以每十分钟通过这条命令获取数值，作减法即可，开发脚本输出表格是比较合适的解决方案。脚本开发需要您自己联系开发人员进行开发。</p>
+<p>二、高性能网关</p>
+<p>您可以使用Azure Powershell来创建高性能网关或者将现有网关调整为高性能，参考命令：</p>
+<p>新建高性能网关：New-AzureVNetGateway –VNetName “MyVNET” –GatewayType DynamicRouting –GatewaySKU HighPerformance</p>
+<p>调整已有网关：  Resize-AzureVNetGateway –VNetName “MyVNET” –GatewaySKU HighPerformance</p>
+<p>关于高性能网关的参数参考：</p>
+<p>(参考链接：<a href="https://msdn.microsoft.com/en-us/library/azure/jj156075.aspx#bkmk_KnownCompatibleVPN)" target="_blank" rel="noopener">https://msdn.microsoft.com/en-us/library/azure/jj156075.aspx#bkmk_KnownCompatibleVPN)</a></p></article>

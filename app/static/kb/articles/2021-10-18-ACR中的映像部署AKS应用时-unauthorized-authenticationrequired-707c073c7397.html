@@ -1,0 +1,93 @@
+<article class="kb-article" data-title="ACR中的映像部署AKS应用时 unauthorized：authenticationrequired"><h1>ACR中的映像部署AKS应用时 unauthorized：authenticationrequired</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: ACR</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-10-18 15:36:53</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2019073041998_[S400]配置 ACR 身份验证 权限错误</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2019073041998_[S400]配置 ACR 身份验证 权限错误</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>使用ACR中的映像部署AKS应用时，遇到了Pod起不来，状态为ImagePullBackOff的问题，如下图：</li>
+</ul>
+<ul>
+<li>使用describe看到提示没有授权</li>
+</ul>
+<ul>
+<li>按照官方文档向AKS授予访问ACR权限后问题解决：</li>
+</ul>
+<ul>
+<li>#!/bin/bash</li>
+</ul>
+<ul>
+<li># Get the id of the service principal configured for AKS</li>
+</ul>
+<ul>
+<li># Get the ACR registry resource id</li>
+</ul>
+<ul>
+<li># Create role assignment</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>SR_2019073041998_[S400]配置 ACR 身份验证 权限错误</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>创建以下脚本并运行，运行前根据实际情况修改前4行参数：</li>
+</ul>
+<ul>
+<li>az role assignment create --assignee $CLIENT_ID --role acrpull --scope $ACR_ID</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>AKS_RESOURCE_GROUP=czaks</li>
+</ul>
+<ul>
+<li>AKS_CLUSTER_NAME=kubenetaks</li>
+</ul>
+<ul>
+<li>ACR_RESOURCE_GROUP=czaks</li>
+</ul>
+<ul>
+<li>ACR_NAME=czacr</li>
+</ul>
+<ul>
+<li>CLIENT_ID=$(az aks show --resource-group $AKS_RESOURCE_GROUP --name $AKS_CLUSTER_NAME --query &quot;servicePrincipalProfile.clientId&quot; --output tsv)</li>
+</ul>
+<ul>
+<li>ACR_ID=$(az acr show --name $ACR_NAME --resource-group $ACR_RESOURCE_GROUP --query &quot;id&quot; --output tsv)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/container-registry/container-registry-auth-aks?toc=https%3A%2F%2Fdocs.azure.cn%2Fzh-cn%2Faks%2FTOC.json&amp;bc=https%3A%2F%2Fdocs.azure.cn%2Fzh-cn%2Fbread%2Ftoc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/container-registry/container-registry-auth-aks?toc=https%3A%2F%2Fdocs.azure.cn%2Fzh-cn%2Faks%2FTOC.json&amp;bc=https%3A%2F%2Fdocs.azure.cn%2Fzh-cn%2Fbread%2Ftoc.json</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2019073041998_[S400]配置 ACR 身份验证 权限错误</p>
+<p>使用ACR中的映像部署AKS应用时，遇到了Pod起不来，状态为ImagePullBackOff的问题，如下图：</p>
+<p>使用describe看到提示没有授权</p>
+<p>按照官方文档向AKS授予访问ACR权限后问题解决：</p>
+<p><a href="https://docs.azure.cn/zh-cn/container-registry/container-registry-auth-aks?toc=https%3A%2F%2Fdocs.azure.cn%2Fzh-cn%2Faks%2FTOC.json&amp;bc=https%3A%2F%2Fdocs.azure.cn%2Fzh-cn%2Fbread%2Ftoc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/container-registry/container-registry-auth-aks?toc=https%3A%2F%2Fdocs.azure.cn%2Fzh-cn%2Faks%2FTOC.json&amp;bc=https%3A%2F%2Fdocs.azure.cn%2Fzh-cn%2Fbread%2Ftoc.json</a></p>
+<p>创建以下脚本并运行，运行前根据实际情况修改前4行参数：</p>
+<p>#!/bin/bash</p>
+<p>AKS_RESOURCE_GROUP=czaks</p>
+<p>AKS_CLUSTER_NAME=kubenetaks</p>
+<p>ACR_RESOURCE_GROUP=czaks</p>
+<p>ACR_NAME=czacr</p>
+<h1>Get the id of the service principal configured for AKS</h1>
+<p>CLIENT_ID=$(az aks show --resource-group $AKS_RESOURCE_GROUP --name $AKS_CLUSTER_NAME --query &quot;servicePrincipalProfile.clientId&quot; --output tsv)</p>
+<h1>Get the ACR registry resource id</h1>
+<p>ACR_ID=$(az acr show --name $ACR_NAME --resource-group $ACR_RESOURCE_GROUP --query &quot;id&quot; --output tsv)</p>
+<h1>Create role assignment</h1>
+<p>az role assignment create --assignee $CLIENT_ID --role acrpull --scope $ACR_ID</p></article>

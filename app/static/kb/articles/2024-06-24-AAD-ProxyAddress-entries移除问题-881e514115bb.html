@@ -1,0 +1,103 @@
+<article class="kb-article" data-title="AAD ProxyAddress entries移除问题"><h1>AAD ProxyAddress entries移除问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-24 15:45:41</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>结论：无法移除ProxyAddress。这目前看应该是By Design的。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>结论：无法移除ProxyAddress。这目前看应该是By Design的。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>AAD ProxyAddress entries移除问题</li>
+</ul>
+<ul>
+<li>Lu Yitong</li>
+</ul>
+<ul>
+<li>关于AADProxyAddress属性值是否可以移除的问题， 目前研究下来，大概分以下几种情况：</li>
+</ul>
+<ul>
+<li>情况2：用户无论是从哪里创建的，但是有O365订阅。</li>
+</ul>
+<ul>
+<li>结论：可以移除ProxyAddress。</li>
+</ul>
+<ul>
+<li>Add:</li>
+</ul>
+<ul>
+<li>Remove:</li>
+</ul>
+<ul>
+<li>===================</li>
+</ul>
+<ul>
+<li>情况3：用户是On-Premis使用AAD Connector同步到AAD的。</li>
+</ul>
+<ul>
+<li>方案： 通过移除On-Premise环境中用户的Email属性方式移除AAD中该用户的ProxyAddress。</li>
+</ul>
+<ul>
+<li>User luyitongwvd2 is created On-Premise AD Server:</li>
+</ul>
+<ul>
+<li>Synced to AAD:</li>
+</ul>
+<ul>
+<li>Delete email from On-Premise, then you can see proxyaddress entries has been removed:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>情况1：用户是从AAD Portal创建，或者B2C企业协作邀请Guest方式加入的，且用户没有O365订阅。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>方案：Powershell使用Exchange commands方式移除</li>
+</ul>
+<ul>
+<li>If you have Exchange online of O365 with the same tenant domain, then the only way to fix it is to use Exchange Powershell  cmdlet to add the offending smtp addresses back to the original account, then remove it.</li>
+</ul>
+<ul>
+<li>Set-Mailbox account@domain.com -EmailAddresses @{add=&quot;smtpaddress@domain.com&quot;}</li>
+</ul>
+<ul>
+<li>Set-Mailbox account@domain.com -EmailAddresses @{remove=&quot;smtpaddress@domain.com&quot;}</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Reference doc: <a href="https://docs.microsoft.com/en-us/powershell/module/exchange/set-mailbox?view=exchange-ps" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/exchange/set-mailbox?view=exchange-ps</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>AAD ProxyAddress entries移除问题</p>
+<p>Lu Yitong</p>
+<p>关于AADProxyAddress属性值是否可以移除的问题， 目前研究下来，大概分以下几种情况：</p>
+<p>情况1：用户是从AAD Portal创建，或者B2C企业协作邀请Guest方式加入的，且用户没有O365订阅。</p>
+<p>结论：无法移除ProxyAddress。这目前看应该是By Design的。</p>
+<p>情况2：用户无论是从哪里创建的，但是有O365订阅。</p>
+<p>结论：可以移除ProxyAddress。</p>
+<p>方案：Powershell使用Exchange commands方式移除</p>
+<p>If you have Exchange online of O365 with the same tenant domain, then the only way to fix it is to use Exchange Powershell  cmdlet to add the offending smtp addresses back to the original account, then remove it.</p>
+<p>Add:</p>
+<p>Set-Mailbox account@domain.com -EmailAddresses @{add=&quot;smtpaddress@domain.com&quot;}</p>
+<p>Remove:</p>
+<p>Set-Mailbox account@domain.com -EmailAddresses @{remove=&quot;smtpaddress@domain.com&quot;}</p>
+<p>===================</p>
+<p>Reference doc: <a href="https://docs.microsoft.com/en-us/powershell/module/exchange/set-mailbox?view=exchange-ps" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/exchange/set-mailbox?view=exchange-ps</a></p>
+<p>情况3：用户是On-Premis使用AAD Connector同步到AAD的。</p>
+<p>方案： 通过移除On-Premise环境中用户的Email属性方式移除AAD中该用户的ProxyAddress。</p>
+<p>User luyitongwvd2 is created On-Premise AD Server:</p>
+<p>Synced to AAD:</p>
+<p>Delete email from On-Premise, then you can see proxyaddress entries has been removed:</p></article>

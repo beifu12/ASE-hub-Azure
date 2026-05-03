@@ -1,0 +1,141 @@
+<article class="kb-article" data-title="取消WAF_v2关联的Policy，并将WAF_v2调整为Standard_v2"><h1>取消WAF_v2关联的Policy，并将WAF_v2调整为Standard_v2</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-05-10 14:05:50</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Fuzhangliang</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Fuzhangliang</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Fuzhangliang</li>
+</ul>
+<ul>
+<li>Update:   2023/05/08   by Fuzhangliang</li>
+</ul>
+<ul>
+<li>目前支持从门户直接将WAF V1/V2 （无论是否关联Custom Policy）更改为Standard V1/V2 ，</li>
+</ul>
+<ul>
+<li>=============================================================================================================================================</li>
+</ul>
+<ul>
+<li>而关联了policy的WAF_v2是不能直接在门户调整为Standard_v2的。</li>
+</ul>
+<ul>
+<li>$policy=Get-AzApplicationGatewayFirewallPolicy -Name mypolicy -ResourceGroupName fuzlnewrg</li>
+</ul>
+<ul>
+<li>$appgw=Get-AzApplicationGateway -Name v2waf -ResourceGroupName fuzlnewrg</li>
+</ul>
+<ul>
+<li>$appgw.WebApplicationFirewallConfiguration=$null</li>
+</ul>
+<ul>
+<li>//解绑Policy</li>
+</ul>
+<ul>
+<li>$appgw.FirewallPolicy=$null</li>
+</ul>
+<ul>
+<li>$appgw.HttpListeners[0].FirewallPolicy=$null</li>
+</ul>
+<ul>
+<li>$appgw</li>
+</ul>
+<ul>
+<li>//然后保存配置</li>
+</ul>
+<ul>
+<li>保存完成后，WAF_v2已经调整为Standard_v2</li>
+</ul>
+<ul>
+<li>如果后续需要使用WAF，可以再将Standard_v2调整为WAF_v2</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>//输出appgw的配置，再次检查是否有关联任何policy</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>以下&quot;取消WAF_v2关联的Policy，并将WAF_v2调整为Standard_v2&quot;Powershell的说明可以不再使用</li>
+</ul>
+<ul>
+<li>Set-AzApplicationGatewayFirewallPolicy -Name mypolicy -ResourceGroupName fuzlnewrg -PolicySetting $policy.PolicySettings</li>
+</ul>
+<ul>
+<li>//如果Listener也关联了Policy，按照如下的命令，也要全部解绑</li>
+</ul>
+<ul>
+<li>Set-AzApplicationGateway -ApplicationGateway $appgw</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>2、禁用网关的Policy。同时将网关的SKU由WAF_v2.调整为Standard_v2</li>
+</ul>
+<ul>
+<li>//调整SKU和关闭WAF</li>
+</ul>
+<ul>
+<li>$appgw.Sku.Name=&quot;Standard_v2&quot;</li>
+</ul>
+<ul>
+<li>$appgw.Sku.Tier=&quot;Standard_v2&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>由于API版本更新，将 $appgw.FirewallPolicy=$null设置为空，然后保存来取消WAF关联的Policy确实是不行的。目前一旦WAF关联上custom policy，就不支持取消policy，只能更换policy。</li>
+</ul>
+<ul>
+<li>根据Lina的培训，在global上将Policy 的状态修改为禁用，然后可以在门户将WAF_v2调整为Standard_v2， 但是在CHina也是不行的。</li>
+</ul>
+<ul>
+<li>经测试，可以使用如下方法禁用policy并将WAF_V2修改为Standard_V2。具体的操作步骤如下：</li>
+</ul>
+<ul>
+<li>1、先调整policy，将其状态设置为Disabled, 如果状态已经禁用，则无需操作</li>
+</ul>
+<ul>
+<li>$policy.PolicySettings.State=&quot;Disabled&quot;</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Fuzhangliang</p>
+<p>Update:   2023/05/08   by Fuzhangliang</p>
+<p>目前支持从门户直接将WAF V1/V2 （无论是否关联Custom Policy）更改为Standard V1/V2 ，</p>
+<p>以下&quot;取消WAF_v2关联的Policy，并将WAF_v2调整为Standard_v2&quot;Powershell的说明可以不再使用</p>
+<p>=============================================================================================================================================</p>
+<p>由于API版本更新，将 $appgw.FirewallPolicy=$null设置为空，然后保存来取消WAF关联的Policy确实是不行的。目前一旦WAF关联上custom policy，就不支持取消policy，只能更换policy。</p>
+<p>而关联了policy的WAF_v2是不能直接在门户调整为Standard_v2的。</p>
+<p>根据Lina的培训，在global上将Policy 的状态修改为禁用，然后可以在门户将WAF_v2调整为Standard_v2， 但是在CHina也是不行的。</p>
+<p>经测试，可以使用如下方法禁用policy并将WAF_V2修改为Standard_V2。具体的操作步骤如下：</p>
+<p>1、先调整policy，将其状态设置为Disabled, 如果状态已经禁用，则无需操作</p>
+<p>$policy=Get-AzApplicationGatewayFirewallPolicy -Name mypolicy -ResourceGroupName fuzlnewrg</p>
+<p>$policy.PolicySettings.State=&quot;Disabled&quot;</p>
+<p>Set-AzApplicationGatewayFirewallPolicy -Name mypolicy -ResourceGroupName fuzlnewrg -PolicySetting $policy.PolicySettings</p>
+<p>2、禁用网关的Policy。同时将网关的SKU由WAF_v2.调整为Standard_v2</p>
+<p>$appgw=Get-AzApplicationGateway -Name v2waf -ResourceGroupName fuzlnewrg</p>
+<p>//调整SKU和关闭WAF</p>
+<p>$appgw.Sku.Name=&quot;Standard_v2&quot;</p>
+<p>$appgw.Sku.Tier=&quot;Standard_v2&quot;</p>
+<p>$appgw.WebApplicationFirewallConfiguration=$null</p>
+<p>//解绑Policy</p>
+<p>$appgw.FirewallPolicy=$null</p>
+<p>//如果Listener也关联了Policy，按照如下的命令，也要全部解绑</p>
+<p>$appgw.HttpListeners[0].FirewallPolicy=$null</p>
+<p>//输出appgw的配置，再次检查是否有关联任何policy</p>
+<p>$appgw</p>
+<p>//然后保存配置</p>
+<p>Set-AzApplicationGateway -ApplicationGateway $appgw</p>
+<p>保存完成后，WAF_v2已经调整为Standard_v2</p>
+<p>如果后续需要使用WAF，可以再将Standard_v2调整为WAF_v2</p></article>

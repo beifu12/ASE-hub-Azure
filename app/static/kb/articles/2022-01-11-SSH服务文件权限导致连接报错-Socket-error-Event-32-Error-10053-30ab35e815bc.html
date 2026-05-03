@@ -1,0 +1,62 @@
+<article class="kb-article" data-title="SSH服务文件权限导致连接报错:Socket error Event: 32 Error: 10053."><h1>SSH服务文件权限导致连接报错:Socket error Event: 32 Error: 10053.</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RDP_SSH</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-01-11 09:08:41</li>
+<li>JD 相关性: 售后排障; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SSH服务文件权限导致连接报错:Socket error Event: 32 Error: 10053.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SSH服务文件权限导致连接报错:Socket error Event: 32 Error: 10053.</li>
+</ul>
+<ul>
+<li>工单参考：SR_2019060430338_[MS-LED]微软云环境linux虚拟机无法ssh</li>
+</ul>
+<ul>
+<li>报错：Socket error Event: 32 Error: 10053. Connection closing…Socket close. Connection closed by foreign host</li>
+</ul>
+<ul>
+<li>报错截图：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Permissions 0777 for “/etc/ssh/ssh_host_rsa_key” are too open</li>
+</ul>
+<ul>
+<li>默认权限</li>
+</ul>
+<ul>
+<li>更改为默认权限后，可以SSH连接。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查看sshd服务的状态，发现提示Permissions 0777 for “/etc/ssh/ssh_host_dsa_key” are too open 和</li>
+</ul>
+<ul>
+<li>于是查看/etc/ssh中文件的权限，发现与默认权限不同。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SSH服务文件权限导致连接报错:Socket error Event: 32 Error: 10053.</p>
+<p>2019/06/04</p>
+<p>工单参考：SR_2019060430338_[MS-LED]微软云环境linux虚拟机无法ssh</p>
+<p>报错：Socket error Event: 32 Error: 10053. Connection closing…Socket close. Connection closed by foreign host</p>
+<p>报错截图：</p>
+<p>查看sshd服务的状态，发现提示Permissions 0777 for “/etc/ssh/ssh_host_dsa_key” are too open 和</p>
+<p>Permissions 0777 for “/etc/ssh/ssh_host_rsa_key” are too open</p>
+<p>于是查看/etc/ssh中文件的权限，发现与默认权限不同。</p>
+<p>默认权限</p>
+<p>更改为默认权限后，可以SSH连接。</p></article>

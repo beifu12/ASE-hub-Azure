@@ -1,0 +1,61 @@
+<article class="kb-article" data-title="本地机器无法通过专线访问到部分虚拟机"><h1>本地机器无法通过专线访问到部分虚拟机</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-06-28 14:26:43</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_20220627173781_yd-t13无法启动</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_20220627173781_yd-t13无法启动</li>
+</ul>
+<ul>
+<li>根据产品组的描述，error code 0x803D0013 意味着gw的instance的证书过期，导致VM的node更新规则失败，从而无法访问。后续产品组手动在instance更新证书以后，问题解决。</li>
+</ul>
+<ul>
+<li>工单： SR_20220627173781_yd-t13无法启动</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi All</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题描述现象：本地机器无法通过专线访问到部分虚拟机，专线bgp 邻居/路由通告都是正常的，本地的PC可以访问部分虚拟机，无法访问的虚拟机均是发生重启或者开关机或者resize等，同时新建的虚拟机也是无法访问到，查看无法访问虚拟机的网卡有效路由均无法获取到本地的路由。</li>
+</ul>
+<ul>
+<li>问题排查：</li>
+</ul>
+<ul>
+<li>后续有类似的问题，可以参考上述链接进行排查。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>ICM: <a href="https://portal.microsofticm.com/imp/v3/incidents/details/316824756/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/316824756/home</a></li>
+</ul>
+<ul>
+<li>Geneva：<a href="https://portal.microsoftgeneva.com/s/A990DB32" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/A990DB32</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022/06/28</p>
+<p>SR_20220627173781_yd-t13无法启动</p>
+<p>Hi All</p>
+<p>问题描述现象：本地机器无法通过专线访问到部分虚拟机，专线bgp 邻居/路由通告都是正常的，本地的PC可以访问部分虚拟机，无法访问的虚拟机均是发生重启或者开关机或者resize等，同时新建的虚拟机也是无法访问到，查看无法访问虚拟机的网卡有效路由均无法获取到本地的路由。</p>
+<p>问题排查：</p>
+<p>ICM: <a href="https://portal.microsofticm.com/imp/v3/incidents/details/316824756/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/316824756/home</a></p>
+<p>Geneva：<a href="https://portal.microsoftgeneva.com/s/A990DB32" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/A990DB32</a></p>
+<p>根据产品组的描述，error code 0x803D0013 意味着gw的instance的证书过期，导致VM的node更新规则失败，从而无法访问。后续产品组手动在instance更新证书以后，问题解决。</p>
+<p>后续有类似的问题，可以参考上述链接进行排查。</p>
+<p>工单： SR_20220627173781_yd-t13无法启动</p></article>

@@ -1,0 +1,85 @@
+<article class="kb-article" data-title="RE: [PODVM]SR_20230120208937[S500]/IKEA China Investment Co., Ltd/Licensied users like abc.tcs.com going to different login page instead of our built in sign in user flow."><h1>RE: [PODVM]SR_20230120208937[S500]/IKEA China Investment Co., Ltd/Licensied users like abc.tcs.com going to different login page instead of our built in sign in user flow.</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure B2C B2B</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-12-18 14:22:16</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>We can reproduce this issue in my local environment:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>We can reproduce this issue in my local environment:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zuoteng</li>
+</ul>
+<ul>
+<li>The reason is that when creating the user flow, the customer chose the ‘Sign in (Standard legacy)”.  It is a not-suggested legacy version now.</li>
+</ul>
+<ul>
+<li>(In Global Azure, it is explicitly stating that “This is the legacy user flow. Unless you have a special business need, we don’t recommend using this version.”)</li>
+</ul>
+<ul>
+<li>So, the next action plan:</li>
+</ul>
+<ul>
+<li>1.   Please suggest customer to use “Sign in (Preview v2 legacy’)” marked in screenshot above.</li>
+</ul>
+<ul>
+<li>Add an identity provider - Azure Active Directory B2C | Azure Docs</li>
+</ul>
+<ul>
+<li>Set up sign-up and sign-in with OpenID Connect - Azure AD B2C | Azure Docs</li>
+</ul>
+<ul>
+<li>(If customer has further questions regarding this, they may need to create a new case specially. Thanks for understanding.)</li>
+</ul>
+<ul>
+<li>The statement about ‘Sign in (Standard Legacy)’ in Global Azure, FYI.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>RE: [PODVM]SR_20230120208937[S500]/IKEA China Investment Co., Ltd/Licensied users like abc.tcs.com going to different login page instead of our built in sign in user flow.</li>
+</ul>
+<ul>
+<li>2.   We found ‘tcs.com’ is not a AAD verified domain. Please be well noted that ‘login_hint’ is not used for crossing cloud.  If customers want to use global domain/user to login in China B2C, they need to configure the global Azure AD as B2C identity providers.  Please follow the documents below:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>My test b2c user flow endpoint URL:     <a href="https://caiwanorg.b2clogin.cn/caiwanorg.partner.onmschina.cn/oauth2/v2.0/authorize?p=B2C_1_SigninOnly&amp;client_id=a00a6a87-e104-4731-bb8a-33393bedde49&amp;nonce=defaultNonce&amp;redirect_uri=https%3A%2F%2Fjwt.ms&amp;scope=openid&amp;response_type=id_token&amp;prompt=login" target="_blank" rel="noopener">https://caiwanorg.b2clogin.cn/caiwanorg.partner.onmschina.cn/oauth2/v2.0/authorize?p=B2C_1_SigninOnly&amp;client_id=a00a6a87-e104-4731-bb8a-33393bedde49&amp;nonce=defaultNonce&amp;redirect_uri=https%3A%2F%2Fjwt.ms&amp;scope=openid&amp;response_type=id_token&amp;prompt=login</a></li>
+</ul>
+<ul>
+<li>If we also add the option “&amp;login_hint=p.ashwin7@tcs.com”, it will also redirect to global <a href="https://login.microsoftonline.com" target="_blank" rel="noopener">https://login.microsoftonline.com</a> .</li>
+</ul>
+<ul>
+<li><a href="https://caiwanorg.b2clogin.cn/caiwanorg.partner.onmschina.cn/oauth2/v2.0/authorize?p=B2C_1_SigninOnly&amp;client_id=a00a6a87-e104-4731-bb8a-33393bedde49&amp;nonce=defaultNonce&amp;redirect_uri=https%3A%2F%2Fjwt.ms&amp;scope=openid&amp;response_type=id_token&amp;prompt=login&amp;login_hint=p.ashwin7@tcs.com" target="_blank" rel="noopener">https://caiwanorg.b2clogin.cn/caiwanorg.partner.onmschina.cn/oauth2/v2.0/authorize?p=B2C_1_SigninOnly&amp;client_id=a00a6a87-e104-4731-bb8a-33393bedde49&amp;nonce=defaultNonce&amp;redirect_uri=https%3A%2F%2Fjwt.ms&amp;scope=openid&amp;response_type=id_token&amp;prompt=login&amp;login_hint=p.ashwin7@tcs.com</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>RE: [PODVM]SR_20230120208937[S500]/IKEA China Investment Co., Ltd/Licensied users like abc.tcs.com going to different login page instead of our built in sign in user flow.</p>
+<p>2023/04/03</p>
+<p>zuoteng</p>
+<p>We can reproduce this issue in my local environment:</p>
+<p>My test b2c user flow endpoint URL:     <a href="https://caiwanorg.b2clogin.cn/caiwanorg.partner.onmschina.cn/oauth2/v2.0/authorize?p=B2C_1_SigninOnly&amp;client_id=a00a6a87-e104-4731-bb8a-33393bedde49&amp;nonce=defaultNonce&amp;redirect_uri=https%3A%2F%2Fjwt.ms&amp;scope=openid&amp;response_type=id_token&amp;prompt=login" target="_blank" rel="noopener">https://caiwanorg.b2clogin.cn/caiwanorg.partner.onmschina.cn/oauth2/v2.0/authorize?p=B2C_1_SigninOnly&amp;client_id=a00a6a87-e104-4731-bb8a-33393bedde49&amp;nonce=defaultNonce&amp;redirect_uri=https%3A%2F%2Fjwt.ms&amp;scope=openid&amp;response_type=id_token&amp;prompt=login</a></p>
+<p>If we also add the option “&amp;login_hint=p.ashwin7@tcs.com”, it will also redirect to global <a href="https://login.microsoftonline.com" target="_blank" rel="noopener">https://login.microsoftonline.com</a> .</p>
+<p><a href="https://caiwanorg.b2clogin.cn/caiwanorg.partner.onmschina.cn/oauth2/v2.0/authorize?p=B2C_1_SigninOnly&amp;client_id=a00a6a87-e104-4731-bb8a-33393bedde49&amp;nonce=defaultNonce&amp;redirect_uri=https%3A%2F%2Fjwt.ms&amp;scope=openid&amp;response_type=id_token&amp;prompt=login&amp;login_hint=p.ashwin7@tcs.com" target="_blank" rel="noopener">https://caiwanorg.b2clogin.cn/caiwanorg.partner.onmschina.cn/oauth2/v2.0/authorize?p=B2C_1_SigninOnly&amp;client_id=a00a6a87-e104-4731-bb8a-33393bedde49&amp;nonce=defaultNonce&amp;redirect_uri=https%3A%2F%2Fjwt.ms&amp;scope=openid&amp;response_type=id_token&amp;prompt=login&amp;login_hint=p.ashwin7@tcs.com</a></p>
+<p>The reason is that when creating the user flow, the customer chose the ‘Sign in (Standard legacy)”.  It is a not-suggested legacy version now.</p>
+<p>(In Global Azure, it is explicitly stating that “This is the legacy user flow. Unless you have a special business need, we don’t recommend using this version.”)</p>
+<p>So, the next action plan:</p>
+<p>1.   Please suggest customer to use “Sign in (Preview v2 legacy’)” marked in screenshot above.</p>
+<p>2.   We found ‘tcs.com’ is not a AAD verified domain. Please be well noted that ‘login_hint’ is not used for crossing cloud.  If customers want to use global domain/user to login in China B2C, they need to configure the global Azure AD as B2C identity providers.  Please follow the documents below:</p>
+<p>Add an identity provider - Azure Active Directory B2C | Azure Docs</p>
+<p>Set up sign-up and sign-in with OpenID Connect - Azure AD B2C | Azure Docs</p>
+<p>(If customer has further questions regarding this, they may need to create a new case specially. Thanks for understanding.)</p>
+<p>The statement about ‘Sign in (Standard Legacy)’ in Global Azure, FYI.</p></article>

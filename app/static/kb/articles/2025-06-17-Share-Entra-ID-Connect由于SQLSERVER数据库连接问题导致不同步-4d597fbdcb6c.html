@@ -1,0 +1,60 @@
+<article class="kb-article" data-title="【Share】Entra ID Connect由于SQLSERVER数据库连接问题导致不同步"><h1>【Share】Entra ID Connect由于SQLSERVER数据库连接问题导致不同步</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-17 17:52:26</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>登录到服务器后，打开同步任务服务时会遇到报错，提示存储空间不足</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>登录到服务器后，打开同步任务服务时会遇到报错，提示存储空间不足</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>Entra ID Connect 间隔了一段时间没有同步</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>经排查Entra ID Conect服务器本机存储空间重组，判断此问题与SQLSERVER数据库自身相关。</li>
+</ul>
+<ul>
+<li>经查看Entra ID Connect中SQLSERVER数据库是托管的，客户将Entra ID Connect服务器重启后，该问题自恢复，同步任务恢复正常。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>尝试使用命令做增量同步，在powershell中会出现相同的报错信息。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/6/16</p>
+<p>问题描述：</p>
+<p>========</p>
+<p>Entra ID Connect 间隔了一段时间没有同步</p>
+<p>排查过程：</p>
+<p>登录到服务器后，打开同步任务服务时会遇到报错，提示存储空间不足</p>
+<p>尝试使用命令做增量同步，在powershell中会出现相同的报错信息。</p>
+<p>经排查Entra ID Conect服务器本机存储空间重组，判断此问题与SQLSERVER数据库自身相关。</p>
+<p>解决方案：</p>
+<p>经查看Entra ID Connect中SQLSERVER数据库是托管的，客户将Entra ID Connect服务器重启后，该问题自恢复，同步任务恢复正常。</p></article>

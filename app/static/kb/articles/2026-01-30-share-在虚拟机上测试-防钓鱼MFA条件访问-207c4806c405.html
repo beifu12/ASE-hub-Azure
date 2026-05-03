@@ -1,0 +1,130 @@
+<article class="kb-article" data-title="【share】在虚拟机上测试 防钓鱼MFA条件访问"><h1>【share】在虚拟机上测试 防钓鱼MFA条件访问</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-30 17:11:57</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Zhangwenxin</li>
+</ul>
+<ul>
+<li>参考文档</li>
+</ul>
+<ul>
+<li>首先虚拟机需要Microsoft Entra join</li>
+</ul>
+<ul>
+<li>创建时选择 受信任启动并加入到Entra ID</li>
+</ul>
+<ul>
+<li>并给登录用户相应的登录权限</li>
+</ul>
+<ul>
+<li>GPO (设备)</li>
+</ul>
+<ul>
+<li>密钥路径： KEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\PassportForWork</li>
+</ul>
+<ul>
+<li>类型： REG_DWORD</li>
+</ul>
+<ul>
+<li>值： 1 （启用）</li>
+</ul>
+<ul>
+<li>如果需要在虚拟机上设置windows Hello 不能通过RDP 登录，需要安装远程控制软件</li>
+</ul>
+<ul>
+<li>在虚拟机上安装Real VNC  server注册后可以试用14天（连接端下载客户端）</li>
+</ul>
+<ul>
+<li>登录后在账户的 登录选项中添加PIN码</li>
+</ul>
+<ul>
+<li>设置好后登出系统，重新登录会提示用PIN码</li>
+</ul>
+<ul>
+<li>试用Edge打开poratl无需输入密码直接进入</li>
+</ul>
+<ul>
+<li>注：FIDO2 目前在21V 不available.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>会要求当前登录的账号添加2种验证方法</li>
+</ul>
+<ul>
+<li>条件访问验证设置要求用户登录portal 试用防钓鱼MFA</li>
+</ul>
+<ul>
+<li>查看登录信息显示 应用条件访问。</li>
+</ul>
+<ul>
+<li>Windows hello的验证方式显示在登录系统的日志中</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>启用Windows Hello for business 可以通过修改注册表实现</li>
+</ul>
+<ul>
+<li>密钥名称： Enabled</li>
+</ul>
+<ul>
+<li>建议添加电话和邮箱（测试过过程中验证器没有找到在哪里选择一次性密码），有时间可以尝试下提前在用户的安全信息中添加好。按照步骤会提示设置PIN码</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/how-it-works-authentication" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/how-it-works-authentication</a></li>
+</ul>
+<ul>
+<li>参考：<a href="https://learn.microsoft.com/zh-cn/windows/security/identity-protection/hello-for-business/configure" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/security/identity-protection/hello-for-business/configure</a></li>
+</ul>
+<ul>
+<li><a href="https://www.realvnc.com/en/connect/download/vnc/windows/" target="_blank" rel="noopener">https://www.realvnc.com/en/connect/download/vnc/windows/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Zhangwenxin</p>
+<p>参考文档</p>
+<p><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/how-it-works-authentication" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/windows/security/identity-protection/hello-for-business/how-it-works-authentication</a></p>
+<p>首先虚拟机需要Microsoft Entra join</p>
+<p>创建时选择 受信任启动并加入到Entra ID</p>
+<p>并给登录用户相应的登录权限</p>
+<p>启用Windows Hello for business 可以通过修改注册表实现</p>
+<p>GPO (设备)</p>
+<p>密钥路径： KEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\PassportForWork</p>
+<p>密钥名称： Enabled</p>
+<p>类型： REG_DWORD</p>
+<p>值： 1 （启用）</p>
+<p>参考：<a href="https://learn.microsoft.com/zh-cn/windows/security/identity-protection/hello-for-business/configure" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/security/identity-protection/hello-for-business/configure</a></p>
+<p>如果需要在虚拟机上设置windows Hello 不能通过RDP 登录，需要安装远程控制软件</p>
+<p>在虚拟机上安装Real VNC  server注册后可以试用14天（连接端下载客户端）</p>
+<p><a href="https://www.realvnc.com/en/connect/download/vnc/windows/" target="_blank" rel="noopener">https://www.realvnc.com/en/connect/download/vnc/windows/</a></p>
+<p>登录后在账户的 登录选项中添加PIN码</p>
+<p>会要求当前登录的账号添加2种验证方法</p>
+<p>建议添加电话和邮箱（测试过过程中验证器没有找到在哪里选择一次性密码），有时间可以尝试下提前在用户的安全信息中添加好。按照步骤会提示设置PIN码</p>
+<p>设置好后登出系统，重新登录会提示用PIN码</p>
+<p>条件访问验证设置要求用户登录portal 试用防钓鱼MFA</p>
+<p>试用Edge打开poratl无需输入密码直接进入</p>
+<p>查看登录信息显示 应用条件访问。</p>
+<p>Windows hello的验证方式显示在登录系统的日志中</p>
+<p>注：FIDO2 目前在21V 不available.</p></article>

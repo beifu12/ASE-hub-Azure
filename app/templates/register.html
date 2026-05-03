@@ -3,130 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - ASE Hub</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <title>ASE Hub · 注册</title>
     <style>
-        .auth-container {
-            max-width: 400px;
-            margin: 80px auto;
-            padding: 40px;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-        }
-        .auth-container h1 { text-align: center; margin-bottom: 8px; }
-        .auth-container .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 32px; font-size: 14px; }
-        .auth-container .form-group { margin-bottom: 16px; }
-        .auth-container label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
-        .auth-container input {
-            width: 100%; padding: 10px 14px; border: 1px solid var(--border);
-            border-radius: 8px; background: var(--bg); color: var(--text);
-            font-size: 14px; box-sizing: border-box;
-        }
-        .auth-container input:focus { outline: none; border-color: var(--accent); }
-        .auth-container .btn { width: 100%; padding: 12px; margin-top: 8px; font-size: 15px; }
-        .auth-container .error { color: #f87171; font-size: 13px; text-align: center; margin-top: 12px; display: none; }
-        .auth-container .success { color: #4ade80; font-size: 13px; text-align: center; margin-top: 12px; display: none; }
-        .auth-container .switch { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary); }
-        .auth-container .switch a { color: var(--accent); text-decoration: none; }
-        .logo-text { text-align: center; font-size: 28px; font-weight: 800; margin-bottom: 4px; }
-        .logo-text span { color: var(--accent); }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; background: #FAFBFC; color: #1A1A2E; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .card { background: #fff; border: 1px solid #D0D7DE; border-radius: 12px; padding: 40px; width: 420px; max-width: 90vw; box-shadow: 0 4px 24px rgba(0,0,0,0.06); text-align: center; }
+        h1 { font-size: 20px; color: #1A1A2E; margin-bottom: 8px; }
+        p { color: #5E6C84; font-size: 14px; margin-bottom: 24px; line-height: 1.5; }
+        .btn { display: inline-flex; align-items: center; padding: 8px 20px; background: #0078D4; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; }
+        .btn:hover { background: #106EBE; }
     </style>
 </head>
 <body>
-    <div class="auth-container">
-        <div class="logo-text">ASE<span>Hub</span></div>
-        <p class="subtitle">Azure Solutions Engineer Hub</p>
-        <h1>注册</h1>
-        <div class="form-group">
-            <label>用户名</label>
-            <input type="text" id="username" placeholder="至少2个字符" autocomplete="username">
-        </div>
-        <div class="form-group">
-            <label>显示名称（可选）</label>
-            <input type="text" id="display_name" placeholder="你的昵称">
-        </div>
-        <div class="form-group">
-            <label>密码</label>
-            <input type="password" id="password" placeholder="至少4个字符" autocomplete="new-password">
-        </div>
-        <div class="form-group">
-            <label>确认密码</label>
-            <input type="password" id="password_confirm" placeholder="再次输入密码">
-        </div>
-        <button class="btn btn-primary" onclick="handleRegister()">注 册</button>
-        <div class="error" id="error"></div>
-        <div class="success" id="success"></div>
-        <div class="switch">
-            已有账号？<a href="/login">直接登录</a>
-        </div>
-    </div>
-
-    <script>
-        const API = '/api';
-
-        async function handleRegister() {
-            const username = document.getElementById('username').value.trim();
-            const display_name = document.getElementById('display_name').value.trim();
-            const password = document.getElementById('password').value;
-            const password_confirm = document.getElementById('password_confirm').value;
-            const errorEl = document.getElementById('error');
-            const successEl = document.getElementById('success');
-
-            errorEl.style.display = 'none';
-            successEl.style.display = 'none';
-
-            if (!username || !password) {
-                errorEl.textContent = '请填写用户名和密码';
-                errorEl.style.display = 'block';
-                return;
-            }
-            if (password !== password_confirm) {
-                errorEl.textContent = '两次输入的密码不一致';
-                errorEl.style.display = 'block';
-                return;
-            }
-            if (username.length < 2) {
-                errorEl.textContent = '用户名至少2个字符';
-                errorEl.style.display = 'block';
-                return;
-            }
-            if (password.length < 4) {
-                errorEl.textContent = '密码至少4个字符';
-                errorEl.style.display = 'block';
-                return;
-            }
-
-            try {
-                const resp = await fetch(API + '/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password, display_name }),
-                });
-                const data = await resp.json();
-                if (!resp.ok) {
-                    errorEl.textContent = data.detail || '注册失败';
-                    errorEl.style.display = 'block';
-                    return;
-                }
-                localStorage.setItem('ase_token', data.access_token);
-                localStorage.setItem('ase_user', JSON.stringify(data.user));
-                successEl.textContent = '注册成功！正在跳转...';
-                successEl.style.display = 'block';
-                setTimeout(() => { window.location.href = '/'; }, 800);
-            } catch (e) {
-                errorEl.textContent = '网络错误，请重试';
-                errorEl.style.display = 'block';
-            }
-        }
-
-        document.getElementById('password_confirm').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') handleRegister();
-        });
-
-        if (localStorage.getItem('ase_token')) {
-            window.location.href = '/';
-        }
-    </script>
+<div class="card">
+    <h1>🔒 注册已关闭</h1>
+    <p>ASE Hub 以私有实例模式运行。<br>新用户需要由管理员手动添加。</p>
+    <a class="btn" href="/">返回首页</a>
+</div>
 </body>
 </html>

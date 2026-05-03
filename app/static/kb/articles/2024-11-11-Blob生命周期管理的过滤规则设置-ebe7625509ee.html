@@ -1,0 +1,87 @@
+<article class="kb-article" data-title="Blob生命周期管理的过滤规则设置"><h1>Blob生命周期管理的过滤规则设置</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-11 09:48:59</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<ul>
+<li>环境：Azure Blob，1个存储账户下有3个Container</li>
+</ul>
+<ul>
+<li>问题：</li>
+</ul>
+<ul>
+<li>其中1个Container中的所有文件、目录满足创建时间满1年的条件就删除。另外2个Container不受该规则影响。在生命周期Rule的Blob prefix写  container/* 是否能实现？</li>
+</ul>
+<ul>
+<li>如果容器下面的子文件夹中的文件都被删除了，子文件夹是否也会被删除的问题。</li>
+</ul>
+<ul>
+<li>1.前缀字符串不支持通配符匹配。</li>
+</ul>
+<ul>
+<li>前缀匹配字符串（如 container1/） 适用于名为 container1 的容器中的所有 blob。 container1 的前缀匹配字符串（不带尾部正斜杠字符 (/)）适用于容器名称以字符串 container1 开头的所有容器中的所有 blob。 此前缀将匹配名为 container11、container1234、container1ab 之类的容器。</li>
+</ul>
+<ul>
+<li>参考文档:</li>
+</ul>
+<ul>
+<li>2.根据测试结果，如果容器下面的子文件夹中的文件都被删除了，子文件夹也会被删除。</li>
+</ul>
+<ul>
+<li>以下测试截图供您参考：</li>
+</ul>
+<ul>
+<li>为了便于说明问题，我开启了blob软删除。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：<a href="https://learn.microsoft.com/zh-cn/azure/storage/blobs/lifecycle-management-overview" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/storage/blobs/lifecycle-management-overview</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-faq#-------" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-faq#-------</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Zhang Lihong</p>
+<p>环境：Azure Blob，1个存储账户下有3个Container</p>
+<p>问题：</p>
+<p>其中1个Container中的所有文件、目录满足创建时间满1年的条件就删除。另外2个Container不受该规则影响。在生命周期Rule的Blob prefix写  container/* 是否能实现？</p>
+<p>如果容器下面的子文件夹中的文件都被删除了，子文件夹是否也会被删除的问题。</p>
+<p>解决方案：</p>
+<p>1.前缀字符串不支持通配符匹配。</p>
+<p>参考文档：<a href="https://learn.microsoft.com/zh-cn/azure/storage/blobs/lifecycle-management-overview" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/storage/blobs/lifecycle-management-overview</a></p>
+<p>前缀匹配字符串（如 container1/） 适用于名为 container1 的容器中的所有 blob。 container1 的前缀匹配字符串（不带尾部正斜杠字符 (/)）适用于容器名称以字符串 container1 开头的所有容器中的所有 blob。 此前缀将匹配名为 container11、container1234、container1ab 之类的容器。</p>
+<p>参考文档:</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-faq#-------" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/storage/blobs/storage-blob-faq#-------</a></p>
+<p>2.根据测试结果，如果容器下面的子文件夹中的文件都被删除了，子文件夹也会被删除。</p>
+<p>以下测试截图供您参考：</p>
+<p>为了便于说明问题，我开启了blob软删除。</p></article>

@@ -1,0 +1,555 @@
+<article class="kb-article" data-title="[Geneva]查询VM DNS 请求超过限制"><h1>[Geneva]查询VM DNS 请求超过限制</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DNS</li>
+<li>Section: DNS</li>
+<li>最近修改: 2026-01-08 23:03:37</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>errors</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>errors</li>
+</ul>
+<ul>
+<li>在偶尔出现域名解析失败时，core DNS上的探测会自动去探测 168.63.129.16的DNS 解析响应，会出现近10分钟的超时警告</li>
+</ul>
+<ul>
+<li>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 24264</li>
+</ul>
+<ul>
+<li>a.root-servers.net.     1436    IN      AAAA    2001:503:ba3e::2:30</li>
+</ul>
+<ul>
+<li>01:07:44.003403 IP ub20VM.45182 &gt; 168.63.129.16.domain: 60518+ [1au] PTR? 16.129.63.168.in-addr.arpa. (55)</li>
+</ul>
+<ul>
+<li>01:07:46.580166 IP ub20VM.35027 &gt; 168.63.129.16.domain: 9217+ [1au] NS? . (40)</li>
+</ul>
+<ul>
+<li>01:07:46.582886 IP 168.63.129.16.domain &gt; ub20VM.35027: 9217 13/0/19 NS j.root-servers.net., NS a.root-servers.net., NS m.root-servers.net., NS c.root-servers.net., NS f.root-servers.net., NS e.root-servers.net., NS i.root-servers.net., NS l.root-servers.net., NS b.root-servers.net., NS d.root-servers.net., NS g.root-servers.net., NS k.root-servers.net., NS h.root-servers.net. (612)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Miya hu</li>
+</ul>
+<ul>
+<li>参考工单：20240526295525</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=========</li>
+</ul>
+<ul>
+<li>用户在azure 上创建了两台coreDNS 服务器配置了DNS forwarder</li>
+</ul>
+<ul>
+<li>We are using CoreDNS version 1.10.1</li>
+</ul>
+<ul>
+<li>Our CoreDNS configuration is as follows:</li>
+</ul>
+<ul>
+<li>.:53 {</li>
+</ul>
+<ul>
+<li>forward . 168.63.129.16</li>
+</ul>
+<ul>
+<li>cache {</li>
+</ul>
+<ul>
+<li>success 80000</li>
+</ul>
+<ul>
+<li>denial 20000</li>
+</ul>
+<ul>
+<li>serve_stale 15m immediate</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>prometheus :9153</li>
+</ul>
+<ul>
+<li>health :8080</li>
+</ul>
+<ul>
+<li>The query was similar to this dig command: <code>dig @168.63.129.16 . IN NS</code></li>
+</ul>
+<ul>
+<li>recently configured CoreDNS monitoring with Prometheus alerts</li>
+</ul>
+<ul>
+<li>============</li>
+</ul>
+<ul>
+<li>Node id: 10.171.22.143</li>
+</ul>
+<ul>
+<li>Containerid: e47bedb6-c28c-458d-98a8-730642697965</li>
+</ul>
+<ul>
+<li>扩展内容：</li>
+</ul>
+<ul>
+<li>===================================================</li>
+</ul>
+<ul>
+<li>1，根据用户core DNS的探测行为，这里模拟进行测试</li>
+</ul>
+<ul>
+<li>miya@ub20VM:~$ dig @168.63.129.16 . IN NS</li>
+</ul>
+<ul>
+<li>; &lt;&lt;&gt;&gt; DiG 9.16.48-Ubuntu &lt;&lt;&gt;&gt; @168.63.129.16 . IN NS</li>
+</ul>
+<ul>
+<li>; (1 server found)</li>
+</ul>
+<ul>
+<li>;; global options: +cmd</li>
+</ul>
+<ul>
+<li>;; Got answer:</li>
+</ul>
+<ul>
+<li>;; flags: qr rd ra; QUERY: 1, ANSWER: 13, AUTHORITY: 0, ADDITIONAL: 19</li>
+</ul>
+<ul>
+<li>;; OPT PSEUDOSECTION:</li>
+</ul>
+<ul>
+<li>; EDNS: version: 0, flags:; udp: 1224</li>
+</ul>
+<ul>
+<li>; COOKIE: 5fe9e710609c3433 (echoed)</li>
+</ul>
+<ul>
+<li>;; QUESTION SECTION:</li>
+</ul>
+<ul>
+<li>;.                              IN      NS</li>
+</ul>
+<ul>
+<li>;; ANSWER SECTION:</li>
+</ul>
+<ul>
+<li>.                       518036  IN      NS      d.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                       518036  IN      NS      l.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                       518036  IN      NS      g.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                       518036  IN      NS      m.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                       518036  IN      NS      e.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                       518036  IN      NS      a.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                       518036  IN      NS      i.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                       518036  IN      NS      c.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                       518036  IN      NS      h.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                       518036  IN      NS      j.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                       518036  IN      NS      b.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                       518036  IN      NS      f.root-servers.net.</li>
+</ul>
+<ul>
+<li>.                       518036  IN      NS      k.root-servers.net.</li>
+</ul>
+<ul>
+<li>;; ADDITIONAL SECTION:</li>
+</ul>
+<ul>
+<li>d.root-servers.net.     1436    IN      A       199.7.91.13</li>
+</ul>
+<ul>
+<li>d.root-servers.net.     1436    IN      AAAA    2001:500:2d::d</li>
+</ul>
+<ul>
+<li>l.root-servers.net.     1436    IN      A       199.7.83.42</li>
+</ul>
+<ul>
+<li>g.root-servers.net.     1382    IN      A       192.112.36.4</li>
+</ul>
+<ul>
+<li>m.root-servers.net.     1436    IN      A       202.12.27.33</li>
+</ul>
+<ul>
+<li>e.root-servers.net.     1436    IN      A       192.203.230.10</li>
+</ul>
+<ul>
+<li>e.root-servers.net.     1436    IN      AAAA    2001:500:a8::e</li>
+</ul>
+<ul>
+<li>a.root-servers.net.     1436    IN      A       198.41.0.4</li>
+</ul>
+<ul>
+<li>i.root-servers.net.     1436    IN      A       192.36.148.17</li>
+</ul>
+<ul>
+<li>c.root-servers.net.     1436    IN      A       192.33.4.12</li>
+</ul>
+<ul>
+<li>c.root-servers.net.     1436    IN      AAAA    2001:500:2::c</li>
+</ul>
+<ul>
+<li>h.root-servers.net.     1436    IN      A       198.97.190.53</li>
+</ul>
+<ul>
+<li>j.root-servers.net.     1436    IN      A       192.58.128.30</li>
+</ul>
+<ul>
+<li>b.root-servers.net.     1436    IN      A       170.247.170.2</li>
+</ul>
+<ul>
+<li>b.root-servers.net.     1436    IN      AAAA    2801:1b8:10::b</li>
+</ul>
+<ul>
+<li>f.root-servers.net.     1436    IN      A       192.5.5.241</li>
+</ul>
+<ul>
+<li>k.root-servers.net.     1436    IN      A       193.0.14.129</li>
+</ul>
+<ul>
+<li>;; Query time: 4 msec</li>
+</ul>
+<ul>
+<li>;; SERVER: 168.63.129.16#53(168.63.129.16)</li>
+</ul>
+<ul>
+<li>;; WHEN: Wed May 29 03:09:33 UTC 2024</li>
+</ul>
+<ul>
+<li>;; MSG SIZE  rcvd: 612</li>
+</ul>
+<ul>
+<li>root@ub20VM:/home/miya# tcpdump -i any udp port 53</li>
+</ul>
+<ul>
+<li>listening on any, link-type LINUX_SLL (Linux cooked v1), capture size 262144 bytes</li>
+</ul>
+<ul>
+<li>01:07:44.002559 IP ub20VM.48460 &gt; 168.63.129.16.domain: 44818+ [1au] NS? . (40)</li>
+</ul>
+<ul>
+<li>01:07:44.003143 IP localhost.43451 &gt; localhost.domain: 57985+ [1au] PTR? 16.129.63.168.in-addr.arpa. (55)</li>
+</ul>
+<ul>
+<li>01:07:44.003360 IP ub20VM.35089 &gt; 168.63.129.16.domain: 38439+ [1au] PTR? 16.129.63.168.in-addr.arpa. (55)</li>
+</ul>
+<ul>
+<li>01:07:44.004910 IP 168.63.129.16.domain &gt; ub20VM.35089: 38439 NXDomain 0/1/1 (141)</li>
+</ul>
+<ul>
+<li>01:07:44.005064 IP ub20VM.35089 &gt; 168.63.129.16.domain: 38439+ PTR? 16.129.63.168.in-addr.arpa. (44)</li>
+</ul>
+<ul>
+<li>01:07:44.005084 IP 168.63.129.16.domain &gt; ub20VM.45182: 60518 NXDomain 0/1/1 (141)</li>
+</ul>
+<ul>
+<li>01:07:44.010020 IP localhost.49177 &gt; localhost.domain: 3110+ [1au] PTR? 53.0.0.127.in-addr.arpa. (52)</li>
+</ul>
+<ul>
+<li>01:07:48.577948 IP ub20VM.48447 &gt; 168.63.129.16.domain: 45849+ [1au] NS? . (40)</li>
+</ul>
+<ul>
+<li>01:07:48.580787 IP 168.63.129.16.domain &gt; ub20VM.48447: 45849 13/0/27 NS l.root-servers.net., NS g.root-servers.net., NS i.root-servers.net., NS c.root-servers.net., NS f.root-servers.net., NS e.root-servers.net., NS k.root-servers.net., NS a.root-servers.net., NS j.root-servers.net., NS d.root-servers.net., NS h.root-servers.net., NS b.root-servers.net., NS m.root-servers.net. (836)</li>
+</ul>
+<ul>
+<li>^C</li>
+</ul>
+<ul>
+<li>12 packets captured</li>
+</ul>
+<ul>
+<li>34 packets received by filter</li>
+</ul>
+<ul>
+<li>root@ub20VM:/home/miya# ^C</li>
+</ul>
+<ul>
+<li>VM 所在Node 的IP：10.250.8.34</li>
+</ul>
+<ul>
+<li>VM 的container ID</li>
+</ul>
+<ul>
+<li>日志中 interface IP是DNS服务器所在Windows VM的DIP；Source IP是发起解析请求的VM所在底层Hpyter-v host的IP</li>
+</ul>
+<ul>
+<li>在ubuntu VM 装相应的工具后进行解析packetdata， 可以看到具体发出的请求与测试内容一致，并解析DNS response 内容与测试VM 获得的返回值一致:</li>
+</ul>
+<ul>
+<li>apt update</li>
+</ul>
+<ul>
+<li>sudo apt install python3 python3-pip</li>
+</ul>
+<ul>
+<li>sudo pip3 install dnslib</li>
+</ul>
+<ul>
+<li>touch decodens.py</li>
+</ul>
+<ul>
+<li>vim decodens.py</li>
+</ul>
+<ul>
+<li>Python3:</li>
+</ul>
+<ul>
+<li>#!/usr/bin/python3</li>
+</ul>
+<ul>
+<li>#coding: utf-8</li>
+</ul>
+<ul>
+<li>import sys</li>
+</ul>
+<ul>
+<li>import dnslib</li>
+</ul>
+<ul>
+<li>print(dnspacket) # Print output</li>
+</ul>
+<ul>
+<li>chmod +x decodens.py</li>
+</ul>
+<ul>
+<li>./decodens.py 01BA012000010000000000000000020001</li>
+</ul>
+<ul>
+<li>相关参考：</li>
+</ul>
+<ul>
+<li>Azure subscription limits and quotas - Azure Resource Manager | Azure Docs</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>[Geneva]查询VM DNS 请求超过限制</li>
+</ul>
+<ul>
+<li>log</li>
+</ul>
+<ul>
+<li>There was no specific domain involved; the failed requests were NS Queries performed by the forward plugin as part of health checks.</li>
+</ul>
+<ul>
+<li>根据azure 上虚拟机的DNS解析过程来排查相关日志：</li>
+</ul>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>1，首先在ASC或kusto中查询到这台虚拟机的node ID 和container id</li>
+</ul>
+<ul>
+<li>2， 查询虚拟机所在node上的DNS forwarder 服务相关DNS查询日志记录，这里可以明显看到有UDP 报文被drop的现象。</li>
+</ul>
+<ul>
+<li>3， 结合官网给出的VM DNS 查询限制：Azure subscription limits and quotas - Azure Resource Manager | Azure Docs    可以明显看到DNS 请求因为Qps 超限制而被drop</li>
+</ul>
+<ul>
+<li>测试DNS 的请求并通过Geneva 查询相关日志排查过程：</li>
+</ul>
+<ul>
+<li>进行抓包</li>
+</ul>
+<ul>
+<li>20 packets dropped by kernel</li>
+</ul>
+<ul>
+<li>这里查询VM 所在host上的DNS forwarder 的日志</li>
+</ul>
+<ul>
+<li>继续查询IDNS 上收到的请求及响应:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>tcpdump: verbose output suppressed, use -v or -vv for full protocol decode</li>
+</ul>
+<ul>
+<li>packethex = sys.argv[1] # This is the binary in hex encoding</li>
+</ul>
+<ul>
+<li>packet = bytes.fromhex(packethex) # Packet decoded from hex</li>
+</ul>
+<ul>
+<li>dnspacket = dnslib.DNSRecord.parse(packet) # Parse binary and convert it into human readable strings</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/2B1D7E52" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/2B1D7E52</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/5CCF4ED0" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/5CCF4ED0</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/FA9517C0" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/FA9517C0</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>[Geneva]查询VM DNS 请求超过限制</p>
+<p>Update</p>
+<p>Miya hu</p>
+<p>参考工单：20240526295525</p>
+<p>问题描述：</p>
+<p>=========</p>
+<p>用户在azure 上创建了两台coreDNS 服务器配置了DNS forwarder</p>
+<p>We are using CoreDNS version 1.10.1</p>
+<p>Our CoreDNS configuration is as follows:</p>
+<p>.:53 {</p>
+<p>forward . 168.63.129.16</p>
+<p>cache {</p>
+<p>success 80000</p>
+<p>denial 20000</p>
+<p>serve_stale 15m immediate</p>
+<p>}</p>
+<p>log</p>
+<p>errors</p>
+<p>prometheus :9153</p>
+<p>health :8080</p>
+<p>在偶尔出现域名解析失败时，core DNS上的探测会自动去探测 168.63.129.16的DNS 解析响应，会出现近10分钟的超时警告</p>
+<p>There was no specific domain involved; the failed requests were NS Queries performed by the forward plugin as part of health checks.</p>
+<p>The query was similar to this dig command: <code>dig @168.63.129.16 . IN NS</code></p>
+<p>recently configured CoreDNS monitoring with Prometheus alerts</p>
+<p>根据azure 上虚拟机的DNS解析过程来排查相关日志：</p>
+<p>排查过程：</p>
+<p>============</p>
+<p>1，首先在ASC或kusto中查询到这台虚拟机的node ID 和container id</p>
+<p>Node id: 10.171.22.143</p>
+<p>Containerid: e47bedb6-c28c-458d-98a8-730642697965</p>
+<p>2， 查询虚拟机所在node上的DNS forwarder 服务相关DNS查询日志记录，这里可以明显看到有UDP 报文被drop的现象。</p>
+<p><a href="https://portal.microsoftgeneva.com/s/2B1D7E52" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/2B1D7E52</a></p>
+<p>3， 结合官网给出的VM DNS 查询限制：Azure subscription limits and quotas - Azure Resource Manager | Azure Docs    可以明显看到DNS 请求因为Qps 超限制而被drop</p>
+<p>扩展内容：</p>
+<p>测试DNS 的请求并通过Geneva 查询相关日志排查过程：</p>
+<p>===================================================</p>
+<p>1，根据用户core DNS的探测行为，这里模拟进行测试</p>
+<p>miya@ub20VM:~$ dig @168.63.129.16 . IN NS</p>
+<p>; &lt;&lt;&gt;&gt; DiG 9.16.48-Ubuntu &lt;&lt;&gt;&gt; @168.63.129.16 . IN NS</p>
+<p>; (1 server found)</p>
+<p>;; global options: +cmd</p>
+<p>;; Got answer:</p>
+<p>;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 24264</p>
+<p>;; flags: qr rd ra; QUERY: 1, ANSWER: 13, AUTHORITY: 0, ADDITIONAL: 19</p>
+<p>;; OPT PSEUDOSECTION:</p>
+<p>; EDNS: version: 0, flags:; udp: 1224</p>
+<p>; COOKIE: 5fe9e710609c3433 (echoed)</p>
+<p>;; QUESTION SECTION:</p>
+<p>;.                              IN      NS</p>
+<p>;; ANSWER SECTION:</p>
+<p>.                       518036  IN      NS      d.root-servers.net.</p>
+<p>.                       518036  IN      NS      l.root-servers.net.</p>
+<p>.                       518036  IN      NS      g.root-servers.net.</p>
+<p>.                       518036  IN      NS      m.root-servers.net.</p>
+<p>.                       518036  IN      NS      e.root-servers.net.</p>
+<p>.                       518036  IN      NS      a.root-servers.net.</p>
+<p>.                       518036  IN      NS      i.root-servers.net.</p>
+<p>.                       518036  IN      NS      c.root-servers.net.</p>
+<p>.                       518036  IN      NS      h.root-servers.net.</p>
+<p>.                       518036  IN      NS      j.root-servers.net.</p>
+<p>.                       518036  IN      NS      b.root-servers.net.</p>
+<p>.                       518036  IN      NS      f.root-servers.net.</p>
+<p>.                       518036  IN      NS      k.root-servers.net.</p>
+<p>;; ADDITIONAL SECTION:</p>
+<p>d.root-servers.net.     1436    IN      A       199.7.91.13</p>
+<p>d.root-servers.net.     1436    IN      AAAA    2001:500:2d::d</p>
+<p>l.root-servers.net.     1436    IN      A       199.7.83.42</p>
+<p>g.root-servers.net.     1382    IN      A       192.112.36.4</p>
+<p>m.root-servers.net.     1436    IN      A       202.12.27.33</p>
+<p>e.root-servers.net.     1436    IN      A       192.203.230.10</p>
+<p>e.root-servers.net.     1436    IN      AAAA    2001:500:a8::e</p>
+<p>a.root-servers.net.     1436    IN      A       198.41.0.4</p>
+<p>a.root-servers.net.     1436    IN      AAAA    2001:503:ba3e::2:30</p>
+<p>i.root-servers.net.     1436    IN      A       192.36.148.17</p>
+<p>c.root-servers.net.     1436    IN      A       192.33.4.12</p>
+<p>c.root-servers.net.     1436    IN      AAAA    2001:500:2::c</p>
+<p>h.root-servers.net.     1436    IN      A       198.97.190.53</p>
+<p>j.root-servers.net.     1436    IN      A       192.58.128.30</p>
+<p>b.root-servers.net.     1436    IN      A       170.247.170.2</p>
+<p>b.root-servers.net.     1436    IN      AAAA    2801:1b8:10::b</p>
+<p>f.root-servers.net.     1436    IN      A       192.5.5.241</p>
+<p>k.root-servers.net.     1436    IN      A       193.0.14.129</p>
+<p>;; Query time: 4 msec</p>
+<p>;; SERVER: 168.63.129.16#53(168.63.129.16)</p>
+<p>;; WHEN: Wed May 29 03:09:33 UTC 2024</p>
+<p>;; MSG SIZE  rcvd: 612</p>
+<p>进行抓包</p>
+<p>root@ub20VM:/home/miya# tcpdump -i any udp port 53</p>
+<p>tcpdump: verbose output suppressed, use -v or -vv for full protocol decode</p>
+<p>listening on any, link-type LINUX_SLL (Linux cooked v1), capture size 262144 bytes</p>
+<p>01:07:44.002559 IP ub20VM.48460 &gt; 168.63.129.16.domain: 44818+ [1au] NS? . (40)</p>
+<p>01:07:44.003143 IP localhost.43451 &gt; localhost.domain: 57985+ [1au] PTR? 16.129.63.168.in-addr.arpa. (55)</p>
+<p>01:07:44.003360 IP ub20VM.35089 &gt; 168.63.129.16.domain: 38439+ [1au] PTR? 16.129.63.168.in-addr.arpa. (55)</p>
+<p>01:07:44.003403 IP ub20VM.45182 &gt; 168.63.129.16.domain: 60518+ [1au] PTR? 16.129.63.168.in-addr.arpa. (55)</p>
+<p>01:07:44.004910 IP 168.63.129.16.domain &gt; ub20VM.35089: 38439 NXDomain 0/1/1 (141)</p>
+<p>01:07:44.005064 IP ub20VM.35089 &gt; 168.63.129.16.domain: 38439+ PTR? 16.129.63.168.in-addr.arpa. (44)</p>
+<p>01:07:44.005084 IP 168.63.129.16.domain &gt; ub20VM.45182: 60518 NXDomain 0/1/1 (141)</p>
+<p>01:07:44.010020 IP localhost.49177 &gt; localhost.domain: 3110+ [1au] PTR? 53.0.0.127.in-addr.arpa. (52)</p>
+<p>01:07:46.580166 IP ub20VM.35027 &gt; 168.63.129.16.domain: 9217+ [1au] NS? . (40)</p>
+<p>01:07:46.582886 IP 168.63.129.16.domain &gt; ub20VM.35027: 9217 13/0/19 NS j.root-servers.net., NS a.root-servers.net., NS m.root-servers.net., NS c.root-servers.net., NS f.root-servers.net., NS e.root-servers.net., NS i.root-servers.net., NS l.root-servers.net., NS b.root-servers.net., NS d.root-servers.net., NS g.root-servers.net., NS k.root-servers.net., NS h.root-servers.net. (612)</p>
+<p>01:07:48.577948 IP ub20VM.48447 &gt; 168.63.129.16.domain: 45849+ [1au] NS? . (40)</p>
+<p>01:07:48.580787 IP 168.63.129.16.domain &gt; ub20VM.48447: 45849 13/0/27 NS l.root-servers.net., NS g.root-servers.net., NS i.root-servers.net., NS c.root-servers.net., NS f.root-servers.net., NS e.root-servers.net., NS k.root-servers.net., NS a.root-servers.net., NS j.root-servers.net., NS d.root-servers.net., NS h.root-servers.net., NS b.root-servers.net., NS m.root-servers.net. (836)</p>
+<p>^C</p>
+<p>12 packets captured</p>
+<p>34 packets received by filter</p>
+<p>20 packets dropped by kernel</p>
+<p>root@ub20VM:/home/miya# ^C</p>
+<p>这里查询VM 所在host上的DNS forwarder 的日志</p>
+<p><a href="https://portal.microsoftgeneva.com/s/5CCF4ED0" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/5CCF4ED0</a></p>
+<p>VM 所在Node 的IP：10.250.8.34</p>
+<p>VM 的container ID</p>
+<p>继续查询IDNS 上收到的请求及响应:</p>
+<p>日志中 interface IP是DNS服务器所在Windows VM的DIP；Source IP是发起解析请求的VM所在底层Hpyter-v host的IP</p>
+<p>在ubuntu VM 装相应的工具后进行解析packetdata， 可以看到具体发出的请求与测试内容一致，并解析DNS response 内容与测试VM 获得的返回值一致:</p>
+<p>apt update</p>
+<p>sudo apt install python3 python3-pip</p>
+<p>sudo pip3 install dnslib</p>
+<p>touch decodens.py</p>
+<p>vim decodens.py</p>
+<p>Python3:</p>
+<p>#!/usr/bin/python3</p>
+<p>#coding: utf-8</p>
+<p>import sys</p>
+<p>import dnslib</p>
+<p>packethex = sys.argv[1] # This is the binary in hex encoding</p>
+<p>packet = bytes.fromhex(packethex) # Packet decoded from hex</p>
+<p>dnspacket = dnslib.DNSRecord.parse(packet) # Parse binary and convert it into human readable strings</p>
+<p>print(dnspacket) # Print output</p>
+<p>chmod +x decodens.py</p>
+<p><a href="https://portal.microsoftgeneva.com/s/FA9517C0" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/FA9517C0</a></p>
+<p>./decodens.py 01BA012000010000000000000000020001</p>
+<p>相关参考：</p>
+<p>Azure subscription limits and quotas - Azure Resource Manager | Azure Docs</p></article>

@@ -1,0 +1,179 @@
+<article class="kb-article" data-title="Vnet使用自定义DNS, P2S VPN使用AAD认证，拨号后客户端DNS问题"><h1>Vnet使用自定义DNS, P2S VPN使用AAD认证，拨号后客户端DNS问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-07-19 15:46:23</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>在有自定义DNS服务器的Vnet中创建了VPN网关，并创建了使用AAD认证的P2S链接，拨号后客户端无法正常访问公网</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>在有自定义DNS服务器的Vnet中创建了VPN网关，并创建了使用AAD认证的P2S链接，拨号后客户端无法正常访问公网</li>
+</ul>
+<ul>
+<li>1.测试发现通过公网IP访问公网正常，当前访问报错是由于DNS无法解析公网域名。</li>
+</ul>
+<ul>
+<li>对于Vnet上的DNS服务器从P2S客户端无法访问的情形（比如有NSG规则阻挡），最终用户可以在Azure VPN的配置文件中找到如下部分：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>[‎12‎/‎21‎/‎2021‎ ‎9‎:‎41‎:‎37‎ ‎AM] PId:[00007380] TId:[00002412] [VnetEast] [{5434fce6-83bd-4d5f-8779-b2fb30064b07}] [Verbose] Received option: dhcp-option DNS 114.114.114.114</li>
+</ul>
+<ul>
+<li>[‎12‎/‎21‎/‎2021‎ ‎9‎:‎41‎:‎37‎ ‎AM] PId:[00007380] TId:[00002412] [VnetEast] [{5434fce6-83bd-4d5f-8779-b2fb30064b07}] [Verbose] Assigned DNS Server : 114.114.114.114</li>
+</ul>
+<ul>
+<li>[‎12‎/‎21‎/‎2021‎ ‎9‎:‎41‎:‎37‎ ‎AM] PId:[00007380] TId:[00002412] [VnetEast] [{5434fce6-83bd-4d5f-8779-b2fb30064b07}] [Verbose] Received option: cipher AES-256-GCM</li>
+</ul>
+<ul>
+<li>[‎12‎/‎21‎/‎2021‎ ‎9‎:‎41‎:‎37‎ ‎AM] PId:[00007380] TId:[00005416] [VnetEast] [{5434fce6-83bd-4d5f-8779-b2fb30064b07}] [Verbose] Session established!</li>
+</ul>
+<ul>
+<li>……</li>
+</ul>
+<ul>
+<li>NameServers                      : 114.114.114.114</li>
+</ul>
+<ul>
+<li>DnsSecIPsecCARestriction         :</li>
+</ul>
+<ul>
+<li>DnsSecQueryIPsecEncryption       :</li>
+</ul>
+<ul>
+<li>DnsSecQueryIPsecRequired         : False</li>
+</ul>
+<ul>
+<li>DnsSecValidationRequired         : False</li>
+</ul>
+<ul>
+<li>NameEncoding                     : Utf8WithoutMapping</li>
+</ul>
+<ul>
+<li>…..</li>
+</ul>
+<ul>
+<li>NameServers                      : {114.114.114.114, 8.8.8.8}</li>
+</ul>
+<ul>
+<li>问题结论：</li>
+</ul>
+<ul>
+<li>&lt;dnsservers&gt;</li>
+</ul>
+<ul>
+<li>&lt;DnsServerEntry&gt;</li>
+</ul>
+<ul>
+<li>&lt;dnsserver&gt;x.x.x.x&lt;/dnsserver&gt;</li>
+</ul>
+<ul>
+<li>&lt;/DnsServerEntry&gt;</li>
+</ul>
+<ul>
+<li>&lt;/dnsservers&gt;</li>
+</ul>
+<ul>
+<li>&lt;dnsserver&gt;114.114.114.114&lt;/dnsserver&gt;</li>
+</ul>
+<ul>
+<li>在Windows搜索栏搜索 “Group Policy”</li>
+</ul>
+<ul>
+<li>参考工单：20211217138587</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>2.查看到拨号后，使用了Vnet中自定义DNS服务器，由于此DNS服务器没有配置转发，无法解析公网域名。</li>
+</ul>
+<ul>
+<li>3.对于客户端拨号后，使用Vnet的自定义DNS的问题，查看拨号日志，可以看到这是在拨号过程中被下发给客户端，随后将其应用到客户端的DNS NRPT表中（测试环境中Vnet自定义的DNS服务器为114.114.114.114）：</li>
+</ul>
+<ul>
+<li>PS &gt; Get-DnsClientNrptPolicy</li>
+</ul>
+<ul>
+<li>其中， 114.114.114.114为国内常用的DNS服务器地址。这样的话，这个DNS服务器地址会加入到客户端的DNS NRPT规则中。当Vnet中的DNS服务器不可达时，客户端会自动尝试使用该地址进行访问。</li>
+</ul>
+<ul>
+<li>对于Vnet上的DNS服务器可达，但无法解析的情形（比如返回NxDomain），当前可用的方法是每次拨号后手动删除DNS客户端NRPT中的的相应规则。具体方法：</li>
+</ul>
+<ul>
+<li>删除NRPT规则中Namespace为”.”，DNS服务器为Vnet上自定义的DNS服务器地址的那条记录（示例如下）：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>OpenVPN Azure AD 客户端使用 DNS 名称解析策略表 (NRPT) 条目，这意味着不会在 ipconfig /all 的输出下列出 DNS 服务器。 若要确认使用中的 DNS 设置，请使用 PowerShell 中的 Get-DnsClientNrptPolicy</li>
+</ul>
+<ul>
+<li>Azure VPN网关推送Vnet上自定义的DNS服务器到客户端的做法实际是OpenVPN本身的行为 (Pushing DHCP Options To Clients | OpenVPN)。当前产品没有提供任何可以禁用此行为的参数，无论是通过Powershell还是CLI命令行，因此，这个行为是无法改变的。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>4.尝试修改配置文件中DNS server相关配置，但是这个DNS服务器地址是在P2S协商的过程中指派的，并非从配置文件中获取，因此即使在配置文件中将DNS Server的字段删除，此配置依然会被下发并被应用到客户端。如果在配置文件中将此服务器修改为其他地址，比如8.8.8.8，从我们的验证结果来看，客户端只会将这个地址“添加”到DNS服务器上，而不会“代替”VPN 网关下发的地址：</li>
+</ul>
+<ul>
+<li>Workaround:</li>
+</ul>
+<ul>
+<li>将其修改为：</li>
+</ul>
+<ul>
+<li>导航到”Name Resolution Policy”</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>问题描述：</p>
+<p>在有自定义DNS服务器的Vnet中创建了VPN网关，并创建了使用AAD认证的P2S链接，拨号后客户端无法正常访问公网</p>
+<p>排查过程：</p>
+<p>1.测试发现通过公网IP访问公网正常，当前访问报错是由于DNS无法解析公网域名。</p>
+<p>2.查看到拨号后，使用了Vnet中自定义DNS服务器，由于此DNS服务器没有配置转发，无法解析公网域名。</p>
+<p>3.对于客户端拨号后，使用Vnet的自定义DNS的问题，查看拨号日志，可以看到这是在拨号过程中被下发给客户端，随后将其应用到客户端的DNS NRPT表中（测试环境中Vnet自定义的DNS服务器为114.114.114.114）：</p>
+<p>[‎12‎/‎21‎/‎2021‎ ‎9‎:‎41‎:‎37‎ ‎AM] PId:[00007380] TId:[00002412] [VnetEast] [{5434fce6-83bd-4d5f-8779-b2fb30064b07}] [Verbose] Received option: dhcp-option DNS 114.114.114.114</p>
+<p>[‎12‎/‎21‎/‎2021‎ ‎9‎:‎41‎:‎37‎ ‎AM] PId:[00007380] TId:[00002412] [VnetEast] [{5434fce6-83bd-4d5f-8779-b2fb30064b07}] [Verbose] Assigned DNS Server : 114.114.114.114</p>
+<p>[‎12‎/‎21‎/‎2021‎ ‎9‎:‎41‎:‎37‎ ‎AM] PId:[00007380] TId:[00002412] [VnetEast] [{5434fce6-83bd-4d5f-8779-b2fb30064b07}] [Verbose] Received option: cipher AES-256-GCM</p>
+<p>[‎12‎/‎21‎/‎2021‎ ‎9‎:‎41‎:‎37‎ ‎AM] PId:[00007380] TId:[00005416] [VnetEast] [{5434fce6-83bd-4d5f-8779-b2fb30064b07}] [Verbose] Session established!</p>
+<p>PS &gt; Get-DnsClientNrptPolicy</p>
+<p>……</p>
+<p>NameServers                      : 114.114.114.114</p>
+<p>DnsSecIPsecCARestriction         :</p>
+<p>DnsSecQueryIPsecEncryption       :</p>
+<p>DnsSecQueryIPsecRequired         : False</p>
+<p>DnsSecValidationRequired         : False</p>
+<p>NameEncoding                     : Utf8WithoutMapping</p>
+<p>OpenVPN Azure AD 客户端使用 DNS 名称解析策略表 (NRPT) 条目，这意味着不会在 ipconfig /all 的输出下列出 DNS 服务器。 若要确认使用中的 DNS 设置，请使用 PowerShell 中的 Get-DnsClientNrptPolicy</p>
+<p>4.尝试修改配置文件中DNS server相关配置，但是这个DNS服务器地址是在P2S协商的过程中指派的，并非从配置文件中获取，因此即使在配置文件中将DNS Server的字段删除，此配置依然会被下发并被应用到客户端。如果在配置文件中将此服务器修改为其他地址，比如8.8.8.8，从我们的验证结果来看，客户端只会将这个地址“添加”到DNS服务器上，而不会“代替”VPN 网关下发的地址：</p>
+<p>…..</p>
+<p>NameServers                      : {114.114.114.114, 8.8.8.8}</p>
+<p>问题结论：</p>
+<p>Azure VPN网关推送Vnet上自定义的DNS服务器到客户端的做法实际是OpenVPN本身的行为 (Pushing DHCP Options To Clients | OpenVPN)。当前产品没有提供任何可以禁用此行为的参数，无论是通过Powershell还是CLI命令行，因此，这个行为是无法改变的。</p>
+<p>Workaround:</p>
+<p>对于Vnet上的DNS服务器从P2S客户端无法访问的情形（比如有NSG规则阻挡），最终用户可以在Azure VPN的配置文件中找到如下部分：</p>
+<p>&lt;dnsservers&gt;</p>
+<p>&lt;DnsServerEntry&gt;</p>
+<p>&lt;dnsserver&gt;x.x.x.x&lt;/dnsserver&gt;</p>
+<p>&lt;/DnsServerEntry&gt;</p>
+<p>&lt;/dnsservers&gt;</p>
+<p>将其修改为：</p>
+<p>&lt;dnsserver&gt;114.114.114.114&lt;/dnsserver&gt;</p>
+<p>其中， 114.114.114.114为国内常用的DNS服务器地址。这样的话，这个DNS服务器地址会加入到客户端的DNS NRPT规则中。当Vnet中的DNS服务器不可达时，客户端会自动尝试使用该地址进行访问。</p>
+<p>对于Vnet上的DNS服务器可达，但无法解析的情形（比如返回NxDomain），当前可用的方法是每次拨号后手动删除DNS客户端NRPT中的的相应规则。具体方法：</p>
+<p>在Windows搜索栏搜索 “Group Policy”</p>
+<p>导航到”Name Resolution Policy”</p>
+<p>删除NRPT规则中Namespace为”.”，DNS服务器为Vnet上自定义的DNS服务器地址的那条记录（示例如下）：</p>
+<p>参考工单：20211217138587</p></article>

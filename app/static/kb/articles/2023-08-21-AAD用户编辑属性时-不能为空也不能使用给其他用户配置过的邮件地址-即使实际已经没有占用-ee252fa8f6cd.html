@@ -1,0 +1,93 @@
+<article class="kb-article" data-title="AAD用户编辑属性时，不能为空也不能使用给其他用户配置过的邮件地址，即使实际已经没有占用"><h1>AAD用户编辑属性时，不能为空也不能使用给其他用户配置过的邮件地址，即使实际已经没有占用</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: Kusto Jarvis常用命令</li>
+<li>最近修改: 2023-08-21 14:20:00</li>
+<li>JD 相关性: 自动化/命令工具; Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题报错：</li>
+</ul>
+<ul>
+<li>改为空报错报错：</li>
+</ul>
+<ul>
+<li>如果使用别的用户已经使用了，包括之前配置过的邮箱地址就会报您截图第三条的报错：</li>
+</ul>
+<ul>
+<li>点击这个报错记录就可以跳转到已经使用这个邮件地址的用户：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>johnny</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>如果之前写过邮件地址，是不能删除为空之后保存的，我测试可以复现您的问题，您可以直接修改一个没有使用过的邮箱地址：</li>
+</ul>
+<ul>
+<li>直接改一个没有用过的邮箱，可以保存：</li>
+</ul>
+<ul>
+<li>ccc1@163.com 之前给jo1账号配置过:</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>通过查找文档发现这个情况就是设计决定的，因为之前的邮件地址会保存在AAD的邮件历史中：</li>
+</ul>
+<ul>
+<li>Azure b2c Proxy address &quot;history&quot; block assignation of email - Microsoft Q&amp;A</li>
+</ul>
+<ul>
+<li>转到一个描述和您当前情况一致的更详细的文档：</li>
+</ul>
+<ul>
+<li>Remove old proxyaddress entry for user in azure active directory - Stack Overflow</li>
+</ul>
+<ul>
+<li>由于对仅限云的用户的代理地址属性是只读的，所以删除不了历史，只有如下非官方的方法：</li>
+</ul>
+<ul>
+<li>这是需要删除之前使用过这个地址的用户才能操作实现，请您评估之后再考虑是否使用。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>johnny</p>
+<p>问题报错：</p>
+<p>=======</p>
+<p>如果之前写过邮件地址，是不能删除为空之后保存的，我测试可以复现您的问题，您可以直接修改一个没有使用过的邮箱地址：</p>
+<p>改为空报错报错：</p>
+<p>直接改一个没有用过的邮箱，可以保存：</p>
+<p>如果使用别的用户已经使用了，包括之前配置过的邮箱地址就会报您截图第三条的报错：</p>
+<p>点击这个报错记录就可以跳转到已经使用这个邮件地址的用户：</p>
+<p>ccc1@163.com 之前给jo1账号配置过:</p>
+<p>问题原因：</p>
+<p>通过查找文档发现这个情况就是设计决定的，因为之前的邮件地址会保存在AAD的邮件历史中：</p>
+<p>Azure b2c Proxy address &quot;history&quot; block assignation of email - Microsoft Q&amp;A</p>
+<p>解决方案：</p>
+<p>转到一个描述和您当前情况一致的更详细的文档：</p>
+<p>Remove old proxyaddress entry for user in azure active directory - Stack Overflow</p>
+<p>由于对仅限云的用户的代理地址属性是只读的，所以删除不了历史，只有如下非官方的方法：</p>
+<p>这是需要删除之前使用过这个地址的用户才能操作实现，请您评估之后再考虑是否使用。</p></article>

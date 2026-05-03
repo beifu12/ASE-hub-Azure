@@ -1,0 +1,127 @@
+<article class="kb-article" data-title="【share】Ubuntu系统配置rsyslog接收日志问题"><h1>【share】Ubuntu系统配置rsyslog接收日志问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-27 10:24:23</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错信息</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错信息</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题背景：</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>/subscriptions/4a064d3b-b7e9-4566-960f-948b42692735/resourceGroups/rg-itps-cne2-prode1-prod-hub/providers/Microsoft.Compute/virtualMachines/aclmvdpmon02</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>Ubuntu-test作为接受日志的vm，Ubuntu发送日志。</li>
+</ul>
+<ul>
+<li>1，Ubuntu-test：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>最近有个工单20241125326692，Ubuntu系统配置rsyslog接收日志的问题。与李老师沟通是权限问题导致，测试在/var/log下创建的目录，可以正常接收日志。但是客户不采用这种方式，需要解决在自己创建的根目录/mnt/rsyslog下可以成功接受日志。</li>
+</ul>
+<ul>
+<li>两台Azure Ubuntu vm ，一台vm配置rsyslog接受日志，另一台vm发送日志。</li>
+</ul>
+<ul>
+<li>Apparmor安全模块阻止了rsyslog</li>
+</ul>
+<ul>
+<li>/etc/apparmor.d/usr.sbin.rsyslogd 这个目录下可以看到Apparmor保护的程序，移除这个进程，就成功了。</li>
+</ul>
+<ul>
+<li>创建目录/test1125，修改rsyslog配置文件/etc/rsyslog.conf，重启rsyslog服务</li>
+</ul>
+<ul>
+<li>rsyslog配置文件/etc/rsyslog.conf信息：</li>
+</ul>
+<ul>
+<li>重启rsyslog服务，Ubuntu发送日志，查看rsyslog状态，出现报错</li>
+</ul>
+<ul>
+<li>2，/etc/apparmor.d/usr.sbin.rsyslogd 这个目录下可以看到Apparmor保护的程序，移除这个进程</li>
+</ul>
+<ul>
+<li>查看看不到这个进程后，重启rsyslog服务，Ubuntu发送日志，/test1125可以接受到日志了。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在另一台vm发送日志，参考命令：logger -n 172.31.1.1 -P 514 -t &quot;test_tag&quot; &quot;This is a test log message&quot;</li>
+</ul>
+<ul>
+<li>然后在aclmvdpmon02使用命令查看systemctl status rsyslog.service，出现报错信息且在rsyslog配置文件对应的根目录下没有接受日志存在。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>后续发现是Apparmor安全模块阻止了rsyslog，解决方法分享给大家，供大家参考：</li>
+</ul>
+<ul>
+<li>解决方法：</li>
+</ul>
+<ul>
+<li>测试解决方案参考：</li>
+</ul>
+<ul>
+<li>新建目录mkdir /etc/apparmor.d/disable/</li>
+</ul>
+<ul>
+<li>软链接ln -s /etc/apparmor.d/usr.sbin.rsyslogd /etc/apparmor.d/disable/</li>
+</ul>
+<ul>
+<li>执行apparmor_parser -R /etc/apparmor.d/disable/usr.sbin.rsyslogd</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Nov 25 11:38:53 aclmvdpmon02 rsyslogd[3577234]: rsyslogd: error during config processing: omfile: creating parent directories for file  &#39;/mnt/rsyslog/10.59.176.69/10.59.176.69_2024-11-25.log&#39; failed: Permission denied [v8.2312.0 try <a href="https://www.rsyslog.com/e/2207]" target="_blank" rel="noopener">https://www.rsyslog.com/e/2207]</a></li>
+</ul>
+<ul>
+<li>Nov 25 11:38:53 aclmvdpmon02 rsyslogd[3577234]: rsyslogd: error during config processing: Could not open dynamic file &#39;/mnt/rsyslog/10.59.176.69/10.59.176.69_2024-11-25.log&#39; [state -3000] - discarding message [v8.2312.0 try <a href="https://www.rsyslog.com/e/2207]" target="_blank" rel="noopener">https://www.rsyslog.com/e/2207]</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/11/27</p>
+<p>最近有个工单20241125326692，Ubuntu系统配置rsyslog接收日志的问题。与李老师沟通是权限问题导致，测试在/var/log下创建的目录，可以正常接收日志。但是客户不采用这种方式，需要解决在自己创建的根目录/mnt/rsyslog下可以成功接受日志。</p>
+<p>后续发现是Apparmor安全模块阻止了rsyslog，解决方法分享给大家，供大家参考：</p>
+<p>问题背景：</p>
+<p>两台Azure Ubuntu vm ，一台vm配置rsyslog接受日志，另一台vm发送日志。</p>
+<p>问题描述：</p>
+<p>/subscriptions/4a064d3b-b7e9-4566-960f-948b42692735/resourceGroups/rg-itps-cne2-prode1-prod-hub/providers/Microsoft.Compute/virtualMachines/aclmvdpmon02</p>
+<p>在另一台vm发送日志，参考命令：logger -n 172.31.1.1 -P 514 -t &quot;test_tag&quot; &quot;This is a test log message&quot;</p>
+<p>然后在aclmvdpmon02使用命令查看systemctl status rsyslog.service，出现报错信息且在rsyslog配置文件对应的根目录下没有接受日志存在。</p>
+<p>报错信息</p>
+<p>Nov 25 11:38:53 aclmvdpmon02 rsyslogd[3577234]: rsyslogd: error during config processing: omfile: creating parent directories for file  &#39;/mnt/rsyslog/10.59.176.69/10.59.176.69_2024-11-25.log&#39; failed: Permission denied [v8.2312.0 try <a href="https://www.rsyslog.com/e/2207]" target="_blank" rel="noopener">https://www.rsyslog.com/e/2207]</a></p>
+<p>Nov 25 11:38:53 aclmvdpmon02 rsyslogd[3577234]: rsyslogd: error during config processing: Could not open dynamic file &#39;/mnt/rsyslog/10.59.176.69/10.59.176.69_2024-11-25.log&#39; [state -3000] - discarding message [v8.2312.0 try <a href="https://www.rsyslog.com/e/2207]" target="_blank" rel="noopener">https://www.rsyslog.com/e/2207]</a></p>
+<p>问题原因：</p>
+<p>Apparmor安全模块阻止了rsyslog</p>
+<p>解决方法：</p>
+<p>/etc/apparmor.d/usr.sbin.rsyslogd 这个目录下可以看到Apparmor保护的程序，移除这个进程，就成功了。</p>
+<p>测试解决方案参考：</p>
+<p>Ubuntu-test作为接受日志的vm，Ubuntu发送日志。</p>
+<p>1，Ubuntu-test：</p>
+<p>创建目录/test1125，修改rsyslog配置文件/etc/rsyslog.conf，重启rsyslog服务</p>
+<p>rsyslog配置文件/etc/rsyslog.conf信息：</p>
+<p>重启rsyslog服务，Ubuntu发送日志，查看rsyslog状态，出现报错</p>
+<p>2，/etc/apparmor.d/usr.sbin.rsyslogd 这个目录下可以看到Apparmor保护的程序，移除这个进程</p>
+<p>新建目录mkdir /etc/apparmor.d/disable/</p>
+<p>软链接ln -s /etc/apparmor.d/usr.sbin.rsyslogd /etc/apparmor.d/disable/</p>
+<p>执行apparmor_parser -R /etc/apparmor.d/disable/usr.sbin.rsyslogd</p>
+<p>查看看不到这个进程后，重启rsyslog服务，Ubuntu发送日志，/test1125可以接受到日志了。</p></article>

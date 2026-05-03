@@ -1,0 +1,72 @@
+<article class="kb-article" data-title="【rhel 9.5 image】RHEL9.5image"><h1>【rhel 9.5 image】RHEL9.5image</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-03-24 13:57:50</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考：SR_20250106333345 _ 制作的通用镜像创建虚拟机无法连接</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考：SR_20250106333345 _ 制作的通用镜像创建虚拟机无法连接</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025.2.20</li>
+</ul>
+<ul>
+<li>RHEL9.5image 按照以下文档制作成功</li>
+</ul>
+<ul>
+<li>/subscriptions/fb8c917d-c54c-4ce0-88a2-a9ca5a54c9a2/resourceGroups/rhel9/providers/Microsoft.Compute/galleries/rhel9/images/rhel95</li>
+</ul>
+<ul>
+<li>有需要自取</li>
+</ul>
+<ul>
+<li>此问题我会反馈后线团队，目前请采用以下办法，任选其一</li>
+</ul>
+<ul>
+<li>1. 创建虚拟机后从源机器拷贝相关key文件</li>
+</ul>
+<ul>
+<li>2.放弃通用化，直接创建专用镜像</li>
+</ul>
+<ul>
+<li>经您同意，暂时关闭此工单；</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>通用化命令会删除/etc/ssh 目录下的key文件，但是初始化时不生产该key文件，导致无法启动sshd，如下图所示</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/virtual-machines/linux/redhat-create-upload-vhd?tabs=rhel89hv" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-machines/linux/redhat-create-upload-vhd?tabs=rhel89hv</a></li>
+</ul>
+<ul>
+<li>详情请参考<a href="https://docs.azure.cn/zh-cn/virtual-machines/image-version?tabs=portal%2Ccli2" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/image-version?tabs=portal%2Ccli2</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025.2.20</p>
+<p>RHEL9.5image 按照以下文档制作成功</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/virtual-machines/linux/redhat-create-upload-vhd?tabs=rhel89hv" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-machines/linux/redhat-create-upload-vhd?tabs=rhel89hv</a></p>
+<p>/subscriptions/fb8c917d-c54c-4ce0-88a2-a9ca5a54c9a2/resourceGroups/rhel9/providers/Microsoft.Compute/galleries/rhel9/images/rhel95</p>
+<p>有需要自取</p>
+<p>通用化命令会删除/etc/ssh 目录下的key文件，但是初始化时不生产该key文件，导致无法启动sshd，如下图所示</p>
+<p>此问题我会反馈后线团队，目前请采用以下办法，任选其一</p>
+<p>1. 创建虚拟机后从源机器拷贝相关key文件</p>
+<p>2.放弃通用化，直接创建专用镜像</p>
+<p>详情请参考<a href="https://docs.azure.cn/zh-cn/virtual-machines/image-version?tabs=portal%2Ccli2" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/image-version?tabs=portal%2Ccli2</a></p>
+<p>经您同意，暂时关闭此工单；</p>
+<p>参考：SR_20250106333345 _ 制作的通用镜像创建虚拟机无法连接</p></article>

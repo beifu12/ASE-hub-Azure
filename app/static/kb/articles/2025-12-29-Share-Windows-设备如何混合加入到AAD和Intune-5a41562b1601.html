@@ -1,0 +1,207 @@
+<article class="kb-article" data-title="【Share】 Windows 设备如何混合加入到AAD和Intune"><h1>【Share】 Windows 设备如何混合加入到AAD和Intune</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-29 09:49:50</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>注1：如果使用对应自定义域名的账户试用Global 365 的相关服务，则对应的自定义域名将会被自动绑定到Global。此时一旦您尝试注册设备到Intune，会优先会连接Global 的租户。如果您有该域名的管理权限可以尝试参考Global 365链接管理员接管非托管目录 - Microsoft Entra ID | Microsoft Learn中的内部管理员接管部分夺回域名的管理权，并删除对应的自定义域名。如果此方法无法操作或操作后仍无法解绑，需要您自行联系Global 支持团队。此外，域名仅绑定到中国区的场景...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>注1：如果使用对应自定义域名的账户试用Global 365 的相关服务，则对应的自定义域名将会被自动绑定到Global。此时一旦您尝试注册设备到Intune，会优先会连接Global 的租户。如果您有该域名的管理权限可以尝试参考Global 365链接管理员接管非托管目录 - Microsoft Entra ID | Microsoft Learn中的内部管理员接管部分夺回域名的管理权，并删除对应的自定义域名。如果此方法无法操作或操作后仍无法解绑，需要您自行联系Global 支持团队。此外，域名仅绑定到中国区的场景下，可以给21V 开工单阻止域名后续在Global 绑定，通常可能需要2周的时间。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>Lv Lei</li>
+</ul>
+<ul>
+<li>此处附件为对应的word 文档，可以直接下载下来发给客户。</li>
+</ul>
+<ul>
+<li>前期准备和说明</li>
+</ul>
+<ul>
+<li>==========================</li>
+</ul>
+<ul>
+<li>对于已经通过工作或学校账户或其他方式已经加入到Microsoft Entra ID的设备，请先取消注册，否则自动注册可能会有问题。</li>
+</ul>
+<ul>
+<li>对应地，请在登录Teams 或Office 365相关应用 时，选择“仅登录App”, 避免设备先以BYOD的方式加入到Azure AD 和Intune, 进而导致自动注册遇到问题。</li>
+</ul>
+<ul>
+<li>#以Teams 登录为例进行说明#</li>
+</ul>
+<ul>
+<li>注册设备的Microsoft Entra ID用户需要包含Intune许可证，当前中国区主要为Microsoft Intune Plan 1 。</li>
+</ul>
+<ul>
+<li>#当前Enterprise Mobility + Security E3 许可中就包含Microsoft Intune Plan 1 许可#</li>
+</ul>
+<ul>
+<li>需要启用Windows MDM自动注册。</li>
+</ul>
+<ul>
+<li>注2：需要Microsoft Entra ID P1、P2 或高级试用版订阅。</li>
+</ul>
+<ul>
+<li>=============================================</li>
+</ul>
+<ul>
+<li>#Microsoft Entra connect 配置#</li>
+</ul>
+<ul>
+<li>#（在其他任务）选择配置设备选项 #</li>
+</ul>
+<ul>
+<li>#（在连接到Azure AD）输入Microsoft Entra ID全局管理员凭据和密码#</li>
+</ul>
+<ul>
+<li>#（在设备选项）勾选“配置混合Azure AD 联接” #</li>
+</ul>
+<ul>
+<li>#（在设备操作系统）勾选操作系统#</li>
+</ul>
+<ul>
+<li>通过组策略自动注册 Windows 设备</li>
+</ul>
+<ul>
+<li>根据设备的操作系统版本，下载对应版本的管理模板（最新版本向下兼容。）</li>
+</ul>
+<ul>
+<li>在AD域控服务器上安装上一步中下载的管理模板</li>
+</ul>
+<ul>
+<li>在路径“C:\Program Files (x86)\Microsoft Group Policy”下根据安装版本找到相应的子目录。</li>
+</ul>
+<ul>
+<li>#以下截图中使用的管理模板版本为win 11 22H2#</li>
+</ul>
+<ul>
+<li>注4：如果模板位置已有PolicyDefinitions，可以对原PolicyDefinitions进行重命名，比如添加一个时间，然后再复制。</li>
+</ul>
+<ul>
+<li>再次打开“运行”输入“，打开组策略管理器。</li>
+</ul>
+<ul>
+<li>在域（或选定的计算机OU），右键点击“编辑”，打开“组策略管理编辑器”à 计算机配置 à 策略 à 管理模板à Windows组件à MDM à 双击“使用默认 Azure AD 凭据启用自动 MDM 注册” à  选择 “启用” ，选择 “用户凭据”作为要使用的所选凭据，然后选择 “确定”。</li>
+</ul>
+<ul>
+<li>当客户端上发生组策略刷新时，将创建一个任务用于从Microsoft Entra ID 自动注册 到Intune MDM。之后当您使用已经同步到Microsoft Entra ID的本地AD帐户登录到设备后，注册过程将在后台启动。（整个注册过程可能需要一定的时间才能完成。）</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>检查对应的自定义域名与Microsoft Entra ID 中绑定的域名是否完全一致。</li>
+</ul>
+<ul>
+<li>确认当前的自定义域名仅被绑定到了中国区Azure (或Office 365)，并未被绑定到Global Azure (或Office 365)。</li>
+</ul>
+<ul>
+<li>快速检查方法：</li>
+</ul>
+<ul>
+<li>使用有权限的域账户登录到安装Microsoft Entra connect的服务器，打开Microsoft Entra connect–&gt;配置–&gt;（在其他任务）选择配置设备选项 –&gt;下一步–&gt; （在概述）下一步–&gt;（在连接到Azure AD）输入Microsoft Entra ID全局管理员凭据和密码–&gt;下一步–&gt; （在设备选项）勾选“配置混合Azure AD 联接” –&gt;下一步–&gt;（在设备操作系统）勾选操作系统–&gt;下一步–&gt;（在SCP配置）勾选”林” –&gt;选择身份验证为 “Azure Active Directory“ –&gt; 添加AD DS 企业管理员凭据–&gt;下一步–&gt;（在已准备好配置）确认进行配置，并等待配置完成–&gt;下一步–&gt;（在配置完成）退出。</li>
+</ul>
+<ul>
+<li>#（在SCP配置）勾选”林” –&gt;选择身份验证为 “Azure Active Directory“ –&gt; 添加AD DS 企业管理员凭据#</li>
+</ul>
+<ul>
+<li>#（在已准备好配置）确认进行配置#</li>
+</ul>
+<ul>
+<li>注5：如果需要多重身份验证，系统会提示你完成该过程。</li>
+</ul>
+<ul>
+<li>在Azure 门户（portal.azure.cn）à Microsoft Entra IDà 设备 à 所有设备 à找到对应的设备，对应的该设备的状态应该类似如下的截图中红色框中的内容（连接类型为Hybrid Microsoft Entra hybrid joined，MDM 为Microsoft Intune）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在域控计算机上打开”运行”，在命令框中输入\\域名\SYSVOL\域名\Policies, 然后将PolicyDefinitions 文件夹复制到当前位置，等待复制完成。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>如果设备已经加域（本地AD DS），建议的做法是通过Microsoft Entra connect将设备混合加入Microsoft Entra ID（旧名称Azure Active Directory, 简称Azure AD 或AAD），然后再使用组策略(GPO)触发到Intune的自动注册。正常情况下，组策略在设备上下发成功后，使用 Microsoft Entra 帐户登录到设备后，注册过程将在后台启动。</li>
+</ul>
+<ul>
+<li>将AD DS中的设备配置为Microsoft Entra 混合加入</li>
+</ul>
+<ul>
+<li>注3：建议使用域控管理员账户操作。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>通过浏览器打开URL <a href="https://login.microsoftonline.com/yourdomain.com.cn/.well-known/openid-configuration，查看其中显示的终结点是否仅有中国区的终结点（*.microsoftonline.cn）。" target="_blank" rel="noopener">https://login.microsoftonline.com/yourdomain.com.cn/.well-known/openid-configuration，查看其中显示的终结点是否仅有中国区的终结点（*.microsoftonline.cn）。</a></li>
+</ul>
+<ul>
+<li>关于此部分的官方文档说明，请参见<a href="https://learn.microsoft.com/zh-cn/intune/intune-service/enrollment/quickstart-setup-auto-enrollment。" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/intune/intune-service/enrollment/quickstart-setup-auto-enrollment。</a></li>
+</ul>
+<ul>
+<li>Intune 管理门户（<a href="https://endpoint.microsoftonline.cn/）--&gt;" target="_blank" rel="noopener">https://endpoint.microsoftonline.cn/）--&gt;</a> 设备--&gt;注册--&gt; Windows--&gt;自动注册--&gt;MDM 用户范围请选择为全部或部分（用户组）--&gt;WIP 用户范围, 请选择为无--&gt; 保存。</li>
+</ul>
+<ul>
+<li>如下假设您已经配置了通过Microsoft Entra connect将AD DS中的用户和密码同步到Azure AD,仅就配置设备选项部分进行说明。如果您仍未配置，请先参考官方文档 <a href="https://docs.azure.cn/zh-cn/entra/identity/devices/how-to-hybrid-join配置Microsoft" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/devices/how-to-hybrid-join配置Microsoft</a> Entra 混合加入。</li>
+</ul>
+<ul>
+<li>下载链接： <a href="https://learn.microsoft.com/zh-cn/windows/client-management/enroll-a-windows-10-device-automatically-using-group-policy#configure-the-autoenrollment-for-a-group-of-devices" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/client-management/enroll-a-windows-10-device-automatically-using-group-policy#configure-the-autoenrollment-for-a-group-of-devices</a></li>
+</ul>
+<ul>
+<li>截图来源： <a href="https://learn.microsoft.com/zh-cn/windows/client-management/enroll-a-windows-10-device-automatically-using-group-policy#configure-the-autoenrollment-for-a-group-of-devices" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/client-management/enroll-a-windows-10-device-automatically-using-group-policy#configure-the-autoenrollment-for-a-group-of-devices</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/29</p>
+<p>Reviewer</p>
+<p>Lv Lei</p>
+<p>此处附件为对应的word 文档，可以直接下载下来发给客户。</p>
+<p>如果设备已经加域（本地AD DS），建议的做法是通过Microsoft Entra connect将设备混合加入Microsoft Entra ID（旧名称Azure Active Directory, 简称Azure AD 或AAD），然后再使用组策略(GPO)触发到Intune的自动注册。正常情况下，组策略在设备上下发成功后，使用 Microsoft Entra 帐户登录到设备后，注册过程将在后台启动。</p>
+<p>前期准备和说明</p>
+<p>==========================</p>
+<p>检查对应的自定义域名与Microsoft Entra ID 中绑定的域名是否完全一致。</p>
+<p>确认当前的自定义域名仅被绑定到了中国区Azure (或Office 365)，并未被绑定到Global Azure (或Office 365)。</p>
+<p>注1：如果使用对应自定义域名的账户试用Global 365 的相关服务，则对应的自定义域名将会被自动绑定到Global。此时一旦您尝试注册设备到Intune，会优先会连接Global 的租户。如果您有该域名的管理权限可以尝试参考Global 365链接管理员接管非托管目录 - Microsoft Entra ID | Microsoft Learn中的内部管理员接管部分夺回域名的管理权，并删除对应的自定义域名。如果此方法无法操作或操作后仍无法解绑，需要您自行联系Global 支持团队。此外，域名仅绑定到中国区的场景下，可以给21V 开工单阻止域名后续在Global 绑定，通常可能需要2周的时间。</p>
+<p>快速检查方法：</p>
+<p>通过浏览器打开URL <a href="https://login.microsoftonline.com/yourdomain.com.cn/.well-known/openid-configuration，查看其中显示的终结点是否仅有中国区的终结点（*.microsoftonline.cn）。" target="_blank" rel="noopener">https://login.microsoftonline.com/yourdomain.com.cn/.well-known/openid-configuration，查看其中显示的终结点是否仅有中国区的终结点（*.microsoftonline.cn）。</a></p>
+<p>对于已经通过工作或学校账户或其他方式已经加入到Microsoft Entra ID的设备，请先取消注册，否则自动注册可能会有问题。</p>
+<p>对应地，请在登录Teams 或Office 365相关应用 时，选择“仅登录App”, 避免设备先以BYOD的方式加入到Azure AD 和Intune, 进而导致自动注册遇到问题。</p>
+<p>#以Teams 登录为例进行说明#</p>
+<p>注册设备的Microsoft Entra ID用户需要包含Intune许可证，当前中国区主要为Microsoft Intune Plan 1 。</p>
+<p>#当前Enterprise Mobility + Security E3 许可中就包含Microsoft Intune Plan 1 许可#</p>
+<p>需要启用Windows MDM自动注册。</p>
+<p>关于此部分的官方文档说明，请参见<a href="https://learn.microsoft.com/zh-cn/intune/intune-service/enrollment/quickstart-setup-auto-enrollment。" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/intune/intune-service/enrollment/quickstart-setup-auto-enrollment。</a></p>
+<p>注2：需要Microsoft Entra ID P1、P2 或高级试用版订阅。</p>
+<p>Intune 管理门户（<a href="https://endpoint.microsoftonline.cn/）--&gt;" target="_blank" rel="noopener">https://endpoint.microsoftonline.cn/）--&gt;</a> 设备--&gt;注册--&gt; Windows--&gt;自动注册--&gt;MDM 用户范围请选择为全部或部分（用户组）--&gt;WIP 用户范围, 请选择为无--&gt; 保存。</p>
+<p>将AD DS中的设备配置为Microsoft Entra 混合加入</p>
+<p>=============================================</p>
+<p>如下假设您已经配置了通过Microsoft Entra connect将AD DS中的用户和密码同步到Azure AD,仅就配置设备选项部分进行说明。如果您仍未配置，请先参考官方文档 <a href="https://docs.azure.cn/zh-cn/entra/identity/devices/how-to-hybrid-join配置Microsoft" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/devices/how-to-hybrid-join配置Microsoft</a> Entra 混合加入。</p>
+<p>使用有权限的域账户登录到安装Microsoft Entra connect的服务器，打开Microsoft Entra connect–&gt;配置–&gt;（在其他任务）选择配置设备选项 –&gt;下一步–&gt; （在概述）下一步–&gt;（在连接到Azure AD）输入Microsoft Entra ID全局管理员凭据和密码–&gt;下一步–&gt; （在设备选项）勾选“配置混合Azure AD 联接” –&gt;下一步–&gt;（在设备操作系统）勾选操作系统–&gt;下一步–&gt;（在SCP配置）勾选”林” –&gt;选择身份验证为 “Azure Active Directory“ –&gt; 添加AD DS 企业管理员凭据–&gt;下一步–&gt;（在已准备好配置）确认进行配置，并等待配置完成–&gt;下一步–&gt;（在配置完成）退出。</p>
+<p>#Microsoft Entra connect 配置#</p>
+<p>#（在其他任务）选择配置设备选项 #</p>
+<p>#（在连接到Azure AD）输入Microsoft Entra ID全局管理员凭据和密码#</p>
+<p>#（在设备选项）勾选“配置混合Azure AD 联接” #</p>
+<p>#（在设备操作系统）勾选操作系统#</p>
+<p>#（在SCP配置）勾选”林” –&gt;选择身份验证为 “Azure Active Directory“ –&gt; 添加AD DS 企业管理员凭据#</p>
+<p>#（在已准备好配置）确认进行配置#</p>
+<p>通过组策略自动注册 Windows 设备</p>
+<p>根据设备的操作系统版本，下载对应版本的管理模板（最新版本向下兼容。）</p>
+<p>下载链接： <a href="https://learn.microsoft.com/zh-cn/windows/client-management/enroll-a-windows-10-device-automatically-using-group-policy#configure-the-autoenrollment-for-a-group-of-devices" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/client-management/enroll-a-windows-10-device-automatically-using-group-policy#configure-the-autoenrollment-for-a-group-of-devices</a></p>
+<p>截图来源： <a href="https://learn.microsoft.com/zh-cn/windows/client-management/enroll-a-windows-10-device-automatically-using-group-policy#configure-the-autoenrollment-for-a-group-of-devices" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/windows/client-management/enroll-a-windows-10-device-automatically-using-group-policy#configure-the-autoenrollment-for-a-group-of-devices</a></p>
+<p>在AD域控服务器上安装上一步中下载的管理模板</p>
+<p>在路径“C:\Program Files (x86)\Microsoft Group Policy”下根据安装版本找到相应的子目录。</p>
+<p>#以下截图中使用的管理模板版本为win 11 22H2#</p>
+<p>在域控计算机上打开”运行”，在命令框中输入\\域名\SYSVOL\域名\Policies, 然后将PolicyDefinitions 文件夹复制到当前位置，等待复制完成。</p>
+<p>注3：建议使用域控管理员账户操作。</p>
+<p>注4：如果模板位置已有PolicyDefinitions，可以对原PolicyDefinitions进行重命名，比如添加一个时间，然后再复制。</p>
+<p>再次打开“运行”输入“，打开组策略管理器。</p>
+<p>在域（或选定的计算机OU），右键点击“编辑”，打开“组策略管理编辑器”à 计算机配置 à 策略 à 管理模板à Windows组件à MDM à 双击“使用默认 Azure AD 凭据启用自动 MDM 注册” à  选择 “启用” ，选择 “用户凭据”作为要使用的所选凭据，然后选择 “确定”。</p>
+<p>当客户端上发生组策略刷新时，将创建一个任务用于从Microsoft Entra ID 自动注册 到Intune MDM。之后当您使用已经同步到Microsoft Entra ID的本地AD帐户登录到设备后，注册过程将在后台启动。（整个注册过程可能需要一定的时间才能完成。）</p>
+<p>注5：如果需要多重身份验证，系统会提示你完成该过程。</p>
+<p>在Azure 门户（portal.azure.cn）à Microsoft Entra IDà 设备 à 所有设备 à找到对应的设备，对应的该设备的状态应该类似如下的截图中红色框中的内容（连接类型为Hybrid Microsoft Entra hybrid joined，MDM 为Microsoft Intune）</p></article>

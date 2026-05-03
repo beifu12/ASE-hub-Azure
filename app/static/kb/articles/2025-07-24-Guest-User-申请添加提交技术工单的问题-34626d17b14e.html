@@ -1,0 +1,105 @@
+<article class="kb-article" data-title="Guest User 申请添加提交技术工单的问题"><h1>Guest User 申请添加提交技术工单的问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-24 13:34:31</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>更新一下关于guest user被邀请到其他Azure AD后无法创建技术工单的问题。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>更新一下关于guest user被邀请到其他Azure AD后无法创建技术工单的问题。</li>
+</ul>
+<ul>
+<li>由于目前在21V门户上开case的功能还存在一些技术限制，因此还不能直接集成global AAD的账号，产品组对于这部分功能的完善还在排期，目前没有一个明确的上线时间，因此短时间内还无法实现无缝集成。内部负责的团队还在继续跟进这个事情，敦促早日能够将这个问题解决。</li>
+</ul>
+<ul>
+<li>目前还不支持Cross-tenant的Guest 用户。 SR_20240724306231_无法提交工单 （目前已经可以登录）</li>
+</ul>
+<ul>
+<li>邀请中国区的tenant 中的Guest 用户，用户没有订阅无法创建技术工单。在邀请的订阅中添加资源权限，进入工单系统无法读取到订阅信息，才需要以上流程。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>subscription id（授权访问的订阅id）</li>
+</ul>
+<ul>
+<li>以上信息都获取后，发送邮件给如下人员，进入后台人工添加功能的环节</li>
+</ul>
+<ul>
+<li>并发送申请邮件给 daizys@microsoft.com;  抄送：wang.zongyue@oe.21vianet.com</li>
+</ul>
+<ul>
+<li>待Sarah 或者Daizy 批准，由zongyue 添加，</li>
+</ul>
+<ul>
+<li>备注：  cuijun  2025.07.24</li>
+</ul>
+<ul>
+<li>目前 daizys@microsoft.com 已经离，经过和zongyue 沟通， 替换为以下两人进行审批</li>
+</ul>
+<ul>
+<li>Sheldon Jiang &lt;Sheldon.Jiang@microsoft.com&gt;  Sarah Lin &lt;Sarah.Lin@microsoft.com&gt;</li>
+</ul>
+<ul>
+<li>注：</li>
+</ul>
+<ul>
+<li>开启该权限只针对subid，没有针对tenantid的 （因为acn登录和提单都是以subid作为登陆账号的）参考：20230712240555</li>
+</ul>
+<ul>
+<li>目前可行的方法有两个，一个是用中国的账号登录，另一个是给邮箱 atsmgrs@oe.21vianet.com 发邮件，由这个团队协助开21V的支持case。</li>
+</ul>
+<ul>
+<li>Unified合同就绪之后技术类问题就可以在Services Hub上提交，商务、配额等非技术问题就用上述两种方法暂行。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>首先跟客户确认，是否为guest user用户无法提交技术工单</li>
+</ul>
+<ul>
+<li>确认后，收集如下信息</li>
+</ul>
+<ul>
+<li>Email address   （guest 登陆portal账号邮箱）</li>
+</ul>
+<ul>
+<li>联系TA，查找该相应订阅下的管理员邮箱，确认相应邮箱后，给提交工单的客户打电话，告知我们要将相应订阅的管理员添加到沟通的邮件中，以便让管理员邮件确认授权给guest user 提交工单的功能</li>
+</ul>
+<ul>
+<li>注，测试Cross tenant Guest 可以读到订阅，不需要走以上流程（需要在和用户验证）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>更新一下关于guest user被邀请到其他Azure AD后无法创建技术工单的问题。</p>
+<p>首先跟客户确认，是否为guest user用户无法提交技术工单</p>
+<p>确认后，收集如下信息</p>
+<p>Email address   （guest 登陆portal账号邮箱）</p>
+<p>subscription id（授权访问的订阅id）</p>
+<p>联系TA，查找该相应订阅下的管理员邮箱，确认相应邮箱后，给提交工单的客户打电话，告知我们要将相应订阅的管理员添加到沟通的邮件中，以便让管理员邮件确认授权给guest user 提交工单的功能</p>
+<p>以上信息都获取后，发送邮件给如下人员，进入后台人工添加功能的环节</p>
+<p>并发送申请邮件给 daizys@microsoft.com;  抄送：wang.zongyue@oe.21vianet.com</p>
+<p>待Sarah 或者Daizy 批准，由zongyue 添加，</p>
+<p>备注：  cuijun  2025.07.24</p>
+<p>目前 daizys@microsoft.com 已经离，经过和zongyue 沟通， 替换为以下两人进行审批</p>
+<p>Sheldon Jiang &lt;Sheldon.Jiang@microsoft.com&gt;  Sarah Lin &lt;Sarah.Lin@microsoft.com&gt;</p>
+<p>注：</p>
+<p>开启该权限只针对subid，没有针对tenantid的 （因为acn登录和提单都是以subid作为登陆账号的）参考：20230712240555</p>
+<p>由于目前在21V门户上开case的功能还存在一些技术限制，因此还不能直接集成global AAD的账号，产品组对于这部分功能的完善还在排期，目前没有一个明确的上线时间，因此短时间内还无法实现无缝集成。内部负责的团队还在继续跟进这个事情，敦促早日能够将这个问题解决。</p>
+<p>目前可行的方法有两个，一个是用中国的账号登录，另一个是给邮箱 atsmgrs@oe.21vianet.com 发邮件，由这个团队协助开21V的支持case。</p>
+<p>Unified合同就绪之后技术类问题就可以在Services Hub上提交，商务、配额等非技术问题就用上述两种方法暂行。</p>
+<p>目前还不支持Cross-tenant的Guest 用户。 SR_20240724306231_无法提交工单 （目前已经可以登录）</p>
+<p>注，测试Cross tenant Guest 可以读到订阅，不需要走以上流程（需要在和用户验证）</p>
+<p>邀请中国区的tenant 中的Guest 用户，用户没有订阅无法创建技术工单。在邀请的订阅中添加资源权限，进入工单系统无法读取到订阅信息，才需要以上流程。</p></article>

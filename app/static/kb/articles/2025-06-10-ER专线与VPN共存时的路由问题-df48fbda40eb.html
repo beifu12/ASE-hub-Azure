@@ -1,0 +1,175 @@
+<article class="kb-article" data-title="ER专线与VPN共存时的路由问题"><h1>ER专线与VPN共存时的路由问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-10 19:07:24</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>涉及工单：20250516353735、20250326345566</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>涉及工单：20250516353735、20250326345566</li>
+</ul>
+<ul>
+<li>同一VNet中由于事先存在一使用Basic Public IP的VPN GW (VpnGW2)，导致无法再创建ER Gateway。</li>
+</ul>
+<ul>
+<li>同一VNet中ER和VPN共存时，ER中断之后再恢复，VNet去往on-prem路由无法切换回ER，下一跳始终为VPN Gateway。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025.5.27</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>问题原因： 问题1是平台限制所致；问题二是由于作为failover线路的VPN connection未启用BGP，当ER线路Down了后，由VPN connection引入BGP的路由会一路传播给MSEE，然后MSEE会发送给其eBGP邻居On-prem ER BGP router；当VPN connection启用了BGP后，经VPN connection学习到的相同On-prem IP前缀路由会携带AS号，此时ER Down了，然后再Up, MSEE不会再将此路由传播给具备相同AS号的eBGP邻居即On-prem ER BGP router（BGP自身的防环机制），所以此时MSEE在ER恢复后，就可以接受由On-prem ER BGP router宣告进来的路由，由于Azure平台默认ER路由优选，此时Azure VNet中的路由得以更新为下一跳为MSEE PA接口IP。</li>
+</ul>
+<ul>
+<li>问题解决：</li>
+</ul>
+<ul>
+<li>问题一：</li>
+</ul>
+<ul>
+<li>用户不想删除现有的VPN GW然后再创建ER GW + VPN GW。</li>
+</ul>
+<ul>
+<li>为了实现Remote VNet与On-prem间的BGP路由打通，此时需要引入Route server，以借助它来传递两端的BGP路由。注意部署Route Server的VNet中的VPN Gateway必须是Active-Active模式的。</li>
+</ul>
+<ul>
+<li>问题二：</li>
+</ul>
+<ul>
+<li>当ER专线Up，然后VPN再Up时，此时中转VNet中的VM NIC有效路由显示去往On-prem 10.207.0.0/16下一跳为MSEE中的PA IP （10.13.248.129）。VPN connection未启用BGP。</li>
+</ul>
+<ul>
+<li>当ER专线Down，保持VPN Up，此时中转VNet中的VM NIC有效路由显示去往On-prem  10.207.0.0/16下一跳为VPN Gateway的实例内网IP，哪一个建立了VPN连接就显示哪一个实例的。</li>
+</ul>
+<ul>
+<li>当恢复ER为Up，保持VPN Up，此时中转VNet中的VM NIC有效路由显示去往On-prem  10.207.0.0/16下一跳仍为VPN Gateway的实例内网IP，并没有更新为预期的ER MSEE中的PA IP。</li>
+</ul>
+<ul>
+<li>ER GW学到的BGP路由，此时去往On-prem 10.207.0.0/16的只有ER一条路，并没有VPN connection Local network gateway地址段所导入的静态路由：原因：Route server中学到的关于10.207.0.0/16的路由，weight 32769高于32768，所以此时VPN connection Local network 地址段注入进BGP的路由并不会被Route server又通告给ER GW，进而MSEE、 On-prem ER BGP router都不会收到这一条路由。</li>
+</ul>
+<ul>
+<li>如上图所示，可以看到从On-prem侧学到的BGP路由10.207.0.0/16，其Origin为？（imcomplete)。</li>
+</ul>
+<ul>
+<li>当ER Down，保持VPN UP，</li>
+</ul>
+<ul>
+<li>ER Down, VPN Up时Route Server学到的路由，下一跳为VPN Gateway Instance，符合预期：</li>
+</ul>
+<ul>
+<li>ER Down, VPN Up时MSEE上的路由，符合预期：</li>
+</ul>
+<ul>
+<li>同时On-prem侧反馈，他们的设备中确实收到了MSEE宣告的10.207.0.0/16的路由；BGP路由的防环机制决定了此时On-prem ER BGP router不会将10.207.0.0/16的路由再通告给MSEE。</li>
+</ul>
+<ul>
+<li>当ER先于VPN UP时，MSEE没有将VPN connection所连接的On-prem 10.207.0.0/16段通过BGP宣告给On-prem ER BGP router；但当VPN先于ER UP时，MSEE会将VPN connection所连接的On-prem 10.207.0.0/16段通过BGP路由宣告给On-prem BGP router。  ER线路断了，ER BGP路由被撤销，此时Route server只能从VPN GW学到去往10.207.0.0/16的路由weight 32768，VPN GW将路由发送给Route server，Route server再发送给ER GW，然后ER GW再ER BGP peer再次UP时，便将路由往eBGP On-prem ER BGP router送了。</li>
+</ul>
+<ul>
+<li>问题总结：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题排查： 10.140.1.12\13为ER GW Instance， 10.140.1.14\15为VPN GW Instance，10.140.3.4\5为Router Server Instance。</li>
+</ul>
+<ul>
+<li>当（ER先UP，VPN后UP)检查Router Server学到的路由，10.140.1.5为MSEE上的tunnel IP：</li>
+</ul>
+<ul>
+<li>检查此时MSEE中的BGP路由表：</li>
+</ul>
+<ul>
+<li>此时检查ER GW学习到的路由如下，下一跳10.140.1.15为VPN GW Instance IP，符合预期：</li>
+</ul>
+<ul>
+<li>恢复ER线路为UP，保持VPN UP，此时检查MSEE与On-prem间的BGP peer状态为Up：</li>
+</ul>
+<ul>
+<li>检查MSEE中的BGP路由，下一跳为ER GW，origin为incomplete:</li>
+</ul>
+<ul>
+<li>检查MSEE向On-prem宣告的路由：</li>
+</ul>
+<ul>
+<li>检查此时VPN GW学到的路由，去往On-prem 10.207.0.0/0没有下一跳为MSEE的路由，只有下一跳为VPN GW Instance的：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>建议用户创建Transit VNet，然后在其中部署ER Gateway和VPN Gateway。</li>
+</ul>
+<ul>
+<li>然后让用户使用VPN Gateway建立起Transit VNet与Remote VNet间的Vnet to Vnet VPN Connection；并启用BGP。注意Transit Vnet BGP AS号保持为65515，Remote Vnet BGp AS号不能为65515，建立Vnet to Vnet VPN Connection时的硬性要求，如两个VNet间BGP AS号都为65515，Portal会提示需要将其中一个修改为非65515。</li>
+</ul>
+<ul>
+<li>Weight 通常见于思科设备，32768通常表示设备自身产生的路由；看上图变相说明由VPN Gw产生的去往10.207.0.0/16的IBgp路由是其直连的VPN connection产生的。32769推断是Azure默认ER优先，它将从ER学习到的路由的Weight设置为32769，高于32768，以达到优先的目的。</li>
+</ul>
+<ul>
+<li>最终解决办法： 将On-prem 10.207.0.0/16与Azure transit VNet间的VPN connection启用BGP，由于On-prem华为侧BGP peer IP是APIPA BGP IP address，因此Azure VPN Gateway同步配置对应同网段的APIPA BGP IP address (169.254.21.2/30)，On-prem用169.254.21.1/30。</li>
+</ul>
+<ul>
+<li>最终ER Up + VPN UP(vpn connection BGP enable)，Route Server学到的路由，此时通过VPN GW学到的10.207.0.0/16的路由，其AS path虽短于从ER GW学到的，但Azure默认ER优先且Route server也设置了ER优先，Route server会自动将从ER GW学到的路由设置更高的Weight，这样VNet内去往On-prem 10.207.0.0/16始终是ER优先；当ER Down了，VNet中只能从VPN connection BGP学到去往10.207.0.0/16的路由：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>对于这种ER和VPN 对应同一个On-prem Network (相同IP前缀）的场景，VPN connection推荐启用BGP，不要使用静态路由的方式。参考文档： <a href="https://learn.microsoft.com/en-us/azure/expressroute/use-s2s-vpn-as-backup-for-expressroute-privatepeering" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/expressroute/use-s2s-vpn-as-backup-for-expressroute-privatepeering</a></li>
+</ul>
+<ul>
+<li>关于Router Server + ER GW + VPN GW的应用可参考文档： <a href="https://learn.microsoft.com/en-us/azure/route-server/expressroute-vpn-support" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/route-server/expressroute-vpn-support</a> ；如果ER GW和VPN GW对接的On-prem Network IP前缀不同，按文档说明此时VPN GW可以不启用BGP。</li>
+</ul>
+<ul>
+<li>ER GW在切换前后的10.207.0.0/16路由相关的日志： <a href="https://portal.microsoftgeneva.com/s/B5C6DC3" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/B5C6DC3</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025.5.27</p>
+<p>涉及工单：20250516353735、20250326345566</p>
+<p>问题描述：</p>
+<p>同一VNet中由于事先存在一使用Basic Public IP的VPN GW (VpnGW2)，导致无法再创建ER Gateway。</p>
+<p>同一VNet中ER和VPN共存时，ER中断之后再恢复，VNet去往on-prem路由无法切换回ER，下一跳始终为VPN Gateway。</p>
+<p>问题原因： 问题1是平台限制所致；问题二是由于作为failover线路的VPN connection未启用BGP，当ER线路Down了后，由VPN connection引入BGP的路由会一路传播给MSEE，然后MSEE会发送给其eBGP邻居On-prem ER BGP router；当VPN connection启用了BGP后，经VPN connection学习到的相同On-prem IP前缀路由会携带AS号，此时ER Down了，然后再Up, MSEE不会再将此路由传播给具备相同AS号的eBGP邻居即On-prem ER BGP router（BGP自身的防环机制），所以此时MSEE在ER恢复后，就可以接受由On-prem ER BGP router宣告进来的路由，由于Azure平台默认ER路由优选，此时Azure VNet中的路由得以更新为下一跳为MSEE PA接口IP。</p>
+<p>问题解决：</p>
+<p>问题一：</p>
+<p>用户不想删除现有的VPN GW然后再创建ER GW + VPN GW。</p>
+<p>建议用户创建Transit VNet，然后在其中部署ER Gateway和VPN Gateway。</p>
+<p>然后让用户使用VPN Gateway建立起Transit VNet与Remote VNet间的Vnet to Vnet VPN Connection；并启用BGP。注意Transit Vnet BGP AS号保持为65515，Remote Vnet BGp AS号不能为65515，建立Vnet to Vnet VPN Connection时的硬性要求，如两个VNet间BGP AS号都为65515，Portal会提示需要将其中一个修改为非65515。</p>
+<p>为了实现Remote VNet与On-prem间的BGP路由打通，此时需要引入Route server，以借助它来传递两端的BGP路由。注意部署Route Server的VNet中的VPN Gateway必须是Active-Active模式的。</p>
+<p>问题二：</p>
+<p>当ER专线Up，然后VPN再Up时，此时中转VNet中的VM NIC有效路由显示去往On-prem 10.207.0.0/16下一跳为MSEE中的PA IP （10.13.248.129）。VPN connection未启用BGP。</p>
+<p>当ER专线Down，保持VPN Up，此时中转VNet中的VM NIC有效路由显示去往On-prem  10.207.0.0/16下一跳为VPN Gateway的实例内网IP，哪一个建立了VPN连接就显示哪一个实例的。</p>
+<p>当恢复ER为Up，保持VPN Up，此时中转VNet中的VM NIC有效路由显示去往On-prem  10.207.0.0/16下一跳仍为VPN Gateway的实例内网IP，并没有更新为预期的ER MSEE中的PA IP。</p>
+<p>问题排查： 10.140.1.12\13为ER GW Instance， 10.140.1.14\15为VPN GW Instance，10.140.3.4\5为Router Server Instance。</p>
+<p>当（ER先UP，VPN后UP)检查Router Server学到的路由，10.140.1.5为MSEE上的tunnel IP：</p>
+<p>ER GW学到的BGP路由，此时去往On-prem 10.207.0.0/16的只有ER一条路，并没有VPN connection Local network gateway地址段所导入的静态路由：原因：Route server中学到的关于10.207.0.0/16的路由，weight 32769高于32768，所以此时VPN connection Local network 地址段注入进BGP的路由并不会被Route server又通告给ER GW，进而MSEE、 On-prem ER BGP router都不会收到这一条路由。</p>
+<p>Weight 通常见于思科设备，32768通常表示设备自身产生的路由；看上图变相说明由VPN Gw产生的去往10.207.0.0/16的IBgp路由是其直连的VPN connection产生的。32769推断是Azure默认ER优先，它将从ER学习到的路由的Weight设置为32769，高于32768，以达到优先的目的。</p>
+<p>检查此时MSEE中的BGP路由表：</p>
+<p>如上图所示，可以看到从On-prem侧学到的BGP路由10.207.0.0/16，其Origin为？（imcomplete)。</p>
+<p>当ER Down，保持VPN UP，</p>
+<p>ER Down, VPN Up时Route Server学到的路由，下一跳为VPN Gateway Instance，符合预期：</p>
+<p>此时检查ER GW学习到的路由如下，下一跳10.140.1.15为VPN GW Instance IP，符合预期：</p>
+<p>ER Down, VPN Up时MSEE上的路由，符合预期：</p>
+<p>恢复ER线路为UP，保持VPN UP，此时检查MSEE与On-prem间的BGP peer状态为Up：</p>
+<p>检查MSEE中的BGP路由，下一跳为ER GW，origin为incomplete:</p>
+<p>检查MSEE向On-prem宣告的路由：</p>
+<p>同时On-prem侧反馈，他们的设备中确实收到了MSEE宣告的10.207.0.0/16的路由；BGP路由的防环机制决定了此时On-prem ER BGP router不会将10.207.0.0/16的路由再通告给MSEE。</p>
+<p>检查此时VPN GW学到的路由，去往On-prem 10.207.0.0/0没有下一跳为MSEE的路由，只有下一跳为VPN GW Instance的：</p>
+<p>当ER先于VPN UP时，MSEE没有将VPN connection所连接的On-prem 10.207.0.0/16段通过BGP宣告给On-prem ER BGP router；但当VPN先于ER UP时，MSEE会将VPN connection所连接的On-prem 10.207.0.0/16段通过BGP路由宣告给On-prem BGP router。  ER线路断了，ER BGP路由被撤销，此时Route server只能从VPN GW学到去往10.207.0.0/16的路由weight 32768，VPN GW将路由发送给Route server，Route server再发送给ER GW，然后ER GW再ER BGP peer再次UP时，便将路由往eBGP On-prem ER BGP router送了。</p>
+<p>最终解决办法： 将On-prem 10.207.0.0/16与Azure transit VNet间的VPN connection启用BGP，由于On-prem华为侧BGP peer IP是APIPA BGP IP address，因此Azure VPN Gateway同步配置对应同网段的APIPA BGP IP address (169.254.21.2/30)，On-prem用169.254.21.1/30。</p>
+<p>最终ER Up + VPN UP(vpn connection BGP enable)，Route Server学到的路由，此时通过VPN GW学到的10.207.0.0/16的路由，其AS path虽短于从ER GW学到的，但Azure默认ER优先且Route server也设置了ER优先，Route server会自动将从ER GW学到的路由设置更高的Weight，这样VNet内去往On-prem 10.207.0.0/16始终是ER优先；当ER Down了，VNet中只能从VPN connection BGP学到去往10.207.0.0/16的路由：</p>
+<p>问题总结：</p>
+<p>对于这种ER和VPN 对应同一个On-prem Network (相同IP前缀）的场景，VPN connection推荐启用BGP，不要使用静态路由的方式。参考文档： <a href="https://learn.microsoft.com/en-us/azure/expressroute/use-s2s-vpn-as-backup-for-expressroute-privatepeering" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/expressroute/use-s2s-vpn-as-backup-for-expressroute-privatepeering</a></p>
+<p>关于Router Server + ER GW + VPN GW的应用可参考文档： <a href="https://learn.microsoft.com/en-us/azure/route-server/expressroute-vpn-support" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/route-server/expressroute-vpn-support</a> ；如果ER GW和VPN GW对接的On-prem Network IP前缀不同，按文档说明此时VPN GW可以不启用BGP。</p>
+<p>ER GW在切换前后的10.207.0.0/16路由相关的日志： <a href="https://portal.microsoftgeneva.com/s/B5C6DC3" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/B5C6DC3</a></p></article>

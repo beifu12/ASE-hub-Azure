@@ -1,0 +1,51 @@
+<article class="kb-article" data-title="[Share]关于ER GW Basic  IP  IP ER 升级到Standard Public IP"><h1>[Share]关于ER GW Basic  IP  IP ER 升级到Standard Public IP</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2026-02-24 16:47:29</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Hi Team,</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Hi Team,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi Team,</li>
+</ul>
+<ul>
+<li>As mentioned, you don’t need to migrate this gateway, and no action is required at this time. Azure will migrate these gateways to Az aware from the backend after September 25, which will be transparent to you.</li>
+</ul>
+<ul>
+<li>附件是Global工单的邮件，供参考。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>根据Azure 文档在Portal中使用迁移工具，是可以实现将ER GW  Basic Public IP升级到Standard Public IP的，但从之前用户的反馈，他们在Global升级是失败的，原因：用户的ER GW部署类型是VMSS：The gateway deployment type is VMSS, which does not support the migration</li>
+</ul>
+<ul>
+<li>当前可以确认的是ER GW的部署类型至少有 CSES （Cloud Service Extension S????）和VMSS，早期创建的ER GW，其部署类型会有CSES的。根据用户在Global遇到问题时微软产品组的反馈，VMSS部署类型的ER GW无法使用Portal中的工具进行迁移，且后台会为这部分用户迁移：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>中国区ER GW Portal中的这个迁移工具到底能否实现将部署类型为CSES的Basic Public IP升级到Standard Public IP，目前还不得而知，已建议有关用户试试，可以肯定的是如果用户迁移时Target SKU选择了带AZ那肯定失败，因为AZ Virtual network Gateway在Non AZ region都还不支持。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi Team,</p>
+<p>根据Azure 文档在Portal中使用迁移工具，是可以实现将ER GW  Basic Public IP升级到Standard Public IP的，但从之前用户的反馈，他们在Global升级是失败的，原因：用户的ER GW部署类型是VMSS：The gateway deployment type is VMSS, which does not support the migration</p>
+<p>当前可以确认的是ER GW的部署类型至少有 CSES （Cloud Service Extension S????）和VMSS，早期创建的ER GW，其部署类型会有CSES的。根据用户在Global遇到问题时微软产品组的反馈，VMSS部署类型的ER GW无法使用Portal中的工具进行迁移，且后台会为这部分用户迁移：</p>
+<p>As mentioned, you don’t need to migrate this gateway, and no action is required at this time. Azure will migrate these gateways to Az aware from the backend after September 25, which will be transparent to you.</p>
+<p>中国区ER GW Portal中的这个迁移工具到底能否实现将部署类型为CSES的Basic Public IP升级到Standard Public IP，目前还不得而知，已建议有关用户试试，可以肯定的是如果用户迁移时Target SKU选择了带AZ那肯定失败，因为AZ Virtual network Gateway在Non AZ region都还不支持。</p>
+<p>附件是Global工单的邮件，供参考。</p></article>

@@ -1,0 +1,124 @@
+<article class="kb-article" data-title="Azure CDN Support TSG update - Product Update (English)"><h1>Azure CDN Support TSG update - Product Update (English)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: CDN Operation Guideline</li>
+<li>最近修改: 2022-10-16 14:18:37</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>The latest CDN product updates and problem handling Tips are as follows. Please take note.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>The latest CDN product updates and problem handling Tips are as follows. Please take note.</li>
+</ul>
+<ul>
+<li>At present, customers cannot select China East2 and China North2 when creating CDN profiles. However, if you select a resource group in both areas, you will still encounter problems that result in unavailability.</li>
+</ul>
+<ul>
+<li>As shown in the figure above, the area where the CDN Profile is located does not affect the actual CDN service. If the customer does not have strict requirements on the geographical area, it is recommended to use the resource group in China North and China East. At the same time, we also understand that customers may need to create resources in China North2 and China East2 based on reasons such as Policy. The development team is working on the issue and it will take some time. Please excuse us for the time being.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1) Origin Path Support in Mooncake CDN</li>
+</ul>
+<ul>
+<li>However, in some scenarios, users may wish to use this feature. Especially for users who have experience with Global CDNs, such as configuring CDNs for Azure Blob, they may wish to use a container of blob as the source path of the source. Currently, Mooncake CDN does not support user self-service configuration. Please help collect user requirements and contact the product group for offline configuration.</li>
+</ul>
+<ul>
+<li>Information to be provided:</li>
+</ul>
+<ul>
+<li>Custom domain name:</li>
+</ul>
+<ul>
+<li>ICP number:</li>
+</ul>
+<ul>
+<li>Acceleration type:</li>
+</ul>
+<ul>
+<li>Source station domain name or IP:</li>
+</ul>
+<ul>
+<li>Back to the source Host Header:</li>
+</ul>
+<ul>
+<li>Origin Path:</li>
+</ul>
+<ul>
+<li>Return source agreement:</li>
+</ul>
+<ul>
+<li>2) CDN REST API documentation update</li>
+</ul>
+<ul>
+<li>1. Reference to the CDN ARM REST API documentation released by Global does not apply to Mooncake. The document group has been contacted for revocation.</li>
+</ul>
+<ul>
+<li>· Contact the CDN product group to get the Key ID and Key Value of the relevant subscription, and then create a CDN.</li>
+</ul>
+<ul>
+<li>3) CDN Profile in new regions - low priority</li>
+</ul>
+<ul>
+<li>5) Azure CDN page repair in the sidebar of the storage account</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2. The current ASM REST API is tested and available. However, if the customer does not have a CDN endpoint, they cannot access the CDN management portal to obtain the Key ID and Key Value of the API call authorization. In this case, there are two options:</li>
+</ul>
+<ul>
+<li>· It is recommended that the customer first create a CDN through the Portal, then go to the CDN management portal to obtain the Key ID and Key Value of the API call authorization, and then perform other operations through the REST API.</li>
+</ul>
+<ul>
+<li>4) Ibiza Portal adds check function to Host header</li>
+</ul>
+<ul>
+<li>In a recent product update, Ibiza Portal was added to verify the input Origin Host Header. If the user enters the IP, after clicking Add, an error will be received within one minute: the creation fails.</li>
+</ul>
+<ul>
+<li>At present, the user has not been able to judge the cause of the error by giving an error message. The product group is further optimizing this feature to make the error message display information as intuitive as possible to the customer. During this time, technical support can use the Jarvis query below to determine if it is a bug of this type.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>When configuring the CDN in Global, you can specify a path of the source station as Origin Path. In this way, the custom domain name corresponds to a path to the actual source domain name, not the entire site. As shown above, when visiting <a href="http://qlitest.azureedge.net/abc.jpg" target="_blank" rel="noopener">http://qlitest.azureedge.net/abc.jpg</a> you actually visit the source station at <a href="http://test.com.cn/pictures/abc.jpg." target="_blank" rel="noopener">http://test.com.cn/pictures/abc.jpg.</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/196DDAB9" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/196DDAB9</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>The latest CDN product updates and problem handling Tips are as follows. Please take note.</p>
+<p>1) Origin Path Support in Mooncake CDN</p>
+<p>When configuring the CDN in Global, you can specify a path of the source station as Origin Path. In this way, the custom domain name corresponds to a path to the actual source domain name, not the entire site. As shown above, when visiting <a href="http://qlitest.azureedge.net/abc.jpg" target="_blank" rel="noopener">http://qlitest.azureedge.net/abc.jpg</a> you actually visit the source station at <a href="http://test.com.cn/pictures/abc.jpg." target="_blank" rel="noopener">http://test.com.cn/pictures/abc.jpg.</a></p>
+<p>However, in some scenarios, users may wish to use this feature. Especially for users who have experience with Global CDNs, such as configuring CDNs for Azure Blob, they may wish to use a container of blob as the source path of the source. Currently, Mooncake CDN does not support user self-service configuration. Please help collect user requirements and contact the product group for offline configuration.</p>
+<p>Information to be provided:</p>
+<p>Custom domain name:</p>
+<p>ICP number:</p>
+<p>Acceleration type:</p>
+<p>Source station domain name or IP:</p>
+<p>Back to the source Host Header:</p>
+<p>Origin Path:</p>
+<p>Return source agreement:</p>
+<p>2) CDN REST API documentation update</p>
+<p>1. Reference to the CDN ARM REST API documentation released by Global does not apply to Mooncake. The document group has been contacted for revocation.</p>
+<p>2. The current ASM REST API is tested and available. However, if the customer does not have a CDN endpoint, they cannot access the CDN management portal to obtain the Key ID and Key Value of the API call authorization. In this case, there are two options:</p>
+<p>· It is recommended that the customer first create a CDN through the Portal, then go to the CDN management portal to obtain the Key ID and Key Value of the API call authorization, and then perform other operations through the REST API.</p>
+<p>· Contact the CDN product group to get the Key ID and Key Value of the relevant subscription, and then create a CDN.</p>
+<p>3) CDN Profile in new regions - low priority</p>
+<p>At present, customers cannot select China East2 and China North2 when creating CDN profiles. However, if you select a resource group in both areas, you will still encounter problems that result in unavailability.</p>
+<p>As shown in the figure above, the area where the CDN Profile is located does not affect the actual CDN service. If the customer does not have strict requirements on the geographical area, it is recommended to use the resource group in China North and China East. At the same time, we also understand that customers may need to create resources in China North2 and China East2 based on reasons such as Policy. The development team is working on the issue and it will take some time. Please excuse us for the time being.</p>
+<p>4) Ibiza Portal adds check function to Host header</p>
+<p>In a recent product update, Ibiza Portal was added to verify the input Origin Host Header. If the user enters the IP, after clicking Add, an error will be received within one minute: the creation fails.</p>
+<p>At present, the user has not been able to judge the cause of the error by giving an error message. The product group is further optimizing this feature to make the error message display information as intuitive as possible to the customer. During this time, technical support can use the Jarvis query below to determine if it is a bug of this type.</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/196DDAB9" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/196DDAB9</a></p>
+<p>5) Azure CDN page repair in the sidebar of the storage account</p></article>

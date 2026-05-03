@@ -1,0 +1,142 @@
+<article class="kb-article" data-title="Terraform将状态文件保存在Azure存储中"><h1>Terraform将状态文件保存在Azure存储中</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Cli</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-04-01 16:42:23</li>
+<li>JD 相关性: 自动化/命令工具</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>WangZhaoqing</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>Terraform 状态用于对已部署资源和 Terraform 配置进行对帐。 Terraform 可通过状态了解需要添加、更新或删除的 Azure 资源。</li>
+</ul>
+<ul>
+<li>中国区目前没有相关文档，可参考global文档，但是连接中国区时有以下注意的地方。除了在provider中指定连接中国区外，在backend中也要指定中国区，否则在terraform init时就是报如下错误：</li>
+</ul>
+<ul>
+<li>terraform {</li>
+</ul>
+<ul>
+<li>required_providers {</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>backend &quot;azurerm&quot; {</li>
+</ul>
+<ul>
+<li>provider &quot;azurerm&quot; {</li>
+</ul>
+<ul>
+<li>features {}</li>
+</ul>
+<ul>
+<li>resource &quot;azurerm_resource_group&quot; &quot;state-demo-secure&quot; {</li>
+</ul>
+<ul>
+<li>Global文档链接：</li>
+</ul>
+<ul>
+<li>terraform官方文档：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>调整后脚本如下：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>azurerm = {</li>
+</ul>
+<ul>
+<li>source = &quot;hashicorp/azurerm&quot;</li>
+</ul>
+<ul>
+<li>version = &quot;2.90.0&quot;</li>
+</ul>
+<ul>
+<li>resource_group_name  = &quot;cdn&quot;</li>
+</ul>
+<ul>
+<li>storage_account_name = &quot;testac&quot;</li>
+</ul>
+<ul>
+<li>container_name       = &quot;tfstate&quot;</li>
+</ul>
+<ul>
+<li>key                  = &quot;myterraform.tfstate&quot;</li>
+</ul>
+<ul>
+<li>environment     = &quot;china&quot;</li>
+</ul>
+<ul>
+<li>subscription_id = &quot;a07125f6-e353-418a-ab1c-d29a656ae44d&quot;</li>
+</ul>
+<ul>
+<li>client_id       = &quot;27bbc68a-15ef-4173-9cc7-eaa634235822&quot;</li>
+</ul>
+<ul>
+<li>client_secret   = &quot;3.os3jpjrmZp6wlT3H4~.JiG-TRuW9Y~Ki&quot;</li>
+</ul>
+<ul>
+<li>tenant_id       = &quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;</li>
+</ul>
+<ul>
+<li>name     = &quot;state-demo&quot;</li>
+</ul>
+<ul>
+<li>location = &quot;chinanorth2&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/developer/terraform/store-state-in-azure-storage?tabs=azure-cli" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/developer/terraform/store-state-in-azure-storage?tabs=azure-cli</a></li>
+</ul>
+<ul>
+<li><a href="https://www.terraform.io/language/settings/backends/azurerm" target="_blank" rel="noopener">https://www.terraform.io/language/settings/backends/azurerm</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>WangZhaoqing</p>
+<p>Terraform 状态用于对已部署资源和 Terraform 配置进行对帐。 Terraform 可通过状态了解需要添加、更新或删除的 Azure 资源。</p>
+<p>中国区目前没有相关文档，可参考global文档，但是连接中国区时有以下注意的地方。除了在provider中指定连接中国区外，在backend中也要指定中国区，否则在terraform init时就是报如下错误：</p>
+<p>调整后脚本如下：</p>
+<p>terraform {</p>
+<p>required_providers {</p>
+<p>azurerm = {</p>
+<p>source = &quot;hashicorp/azurerm&quot;</p>
+<p>version = &quot;2.90.0&quot;</p>
+<p>}</p>
+<p>backend &quot;azurerm&quot; {</p>
+<p>resource_group_name  = &quot;cdn&quot;</p>
+<p>storage_account_name = &quot;testac&quot;</p>
+<p>container_name       = &quot;tfstate&quot;</p>
+<p>key                  = &quot;myterraform.tfstate&quot;</p>
+<p>environment     = &quot;china&quot;</p>
+<p>provider &quot;azurerm&quot; {</p>
+<p>features {}</p>
+<p>subscription_id = &quot;a07125f6-e353-418a-ab1c-d29a656ae44d&quot;</p>
+<p>client_id       = &quot;27bbc68a-15ef-4173-9cc7-eaa634235822&quot;</p>
+<p>client_secret   = &quot;3.os3jpjrmZp6wlT3H4~.JiG-TRuW9Y~Ki&quot;</p>
+<p>tenant_id       = &quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot;</p>
+<p>resource &quot;azurerm_resource_group&quot; &quot;state-demo-secure&quot; {</p>
+<p>name     = &quot;state-demo&quot;</p>
+<p>location = &quot;chinanorth2&quot;</p>
+<p>Global文档链接：</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/developer/terraform/store-state-in-azure-storage?tabs=azure-cli" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/developer/terraform/store-state-in-azure-storage?tabs=azure-cli</a></p>
+<p>terraform官方文档：</p>
+<p><a href="https://www.terraform.io/language/settings/backends/azurerm" target="_blank" rel="noopener">https://www.terraform.io/language/settings/backends/azurerm</a></p></article>

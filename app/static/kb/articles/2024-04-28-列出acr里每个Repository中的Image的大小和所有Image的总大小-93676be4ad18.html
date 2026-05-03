@@ -1,0 +1,123 @@
+<article class="kb-article" data-title="列出acr里每个Repository中的Image的大小和所有Image的总大小"><h1>列出acr里每个Repository中的Image的大小和所有Image的总大小</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: ACR</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-04-28 13:19:51</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>可以使用以下脚本进行统计。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>可以使用以下脚本进行统计。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1．统计注册表中每个Repository中的Image的大小</li>
+</ul>
+<ul>
+<li>========================================================================</li>
+</ul>
+<ul>
+<li>for myReg in ${arr_reglist[@]}</li>
+</ul>
+<ul>
+<li>do</li>
+</ul>
+<ul>
+<li>done</li>
+</ul>
+<ul>
+<li>=========================================================================</li>
+</ul>
+<ul>
+<li>运行截图参考：</li>
+</ul>
+<ul>
+<li>2．统计注册表中每个Repository中所有Image的总大小。</li>
+</ul>
+<ul>
+<li>echo &quot;Getting all repos...&quot;</li>
+</ul>
+<ul>
+<li>((progress++))</li>
+</ul>
+<ul>
+<li>printf &quot;Calculating %d of %d: %s\n&quot; &quot;$progress&quot; &quot;$total_items&quot; &quot;$repo&quot;</li>
+</ul>
+<ul>
+<li>done &lt;&lt;&lt; &quot;$arr_reglist_str&quot;</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>可以使用以下脚本进行统计。</li>
+</ul>
+<ul>
+<li>az acr repository show-manifests -n $registry  --repository $myReg --detail --query &#39;[].{Size: imageSize, Tags: tags[0],Created: createdTime, Architecture: architecture, OS: os}&#39; -o tsv | awk -v myReg=&quot;$myReg&quot; &#39;{ byte =$1 /1024/1024; print myReg &quot;: &quot; byte &quot; MB&quot;, &quot;Tag: &quot;$2, $3, $4 ,$5 }&#39;</li>
+</ul>
+<ul>
+<li>az acr repository show-manifests -n $registry --only-show-errors --repository $repo --detail --query &#39;[].{Size: imageSize}&#39; -o tsv | awk -v repo=&quot;$repo&quot; &#39;{sum += $1} END {printf &quot;%s %.2f GB\n&quot;, repo, sum /1024/1024/1024}&#39;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>registry= YOUR_REGISTRY_NAME</li>
+</ul>
+<ul>
+<li>arr_reglist=<code>az acr repository list -n $registry -o tsv</code></li>
+</ul>
+<ul>
+<li>registry=YOUR_REGISTRY_NAME</li>
+</ul>
+<ul>
+<li>arr_reglist_str=<code>az acr repository list -n $registry -o tsv</code></li>
+</ul>
+<ul>
+<li>progress=0</li>
+</ul>
+<ul>
+<li>total_items=$(echo &quot;$arr_reglist_str&quot; | wc -l)</li>
+</ul>
+<ul>
+<li>while IFS= read -r repo; do</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/Azure/acr/issues/169" target="_blank" rel="noopener">https://github.com/Azure/acr/issues/169</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-04-28</p>
+<p>可以使用以下脚本进行统计。</p>
+<p>1．统计注册表中每个Repository中的Image的大小</p>
+<p>========================================================================</p>
+<p>registry= YOUR_REGISTRY_NAME</p>
+<p>arr_reglist=<code>az acr repository list -n $registry -o tsv</code></p>
+<p>for myReg in ${arr_reglist[@]}</p>
+<p>do</p>
+<p>az acr repository show-manifests -n $registry  --repository $myReg --detail --query &#39;[].{Size: imageSize, Tags: tags[0],Created: createdTime, Architecture: architecture, OS: os}&#39; -o tsv | awk -v myReg=&quot;$myReg&quot; &#39;{ byte =$1 /1024/1024; print myReg &quot;: &quot; byte &quot; MB&quot;, &quot;Tag: &quot;$2, $3, $4 ,$5 }&#39;</p>
+<p>done</p>
+<p>=========================================================================</p>
+<p>运行截图参考：</p>
+<p>2．统计注册表中每个Repository中所有Image的总大小。</p>
+<p>registry=YOUR_REGISTRY_NAME</p>
+<p>echo &quot;Getting all repos...&quot;</p>
+<p>arr_reglist_str=<code>az acr repository list -n $registry -o tsv</code></p>
+<p>progress=0</p>
+<p>total_items=$(echo &quot;$arr_reglist_str&quot; | wc -l)</p>
+<p>while IFS= read -r repo; do</p>
+<p>((progress++))</p>
+<p>printf &quot;Calculating %d of %d: %s\n&quot; &quot;$progress&quot; &quot;$total_items&quot; &quot;$repo&quot;</p>
+<p>az acr repository show-manifests -n $registry --only-show-errors --repository $repo --detail --query &#39;[].{Size: imageSize}&#39; -o tsv | awk -v repo=&quot;$repo&quot; &#39;{sum += $1} END {printf &quot;%s %.2f GB\n&quot;, repo, sum /1024/1024/1024}&#39;</p>
+<p>done &lt;&lt;&lt; &quot;$arr_reglist_str&quot;</p>
+<p>参考文档：</p>
+<p><a href="https://github.com/Azure/acr/issues/169" target="_blank" rel="noopener">https://github.com/Azure/acr/issues/169</a></p></article>

@@ -1,0 +1,65 @@
+<article class="kb-article" data-title="使用FQDN域名类的网络规则或应用程序规则不生效"><h1>使用FQDN域名类的网络规则或应用程序规则不生效</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AzureFW</li>
+<li>Section: Troubleshooting</li>
+<li>最近修改: 2022-03-23 10:03:51</li>
+<li>JD 相关性: 售后排障</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>域名类的防火墙规则，最终是需要解析为IP并执行allow或deny的。在域名解析时，如果虚拟机和防火墙解析的结果不一致，则有可能导致访问不通。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2022.3.23</li>
+</ul>
+<ul>
+<li>客户配置了相应的网络规则或应用程序规则，规则的目标为FQDN，但是配置后不生效或者有些时候生效，有些时候不生效。</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>解决办法：</li>
+</ul>
+<ul>
+<li>需要保证防火墙与虚拟机的DNS解析结果一致即可。</li>
+</ul>
+<ul>
+<li>启用Azure Firewall的DNS代理：</li>
+</ul>
+<ul>
+<li>如果虚拟机用的是自建DNS server，可以不开启防火墙DNS代理，而是把Azure Firewall的DNS也指向这个自建DNS server。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>（截图摘自<a href="https://docs.azure.cn/zh-cn/firewall/dns-details）" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/firewall/dns-details）</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022.3.23</p>
+<p>问题现象：</p>
+<p>客户配置了相应的网络规则或应用程序规则，规则的目标为FQDN，但是配置后不生效或者有些时候生效，有些时候不生效。</p>
+<p>问题原因：</p>
+<p>域名类的防火墙规则，最终是需要解析为IP并执行allow或deny的。在域名解析时，如果虚拟机和防火墙解析的结果不一致，则有可能导致访问不通。</p>
+<p>解决办法：</p>
+<p>需要保证防火墙与虚拟机的DNS解析结果一致即可。</p>
+<p>启用Azure Firewall的DNS代理：</p>
+<p>（截图摘自<a href="https://docs.azure.cn/zh-cn/firewall/dns-details）" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/firewall/dns-details）</a></p>
+<p>如果虚拟机用的是自建DNS server，可以不开启防火墙DNS代理，而是把Azure Firewall的DNS也指向这个自建DNS server。</p></article>

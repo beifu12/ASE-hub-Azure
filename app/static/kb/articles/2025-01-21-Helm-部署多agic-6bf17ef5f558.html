@@ -1,0 +1,762 @@
+<article class="kb-article" data-title="Helm 部署多agic"><h1>Helm 部署多agic</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-01-21 11:36:19</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>当前我们通过add-on的方式来部署的agic只能部署一个，无法在一个集群中在部署一个。 如果是客户的自托管ingress-contorller是没任何问题的，想部署多少就部署多少。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>当前我们通过add-on的方式来部署的agic只能部署一个，无法在一个集群中在部署一个。 如果是客户的自托管ingress-contorller是没任何问题的，想部署多少就部署多少。</li>
+</ul>
+<ul>
+<li>我们先进行初始资源授权，后面根据pod日志进行其他方面的授权。报错通常是我们常见的403，某client没有对某资源的权限。</li>
+</ul>
+<ul>
+<li>这部分内容只是说明和初始授权，必要的appgw权限，管理标识等。具体视情况而定，比如不同的资源组，那么你还需要对资源组授权，授权appgw还要对网络，vmss资源组部分进行授权。 所以根据后续报错进行添加）。</li>
+</ul>
+<ul>
+<li>安装没有报错会提示如下配置信息：</li>
+</ul>
+<ul>
+<li>报错1：</li>
+</ul>
+<ul>
+<li>Error fetching AGIC Pod (This may happen if AGIC is running in a test environment). Error: pods &quot;ingress-appgw-ingress-azure-5c468bd59-rgwrl&quot; is forbidden: User &quot;system:serviceaccount:default:ingress-appgw-sa-ingress-azure&quot; cannot get resource &quot;pods&quot; in API group &quot;&quot; in the namespace &quot;default&quot;</li>
+</ul>
+<ul>
+<li>处理报错：</li>
+</ul>
+<ul>
+<li>报错提示没有对于default的pods get权限。从报错看需要进行授权。</li>
+</ul>
+<ul>
+<li>你可能看到如下没有什么报错，但是没有ready</li>
+</ul>
+<ul>
+<li>报错2：</li>
+</ul>
+<ul>
+<li>failed to update user-assigned identities on node aks-agentpool-41616617-vmss (add [1], del [1], update[0]), error: failed to get identity resource, error: failed to get vmss aks-agentpool-41616617-vmss in resource group MC_AKS_test-aks_chinanorth3, error: failed to get vmss aks-agentpool-41616617-vmss in resource group MC_AKS_test-aks_chinanorth3, error: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: Service returned an error. Status=403 Code=&quot;AuthorizationFailed&quot; Message=&quot;The client &#39;32d9273b-7496-4555-83a9-09468c3a3314&#39; with object id &#39;32d9273b-7496-4555-83a9-09468c3a3314&#39; does not have authorization to perform action &#39;Microsoft.Compute/virtualMachineScaleSets/read&#39; over scope &#39;/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/MC_AKS_test-aks_chinanorth3/providers/Microsoft.Compute/virtualMachineScaleSets/aks-agentpool-41616617-vmss&#39; or the scope is invalid. If access was recently granted, please refresh your credentials.&quot;</li>
+</ul>
+<ul>
+<li>E0327 08:42:25.370822       1 mic.go:1114] failed to get a list of user-assigned identites from node aks-agentpool-41616617-vmss, error: failed to get identity resource, error: failed to get vmss aks-agentpool-41616617-vmss in resource group MC_AKS_test-aks_chinanorth3, error: failed to get vmss aks-agentpool-41616617-vmss in resource group MC_AKS_test-aks_chinanorth3, error: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: Service returned an error. Status=403 Code=&quot;AuthorizationFailed&quot; Message=&quot;The client &#39;32d9273b-7496-4555-83a9-09468c3a3314&#39; with object id &#39;32d9273b-7496-4555-83a9-09468c3a3314&#39; does not have authorization to perform action &#39;Microsoft.Compute/virtualMachineScaleSets/read&#39; over scope &#39;/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/MC_AKS_test-aks_chinanorth3/providers/Microsoft.Compute/virtualMachineScaleSets/aks-agentpool-41616617-vmss&#39; or the scope is invalid. If access was recently granted, please refresh your credentials.&quot;</li>
+</ul>
+<ul>
+<li>根据报错直接授权这个clent的vm资源组权限：</li>
+</ul>
+<ul>
+<li>报错3：</li>
+</ul>
+<ul>
+<li>这里你如果删除了appgw的pod或者删除mic，nmi 其中一个，比如保留了一个，等它重新创建出来的日志大概率还是和以上相同。 因此我这里把这3个pod都删除后又报错如下：</li>
+</ul>
+<ul>
+<li>failed to apply binding default/ingress-appgw-azidbinding-ingress-azure node aks-agentpool-41616617-vmss000001 for pod default/ingress-appgw-ingress-azure-5c468bd59-kt6kb, error: failed to update identities for aks-agentpool-41616617-vmss in MC_AKS_test-aks_chinanorth3, error: compute.VirtualMachineScaleSetsClient#Update: Failure sending request: StatusCode=403 -- Original Error: Code=&quot;LinkedAuthorizationFailed&quot; Message=&quot;The client &#39;32d9273b-7496-4555-83a9-09468c3a3314&#39; with object id &#39;32d9273b-7496-4555-83a9-09468c3a3314&#39; has permission to perform action &#39;Microsoft.Compute/virtualMachineScaleSets/write&#39; on scope &#39;/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/MC_AKS_test-aks_chinanorth3/providers/Microsoft.Compute/virtualMachineScaleSets/aks-agentpool-41616617-vmss&#39;; however, it does not have permission to perform action &#39;Microsoft.ManagedIdentity/userAssignedIdentities/assign/action&#39; on the linked scope(s) &#39;/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourcegroups/testgroup/providers/microsoft.managedidentity/userassignedidentities/myaks-identity&#39; or the linked scope(s) are invalid.&quot;</li>
+</ul>
+<ul>
+<li>报错4：</li>
+</ul>
+<ul>
+<li>但通过指示添加后pod还是起不来。 细读报错得知是AAD资源主体名称找不到。因此这是之前value.yaml的clientid不对导致的。 如果你的管理标识不对，比如通过show 集群得到的client id那么以上报错你会遇到。</li>
+</ul>
+<ul>
+<li>如果你看到appgw的pod 这样的日志，说明你的appgw 已经部署好了。 后面推配置看任何报错可以详细看这个pod日志</li>
+</ul>
+<ul>
+<li>I0403 12:46:42.775248       1 reflector.go:255] Listing and watching *v1.Ingress from pkg/mod/k8s.io/client-go@v0.20.0-beta.1/tools/cache/reflector.go:167</li>
+</ul>
+<ul>
+<li>I0403 12:46:42.775389       1 reflector.go:255] Listing and watching *v1beta1.AzureApplicationGatewayRewrite from pkg/mod/k8s.io/client-go@v0.20.0-beta.1/tools/cache/reflector.go:167</li>
+</ul>
+<ul>
+<li>I0403 12:46:42.775533       1 reflector.go:255] Listing and watching *v1.IngressClass from pkg/mod/k8s.io/client-go@v0.20.0-beta.1/tools/cache/reflector.go:167</li>
+</ul>
+<ul>
+<li>I0403 12:46:42.876243       1 context.go:251] Initial cache sync done</li>
+</ul>
+<ul>
+<li>I0403 12:46:42.876717       1 context.go:252] k8s context run finished</li>
+</ul>
+<ul>
+<li>I0403 12:46:42.876988       1 worker.go:39] Worker started</li>
+</ul>
+<ul>
+<li>I0403 12:46:43.007794       1 mutate_app_gateway.go:177] BEGIN AppGateway deployment</li>
+</ul>
+<ul>
+<li>I0403 12:46:43.747489       1 client.go:216] OperationID=&#39;ff76828b-b922-4379-82b3-d25312c2ae0b&#39;</li>
+</ul>
+<ul>
+<li>I0403 12:46:49.839983       1 mutate_app_gateway.go:185] Applied generated Application Gateway configuration</li>
+</ul>
+<ul>
+<li>I0403 12:46:49.840007       1 mutate_app_gateway.go:200] cache: Updated with latest applied config.</li>
+</ul>
+<ul>
+<li>I0403 12:46:49.841212       1 mutate_app_gateway.go:204] END AppGateway deployment</li>
+</ul>
+<ul>
+<li>I0403 12:46:49.841235       1 controller.go:152] Completed last event loop run in: 6.964223859s</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2023.3.5</li>
+</ul>
+<ul>
+<li>Wang guoyuan</li>
+</ul>
+<ul>
+<li>当前官方文档中提到多集群共享appgw（AzureIngressProhibitedTarget），但没有明确说可以在一个集群共享多个appgw。 最终通过github看到一句话证明是支持的。</li>
+</ul>
+<ul>
+<li>For deployments that require more than one AGIC per cluster or multiple AGICs targeting one Application Gateway, please continue to use AGIC deployed through Helm.</li>
+</ul>
+<ul>
+<li>这篇文章也给出了他们的区别。</li>
+</ul>
+<ul>
+<li>安装篇：</li>
+</ul>
+<ul>
+<li>准备：</li>
+</ul>
+<ul>
+<li>1个AKS集群；2个APPGW；helm 环境；aad pod identity;</li>
+</ul>
+<ul>
+<li>#以上资源他们可以是不同的资源组。</li>
+</ul>
+<ul>
+<li>可以参考</li>
+</ul>
+<ul>
+<li>Helm 3 安装aad pod identity.</li>
+</ul>
+<ul>
+<li>先创建identity:</li>
+</ul>
+<ul>
+<li>--role Contributor \</li>
+</ul>
+<ul>
+<li>--assignee &lt;principalId&gt; \</li>
+</ul>
+<ul>
+<li>--scope &lt;App-Gateway-ID&gt;</li>
+</ul>
+<ul>
+<li>以上可以根据文档1-4来授权。</li>
+</ul>
+<ul>
+<li>授权：</li>
+</ul>
+<ul>
+<li>52b2f567-5810-46bb-9edc-493e9d22408d</li>
+</ul>
+<ul>
+<li>如上输出是一个id证明是管理标识。</li>
+</ul>
+<ul>
+<li>部署后看一下是否都ready.</li>
+</ul>
+<ul>
+<li>部署agic-1</li>
+</ul>
+<ul>
+<li>从网上copy配置文件，和pull 下来appgw-ingress的chart.</li>
+</ul>
+<ul>
+<li>helm-config.yaml</li>
+</ul>
+<ul>
+<li>verbosityLevel: 3</li>
+</ul>
+<ul>
+<li>appgw:</li>
+</ul>
+<ul>
+<li>subscriptionId: &lt;subscriptionId&gt;</li>
+</ul>
+<ul>
+<li>resourceGroup: &lt;resourceGroupName&gt;</li>
+</ul>
+<ul>
+<li>name: &lt;applicationGatewayName&gt;</li>
+</ul>
+<ul>
+<li>shared: false</li>
+</ul>
+<ul>
+<li>environment: AzureChinaCloud</li>
+</ul>
+<ul>
+<li>armAuth: type: aadPodIdentity</li>
+</ul>
+<ul>
+<li>identityResourceID: &lt;identityResourceId&gt;</li>
+</ul>
+<ul>
+<li>identityClientID: &lt;identityClientId&gt;</li>
+</ul>
+<ul>
+<li>rbac:</li>
+</ul>
+<ul>
+<li>将以上部分替换为你的资源信息。</li>
+</ul>
+<ul>
+<li>helm pull application-gateway-kubernetes-ingress/ingress-azure</li>
+</ul>
+<ul>
+<li>拉取下来后修改如下values文件。</li>
+</ul>
+<ul>
+<li>root@wangguoyuan-d-2:~/mult-agic/ingress-azure/ingress-azure# ls</li>
+</ul>
+<ul>
+<li>Chart-template.yaml  Chart.yaml  crds  http_ingress.yml  templates  tests  values-template.yaml  values.yaml</li>
+</ul>
+<ul>
+<li>vim values.yaml</li>
+</ul>
+<ul>
+<li>ingressClassResource:</li>
+</ul>
+<ul>
+<li>name: azure-application-gateway-one</li>
+</ul>
+<ul>
+<li>default: false</li>
+</ul>
+<ul>
+<li>controllerValue: &quot;azure/application-gateway-one&quot;</li>
+</ul>
+<ul>
+<li>#修改默认值为你希望的值。这个类似ingress-controller的class定义</li>
+</ul>
+<ul>
+<li>subscriptionId: dfd49f47-6adb-4de5-b48c-b30587985eb5</li>
+</ul>
+<ul>
+<li>resourceGroup: TestGroup</li>
+</ul>
+<ul>
+<li>name: AGIC</li>
+</ul>
+<ul>
+<li>#修改为你的资源信息</li>
+</ul>
+<ul>
+<li>armAuth:</li>
+</ul>
+<ul>
+<li>type: aadPodIdentity</li>
+</ul>
+<ul>
+<li>identityResourceID: /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourcegroups/TestGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/myaks-identity</li>
+</ul>
+<ul>
+<li>identityClientID: f0fb8dcc-fcf7-48e5-a756-d74ae5323b40</li>
+</ul>
+<ul>
+<li>#修改为你的资源信息。</li>
+</ul>
+<ul>
+<li>我没有测试watchnamespace. 如果有兴趣可以测试一下把两个agic部署到不同的ns下，watch不同的ns</li>
+</ul>
+<ul>
+<li>kubernetes:</li>
+</ul>
+<ul>
+<li>watchNamespace: ingress</li>
+</ul>
+<ul>
+<li>本地chart安装：</li>
+</ul>
+<ul>
+<li>helm install ingress-appgw  .</li>
+</ul>
+<ul>
+<li>Your release is named ingress-appgw.</li>
+</ul>
+<ul>
+<li>The controller is deployed in deployment ingress-appgw-ingress-azure.</li>
+</ul>
+<ul>
+<li>Configuration Details:</li>
+</ul>
+<ul>
+<li>----------------------</li>
+</ul>
+<ul>
+<li>* AzureRM Authentication Method:</li>
+</ul>
+<ul>
+<li>- Use AAD-Pod-Identity</li>
+</ul>
+<ul>
+<li>* Application Gateway:</li>
+</ul>
+<ul>
+<li>- Subscription ID : dfd49f47-6adb-4de5-b48c-b30587985eb5</li>
+</ul>
+<ul>
+<li>- Resource Group  : TestGroup</li>
+</ul>
+<ul>
+<li>- Application Gateway Name : AGIC</li>
+</ul>
+<ul>
+<li>* Kubernetes Ingress Controller:</li>
+</ul>
+<ul>
+<li>- Watching Namespaces: ingress</li>
+</ul>
+<ul>
+<li>- Verbosity level: 3</li>
+</ul>
+<ul>
+<li>部署agic-1完成。</li>
+</ul>
+<ul>
+<li>vi templates/deployment.yaml</li>
+</ul>
+<ul>
+<li>template &quot;application-gateway-kubernetes-ingress.fullname&quot; .</li>
+</ul>
+<ul>
+<li>排错篇：</li>
+</ul>
+<ul>
+<li>ngress-azure# k get sa</li>
+</ul>
+<ul>
+<li>NAME                             SECRETS   AGE</li>
+</ul>
+<ul>
+<li>aad-pod-id-mic-service-account   0         22m</li>
+</ul>
+<ul>
+<li>aad-pod-id-nmi-service-account   0         22m</li>
+</ul>
+<ul>
+<li>default                          0         96m</li>
+</ul>
+<ul>
+<li>ingress-appgw-sa-ingress-azure   0         8m26s</li>
+</ul>
+<ul>
+<li>创建一个rolebinding对这个sa进行授权：</li>
+</ul>
+<ul>
+<li>vi ingress-appgw-sa-rolebinding.yaml</li>
+</ul>
+<ul>
+<li>apiVersion: rbac.authorization.k8s.io/v1</li>
+</ul>
+<ul>
+<li>kind: ClusterRoleBinding</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: ingress-appgw-clusterrolebinding</li>
+</ul>
+<ul>
+<li>subjects:</li>
+</ul>
+<ul>
+<li>- kind: ServiceAccount</li>
+</ul>
+<ul>
+<li>name: ingress-appgw-sa-ingress-azure  # name of your service account</li>
+</ul>
+<ul>
+<li>namespace: default # this is the namespace your service account is in</li>
+</ul>
+<ul>
+<li>roleRef: # referring to your ClusterRole</li>
+</ul>
+<ul>
+<li>kind: ClusterRole</li>
+</ul>
+<ul>
+<li>name: cluster-admin</li>
+</ul>
+<ul>
+<li>apiGroup: rbac.authorization.k8s.io</li>
+</ul>
+<ul>
+<li>k get clusterrolebinding</li>
+</ul>
+<ul>
+<li>NAME                                                   ROLE                                                                               AGE</li>
+</ul>
+<ul>
+<li>ingress-appgw-clusterrolebinding</li>
+</ul>
+<ul>
+<li>k get pod</li>
+</ul>
+<ul>
+<li>NAME                                          READY   STATUS    RESTARTS   AGE</li>
+</ul>
+<ul>
+<li>ingress-appgw-ingress-azure-5c468bd59-kg8p2   0/1     Running   0          75s</li>
+</ul>
+<ul>
+<li>mic-55687b76d9-5bcld                          1/1     Running   0          39m</li>
+</ul>
+<ul>
+<li>mic-55687b76d9-mgdts                          1/1     Running   0          39m</li>
+</ul>
+<ul>
+<li>nmi-d4scr                                     1/1     Running   0          39m</li>
+</ul>
+<ul>
+<li>I0327 08:42:25.491908       1 utils.go:114] Using verbosity level 3 from environment variable APPGW_VERBOSITY_LEVEL</li>
+</ul>
+<ul>
+<li>I0327 08:42:25.513993       1 supported_apiversion.go:70] server version is: 1.24.9</li>
+</ul>
+<ul>
+<li>I0327 08:42:25.525579       1 main.go:118] Using User Agent Suffix=&#39;ingress-appgw-ingress-azure-5c468bd59-kg8p2&#39; when communicating with ARM</li>
+</ul>
+<ul>
+<li>I0327 08:42:25.525658       1 main.go:137] Application Gateway Details: Subscription=&quot;dfd49f47-6adb-4de5-b48c-b30587985eb5&quot; Resource Group=&quot;TestGroup&quot; Name=&quot;AGIC&quot;</li>
+</ul>
+<ul>
+<li>I0327 08:42:25.525671       1 auth.go:57] Creating authorizer from Azure Managed Service Identity</li>
+</ul>
+<ul>
+<li>I0327 08:42:25.525810       1 httpserver.go:57] Starting API Server on :8123</li>
+</ul>
+<ul>
+<li>添加标识的权限。</li>
+</ul>
+<ul>
+<li>这里需要注意的是，这里的clientid同样也需要对管理标识进行授权。添加完成后再次移除appgw 的pod后会变为ready</li>
+</ul>
+<ul>
+<li>如果你看到agic的pod，如下错误：</li>
+</ul>
+<ul>
+<li>这里提示也是非常的明确，根据指引进行授权；</li>
+</ul>
+<ul>
+<li>因此需要重新修订后重新安装。</li>
+</ul>
+<ul>
+<li>/cache/reflector.go:167</li>
+</ul>
+<ul>
+<li>可以基于此方法（修改value文件）安装第二个agic</li>
+</ul>
+<ul>
+<li>改一下appgw的名称或资源组</li>
+</ul>
+<ul>
+<li>class的定义</li>
+</ul>
+<ul>
+<li>…</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>检查集群是管理标识还是服务主体，默认portal上建出来的是管理标识。</li>
+</ul>
+<ul>
+<li>portal上检查是否启用了RBAC：</li>
+</ul>
+<ul>
+<li>以上完成后你查看创建的pod名称应该为ingress-appgw-ingress-azure开头的pod. 这个pod名字很奇怪。因为你在部署的时候指定了名字，而chart的模板是组合了这个名字和默认chart的名称。你可以自行通过chart来修改这个值。（我测试时没有修改过，且sa的名字也是这样组合起来的，感兴趣可以自行调整chart的yaml）。具体编辑文件为：</li>
+</ul>
+<ul>
+<li>查看pod可以看到肯定是没有ready的一个pod. 下一步我们检查日志并处理报错。</li>
+</ul>
+<ul>
+<li>检查报错的SA确实存在：</li>
+</ul>
+<ul>
+<li>删除pod，再次检查pod或日志。</li>
+</ul>
+<ul>
+<li>root@wangguoyuan-d-2:~/mult-agic/ingress-azure/ingress-azure# k logs ingress-appgw-ingress-azure-5c468bd59-kg8p2</li>
+</ul>
+<ul>
+<li>这里你需要检查mic或nmi的pod，通常会看到相关报错，基于报错来解决。</li>
+</ul>
+<ul>
+<li>检查mic的pod报错日志你会发现其他的报错：</li>
+</ul>
+<ul>
+<li>Helm 安装后，需要根据报错提示再创建一下clusterrulebinding（基于之前的步骤）。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az identity create -g &lt;agent-pool-resource-group&gt; -n &lt;identity-name&gt;</li>
+</ul>
+<ul>
+<li>az identity show -g &lt;resourcegroup&gt; -n &lt;identity-name&gt;</li>
+</ul>
+<ul>
+<li>az role assignment create \</li>
+</ul>
+<ul>
+<li>az aks show -g AKS -n test-aks --query identityProfile.kubeletidentity.clientId -o tsv</li>
+</ul>
+<ul>
+<li>az role assignment create  --role Contributor   --assignee 32d9273b-7496-4555-83a9-09468c3a3314    --scope &#39;/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/MC_AKS_test-aks_chinanorth3&#39;</li>
+</ul>
+<ul>
+<li>az role assignment create  --role &quot;Managed Identity Operator&quot; --assignee 32d9273b-7496-4555-83a9-09468c3a3314    --scope &#39;/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourcegroups/testgroup/providers/microsoft.managedidentity/userassignedidentities/myaks-identity&#39;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>#也可以不用aad pod identity， 比如service principal我没有测试过，理论上是一样的，需要修改arm部分的类型等相关字段。</li>
+</ul>
+<ul>
+<li>如果是disable RBAC的集群那么可以通过以下来安装：</li>
+</ul>
+<ul>
+<li>enabled: false # true/false # Specify aks cluster related information. THIS IS BEING DEPRECATED.</li>
+</ul>
+<ul>
+<li>enabled: true</li>
+</ul>
+<ul>
+<li>需要修改value的值：（假如用相同的标识）</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/Azure-Samples/aks-agic#application-gateway-ingress-controller-deployment-options" target="_blank" rel="noopener">https://github.com/Azure-Samples/aks-agic#application-gateway-ingress-controller-deployment-options</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/application-gateway/ingress-controller-install-existing#multi-cluster--shared-application-gateway" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/application-gateway/ingress-controller-install-existing#multi-cluster--shared-application-gateway</a></li>
+</ul>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.15/deploy/infra/deployment-rbac.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.15/deploy/infra/deployment-rbac.yaml</a></li>
+</ul>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.15/deploy/infra/mic-exception.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.15/deploy/infra/mic-exception.yaml</a></li>
+</ul>
+<ul>
+<li><a href="https://azure.github.io/aad-pod-identity/docs/getting-started/installation/" target="_blank" rel="noopener">https://azure.github.io/aad-pod-identity/docs/getting-started/installation/</a></li>
+</ul>
+<ul>
+<li>Code=&quot;ErrorApplicationGatewayForbidden&quot; Message=&quot;Unexpected status code &#39;403&#39; while performing a GET on Application Gateway. You can use &#39;az role assignment create --role Reader --scope /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/TestGroup --assignee 52b2f567-5810-46bb-9edc-493e9d22408d; az role assignment create --role Contributor --scope /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/TestGroup/providers/Microsoft.Network/applicationGateways/AGIC --assignee 52b2f567-5810-46bb-9edc-493e9d22408d&#39; to assign permissions. AGIC Identity needs atleast has &#39;Contributor&#39; access to Application Gateway &#39;AGIC&#39; and &#39;Reader&#39; access to Application Gateway&#39;s Resource Group &#39;TestGroup&#39;.&quot; InnerError=&quot;azure.BearerAuthorizer#WithAuthorization: Failed to refresh the Token for request to <a href="https://management.azure.com/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/TestGroup/providers/Microsoft.Network/applicationGateways/AGIC?api-version=2021-03-01:" target="_blank" rel="noopener">https://management.azure.com/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/TestGroup/providers/Microsoft.Network/applicationGateways/AGIC?api-version=2021-03-01:</a> StatusCode=403 -- Original Error: adal: Refresh request failed. Status Code = &#39;403&#39;. Response body: adal: Refresh request failed. Status Code = &#39;400&#39;. Response body: {&quot;error&quot;:&quot;invalid_resource&quot;,&quot;error_description&quot;:&quot;AADSTS500011: The resource principal named <a href="https://management.azure.com/" target="_blank" rel="noopener">https://management.azure.com/</a> was not found in the tenant named Microsoft. This can happen if the application has not been installed by the administrator of the tenant or consented to by any user in the tenant. You might have sent your authentication request to the wrong tenant.\r\nTrace ID: 0ab3be74-f621-449b-a09d-cb7d3a6d0100\r\nCorrelation ID: f690021c-fc29-4c76-9c2a-25456efd1da9\r\nTimestamp: 2023-03-27 09:02:48Z&quot;,&quot;error_codes&quot;:[500011],&quot;timestamp&quot;:&quot;2023-03-27 09:02:48Z&quot;,&quot;trace_id&quot;:&quot;0ab3be74-f621-449b-a09d-cb7d3a6d0100&quot;,&quot;correlation_id&quot;:&quot;f690021c-fc29-4c76-9c2a-25456efd1da9&quot;,&quot;error_uri&quot;:&quot;<a href="https://chinanorth3.login.partner.microsoftonline.cn/error?code=500011&quot;}" target="_blank" rel="noopener">https://chinanorth3.login.partner.microsoftonline.cn/error?code=500011&quot;}</a> Endpoint <a href="http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&amp;client_id=52b2f567-5810-46bb-9edc-493e9d22408d&amp;resource=https%!A(MISSING)%!F(MISSING)%!F(MISSING)management.azure.com%!F(MISSING)" target="_blank" rel="noopener">http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&amp;client_id=52b2f567-5810-46bb-9edc-493e9d22408d&amp;resource=https%!A(MISSING)%!F(MISSING)%!F(MISSING)management.azure.com%!F(MISSING)</a></li>
+</ul>
+<ul>
+<li>Endpoint <a href="http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&amp;client_id=52b2f567-5810-46bb-9edc-493e9d22408d&amp;resource=https%!A(MISSING)%!F(MISSING)%!F(MISSING)management.azure.com%!F(MISSING)&quot;" target="_blank" rel="noopener">http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&amp;client_id=52b2f567-5810-46bb-9edc-493e9d22408d&amp;resource=https%!A(MISSING)%!F(MISSING)%!F(MISSING)management.azure.com%!F(MISSING)&quot;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023.3.5</p>
+<p>Wang guoyuan</p>
+<p>当前我们通过add-on的方式来部署的agic只能部署一个，无法在一个集群中在部署一个。 如果是客户的自托管ingress-contorller是没任何问题的，想部署多少就部署多少。</p>
+<p>当前官方文档中提到多集群共享appgw（AzureIngressProhibitedTarget），但没有明确说可以在一个集群共享多个appgw。 最终通过github看到一句话证明是支持的。</p>
+<p><a href="https://github.com/Azure-Samples/aks-agic#application-gateway-ingress-controller-deployment-options" target="_blank" rel="noopener">https://github.com/Azure-Samples/aks-agic#application-gateway-ingress-controller-deployment-options</a></p>
+<p>For deployments that require more than one AGIC per cluster or multiple AGICs targeting one Application Gateway, please continue to use AGIC deployed through Helm.</p>
+<p>这篇文章也给出了他们的区别。</p>
+<p>安装篇：</p>
+<p>准备：</p>
+<p>1个AKS集群；2个APPGW；helm 环境；aad pod identity;</p>
+<p>#以上资源他们可以是不同的资源组。</p>
+<p>可以参考</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/application-gateway/ingress-controller-install-existing#multi-cluster--shared-application-gateway" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/application-gateway/ingress-controller-install-existing#multi-cluster--shared-application-gateway</a></p>
+<p>Helm 3 安装aad pod identity.</p>
+<p>先创建identity:</p>
+<p>az identity create -g &lt;agent-pool-resource-group&gt; -n &lt;identity-name&gt;</p>
+<p>az identity show -g &lt;resourcegroup&gt; -n &lt;identity-name&gt;</p>
+<p>az role assignment create \</p>
+<p>--role Contributor \</p>
+<p>--assignee &lt;principalId&gt; \</p>
+<p>--scope &lt;App-Gateway-ID&gt;</p>
+<p>以上可以根据文档1-4来授权。</p>
+<p>授权：</p>
+<p>我们先进行初始资源授权，后面根据pod日志进行其他方面的授权。报错通常是我们常见的403，某client没有对某资源的权限。</p>
+<p>这部分内容只是说明和初始授权，必要的appgw权限，管理标识等。具体视情况而定，比如不同的资源组，那么你还需要对资源组授权，授权appgw还要对网络，vmss资源组部分进行授权。 所以根据后续报错进行添加）。</p>
+<p>#也可以不用aad pod identity， 比如service principal我没有测试过，理论上是一样的，需要修改arm部分的类型等相关字段。</p>
+<p>检查集群是管理标识还是服务主体，默认portal上建出来的是管理标识。</p>
+<p>az aks show -g AKS -n test-aks --query identityProfile.kubeletidentity.clientId -o tsv</p>
+<p>52b2f567-5810-46bb-9edc-493e9d22408d</p>
+<p>如上输出是一个id证明是管理标识。</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.15/deploy/infra/deployment-rbac.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.15/deploy/infra/deployment-rbac.yaml</a></p>
+<p>如果是disable RBAC的集群那么可以通过以下来安装：</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.15/deploy/infra/mic-exception.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.15/deploy/infra/mic-exception.yaml</a></p>
+<p>portal上检查是否启用了RBAC：</p>
+<p><a href="https://azure.github.io/aad-pod-identity/docs/getting-started/installation/" target="_blank" rel="noopener">https://azure.github.io/aad-pod-identity/docs/getting-started/installation/</a></p>
+<p>部署后看一下是否都ready.</p>
+<p>部署agic-1</p>
+<p>从网上copy配置文件，和pull 下来appgw-ingress的chart.</p>
+<p>helm-config.yaml</p>
+<p>verbosityLevel: 3</p>
+<p>appgw:</p>
+<p>subscriptionId: &lt;subscriptionId&gt;</p>
+<p>resourceGroup: &lt;resourceGroupName&gt;</p>
+<p>name: &lt;applicationGatewayName&gt;</p>
+<p>shared: false</p>
+<p>environment: AzureChinaCloud</p>
+<p>armAuth: type: aadPodIdentity</p>
+<p>identityResourceID: &lt;identityResourceId&gt;</p>
+<p>identityClientID: &lt;identityClientId&gt;</p>
+<p>rbac:</p>
+<p>enabled: false # true/false # Specify aks cluster related information. THIS IS BEING DEPRECATED.</p>
+<p>将以上部分替换为你的资源信息。</p>
+<p>helm pull application-gateway-kubernetes-ingress/ingress-azure</p>
+<p>拉取下来后修改如下values文件。</p>
+<p>root@wangguoyuan-d-2:~/mult-agic/ingress-azure/ingress-azure# ls</p>
+<p>Chart-template.yaml  Chart.yaml  crds  http_ingress.yml  templates  tests  values-template.yaml  values.yaml</p>
+<p>vim values.yaml</p>
+<p>ingressClassResource:</p>
+<p>name: azure-application-gateway-one</p>
+<p>enabled: true</p>
+<p>default: false</p>
+<p>controllerValue: &quot;azure/application-gateway-one&quot;</p>
+<p>#修改默认值为你希望的值。这个类似ingress-controller的class定义</p>
+<p>subscriptionId: dfd49f47-6adb-4de5-b48c-b30587985eb5</p>
+<p>resourceGroup: TestGroup</p>
+<p>name: AGIC</p>
+<p>#修改为你的资源信息</p>
+<p>armAuth:</p>
+<p>type: aadPodIdentity</p>
+<p>identityResourceID: /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourcegroups/TestGroup/providers/Microsoft.ManagedIdentity/userAssignedIdentities/myaks-identity</p>
+<p>identityClientID: f0fb8dcc-fcf7-48e5-a756-d74ae5323b40</p>
+<p>#修改为你的资源信息。</p>
+<p>我没有测试watchnamespace. 如果有兴趣可以测试一下把两个agic部署到不同的ns下，watch不同的ns</p>
+<p>kubernetes:</p>
+<p>watchNamespace: ingress</p>
+<p>本地chart安装：</p>
+<p>helm install ingress-appgw  .</p>
+<p>安装没有报错会提示如下配置信息：</p>
+<p>Your release is named ingress-appgw.</p>
+<p>The controller is deployed in deployment ingress-appgw-ingress-azure.</p>
+<p>Configuration Details:</p>
+<p>----------------------</p>
+<ul>
+<li>AzureRM Authentication Method:</li>
+</ul>
+<ul>
+<li>Use AAD-Pod-Identity</li>
+</ul>
+<ul>
+<li>Application Gateway:</li>
+</ul>
+<ul>
+<li>Subscription ID : dfd49f47-6adb-4de5-b48c-b30587985eb5</li>
+</ul>
+<ul>
+<li>Resource Group  : TestGroup</li>
+</ul>
+<ul>
+<li>Application Gateway Name : AGIC</li>
+</ul>
+<ul>
+<li>Kubernetes Ingress Controller:</li>
+</ul>
+<ul>
+<li>Watching Namespaces: ingress</li>
+</ul>
+<ul>
+<li>Verbosity level: 3</li>
+</ul>
+<p>部署agic-1完成。</p>
+<p>以上完成后你查看创建的pod名称应该为ingress-appgw-ingress-azure开头的pod. 这个pod名字很奇怪。因为你在部署的时候指定了名字，而chart的模板是组合了这个名字和默认chart的名称。你可以自行通过chart来修改这个值。（我测试时没有修改过，且sa的名字也是这样组合起来的，感兴趣可以自行调整chart的yaml）。具体编辑文件为：</p>
+<p>vi templates/deployment.yaml</p>
+<p>template &quot;application-gateway-kubernetes-ingress.fullname&quot; .</p>
+<p>排错篇：</p>
+<p>查看pod可以看到肯定是没有ready的一个pod. 下一步我们检查日志并处理报错。</p>
+<p>报错1：</p>
+<p>Error fetching AGIC Pod (This may happen if AGIC is running in a test environment). Error: pods &quot;ingress-appgw-ingress-azure-5c468bd59-rgwrl&quot; is forbidden: User &quot;system:serviceaccount:default:ingress-appgw-sa-ingress-azure&quot; cannot get resource &quot;pods&quot; in API group &quot;&quot; in the namespace &quot;default&quot;</p>
+<p>处理报错：</p>
+<p>检查报错的SA确实存在：</p>
+<p>ngress-azure# k get sa</p>
+<p>NAME                             SECRETS   AGE</p>
+<p>aad-pod-id-mic-service-account   0         22m</p>
+<p>aad-pod-id-nmi-service-account   0         22m</p>
+<p>default                          0         96m</p>
+<p>ingress-appgw-sa-ingress-azure   0         8m26s</p>
+<p>报错提示没有对于default的pods get权限。从报错看需要进行授权。</p>
+<p>创建一个rolebinding对这个sa进行授权：</p>
+<p>vi ingress-appgw-sa-rolebinding.yaml</p>
+<p>apiVersion: rbac.authorization.k8s.io/v1</p>
+<p>kind: ClusterRoleBinding</p>
+<p>metadata:</p>
+<p>name: ingress-appgw-clusterrolebinding</p>
+<p>subjects:</p>
+<ul>
+<li>kind: ServiceAccount</li>
+</ul>
+<p>name: ingress-appgw-sa-ingress-azure  # name of your service account</p>
+<p>namespace: default # this is the namespace your service account is in</p>
+<p>roleRef: # referring to your ClusterRole</p>
+<p>kind: ClusterRole</p>
+<p>name: cluster-admin</p>
+<p>apiGroup: rbac.authorization.k8s.io</p>
+<p>k get clusterrolebinding</p>
+<p>NAME                                                   ROLE                                                                               AGE</p>
+<p>ingress-appgw-clusterrolebinding</p>
+<p>删除pod，再次检查pod或日志。</p>
+<p>你可能看到如下没有什么报错，但是没有ready</p>
+<p>k get pod</p>
+<p>NAME                                          READY   STATUS    RESTARTS   AGE</p>
+<p>ingress-appgw-ingress-azure-5c468bd59-kg8p2   0/1     Running   0          75s</p>
+<p>mic-55687b76d9-5bcld                          1/1     Running   0          39m</p>
+<p>mic-55687b76d9-mgdts                          1/1     Running   0          39m</p>
+<p>nmi-d4scr                                     1/1     Running   0          39m</p>
+<p>root@wangguoyuan-d-2:~/mult-agic/ingress-azure/ingress-azure# k logs ingress-appgw-ingress-azure-5c468bd59-kg8p2</p>
+<p>I0327 08:42:25.491908       1 utils.go:114] Using verbosity level 3 from environment variable APPGW_VERBOSITY_LEVEL</p>
+<p>I0327 08:42:25.513993       1 supported_apiversion.go:70] server version is: 1.24.9</p>
+<p>I0327 08:42:25.525579       1 main.go:118] Using User Agent Suffix=&#39;ingress-appgw-ingress-azure-5c468bd59-kg8p2&#39; when communicating with ARM</p>
+<p>I0327 08:42:25.525658       1 main.go:137] Application Gateway Details: Subscription=&quot;dfd49f47-6adb-4de5-b48c-b30587985eb5&quot; Resource Group=&quot;TestGroup&quot; Name=&quot;AGIC&quot;</p>
+<p>I0327 08:42:25.525671       1 auth.go:57] Creating authorizer from Azure Managed Service Identity</p>
+<p>I0327 08:42:25.525810       1 httpserver.go:57] Starting API Server on :8123</p>
+<p>这里你需要检查mic或nmi的pod，通常会看到相关报错，基于报错来解决。</p>
+<p>报错2：</p>
+<p>检查mic的pod报错日志你会发现其他的报错：</p>
+<p>failed to update user-assigned identities on node aks-agentpool-41616617-vmss (add [1], del [1], update[0]), error: failed to get identity resource, error: failed to get vmss aks-agentpool-41616617-vmss in resource group MC_AKS_test-aks_chinanorth3, error: failed to get vmss aks-agentpool-41616617-vmss in resource group MC_AKS_test-aks_chinanorth3, error: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: Service returned an error. Status=403 Code=&quot;AuthorizationFailed&quot; Message=&quot;The client &#39;32d9273b-7496-4555-83a9-09468c3a3314&#39; with object id &#39;32d9273b-7496-4555-83a9-09468c3a3314&#39; does not have authorization to perform action &#39;Microsoft.Compute/virtualMachineScaleSets/read&#39; over scope &#39;/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/MC_AKS_test-aks_chinanorth3/providers/Microsoft.Compute/virtualMachineScaleSets/aks-agentpool-41616617-vmss&#39; or the scope is invalid. If access was recently granted, please refresh your credentials.&quot;</p>
+<p>E0327 08:42:25.370822       1 mic.go:1114] failed to get a list of user-assigned identites from node aks-agentpool-41616617-vmss, error: failed to get identity resource, error: failed to get vmss aks-agentpool-41616617-vmss in resource group MC_AKS_test-aks_chinanorth3, error: failed to get vmss aks-agentpool-41616617-vmss in resource group MC_AKS_test-aks_chinanorth3, error: compute.VirtualMachineScaleSetsClient#Get: Failure responding to request: StatusCode=403 -- Original Error: autorest/azure: Service returned an error. Status=403 Code=&quot;AuthorizationFailed&quot; Message=&quot;The client &#39;32d9273b-7496-4555-83a9-09468c3a3314&#39; with object id &#39;32d9273b-7496-4555-83a9-09468c3a3314&#39; does not have authorization to perform action &#39;Microsoft.Compute/virtualMachineScaleSets/read&#39; over scope &#39;/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/MC_AKS_test-aks_chinanorth3/providers/Microsoft.Compute/virtualMachineScaleSets/aks-agentpool-41616617-vmss&#39; or the scope is invalid. If access was recently granted, please refresh your credentials.&quot;</p>
+<p>根据报错直接授权这个clent的vm资源组权限：</p>
+<p>az role assignment create  --role Contributor   --assignee 32d9273b-7496-4555-83a9-09468c3a3314    --scope &#39;/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/MC_AKS_test-aks_chinanorth3&#39;</p>
+<p>报错3：</p>
+<p>这里你如果删除了appgw的pod或者删除mic，nmi 其中一个，比如保留了一个，等它重新创建出来的日志大概率还是和以上相同。 因此我这里把这3个pod都删除后又报错如下：</p>
+<p>failed to apply binding default/ingress-appgw-azidbinding-ingress-azure node aks-agentpool-41616617-vmss000001 for pod default/ingress-appgw-ingress-azure-5c468bd59-kt6kb, error: failed to update identities for aks-agentpool-41616617-vmss in MC_AKS_test-aks_chinanorth3, error: compute.VirtualMachineScaleSetsClient#Update: Failure sending request: StatusCode=403 -- Original Error: Code=&quot;LinkedAuthorizationFailed&quot; Message=&quot;The client &#39;32d9273b-7496-4555-83a9-09468c3a3314&#39; with object id &#39;32d9273b-7496-4555-83a9-09468c3a3314&#39; has permission to perform action &#39;Microsoft.Compute/virtualMachineScaleSets/write&#39; on scope &#39;/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/MC_AKS_test-aks_chinanorth3/providers/Microsoft.Compute/virtualMachineScaleSets/aks-agentpool-41616617-vmss&#39;; however, it does not have permission to perform action &#39;Microsoft.ManagedIdentity/userAssignedIdentities/assign/action&#39; on the linked scope(s) &#39;/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourcegroups/testgroup/providers/microsoft.managedidentity/userassignedidentities/myaks-identity&#39; or the linked scope(s) are invalid.&quot;</p>
+<p>添加标识的权限。</p>
+<p>az role assignment create  --role &quot;Managed Identity Operator&quot; --assignee 32d9273b-7496-4555-83a9-09468c3a3314    --scope &#39;/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourcegroups/testgroup/providers/microsoft.managedidentity/userassignedidentities/myaks-identity&#39;</p>
+<p>这里需要注意的是，这里的clientid同样也需要对管理标识进行授权。添加完成后再次移除appgw 的pod后会变为ready</p>
+<p>报错4：</p>
+<p>如果你看到agic的pod，如下错误：</p>
+<p>Code=&quot;ErrorApplicationGatewayForbidden&quot; Message=&quot;Unexpected status code &#39;403&#39; while performing a GET on Application Gateway. You can use &#39;az role assignment create --role Reader --scope /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/TestGroup --assignee 52b2f567-5810-46bb-9edc-493e9d22408d; az role assignment create --role Contributor --scope /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/TestGroup/providers/Microsoft.Network/applicationGateways/AGIC --assignee 52b2f567-5810-46bb-9edc-493e9d22408d&#39; to assign permissions. AGIC Identity needs atleast has &#39;Contributor&#39; access to Application Gateway &#39;AGIC&#39; and &#39;Reader&#39; access to Application Gateway&#39;s Resource Group &#39;TestGroup&#39;.&quot; InnerError=&quot;azure.BearerAuthorizer#WithAuthorization: Failed to refresh the Token for request to <a href="https://management.azure.com/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/TestGroup/providers/Microsoft.Network/applicationGateways/AGIC?api-version=2021-03-01:" target="_blank" rel="noopener">https://management.azure.com/subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/TestGroup/providers/Microsoft.Network/applicationGateways/AGIC?api-version=2021-03-01:</a> StatusCode=403 -- Original Error: adal: Refresh request failed. Status Code = &#39;403&#39;. Response body: adal: Refresh request failed. Status Code = &#39;400&#39;. Response body: {&quot;error&quot;:&quot;invalid_resource&quot;,&quot;error_description&quot;:&quot;AADSTS500011: The resource principal named <a href="https://management.azure.com/" target="_blank" rel="noopener">https://management.azure.com/</a> was not found in the tenant named Microsoft. This can happen if the application has not been installed by the administrator of the tenant or consented to by any user in the tenant. You might have sent your authentication request to the wrong tenant.\r\nTrace ID: 0ab3be74-f621-449b-a09d-cb7d3a6d0100\r\nCorrelation ID: f690021c-fc29-4c76-9c2a-25456efd1da9\r\nTimestamp: 2023-03-27 09:02:48Z&quot;,&quot;error_codes&quot;:[500011],&quot;timestamp&quot;:&quot;2023-03-27 09:02:48Z&quot;,&quot;trace_id&quot;:&quot;0ab3be74-f621-449b-a09d-cb7d3a6d0100&quot;,&quot;correlation_id&quot;:&quot;f690021c-fc29-4c76-9c2a-25456efd1da9&quot;,&quot;error_uri&quot;:&quot;<a href="https://chinanorth3.login.partner.microsoftonline.cn/error?code=500011&quot;}" target="_blank" rel="noopener">https://chinanorth3.login.partner.microsoftonline.cn/error?code=500011&quot;}</a> Endpoint <a href="http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&amp;client_id=52b2f567-5810-46bb-9edc-493e9d22408d&amp;resource=https%!A(MISSING)%!F(MISSING)%!F(MISSING)management.azure.com%!F(MISSING)" target="_blank" rel="noopener">http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&amp;client_id=52b2f567-5810-46bb-9edc-493e9d22408d&amp;resource=https%!A(MISSING)%!F(MISSING)%!F(MISSING)management.azure.com%!F(MISSING)</a></p>
+<p>Endpoint <a href="http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&amp;client_id=52b2f567-5810-46bb-9edc-493e9d22408d&amp;resource=https%!A(MISSING)%!F(MISSING)%!F(MISSING)management.azure.com%!F(MISSING)&quot;" target="_blank" rel="noopener">http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&amp;client_id=52b2f567-5810-46bb-9edc-493e9d22408d&amp;resource=https%!A(MISSING)%!F(MISSING)%!F(MISSING)management.azure.com%!F(MISSING)&quot;</a></p>
+<p>这里提示也是非常的明确，根据指引进行授权；</p>
+<p>但通过指示添加后pod还是起不来。 细读报错得知是AAD资源主体名称找不到。因此这是之前value.yaml的clientid不对导致的。 如果你的管理标识不对，比如通过show 集群得到的client id那么以上报错你会遇到。</p>
+<p>因此需要重新修订后重新安装。</p>
+<p>如果你看到appgw的pod 这样的日志，说明你的appgw 已经部署好了。 后面推配置看任何报错可以详细看这个pod日志</p>
+<p>/cache/reflector.go:167</p>
+<p>I0403 12:46:42.775248       1 reflector.go:255] Listing and watching *v1.Ingress from pkg/mod/k8s.io/client-go@v0.20.0-beta.1/tools/cache/reflector.go:167</p>
+<p>I0403 12:46:42.775389       1 reflector.go:255] Listing and watching *v1beta1.AzureApplicationGatewayRewrite from pkg/mod/k8s.io/client-go@v0.20.0-beta.1/tools/cache/reflector.go:167</p>
+<p>I0403 12:46:42.775533       1 reflector.go:255] Listing and watching *v1.IngressClass from pkg/mod/k8s.io/client-go@v0.20.0-beta.1/tools/cache/reflector.go:167</p>
+<p>I0403 12:46:42.876243       1 context.go:251] Initial cache sync done</p>
+<p>I0403 12:46:42.876717       1 context.go:252] k8s context run finished</p>
+<p>I0403 12:46:42.876988       1 worker.go:39] Worker started</p>
+<p>I0403 12:46:43.007794       1 mutate_app_gateway.go:177] BEGIN AppGateway deployment</p>
+<p>I0403 12:46:43.747489       1 client.go:216] OperationID=&#39;ff76828b-b922-4379-82b3-d25312c2ae0b&#39;</p>
+<p>I0403 12:46:49.839983       1 mutate_app_gateway.go:185] Applied generated Application Gateway configuration</p>
+<p>I0403 12:46:49.840007       1 mutate_app_gateway.go:200] cache: Updated with latest applied config.</p>
+<p>I0403 12:46:49.841212       1 mutate_app_gateway.go:204] END AppGateway deployment</p>
+<p>I0403 12:46:49.841235       1 controller.go:152] Completed last event loop run in: 6.964223859s</p>
+<p>可以基于此方法（修改value文件）安装第二个agic</p>
+<p>需要修改value的值：（假如用相同的标识）</p>
+<p>改一下appgw的名称或资源组</p>
+<p>class的定义</p>
+<p>…</p>
+<p>Helm 安装后，需要根据报错提示再创建一下clusterrulebinding（基于之前的步骤）。</p></article>

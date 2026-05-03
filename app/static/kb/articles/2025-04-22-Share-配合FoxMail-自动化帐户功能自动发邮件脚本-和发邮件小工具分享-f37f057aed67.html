@@ -1,0 +1,299 @@
+<article class="kb-article" data-title="【Share】配合FoxMail、自动化帐户功能自动发邮件脚本，和发邮件小工具分享。"><h1>【Share】配合FoxMail、自动化帐户功能自动发邮件脚本，和发邮件小工具分享。</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-04-22 15:15:43</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<h1>创建SmtpClient实例，并设置超时时间</h1>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li># 创建SmtpClient实例，并设置超时时间</li>
+</ul>
+<ul>
+<li>$smtpClient.Timeout = 300000 # 设置超时时间为5分钟（300秒）</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Failed to send email: $_&quot;</li>
+</ul>
+<ul>
+<li>Write-Host &quot;SMTP Server Error Details:&quot;</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Feng Nanrui</li>
+</ul>
+<ul>
+<li>×  163邮箱应用密码有效期180天，排除，</li>
+</ul>
+<ul>
+<li>×   国外的API调用的方式考虑不稳定，排除</li>
+</ul>
+<ul>
+<li>√   仅QQ托管的qq.com和FoxMail.com邮箱可行，应用密码仅在修改QQ密码后失效。</li>
+</ul>
+<ul>
+<li># 登录Azure账户，本地使用</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li># 登录Azure账户，自动化帐户调用托管标识使用</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -EnvironmentName azurechinacloud -Identity</li>
+</ul>
+<ul>
+<li># 定义参数</li>
+</ul>
+<ul>
+<li>$appId = &quot;ad43de94-a2a1-xxxxxxxx&quot;# 指定应用的对象ID</li>
+</ul>
+<ul>
+<li>$daysBeforeExpiryStartSending = 30 # 提前多少天开始发送提醒</li>
+</ul>
+<ul>
+<li>$smtpServer = &quot;smtp.qq.com&quot; # SMTP服务器地址</li>
+</ul>
+<ul>
+<li>$smtpUser = &quot;xxxxx@foxmail.com&quot; # 你的电子邮件地址</li>
+</ul>
+<ul>
+<li>$smtpPassword = &quot;&quot; # 你的SMTP应用密码</li>
+</ul>
+<ul>
+<li>$smtpFrom = &quot;xxxxxxx@foxmail.com&quot; # 发件人邮箱</li>
+</ul>
+<ul>
+<li>$smtpTo = &quot;feng.nanrui@oe.21vianet.com&quot; # 收件人邮箱</li>
+</ul>
+<ul>
+<li># 获取当前时间</li>
+</ul>
+<ul>
+<li>$currentDate = Get-Date</li>
+</ul>
+<ul>
+<li># 获取指定的应用程序</li>
+</ul>
+<ul>
+<li>$app = Get-AzADApplication -ObjectId $appId</li>
+</ul>
+<ul>
+<li>if ($app) {</li>
+</ul>
+<ul>
+<li># 获取应用程序的所有凭据</li>
+</ul>
+<ul>
+<li>$credentials = Get-AzADAppCredential -ObjectId $appId</li>
+</ul>
+<ul>
+<li>foreach ($credential in $credentials) {</li>
+</ul>
+<ul>
+<li># 计算剩余天数</li>
+</ul>
+<ul>
+<li>$expiryDate = [datetime]::Parse($credential.EndDateTime)</li>
+</ul>
+<ul>
+<li>$daysRemaining = ($expiryDate - $currentDate).Days</li>
+</ul>
+<ul>
+<li># 如果密码将在接下来的30天内到期或已经过期</li>
+</ul>
+<ul>
+<li>if ($daysRemaining -le $daysBeforeExpiryStartSending -or $daysRemaining -lt 0) {</li>
+</ul>
+<ul>
+<li># 构建邮件内容</li>
+</ul>
+<ul>
+<li>$subject = &quot;Azure AppReg Credential Expiry Reminder&quot;</li>
+</ul>
+<ul>
+<li>$body = @&quot;</li>
+</ul>
+<ul>
+<li>Dear Administrator,</li>
+</ul>
+<ul>
+<li>The credential with Key ID &#39;{0}&#39; for the application with object ID &#39;{1}&#39; (Name: {2}) will expire or has expired.</li>
+</ul>
+<ul>
+<li>There are {3} days remaining until the expiration date, which is on {4}.</li>
+</ul>
+<ul>
+<li>Please update the credential to avoid any disruptions.</li>
+</ul>
+<ul>
+<li>Best regards,</li>
+</ul>
+<ul>
+<li>Your Azure Team.</li>
+</ul>
+<ul>
+<li>&quot;@ -f $credential.KeyId, $appId, $app.DisplayName, [math]::Max($daysRemaining, 0), $expiryDate.ToString(&quot;yyyy-MM-dd&quot;)</li>
+</ul>
+<ul>
+<li># 创建SMTP客户端凭据</li>
+</ul>
+<ul>
+<li>$securePassword = ConvertTo-SecureString $smtpPassword -AsPlainText -Force</li>
+</ul>
+<ul>
+<li>$smtpCredential = New-Object System.Management.Automation.PSCredential ($smtpUser, $securePassword)</li>
+</ul>
+<ul>
+<li>$smtpClient = New-Object Net.Mail.SmtpClient($smtpServer, $smtpPort)</li>
+</ul>
+<ul>
+<li>$smtpClient.DeliveryMethod = [Net.Mail.SmtpDeliveryMethod]::Network</li>
+</ul>
+<ul>
+<li>$smtpClient.UseDefaultCredentials = $false</li>
+</ul>
+<ul>
+<li>$smtpClient.Credentials = $smtpCredential</li>
+</ul>
+<ul>
+<li># 添加调试输出</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Connecting to SMTP server...&quot;</li>
+</ul>
+<ul>
+<li>try {</li>
+</ul>
+<ul>
+<li># 创建一个邮件消息对象</li>
+</ul>
+<ul>
+<li>$message = New-Object Net.Mail.MailMessage($smtpFrom, $smtpTo, $subject, $body)</li>
+</ul>
+<ul>
+<li>$message.IsBodyHtml = $false</li>
+</ul>
+<ul>
+<li>$message.Priority = [Net.Mail.MailPriority]::High</li>
+</ul>
+<ul>
+<li># 发送邮件</li>
+</ul>
+<ul>
+<li>$smtpClient.Send($message)</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Email sent successfully.&quot;</li>
+</ul>
+<ul>
+<li>} catch {</li>
+</ul>
+<ul>
+<li>Write-Host $_.Exception.Message</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>} else {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Application with object ID &#39;$appId&#39; not found.&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>×  目前Outlook邮箱2024年9月起无法使用旧式基本身份验证，仅支持OAuth，遂排除，</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>工单关联问题：需要监控应用注册客户端密钥有效期。该脚本可修改配合其他客户需求和场景进行使用。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>$smtpPort = 587 # SMTP端口</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>$smtpClient.EnableSsl = $true</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Feng Nanrui</p>
+<p>2024/10/31</p>
+<p>工单关联问题：需要监控应用注册客户端密钥有效期。该脚本可修改配合其他客户需求和场景进行使用。</p>
+<p>×  目前Outlook邮箱2024年9月起无法使用旧式基本身份验证，仅支持OAuth，遂排除，</p>
+<p>×  163邮箱应用密码有效期180天，排除，</p>
+<p>×   国外的API调用的方式考虑不稳定，排除</p>
+<p>√   仅QQ托管的qq.com和FoxMail.com邮箱可行，应用密码仅在修改QQ密码后失效。</p>
+<h1>登录Azure账户，本地使用</h1>
+<p>Connect-AzAccount -Environment AzureChinaCloud</p>
+<h1>登录Azure账户，自动化帐户调用托管标识使用</h1>
+<p>Connect-AzAccount -EnvironmentName azurechinacloud -Identity</p>
+<h1>定义参数</h1>
+<p>$appId = &quot;ad43de94-a2a1-xxxxxxxx&quot;# 指定应用的对象ID</p>
+<p>$daysBeforeExpiryStartSending = 30 # 提前多少天开始发送提醒</p>
+<p>$smtpServer = &quot;smtp.qq.com&quot; # SMTP服务器地址</p>
+<p>$smtpPort = 587 # SMTP端口</p>
+<p>$smtpUser = &quot;xxxxx@foxmail.com&quot; # 你的电子邮件地址</p>
+<p>$smtpPassword = &quot;&quot; # 你的SMTP应用密码</p>
+<p>$smtpFrom = &quot;xxxxxxx@foxmail.com&quot; # 发件人邮箱</p>
+<p>$smtpTo = &quot;feng.nanrui@oe.21vianet.com&quot; # 收件人邮箱</p>
+<h1>获取当前时间</h1>
+<p>$currentDate = Get-Date</p>
+<h1>获取指定的应用程序</h1>
+<p>$app = Get-AzADApplication -ObjectId $appId</p>
+<p>if ($app) {</p>
+<h1>获取应用程序的所有凭据</h1>
+<p>$credentials = Get-AzADAppCredential -ObjectId $appId</p>
+<p>foreach ($credential in $credentials) {</p>
+<h1>计算剩余天数</h1>
+<p>$expiryDate = [datetime]::Parse($credential.EndDateTime)</p>
+<p>$daysRemaining = ($expiryDate - $currentDate).Days</p>
+<h1>如果密码将在接下来的30天内到期或已经过期</h1>
+<p>if ($daysRemaining -le $daysBeforeExpiryStartSending -or $daysRemaining -lt 0) {</p>
+<h1>构建邮件内容</h1>
+<p>$subject = &quot;Azure AppReg Credential Expiry Reminder&quot;</p>
+<p>$body = @&quot;</p>
+<p>Dear Administrator,</p>
+<p>The credential with Key ID &#39;{0}&#39; for the application with object ID &#39;{1}&#39; (Name: {2}) will expire or has expired.</p>
+<p>There are {3} days remaining until the expiration date, which is on {4}.</p>
+<p>Please update the credential to avoid any disruptions.</p>
+<p>Best regards,</p>
+<p>Your Azure Team.</p>
+<p>&quot;@ -f $credential.KeyId, $appId, $app.DisplayName, [math]::Max($daysRemaining, 0), $expiryDate.ToString(&quot;yyyy-MM-dd&quot;)</p>
+<h1>创建SMTP客户端凭据</h1>
+<p>$securePassword = ConvertTo-SecureString $smtpPassword -AsPlainText -Force</p>
+<p>$smtpCredential = New-Object System.Management.Automation.PSCredential ($smtpUser, $securePassword)</p>
+<h1>创建SmtpClient实例，并设置超时时间</h1>
+<p>$smtpClient = New-Object Net.Mail.SmtpClient($smtpServer, $smtpPort)</p>
+<p>$smtpClient.EnableSsl = $true</p>
+<p>$smtpClient.DeliveryMethod = [Net.Mail.SmtpDeliveryMethod]::Network</p>
+<p>$smtpClient.UseDefaultCredentials = $false</p>
+<p>$smtpClient.Credentials = $smtpCredential</p>
+<p>$smtpClient.Timeout = 300000 # 设置超时时间为5分钟（300秒）</p>
+<h1>添加调试输出</h1>
+<p>Write-Host &quot;Connecting to SMTP server...&quot;</p>
+<p>try {</p>
+<h1>创建一个邮件消息对象</h1>
+<p>$message = New-Object Net.Mail.MailMessage($smtpFrom, $smtpTo, $subject, $body)</p>
+<p>$message.IsBodyHtml = $false</p>
+<p>$message.Priority = [Net.Mail.MailPriority]::High</p>
+<h1>发送邮件</h1>
+<p>$smtpClient.Send($message)</p>
+<p>Write-Host &quot;Email sent successfully.&quot;</p>
+<p>} catch {</p>
+<p>Write-Host &quot;Failed to send email: $_&quot;</p>
+<p>Write-Host &quot;SMTP Server Error Details:&quot;</p>
+<p>Write-Host $_.Exception.Message</p>
+<p>}</p>
+<p>} else {</p>
+<p>Write-Host &quot;Application with object ID &#39;$appId&#39; not found.&quot;</p></article>

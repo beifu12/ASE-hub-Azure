@@ -1,0 +1,69 @@
+<article class="kb-article" data-title="AKS 的应用程序路由加载项的创建,自动缩放以及删除"><h1>AKS 的应用程序路由加载项的创建,自动缩放以及删除</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-01 15:47:34</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>1 Azure CLI 2.54.0版本及以上以及安装aks-preview扩展</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>1  Azure CLI 2.54.0版本及以上以及安装aks-preview扩展</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2 默认创建的面向公网的ingress, 如果只想使用内部的ingress, 使用—nginx internal进行修改</li>
+</ul>
+<ul>
+<li>3 下面是分别创建了内部和外部的ingress 类资源</li>
+</ul>
+<ul>
+<li>4  对ingress类资源启用自动缩放的支持,定义最大和最小的控制器pod数量</li>
+</ul>
+<ul>
+<li>5 如果想清除某个ingress 类资源,删除对应名称的ingress类即可,关联的Pod和service以及Pod controler会自动删除</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>1  Azure CLI 2.54.0版本及以上以及安装aks-preview扩展</li>
+</ul>
+<ul>
+<li>az extension add –name  aks-preview</li>
+</ul>
+<ul>
+<li>az aks approuting update --resource-group aks -n aks --nginx Internal</li>
+</ul>
+<ul>
+<li>kubectl get NginxIngressController</li>
+</ul>
+<ul>
+<li>kubectl edit  NginxIngressController ControllerName</li>
+</ul>
+<ul>
+<li>kubectl delete  NginxIngressController  ControllerName</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026/06/23</p>
+<p>1  Azure CLI 2.54.0版本及以上以及安装aks-preview扩展</p>
+<p>az extension add –name  aks-preview</p>
+<p>2 默认创建的面向公网的ingress, 如果只想使用内部的ingress, 使用—nginx internal进行修改</p>
+<p>az aks approuting update --resource-group aks -n aks --nginx Internal</p>
+<p>3 下面是分别创建了内部和外部的ingress 类资源</p>
+<p>kubectl get NginxIngressController</p>
+<p>4  对ingress类资源启用自动缩放的支持,定义最大和最小的控制器pod数量</p>
+<p>kubectl edit  NginxIngressController ControllerName</p>
+<p>5 如果想清除某个ingress 类资源,删除对应名称的ingress类即可,关联的Pod和service以及Pod controler会自动删除</p>
+<p>kubectl delete  NginxIngressController  ControllerName</p></article>

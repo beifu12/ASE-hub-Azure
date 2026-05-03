@@ -1,0 +1,143 @@
+<article class="kb-article" data-title="CDN 504超时报错"><h1>CDN 504超时报错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-05-15 17:14:38</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>CDN 504超时报错</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>CDN 504超时报错</li>
+</ul>
+<ul>
+<li>+update，  504问题有可能是源站证书到期，导致回源TLS握手失败</li>
+</ul>
+<ul>
+<li>CDN pg反馈：目前回源tcp建联超时是5s,回源加载超时是10s。</li>
+</ul>
+<ul>
+<li>相关工单：SR_20230210211570_GW timeout</li>
+</ul>
+<ul>
+<li>Problem Description：</li>
+</ul>
+<ul>
+<li>Problem Reason:</li>
+</ul>
+<ul>
+<li>The timeout setting on the CDN side seems to be shorter than the normal processing time of the WEB APP</li>
+</ul>
+<ul>
+<li>extended the default timeout of 10s to 30s on the CDN side</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Dear Valclav,</li>
+</ul>
+<ul>
+<li>Your feedback is important to us. After this interaction you will receive a separate closure email with an opportunity to tell us about your experience.</li>
+</ul>
+<ul>
+<li>Herewith, I&#39;d like to provide you a summary of this ticket for your reference:</li>
+</ul>
+<ul>
+<li>=====================</li>
+</ul>
+<ul>
+<li>System Environment/ Application information:</li>
+</ul>
+<ul>
+<li>========================================</li>
+</ul>
+<ul>
+<li>Client&gt;&gt;&gt;&gt;CDN&gt;&gt;&gt;&gt;APPGateway&gt;&gt;&gt;WEB APP</li>
+</ul>
+<ul>
+<li>Investigation Steps:</li>
+</ul>
+<ul>
+<li>c.      We tested the connection without CDN accelerated network and found the post request was handled normally and the processing time was about 20-30 s</li>
+</ul>
+<ul>
+<li>Notice:</li>
+</ul>
+<ul>
+<li>If you have any further question about Azure, please submit or track your support ticket online.</li>
+</ul>
+<ul>
+<li>If you have any suggestion or comment on our product or service, please send emails to  feedback@oe.21vianet.com. Our service supervisor will contact you as soon as possible and see to your</li>
+</ul>
+<ul>
+<li>Regards,</li>
+</ul>
+<ul>
+<li>JunJie Shao</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>目前查看到是CDN给的504，之后我通过您的原站进行回源访问，发现您的证书过期了，导致没法正常握手。如下：</li>
+</ul>
+<ul>
+<li>a.      We checked the access log (UTC +0) on the CDN side, the client get 504 error code , the POST request processing time of each 504 status code is about 10s</li>
+</ul>
+<ul>
+<li>b.     We also checked the access log of the APPGW (UTC +8) and figured out APPGW logged 499 Error code , which means the CDN side closed connection actively</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Thanks for your confirmation, we will proceed to close your ticket as resolved.</li>
+</ul>
+<ul>
+<li>Resolution:</li>
+</ul>
+<ul>
+<li>You may also refer to Azure Operations Guide (Chinese only) for more hot topics on Azure support, and self-help on issue troubleshooting and resolution.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>SR_20230515229502_<a href="https://www.kingfa.com.cn/访问报网关超时" target="_blank" rel="noopener">https://www.kingfa.com.cn/访问报网关超时</a></li>
+</ul>
+<ul>
+<li>GET 504 error when post request at <a href="https://www.schott.cn/zh-cn/get-in-touch" target="_blank" rel="noopener">https://www.schott.cn/zh-cn/get-in-touch</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>CDN 504超时报错</p>
+<p>+update，  504问题有可能是源站证书到期，导致回源TLS握手失败</p>
+<p>SR_20230515229502_<a href="https://www.kingfa.com.cn/访问报网关超时" target="_blank" rel="noopener">https://www.kingfa.com.cn/访问报网关超时</a></p>
+<p>目前查看到是CDN给的504，之后我通过您的原站进行回源访问，发现您的证书过期了，导致没法正常握手。如下：</p>
+<p>CDN pg反馈：目前回源tcp建联超时是5s,回源加载超时是10s。</p>
+<p>相关工单：SR_20230210211570_GW timeout</p>
+<p>Dear Valclav,</p>
+<p>Thanks for your confirmation, we will proceed to close your ticket as resolved.</p>
+<p>Your feedback is important to us. After this interaction you will receive a separate closure email with an opportunity to tell us about your experience.</p>
+<p>Herewith, I&#39;d like to provide you a summary of this ticket for your reference:</p>
+<p>Problem Description：</p>
+<p>=====================</p>
+<p>GET 504 error when post request at <a href="https://www.schott.cn/zh-cn/get-in-touch" target="_blank" rel="noopener">https://www.schott.cn/zh-cn/get-in-touch</a></p>
+<p>System Environment/ Application information:</p>
+<p>========================================</p>
+<p>Client&gt;&gt;&gt;&gt;CDN&gt;&gt;&gt;&gt;APPGateway&gt;&gt;&gt;WEB APP</p>
+<p>Investigation Steps:</p>
+<p>a.      We checked the access log (UTC +0) on the CDN side, the client get 504 error code , the POST request processing time of each 504 status code is about 10s</p>
+<p>b.     We also checked the access log of the APPGW (UTC +8) and figured out APPGW logged 499 Error code , which means the CDN side closed connection actively</p>
+<p>c.      We tested the connection without CDN accelerated network and found the post request was handled normally and the processing time was about 20-30 s</p>
+<p>Problem Reason:</p>
+<p>The timeout setting on the CDN side seems to be shorter than the normal processing time of the WEB APP</p>
+<p>Resolution:</p>
+<p>extended the default timeout of 10s to 30s on the CDN side</p>
+<p>Notice:</p>
+<p>If you have any further question about Azure, please submit or track your support ticket online.</p>
+<p>You may also refer to Azure Operations Guide (Chinese only) for more hot topics on Azure support, and self-help on issue troubleshooting and resolution.</p>
+<p>If you have any suggestion or comment on our product or service, please send emails to  feedback@oe.21vianet.com. Our service supervisor will contact you as soon as possible and see to your</p>
+<p>Regards,</p>
+<p>JunJie Shao</p></article>

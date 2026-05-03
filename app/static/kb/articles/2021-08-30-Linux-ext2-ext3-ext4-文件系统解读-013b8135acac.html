@@ -1,0 +1,3802 @@
+<article class="kb-article" data-title="Linux ext2, ext3, ext4 文件系统解读"><h1>Linux ext2, ext3, ext4 文件系统解读</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-08-30 12:53:27</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>__le16 s_errors; /* Behaviour when detecting errors */</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>__le16        s_errors;                /* Behaviour when detecting errors */</li>
+</ul>
+<ul>
+<li>Errors behavior:          Continue</li>
+</ul>
+<ul>
+<li>EXT2_FT_UNKNOWN,        /*未知*/</li>
+</ul>
+<ul>
+<li>32768(1)，98304(3)，163840(5)，229376(7)，294912(9)，819200(25)，884736(27)，1605632(49)，2654208(81)，4096000(125)，7962624(243)，11239424(343)，20480000(625)，23887872(729)，71663616(2187)，78675968(2401)，102400000(3125)，214990848(6561)</li>
+</ul>
+<ul>
+<li>数据在提交到日志之前发生系统故障，此时数据还没有向文件系统中写入，fsck会直接忽略这次提交的内容，保证元数据和数据的一致性，但是此次写入的数据就丢失了。</li>
+</ul>
+<ul>
+<li>数据提交到日志之后，尚未完全写入文件系统之前，发生系统故障，此时在进行fsck的时候，会重新将日志中的临时写入数据提交到文件系统中，保证数据一致性，同时此次写入操作能够正常完成。</li>
+</ul>
+<ul>
+<li>原子操作（Atomic handle）：一个原子操作是指发生在一次文件系统的高级更新内的所有低级操作，一个原子操作保证在对应的日志提交后才会将数据向文件系统中提交。当系统故障时，文件系统确保原子操作要么提交成功，要么所有该原子操作对应的低级操作都回滚。</li>
+</ul>
+<ul>
+<li>高可用性：即使是系统故障之后，也不需要进行文件系统自检，通常恢复的过程非常短。</li>
+</ul>
+<ul>
+<li>数据完整性：能够极大提高数据一致性，保证文件系统的完整性，减少系统故障对文件系统的破坏。</li>
+</ul>
+<ul>
+<li>日志功能对于文件系统而言至关重要，如果日志本身出现问题，而恰好我们又使用这个异常的日志来进行文件系统的恢复的话，那么会导致文件系统更严重的错误。因此，在ext4文件系统中，加入了日志数据校验的功能，能够及时发现日志中潜在的错误。同时，ext4中还将ext3中的日志提交和文件系统数据的提交合并到一起，从而进一步提升约20%左右的性能。</li>
+</ul>
+<ul>
+<li>├─/misc                      /etc/auto.misc autofs      rw,relatime,fd=7,pgrp=1503,timeout=300,minproto=5,maxproto=5,indirect</li>
+</ul>
+<ul>
+<li>├─/net                       -hosts         autofs      rw,relatime,fd=13,pgrp=1503,timeout=300,minproto=5,maxproto=5,indirect</li>
+</ul>
+<ul>
+<li>└─/mnt/sde                   /dev/sde1      ext3        rw,relatime,errors=continue,barrier=1,data=writeback</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>本文以下面结构进行陈述：</li>
+</ul>
+<ul>
+<li>1. ext2 文件系统的结构分析</li>
+</ul>
+<ul>
+<li>2. mke2fs.conf 配置文件说明以及格式化</li>
+</ul>
+<ul>
+<li>3. ext2 ext3 ext4 文件系统的区别</li>
+</ul>
+<ul>
+<li>4. mount 过程分析</li>
+</ul>
+<ul>
+<li>ext2 文件系统结构分析：</li>
+</ul>
+<ul>
+<li>首先来看一下ext2文件系统的结构示意图：</li>
+</ul>
+<ul>
+<li>Block：</li>
+</ul>
+<ul>
+<li>Block Group：</li>
+</ul>
+<ul>
+<li>多个Block聚合在一起形成一个Block Group，每个Block Group包含的Block数量相同，具体是在SuperBlock中通过s_block_per_group属性定义的（最后一个Block Group除外，最后剩下的Block数量可能小于s_block_per_group，这些Block会被划分到最后一个Block Group中）。</li>
+</ul>
+<ul>
+<li>Boot Block：</li>
+</ul>
+<ul>
+<li>Super Block：</li>
+</ul>
+<ul>
+<li>Super Block是紧邻Boot Block的一个大小为1024字节的配置块，Super Block可能在Block 0或者Block 1中，当Block大小为1024字节时，由于Boot Block恰好占满了Block 0，则Super Block会占用Block 1；如果Block大小为4096字节，则Super Block会在Block 0中紧邻Boot Block的位置（即1024~2047字节）。</li>
+</ul>
+<ul>
+<li>在ext2文件系统中，每个Block Group中开头都会存放一个Super Block的备份。（可以参考前面的示意图）</li>
+</ul>
+<ul>
+<li>ext2中Super Block的结构：</li>
+</ul>
+<ul>
+<li>struct ext2_super_block {</li>
+</ul>
+<ul>
+<li>__le32        s_inodes_count;        /* Inodes count */</li>
+</ul>
+<ul>
+<li>__le32        s_blocks_count;        /* Blocks count */</li>
+</ul>
+<ul>
+<li>__le32        s_r_blocks_count;        /* Reserved blocks count */</li>
+</ul>
+<ul>
+<li>__le32        s_free_blocks_count;        /* Free blocks count */</li>
+</ul>
+<ul>
+<li>__le32        s_free_inodes_count;        /* Free inodes count */</li>
+</ul>
+<ul>
+<li>__le32        s_first_data_block;        /* First Data Block */</li>
+</ul>
+<ul>
+<li>__le32        s_blocks_per_group;        /* # Blocks per group */</li>
+</ul>
+<ul>
+<li>__le32        s_frags_per_group;        /* # Fragments per group */</li>
+</ul>
+<ul>
+<li>__le32        s_inodes_per_group;        /* # Inodes per group */</li>
+</ul>
+<ul>
+<li>__le32        s_mtime;                /* Mount time */</li>
+</ul>
+<ul>
+<li>__le32        s_wtime;                /* Write time */</li>
+</ul>
+<ul>
+<li>__le16        s_mnt_count;                /* Mount count */</li>
+</ul>
+<ul>
+<li>__le16        s_max_mnt_count;        /* Maximal mount count */</li>
+</ul>
+<ul>
+<li>__le16        s_magic;                /* Magic signature */</li>
+</ul>
+<ul>
+<li>__le16        s_state;                /* File system state */</li>
+</ul>
+<ul>
+<li>__le16        s_minor_rev_level;         /* minor revision level */</li>
+</ul>
+<ul>
+<li>__le32        s_creator_os;                /* OS */</li>
+</ul>
+<ul>
+<li>__le32        s_rev_level;                /* Revision level */</li>
+</ul>
+<ul>
+<li>__le16        s_def_resuid;                /* Default uid for reserved blocks */</li>
+</ul>
+<ul>
+<li>__le16        s_def_resgid;                /* Default gid for reserved blocks */</li>
+</ul>
+<ul>
+<li>/*</li>
+</ul>
+<ul>
+<li>* These fields are for EXT2_DYNAMIC_REV superblocks only.</li>
+</ul>
+<ul>
+<li>*</li>
+</ul>
+<ul>
+<li>* Note: the difference between the compatible feature set and</li>
+</ul>
+<ul>
+<li>* the incompatible feature set is that if there is a bit set</li>
+</ul>
+<ul>
+<li>* in the incompatible feature set that the kernel doesn&#39;t</li>
+</ul>
+<ul>
+<li>* know about, it should refuse to mount the filesystem.</li>
+</ul>
+<ul>
+<li>* e2fsck&#39;s requirements are more strict; if it doesn&#39;t know</li>
+</ul>
+<ul>
+<li>* about a feature in either the compatible or incompatible</li>
+</ul>
+<ul>
+<li>* feature set, it must abort and not try to meddle with</li>
+</ul>
+<ul>
+<li>* things it doesn&#39;t understand...</li>
+</ul>
+<ul>
+<li>*/</li>
+</ul>
+<ul>
+<li>__le32        s_first_ino;                 /* First non-reserved inode */</li>
+</ul>
+<ul>
+<li>__le16 s_inode_size;         /* size of inode structure */</li>
+</ul>
+<ul>
+<li>__le16        s_block_group_nr;         /* block group # of this superblock */</li>
+</ul>
+<ul>
+<li>__le32        s_feature_compat;         /* compatible feature set */</li>
+</ul>
+<ul>
+<li>__le32        s_feature_incompat;         /* incompatible feature set */</li>
+</ul>
+<ul>
+<li>__le32        s_feature_ro_compat; /* readonly-compatible feature set */</li>
+</ul>
+<ul>
+<li>__u8        s_uuid[16];                /* 128-bit uuid for volume */</li>
+</ul>
+<ul>
+<li>char        s_volume_name[16];         /* volume name */</li>
+</ul>
+<ul>
+<li>char        s_last_mounted[64];         /* directory where last mounted */</li>
+</ul>
+<ul>
+<li>__le32        s_algorithm_usage_bitmap; /* For compression */</li>
+</ul>
+<ul>
+<li>* Performance hints.  Directory preallocation should only</li>
+</ul>
+<ul>
+<li>* happen if the EXT2_COMPAT_PREALLOC flag is on.</li>
+</ul>
+<ul>
+<li>__u8        s_prealloc_blocks;        /* Nr of blocks to try to preallocate*/</li>
+</ul>
+<ul>
+<li>__u8        s_prealloc_dir_blocks;        /* Nr to preallocate for dirs */</li>
+</ul>
+<ul>
+<li>__u16        s_padding1;</li>
+</ul>
+<ul>
+<li>* Journaling support valid if EXT3_FEATURE_COMPAT_HAS_JOURNAL set.</li>
+</ul>
+<ul>
+<li>__u8        s_journal_uuid[16];        /* uuid of journal superblock */</li>
+</ul>
+<ul>
+<li>__u32        s_journal_inum;                /* inode number of journal file */</li>
+</ul>
+<ul>
+<li>__u32        s_journal_dev;                /* device number of journal file */</li>
+</ul>
+<ul>
+<li>__u32        s_last_orphan;                /* start of list of inodes to delete */</li>
+</ul>
+<ul>
+<li>__u32        s_hash_seed[4];                /* HTREE hash seed */</li>
+</ul>
+<ul>
+<li>__u8        s_def_hash_version;        /* Default hash version to use */</li>
+</ul>
+<ul>
+<li>__u8        s_reserved_char_pad;</li>
+</ul>
+<ul>
+<li>__u16        s_reserved_word_pad;</li>
+</ul>
+<ul>
+<li>__le32        s_default_mount_opts;</li>
+</ul>
+<ul>
+<li>__le32        s_first_meta_bg;         /* First metablock block group */</li>
+</ul>
+<ul>
+<li>__u32        s_reserved[190];        /* Padding to the end of the block */</li>
+</ul>
+<ul>
+<li>};</li>
+</ul>
+<ul>
+<li>除了这些比较有意义的信息外，还在s_magic属性中记录的Magic签名，对于ext2和ext3文件系统来说，s_magic的值等于 0xEF53，如果不等于这个值的话，则这个磁盘分区一定不是一个有效的ext2或ext3文件系统。</li>
+</ul>
+<ul>
+<li>Group Descriptor：</li>
+</ul>
+<ul>
+<li>每个Block Group都对应一个Group Descriptor，所有这些Group Descriptor都被一起存放在紧邻Super Block的若干个Block中，如果Block大小为1024字节，则这些Group Descriptor恰好紧邻着Super Block，如果Block大小为4096字节，则由于Boot Block和Super Block仅占用了Block 0的前2048字节，所以第一个Group Descriptor与Super Block之间会有一定的空间被浪费掉。</li>
+</ul>
+<ul>
+<li>在每个Block Group中紧邻Super Block（或其备份）的若干个Block中都保存了这些Group Descriptor的备份。（可以参考前面的示意图）</li>
+</ul>
+<ul>
+<li>ext2文件系统的Group Descriptor的结构：</li>
+</ul>
+<ul>
+<li>struct ext2_group_desc</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>__u32     bg_block_bitmap;        /* Blocks bitmap block */</li>
+</ul>
+<ul>
+<li>__u32     bg_inode_bitmap;        /* Inodes bitmap block */</li>
+</ul>
+<ul>
+<li>__u32     bg_inode_table;         /* Inodes table block */</li>
+</ul>
+<ul>
+<li>__u16     bg_free_blocks_count;   /* Free blocks count */</li>
+</ul>
+<ul>
+<li>__u16     bg_free_inodes_count;   /* Free inodes count */</li>
+</ul>
+<ul>
+<li>__u16     bg_used_dirs_count;     /* Directories count */</li>
+</ul>
+<ul>
+<li>__u16     bg_pad;</li>
+</ul>
+<ul>
+<li>__u32     bg_reserved[3];</li>
+</ul>
+<ul>
+<li>从上面的数据结构中可以看到，每个Group Descriptor中定义了Data Block Bitmap指针，Inode Bitmap指针，Inode Table指针，分别指向这个Group Descriptor对应的Block Group中对应的Data Block Bitmap，Inode Bitmap，Inode Table的起始位置。此外，还包含了这个Block Group的空闲Block和Inode的数量等信息。</li>
+</ul>
+<ul>
+<li>Data Block Bitmap：</li>
+</ul>
+<ul>
+<li>Data Block Bitmap位于与Group Descriptor相邻的Block中，其中包含的每个比特的数据都对应这个Bitmap所在的Block Group中的Data Block，如果某个比特的值为0，则表示其对应的Data Block中有数据，如果值为1，则表示对应的Data Block是空闲的。假设一个Block的大小为1024字节，则一个Data Block Bitmap的大小为1024*8比特，所以这种情况下一个Block Group最多只能有1024*8个Block。</li>
+</ul>
+<ul>
+<li>Inode Bitmap：</li>
+</ul>
+<ul>
+<li>Inode Bitmap位于Data Block Bitmap相邻的Block中，与Data Block Bitmap类似，Inode Bitmap中的每个比特的数据都对应这个Bitmap所在的Block Group中的Inode，如果某个比特的值为0，则表示其对应的Inode中有数据，如果值为1，则表示对应的Inode是空闲的。假设一个Block大小为1024字节，则一个Inode Bitmap的大小为1024*8比特，所以这种情况下一个Block Group中最多只能包含1024*8个Inode。</li>
+</ul>
+<ul>
+<li>Inode Table：</li>
+</ul>
+<ul>
+<li>Inode Table从与Inode Bitmap相邻的Block开始存放，但是Inode Table并不一定只占据1个Block，Inode Table中实际就存放着一个一个Inode，这些Inode与这个Block Group相对应，映射到这个Block Group中的Data Block进行文件的存储和读取。Inode Table占用的空间与单个Inode大小以及Inode密度有关。</li>
+</ul>
+<ul>
+<li>Inode ：</li>
+</ul>
+<ul>
+<li>Inode，即Index Node，顾名思义，用于文件索引，和Block一样，Inode也有自己的编号，但是Inode编号是从1开始，依次增长（1，2，3，4等等）。看一下ext2文件系统Inode的结构：</li>
+</ul>
+<ul>
+<li>struct ext2_inode {</li>
+</ul>
+<ul>
+<li>__u16 i_mode;            /* File mode */</li>
+</ul>
+<ul>
+<li>__u16 i_uid;             /* Low 16 bits of Owner Uid */</li>
+</ul>
+<ul>
+<li>__u32 i_size;            /* Size in bytes  */</li>
+</ul>
+<ul>
+<li>__u32 i_atime;           /* Access time */</li>
+</ul>
+<ul>
+<li>__u32 i_ctime;           /* Creation time */</li>
+</ul>
+<ul>
+<li>__u32 i_mtime;           /* Modification time */</li>
+</ul>
+<ul>
+<li>__u32 i_dtime;           /* Deletion Time */</li>
+</ul>
+<ul>
+<li>__u16 i_gid;             /* Low 16 bits of Group Id */</li>
+</ul>
+<ul>
+<li>__u16 i_links_count;     /* Links count */</li>
+</ul>
+<ul>
+<li>__u32 i_blocks;          /* Blocks count */</li>
+</ul>
+<ul>
+<li>__u32 i_flags;           /* File flags */</li>
+</ul>
+<ul>
+<li>union {</li>
+</ul>
+<ul>
+<li>struct {</li>
+</ul>
+<ul>
+<li>__u32 l_i_reserved1;</li>
+</ul>
+<ul>
+<li>} linux1;</li>
+</ul>
+<ul>
+<li>__u32 h_i_translator;</li>
+</ul>
+<ul>
+<li>} hurd1;</li>
+</ul>
+<ul>
+<li>__u32 m_i_reserved1;</li>
+</ul>
+<ul>
+<li>} masix1;</li>
+</ul>
+<ul>
+<li>} osd1;                          /* OS dependent 1 */</li>
+</ul>
+<ul>
+<li>__u32 i_block[EXT2_N_BLOCKS];    /* Pointers to blocks, EXT2_N_BLOCKS = 15*/</li>
+</ul>
+<ul>
+<li>__u32 i_generation;              /* File version (for NFS) */</li>
+</ul>
+<ul>
+<li>__u32 i_file_acl;                /* File ACL */</li>
+</ul>
+<ul>
+<li>__u32 i_dir_acl;                 /* Directory ACL */</li>
+</ul>
+<ul>
+<li>__u32 i_faddr;                   /* Fragment address */</li>
+</ul>
+<ul>
+<li>__u8 l_i_frag;             /* Fragment number */</li>
+</ul>
+<ul>
+<li>__u8 l_i_fsize;            /* Fragment size */</li>
+</ul>
+<ul>
+<li>__u16 i_pad1;</li>
+</ul>
+<ul>
+<li>__u16 l_i_uid_high;        /* these 2 fields    */</li>
+</ul>
+<ul>
+<li>__u16 l_i_gid_high;        /* were reserved2[0] */</li>
+</ul>
+<ul>
+<li>__u32 l_i_reserved2;</li>
+</ul>
+<ul>
+<li>} linux2;</li>
+</ul>
+<ul>
+<li>__u8 h_i_frag;             /* Fragment number */</li>
+</ul>
+<ul>
+<li>__u8 h_i_fsize;            /* Fragment size */</li>
+</ul>
+<ul>
+<li>__u16 h_i_mode_high;</li>
+</ul>
+<ul>
+<li>__u16 h_i_uid_high;</li>
+</ul>
+<ul>
+<li>__u16 h_i_gid_high;</li>
+</ul>
+<ul>
+<li>__u32 h_i_author;</li>
+</ul>
+<ul>
+<li>} hurd2;</li>
+</ul>
+<ul>
+<li>__u8 m_i_frag;             /* Fragment number */</li>
+</ul>
+<ul>
+<li>__u8 m_i_fsize;            /* Fragment size */</li>
+</ul>
+<ul>
+<li>__u16 m_pad1;</li>
+</ul>
+<ul>
+<li>__u32 m_i_reserved2[2];</li>
+</ul>
+<ul>
+<li>} masix2;</li>
+</ul>
+<ul>
+<li>} osd2;                          /* OS dependent 2 */</li>
+</ul>
+<ul>
+<li>从结构中可以看到，对于ext2文件系统而言，Inode的大小为128字节，i_mode记录了文件模式（文件/目录/符号链接/设备文件等），i_uid和i_gid记录了用户ID和用户组ID，i_size记录了文件大小，i_atime记录了文件最近访问时间，i_ctime记录了创建时间，i_mtime记录了修改时间，i_dtime代表文件删除时间，i_links_count记录了文件的连接数，i_flags记录了文件特性标志。</li>
+</ul>
+<ul>
+<li>注意这里有一个字段i_blocks表示的并非是这个文件占用的数据块的数量，而是记录实际上分配给文件的有效物理块（以512字节为单位）数。这里需要简单引入一个概念，文件洞（file hole），它表示一些并未存放在磁盘中的“空字符”，引入文件洞是为了更为有效地利用磁盘空间，避免浪费，文件洞在ext2文件系统中是动态分配的，仅当一个进程需要向一个数据块写数据时，才会真正把这个块分配给文件。例如我们创建一个文件：echo -n &quot;X&quot; | dd of=/tmp/hole bs=1024 seek 6，通过bs和seek参数指定跳过6*1024字节开始拷贝文件，然后向文件中输出一个&quot;X&quot;字符。这样，这个文件对应的Inode的i_size属性就是6*1024+1=6145字节，但是i_blocks却不是等于6145/512，假设我们的文件系统的Block大小为4096字节，则第一个Block（4096字节）里面存放的就都是空字符（也就是存在一个文件洞），第二个Block中存放了“X”这个字符。真正存放数据的Block的数量是1，所以i_blocks=1*4096/512=8。</li>
+</ul>
+<ul>
+<li>i_block是一个数组，数组长度为EXT2_N_BLOCKS（15），这15个元组都为Block指针，其中前12个指针指向用于存放实际数据的Block，这些Block称为直接块（Direct Block），第13个指针指向的块为间接块（Indirect Block），间接块中存放了指向直接块的指针。第14个指针指向二级间接块（Double Indirect Block），二级间接块中存放的指针指向间接块。第15个指针指向三级间接块（Triple Indirect Block），三级间接块中存放指向二级间接块的指针。</li>
+</ul>
+<ul>
+<li>Inode大小需要满足三个条件：必须大于等于128字节，必须小于Block大小，必须是128字节的整数倍。</li>
+</ul>
+<ul>
+<li>从上面的结构也可以看出，一个Inode对应一个文件，因此Inode的数量决定了整个文件系统最多可以存放的文件数量。Inode的数量则由Inode的划分密度（inode_ratio）决定，inode_ratio可以在/etc/mke2fs.conf中定义，也可以在创建文件系统的时候通过参数指定，表示每隔inode_ratio个字节创建一个Inode（虽然实际上Inode都是聚在一起的，这个说法仅仅是为了更形象地表示“密度”这个概念）。当然，inode_ratio的取值也并不是没有限制，对于ext2文件系统而言，inode_ratio的取值范围在EXT2_MIN_BLOCK_SIZE和EXT2_MAX_BLOCK_SIZE*1024之间，即1024字节和4096*1024字节之间。</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# dumpe2fs /dev/sdd1 | more</li>
+</ul>
+<ul>
+<li>dumpe2fs 1.41.12 (17-May-2010)</li>
+</ul>
+<ul>
+<li>Filesystem volume name:   &lt;none&gt;</li>
+</ul>
+<ul>
+<li>Last mounted on:          &lt;not available&gt;</li>
+</ul>
+<ul>
+<li>Filesystem UUID:          5399c0d1-dcb3-4c00-b78a-7c8eb2731cd3</li>
+</ul>
+<ul>
+<li>Filesystem magic number:  0xEF53</li>
+</ul>
+<ul>
+<li>Filesystem revision #:    1 (dynamic)</li>
+</ul>
+<ul>
+<li>Filesystem features:      ext_attr resize_inode dir_index filetype sparse_super large_file</li>
+</ul>
+<ul>
+<li>Filesystem flags:         signed_directory_hash</li>
+</ul>
+<ul>
+<li>Default mount options:    (none)</li>
+</ul>
+<ul>
+<li>Filesystem state:         not clean</li>
+</ul>
+<ul>
+<li>Filesystem OS type:       Linux</li>
+</ul>
+<ul>
+<li>Inode count:              1047552</li>
+</ul>
+<ul>
+<li>Block count:              268173037</li>
+</ul>
+<ul>
+<li>Reserved block count:     13408651</li>
+</ul>
+<ul>
+<li>Free blocks:              268071716</li>
+</ul>
+<ul>
+<li>Free inodes:              1047541</li>
+</ul>
+<ul>
+<li>First block:              0</li>
+</ul>
+<ul>
+<li>Block size:               4096</li>
+</ul>
+<ul>
+<li>Fragment size:            4096</li>
+</ul>
+<ul>
+<li>Reserved GDT blocks:      960</li>
+</ul>
+<ul>
+<li>Blocks per group:         32768</li>
+</ul>
+<ul>
+<li>Fragments per group:      32768</li>
+</ul>
+<ul>
+<li>Inodes per group:         128</li>
+</ul>
+<ul>
+<li>Inode blocks per group:   8</li>
+</ul>
+<ul>
+<li>Filesystem created:       Thu Apr 20 14:16:46 2017</li>
+</ul>
+<ul>
+<li>Last mount time:          Thu Apr 20 14:20:16 2017</li>
+</ul>
+<ul>
+<li>Last write time:          Thu Apr 20 14:24:37 2017</li>
+</ul>
+<ul>
+<li>Mount count:              1</li>
+</ul>
+<ul>
+<li>Maximum mount count:      31</li>
+</ul>
+<ul>
+<li>Reserved blocks uid:      0 (user root)</li>
+</ul>
+<ul>
+<li>Reserved blocks gid:      0 (group root)</li>
+</ul>
+<ul>
+<li>First inode:              11</li>
+</ul>
+<ul>
+<li>Inode size:                  256</li>
+</ul>
+<ul>
+<li>Required extra isize:     28</li>
+</ul>
+<ul>
+<li>Desired extra isize:      28</li>
+</ul>
+<ul>
+<li>Default directory hash:   half_md4</li>
+</ul>
+<ul>
+<li>Directory Hash Seed:      b0242b69-cb57-4b52-b448-89d5352db22c</li>
+</ul>
+<ul>
+<li>Group 0: (Blocks 0-32767)</li>
+</ul>
+<ul>
+<li>Primary superblock at 0, Group descriptors at 1-64</li>
+</ul>
+<ul>
+<li>Reserved GDT blocks at 65-1024</li>
+</ul>
+<ul>
+<li>Block bitmap at 1025 (+1025), Inode bitmap at 1026 (+1026)</li>
+</ul>
+<ul>
+<li>Inode table at 1027-1034 (+1027)</li>
+</ul>
+<ul>
+<li>31726 free blocks, 116 free inodes, 2 directories</li>
+</ul>
+<ul>
+<li>Free blocks: 1041-1048, 1050-32767</li>
+</ul>
+<ul>
+<li>Free inodes: 12-13, 15-128</li>
+</ul>
+<ul>
+<li>Group 1: (Blocks 32768-65535)</li>
+</ul>
+<ul>
+<li>Backup superblock at 32768, Group descriptors at 32769-32832</li>
+</ul>
+<ul>
+<li>Reserved GDT blocks at 32833-33792</li>
+</ul>
+<ul>
+<li>Block bitmap at 33793 (+1025), Inode bitmap at 33794 (+1026)</li>
+</ul>
+<ul>
+<li>Inode table at 33795-33802 (+1027)</li>
+</ul>
+<ul>
+<li>31733 free blocks, 128 free inodes, 0 directories</li>
+</ul>
+<ul>
+<li>Free blocks: 33803-65535</li>
+</ul>
+<ul>
+<li>Free inodes: 129-256</li>
+</ul>
+<ul>
+<li>Group 2: (Blocks 65536-98303)</li>
+</ul>
+<ul>
+<li>……</li>
+</ul>
+<ul>
+<li>从输出结果中可以看到下面这些信息：</li>
+</ul>
+<ul>
+<li>文件系统的UUID=5399c0d1-dcb3-4c00-b78a-7c8eb2731cd3</li>
+</ul>
+<ul>
+<li>文件系统的一些特性ext_attr resize_inode dir_index filetype sparse_super large_file</li>
+</ul>
+<ul>
+<li>Inode数量为1047552，Block数量为268173037，空闲的Inode数量为1047541，空闲的Block数量为268071716</li>
+</ul>
+<ul>
+<li>Block大小为4096字节</li>
+</ul>
+<ul>
+<li>每个Block Group中的Block数量为32768，每个Block Group中Inode的数量为128，每个Block Group中Inode占用的Block数量为8</li>
+</ul>
+<ul>
+<li>创建时间，上次挂载时间，上次写入数据的时间</li>
+</ul>
+<ul>
+<li>最多挂载31次就会强制自检（fsck），上次自检时间，强制自检周期，下次强制自检的时间</li>
+</ul>
+<ul>
+<li>Inode大小为256字节</li>
+</ul>
+<ul>
+<li>在这些信息后面，紧接着会将每个Block Group的信息依次输出来：</li>
+</ul>
+<ul>
+<li>Super Block的起始位置，Group Descriptor的范围，Data Block Bitmap的位置，Inode Bitmap的位置，Inode Table的范围，空闲的Block数量，空闲的Inode数量，目录数量，空闲Block的范围，空闲Inode的范围。</li>
+</ul>
+<ul>
+<li>目录与文件：</li>
+</ul>
+<ul>
+<li>从前面Inode的结构中我们可以看到，其中并没有定义文件名称，文件名称实际是存放在目录中的，目录也是一类特殊的文件，在ext2文件系统中，目录是由ext2_dir_entry结构组成的列表，目录是变长的结构，这样可以避免磁盘空间的浪费。对于单个文件名，长度不能超过255字符，且文件名的长度会自动使用&#39;\0&#39;字符填充为4个整数倍。目录中有文件和子目录。</li>
+</ul>
+<ul>
+<li>ext2_dir_entry结构：</li>
+</ul>
+<ul>
+<li>* Structure of a directory entry</li>
+</ul>
+<ul>
+<li>#define EXT2_NAME_LEN 255</li>
+</ul>
+<ul>
+<li>struct ext2_dir_entry {</li>
+</ul>
+<ul>
+<li>__u32   inode;                  /* Inode number */</li>
+</ul>
+<ul>
+<li>__u16   rec_len;                /* Directory entry length */</li>
+</ul>
+<ul>
+<li>__u16   name_len;               /* Name length */</li>
+</ul>
+<ul>
+<li>char    name[EXT2_NAME_LEN];    /* File name */</li>
+</ul>
+<ul>
+<li>上面是老版本的定义，新版本的结构定义：</li>
+</ul>
+<ul>
+<li>* The new version of the directory entry.  Since EXT2 structures are</li>
+</ul>
+<ul>
+<li>* stored in intel byte order, and the name_len field could never be</li>
+</ul>
+<ul>
+<li>* bigger than 255 chars, it&#39;s safe to reclaim the extra byte for the</li>
+</ul>
+<ul>
+<li>* file_type field.</li>
+</ul>
+<ul>
+<li>struct ext2_dir_entry_2 {</li>
+</ul>
+<ul>
+<li>__u8    name_len;               /* Name length */</li>
+</ul>
+<ul>
+<li>__u8    file_type;</li>
+</ul>
+<ul>
+<li>文件类型定义：</li>
+</ul>
+<ul>
+<li>/ *</li>
+</ul>
+<ul>
+<li>* Ext2 directory file types.  Only the low 3 bits are used.  The</li>
+</ul>
+<ul>
+<li>* other bits are reserved for now.</li>
+</ul>
+<ul>
+<li>enum {</li>
+</ul>
+<ul>
+<li>EXT2_FT_REG_FILE,       /*普通文件*/</li>
+</ul>
+<ul>
+<li>EXT2_FT_DIR,           /*目录文件*/</li>
+</ul>
+<ul>
+<li>EXT2_FT_CHRDEV,         /*字符设备*/</li>
+</ul>
+<ul>
+<li>EXT2_FT_BLKDEV,         /*块设备*/</li>
+</ul>
+<ul>
+<li>EXT2_FT_FIFO,          /*管道*/</li>
+</ul>
+<ul>
+<li>EXT2_FT_SOCK,          /*套接字*/</li>
+</ul>
+<ul>
+<li>EXT2_FT_SYMLINK,            /*符号链接*/</li>
+</ul>
+<ul>
+<li>EXT2_FT_MAX             /*文件类型枚举的结尾标识*/</li>
+</ul>
+<ul>
+<li>无论何种类型的文件，都对应一个Inode，Inode号在结构中inode属性记录。不同类型的文件使用Data Block的方式并不相同。有的文件不用来存放数据，不使用Data Block。下面是不同类型的文件使用Data Block的说明：</li>
+</ul>
+<ul>
+<li>普通文件：</li>
+</ul>
+<ul>
+<li>普通文件在创建时是空的，再向其中写入数据的时候，会为其分配Data Block。</li>
+</ul>
+<ul>
+<li>目录文件：</li>
+</ul>
+<ul>
+<li>目录文件的Data Block中存放的就是上面的ext2_dir_entry结构（或者是新的结构），name长度可变，最大不会超过255。rec_len记录了目录的大小，将它与这个目录的起始地址相加，就得到了下一个有效目录的起始地址，所以rec_len也可以看做是下一个有效目录的指针。要删除当前这个目录，只需要将inode置为0，并增加前一个目录的rec_len的值，以“跳过”当前这个删除的目录。</li>
+</ul>
+<ul>
+<li>符号链接（软连接）：</li>
+</ul>
+<ul>
+<li>如果符号链接的路径名称小于60个字符，则使用Inode的i_block数组直接存放其值（15*4字节=60字节），如果超出60了字符，则需要为其分配一个Block，并将i_block中的指针指向对应的Block。</li>
+</ul>
+<ul>
+<li>设备文件，管道，套接字：</li>
+</ul>
+<ul>
+<li>这些文件类型不需要Block，所有信息都存放在Inode中。</li>
+</ul>
+<ul>
+<li>下面是一个小例子，说明了ext2文件系统中，是如何利用目录来读出一个文件内容的，顺便也熟悉一下debugfs调试工具：</li>
+</ul>
+<ul>
+<li>我们将1023GB的磁盘（分区：/dev/sdd1）使用ext2格式化，然后挂载到/mnt/sdd下，在下面创建了几个目录和文件，结构如下：</li>
+</ul>
+<ul>
+<li>/mnt/sdd</li>
+</ul>
+<ul>
+<li>/mnt/sdd/root_inode_debugfs</li>
+</ul>
+<ul>
+<li>/mnt/sdd/test/new1.txt</li>
+</ul>
+<ul>
+<li>/mnt/sdd/test/testlnk.txt -&gt; test.txt</li>
+</ul>
+<ul>
+<li>/mnt/sdd/test/test.txt</li>
+</ul>
+<ul>
+<li>/mnt/sdd/test/test1/2.txt</li>
+</ul>
+<ul>
+<li>/mnt/sdd/test/test2/2.txt</li>
+</ul>
+<ul>
+<li>首先，输入debugfs，进入调试：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# debugfs</li>
+</ul>
+<ul>
+<li>debugfs 1.41.12 (17-May-2010)</li>
+</ul>
+<ul>
+<li>debugfs:</li>
+</ul>
+<ul>
+<li>接着使用open打开要调试的设备：</li>
+</ul>
+<ul>
+<li>debugfs:  open /dev/sdd1</li>
+</ul>
+<ul>
+<li>debugfs:  ls -l</li>
+</ul>
+<ul>
+<li>2   40755 (2)      0      0    4096 21-Apr-2017 03:21 .</li>
+</ul>
+<ul>
+<li>2   40755 (2)      0      0    4096 21-Apr-2017 03:21 ..</li>
+</ul>
+<ul>
+<li>11   40700 (2)      0      0   16384 20-Apr-2017 14:16 lost+found</li>
+</ul>
+<ul>
+<li>12  100644 (1)      0      0    4096 21-Apr-2017 02:49 root_inode_debugfs</li>
+</ul>
+<ul>
+<li>855681   40755 (2)      0      0    4096 21-Apr-2017 07:30 test</li>
+</ul>
+<ul>
+<li>每一列的说明：</li>
+</ul>
+<ul>
+<li>第一列为Inode号</li>
+</ul>
+<ul>
+<li>第二列表示文件权限（前三位是suid/sgid/ticky，后三位的User/Group/Others的权限）</li>
+</ul>
+<ul>
+<li>第三列是文件类型，(2)对应目录，(1)对应普通文件，具体可以参考一下前面ext2文件类型的枚举</li>
+</ul>
+<ul>
+<li>第四列表示文件/目录的ownerid</li>
+</ul>
+<ul>
+<li>第五列表示文件/目录的groupid</li>
+</ul>
+<ul>
+<li>第六列表示文件占用的大小，可以除以Block大小得到文件占用的Block数量</li>
+</ul>
+<ul>
+<li>第七列表示创建时间</li>
+</ul>
+<ul>
+<li>最后一列是目录的名称</li>
+</ul>
+<ul>
+<li>注意到上面输出结果中有两个特殊的目录“.”和“..”，这两个目录不能删除，用于相对路径的查找，“.”表示当前目录，“..”表示父目录。</li>
+</ul>
+<ul>
+<li>言归正传，我们以/mnt/sdd/test/test2/2.txt来说明文件的读取过程：</li>
+</ul>
+<ul>
+<li>debugfs:  dump_inode &lt;2&gt; dump1</li>
+</ul>
+<ul>
+<li>接着在另一个终端中使用vi -b打开dump1文件（注意，上面dump1文件的存放目录是进入debugfs之前的那个目录，而不是我们调试的那个目录）：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# vi -b dump1</li>
+</ul>
+<ul>
+<li>^B^@^@^@^L^@^A^B.^@^@^@^B^@^@^@^L^@^B^B..^@^@^K^@^@^@$^@</li>
+</ul>
+<ul>
+<li>^Blost+found^@^@^@^@^@^@^P^@^E^A1.txt^@^@^@^L^@^@^@D^@^R^Aroot_inode_debugfs^F^A^@^@^@^@(^@^L^Adir1_debugfs^@^@^@^@^T^@^K^Adev_debugfs^@&lt;81&gt;^N^M^@&lt;80&gt;^O^D^Btest^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@</li>
+</ul>
+<ul>
+<li>.                                                                                                                                                                                                                              ntest2.tx</li>
+</ul>
+<ul>
+<li>&lt;81&gt;^N^M^@^L^@^A^B.^@^@^@^B^@^@^@^L^@^B^B..^@^@&lt;85&gt;^N^M^@^P^@^H^Anew1.txt&lt;82&gt;^N^M^@^P^@^E^Btest1t.s^A^O^M^@^P^@^E^Btest2.tx&lt;83&gt;^N^M^@^X^@^K^Gtestlnk.txtwp^@^@^@&lt;84&gt;^N^M^@&lt;a0&gt;^O^H^Atest.txtt.swx^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@......</li>
+</ul>
+<ul>
+<li>同理，文件系统会从中找到下一级目录test2，并找到他的Inode编号855809：</li>
+</ul>
+<ul>
+<li>debugfs:  ls -l test</li>
+</ul>
+<ul>
+<li>855681   40755 (2)      0      0    4096 21-Apr-2017 08:09 .</li>
+</ul>
+<ul>
+<li>2   40755 (2)      0      0    4096 21-Apr-2017 09:14 ..</li>
+</ul>
+<ul>
+<li>855685  100644 (1)      0      0      15 21-Apr-2017 06:54 new1.txt</li>
+</ul>
+<ul>
+<li>855682   40755 (2)      0      0    4096 21-Apr-2017 05:04 test1</li>
+</ul>
+<ul>
+<li>855809   40755 (2)      0      0    4096 21-Apr-2017 05:05 test2</li>
+</ul>
+<ul>
+<li>855683  120777 (7)      0      0       8 21-Apr-2017 08:09 testlnk.txt</li>
+</ul>
+<ul>
+<li>855684  100644 (1)      0      0      58 21-Apr-2017 07:30 test.txt</li>
+</ul>
+<ul>
+<li>继续读取其中内容：</li>
+</ul>
+<ul>
+<li>^A^O^M^@^L^@^A^B.^@^@^@&lt;81&gt;^N^M^@^L^@^B^B..^@^@^D^O^M^@&lt;e8&gt;^O^E^A2.txt^@^@^@^@^@^@^@&lt;d8&gt;^O</li>
+</ul>
+<ul>
+<li>^A.2.txt.swp^@^@^@^@^@^@&lt;c4&gt;^O^F^A2.txt~.swx^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@</li>
+</ul>
+<ul>
+<li>进一步得到2.txt的Inode号，最终从Data Block中读出文件数据。</li>
+</ul>
+<ul>
+<li>调试完成后，可以使用close关闭打开的设备：</li>
+</ul>
+<ul>
+<li>debugfs:  close</li>
+</ul>
+<ul>
+<li>需要注意的是，在调试过程中，如果我们在其他终端中对这个文件系统的文件或者目录进行调整，是不会反映到当前Debug的过程中的，想要重新载入修改的目录和文件，需要退出debugfs，重新mount一下分区，再次打开debugfs即可。</li>
+</ul>
+<ul>
+<li>debugfs:  ?</li>
+</ul>
+<ul>
+<li>Available debugfs requests:</li>
+</ul>
+<ul>
+<li>show_debugfs_params, params</li>
+</ul>
+<ul>
+<li>Show debugfs parameters</li>
+</ul>
+<ul>
+<li>open_filesys, open       Open a filesystem</li>
+</ul>
+<ul>
+<li>close_filesys, close     Close the filesystem</li>
+</ul>
+<ul>
+<li>feature, features        Set/print superblock features</li>
+</ul>
+<ul>
+<li>dirty_filesys, dirty     Mark the filesystem as dirty</li>
+</ul>
+<ul>
+<li>init_filesys             Initialize a filesystem (DESTROYS DATA)</li>
+</ul>
+<ul>
+<li>show_super_stats, stats  Show superblock statistics</li>
+</ul>
+<ul>
+<li>change_root_directory, chroot</li>
+</ul>
+<ul>
+<li>Change root directory</li>
+</ul>
+<ul>
+<li>change_working_directory, cd</li>
+</ul>
+<ul>
+<li>Change working directory</li>
+</ul>
+<ul>
+<li>list_directory, ls       List directory</li>
+</ul>
+<ul>
+<li>show_inode_info, stat    Show inode information</li>
+</ul>
+<ul>
+<li>dump_extents, extents, ex</li>
+</ul>
+<ul>
+<li>Dump extents information</li>
+</ul>
+<ul>
+<li>link, ln                 Create directory link</li>
+</ul>
+<ul>
+<li>unlink                   Delete a directory link</li>
+</ul>
+<ul>
+<li>mkdir                    Create a directory</li>
+</ul>
+<ul>
+<li>rmdir                    Remove a directory</li>
+</ul>
+<ul>
+<li>rm                       Remove a file (unlink and kill_file, if appropriate)</li>
+</ul>
+<ul>
+<li>kill_file                Deallocate an inode and its blocks</li>
+</ul>
+<ul>
+<li>clri                     Clear an inode&#39;s contents</li>
+</ul>
+<ul>
+<li>freei                    Clear an inode&#39;s in-use flag</li>
+</ul>
+<ul>
+<li>seti                     Set an inode&#39;s in-use flag</li>
+</ul>
+<ul>
+<li>testi                    Test an inode&#39;s in-use flag</li>
+</ul>
+<ul>
+<li>freeb                    Clear a block&#39;s in-use flag</li>
+</ul>
+<ul>
+<li>setb                     Set a block&#39;s in-use flag</li>
+</ul>
+<ul>
+<li>testb                    Test a block&#39;s in-use flag</li>
+</ul>
+<ul>
+<li>modify_inode, mi         Modify an inode by structure</li>
+</ul>
+<ul>
+<li>find_free_block, ffb     Find free block(s)</li>
+</ul>
+<ul>
+<li>find_free_inode, ffi     Find free inode(s)</li>
+</ul>
+<ul>
+<li>print_working_directory, pwd</li>
+</ul>
+<ul>
+<li>Print current working directory</li>
+</ul>
+<ul>
+<li>expand_dir, expand       Expand directory</li>
+</ul>
+<ul>
+<li>mknod                    Create a special file</li>
+</ul>
+<ul>
+<li>list_deleted_inodes, lsdel</li>
+</ul>
+<ul>
+<li>List deleted inodes</li>
+</ul>
+<ul>
+<li>undelete, undel          Undelete file</li>
+</ul>
+<ul>
+<li>write                    Copy a file from your native filesystem</li>
+</ul>
+<ul>
+<li>dump_inode, dump         Dump an inode out to a file</li>
+</ul>
+<ul>
+<li>cat                      Dump an inode out to stdout</li>
+</ul>
+<ul>
+<li>lcd                      Change the current directory on your native filesystem</li>
+</ul>
+<ul>
+<li>rdump                    Recursively dump a directory to the native filesystem</li>
+</ul>
+<ul>
+<li>set_super_value, ssv     Set superblock value</li>
+</ul>
+<ul>
+<li>set_inode_field, sif     Set inode field</li>
+</ul>
+<ul>
+<li>set_block_group, set_bg  Set block group descriptor field</li>
+</ul>
+<ul>
+<li>htree_dump, htree        Dump a hash-indexed directory</li>
+</ul>
+<ul>
+<li>dx_hash, hash            Calculate the directory hash of a filename</li>
+</ul>
+<ul>
+<li>dirsearch                Search a directory for a particular filename</li>
+</ul>
+<ul>
+<li>imap                     Calculate the location of an inode</li>
+</ul>
+<ul>
+<li>dump_unused              Dump unused blocks</li>
+</ul>
+<ul>
+<li>set_current_time         Set current time to use when setting filesystme fields</li>
+</ul>
+<ul>
+<li>supported_features       Print features supported by this version of e2fsprogs</li>
+</ul>
+<ul>
+<li>help                     Display info on command or topic.</li>
+</ul>
+<ul>
+<li>list_requests, lr, ?     List available commands.</li>
+</ul>
+<ul>
+<li>quit, q                  Leave the subsystem.</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 test]# ls -il</li>
+</ul>
+<ul>
+<li>total 16</li>
+</ul>
+<ul>
+<li>855685 -rw-r--r-- 1 root root   15 Apr 21 06:54 new1.txt</li>
+</ul>
+<ul>
+<li>855682 drwxr-xr-x 2 root root 4096 Apr 21 05:04 test1</li>
+</ul>
+<ul>
+<li>855809 drwxr-xr-x 2 root root 4096 Apr 21 05:05 test2</li>
+</ul>
+<ul>
+<li>855683 lrwxrwxrwx 1 root root    8 Apr 21 08:09 testlnk.txt -&gt; test.txt</li>
+</ul>
+<ul>
+<li>855684 -rw-r--r-- 1 root root   58 Apr 21 07:30 test.txt</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 test]# stat test2</li>
+</ul>
+<ul>
+<li>File: `test2&#39;</li>
+</ul>
+<ul>
+<li>Size: 4096              Blocks: 8          IO Block: 4096   directory</li>
+</ul>
+<ul>
+<li>Device: 831h/2097d        Inode: 855809      Links: 2</li>
+</ul>
+<ul>
+<li>Access: (0755/drwxr-xr-x)  Uid: (    0/    root)   Gid: (    0/    root)</li>
+</ul>
+<ul>
+<li>Access: 2017-04-21 05:35:58.000000000 +0000</li>
+</ul>
+<ul>
+<li>Modify: 2017-04-21 05:05:08.000000000 +0000</li>
+</ul>
+<ul>
+<li>Change: 2017-04-21 05:05:08.000000000 +0000</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# df -ih</li>
+</ul>
+<ul>
+<li>Filesystem     Inodes IUsed IFree IUse% Mounted on</li>
+</ul>
+<ul>
+<li>/dev/sda1        1.9M   98K  1.8M    6% /</li>
+</ul>
+<ul>
+<li>tmpfs            873K     1  873K    1% /dev/shm</li>
+</ul>
+<ul>
+<li>/dev/sdb1         18M    12   18M    1% /mnt/resource</li>
+</ul>
+<ul>
+<li>/dev/sdf1        1.9M   36K  1.9M    2% /mnt/ubuntu</li>
+</ul>
+<ul>
+<li>/dev/sdd1       1023K    20 1023K    1% /mnt/sdd</li>
+</ul>
+<ul>
+<li>顺便再补充一下软连接和硬链接的知识：</li>
+</ul>
+<ul>
+<li>我们接着上面的例子，再创建一个硬链接：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# ll /mnt/sdd/test</li>
+</ul>
+<ul>
+<li>total 20</li>
+</ul>
+<ul>
+<li>-rw-r--r-- 2 root root   15 Apr 21 06:54 new1HDlnk</li>
+</ul>
+<ul>
+<li>-rw-r--r-- 2 root root   15 Apr 21 06:54 new1.txt</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root 4096 Apr 21 05:04 test1</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root 4096 Apr 21 05:05 test2</li>
+</ul>
+<ul>
+<li>lrwxrwxrwx 1 root root    8 Apr 21 08:09 testlnk.txt -&gt; test.txt</li>
+</ul>
+<ul>
+<li>-rw-r--r-- 1 root root   58 Apr 21 07:30 test.txt</li>
+</ul>
+<ul>
+<li>上面的目录中new1HDlnk文件是new1.txt的硬链接，testlnk.txt是test.txt的软连接，我们还是用debugfs来看一下二者的区别：</li>
+</ul>
+<ul>
+<li>855681   40755 (2)      0      0    4096 21-Apr-2017 09:47 .</li>
+</ul>
+<ul>
+<li>855685  100644 (1)      0      0      15 21-Apr-2017 06:54 new1HDlnk</li>
+</ul>
+<ul>
+<li>可以明显看到，硬链接new1HDlnk实际上仅仅是源文件的一个别名，写到了上级目录的Data Block中，它是没有自己的Inode的，所以它的Inode号855685其实也就是源文件new1.txt的Inode号。而软连接不同，软连接是一类特殊的文件，有自己的Inode和内容。上面例子中，源文件test.txt的文件名小于60字节，所以我们可以看到testlnk.txt的Inode中并没有分配Data Block：</li>
+</ul>
+<ul>
+<li>debugfs:  stat &lt;855683&gt;</li>
+</ul>
+<ul>
+<li>Inode: 855683   Type: symlink    Mode:  0777   Flags: 0x0</li>
+</ul>
+<ul>
+<li>Generation: 2285856085    Version: 0x00000000</li>
+</ul>
+<ul>
+<li>User:     0   Group:     0   Size: 8</li>
+</ul>
+<ul>
+<li>File ACL: 0    Directory ACL: 0</li>
+</ul>
+<ul>
+<li>Links: 1   Blockcount: 0</li>
+</ul>
+<ul>
+<li>Fragment:  Address: 0    Number: 0    Size: 0</li>
+</ul>
+<ul>
+<li>ctime: 0x58f9be38 -- Fri Apr 21 08:09:28 2017</li>
+</ul>
+<ul>
+<li>atime: 0x58f9be39 -- Fri Apr 21 08:09:29 2017</li>
+</ul>
+<ul>
+<li>mtime: 0x58f9be38 -- Fri Apr 21 08:09:28 2017</li>
+</ul>
+<ul>
+<li>Size of extra inode fields: 0</li>
+</ul>
+<ul>
+<li>Fast_link_dest: test.txt</li>
+</ul>
+<ul>
+<li>我们在做一个测试，创建一个超过60字节文件名的文件file0123456789012345678901234567890123456789012345678901234567890123456789.txt，并为其创建一个软连接largerlnk：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 test]# ll</li>
+</ul>
+<ul>
+<li>total 28</li>
+</ul>
+<ul>
+<li>-rw-r--r-- 1 root root   71 Apr 22 08:35 file0123456789012345678901234567890123456789012345678901234567890123456789.txt</li>
+</ul>
+<ul>
+<li>lrwxrwxrwx 1 root root   78 Apr 22 08:36 largerlnk -&gt; file0123456789012345678901234567890123456789012345678901234567890123456789.txt</li>
+</ul>
+<ul>
+<li>-rwxr-xr-x 1 root root   58 Apr 21 07:30 test.txt</li>
+</ul>
+<ul>
+<li>再来看一下largerlnk对应的Inode：</li>
+</ul>
+<ul>
+<li>855681   40755 (2)     0     0    4096 22-Apr-2017 08:36 .</li>
+</ul>
+<ul>
+<li>2   40755 (2)     0     0    4096 21-Apr-2017 09:14 ..</li>
+</ul>
+<ul>
+<li>855685  100644 (1)     0     0      15 21-Apr-2017 06:54 new1.txt</li>
+</ul>
+<ul>
+<li>855682   40755 (2)     0     0    4096 21-Apr-2017 05:04 test1</li>
+</ul>
+<ul>
+<li>855809   40755 (2)     0     0    4096 21-Apr-2017 05:05 test2</li>
+</ul>
+<ul>
+<li>855683  120777 (7)     0     0       8 21-Apr-2017 08:09 testlnk.txt</li>
+</ul>
+<ul>
+<li>855684  100755 (1)     0     0      58 21-Apr-2017 07:30 test.txt</li>
+</ul>
+<ul>
+<li>855685  100644 (1)     0     0      15 21-Apr-2017 06:54 new1HDlnk</li>
+</ul>
+<ul>
+<li>855687  120777 (7)     0     0      78 22-Apr-2017 08:36 largerlnk</li>
+</ul>
+<ul>
+<li>855688  100644 (1)     0     0      71 22-Apr-2017 08:35 file0123456789012345678901234567890123456789012345678901234567890123456789.txt</li>
+</ul>
+<ul>
+<li>debugfs:  stat &lt;855687&gt;</li>
+</ul>
+<ul>
+<li>Inode: 855687   Type: symlink    Mode:  0777   Flags: 0x0</li>
+</ul>
+<ul>
+<li>Generation: 2439924333    Version: 0x00000000</li>
+</ul>
+<ul>
+<li>User:     0   Group:     0   Size: 78</li>
+</ul>
+<ul>
+<li>Links: 1   Blockcount: 8</li>
+</ul>
+<ul>
+<li>ctime: 0x58fb1607 -- Sat Apr 22 08:36:23 2017</li>
+</ul>
+<ul>
+<li>atime: 0x58fb1608 -- Sat Apr 22 08:36:24 2017</li>
+</ul>
+<ul>
+<li>mtime: 0x58fb1607 -- Sat Apr 22 08:36:23 2017</li>
+</ul>
+<ul>
+<li>BLOCKS:</li>
+</ul>
+<ul>
+<li>(0):219056128</li>
+</ul>
+<ul>
+<li>TOTAL: 1</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 test]# dd if=/dev/sdc1 of=block.txt skip=219056128 ibs=4096 bs=4096 count=1</li>
+</ul>
+<ul>
+<li>1+0 records in</li>
+</ul>
+<ul>
+<li>1+0 records out</li>
+</ul>
+<ul>
+<li>4096 bytes (4.1 kB) copied, 0.00018398 s, 22.3 MB/s</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 test]# vi block.txt</li>
+</ul>
+<ul>
+<li>file0123456789012345678901234567890123456789012345678901234567890123456789.txt^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@……</li>
+</ul>
+<ul>
+<li>可以看到，Data Block中存放的就是指向的文件的名称。</li>
+</ul>
+<ul>
+<li>mke2fs.conf 配置文件说明以及格式化：</li>
+</ul>
+<ul>
+<li>mke2fs.conf文件位于/etc/mke2fs.conf（不同系统位置可能有区别，这里以CentOS 6.5为例），我们看一下其中的内容：</li>
+</ul>
+<ul>
+<li>[defaults]</li>
+</ul>
+<ul>
+<li>[fs_types]</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>当我们使用使用mke2fs为磁盘创建文件系统时，未指定的参数就会从这个配置文件中读取相应的参数值。</li>
+</ul>
+<ul>
+<li>这个配置文件采用一种类似INI文件的样式进行书写通过中括号来定义各个“小节”，在每个小节中，通过等号将等号右侧的值赋值给左侧的标签，通过大括号可以进一步定义子一级标签，通过分号（;）或者井号（#）来定义注释，例如：</li>
+</ul>
+<ul>
+<li># This line is a comment</li>
+</ul>
+<ul>
+<li>[section1]</li>
+</ul>
+<ul>
+<li>[section 2]</li>
+</ul>
+<ul>
+<li>继续看上面的配置文件，[default]小节中定义了默认的参数，默认参数中的参数值可以被[fs_types]小节中定义的参数值覆盖，或者如果在格式化的时候指定了对应的参数，也可以覆盖掉默认参数。</li>
+</ul>
+<ul>
+<li>default小节中的参数说明：</li>
+</ul>
+<ul>
+<li>base_features：定义了创建文件系统时需要启用的功能</li>
+</ul>
+<ul>
+<li>blocksize：Block的划分大小</li>
+</ul>
+<ul>
+<li>inode_ratio：Inode的密度，即每隔多少字节会划分一个Inode</li>
+</ul>
+<ul>
+<li>inode_size：Inode的大小</li>
+</ul>
+<ul>
+<li>fs_types小节的重要参数说明：</li>
+</ul>
+<ul>
+<li>在格式化的时候，可以使用-T来调用[fs_types]中定义的类型。如果未指定类型，则会根据mke2fs程序的后缀名来判断类型，例如mke2fs.ext4默认会使用ext4类型。</li>
+</ul>
+<ul>
+<li>features：定义了一组需要启用或者禁用的功能（基于base_features），对于需要禁用的功能，在功能名称前面添加符号^，例如如果要禁用base_features中的resize_inode，则可以定义features = ^resize_inode</li>
+</ul>
+<ul>
+<li>block_size：如果指定为负数，则mke2f会通过探索性地尝试来计算合适的Block大小</li>
+</ul>
+<ul>
+<li>mke2fs常用参数说明：</li>
+</ul>
+<ul>
+<li>-b：指定Block大小</li>
+</ul>
+<ul>
+<li>-c：检测磁盘坏道，如果指定twice，则会进行读和写双重检测</li>
+</ul>
+<ul>
+<li>-E：扩展选项，有很多可选项，具体可以参考man mke2fs</li>
+</ul>
+<ul>
+<li>-f：指定fragment的大小</li>
+</ul>
+<ul>
+<li>-g：每个Block Group中的Block数量</li>
+</ul>
+<ul>
+<li>-G：Block Group的数量</li>
+</ul>
+<ul>
+<li>-i：inode_ratio的大小</li>
+</ul>
+<ul>
+<li>-I：Inode的大小</li>
+</ul>
+<ul>
+<li>-j：启用ext3 journal日志</li>
+</ul>
+<ul>
+<li>-J：journal日志的扩展参数，具体可以参考man mke2fs</li>
+</ul>
+<ul>
+<li>-m：为超级用户预留出的Block数量，默认为5%</li>
+</ul>
+<ul>
+<li>-n：如果加了这个参数，mke2fs只会计算一下文件系统创建后的各个参数，并不会实际创建文件系统（类似于预览）</li>
+</ul>
+<ul>
+<li>-N：Inode数量</li>
+</ul>
+<ul>
+<li>-O：指定文件系统要启用的功能(features)，常见功能如下：</li>
+</ul>
+<ul>
+<li>dir_index：使用经过哈希的二叉树来加速长目录的访问</li>
+</ul>
+<ul>
+<li>extent：使用extents字段而非Block Pointer来访问Block，对大文件访问有加速作用</li>
+</ul>
+<ul>
+<li>filetype：在目录入口（dentry结构中）存放文件类型的信息</li>
+</ul>
+<ul>
+<li>flex_bg：允许将Block Group的元数据（Bitmap和Inode Table）存放在Block Group中的任意位置而非按顺序排列</li>
+</ul>
+<ul>
+<li>has_journal：类似-j参数，启用ext3 journal日志</li>
+</ul>
+<ul>
+<li>large_file：允许文件大小超过2GB</li>
+</ul>
+<ul>
+<li>resize_inode：为Block Group Descriptor Table预留空间，以便后续对文件系统的划分进行调整（resize2fs）</li>
+</ul>
+<ul>
+<li>sparse_super：为Super Block和Group Descriptor建立更少的备份</li>
+</ul>
+<ul>
+<li>uninit_bg：创建文件系统，但是并不初始化好全部的Block Group</li>
+</ul>
+<ul>
+<li>-r：为文件系统指定revision</li>
+</ul>
+<ul>
+<li>-t：指定fs-type，例如ext2，ext3等等</li>
+</ul>
+<ul>
+<li>-T：选择mke2fs.conf中[fs_type]小节中定义的类型</li>
+</ul>
+<ul>
+<li>-U：指定UUID</li>
+</ul>
+<ul>
+<li>-v：指定结果输出级别为verbose</li>
+</ul>
+<ul>
+<li>-V：打印mke2fs的版本</li>
+</ul>
+<ul>
+<li>了解了上面的结构之后，我们看一下使用mkfs.ext2 -T largefile格式化一块1023GB的磁盘的输出：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# mkfs.ext2 -T largefile /dev/sdd1</li>
+</ul>
+<ul>
+<li>mke2fs 1.41.12 (17-May-2010)</li>
+</ul>
+<ul>
+<li>Filesystem label=</li>
+</ul>
+<ul>
+<li>OS type: Linux</li>
+</ul>
+<ul>
+<li>1047552 inodes, 268173037 blocks</li>
+</ul>
+<ul>
+<li>13408651 blocks (5.00%) reserved for the super user</li>
+</ul>
+<ul>
+<li>8184 block groups</li>
+</ul>
+<ul>
+<li>32768 blocks per group, 32768 fragments per group</li>
+</ul>
+<ul>
+<li>128 inodes per group</li>
+</ul>
+<ul>
+<li>Superblock backups stored on blocks:</li>
+</ul>
+<ul>
+<li>32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,</li>
+</ul>
+<ul>
+<li>4096000, 7962624, 11239424, 20480000, 23887872, 71663616, 78675968,</li>
+</ul>
+<ul>
+<li>102400000, 214990848</li>
+</ul>
+<ul>
+<li>Writing inode tables: done</li>
+</ul>
+<ul>
+<li>Writing superblocks and filesystem accounting information: done</li>
+</ul>
+<ul>
+<li>180 days, whichever comes first.  Use tune2fs -c or -i to override.</li>
+</ul>
+<ul>
+<li>使用dumpe2fs具体可以看一下每个Group中的Block数量：</li>
+</ul>
+<ul>
+<li>Free blocks: 1041-4095, 4097-32767</li>
+</ul>
+<ul>
+<li>Free inodes: 13-128</li>
+</ul>
+<ul>
+<li>Block bitmap at 65536 (+0), Inode bitmap at 65537 (+1)</li>
+</ul>
+<ul>
+<li>Inode table at 65538-65545 (+2)</li>
+</ul>
+<ul>
+<li>32758 free blocks, 128 free inodes, 0 directories</li>
+</ul>
+<ul>
+<li>Free blocks: 65546-98303</li>
+</ul>
+<ul>
+<li>Free inodes: 257-384</li>
+</ul>
+<ul>
+<li>Group 8182: (Blocks 268107776-268140543)</li>
+</ul>
+<ul>
+<li>Block bitmap at 268107776 (+0), Inode bitmap at 268107777 (+1)</li>
+</ul>
+<ul>
+<li>Inode table at 268107778-268107785 (+2)</li>
+</ul>
+<ul>
+<li>Free blocks: 268107786-268140543</li>
+</ul>
+<ul>
+<li>Free inodes: 1047297-1047424</li>
+</ul>
+<ul>
+<li>Group 8183: (Blocks 268140544-268173036)</li>
+</ul>
+<ul>
+<li>Block bitmap at 268140544 (+0), Inode bitmap at 268140545 (+1)</li>
+</ul>
+<ul>
+<li>Inode table at 268140546-268140553 (+2)</li>
+</ul>
+<ul>
+<li>32483 free blocks, 128 free inodes, 0 directories</li>
+</ul>
+<ul>
+<li>Free blocks: 268140554-268173036</li>
+</ul>
+<ul>
+<li>Free inodes: 1047425-1047552</li>
+</ul>
+<ul>
+<li>可以看到，除了最后一个Block Group之外，其他的Group都有32768个Block，最后一个Group有32493块Block，所以一共有8183*32768+32493=268173037个Block，数量和之前的总数对应。具体在看一下Group中的内容，可以看到Group 0和其他所有备份Super Block的Group中都有1个Block存放Super Block，从前面的Group Descriptor结构中可以看到每个Descriptor的结构占32字节，全部Group Descriptor一共占32*8184/4096=63.9375，即64个Block，看Group 0和Group 1，每个Group确实分配了64个Block来存放Group Descriptor，但是还会为GDT（Group Descriptor Table）额外保留一些Block，一共加起来占1024个Block（预留的Block是为了后续调整文件系统结构的时候扩展GDT使用，例如使用resize2fs调整大小等等）。此外，每个Group中还有1个Block存放Data Block Bitmap，一个Block存放Inode Bitmap，以及8个Block存放Inode Table（8*4096/256=128）。</li>
+</ul>
+<ul>
+<li>ext2 ext3 ext4 文件系统的区别：</li>
+</ul>
+<ul>
+<li>ext2为非日志文件系统，即在文件系统的运行期间不会记录写操作的日志，这就有一个很大的弊端，即文件系统只能单纯依靠Inode和Data Block的Bitmap来确定数据写入的状态。</li>
+</ul>
+<ul>
+<li>当用户尝试写入一个文件时，首先系统判断当前用户对于这个文件尝试写入的目录是否有写权限，如果有权限的话才允许写入。</li>
+</ul>
+<ul>
+<li>文件系统根据Inode Bitmap找到第一个未使用的Inode，得到Inode的编号，将文件权限和属性写入Inode结构中。</li>
+</ul>
+<ul>
+<li>文件系统根据Data Block Bitmap找到未使用的Data Block，将文件内容写入其中，并将Inode中的Data Block指针指向Data Block，如果一块Data Block不足以存放文件内容，就再找下一块Data Block，如果直接块不足以存放内容，就在间接块中进一步分配空间。</li>
+</ul>
+<ul>
+<li>Data Block数据写完并且Inode中的指针更新完成后，会更新Inode Bitmap和Data Block Bitmap，将占用的Inode和Data Block对应的比特标记为0（使用中）。</li>
+</ul>
+<ul>
+<li>最后会更新Super Block的内容（更新空闲和使用的数量）。</li>
+</ul>
+<ul>
+<li>数据不一致：</li>
+</ul>
+<ul>
+<li>为了克服上述的问题，在ext3中引入了日志功能，ext3文件系统由ext2发展而来（二者的Magic Number都是一样的，可见其兼容性），ext3文件系统本身的数据结构（例如Super Block，Inode，Group Descriptor，Dir Entry等）基本与ext2一致，可以完全兼容ext2文件系统，使得用户可以平滑地过度到一个带有日志功能的文件系统中。</li>
+</ul>
+<ul>
+<li>引入日志功能后，文件系统会划分出部分Block用于日志的写入，当进行文件写入时，系统首先会把待写的Block数据写入日志中，当数据成功提交到日志中后，会进一步向文件系统的Data Block中提交，数据成功提交到文件系统后，日志中的临时数据就会被丢弃。</li>
+</ul>
+<ul>
+<li>从上面的两种情况可以看到，引入日志系统后，能够保证数据一致性，但是并不能保证数据不丢失。</li>
+</ul>
+<ul>
+<li>ext3支持三种日志模式，区别是写入日志的Block是元数据的Block还是Data Block，以及何日提交日志：</li>
+</ul>
+<ul>
+<li>Journal：文件系统所有数据和元数据的改变都要提交到日志，这种模式下会减少所有Block丢失数据以及数据不一致的可能性，但是会有相当大的磁盘空间被日志Block占用，当一个文件被创建时，所有的Data Block在提交前都会提交到日志，相当于所有数据写入都执行了两次（一次对日志，一次对文件系统本身），所以这是最安全但是最慢的日志模式。</li>
+</ul>
+<ul>
+<li>Ordered：只有对元数据的改变才会提交到日志，这种模式下能够确保数据一致性，但是对于文件内容的可靠性不做保证。尽管这种情况下并不保证文件内容，但是在元数据修改之前，会先提交文件内容，然后再提交元数据对应的Block到日志，最后再提交到文件系统。这个模式会对文件系统的性能有少量影响。Ordered模式是ext3文件系统的默认日志模式。</li>
+</ul>
+<ul>
+<li>Writeback：只有对元数据的改变才会提交到日志，但是和Ordered模式不同的是，这个模式下文件数据提交后和元数据的更新可以异步进行，由于元数据的更新不会等文件数据提交后进行，所以很有可能出现元数据更新已经完成，但是文件数据还没有完成提交，造成数据不一致的情况。</li>
+</ul>
+<ul>
+<li>上面三种日志模式，可以在手动mount的时候通过-o参数指定，也可以在/etc/fstab中指定，例如：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# mount -o data=writeback /dev/sde1 /mnt/sde</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# mount -v</li>
+</ul>
+<ul>
+<li>/dev/sda1 on / type ext4 (rw)</li>
+</ul>
+<ul>
+<li>proc on /proc type proc (rw)</li>
+</ul>
+<ul>
+<li>sysfs on /sys type sysfs (rw)</li>
+</ul>
+<ul>
+<li>devpts on /dev/pts type devpts (rw,gid=5,mode=620)</li>
+</ul>
+<ul>
+<li>tmpfs on /dev/shm type tmpfs (rw)</li>
+</ul>
+<ul>
+<li>none on /proc/sys/fs/binfmt_misc type binfmt_misc (rw)</li>
+</ul>
+<ul>
+<li>/dev/sdb1 on /mnt/resource type ext4 (rw)</li>
+</ul>
+<ul>
+<li>/dev/sdd1 on /mnt/sdd type ext4 (rw)</li>
+</ul>
+<ul>
+<li>/dev/sdc1 on /mnt/sdc type ext2 (rw)</li>
+</ul>
+<ul>
+<li>/dev/sde1 on /mnt/sde type ext3 (rw,data=writeback)</li>
+</ul>
+<ul>
+<li># /etc/fstab</li>
+</ul>
+<ul>
+<li># Created by anaconda on Tue Mar 29 17:12:12 2016</li>
+</ul>
+<ul>
+<li>#</li>
+</ul>
+<ul>
+<li># Accessible filesystems, by reference, are maintained under &#39;/dev/disk&#39;</li>
+</ul>
+<ul>
+<li># See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info</li>
+</ul>
+<ul>
+<li>tmpfs                   /dev/shm                tmpfs   defaults        0 0</li>
+</ul>
+<ul>
+<li>devpts                  /dev/pts                devpts  gid=5,mode=620  0 0</li>
+</ul>
+<ul>
+<li>sysfs                   /sys                    sysfs   defaults        0 0</li>
+</ul>
+<ul>
+<li>proc                    /proc                   proc    defaults        0 0</li>
+</ul>
+<ul>
+<li>/dev/sde1               /mnt/sde                ext3    data=writeback  0 0</li>
+</ul>
+<ul>
+<li>ext3日志可以存储到一个文件中，也可以存放在单独的设备中，可以在建立文件系统的时候，指定将日志记录到其他设备上，例如：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# mkfs.ext3 -J device=/dev/sdf1 /dev/sdc1</li>
+</ul>
+<ul>
+<li>文件系统本身并不处理日志，而是通过日志块设备（Journaling Block Device，JBD）的通用内核层进行处理。</li>
+</ul>
+<ul>
+<li>ext3文件系统与JBD的交互过程主要基于三个单元：</li>
+</ul>
+<ul>
+<li>日志记录：用于描述文件系统的一次低级操作，在某些日志系统中，日志记录只包括操作所修改的数据范围以及起始位置。JBD使用的日志记录由一次低级操作所包含的数据缓冲区组成，JBD直接对缓冲区和其首部操作。</li>
+</ul>
+<ul>
+<li>事务（Transaction）：处于管理的方便以及性能考虑，JBD将一组原子操作合并为一个事务，每隔一段时间会将日志中的内容同步到文件系统中，或者当日志空间中没有多余的可写空间时，事务的日志会同步到文件系统中。事务会在多个状态之间切换：</li>
+</ul>
+<ul>
+<li>运行（Running）：表示事务可以接收和处理更多的原子操作</li>
+</ul>
+<ul>
+<li>锁定（Locked）：不接收新的原子操作，所有已接受的原子操作尚未完成</li>
+</ul>
+<ul>
+<li>同步（Flush）：事务已完成，正在向提交日志</li>
+</ul>
+<ul>
+<li>提交（Commit）：日志提交完成，正在向文件系统提交数据</li>
+</ul>
+<ul>
+<li>完成（Finished）：数据已经全部提交到文件系统中，可以删除此事务</li>
+</ul>
+<ul>
+<li>ext3日志文件系统的几个特点：</li>
+</ul>
+<ul>
+<li>访问速度：尽管ext3文件系统启用了日志功能后，会增加写入磁盘的次数，但是从整体上来看，ext3仍然比ext2性能要好一些，这是因为ext3的日志功能对磁盘驱动器的读写头进行了一些优化，所以从读写性能上看，ext3较ext2并没有降低。</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# umount /dev/sdc1</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# tune2fs -j /dev/sdc1</li>
+</ul>
+<ul>
+<li>tune2fs 1.41.12 (17-May-2010)</li>
+</ul>
+<ul>
+<li>Creating journal inode: done</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# mount /dev/sdc1 /mnt/sdc</li>
+</ul>
+<ul>
+<li>/dev/sdc1 on /mnt/sdc type ext3 (rw)</li>
+</ul>
+<ul>
+<li>也可以在不修改ext3文件系统的前提下，直接将其重新挂载为ext2文件系统。</li>
+</ul>
+<ul>
+<li>日志模式：ext3的三种不同的日志模式可以让系统管理员根据实际情况在速度和稳定性之间进行灵活配置。</li>
+</ul>
+<ul>
+<li>ext4文件系统：</li>
+</ul>
+<ul>
+<li>ext4文件系统是ext3的改进版，从前面的描述中我们可以看到，ext3仅仅是在ext2文件系统上增加了一个日志功能而已，而ext4则针对ext2/ext3的重要数据结构进行了调整优化，使其可以提供更好的性能和稳定性，以及更为丰富的功能。</li>
+</ul>
+<ul>
+<li>与ext2转换为ext3一样，无需重新格式化，就可以将ext3文件系统更新为ext4，原有ext3的数据结构依然保留，ext4作用与新的数据。例如：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# tune2fs -O extents,uninit_bg,dir_index /dev/sdc1</li>
+</ul>
+<ul>
+<li>Please run e2fsck on the filesystem.</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# fsck /dev/sdc1</li>
+</ul>
+<ul>
+<li>......</li>
+</ul>
+<ul>
+<li>/dev/sdc1: 23/1047552 files (0.0% non-contiguous), 134133/268173037 blocks</li>
+</ul>
+<ul>
+<li>/dev/sdc1 on /mnt/sdc type ext4 (rw)</li>
+</ul>
+<ul>
+<li>与ext3相比，ext4有如下新的特性：</li>
+</ul>
+<ul>
+<li>支持更大的文件系统总大小和更大的单个文件大小，ext4支持的最大文件系统大小为1EB，最大16TB的单个文件。</li>
+</ul>
+<ul>
+<li>支持无限数量的子目录，ext3目前最多支持32000个子目录。</li>
+</ul>
+<ul>
+<li>ext3采用间接块映射，当文件大小非常大的时候，通过二级和三级间接块查找文件内容效率极低，与之相比，ext4中引入了extents的概念，每个extent为一组连续数据块，一个大文件会被分解保存在多个extents中，从而大大提高了大文件的访问效率，减少碎片文件。</li>
+</ul>
+<ul>
+<li>当文件写入ext3文件系统时，文件系统的数据块分配器每次只能分配一个Block，而ext4文件系统可以一次调配多个Block，减少在写入文件时Block的调配次数。</li>
+</ul>
+<ul>
+<li>ext3的块分配策略是尽快分配，而ext4则尽可能地延迟分配，直到文件在缓存中写完才开始进行数据块的分配，这样能够极大地优化数据块的分布，从而提高后续文件读取的性能。</li>
+</ul>
+<ul>
+<li>磁盘碎片的产生在所难免，ext4支持在线碎片整理，在整理时能够保证文件的正常访问。</li>
+</ul>
+<ul>
+<li>ext4将Inode的默认大小改为256字节，增加的空间用来存放更多的节点信息和扩展属性（例如纳秒时间戳，Inode版本等等），以提升文件的访问速度。节点预留机制：当一个目录被建立时，若干个Inode会被预留出来，以加速文件的建立。</li>
+</ul>
+<ul>
+<li>很多软件为了保证下载文件有足够的空间来存放，通常会提前创建一个与下载文件大小相同的空文件，ext4文件系统中实现了与非陪的机制并提供了相应的API。</li>
+</ul>
+<ul>
+<li>默认启用barrier，以保证数据完整性。</li>
+</ul>
+<ul>
+<li>mount 过程：</li>
+</ul>
+<ul>
+<li>从本质上来说，挂载的过程最主要的目的是要将挂载目录的Dir Entry结构指向的Inode屏蔽掉，然后重新定位到要挂载的文件系统的入口Inode，这样在访问挂载目录的文件的时候，才能够通过文件系统的入口Inode一级一级找到里面的文件，例如：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 sdc]# stat /mnt/sdc</li>
+</ul>
+<ul>
+<li>File: `/mnt/sdc&#39;</li>
+</ul>
+<ul>
+<li>Device: 801h/2049d        Inode: 1704120     Links: 3</li>
+</ul>
+<ul>
+<li>Access: 2017-04-27 10:54:50.364707408 +0000</li>
+</ul>
+<ul>
+<li>Modify: 2016-11-29 03:48:54.730756524 +0000</li>
+</ul>
+<ul>
+<li>Change: 2016-11-29 03:48:54.730756524 +0000</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 sdc]# mount /dev/sdc1 /mnt/sdc</li>
+</ul>
+<ul>
+<li>Device: 821h/2081d        Inode: 2           Links: 4</li>
+</ul>
+<ul>
+<li>Access: 2017-04-25 08:35:11.000000000 +0000</li>
+</ul>
+<ul>
+<li>Modify: 2017-04-21 09:14:29.000000000 +0000</li>
+</ul>
+<ul>
+<li>Change: 2017-04-21 09:14:29.000000000 +0000</li>
+</ul>
+<ul>
+<li>可以看到，在挂载之前，/mnt/sdc目录的Inode编号为1704120，当将/dev/sdc1挂载到/mnt/sdc后，目录的Inode就指向了文件系统入口的Inode了，具体过程是当文件系统挂载到/mnt/sdc的时候，系统会从Dir Entry的哈希表中获取这个目录的Dir Entry，然后将这个结构中的d_flags标记为DCACHE_MOUNTED，标记完成也就将/mnt/sdc指向的Inode屏蔽掉了，如果我们再将目录umount掉，则又能看到该目录的Inode指回了原Inode：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 sdc]# umount /dev/sdc1</li>
+</ul>
+<ul>
+<li>Dir Entry的结构：</li>
+</ul>
+<ul>
+<li>struct dentry {</li>
+</ul>
+<ul>
+<li>atomic_t                 d_count;      /* usage count */</li>
+</ul>
+<ul>
+<li>unsigned long            d_vfs_flags;  /* dentry cache flags */</li>
+</ul>
+<ul>
+<li>spinlock_t               d_lock;       /* per-dentry lock */</li>
+</ul>
+<ul>
+<li>struct inode             *d_inode;     /* associated inode */</li>
+</ul>
+<ul>
+<li>struct list_head         d_lru;        /* unused list */</li>
+</ul>
+<ul>
+<li>struct list_head         d_child;      /* list of dentries within */</li>
+</ul>
+<ul>
+<li>struct list_head         d_subdirs;    /* subdirectories */</li>
+</ul>
+<ul>
+<li>struct list_head         d_alias;      /* list of alias inodes */</li>
+</ul>
+<ul>
+<li>struct dentry_operations *d_op;        /* dentry operations table */</li>
+</ul>
+<ul>
+<li>struct super_block       *d_sb;        /* superblock of file */</li>
+</ul>
+<ul>
+<li>unsigned int             d_flags;      /* dentry flags */</li>
+</ul>
+<ul>
+<li>int                      d_mounted;    /* is this a mount point? */</li>
+</ul>
+<ul>
+<li>void                     *d_fsdata;    /* filesystem-specific data */</li>
+</ul>
+<ul>
+<li>struct rcu_head          d_rcu;        /* RCU locking */</li>
+</ul>
+<ul>
+<li>struct dcookie_struct    *d_cookie;    /* cookie */</li>
+</ul>
+<ul>
+<li>struct dentry            *d_parent;    /* dentry object of parent */</li>
+</ul>
+<ul>
+<li>struct qstr              d_name;       /* dentry name */</li>
+</ul>
+<ul>
+<li>struct hlist_node        d_hash;       /* list of hash table entries */</li>
+</ul>
+<ul>
+<li>struct hlist_head        *d_bucket;    /* hash bucket */</li>
+</ul>
+<ul>
+<li>unsigned char            d_iname[DNAME_INLINE_LEN_MIN]; /* short name */</li>
+</ul>
+<ul>
+<li>那么系统是如何在屏蔽掉原Inode后，将目录映射到文件系统的入口Inode的呢？接着来看：</li>
+</ul>
+<ul>
+<li>在挂载的时候，内核会在内存中创建一个对应这个文件系统的Super Block对象，从要挂在的文件系统中读出其Super Block，用于这个内存对象的初始化，初始化好内存对象后，内核会将其加入一个全局的Super Block对象列表（这个列表由内核一直维护）。Super Block结构中的s_root字段指向文件系统根目录的Dir Entry，挂载后的文件系统的入口就是这里。同时，VFS（Virtual Filesystem Switch）会创建一个vfsmount对象，这个对象包含了文件系统挂载点的全部信息：</li>
+</ul>
+<ul>
+<li>struct vfsmount {</li>
+</ul>
+<ul>
+<li>struct list_head mnt_hash;  /* 连接到VFSMOUNT Hash Table */</li>
+</ul>
+<ul>
+<li>struct vfsmount *mnt_parent;    /* 指向mount树中的父节点 */</li>
+</ul>
+<ul>
+<li>struct dentry *mnt_mountpoint;  /* 指向mount点的目录项 */</li>
+</ul>
+<ul>
+<li>struct dentry *mnt_root;    /* 被mount的文件系统根目录项 */</li>
+</ul>
+<ul>
+<li>struct super_block *mnt_sb; /* 指向被mount的文件系统superblock */</li>
+</ul>
+<ul>
+<li>#ifdef CONFIG_SMP</li>
+</ul>
+<ul>
+<li>struct mnt_pcp __percpu *mnt_pcp;</li>
+</ul>
+<ul>
+<li>atomic_t mnt_longterm;      /* how many of the refs are longterm */</li>
+</ul>
+<ul>
+<li>#else</li>
+</ul>
+<ul>
+<li>int mnt_count;</li>
+</ul>
+<ul>
+<li>int mnt_writers;</li>
+</ul>
+<ul>
+<li>#endif</li>
+</ul>
+<ul>
+<li>struct list_head mnt_mounts;    /* 下级（child）vfsmount对象链表 */</li>
+</ul>
+<ul>
+<li>struct list_head mnt_child; /* 链入上级vfsmount对象的链表点 */</li>
+</ul>
+<ul>
+<li>int mnt_flags;</li>
+</ul>
+<ul>
+<li>/* 4 bytes hole on 64bits arches without fsnotify */</li>
+</ul>
+<ul>
+<li>#ifdef CONFIG_FSNOTIFY</li>
+</ul>
+<ul>
+<li>__u32 mnt_fsnotify_mask;</li>
+</ul>
+<ul>
+<li>struct hlist_head mnt_fsnotify_marks;</li>
+</ul>
+<ul>
+<li>const char *mnt_devname;    /* 文件系统所在的设备名字，例如/dev/sdb */</li>
+</ul>
+<ul>
+<li>struct list_head mnt_list;</li>
+</ul>
+<ul>
+<li>struct list_head mnt_expire;    /* link in fs-specific expiry list */</li>
+</ul>
+<ul>
+<li>struct list_head mnt_share; /* circular list of shared mounts */</li>
+</ul>
+<ul>
+<li>struct list_head mnt_slave_list;/* list of slave mounts */</li>
+</ul>
+<ul>
+<li>struct list_head mnt_slave; /* slave list entry */</li>
+</ul>
+<ul>
+<li>struct vfsmount *mnt_master;    /* slave is on master-&gt;mnt_slave_list */</li>
+</ul>
+<ul>
+<li>struct mnt_namespace *mnt_ns;   /* containing namespace */</li>
+</ul>
+<ul>
+<li>int mnt_id;         /* mount identifier */</li>
+</ul>
+<ul>
+<li>int mnt_group_id;       /* peer group identifier */</li>
+</ul>
+<ul>
+<li>int mnt_expiry_mark;        /* true if marked for expiry */</li>
+</ul>
+<ul>
+<li>int mnt_pinned;</li>
+</ul>
+<ul>
+<li>int mnt_ghosts;</li>
+</ul>
+<ul>
+<li>vfsmount对象也是通过哈希表来维护，通过访问的目录的路径来计算哈希值，vfsmount结构中的mnt_root指向Super Block对象的s_root，因此，在挂载完成，vfsmount对象创建并完成哈希后，目录的查找过程就变成了下面这个样子：</li>
+</ul>
+<ul>
+<li>挂载完成后（假设挂载点是/mnt/sdc），尝试去访问/mnt/sdc/test/1.txt</li>
+</ul>
+<ul>
+<li>在进行地址解析的时候，首先解析得到/mnt/sdc的Dir Entry，发现对应的d_flags字段被标记为DCACHE_MOUNTED，所以会进一步通过/mnt/sdc去计算哈希值，并在vfsmount的哈希表中检索得到对应的vfsmount对象，得到该对象后，通过其mnt_root属性找到文件系统Super Block的根目录的Dir Entry，从而找到了文件系统的入口Inode</li>
+</ul>
+<ul>
+<li>除了vfsmount对象的哈希表之外，内核中还维护了一个挂在对象的树结构，通过这个树结构，可以了解到各个文件系统的关系，通过findmnt可以打印出当前挂载对象的树结构：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# findmnt</li>
+</ul>
+<ul>
+<li>TARGET                       SOURCE         FSTYPE      OPTIONS</li>
+</ul>
+<ul>
+<li>/                            /dev/sda1      ext4        rw,relatime,barrier=1,data=ordered</li>
+</ul>
+<ul>
+<li>├─/proc                      proc           proc        rw,relatime</li>
+</ul>
+<ul>
+<li>│ ├─/proc/bus/usb            /proc/bus/usb  usbfs       rw,relatime</li>
+</ul>
+<ul>
+<li>│ └─/proc/sys/fs/binfmt_misc                binfmt_misc rw,relatime</li>
+</ul>
+<ul>
+<li>├─/sys                       sysfs          sysfs       rw,relatime</li>
+</ul>
+<ul>
+<li>├─/dev                       devtmpfs       devtmpfs    rw,relatime,size=3496016k,nr_inodes=874004,mode=755</li>
+</ul>
+<ul>
+<li>│ ├─/dev/pts                 devpts         devpts      rw,relatime,gid=5,mode=620,ptmxmode=000</li>
+</ul>
+<ul>
+<li>│ └─/dev/shm                 tmpfs          tmpfs       rw,relatime</li>
+</ul>
+<ul>
+<li>├─/mnt/resource              /dev/sdb1      ext4        rw,relatime,barrier=1,data=ordered</li>
+</ul>
+<ul>
+<li>├─/mnt/sdd                   /dev/sdd1      ext4        rw,relatime,barrier=1,data=ordered</li>
+</ul>
+<ul>
+<li>├─/mnt/sdc                   /dev/sdc1      ext4        rw,relatime,barrier=1,data=ordered</li>
+</ul>
+<ul>
+<li>通过上面的树结构，可以对整个文件系统挂载的情况一目了然。</li>
+</ul>
+<ul>
+<li>umount的一个小技巧：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 test]# umount /mnt/sdd</li>
+</ul>
+<ul>
+<li>umount: /mnt/sdd: device is busy.</li>
+</ul>
+<ul>
+<li>(In some cases useful info about processes that use</li>
+</ul>
+<ul>
+<li>the device is found by lsof(8) or fuser(1))</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 test]# fuser -m -v /mnt/sdd</li>
+</ul>
+<ul>
+<li>USER        PID ACCESS COMMAND</li>
+</ul>
+<ul>
+<li>/mnt/sdd:            root       4255 ..c.. bash</li>
+</ul>
+<ul>
+<li>再使用kill杀掉对应的进程：</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 test]# kill -9 4255</li>
+</ul>
+<ul>
+<li>Killed</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]# umount /mnt/sdd</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 daniel]#</li>
+</ul>
+<ul>
+<li>其他类型文件系统的支持情况：</li>
+</ul>
+<ul>
+<li>除了前面我们深入介绍的ext2/ext3/ext4文件系统之外，Linux还支持很多其他类型的文件系统，例如：</li>
+</ul>
+<ul>
+<li>传统文件系统：ext2，minix，MS-DOS，FAT (用 vfat 模块)，iso9660 (光盘)等</li>
+</ul>
+<ul>
+<li>日志式文件系统： ext3，ReiserFS，Windows&#39; NTFS，IBM&#39;s JFS，SGI&#39;s XFS等</li>
+</ul>
+<ul>
+<li>网络文件系统： NFS，SMBFS等</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 /]# ls -l /lib/modules/$(uname -r)/kernel/fs</li>
+</ul>
+<ul>
+<li>total 132</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 autofs4</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 btrfs</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 cachefiles</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 cifs</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 configfs</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 cramfs</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 dlm</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 ecryptfs</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 exportfs</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 ext2</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 ext3</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 ext4</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 fat</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 fscache</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 fuse</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 gfs2</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 jbd</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 jbd2</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 jffs2</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 lockd</li>
+</ul>
+<ul>
+<li>-rwxr--r-- 1 root root 19944 Apr 11 17:30 mbcache.ko</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 nfs</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 nfs_common</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 nfsd</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 nls</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 squashfs</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 ubifs</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 udf</li>
+</ul>
+<ul>
+<li>drwxr-xr-x 2 root root  4096 Apr 18 05:57 xfs</li>
+</ul>
+<ul>
+<li>[root@DanCentOS65 /]# cat /proc/filesystems</li>
+</ul>
+<ul>
+<li>nodev        sysfs</li>
+</ul>
+<ul>
+<li>nodev        rootfs</li>
+</ul>
+<ul>
+<li>nodev        bdev</li>
+</ul>
+<ul>
+<li>nodev        proc</li>
+</ul>
+<ul>
+<li>nodev        cgroup</li>
+</ul>
+<ul>
+<li>nodev        cpuset</li>
+</ul>
+<ul>
+<li>nodev        tmpfs</li>
+</ul>
+<ul>
+<li>nodev        devtmpfs</li>
+</ul>
+<ul>
+<li>nodev        binfmt_misc</li>
+</ul>
+<ul>
+<li>nodev        debugfs</li>
+</ul>
+<ul>
+<li>nodev        securityfs</li>
+</ul>
+<ul>
+<li>nodev        sockfs</li>
+</ul>
+<ul>
+<li>nodev        usbfs</li>
+</ul>
+<ul>
+<li>nodev        pipefs</li>
+</ul>
+<ul>
+<li>nodev        anon_inodefs</li>
+</ul>
+<ul>
+<li>nodev        inotifyfs</li>
+</ul>
+<ul>
+<li>nodev        devpts</li>
+</ul>
+<ul>
+<li>nodev        ramfs</li>
+</ul>
+<ul>
+<li>nodev        hugetlbfs</li>
+</ul>
+<ul>
+<li>iso9660</li>
+</ul>
+<ul>
+<li>nodev        pstore</li>
+</ul>
+<ul>
+<li>nodev        mqueue</li>
+</ul>
+<ul>
+<li>ext4</li>
+</ul>
+<ul>
+<li>nodev        autofs</li>
+</ul>
+<ul>
+<li>ext2</li>
+</ul>
+<ul>
+<li>ext3</li>
+</ul>
+<ul>
+<li>参考链接：</li>
+</ul>
+<ul>
+<li>yang2012/article/details/8116522</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>__le32        s_log_block_size;        /* Block size */</li>
+</ul>
+<ul>
+<li>__le32        s_log_frag_size;        /* Fragment size */</li>
+</ul>
+<ul>
+<li>__le32        s_lastcheck;                /* time of last check */</li>
+</ul>
+<ul>
+<li>__le32        s_checkinterval;        /* max. time between checks */</li>
+</ul>
+<ul>
+<li>从上面的结构中可以看到，Super Block中记录了Inode和Block的数量，预留的Block数量，空闲Block和Inode的数量，Block的大小，Inode大小，每个Block Group中有多少Block和Inode，文件系统挂在时间，最近一次写入数据时间，最近一次磁盘检查（fsck）时间，挂载标记为等等。</li>
+</ul>
+<ul>
+<li>s_log_block_size中的记录需要通过计算转换为实际的Block大小，公式为：BlockSize=1&lt;&lt;(s_log_block_size+10)Byte，即当s_log_block_size为0时，通过将1左移(0+10)位，得到Block的大小为1024字节，当这个值为2时，通过将1左移(2+10)位，得到Block的大小为4096字节。</li>
+</ul>
+<ul>
+<li>Last checked:             Thu Apr 20 14:16:46 2017</li>
+</ul>
+<ul>
+<li>Check interval:           15552000 (6 months)</li>
+</ul>
+<ul>
+<li>Next check after:         Tue Oct 17 14:16:46 2017</li>
+</ul>
+<ul>
+<li>查看根目录的详细信息：</li>
+</ul>
+<ul>
+<li>上面的结果中显示了目前Inode 2中存放的内容，其中有一些乱码先忽略掉，我们先查看可读的文件名。细心的读者可能会发现除了我们在目录中看到的lost+found目录，test目录以及root_inode_debugfs文件之外，还有1.txt和dir1_debugfs两个文件，其实这两个文件之前确实是存在的，后来删除掉了，由于删除其实仅仅是修改对应的Inode和Block的标记位，在没有新的内容覆盖掉其内容之前，这些旧的条目会一直都在磁盘上，所以这里我们才能看到对应的内容，这也是一些磁盘数据恢复工具的原理所在。</li>
+</ul>
+<ul>
+<li>当我们尝试打开/mnt/sdd/test/test2/2.txt时，文件系统首先会根据目录/mnt/sdd得到其Inode号2，并且确认其权限有读权限，从中读出Block中的内容，也就是上面这些子目录和文件的内容，从中找到我们要访问的下一个目录test，并找到对应的Inode号码855681（从上面的结果中可以看到）。接着系统会读取Inode 855681的内容：</li>
+</ul>
+<ul>
+<li>ncheck                   Do inode-&gt;name translation</li>
+</ul>
+<ul>
+<li>icheck                   Do block-&gt;inode translation</li>
+</ul>
+<ul>
+<li>logdump                  Dump the contents of the journal</li>
+</ul>
+<ul>
+<li>bmap                     Calculate the logical-&gt;physical block mapping for an inode</li>
+</ul>
+<ul>
+<li>通过-i参数在输出结果中查看Inode编号：</li>
+</ul>
+<ul>
+<li>查看Inode使用情况：</li>
+</ul>
+<ul>
+<li>可以看到，当指向的文件名超过60字节时，就不能在Inode的i_block中直接存放指向的文件名了，此时文件系统会分配一个Data Block，我们看到Data Block的编号为219056128，查看一下其中的内容（当然直接在debugfs中通过cat也可以查看，只不过这里演示一下如何使用dd来读取Data Block的数据）：</li>
+</ul>
+<ul>
+<li>This filesystem will be automatically checked every 31 mounts or</li>
+</ul>
+<ul>
+<li>我们先来了解一下写入数据的一些具体的步骤：</li>
+</ul>
+<ul>
+<li>当出现系统故障，通过fsck进行一致性检查和恢复的时候，会存在以下两种情况：</li>
+</ul>
+<ul>
+<li>/dev/sdc1 contains a file system with errors, check forced.</li>
+</ul>
+<ul>
+<li>Pass 1: Checking inodes, blocks, and sizes</li>
+</ul>
+<ul>
+<li>Pass 2: Checking directory structure</li>
+</ul>
+<ul>
+<li>Pass 3: Checking directory connectivity</li>
+</ul>
+<ul>
+<li>Pass 4: Checking reference counts</li>
+</ul>
+<ul>
+<li>Pass 5: Checking group summary information</li>
+</ul>
+<ul>
+<li>对于ext4文件系统来说，系统会维护一个未使用的Inode的表，当进行磁盘自检的时候，会跳过这个表中的Inode，只检查使用中的Inode，而对ext3文件系统fsck则会逐个检查Inode，这个机制使得ext4的自检速度要比ext3快很多。不过需要注意的是，这个Inode表并不是由ext4文件系统维护的，而是由fsck来维护的，所以首先需要执行过一次fsck，才能够在下次fsck的时候得到速度上的优化。</li>
+</ul>
+<ul>
+<li>unsigned long            d_time;       /* revalidate time */</li>
+</ul>
+<ul>
+<li>后面的步骤就是按照前面小节中介绍的目录检索的步骤最终得到文件内容了，这里不再赘述</li>
+</ul>
+<ul>
+<li>使用fuser查看是那个进程再占用设备：</li>
+</ul>
+<ul>
+<li>如果想要看一下你的Linux系统支持的文件系统类型有哪些，可以查看下面的目录：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>我们当前查看的目录其实就是/dev/sdd1的挂载点的目录，即/mnt/sdd，所以在结果中看到的“.”目录对应的Inode号为2，也就是/mnt/sdd的根Inode号是2，进一步查看Inode 2的内容，首先通过命令将Inode 2的内容输出到文件中：</li>
+</ul>
+<ul>
+<li>除了上面列出的命令之外，还有很多其他命令可以使用，例如可以使用features查看superblock中定义的功能特性，使用stat &lt;inode number&gt;查看对应的Inode的结构信息，使用stats可以查看superblock的结构等等，有兴趣的读者可以使用?查看全部命令（也可以使用man debugfs查看更详细的用户手册）：</li>
+</ul>
+<ul>
+<li>除了上面说的dumpe2fs和debugfs中的调试命令之外，下面也是一些常用的查看命令：</li>
+</ul>
+<ul>
+<li>stat命令查看目录或文件对应的Inode信息：</li>
+</ul>
+<ul>
+<li>注：dd命令参数简要说明：</li>
+</ul>
+<ul>
+<li>enable_periodic_fsck：指明是否需要启用定期强制自检，如果启用，则每个180天或固定每隔若干次Mount后会强制自检，可以通过mke2fs命令的-i和-c参数来指定天数或Mount次数</li>
+</ul>
+<ul>
+<li>通过下面的命令可以查看VFS系统目前加载到内存中支持的文件系统类型：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>magic number=0xEF53</li>
+</ul>
+<ul>
+<li>if=file                                                    #输入文件名，缺省为标准输入</li>
+</ul>
+<ul>
+<li>of=file                                                    #输出文件名，缺省为标准输出</li>
+</ul>
+<ul>
+<li>ibs=bytes                                                #一次读入 bytes 个字节(即一个块大小为 bytes 个字节)</li>
+</ul>
+<ul>
+<li>obs=bytes                                                #一次写 bytes 个字节(即一个块大小为 bytes 个字节)</li>
+</ul>
+<ul>
+<li>bs=bytes                                                  #同时设置读写块的大小为 bytes ，可代替 ibs 和 obs</li>
+</ul>
+<ul>
+<li>cbs=bytes                                                #一次转换 bytes 个字节，即转换缓冲区大小</li>
+</ul>
+<ul>
+<li>skip=blocks                                             #从输入文件开头跳过 blocks 个块后再开始复制</li>
+</ul>
+<ul>
+<li>seek=blocks                                             #从输出文件开头跳过 blocks 个块后再开始复制</li>
+</ul>
+<ul>
+<li>count=blocks                                           #仅拷贝 blocks 个块，块大小等于 ibs 指定的字节数</li>
+</ul>
+<ul>
+<li>conv=conversion[,conversion...] #用指定的参数转换文件</li>
+</ul>
+<ul>
+<li>base_features = sparse_super,filetype,resize_inode,dir_index,ext_attr</li>
+</ul>
+<ul>
+<li>enable_periodic_fsck = 1</li>
+</ul>
+<ul>
+<li>blocksize = 4096</li>
+</ul>
+<ul>
+<li>inode_size = 256</li>
+</ul>
+<ul>
+<li>inode_ratio = 16384</li>
+</ul>
+<ul>
+<li>ext3 = {</li>
+</ul>
+<ul>
+<li>features = has_journal</li>
+</ul>
+<ul>
+<li>ext4 = {</li>
+</ul>
+<ul>
+<li>features = has_journal,extent,huge_file,flex_bg,uninit_bg,dir_nlink,extra_isize</li>
+</ul>
+<ul>
+<li>ext4dev = {</li>
+</ul>
+<ul>
+<li>options = test_fs=1</li>
+</ul>
+<ul>
+<li>small = {</li>
+</ul>
+<ul>
+<li>blocksize = 1024</li>
+</ul>
+<ul>
+<li>inode_size = 128</li>
+</ul>
+<ul>
+<li>inode_ratio = 4096</li>
+</ul>
+<ul>
+<li>floppy = {</li>
+</ul>
+<ul>
+<li>inode_ratio = 8192</li>
+</ul>
+<ul>
+<li>news = {</li>
+</ul>
+<ul>
+<li>largefile = {</li>
+</ul>
+<ul>
+<li>inode_ratio = 1048576</li>
+</ul>
+<ul>
+<li>blocksize = -1</li>
+</ul>
+<ul>
+<li>largefile4 = {</li>
+</ul>
+<ul>
+<li>inode_ratio = 4194304</li>
+</ul>
+<ul>
+<li>hurd = {</li>
+</ul>
+<ul>
+<li>tag1 = value_a</li>
+</ul>
+<ul>
+<li>tag1 = value_b</li>
+</ul>
+<ul>
+<li>tag2 = value_c</li>
+</ul>
+<ul>
+<li>tag3 = {</li>
+</ul>
+<ul>
+<li>subtag1 = subtag_value_a</li>
+</ul>
+<ul>
+<li>subtag1 = subtag_value_b</li>
+</ul>
+<ul>
+<li>subtag2 = subtag_value_c</li>
+</ul>
+<ul>
+<li>tag1 = value_d</li>
+</ul>
+<ul>
+<li>tag2 = value_e</li>
+</ul>
+<ul>
+<li>Block size=4096 (log=2)</li>
+</ul>
+<ul>
+<li>Fragment size=4096 (log=2)</li>
+</ul>
+<ul>
+<li>Stride=0 blocks, Stripe width=0 blocks</li>
+</ul>
+<ul>
+<li>First data block=0</li>
+</ul>
+<ul>
+<li>Maximum filesystem blocks=4294967296</li>
+</ul>
+<ul>
+<li>UUID=8fc4d768-29cd-462c-a7ab-5bf4bcfa9fa2 /     ext4    defaults        1 1</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>每个磁盘分区的开头1024字节大小都预留为分区的启动扇区，存放引导程序和数据，所以又叫引导块。引导块在第一个Block，即Block 0中存放，但是未必占满这个Block，原因是Block的大小可能大于1024字节。</li>
+</ul>
+<ul>
+<li>为了最大程度地利用磁盘空间，避免浪费，当然是每个文件的实际大小与Inode的密度越接近越好：最完美的情况是每个文件的大小都恰好等于Inode密度，这种情况下，假设磁盘总大小为G，每个文件大小F=inode_ratio，inode数量N=G/inode_ratio，当Inode使用完的时候，磁盘存放的数据总量为N*F=(G/inode_ratio)*inode_ratio=G，即磁盘利用率为100%。当然这只是理想情况，实际情况中，由于文件系统在不重新格式化的情况下不能随意调整inode_ratio，所以在格式化之前一定要做好规划，如果磁盘中存放的都是小文件，则inode_ratio划分的小一些可以更好地利用磁盘避免浪费，如果磁盘中的文件相对都比较大，则inode_ratio划分的大一些会更好，原因是Inode本身也会占用一部分磁盘空间，更少的Inode可以省出空间划分更多的Data Block。</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>对于ext2文件系统来说，硬盘分区首先被分割为一个一个的“Block”，每个Block就是实际用来存储数据的单元，大小相同，Block按照0，1，2，3的顺序进行编号，第一个Block的编号为0。对于ext2文件系统来说，支持的Block的大小有1024字节/2048字节/4096字节，Block的大小在创建文件系统的时候可以通过参数指定，如果不指定，则会从/etc/mke2fs.conf文件中读取对应的值。原则上，Block的大小与数量在格式化后就不能够发生改变了，每个Block内只会存放至多一个文件的数据（即不会出现两个文件的数据被放入同一个Block的情况），如果文件超过一个Block，则会占用多个Block来存放文件，如果小于一个Block大小，则这个Block剩余的空间就浪费掉了。</li>
+</ul>
+<ul>
+<li>可以通过dumpe2fs查看一个文件系统的详细信息：</li>
+</ul>
+<ul>
+<li>可以看到，新版本中，将文件名的长度的属性从16比特修改为8比特，将剩余的8比特用于记录文件类型。</li>
+</ul>
+<ul>
+<li>通常我们将Inode和Data Block中的数据称为数据部分，将Super Block/Inode Bitmap/Data Block Bitmap称为元数据（Metadata）。从上面数据写入的过程可以很容易看到问题，如果在意外情况下（例如掉电，Kernel Crash，读写异常等等），数据写入成功，但是元数据没有完成写入，这时就会出现元数据与实际数据不一致的情况。当出现这种不一致的情况时，可以通过文件系统自检来针对数据一致性进行检查（fsck），一致性检查要遍历整个文件系统，根据元数据中的标志位来与实际数据存放进行对比，如果文件数量和大小很多，那么整个过程的耗时就会非常长。</li>
+</ul>
+<ul>
+<li>数据转换：ext2文件系统不需要重新格式化，可以通过tune2fs直接将ext2文件系统转换为ext3，例如：</li>
+</ul>
+<ul>
+<li>Group descriptor 8181 checksum is invalid.  FIXED.</li>
+</ul>
+<ul>
+<li>Group descriptor 8182 checksum is invalid.  FIXED.</li>
+</ul>
+<ul>
+<li>Group descriptor 8183 checksum is invalid.  FIXED.</li>
+</ul>
+<ul>
+<li>每个文件系统都有独立的Super Block，Inode，Data Block，如果我们要访问一个文件系统中的内容，或者向文件系统中写入数据，那么首先需要让系统能够找到文件系统的入口。在前面的小节中可以看到，Linux中使用目录来进行文件的查找，所以我们需要将文件系统与目录树进行关联，关联后，便可以通过文件系统关联到的目录的入口进入文件系统，这个关联的过程也就是我们通常所说的挂载（Mount）。</li>
+</ul>
+<ul>
+<li>如果umount的时候提示“device is busy”，可以通过下面的方法解决：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>可以看到Block size=4096字节，一共划分了1027552个Inode（largefile中定义的inode_ratio为1048576，磁盘大小为1023GB，Inode数量：1023*1024*1024*1024/1048576=1027552），268173037个Block（理论上应该划分1023*1024*1024*1024/4096=268173312个Block才对，但是按照实际情况算下来，磁盘空间中有(268173312 -268173037)* 4096=1126400字节的空间并没有划分到文件系统中，查阅了很多资料，并没有得出这部分空间的去向，猜想有可能是磁盘结构划分的时候占用了，或者是由于磁盘cylinder的计算精度导致的），一共有8184个Block Group，每个Group有32768个Block，128个Inode，一共有13408651块Block被预留出来（预留出的5%的Block的作用具体可以参考<a href="https://www.redhat.com/archives/ext3-users/2009-January/msg00026.html），除了这些信息之外，由于我们使用了sparse_super参数（默认参数），所以并不是每个Block" target="_blank" rel="noopener">https://www.redhat.com/archives/ext3-users/2009-January/msg00026.html），除了这些信息之外，由于我们使用了sparse_super参数（默认参数），所以并不是每个Block</a> Group都备份了Super Block和Group Descriptor，而只有编号等于3/5/7的幂次的Group才进行了备份，Group的编号范围为0~8183，这其中符合条件的Group编号为：1 3 5 7 9 25 27 49 81 125 243 343 625 729 2187 2401 3125 6561，我们将他们乘以32768（Block Per Group），就得到了：</li>
+</ul>
+<ul>
+<li><a href="https://www.ibm.com/developerworks/cn/linux/filesystem/ext2/" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/linux/filesystem/ext2/</a></li>
+</ul>
+<ul>
+<li><a href="https://linux.die.net/man/5/mke2fs.conf" target="_blank" rel="noopener">https://linux.die.net/man/5/mke2fs.conf</a></li>
+</ul>
+<ul>
+<li><a href="http://www.tuicool.com/articles/mYBBbu" target="_blank" rel="noopener">http://www.tuicool.com/articles/mYBBbu</a></li>
+</ul>
+<ul>
+<li><a href="http://www.cnblogs.com/wuhuiyuan/p/linux-filesystem-inodes.html" target="_blank" rel="noopener">http://www.cnblogs.com/wuhuiyuan/p/linux-filesystem-inodes.html</a></li>
+</ul>
+<ul>
+<li><a href="http://blog.csdn.net/ljianhui/article/details/8604140" target="_blank" rel="noopener">http://blog.csdn.net/ljianhui/article/details/8604140</a></li>
+</ul>
+<ul>
+<li><a href="http://blog.csdn.net/kai_ding/article/details/9914619" target="_blank" rel="noopener">http://blog.csdn.net/kai_ding/article/details/9914619</a></li>
+</ul>
+<ul>
+<li><a href="http://baike.baidu.com/link?url=_MHxOFX2VePw4LX9WBPhK3l72-pJc9o_BgSE322afOMHlzO3WSn1Tw6FVC2Y54unAq46ho4oENqSv8nU6l712j7e-_8RZLIf27ITr_SfZVbC0srUVZ5n_WdWz0GBp_eijWO1S8rAY-YLpn1-rNgSc7XQQ0epy38FRlVtvAEJo3aMxNCkLQ1yRjYA6j1pigiT" target="_blank" rel="noopener">http://baike.baidu.com/link?url=_MHxOFX2VePw4LX9WBPhK3l72-pJc9o_BgSE322afOMHlzO3WSn1Tw6FVC2Y54unAq46ho4oENqSv8nU6l712j7e-_8RZLIf27ITr_SfZVbC0srUVZ5n_WdWz0GBp_eijWO1S8rAY-YLpn1-rNgSc7XQQ0epy38FRlVtvAEJo3aMxNCkLQ1yRjYA6j1pigiT</a></li>
+</ul>
+<ul>
+<li><a href="http://blog.csdn.net/haiross/article/details/39179301" target="_blank" rel="noopener">http://blog.csdn.net/haiross/article/details/39179301</a></li>
+</ul>
+<ul>
+<li><a href="http://blog.csdn.net/younger_china/article/details/21185097" target="_blank" rel="noopener">http://blog.csdn.net/younger_china/article/details/21185097</a></li>
+</ul>
+<ul>
+<li><a href="http://www.cgsecurity.org/wiki/Advanced_Find_ext2_ext3_Backup_SuperBlock" target="_blank" rel="noopener">http://www.cgsecurity.org/wiki/Advanced_Find_ext2_ext3_Backup_SuperBlock</a></li>
+</ul>
+<ul>
+<li><a href="http://alanwu.blog.51cto.com/3652632/1105681/" target="_blank" rel="noopener">http://alanwu.blog.51cto.com/3652632/1105681/</a></li>
+</ul>
+<ul>
+<li><a href="http://codefine.co/2593.html" target="_blank" rel="noopener">http://codefine.co/2593.html</a></li>
+</ul>
+<ul>
+<li><a href="http://blog.csdn.net/macrossdzh/article/details/5973639" target="_blank" rel="noopener">http://blog.csdn.net/macrossdzh/article/details/5973639</a></li>
+</ul>
+<ul>
+<li><a href="http://www.cnblogs.com/cute/p/4627622.html" target="_blank" rel="noopener">http://www.cnblogs.com/cute/p/4627622.html</a></li>
+</ul>
+<ul>
+<li><a href="http://www.docin.com/p-661335281.html" target="_blank" rel="noopener">http://www.docin.com/p-661335281.html</a></li>
+</ul>
+<ul>
+<li><a href="http://www.cnblogs.com/peon/archive/2011/06/22/2086470.html" target="_blank" rel="noopener">http://www.cnblogs.com/peon/archive/2011/06/22/2086470.html</a></li>
+</ul>
+<ul>
+<li><a href="http://blog.csdn.net/yunsongice/article/details/5822495" target="_blank" rel="noopener">http://blog.csdn.net/yunsongice/article/details/5822495</a></li>
+</ul>
+<ul>
+<li><a href="http://e2fsprogs.sourceforge.net/" target="_blank" rel="noopener">http://e2fsprogs.sourceforge.net/</a></li>
+</ul>
+<ul>
+<li><a href="http://blog.csdn.net/" target="_blank" rel="noopener">http://blog.csdn.net/</a></li>
+</ul>
+<ul>
+<li><a href="http://lxr.free-electrons.com/source/fs/ext2/ext2.h" target="_blank" rel="noopener">http://lxr.free-electrons.com/source/fs/ext2/ext2.h</a></li>
+</ul>
+<ul>
+<li><a href="http://www.science.unitn.it/~fiorella/guidelinux/tlk/node96.html" target="_blank" rel="noopener">http://www.science.unitn.it/~fiorella/guidelinux/tlk/node96.html</a></li>
+</ul>
+<ul>
+<li><a href="http://cs.smith.edu/~nhowe/262/oldlabs/ext2.html" target="_blank" rel="noopener">http://cs.smith.edu/~nhowe/262/oldlabs/ext2.html</a></li>
+</ul>
+<ul>
+<li><a href="http://140.120.7.21/LinuxKernel/LinuxKernel/node17.html" target="_blank" rel="noopener">http://140.120.7.21/LinuxKernel/LinuxKernel/node17.html</a></li>
+</ul>
+<ul>
+<li><a href="http://www.nongnu.org/ext2-doc/ext2.html" target="_blank" rel="noopener">http://www.nongnu.org/ext2-doc/ext2.html</a></li>
+</ul>
+<ul>
+<li><a href="https://www.cs.montana.edu/courses/309/topics/4-disks/debugfs_example.html" target="_blank" rel="noopener">https://www.cs.montana.edu/courses/309/topics/4-disks/debugfs_example.html</a></li>
+</ul>
+<ul>
+<li><a href="http://www.giis.co.in/symlink.html" target="_blank" rel="noopener">http://www.giis.co.in/symlink.html</a></li>
+</ul>
+<ul>
+<li><a href="http://www.cnblogs.com/qq78292959/archive/2012/02/23/2364760.html" target="_blank" rel="noopener">http://www.cnblogs.com/qq78292959/archive/2012/02/23/2364760.html</a></li>
+</ul>
+<ul>
+<li><a href="http://blog.chinaunix.net/uid-20196318-id-152429.html" target="_blank" rel="noopener">http://blog.chinaunix.net/uid-20196318-id-152429.html</a></li>
+</ul>
+<ul>
+<li><a href="http://www.linuxplanet.com/linuxplanet/reports/4136/5" target="_blank" rel="noopener">http://www.linuxplanet.com/linuxplanet/reports/4136/5</a></li>
+</ul>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Journaling_block_device" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Journaling_block_device</a></li>
+</ul>
+<ul>
+<li><a href="http://www.tldp.org/LDP/lki/lki-3.html" target="_blank" rel="noopener">http://www.tldp.org/LDP/lki/lki-3.html</a></li>
+</ul>
+<ul>
+<li><a href="http://www.makelinux.net/books/lkd2/ch12lev1sec7" target="_blank" rel="noopener">http://www.makelinux.net/books/lkd2/ch12lev1sec7</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>本文以下面结构进行陈述：</p>
+<p>1. ext2 文件系统的结构分析</p>
+<p>2. mke2fs.conf 配置文件说明以及格式化</p>
+<p>3. ext2 ext3 ext4 文件系统的区别</p>
+<p>4. mount 过程分析</p>
+<p>ext2 文件系统结构分析：</p>
+<p>首先来看一下ext2文件系统的结构示意图：</p>
+<p>Block：</p>
+<p>对于ext2文件系统来说，硬盘分区首先被分割为一个一个的“Block”，每个Block就是实际用来存储数据的单元，大小相同，Block按照0，1，2，3的顺序进行编号，第一个Block的编号为0。对于ext2文件系统来说，支持的Block的大小有1024字节/2048字节/4096字节，Block的大小在创建文件系统的时候可以通过参数指定，如果不指定，则会从/etc/mke2fs.conf文件中读取对应的值。原则上，Block的大小与数量在格式化后就不能够发生改变了，每个Block内只会存放至多一个文件的数据（即不会出现两个文件的数据被放入同一个Block的情况），如果文件超过一个Block，则会占用多个Block来存放文件，如果小于一个Block大小，则这个Block剩余的空间就浪费掉了。</p>
+<p>Block Group：</p>
+<p>多个Block聚合在一起形成一个Block Group，每个Block Group包含的Block数量相同，具体是在SuperBlock中通过s_block_per_group属性定义的（最后一个Block Group除外，最后剩下的Block数量可能小于s_block_per_group，这些Block会被划分到最后一个Block Group中）。</p>
+<p>Boot Block：</p>
+<p>每个磁盘分区的开头1024字节大小都预留为分区的启动扇区，存放引导程序和数据，所以又叫引导块。引导块在第一个Block，即Block 0中存放，但是未必占满这个Block，原因是Block的大小可能大于1024字节。</p>
+<p>Super Block：</p>
+<p>Super Block是紧邻Boot Block的一个大小为1024字节的配置块，Super Block可能在Block 0或者Block 1中，当Block大小为1024字节时，由于Boot Block恰好占满了Block 0，则Super Block会占用Block 1；如果Block大小为4096字节，则Super Block会在Block 0中紧邻Boot Block的位置（即1024~2047字节）。</p>
+<p>在ext2文件系统中，每个Block Group中开头都会存放一个Super Block的备份。（可以参考前面的示意图）</p>
+<p>ext2中Super Block的结构：</p>
+<p>struct ext2_super_block {</p>
+<p>__le32        s_inodes_count;        /* Inodes count */</p>
+<p>__le32        s_blocks_count;        /* Blocks count */</p>
+<p>__le32        s_r_blocks_count;        /* Reserved blocks count */</p>
+<p>__le32        s_free_blocks_count;        /* Free blocks count */</p>
+<p>__le32        s_free_inodes_count;        /* Free inodes count */</p>
+<p>__le32        s_first_data_block;        /* First Data Block */</p>
+<p>__le32        s_log_block_size;        /* Block size */</p>
+<p>__le32        s_log_frag_size;        /* Fragment size */</p>
+<p>__le32        s_blocks_per_group;        /* # Blocks per group */</p>
+<p>__le32        s_frags_per_group;        /* # Fragments per group */</p>
+<p>__le32        s_inodes_per_group;        /* # Inodes per group */</p>
+<p>__le32        s_mtime;                /* Mount time */</p>
+<p>__le32        s_wtime;                /* Write time */</p>
+<p>__le16        s_mnt_count;                /* Mount count */</p>
+<p>__le16        s_max_mnt_count;        /* Maximal mount count */</p>
+<p>__le16        s_magic;                /* Magic signature */</p>
+<p>__le16        s_state;                /* File system state */</p>
+<p>__le16        s_errors;                /* Behaviour when detecting errors */</p>
+<p>__le16        s_minor_rev_level;         /* minor revision level */</p>
+<p>__le32        s_lastcheck;                /* time of last check */</p>
+<p>__le32        s_checkinterval;        /* max. time between checks */</p>
+<p>__le32        s_creator_os;                /* OS */</p>
+<p>__le32        s_rev_level;                /* Revision level */</p>
+<p>__le16        s_def_resuid;                /* Default uid for reserved blocks */</p>
+<p>__le16        s_def_resgid;                /* Default gid for reserved blocks */</p>
+<p>/*</p>
+<ul>
+<li>These fields are for EXT2_DYNAMIC_REV superblocks only.</li>
+</ul>
+<p>*</p>
+<ul>
+<li>Note: the difference between the compatible feature set and</li>
+</ul>
+<ul>
+<li>the incompatible feature set is that if there is a bit set</li>
+</ul>
+<ul>
+<li>in the incompatible feature set that the kernel doesn&#39;t</li>
+</ul>
+<ul>
+<li>know about, it should refuse to mount the filesystem.</li>
+</ul>
+<ul>
+<li>e2fsck&#39;s requirements are more strict; if it doesn&#39;t know</li>
+</ul>
+<ul>
+<li>about a feature in either the compatible or incompatible</li>
+</ul>
+<ul>
+<li>feature set, it must abort and not try to meddle with</li>
+</ul>
+<ul>
+<li>things it doesn&#39;t understand...</li>
+</ul>
+<p>*/</p>
+<p>__le32        s_first_ino;                 /* First non-reserved inode */</p>
+<p>__le16 s_inode_size;         /* size of inode structure */</p>
+<p>__le16        s_block_group_nr;         /* block group # of this superblock */</p>
+<p>__le32        s_feature_compat;         /* compatible feature set */</p>
+<p>__le32        s_feature_incompat;         /* incompatible feature set */</p>
+<p>__le32        s_feature_ro_compat; /* readonly-compatible feature set */</p>
+<p>__u8        s_uuid[16];                /* 128-bit uuid for volume */</p>
+<p>char        s_volume_name[16];         /* volume name */</p>
+<p>char        s_last_mounted[64];         /* directory where last mounted */</p>
+<p>__le32        s_algorithm_usage_bitmap; /* For compression */</p>
+<ul>
+<li>Performance hints.  Directory preallocation should only</li>
+</ul>
+<ul>
+<li>happen if the EXT2_COMPAT_PREALLOC flag is on.</li>
+</ul>
+<p>__u8        s_prealloc_blocks;        /* Nr of blocks to try to preallocate*/</p>
+<p>__u8        s_prealloc_dir_blocks;        /* Nr to preallocate for dirs */</p>
+<p>__u16        s_padding1;</p>
+<ul>
+<li>Journaling support valid if EXT3_FEATURE_COMPAT_HAS_JOURNAL set.</li>
+</ul>
+<p>__u8        s_journal_uuid[16];        /* uuid of journal superblock */</p>
+<p>__u32        s_journal_inum;                /* inode number of journal file */</p>
+<p>__u32        s_journal_dev;                /* device number of journal file */</p>
+<p>__u32        s_last_orphan;                /* start of list of inodes to delete */</p>
+<p>__u32        s_hash_seed[4];                /* HTREE hash seed */</p>
+<p>__u8        s_def_hash_version;        /* Default hash version to use */</p>
+<p>__u8        s_reserved_char_pad;</p>
+<p>__u16        s_reserved_word_pad;</p>
+<p>__le32        s_default_mount_opts;</p>
+<p>__le32        s_first_meta_bg;         /* First metablock block group */</p>
+<p>__u32        s_reserved[190];        /* Padding to the end of the block */</p>
+<p>};</p>
+<p>从上面的结构中可以看到，Super Block中记录了Inode和Block的数量，预留的Block数量，空闲Block和Inode的数量，Block的大小，Inode大小，每个Block Group中有多少Block和Inode，文件系统挂在时间，最近一次写入数据时间，最近一次磁盘检查（fsck）时间，挂载标记为等等。</p>
+<p>除了这些比较有意义的信息外，还在s_magic属性中记录的Magic签名，对于ext2和ext3文件系统来说，s_magic的值等于 0xEF53，如果不等于这个值的话，则这个磁盘分区一定不是一个有效的ext2或ext3文件系统。</p>
+<p>s_log_block_size中的记录需要通过计算转换为实际的Block大小，公式为：BlockSize=1&lt;&lt;(s_log_block_size+10)Byte，即当s_log_block_size为0时，通过将1左移(0+10)位，得到Block的大小为1024字节，当这个值为2时，通过将1左移(2+10)位，得到Block的大小为4096字节。</p>
+<p>Group Descriptor：</p>
+<p>每个Block Group都对应一个Group Descriptor，所有这些Group Descriptor都被一起存放在紧邻Super Block的若干个Block中，如果Block大小为1024字节，则这些Group Descriptor恰好紧邻着Super Block，如果Block大小为4096字节，则由于Boot Block和Super Block仅占用了Block 0的前2048字节，所以第一个Group Descriptor与Super Block之间会有一定的空间被浪费掉。</p>
+<p>在每个Block Group中紧邻Super Block（或其备份）的若干个Block中都保存了这些Group Descriptor的备份。（可以参考前面的示意图）</p>
+<p>ext2文件系统的Group Descriptor的结构：</p>
+<p>struct ext2_group_desc</p>
+<p>{</p>
+<p>__u32     bg_block_bitmap;        /* Blocks bitmap block */</p>
+<p>__u32     bg_inode_bitmap;        /* Inodes bitmap block */</p>
+<p>__u32     bg_inode_table;         /* Inodes table block */</p>
+<p>__u16     bg_free_blocks_count;   /* Free blocks count */</p>
+<p>__u16     bg_free_inodes_count;   /* Free inodes count */</p>
+<p>__u16     bg_used_dirs_count;     /* Directories count */</p>
+<p>__u16     bg_pad;</p>
+<p>__u32     bg_reserved[3];</p>
+<p>从上面的数据结构中可以看到，每个Group Descriptor中定义了Data Block Bitmap指针，Inode Bitmap指针，Inode Table指针，分别指向这个Group Descriptor对应的Block Group中对应的Data Block Bitmap，Inode Bitmap，Inode Table的起始位置。此外，还包含了这个Block Group的空闲Block和Inode的数量等信息。</p>
+<p>Data Block Bitmap：</p>
+<p>Data Block Bitmap位于与Group Descriptor相邻的Block中，其中包含的每个比特的数据都对应这个Bitmap所在的Block Group中的Data Block，如果某个比特的值为0，则表示其对应的Data Block中有数据，如果值为1，则表示对应的Data Block是空闲的。假设一个Block的大小为1024字节，则一个Data Block Bitmap的大小为1024*8比特，所以这种情况下一个Block Group最多只能有1024*8个Block。</p>
+<p>Inode Bitmap：</p>
+<p>Inode Bitmap位于Data Block Bitmap相邻的Block中，与Data Block Bitmap类似，Inode Bitmap中的每个比特的数据都对应这个Bitmap所在的Block Group中的Inode，如果某个比特的值为0，则表示其对应的Inode中有数据，如果值为1，则表示对应的Inode是空闲的。假设一个Block大小为1024字节，则一个Inode Bitmap的大小为1024*8比特，所以这种情况下一个Block Group中最多只能包含1024*8个Inode。</p>
+<p>Inode Table：</p>
+<p>Inode Table从与Inode Bitmap相邻的Block开始存放，但是Inode Table并不一定只占据1个Block，Inode Table中实际就存放着一个一个Inode，这些Inode与这个Block Group相对应，映射到这个Block Group中的Data Block进行文件的存储和读取。Inode Table占用的空间与单个Inode大小以及Inode密度有关。</p>
+<p>Inode ：</p>
+<p>Inode，即Index Node，顾名思义，用于文件索引，和Block一样，Inode也有自己的编号，但是Inode编号是从1开始，依次增长（1，2，3，4等等）。看一下ext2文件系统Inode的结构：</p>
+<p>struct ext2_inode {</p>
+<p>__u16 i_mode;            /* File mode */</p>
+<p>__u16 i_uid;             /* Low 16 bits of Owner Uid */</p>
+<p>__u32 i_size;            /* Size in bytes  */</p>
+<p>__u32 i_atime;           /* Access time */</p>
+<p>__u32 i_ctime;           /* Creation time */</p>
+<p>__u32 i_mtime;           /* Modification time */</p>
+<p>__u32 i_dtime;           /* Deletion Time */</p>
+<p>__u16 i_gid;             /* Low 16 bits of Group Id */</p>
+<p>__u16 i_links_count;     /* Links count */</p>
+<p>__u32 i_blocks;          /* Blocks count */</p>
+<p>__u32 i_flags;           /* File flags */</p>
+<p>union {</p>
+<p>struct {</p>
+<p>__u32 l_i_reserved1;</p>
+<p>} linux1;</p>
+<p>__u32 h_i_translator;</p>
+<p>} hurd1;</p>
+<p>__u32 m_i_reserved1;</p>
+<p>} masix1;</p>
+<p>} osd1;                          /* OS dependent 1 */</p>
+<p>__u32 i_block[EXT2_N_BLOCKS];    /* Pointers to blocks, EXT2_N_BLOCKS = 15*/</p>
+<p>__u32 i_generation;              /* File version (for NFS) */</p>
+<p>__u32 i_file_acl;                /* File ACL */</p>
+<p>__u32 i_dir_acl;                 /* Directory ACL */</p>
+<p>__u32 i_faddr;                   /* Fragment address */</p>
+<p>__u8 l_i_frag;             /* Fragment number */</p>
+<p>__u8 l_i_fsize;            /* Fragment size */</p>
+<p>__u16 i_pad1;</p>
+<p>__u16 l_i_uid_high;        /* these 2 fields    */</p>
+<p>__u16 l_i_gid_high;        /* were reserved2[0] */</p>
+<p>__u32 l_i_reserved2;</p>
+<p>} linux2;</p>
+<p>__u8 h_i_frag;             /* Fragment number */</p>
+<p>__u8 h_i_fsize;            /* Fragment size */</p>
+<p>__u16 h_i_mode_high;</p>
+<p>__u16 h_i_uid_high;</p>
+<p>__u16 h_i_gid_high;</p>
+<p>__u32 h_i_author;</p>
+<p>} hurd2;</p>
+<p>__u8 m_i_frag;             /* Fragment number */</p>
+<p>__u8 m_i_fsize;            /* Fragment size */</p>
+<p>__u16 m_pad1;</p>
+<p>__u32 m_i_reserved2[2];</p>
+<p>} masix2;</p>
+<p>} osd2;                          /* OS dependent 2 */</p>
+<p>从结构中可以看到，对于ext2文件系统而言，Inode的大小为128字节，i_mode记录了文件模式（文件/目录/符号链接/设备文件等），i_uid和i_gid记录了用户ID和用户组ID，i_size记录了文件大小，i_atime记录了文件最近访问时间，i_ctime记录了创建时间，i_mtime记录了修改时间，i_dtime代表文件删除时间，i_links_count记录了文件的连接数，i_flags记录了文件特性标志。</p>
+<p>注意这里有一个字段i_blocks表示的并非是这个文件占用的数据块的数量，而是记录实际上分配给文件的有效物理块（以512字节为单位）数。这里需要简单引入一个概念，文件洞（file hole），它表示一些并未存放在磁盘中的“空字符”，引入文件洞是为了更为有效地利用磁盘空间，避免浪费，文件洞在ext2文件系统中是动态分配的，仅当一个进程需要向一个数据块写数据时，才会真正把这个块分配给文件。例如我们创建一个文件：echo -n &quot;X&quot; | dd of=/tmp/hole bs=1024 seek 6，通过bs和seek参数指定跳过6*1024字节开始拷贝文件，然后向文件中输出一个&quot;X&quot;字符。这样，这个文件对应的Inode的i_size属性就是6*1024+1=6145字节，但是i_blocks却不是等于6145/512，假设我们的文件系统的Block大小为4096字节，则第一个Block（4096字节）里面存放的就都是空字符（也就是存在一个文件洞），第二个Block中存放了“X”这个字符。真正存放数据的Block的数量是1，所以i_blocks=1*4096/512=8。</p>
+<p>i_block是一个数组，数组长度为EXT2_N_BLOCKS（15），这15个元组都为Block指针，其中前12个指针指向用于存放实际数据的Block，这些Block称为直接块（Direct Block），第13个指针指向的块为间接块（Indirect Block），间接块中存放了指向直接块的指针。第14个指针指向二级间接块（Double Indirect Block），二级间接块中存放的指针指向间接块。第15个指针指向三级间接块（Triple Indirect Block），三级间接块中存放指向二级间接块的指针。</p>
+<p>Inode大小需要满足三个条件：必须大于等于128字节，必须小于Block大小，必须是128字节的整数倍。</p>
+<p>从上面的结构也可以看出，一个Inode对应一个文件，因此Inode的数量决定了整个文件系统最多可以存放的文件数量。Inode的数量则由Inode的划分密度（inode_ratio）决定，inode_ratio可以在/etc/mke2fs.conf中定义，也可以在创建文件系统的时候通过参数指定，表示每隔inode_ratio个字节创建一个Inode（虽然实际上Inode都是聚在一起的，这个说法仅仅是为了更形象地表示“密度”这个概念）。当然，inode_ratio的取值也并不是没有限制，对于ext2文件系统而言，inode_ratio的取值范围在EXT2_MIN_BLOCK_SIZE和EXT2_MAX_BLOCK_SIZE*1024之间，即1024字节和4096*1024字节之间。</p>
+<p>为了最大程度地利用磁盘空间，避免浪费，当然是每个文件的实际大小与Inode的密度越接近越好：最完美的情况是每个文件的大小都恰好等于Inode密度，这种情况下，假设磁盘总大小为G，每个文件大小F=inode_ratio，inode数量N=G/inode_ratio，当Inode使用完的时候，磁盘存放的数据总量为N*F=(G/inode_ratio)*inode_ratio=G，即磁盘利用率为100%。当然这只是理想情况，实际情况中，由于文件系统在不重新格式化的情况下不能随意调整inode_ratio，所以在格式化之前一定要做好规划，如果磁盘中存放的都是小文件，则inode_ratio划分的小一些可以更好地利用磁盘避免浪费，如果磁盘中的文件相对都比较大，则inode_ratio划分的大一些会更好，原因是Inode本身也会占用一部分磁盘空间，更少的Inode可以省出空间划分更多的Data Block。</p>
+<p>可以通过dumpe2fs查看一个文件系统的详细信息：</p>
+<p>[root@DanCentOS65 daniel]# dumpe2fs /dev/sdd1 | more</p>
+<p>dumpe2fs 1.41.12 (17-May-2010)</p>
+<p>Filesystem volume name:   &lt;none&gt;</p>
+<p>Last mounted on:          &lt;not available&gt;</p>
+<p>Filesystem UUID:          5399c0d1-dcb3-4c00-b78a-7c8eb2731cd3</p>
+<p>Filesystem magic number:  0xEF53</p>
+<p>Filesystem revision #:    1 (dynamic)</p>
+<p>Filesystem features:      ext_attr resize_inode dir_index filetype sparse_super large_file</p>
+<p>Filesystem flags:         signed_directory_hash</p>
+<p>Default mount options:    (none)</p>
+<p>Filesystem state:         not clean</p>
+<p>Errors behavior:          Continue</p>
+<p>Filesystem OS type:       Linux</p>
+<p>Inode count:              1047552</p>
+<p>Block count:              268173037</p>
+<p>Reserved block count:     13408651</p>
+<p>Free blocks:              268071716</p>
+<p>Free inodes:              1047541</p>
+<p>First block:              0</p>
+<p>Block size:               4096</p>
+<p>Fragment size:            4096</p>
+<p>Reserved GDT blocks:      960</p>
+<p>Blocks per group:         32768</p>
+<p>Fragments per group:      32768</p>
+<p>Inodes per group:         128</p>
+<p>Inode blocks per group:   8</p>
+<p>Filesystem created:       Thu Apr 20 14:16:46 2017</p>
+<p>Last mount time:          Thu Apr 20 14:20:16 2017</p>
+<p>Last write time:          Thu Apr 20 14:24:37 2017</p>
+<p>Mount count:              1</p>
+<p>Maximum mount count:      31</p>
+<p>Last checked:             Thu Apr 20 14:16:46 2017</p>
+<p>Check interval:           15552000 (6 months)</p>
+<p>Next check after:         Tue Oct 17 14:16:46 2017</p>
+<p>Reserved blocks uid:      0 (user root)</p>
+<p>Reserved blocks gid:      0 (group root)</p>
+<p>First inode:              11</p>
+<p>Inode size:                  256</p>
+<p>Required extra isize:     28</p>
+<p>Desired extra isize:      28</p>
+<p>Default directory hash:   half_md4</p>
+<p>Directory Hash Seed:      b0242b69-cb57-4b52-b448-89d5352db22c</p>
+<p>Group 0: (Blocks 0-32767)</p>
+<p>Primary superblock at 0, Group descriptors at 1-64</p>
+<p>Reserved GDT blocks at 65-1024</p>
+<p>Block bitmap at 1025 (+1025), Inode bitmap at 1026 (+1026)</p>
+<p>Inode table at 1027-1034 (+1027)</p>
+<p>31726 free blocks, 116 free inodes, 2 directories</p>
+<p>Free blocks: 1041-1048, 1050-32767</p>
+<p>Free inodes: 12-13, 15-128</p>
+<p>Group 1: (Blocks 32768-65535)</p>
+<p>Backup superblock at 32768, Group descriptors at 32769-32832</p>
+<p>Reserved GDT blocks at 32833-33792</p>
+<p>Block bitmap at 33793 (+1025), Inode bitmap at 33794 (+1026)</p>
+<p>Inode table at 33795-33802 (+1027)</p>
+<p>31733 free blocks, 128 free inodes, 0 directories</p>
+<p>Free blocks: 33803-65535</p>
+<p>Free inodes: 129-256</p>
+<p>Group 2: (Blocks 65536-98303)</p>
+<p>……</p>
+<p>从输出结果中可以看到下面这些信息：</p>
+<p>文件系统的UUID=5399c0d1-dcb3-4c00-b78a-7c8eb2731cd3</p>
+<p>magic number=0xEF53</p>
+<p>文件系统的一些特性ext_attr resize_inode dir_index filetype sparse_super large_file</p>
+<p>Inode数量为1047552，Block数量为268173037，空闲的Inode数量为1047541，空闲的Block数量为268071716</p>
+<p>Block大小为4096字节</p>
+<p>每个Block Group中的Block数量为32768，每个Block Group中Inode的数量为128，每个Block Group中Inode占用的Block数量为8</p>
+<p>创建时间，上次挂载时间，上次写入数据的时间</p>
+<p>最多挂载31次就会强制自检（fsck），上次自检时间，强制自检周期，下次强制自检的时间</p>
+<p>Inode大小为256字节</p>
+<p>在这些信息后面，紧接着会将每个Block Group的信息依次输出来：</p>
+<p>Super Block的起始位置，Group Descriptor的范围，Data Block Bitmap的位置，Inode Bitmap的位置，Inode Table的范围，空闲的Block数量，空闲的Inode数量，目录数量，空闲Block的范围，空闲Inode的范围。</p>
+<p>目录与文件：</p>
+<p>从前面Inode的结构中我们可以看到，其中并没有定义文件名称，文件名称实际是存放在目录中的，目录也是一类特殊的文件，在ext2文件系统中，目录是由ext2_dir_entry结构组成的列表，目录是变长的结构，这样可以避免磁盘空间的浪费。对于单个文件名，长度不能超过255字符，且文件名的长度会自动使用&#39;\0&#39;字符填充为4个整数倍。目录中有文件和子目录。</p>
+<p>ext2_dir_entry结构：</p>
+<ul>
+<li>Structure of a directory entry</li>
+</ul>
+<p>#define EXT2_NAME_LEN 255</p>
+<p>struct ext2_dir_entry {</p>
+<p>__u32   inode;                  /* Inode number */</p>
+<p>__u16   rec_len;                /* Directory entry length */</p>
+<p>__u16   name_len;               /* Name length */</p>
+<p>char    name[EXT2_NAME_LEN];    /* File name */</p>
+<p>上面是老版本的定义，新版本的结构定义：</p>
+<ul>
+<li>The new version of the directory entry.  Since EXT2 structures are</li>
+</ul>
+<ul>
+<li>stored in intel byte order, and the name_len field could never be</li>
+</ul>
+<ul>
+<li>bigger than 255 chars, it&#39;s safe to reclaim the extra byte for the</li>
+</ul>
+<ul>
+<li>file_type field.</li>
+</ul>
+<p>struct ext2_dir_entry_2 {</p>
+<p>__u8    name_len;               /* Name length */</p>
+<p>__u8    file_type;</p>
+<p>可以看到，新版本中，将文件名的长度的属性从16比特修改为8比特，将剩余的8比特用于记录文件类型。</p>
+<p>文件类型定义：</p>
+<p>/ *</p>
+<ul>
+<li>Ext2 directory file types.  Only the low 3 bits are used.  The</li>
+</ul>
+<ul>
+<li>other bits are reserved for now.</li>
+</ul>
+<p>enum {</p>
+<p>EXT2_FT_UNKNOWN,        /*未知*/</p>
+<p>EXT2_FT_REG_FILE,       /*普通文件*/</p>
+<p>EXT2_FT_DIR,           /*目录文件*/</p>
+<p>EXT2_FT_CHRDEV,         /*字符设备*/</p>
+<p>EXT2_FT_BLKDEV,         /*块设备*/</p>
+<p>EXT2_FT_FIFO,          /*管道*/</p>
+<p>EXT2_FT_SOCK,          /*套接字*/</p>
+<p>EXT2_FT_SYMLINK,            /*符号链接*/</p>
+<p>EXT2_FT_MAX             /*文件类型枚举的结尾标识*/</p>
+<p>无论何种类型的文件，都对应一个Inode，Inode号在结构中inode属性记录。不同类型的文件使用Data Block的方式并不相同。有的文件不用来存放数据，不使用Data Block。下面是不同类型的文件使用Data Block的说明：</p>
+<p>普通文件：</p>
+<p>普通文件在创建时是空的，再向其中写入数据的时候，会为其分配Data Block。</p>
+<p>目录文件：</p>
+<p>目录文件的Data Block中存放的就是上面的ext2_dir_entry结构（或者是新的结构），name长度可变，最大不会超过255。rec_len记录了目录的大小，将它与这个目录的起始地址相加，就得到了下一个有效目录的起始地址，所以rec_len也可以看做是下一个有效目录的指针。要删除当前这个目录，只需要将inode置为0，并增加前一个目录的rec_len的值，以“跳过”当前这个删除的目录。</p>
+<p>符号链接（软连接）：</p>
+<p>如果符号链接的路径名称小于60个字符，则使用Inode的i_block数组直接存放其值（15*4字节=60字节），如果超出60了字符，则需要为其分配一个Block，并将i_block中的指针指向对应的Block。</p>
+<p>设备文件，管道，套接字：</p>
+<p>这些文件类型不需要Block，所有信息都存放在Inode中。</p>
+<p>下面是一个小例子，说明了ext2文件系统中，是如何利用目录来读出一个文件内容的，顺便也熟悉一下debugfs调试工具：</p>
+<p>我们将1023GB的磁盘（分区：/dev/sdd1）使用ext2格式化，然后挂载到/mnt/sdd下，在下面创建了几个目录和文件，结构如下：</p>
+<p>/mnt/sdd</p>
+<p>/mnt/sdd/root_inode_debugfs</p>
+<p>/mnt/sdd/test/new1.txt</p>
+<p>/mnt/sdd/test/testlnk.txt -&gt; test.txt</p>
+<p>/mnt/sdd/test/test.txt</p>
+<p>/mnt/sdd/test/test1/2.txt</p>
+<p>/mnt/sdd/test/test2/2.txt</p>
+<p>首先，输入debugfs，进入调试：</p>
+<p>[root@DanCentOS65 daniel]# debugfs</p>
+<p>debugfs 1.41.12 (17-May-2010)</p>
+<p>debugfs:</p>
+<p>接着使用open打开要调试的设备：</p>
+<p>debugfs:  open /dev/sdd1</p>
+<p>查看根目录的详细信息：</p>
+<p>debugfs:  ls -l</p>
+<p>2   40755 (2)      0      0    4096 21-Apr-2017 03:21 .</p>
+<p>2   40755 (2)      0      0    4096 21-Apr-2017 03:21 ..</p>
+<p>11   40700 (2)      0      0   16384 20-Apr-2017 14:16 lost+found</p>
+<p>12  100644 (1)      0      0    4096 21-Apr-2017 02:49 root_inode_debugfs</p>
+<p>855681   40755 (2)      0      0    4096 21-Apr-2017 07:30 test</p>
+<p>每一列的说明：</p>
+<p>第一列为Inode号</p>
+<p>第二列表示文件权限（前三位是suid/sgid/ticky，后三位的User/Group/Others的权限）</p>
+<p>第三列是文件类型，(2)对应目录，(1)对应普通文件，具体可以参考一下前面ext2文件类型的枚举</p>
+<p>第四列表示文件/目录的ownerid</p>
+<p>第五列表示文件/目录的groupid</p>
+<p>第六列表示文件占用的大小，可以除以Block大小得到文件占用的Block数量</p>
+<p>第七列表示创建时间</p>
+<p>最后一列是目录的名称</p>
+<p>注意到上面输出结果中有两个特殊的目录“.”和“..”，这两个目录不能删除，用于相对路径的查找，“.”表示当前目录，“..”表示父目录。</p>
+<p>言归正传，我们以/mnt/sdd/test/test2/2.txt来说明文件的读取过程：</p>
+<p>我们当前查看的目录其实就是/dev/sdd1的挂载点的目录，即/mnt/sdd，所以在结果中看到的“.”目录对应的Inode号为2，也就是/mnt/sdd的根Inode号是2，进一步查看Inode 2的内容，首先通过命令将Inode 2的内容输出到文件中：</p>
+<p>debugfs:  dump_inode &lt;2&gt; dump1</p>
+<p>接着在另一个终端中使用vi -b打开dump1文件（注意，上面dump1文件的存放目录是进入debugfs之前的那个目录，而不是我们调试的那个目录）：</p>
+<p>[root@DanCentOS65 daniel]# vi -b dump1</p>
+<p>^B^@^@^@^L^@^A^B.^@^@^@^B^@^@^@^L^@^B^B..^@^@^K^@^@^@$^@</p>
+<p>^Blost+found^@^@^@^@^@^@^P^@^E^A1.txt^@^@^@^L^@^@^@D^@^R^Aroot_inode_debugfs^F^A^@^@^@^@(^@^L^Adir1_debugfs^@^@^@^@^T^@^K^Adev_debugfs^@&lt;81&gt;^N^M^@&lt;80&gt;^O^D^Btest^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@</p>
+<p>上面的结果中显示了目前Inode 2中存放的内容，其中有一些乱码先忽略掉，我们先查看可读的文件名。细心的读者可能会发现除了我们在目录中看到的lost+found目录，test目录以及root_inode_debugfs文件之外，还有1.txt和dir1_debugfs两个文件，其实这两个文件之前确实是存在的，后来删除掉了，由于删除其实仅仅是修改对应的Inode和Block的标记位，在没有新的内容覆盖掉其内容之前，这些旧的条目会一直都在磁盘上，所以这里我们才能看到对应的内容，这也是一些磁盘数据恢复工具的原理所在。</p>
+<p>当我们尝试打开/mnt/sdd/test/test2/2.txt时，文件系统首先会根据目录/mnt/sdd得到其Inode号2，并且确认其权限有读权限，从中读出Block中的内容，也就是上面这些子目录和文件的内容，从中找到我们要访问的下一个目录test，并找到对应的Inode号码855681（从上面的结果中可以看到）。接着系统会读取Inode 855681的内容：</p>
+<p>.                                                                                                                                                                                                                              ntest2.tx</p>
+<p>&lt;81&gt;^N^M^@^L^@^A^B.^@^@^@^B^@^@^@^L^@^B^B..^@^@&lt;85&gt;^N^M^@^P^@^H^Anew1.txt&lt;82&gt;^N^M^@^P^@^E^Btest1t.s^A^O^M^@^P^@^E^Btest2.tx&lt;83&gt;^N^M^@^X^@^K^Gtestlnk.txtwp^@^@^@&lt;84&gt;^N^M^@&lt;a0&gt;^O^H^Atest.txtt.swx^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@......</p>
+<p>同理，文件系统会从中找到下一级目录test2，并找到他的Inode编号855809：</p>
+<p>debugfs:  ls -l test</p>
+<p>855681   40755 (2)      0      0    4096 21-Apr-2017 08:09 .</p>
+<p>2   40755 (2)      0      0    4096 21-Apr-2017 09:14 ..</p>
+<p>855685  100644 (1)      0      0      15 21-Apr-2017 06:54 new1.txt</p>
+<p>855682   40755 (2)      0      0    4096 21-Apr-2017 05:04 test1</p>
+<p>855809   40755 (2)      0      0    4096 21-Apr-2017 05:05 test2</p>
+<p>855683  120777 (7)      0      0       8 21-Apr-2017 08:09 testlnk.txt</p>
+<p>855684  100644 (1)      0      0      58 21-Apr-2017 07:30 test.txt</p>
+<p>继续读取其中内容：</p>
+<p>^A^O^M^@^L^@^A^B.^@^@^@&lt;81&gt;^N^M^@^L^@^B^B..^@^@^D^O^M^@&lt;e8&gt;^O^E^A2.txt^@^@^@^@^@^@^@&lt;d8&gt;^O</p>
+<p>^A.2.txt.swp^@^@^@^@^@^@&lt;c4&gt;^O^F^A2.txt~.swx^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@</p>
+<p>进一步得到2.txt的Inode号，最终从Data Block中读出文件数据。</p>
+<p>调试完成后，可以使用close关闭打开的设备：</p>
+<p>debugfs:  close</p>
+<p>需要注意的是，在调试过程中，如果我们在其他终端中对这个文件系统的文件或者目录进行调整，是不会反映到当前Debug的过程中的，想要重新载入修改的目录和文件，需要退出debugfs，重新mount一下分区，再次打开debugfs即可。</p>
+<p>除了上面列出的命令之外，还有很多其他命令可以使用，例如可以使用features查看superblock中定义的功能特性，使用stat &lt;inode number&gt;查看对应的Inode的结构信息，使用stats可以查看superblock的结构等等，有兴趣的读者可以使用?查看全部命令（也可以使用man debugfs查看更详细的用户手册）：</p>
+<p>debugfs:  ?</p>
+<p>Available debugfs requests:</p>
+<p>show_debugfs_params, params</p>
+<p>Show debugfs parameters</p>
+<p>open_filesys, open       Open a filesystem</p>
+<p>close_filesys, close     Close the filesystem</p>
+<p>feature, features        Set/print superblock features</p>
+<p>dirty_filesys, dirty     Mark the filesystem as dirty</p>
+<p>init_filesys             Initialize a filesystem (DESTROYS DATA)</p>
+<p>show_super_stats, stats  Show superblock statistics</p>
+<p>ncheck                   Do inode-&gt;name translation</p>
+<p>icheck                   Do block-&gt;inode translation</p>
+<p>change_root_directory, chroot</p>
+<p>Change root directory</p>
+<p>change_working_directory, cd</p>
+<p>Change working directory</p>
+<p>list_directory, ls       List directory</p>
+<p>show_inode_info, stat    Show inode information</p>
+<p>dump_extents, extents, ex</p>
+<p>Dump extents information</p>
+<p>link, ln                 Create directory link</p>
+<p>unlink                   Delete a directory link</p>
+<p>mkdir                    Create a directory</p>
+<p>rmdir                    Remove a directory</p>
+<p>rm                       Remove a file (unlink and kill_file, if appropriate)</p>
+<p>kill_file                Deallocate an inode and its blocks</p>
+<p>clri                     Clear an inode&#39;s contents</p>
+<p>freei                    Clear an inode&#39;s in-use flag</p>
+<p>seti                     Set an inode&#39;s in-use flag</p>
+<p>testi                    Test an inode&#39;s in-use flag</p>
+<p>freeb                    Clear a block&#39;s in-use flag</p>
+<p>setb                     Set a block&#39;s in-use flag</p>
+<p>testb                    Test a block&#39;s in-use flag</p>
+<p>modify_inode, mi         Modify an inode by structure</p>
+<p>find_free_block, ffb     Find free block(s)</p>
+<p>find_free_inode, ffi     Find free inode(s)</p>
+<p>print_working_directory, pwd</p>
+<p>Print current working directory</p>
+<p>expand_dir, expand       Expand directory</p>
+<p>mknod                    Create a special file</p>
+<p>list_deleted_inodes, lsdel</p>
+<p>List deleted inodes</p>
+<p>undelete, undel          Undelete file</p>
+<p>write                    Copy a file from your native filesystem</p>
+<p>dump_inode, dump         Dump an inode out to a file</p>
+<p>cat                      Dump an inode out to stdout</p>
+<p>lcd                      Change the current directory on your native filesystem</p>
+<p>rdump                    Recursively dump a directory to the native filesystem</p>
+<p>set_super_value, ssv     Set superblock value</p>
+<p>set_inode_field, sif     Set inode field</p>
+<p>set_block_group, set_bg  Set block group descriptor field</p>
+<p>logdump                  Dump the contents of the journal</p>
+<p>htree_dump, htree        Dump a hash-indexed directory</p>
+<p>dx_hash, hash            Calculate the directory hash of a filename</p>
+<p>dirsearch                Search a directory for a particular filename</p>
+<p>bmap                     Calculate the logical-&gt;physical block mapping for an inode</p>
+<p>imap                     Calculate the location of an inode</p>
+<p>dump_unused              Dump unused blocks</p>
+<p>set_current_time         Set current time to use when setting filesystme fields</p>
+<p>supported_features       Print features supported by this version of e2fsprogs</p>
+<p>help                     Display info on command or topic.</p>
+<p>list_requests, lr, ?     List available commands.</p>
+<p>quit, q                  Leave the subsystem.</p>
+<p>除了上面说的dumpe2fs和debugfs中的调试命令之外，下面也是一些常用的查看命令：</p>
+<p>通过-i参数在输出结果中查看Inode编号：</p>
+<p>[root@DanCentOS65 test]# ls -il</p>
+<p>total 16</p>
+<p>855685 -rw-r--r-- 1 root root   15 Apr 21 06:54 new1.txt</p>
+<p>855682 drwxr-xr-x 2 root root 4096 Apr 21 05:04 test1</p>
+<p>855809 drwxr-xr-x 2 root root 4096 Apr 21 05:05 test2</p>
+<p>855683 lrwxrwxrwx 1 root root    8 Apr 21 08:09 testlnk.txt -&gt; test.txt</p>
+<p>855684 -rw-r--r-- 1 root root   58 Apr 21 07:30 test.txt</p>
+<p>stat命令查看目录或文件对应的Inode信息：</p>
+<p>[root@DanCentOS65 test]# stat test2</p>
+<p>File: `test2&#39;</p>
+<p>Size: 4096              Blocks: 8          IO Block: 4096   directory</p>
+<p>Device: 831h/2097d        Inode: 855809      Links: 2</p>
+<p>Access: (0755/drwxr-xr-x)  Uid: (    0/    root)   Gid: (    0/    root)</p>
+<p>Access: 2017-04-21 05:35:58.000000000 +0000</p>
+<p>Modify: 2017-04-21 05:05:08.000000000 +0000</p>
+<p>Change: 2017-04-21 05:05:08.000000000 +0000</p>
+<p>查看Inode使用情况：</p>
+<p>[root@DanCentOS65 daniel]# df -ih</p>
+<p>Filesystem     Inodes IUsed IFree IUse% Mounted on</p>
+<p>/dev/sda1        1.9M   98K  1.8M    6% /</p>
+<p>tmpfs            873K     1  873K    1% /dev/shm</p>
+<p>/dev/sdb1         18M    12   18M    1% /mnt/resource</p>
+<p>/dev/sdf1        1.9M   36K  1.9M    2% /mnt/ubuntu</p>
+<p>/dev/sdd1       1023K    20 1023K    1% /mnt/sdd</p>
+<p>顺便再补充一下软连接和硬链接的知识：</p>
+<p>我们接着上面的例子，再创建一个硬链接：</p>
+<p>[root@DanCentOS65 daniel]# ll /mnt/sdd/test</p>
+<p>total 20</p>
+<p>-rw-r--r-- 2 root root   15 Apr 21 06:54 new1HDlnk</p>
+<p>-rw-r--r-- 2 root root   15 Apr 21 06:54 new1.txt</p>
+<p>drwxr-xr-x 2 root root 4096 Apr 21 05:04 test1</p>
+<p>drwxr-xr-x 2 root root 4096 Apr 21 05:05 test2</p>
+<p>lrwxrwxrwx 1 root root    8 Apr 21 08:09 testlnk.txt -&gt; test.txt</p>
+<p>-rw-r--r-- 1 root root   58 Apr 21 07:30 test.txt</p>
+<p>上面的目录中new1HDlnk文件是new1.txt的硬链接，testlnk.txt是test.txt的软连接，我们还是用debugfs来看一下二者的区别：</p>
+<p>855681   40755 (2)      0      0    4096 21-Apr-2017 09:47 .</p>
+<p>855685  100644 (1)      0      0      15 21-Apr-2017 06:54 new1HDlnk</p>
+<p>可以明显看到，硬链接new1HDlnk实际上仅仅是源文件的一个别名，写到了上级目录的Data Block中，它是没有自己的Inode的，所以它的Inode号855685其实也就是源文件new1.txt的Inode号。而软连接不同，软连接是一类特殊的文件，有自己的Inode和内容。上面例子中，源文件test.txt的文件名小于60字节，所以我们可以看到testlnk.txt的Inode中并没有分配Data Block：</p>
+<p>debugfs:  stat &lt;855683&gt;</p>
+<p>Inode: 855683   Type: symlink    Mode:  0777   Flags: 0x0</p>
+<p>Generation: 2285856085    Version: 0x00000000</p>
+<p>User:     0   Group:     0   Size: 8</p>
+<p>File ACL: 0    Directory ACL: 0</p>
+<p>Links: 1   Blockcount: 0</p>
+<p>Fragment:  Address: 0    Number: 0    Size: 0</p>
+<p>ctime: 0x58f9be38 -- Fri Apr 21 08:09:28 2017</p>
+<p>atime: 0x58f9be39 -- Fri Apr 21 08:09:29 2017</p>
+<p>mtime: 0x58f9be38 -- Fri Apr 21 08:09:28 2017</p>
+<p>Size of extra inode fields: 0</p>
+<p>Fast_link_dest: test.txt</p>
+<p>我们在做一个测试，创建一个超过60字节文件名的文件file0123456789012345678901234567890123456789012345678901234567890123456789.txt，并为其创建一个软连接largerlnk：</p>
+<p>[root@DanCentOS65 test]# ll</p>
+<p>total 28</p>
+<p>-rw-r--r-- 1 root root   71 Apr 22 08:35 file0123456789012345678901234567890123456789012345678901234567890123456789.txt</p>
+<p>lrwxrwxrwx 1 root root   78 Apr 22 08:36 largerlnk -&gt; file0123456789012345678901234567890123456789012345678901234567890123456789.txt</p>
+<p>-rwxr-xr-x 1 root root   58 Apr 21 07:30 test.txt</p>
+<p>再来看一下largerlnk对应的Inode：</p>
+<p>855681   40755 (2)     0     0    4096 22-Apr-2017 08:36 .</p>
+<p>2   40755 (2)     0     0    4096 21-Apr-2017 09:14 ..</p>
+<p>855685  100644 (1)     0     0      15 21-Apr-2017 06:54 new1.txt</p>
+<p>855682   40755 (2)     0     0    4096 21-Apr-2017 05:04 test1</p>
+<p>855809   40755 (2)     0     0    4096 21-Apr-2017 05:05 test2</p>
+<p>855683  120777 (7)     0     0       8 21-Apr-2017 08:09 testlnk.txt</p>
+<p>855684  100755 (1)     0     0      58 21-Apr-2017 07:30 test.txt</p>
+<p>855685  100644 (1)     0     0      15 21-Apr-2017 06:54 new1HDlnk</p>
+<p>855687  120777 (7)     0     0      78 22-Apr-2017 08:36 largerlnk</p>
+<p>855688  100644 (1)     0     0      71 22-Apr-2017 08:35 file0123456789012345678901234567890123456789012345678901234567890123456789.txt</p>
+<p>debugfs:  stat &lt;855687&gt;</p>
+<p>Inode: 855687   Type: symlink    Mode:  0777   Flags: 0x0</p>
+<p>Generation: 2439924333    Version: 0x00000000</p>
+<p>User:     0   Group:     0   Size: 78</p>
+<p>Links: 1   Blockcount: 8</p>
+<p>ctime: 0x58fb1607 -- Sat Apr 22 08:36:23 2017</p>
+<p>atime: 0x58fb1608 -- Sat Apr 22 08:36:24 2017</p>
+<p>mtime: 0x58fb1607 -- Sat Apr 22 08:36:23 2017</p>
+<p>BLOCKS:</p>
+<p>(0):219056128</p>
+<p>TOTAL: 1</p>
+<p>可以看到，当指向的文件名超过60字节时，就不能在Inode的i_block中直接存放指向的文件名了，此时文件系统会分配一个Data Block，我们看到Data Block的编号为219056128，查看一下其中的内容（当然直接在debugfs中通过cat也可以查看，只不过这里演示一下如何使用dd来读取Data Block的数据）：</p>
+<p>[root@DanCentOS65 test]# dd if=/dev/sdc1 of=block.txt skip=219056128 ibs=4096 bs=4096 count=1</p>
+<p>1+0 records in</p>
+<p>1+0 records out</p>
+<p>4096 bytes (4.1 kB) copied, 0.00018398 s, 22.3 MB/s</p>
+<p>[root@DanCentOS65 test]# vi block.txt</p>
+<p>file0123456789012345678901234567890123456789012345678901234567890123456789.txt^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@^@……</p>
+<p>可以看到，Data Block中存放的就是指向的文件的名称。</p>
+<p>注：dd命令参数简要说明：</p>
+<p>if=file                                                    #输入文件名，缺省为标准输入</p>
+<p>of=file                                                    #输出文件名，缺省为标准输出</p>
+<p>ibs=bytes                                                #一次读入 bytes 个字节(即一个块大小为 bytes 个字节)</p>
+<p>obs=bytes                                                #一次写 bytes 个字节(即一个块大小为 bytes 个字节)</p>
+<p>bs=bytes                                                  #同时设置读写块的大小为 bytes ，可代替 ibs 和 obs</p>
+<p>cbs=bytes                                                #一次转换 bytes 个字节，即转换缓冲区大小</p>
+<p>skip=blocks                                             #从输入文件开头跳过 blocks 个块后再开始复制</p>
+<p>seek=blocks                                             #从输出文件开头跳过 blocks 个块后再开始复制</p>
+<p>count=blocks                                           #仅拷贝 blocks 个块，块大小等于 ibs 指定的字节数</p>
+<p>conv=conversion[,conversion...] #用指定的参数转换文件</p>
+<p>mke2fs.conf 配置文件说明以及格式化：</p>
+<p>mke2fs.conf文件位于/etc/mke2fs.conf（不同系统位置可能有区别，这里以CentOS 6.5为例），我们看一下其中的内容：</p>
+<p>[defaults]</p>
+<p>base_features = sparse_super,filetype,resize_inode,dir_index,ext_attr</p>
+<p>enable_periodic_fsck = 1</p>
+<p>blocksize = 4096</p>
+<p>inode_size = 256</p>
+<p>inode_ratio = 16384</p>
+<p>[fs_types]</p>
+<p>ext3 = {</p>
+<p>features = has_journal</p>
+<p>}</p>
+<p>ext4 = {</p>
+<p>features = has_journal,extent,huge_file,flex_bg,uninit_bg,dir_nlink,extra_isize</p>
+<p>ext4dev = {</p>
+<p>options = test_fs=1</p>
+<p>small = {</p>
+<p>blocksize = 1024</p>
+<p>inode_size = 128</p>
+<p>inode_ratio = 4096</p>
+<p>floppy = {</p>
+<p>inode_ratio = 8192</p>
+<p>news = {</p>
+<p>largefile = {</p>
+<p>inode_ratio = 1048576</p>
+<p>blocksize = -1</p>
+<p>largefile4 = {</p>
+<p>inode_ratio = 4194304</p>
+<p>hurd = {</p>
+<p>当我们使用使用mke2fs为磁盘创建文件系统时，未指定的参数就会从这个配置文件中读取相应的参数值。</p>
+<p>这个配置文件采用一种类似INI文件的样式进行书写通过中括号来定义各个“小节”，在每个小节中，通过等号将等号右侧的值赋值给左侧的标签，通过大括号可以进一步定义子一级标签，通过分号（;）或者井号（#）来定义注释，例如：</p>
+<h1>This line is a comment</h1>
+<p>[section1]</p>
+<p>tag1 = value_a</p>
+<p>tag1 = value_b</p>
+<p>tag2 = value_c</p>
+<p>[section 2]</p>
+<p>tag3 = {</p>
+<p>subtag1 = subtag_value_a</p>
+<p>subtag1 = subtag_value_b</p>
+<p>subtag2 = subtag_value_c</p>
+<p>tag1 = value_d</p>
+<p>tag2 = value_e</p>
+<p>继续看上面的配置文件，[default]小节中定义了默认的参数，默认参数中的参数值可以被[fs_types]小节中定义的参数值覆盖，或者如果在格式化的时候指定了对应的参数，也可以覆盖掉默认参数。</p>
+<p>default小节中的参数说明：</p>
+<p>base_features：定义了创建文件系统时需要启用的功能</p>
+<p>enable_periodic_fsck：指明是否需要启用定期强制自检，如果启用，则每个180天或固定每隔若干次Mount后会强制自检，可以通过mke2fs命令的-i和-c参数来指定天数或Mount次数</p>
+<p>blocksize：Block的划分大小</p>
+<p>inode_ratio：Inode的密度，即每隔多少字节会划分一个Inode</p>
+<p>inode_size：Inode的大小</p>
+<p>fs_types小节的重要参数说明：</p>
+<p>在格式化的时候，可以使用-T来调用[fs_types]中定义的类型。如果未指定类型，则会根据mke2fs程序的后缀名来判断类型，例如mke2fs.ext4默认会使用ext4类型。</p>
+<p>features：定义了一组需要启用或者禁用的功能（基于base_features），对于需要禁用的功能，在功能名称前面添加符号^，例如如果要禁用base_features中的resize_inode，则可以定义features = ^resize_inode</p>
+<p>block_size：如果指定为负数，则mke2f会通过探索性地尝试来计算合适的Block大小</p>
+<p>mke2fs常用参数说明：</p>
+<p>-b：指定Block大小</p>
+<p>-c：检测磁盘坏道，如果指定twice，则会进行读和写双重检测</p>
+<p>-E：扩展选项，有很多可选项，具体可以参考man mke2fs</p>
+<p>-f：指定fragment的大小</p>
+<p>-g：每个Block Group中的Block数量</p>
+<p>-G：Block Group的数量</p>
+<p>-i：inode_ratio的大小</p>
+<p>-I：Inode的大小</p>
+<p>-j：启用ext3 journal日志</p>
+<p>-J：journal日志的扩展参数，具体可以参考man mke2fs</p>
+<p>-m：为超级用户预留出的Block数量，默认为5%</p>
+<p>-n：如果加了这个参数，mke2fs只会计算一下文件系统创建后的各个参数，并不会实际创建文件系统（类似于预览）</p>
+<p>-N：Inode数量</p>
+<p>-O：指定文件系统要启用的功能(features)，常见功能如下：</p>
+<p>dir_index：使用经过哈希的二叉树来加速长目录的访问</p>
+<p>extent：使用extents字段而非Block Pointer来访问Block，对大文件访问有加速作用</p>
+<p>filetype：在目录入口（dentry结构中）存放文件类型的信息</p>
+<p>flex_bg：允许将Block Group的元数据（Bitmap和Inode Table）存放在Block Group中的任意位置而非按顺序排列</p>
+<p>has_journal：类似-j参数，启用ext3 journal日志</p>
+<p>large_file：允许文件大小超过2GB</p>
+<p>resize_inode：为Block Group Descriptor Table预留空间，以便后续对文件系统的划分进行调整（resize2fs）</p>
+<p>sparse_super：为Super Block和Group Descriptor建立更少的备份</p>
+<p>uninit_bg：创建文件系统，但是并不初始化好全部的Block Group</p>
+<p>-r：为文件系统指定revision</p>
+<p>-t：指定fs-type，例如ext2，ext3等等</p>
+<p>-T：选择mke2fs.conf中[fs_type]小节中定义的类型</p>
+<p>-U：指定UUID</p>
+<p>-v：指定结果输出级别为verbose</p>
+<p>-V：打印mke2fs的版本</p>
+<p>了解了上面的结构之后，我们看一下使用mkfs.ext2 -T largefile格式化一块1023GB的磁盘的输出：</p>
+<p>[root@DanCentOS65 daniel]# mkfs.ext2 -T largefile /dev/sdd1</p>
+<p>mke2fs 1.41.12 (17-May-2010)</p>
+<p>Filesystem label=</p>
+<p>OS type: Linux</p>
+<p>Block size=4096 (log=2)</p>
+<p>Fragment size=4096 (log=2)</p>
+<p>Stride=0 blocks, Stripe width=0 blocks</p>
+<p>1047552 inodes, 268173037 blocks</p>
+<p>13408651 blocks (5.00%) reserved for the super user</p>
+<p>First data block=0</p>
+<p>Maximum filesystem blocks=4294967296</p>
+<p>8184 block groups</p>
+<p>32768 blocks per group, 32768 fragments per group</p>
+<p>128 inodes per group</p>
+<p>Superblock backups stored on blocks:</p>
+<p>32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,</p>
+<p>4096000, 7962624, 11239424, 20480000, 23887872, 71663616, 78675968,</p>
+<p>102400000, 214990848</p>
+<p>Writing inode tables: done</p>
+<p>Writing superblocks and filesystem accounting information: done</p>
+<p>This filesystem will be automatically checked every 31 mounts or</p>
+<p>180 days, whichever comes first.  Use tune2fs -c or -i to override.</p>
+<p>可以看到Block size=4096字节，一共划分了1027552个Inode（largefile中定义的inode_ratio为1048576，磁盘大小为1023GB，Inode数量：1023*1024*1024*1024/1048576=1027552），268173037个Block（理论上应该划分1023*1024*1024*1024/4096=268173312个Block才对，但是按照实际情况算下来，磁盘空间中有(268173312 -268173037)* 4096=1126400字节的空间并没有划分到文件系统中，查阅了很多资料，并没有得出这部分空间的去向，猜想有可能是磁盘结构划分的时候占用了，或者是由于磁盘cylinder的计算精度导致的），一共有8184个Block Group，每个Group有32768个Block，128个Inode，一共有13408651块Block被预留出来（预留出的5%的Block的作用具体可以参考<a href="https://www.redhat.com/archives/ext3-users/2009-January/msg00026.html），除了这些信息之外，由于我们使用了sparse_super参数（默认参数），所以并不是每个Block" target="_blank" rel="noopener">https://www.redhat.com/archives/ext3-users/2009-January/msg00026.html），除了这些信息之外，由于我们使用了sparse_super参数（默认参数），所以并不是每个Block</a> Group都备份了Super Block和Group Descriptor，而只有编号等于3/5/7的幂次的Group才进行了备份，Group的编号范围为0~8183，这其中符合条件的Group编号为：1 3 5 7 9 25 27 49 81 125 243 343 625 729 2187 2401 3125 6561，我们将他们乘以32768（Block Per Group），就得到了：</p>
+<p>32768(1)，98304(3)，163840(5)，229376(7)，294912(9)，819200(25)，884736(27)，1605632(49)，2654208(81)，4096000(125)，7962624(243)，11239424(343)，20480000(625)，23887872(729)，71663616(2187)，78675968(2401)，102400000(3125)，214990848(6561)</p>
+<p>使用dumpe2fs具体可以看一下每个Group中的Block数量：</p>
+<p>Free blocks: 1041-4095, 4097-32767</p>
+<p>Free inodes: 13-128</p>
+<p>Block bitmap at 65536 (+0), Inode bitmap at 65537 (+1)</p>
+<p>Inode table at 65538-65545 (+2)</p>
+<p>32758 free blocks, 128 free inodes, 0 directories</p>
+<p>Free blocks: 65546-98303</p>
+<p>Free inodes: 257-384</p>
+<p>Group 8182: (Blocks 268107776-268140543)</p>
+<p>Block bitmap at 268107776 (+0), Inode bitmap at 268107777 (+1)</p>
+<p>Inode table at 268107778-268107785 (+2)</p>
+<p>Free blocks: 268107786-268140543</p>
+<p>Free inodes: 1047297-1047424</p>
+<p>Group 8183: (Blocks 268140544-268173036)</p>
+<p>Block bitmap at 268140544 (+0), Inode bitmap at 268140545 (+1)</p>
+<p>Inode table at 268140546-268140553 (+2)</p>
+<p>32483 free blocks, 128 free inodes, 0 directories</p>
+<p>Free blocks: 268140554-268173036</p>
+<p>Free inodes: 1047425-1047552</p>
+<p>可以看到，除了最后一个Block Group之外，其他的Group都有32768个Block，最后一个Group有32493块Block，所以一共有8183*32768+32493=268173037个Block，数量和之前的总数对应。具体在看一下Group中的内容，可以看到Group 0和其他所有备份Super Block的Group中都有1个Block存放Super Block，从前面的Group Descriptor结构中可以看到每个Descriptor的结构占32字节，全部Group Descriptor一共占32*8184/4096=63.9375，即64个Block，看Group 0和Group 1，每个Group确实分配了64个Block来存放Group Descriptor，但是还会为GDT（Group Descriptor Table）额外保留一些Block，一共加起来占1024个Block（预留的Block是为了后续调整文件系统结构的时候扩展GDT使用，例如使用resize2fs调整大小等等）。此外，每个Group中还有1个Block存放Data Block Bitmap，一个Block存放Inode Bitmap，以及8个Block存放Inode Table（8*4096/256=128）。</p>
+<p>ext2 ext3 ext4 文件系统的区别：</p>
+<p>ext2为非日志文件系统，即在文件系统的运行期间不会记录写操作的日志，这就有一个很大的弊端，即文件系统只能单纯依靠Inode和Data Block的Bitmap来确定数据写入的状态。</p>
+<p>我们先来了解一下写入数据的一些具体的步骤：</p>
+<p>当用户尝试写入一个文件时，首先系统判断当前用户对于这个文件尝试写入的目录是否有写权限，如果有权限的话才允许写入。</p>
+<p>文件系统根据Inode Bitmap找到第一个未使用的Inode，得到Inode的编号，将文件权限和属性写入Inode结构中。</p>
+<p>文件系统根据Data Block Bitmap找到未使用的Data Block，将文件内容写入其中，并将Inode中的Data Block指针指向Data Block，如果一块Data Block不足以存放文件内容，就再找下一块Data Block，如果直接块不足以存放内容，就在间接块中进一步分配空间。</p>
+<p>Data Block数据写完并且Inode中的指针更新完成后，会更新Inode Bitmap和Data Block Bitmap，将占用的Inode和Data Block对应的比特标记为0（使用中）。</p>
+<p>最后会更新Super Block的内容（更新空闲和使用的数量）。</p>
+<p>数据不一致：</p>
+<p>通常我们将Inode和Data Block中的数据称为数据部分，将Super Block/Inode Bitmap/Data Block Bitmap称为元数据（Metadata）。从上面数据写入的过程可以很容易看到问题，如果在意外情况下（例如掉电，Kernel Crash，读写异常等等），数据写入成功，但是元数据没有完成写入，这时就会出现元数据与实际数据不一致的情况。当出现这种不一致的情况时，可以通过文件系统自检来针对数据一致性进行检查（fsck），一致性检查要遍历整个文件系统，根据元数据中的标志位来与实际数据存放进行对比，如果文件数量和大小很多，那么整个过程的耗时就会非常长。</p>
+<p>为了克服上述的问题，在ext3中引入了日志功能，ext3文件系统由ext2发展而来（二者的Magic Number都是一样的，可见其兼容性），ext3文件系统本身的数据结构（例如Super Block，Inode，Group Descriptor，Dir Entry等）基本与ext2一致，可以完全兼容ext2文件系统，使得用户可以平滑地过度到一个带有日志功能的文件系统中。</p>
+<p>引入日志功能后，文件系统会划分出部分Block用于日志的写入，当进行文件写入时，系统首先会把待写的Block数据写入日志中，当数据成功提交到日志中后，会进一步向文件系统的Data Block中提交，数据成功提交到文件系统后，日志中的临时数据就会被丢弃。</p>
+<p>当出现系统故障，通过fsck进行一致性检查和恢复的时候，会存在以下两种情况：</p>
+<p>数据在提交到日志之前发生系统故障，此时数据还没有向文件系统中写入，fsck会直接忽略这次提交的内容，保证元数据和数据的一致性，但是此次写入的数据就丢失了。</p>
+<p>数据提交到日志之后，尚未完全写入文件系统之前，发生系统故障，此时在进行fsck的时候，会重新将日志中的临时写入数据提交到文件系统中，保证数据一致性，同时此次写入操作能够正常完成。</p>
+<p>从上面的两种情况可以看到，引入日志系统后，能够保证数据一致性，但是并不能保证数据不丢失。</p>
+<p>ext3支持三种日志模式，区别是写入日志的Block是元数据的Block还是Data Block，以及何日提交日志：</p>
+<p>Journal：文件系统所有数据和元数据的改变都要提交到日志，这种模式下会减少所有Block丢失数据以及数据不一致的可能性，但是会有相当大的磁盘空间被日志Block占用，当一个文件被创建时，所有的Data Block在提交前都会提交到日志，相当于所有数据写入都执行了两次（一次对日志，一次对文件系统本身），所以这是最安全但是最慢的日志模式。</p>
+<p>Ordered：只有对元数据的改变才会提交到日志，这种模式下能够确保数据一致性，但是对于文件内容的可靠性不做保证。尽管这种情况下并不保证文件内容，但是在元数据修改之前，会先提交文件内容，然后再提交元数据对应的Block到日志，最后再提交到文件系统。这个模式会对文件系统的性能有少量影响。Ordered模式是ext3文件系统的默认日志模式。</p>
+<p>Writeback：只有对元数据的改变才会提交到日志，但是和Ordered模式不同的是，这个模式下文件数据提交后和元数据的更新可以异步进行，由于元数据的更新不会等文件数据提交后进行，所以很有可能出现元数据更新已经完成，但是文件数据还没有完成提交，造成数据不一致的情况。</p>
+<p>上面三种日志模式，可以在手动mount的时候通过-o参数指定，也可以在/etc/fstab中指定，例如：</p>
+<p>[root@DanCentOS65 daniel]# mount -o data=writeback /dev/sde1 /mnt/sde</p>
+<p>[root@DanCentOS65 daniel]# mount -v</p>
+<p>/dev/sda1 on / type ext4 (rw)</p>
+<p>proc on /proc type proc (rw)</p>
+<p>sysfs on /sys type sysfs (rw)</p>
+<p>devpts on /dev/pts type devpts (rw,gid=5,mode=620)</p>
+<p>tmpfs on /dev/shm type tmpfs (rw)</p>
+<p>none on /proc/sys/fs/binfmt_misc type binfmt_misc (rw)</p>
+<p>/dev/sdb1 on /mnt/resource type ext4 (rw)</p>
+<p>/dev/sdd1 on /mnt/sdd type ext4 (rw)</p>
+<p>/dev/sdc1 on /mnt/sdc type ext2 (rw)</p>
+<p>/dev/sde1 on /mnt/sde type ext3 (rw,data=writeback)</p>
+<h1>/etc/fstab</h1>
+<h1>Created by anaconda on Tue Mar 29 17:12:12 2016</h1>
+<p>#</p>
+<h1>Accessible filesystems, by reference, are maintained under &#39;/dev/disk&#39;</h1>
+<h1>See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info</h1>
+<p>UUID=8fc4d768-29cd-462c-a7ab-5bf4bcfa9fa2 /     ext4    defaults        1 1</p>
+<p>tmpfs                   /dev/shm                tmpfs   defaults        0 0</p>
+<p>devpts                  /dev/pts                devpts  gid=5,mode=620  0 0</p>
+<p>sysfs                   /sys                    sysfs   defaults        0 0</p>
+<p>proc                    /proc                   proc    defaults        0 0</p>
+<p>/dev/sde1               /mnt/sde                ext3    data=writeback  0 0</p>
+<p>ext3日志可以存储到一个文件中，也可以存放在单独的设备中，可以在建立文件系统的时候，指定将日志记录到其他设备上，例如：</p>
+<p>[root@DanCentOS65 daniel]# mkfs.ext3 -J device=/dev/sdf1 /dev/sdc1</p>
+<p>文件系统本身并不处理日志，而是通过日志块设备（Journaling Block Device，JBD）的通用内核层进行处理。</p>
+<p>ext3文件系统与JBD的交互过程主要基于三个单元：</p>
+<p>日志记录：用于描述文件系统的一次低级操作，在某些日志系统中，日志记录只包括操作所修改的数据范围以及起始位置。JBD使用的日志记录由一次低级操作所包含的数据缓冲区组成，JBD直接对缓冲区和其首部操作。</p>
+<p>原子操作（Atomic handle）：一个原子操作是指发生在一次文件系统的高级更新内的所有低级操作，一个原子操作保证在对应的日志提交后才会将数据向文件系统中提交。当系统故障时，文件系统确保原子操作要么提交成功，要么所有该原子操作对应的低级操作都回滚。</p>
+<p>事务（Transaction）：处于管理的方便以及性能考虑，JBD将一组原子操作合并为一个事务，每隔一段时间会将日志中的内容同步到文件系统中，或者当日志空间中没有多余的可写空间时，事务的日志会同步到文件系统中。事务会在多个状态之间切换：</p>
+<p>运行（Running）：表示事务可以接收和处理更多的原子操作</p>
+<p>锁定（Locked）：不接收新的原子操作，所有已接受的原子操作尚未完成</p>
+<p>同步（Flush）：事务已完成，正在向提交日志</p>
+<p>提交（Commit）：日志提交完成，正在向文件系统提交数据</p>
+<p>完成（Finished）：数据已经全部提交到文件系统中，可以删除此事务</p>
+<p>ext3日志文件系统的几个特点：</p>
+<p>高可用性：即使是系统故障之后，也不需要进行文件系统自检，通常恢复的过程非常短。</p>
+<p>数据完整性：能够极大提高数据一致性，保证文件系统的完整性，减少系统故障对文件系统的破坏。</p>
+<p>访问速度：尽管ext3文件系统启用了日志功能后，会增加写入磁盘的次数，但是从整体上来看，ext3仍然比ext2性能要好一些，这是因为ext3的日志功能对磁盘驱动器的读写头进行了一些优化，所以从读写性能上看，ext3较ext2并没有降低。</p>
+<p>数据转换：ext2文件系统不需要重新格式化，可以通过tune2fs直接将ext2文件系统转换为ext3，例如：</p>
+<p>[root@DanCentOS65 daniel]# umount /dev/sdc1</p>
+<p>[root@DanCentOS65 daniel]# tune2fs -j /dev/sdc1</p>
+<p>tune2fs 1.41.12 (17-May-2010)</p>
+<p>Creating journal inode: done</p>
+<p>[root@DanCentOS65 daniel]# mount /dev/sdc1 /mnt/sdc</p>
+<p>/dev/sdc1 on /mnt/sdc type ext3 (rw)</p>
+<p>也可以在不修改ext3文件系统的前提下，直接将其重新挂载为ext2文件系统。</p>
+<p>日志模式：ext3的三种不同的日志模式可以让系统管理员根据实际情况在速度和稳定性之间进行灵活配置。</p>
+<p>ext4文件系统：</p>
+<p>ext4文件系统是ext3的改进版，从前面的描述中我们可以看到，ext3仅仅是在ext2文件系统上增加了一个日志功能而已，而ext4则针对ext2/ext3的重要数据结构进行了调整优化，使其可以提供更好的性能和稳定性，以及更为丰富的功能。</p>
+<p>与ext2转换为ext3一样，无需重新格式化，就可以将ext3文件系统更新为ext4，原有ext3的数据结构依然保留，ext4作用与新的数据。例如：</p>
+<p>[root@DanCentOS65 daniel]# tune2fs -O extents,uninit_bg,dir_index /dev/sdc1</p>
+<p>Please run e2fsck on the filesystem.</p>
+<p>[root@DanCentOS65 daniel]# fsck /dev/sdc1</p>
+<p>......</p>
+<p>Group descriptor 8181 checksum is invalid.  FIXED.</p>
+<p>Group descriptor 8182 checksum is invalid.  FIXED.</p>
+<p>Group descriptor 8183 checksum is invalid.  FIXED.</p>
+<p>/dev/sdc1 contains a file system with errors, check forced.</p>
+<p>Pass 1: Checking inodes, blocks, and sizes</p>
+<p>Pass 2: Checking directory structure</p>
+<p>Pass 3: Checking directory connectivity</p>
+<p>Pass 4: Checking reference counts</p>
+<p>Pass 5: Checking group summary information</p>
+<p>/dev/sdc1: 23/1047552 files (0.0% non-contiguous), 134133/268173037 blocks</p>
+<p>/dev/sdc1 on /mnt/sdc type ext4 (rw)</p>
+<p>与ext3相比，ext4有如下新的特性：</p>
+<p>支持更大的文件系统总大小和更大的单个文件大小，ext4支持的最大文件系统大小为1EB，最大16TB的单个文件。</p>
+<p>支持无限数量的子目录，ext3目前最多支持32000个子目录。</p>
+<p>ext3采用间接块映射，当文件大小非常大的时候，通过二级和三级间接块查找文件内容效率极低，与之相比，ext4中引入了extents的概念，每个extent为一组连续数据块，一个大文件会被分解保存在多个extents中，从而大大提高了大文件的访问效率，减少碎片文件。</p>
+<p>当文件写入ext3文件系统时，文件系统的数据块分配器每次只能分配一个Block，而ext4文件系统可以一次调配多个Block，减少在写入文件时Block的调配次数。</p>
+<p>ext3的块分配策略是尽快分配，而ext4则尽可能地延迟分配，直到文件在缓存中写完才开始进行数据块的分配，这样能够极大地优化数据块的分布，从而提高后续文件读取的性能。</p>
+<p>对于ext4文件系统来说，系统会维护一个未使用的Inode的表，当进行磁盘自检的时候，会跳过这个表中的Inode，只检查使用中的Inode，而对ext3文件系统fsck则会逐个检查Inode，这个机制使得ext4的自检速度要比ext3快很多。不过需要注意的是，这个Inode表并不是由ext4文件系统维护的，而是由fsck来维护的，所以首先需要执行过一次fsck，才能够在下次fsck的时候得到速度上的优化。</p>
+<p>日志功能对于文件系统而言至关重要，如果日志本身出现问题，而恰好我们又使用这个异常的日志来进行文件系统的恢复的话，那么会导致文件系统更严重的错误。因此，在ext4文件系统中，加入了日志数据校验的功能，能够及时发现日志中潜在的错误。同时，ext4中还将ext3中的日志提交和文件系统数据的提交合并到一起，从而进一步提升约20%左右的性能。</p>
+<p>磁盘碎片的产生在所难免，ext4支持在线碎片整理，在整理时能够保证文件的正常访问。</p>
+<p>ext4将Inode的默认大小改为256字节，增加的空间用来存放更多的节点信息和扩展属性（例如纳秒时间戳，Inode版本等等），以提升文件的访问速度。节点预留机制：当一个目录被建立时，若干个Inode会被预留出来，以加速文件的建立。</p>
+<p>很多软件为了保证下载文件有足够的空间来存放，通常会提前创建一个与下载文件大小相同的空文件，ext4文件系统中实现了与非陪的机制并提供了相应的API。</p>
+<p>默认启用barrier，以保证数据完整性。</p>
+<p>mount 过程：</p>
+<p>每个文件系统都有独立的Super Block，Inode，Data Block，如果我们要访问一个文件系统中的内容，或者向文件系统中写入数据，那么首先需要让系统能够找到文件系统的入口。在前面的小节中可以看到，Linux中使用目录来进行文件的查找，所以我们需要将文件系统与目录树进行关联，关联后，便可以通过文件系统关联到的目录的入口进入文件系统，这个关联的过程也就是我们通常所说的挂载（Mount）。</p>
+<p>从本质上来说，挂载的过程最主要的目的是要将挂载目录的Dir Entry结构指向的Inode屏蔽掉，然后重新定位到要挂载的文件系统的入口Inode，这样在访问挂载目录的文件的时候，才能够通过文件系统的入口Inode一级一级找到里面的文件，例如：</p>
+<p>[root@DanCentOS65 sdc]# stat /mnt/sdc</p>
+<p>File: `/mnt/sdc&#39;</p>
+<p>Device: 801h/2049d        Inode: 1704120     Links: 3</p>
+<p>Access: 2017-04-27 10:54:50.364707408 +0000</p>
+<p>Modify: 2016-11-29 03:48:54.730756524 +0000</p>
+<p>Change: 2016-11-29 03:48:54.730756524 +0000</p>
+<p>[root@DanCentOS65 sdc]# mount /dev/sdc1 /mnt/sdc</p>
+<p>Device: 821h/2081d        Inode: 2           Links: 4</p>
+<p>Access: 2017-04-25 08:35:11.000000000 +0000</p>
+<p>Modify: 2017-04-21 09:14:29.000000000 +0000</p>
+<p>Change: 2017-04-21 09:14:29.000000000 +0000</p>
+<p>可以看到，在挂载之前，/mnt/sdc目录的Inode编号为1704120，当将/dev/sdc1挂载到/mnt/sdc后，目录的Inode就指向了文件系统入口的Inode了，具体过程是当文件系统挂载到/mnt/sdc的时候，系统会从Dir Entry的哈希表中获取这个目录的Dir Entry，然后将这个结构中的d_flags标记为DCACHE_MOUNTED，标记完成也就将/mnt/sdc指向的Inode屏蔽掉了，如果我们再将目录umount掉，则又能看到该目录的Inode指回了原Inode：</p>
+<p>[root@DanCentOS65 sdc]# umount /dev/sdc1</p>
+<p>Dir Entry的结构：</p>
+<p>struct dentry {</p>
+<p>atomic_t                 d_count;      /* usage count */</p>
+<p>unsigned long            d_vfs_flags;  /* dentry cache flags */</p>
+<p>spinlock_t               d_lock;       /* per-dentry lock */</p>
+<p>struct inode             *d_inode;     /* associated inode */</p>
+<p>struct list_head         d_lru;        /* unused list */</p>
+<p>struct list_head         d_child;      /* list of dentries within */</p>
+<p>struct list_head         d_subdirs;    /* subdirectories */</p>
+<p>struct list_head         d_alias;      /* list of alias inodes */</p>
+<p>unsigned long            d_time;       /* revalidate time */</p>
+<p>struct dentry_operations *d_op;        /* dentry operations table */</p>
+<p>struct super_block       *d_sb;        /* superblock of file */</p>
+<p>unsigned int             d_flags;      /* dentry flags */</p>
+<p>int                      d_mounted;    /* is this a mount point? */</p>
+<p>void                     *d_fsdata;    /* filesystem-specific data */</p>
+<p>struct rcu_head          d_rcu;        /* RCU locking */</p>
+<p>struct dcookie_struct    *d_cookie;    /* cookie */</p>
+<p>struct dentry            *d_parent;    /* dentry object of parent */</p>
+<p>struct qstr              d_name;       /* dentry name */</p>
+<p>struct hlist_node        d_hash;       /* list of hash table entries */</p>
+<p>struct hlist_head        *d_bucket;    /* hash bucket */</p>
+<p>unsigned char            d_iname[DNAME_INLINE_LEN_MIN]; /* short name */</p>
+<p>那么系统是如何在屏蔽掉原Inode后，将目录映射到文件系统的入口Inode的呢？接着来看：</p>
+<p>在挂载的时候，内核会在内存中创建一个对应这个文件系统的Super Block对象，从要挂在的文件系统中读出其Super Block，用于这个内存对象的初始化，初始化好内存对象后，内核会将其加入一个全局的Super Block对象列表（这个列表由内核一直维护）。Super Block结构中的s_root字段指向文件系统根目录的Dir Entry，挂载后的文件系统的入口就是这里。同时，VFS（Virtual Filesystem Switch）会创建一个vfsmount对象，这个对象包含了文件系统挂载点的全部信息：</p>
+<p>struct vfsmount {</p>
+<p>struct list_head mnt_hash;  /* 连接到VFSMOUNT Hash Table */</p>
+<p>struct vfsmount *mnt_parent;    /* 指向mount树中的父节点 */</p>
+<p>struct dentry *mnt_mountpoint;  /* 指向mount点的目录项 */</p>
+<p>struct dentry *mnt_root;    /* 被mount的文件系统根目录项 */</p>
+<p>struct super_block *mnt_sb; /* 指向被mount的文件系统superblock */</p>
+<p>#ifdef CONFIG_SMP</p>
+<p>struct mnt_pcp __percpu *mnt_pcp;</p>
+<p>atomic_t mnt_longterm;      /* how many of the refs are longterm */</p>
+<p>#else</p>
+<p>int mnt_count;</p>
+<p>int mnt_writers;</p>
+<p>#endif</p>
+<p>struct list_head mnt_mounts;    /* 下级（child）vfsmount对象链表 */</p>
+<p>struct list_head mnt_child; /* 链入上级vfsmount对象的链表点 */</p>
+<p>int mnt_flags;</p>
+<p>/* 4 bytes hole on 64bits arches without fsnotify */</p>
+<p>#ifdef CONFIG_FSNOTIFY</p>
+<p>__u32 mnt_fsnotify_mask;</p>
+<p>struct hlist_head mnt_fsnotify_marks;</p>
+<p>const char *mnt_devname;    /* 文件系统所在的设备名字，例如/dev/sdb */</p>
+<p>struct list_head mnt_list;</p>
+<p>struct list_head mnt_expire;    /* link in fs-specific expiry list */</p>
+<p>struct list_head mnt_share; /* circular list of shared mounts */</p>
+<p>struct list_head mnt_slave_list;/* list of slave mounts */</p>
+<p>struct list_head mnt_slave; /* slave list entry */</p>
+<p>struct vfsmount *mnt_master;    /* slave is on master-&gt;mnt_slave_list */</p>
+<p>struct mnt_namespace *mnt_ns;   /* containing namespace */</p>
+<p>int mnt_id;         /* mount identifier */</p>
+<p>int mnt_group_id;       /* peer group identifier */</p>
+<p>int mnt_expiry_mark;        /* true if marked for expiry */</p>
+<p>int mnt_pinned;</p>
+<p>int mnt_ghosts;</p>
+<p>vfsmount对象也是通过哈希表来维护，通过访问的目录的路径来计算哈希值，vfsmount结构中的mnt_root指向Super Block对象的s_root，因此，在挂载完成，vfsmount对象创建并完成哈希后，目录的查找过程就变成了下面这个样子：</p>
+<p>挂载完成后（假设挂载点是/mnt/sdc），尝试去访问/mnt/sdc/test/1.txt</p>
+<p>在进行地址解析的时候，首先解析得到/mnt/sdc的Dir Entry，发现对应的d_flags字段被标记为DCACHE_MOUNTED，所以会进一步通过/mnt/sdc去计算哈希值，并在vfsmount的哈希表中检索得到对应的vfsmount对象，得到该对象后，通过其mnt_root属性找到文件系统Super Block的根目录的Dir Entry，从而找到了文件系统的入口Inode</p>
+<p>后面的步骤就是按照前面小节中介绍的目录检索的步骤最终得到文件内容了，这里不再赘述</p>
+<p>除了vfsmount对象的哈希表之外，内核中还维护了一个挂在对象的树结构，通过这个树结构，可以了解到各个文件系统的关系，通过findmnt可以打印出当前挂载对象的树结构：</p>
+<p>[root@DanCentOS65 daniel]# findmnt</p>
+<p>TARGET                       SOURCE         FSTYPE      OPTIONS</p>
+<p>/                            /dev/sda1      ext4        rw,relatime,barrier=1,data=ordered</p>
+<p>├─/proc                      proc           proc        rw,relatime</p>
+<p>│ ├─/proc/bus/usb            /proc/bus/usb  usbfs       rw,relatime</p>
+<p>│ └─/proc/sys/fs/binfmt_misc                binfmt_misc rw,relatime</p>
+<p>├─/sys                       sysfs          sysfs       rw,relatime</p>
+<p>├─/dev                       devtmpfs       devtmpfs    rw,relatime,size=3496016k,nr_inodes=874004,mode=755</p>
+<p>│ ├─/dev/pts                 devpts         devpts      rw,relatime,gid=5,mode=620,ptmxmode=000</p>
+<p>│ └─/dev/shm                 tmpfs          tmpfs       rw,relatime</p>
+<p>├─/misc                      /etc/auto.misc autofs      rw,relatime,fd=7,pgrp=1503,timeout=300,minproto=5,maxproto=5,indirect</p>
+<p>├─/net                       -hosts         autofs      rw,relatime,fd=13,pgrp=1503,timeout=300,minproto=5,maxproto=5,indirect</p>
+<p>├─/mnt/resource              /dev/sdb1      ext4        rw,relatime,barrier=1,data=ordered</p>
+<p>├─/mnt/sdd                   /dev/sdd1      ext4        rw,relatime,barrier=1,data=ordered</p>
+<p>├─/mnt/sdc                   /dev/sdc1      ext4        rw,relatime,barrier=1,data=ordered</p>
+<p>└─/mnt/sde                   /dev/sde1      ext3        rw,relatime,errors=continue,barrier=1,data=writeback</p>
+<p>通过上面的树结构，可以对整个文件系统挂载的情况一目了然。</p>
+<p>umount的一个小技巧：</p>
+<p>如果umount的时候提示“device is busy”，可以通过下面的方法解决：</p>
+<p>[root@DanCentOS65 test]# umount /mnt/sdd</p>
+<p>umount: /mnt/sdd: device is busy.</p>
+<p>(In some cases useful info about processes that use</p>
+<p>the device is found by lsof(8) or fuser(1))</p>
+<p>使用fuser查看是那个进程再占用设备：</p>
+<p>[root@DanCentOS65 test]# fuser -m -v /mnt/sdd</p>
+<p>USER        PID ACCESS COMMAND</p>
+<p>/mnt/sdd:            root       4255 ..c.. bash</p>
+<p>再使用kill杀掉对应的进程：</p>
+<p>[root@DanCentOS65 test]# kill -9 4255</p>
+<p>Killed</p>
+<p>[root@DanCentOS65 daniel]# umount /mnt/sdd</p>
+<p>[root@DanCentOS65 daniel]#</p>
+<p>其他类型文件系统的支持情况：</p>
+<p>除了前面我们深入介绍的ext2/ext3/ext4文件系统之外，Linux还支持很多其他类型的文件系统，例如：</p>
+<p>传统文件系统：ext2，minix，MS-DOS，FAT (用 vfat 模块)，iso9660 (光盘)等</p>
+<p>日志式文件系统： ext3，ReiserFS，Windows&#39; NTFS，IBM&#39;s JFS，SGI&#39;s XFS等</p>
+<p>网络文件系统： NFS，SMBFS等</p>
+<p>如果想要看一下你的Linux系统支持的文件系统类型有哪些，可以查看下面的目录：</p>
+<p>[root@DanCentOS65 /]# ls -l /lib/modules/$(uname -r)/kernel/fs</p>
+<p>total 132</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 autofs4</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 btrfs</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 cachefiles</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 cifs</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 configfs</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 cramfs</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 dlm</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 ecryptfs</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 exportfs</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 ext2</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 ext3</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 ext4</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 fat</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 fscache</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 fuse</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 gfs2</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 jbd</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 jbd2</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 jffs2</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 lockd</p>
+<p>-rwxr--r-- 1 root root 19944 Apr 11 17:30 mbcache.ko</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 nfs</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 nfs_common</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 nfsd</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 nls</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 squashfs</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 ubifs</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 udf</p>
+<p>drwxr-xr-x 2 root root  4096 Apr 18 05:57 xfs</p>
+<p>通过下面的命令可以查看VFS系统目前加载到内存中支持的文件系统类型：</p>
+<p>[root@DanCentOS65 /]# cat /proc/filesystems</p>
+<p>nodev        sysfs</p>
+<p>nodev        rootfs</p>
+<p>nodev        bdev</p>
+<p>nodev        proc</p>
+<p>nodev        cgroup</p>
+<p>nodev        cpuset</p>
+<p>nodev        tmpfs</p>
+<p>nodev        devtmpfs</p>
+<p>nodev        binfmt_misc</p>
+<p>nodev        debugfs</p>
+<p>nodev        securityfs</p>
+<p>nodev        sockfs</p>
+<p>nodev        usbfs</p>
+<p>nodev        pipefs</p>
+<p>nodev        anon_inodefs</p>
+<p>nodev        inotifyfs</p>
+<p>nodev        devpts</p>
+<p>nodev        ramfs</p>
+<p>nodev        hugetlbfs</p>
+<p>iso9660</p>
+<p>nodev        pstore</p>
+<p>nodev        mqueue</p>
+<p>ext4</p>
+<p>nodev        autofs</p>
+<p>ext2</p>
+<p>ext3</p>
+<p>参考链接：</p>
+<p><a href="https://www.ibm.com/developerworks/cn/linux/filesystem/ext2/" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/linux/filesystem/ext2/</a></p>
+<p><a href="https://linux.die.net/man/5/mke2fs.conf" target="_blank" rel="noopener">https://linux.die.net/man/5/mke2fs.conf</a></p>
+<p><a href="http://www.tuicool.com/articles/mYBBbu" target="_blank" rel="noopener">http://www.tuicool.com/articles/mYBBbu</a></p>
+<p><a href="http://www.cnblogs.com/wuhuiyuan/p/linux-filesystem-inodes.html" target="_blank" rel="noopener">http://www.cnblogs.com/wuhuiyuan/p/linux-filesystem-inodes.html</a></p>
+<p><a href="http://blog.csdn.net/ljianhui/article/details/8604140" target="_blank" rel="noopener">http://blog.csdn.net/ljianhui/article/details/8604140</a></p>
+<p><a href="http://blog.csdn.net/kai_ding/article/details/9914619" target="_blank" rel="noopener">http://blog.csdn.net/kai_ding/article/details/9914619</a></p>
+<p><a href="http://baike.baidu.com/link?url=_MHxOFX2VePw4LX9WBPhK3l72-pJc9o_BgSE322afOMHlzO3WSn1Tw6FVC2Y54unAq46ho4oENqSv8nU6l712j7e-_8RZLIf27ITr_SfZVbC0srUVZ5n_WdWz0GBp_eijWO1S8rAY-YLpn1-rNgSc7XQQ0epy38FRlVtvAEJo3aMxNCkLQ1yRjYA6j1pigiT" target="_blank" rel="noopener">http://baike.baidu.com/link?url=_MHxOFX2VePw4LX9WBPhK3l72-pJc9o_BgSE322afOMHlzO3WSn1Tw6FVC2Y54unAq46ho4oENqSv8nU6l712j7e-_8RZLIf27ITr_SfZVbC0srUVZ5n_WdWz0GBp_eijWO1S8rAY-YLpn1-rNgSc7XQQ0epy38FRlVtvAEJo3aMxNCkLQ1yRjYA6j1pigiT</a></p>
+<p><a href="http://blog.csdn.net/haiross/article/details/39179301" target="_blank" rel="noopener">http://blog.csdn.net/haiross/article/details/39179301</a></p>
+<p><a href="http://blog.csdn.net/younger_china/article/details/21185097" target="_blank" rel="noopener">http://blog.csdn.net/younger_china/article/details/21185097</a></p>
+<p><a href="http://www.cgsecurity.org/wiki/Advanced_Find_ext2_ext3_Backup_SuperBlock" target="_blank" rel="noopener">http://www.cgsecurity.org/wiki/Advanced_Find_ext2_ext3_Backup_SuperBlock</a></p>
+<p><a href="http://alanwu.blog.51cto.com/3652632/1105681/" target="_blank" rel="noopener">http://alanwu.blog.51cto.com/3652632/1105681/</a></p>
+<p><a href="http://codefine.co/2593.html" target="_blank" rel="noopener">http://codefine.co/2593.html</a></p>
+<p><a href="http://blog.csdn.net/macrossdzh/article/details/5973639" target="_blank" rel="noopener">http://blog.csdn.net/macrossdzh/article/details/5973639</a></p>
+<p><a href="http://www.cnblogs.com/cute/p/4627622.html" target="_blank" rel="noopener">http://www.cnblogs.com/cute/p/4627622.html</a></p>
+<p><a href="http://www.docin.com/p-661335281.html" target="_blank" rel="noopener">http://www.docin.com/p-661335281.html</a></p>
+<p><a href="http://www.cnblogs.com/peon/archive/2011/06/22/2086470.html" target="_blank" rel="noopener">http://www.cnblogs.com/peon/archive/2011/06/22/2086470.html</a></p>
+<p><a href="http://blog.csdn.net/yunsongice/article/details/5822495" target="_blank" rel="noopener">http://blog.csdn.net/yunsongice/article/details/5822495</a></p>
+<p><a href="http://e2fsprogs.sourceforge.net/" target="_blank" rel="noopener">http://e2fsprogs.sourceforge.net/</a></p>
+<p><a href="http://blog.csdn.net/" target="_blank" rel="noopener">http://blog.csdn.net/</a></p>
+<p>yang2012/article/details/8116522</p>
+<p><a href="http://lxr.free-electrons.com/source/fs/ext2/ext2.h" target="_blank" rel="noopener">http://lxr.free-electrons.com/source/fs/ext2/ext2.h</a></p>
+<p><a href="http://www.science.unitn.it/~fiorella/guidelinux/tlk/node96.html" target="_blank" rel="noopener">http://www.science.unitn.it/~fiorella/guidelinux/tlk/node96.html</a></p>
+<p><a href="http://cs.smith.edu/~nhowe/262/oldlabs/ext2.html" target="_blank" rel="noopener">http://cs.smith.edu/~nhowe/262/oldlabs/ext2.html</a></p>
+<p><a href="http://140.120.7.21/LinuxKernel/LinuxKernel/node17.html" target="_blank" rel="noopener">http://140.120.7.21/LinuxKernel/LinuxKernel/node17.html</a></p>
+<p><a href="http://www.nongnu.org/ext2-doc/ext2.html" target="_blank" rel="noopener">http://www.nongnu.org/ext2-doc/ext2.html</a></p>
+<p><a href="https://www.cs.montana.edu/courses/309/topics/4-disks/debugfs_example.html" target="_blank" rel="noopener">https://www.cs.montana.edu/courses/309/topics/4-disks/debugfs_example.html</a></p>
+<p><a href="http://www.giis.co.in/symlink.html" target="_blank" rel="noopener">http://www.giis.co.in/symlink.html</a></p>
+<p><a href="http://www.cnblogs.com/qq78292959/archive/2012/02/23/2364760.html" target="_blank" rel="noopener">http://www.cnblogs.com/qq78292959/archive/2012/02/23/2364760.html</a></p>
+<p><a href="http://blog.chinaunix.net/uid-20196318-id-152429.html" target="_blank" rel="noopener">http://blog.chinaunix.net/uid-20196318-id-152429.html</a></p>
+<p><a href="http://www.linuxplanet.com/linuxplanet/reports/4136/5" target="_blank" rel="noopener">http://www.linuxplanet.com/linuxplanet/reports/4136/5</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Journaling_block_device" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Journaling_block_device</a></p>
+<p><a href="http://www.tldp.org/LDP/lki/lki-3.html" target="_blank" rel="noopener">http://www.tldp.org/LDP/lki/lki-3.html</a></p>
+<p><a href="http://www.makelinux.net/books/lkd2/ch12lev1sec7" target="_blank" rel="noopener">http://www.makelinux.net/books/lkd2/ch12lev1sec7</a></p></article>

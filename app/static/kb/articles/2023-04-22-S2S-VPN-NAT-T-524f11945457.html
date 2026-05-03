@@ -1,0 +1,218 @@
+<article class="kb-article" data-title="S2S VPN NAT-T"><h1>S2S VPN NAT-T</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-22 13:30:14</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Fuzhangliang</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Fuzhangliang</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Fuzhangliang</li>
+</ul>
+<ul>
+<li>1、Azure网关在IKE协商的第一个包确实携带支持NAT-T的特性，第二个包是深信服设备的回复，深信服设备回复同样支持NAT-T特性。说明两端设备都支持NAT-T特性。否则不会在协商中标明该字段。1,2两个包是设备标明自己的支持特点。</li>
+</ul>
+<ul>
+<li>2、实际中是否真的使用NAT-T，是双方设备协商的结果，这是通过3，4个包来协商的。如果中间存在NAT设备，那两者就使用NAT-T</li>
+</ul>
+<ul>
+<li>The NAT-D payloads are included in the third and fourth packets of</li>
+</ul>
+<ul>
+<li>Main Mode, and in the second and third packets in the Aggressive</li>
+</ul>
+<ul>
+<li>Mode.</li>
+</ul>
+<ul>
+<li>The format of the NAT-D packet is</li>
+</ul>
+<ul>
+<li>1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8</li>
+</ul>
+<ul>
+<li>+---------------+---------------+---------------+---------------+</li>
+</ul>
+<ul>
+<li>| Next Payload  | RESERVED      | Payload length                |</li>
+</ul>
+<ul>
+<li>~                 HASH of the address and port                  ~</li>
+</ul>
+<ul>
+<li>The payload type for the NAT discovery payload is 20.</li>
+</ul>
+<ul>
+<li>The HASH is calculated as follows:</li>
+</ul>
+<ul>
+<li>This uses the negotiated HASH algorithm.  All data inside the HASH is</li>
+</ul>
+<ul>
+<li>in the network byte-order.  The IP is 4 octets for an IPv4 address</li>
+</ul>
+<ul>
+<li>and 16 octets for an IPv6 address.  The port number is encoded as a 2</li>
+</ul>
+<ul>
+<li>octet number in network byte-order.  The first NAT-D payload contains</li>
+</ul>
+<ul>
+<li>the remote end&#39;s IP address and port (i.e., the destination address</li>
+</ul>
+<ul>
+<li>The remaining NAT-D payloads contain possible</li>
+</ul>
+<ul>
+<li>local-end IP addresses and ports (i.e., all possible source addresses</li>
+</ul>
+<ul>
+<li>If there is no NAT between the peers, the first NAT-D payload</li>
+</ul>
+<ul>
+<li>received should match one of the local NAT-D payloads (i.e., the</li>
+</ul>
+<ul>
+<li>local NAT-D payloads this host is sending out), and one of the other</li>
+</ul>
+<ul>
+<li>NAT-D payloads must match the remote end&#39;s IP address and port.  If</li>
+</ul>
+<ul>
+<li>of the local IP addresses and ports), it means that there is dynamic</li>
+</ul>
+<ul>
+<li>NAT between the peers, and this end should start sending keepalives</li>
+</ul>
+<ul>
+<li>as defined in the [RFC3948] (this end is behind the NAT).</li>
+</ul>
+<ul>
+<li>The CKY-I and CKY-R are the initiator and responder cookies.  They</li>
+</ul>
+<ul>
+<li>are added to the hash to make precomputation attacks for the IP</li>
+</ul>
+<ul>
+<li>address and port impossible.</li>
+</ul>
+<ul>
+<li>同时在必要的时候，位于NAT后的那一方应该发出keepalive包。</li>
+</ul>
+<ul>
+<li>第一个NAT-D，目标</li>
+</ul>
+<ul>
+<li>第二个NAT-D，是本地的hash值</li>
+</ul>
+<ul>
+<li>发起者innitiator</li>
+</ul>
+<ul>
+<li>Responder</li>
+</ul>
+<ul>
+<li>回复者</li>
+</ul>
+<ul>
+<li>如果没有NAT，则理论上对角的hash值是相等的。</li>
+</ul>
+<ul>
+<li>但是从上图可以看出， Azure的源hash, 与深信服的目标hash不一致，所以有NAT。</li>
+</ul>
+<ul>
+<li>所以Azure网关认为自己这边存在NAT。</li>
+</ul>
+<ul>
+<li>4、Azure网关的公共IP直接配在设备上，前端无NAT设备。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>参考工单: 120072723000079/NET/VSTECS CLOUD TECHNOLOGY (BEIJING)CO.,LTD/SR_2020061834468 _ [MS-LED] S2S VPN connection azure2dsjk cannot be established</li>
+</ul>
+<ul>
+<li>the first check fails (i.e., first NAT-D payload does not match any</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>HASH = HASH(CKY-I | CKY-R | IP | Port)   //根据cookie和IP、port进行计算</li>
+</ul>
+<ul>
+<li>of the UDP packet). //第一个NAT-D 是目标端口和Ip的哈希值</li>
+</ul>
+<ul>
+<li>of the UDP packet).//第二个是源IP和端口的hash值</li>
+</ul>
+<ul>
+<li>3、Azure的发出的第五个包，源端口已经使用4500， 这说明3,4个包的协商结果就是两者之间存在NAT设备。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>根据RFC:<a href="https://tools.ietf.org/html/rfc3947#:~:text=The%20detection%20of%20support%20for%20NAT-Traversal%20and%20detection,packets%20whose%20source%20port%20is%20different%20from%20500.，" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc3947#:~:text=The%20detection%20of%20support%20for%20NAT-Traversal%20and%20detection,packets%20whose%20source%20port%20is%20different%20from%20500.，</a> NAT-T的协商过程是这样的</li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://tools.ietf.org/html/rfc3947&gt;" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc3947&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Fuzhangliang</p>
+<p>参考工单: 120072723000079/NET/VSTECS CLOUD TECHNOLOGY (BEIJING)CO.,LTD/SR_2020061834468 _ [MS-LED] S2S VPN connection azure2dsjk cannot be established</p>
+<p>1、Azure网关在IKE协商的第一个包确实携带支持NAT-T的特性，第二个包是深信服设备的回复，深信服设备回复同样支持NAT-T特性。说明两端设备都支持NAT-T特性。否则不会在协商中标明该字段。1,2两个包是设备标明自己的支持特点。</p>
+<p>2、实际中是否真的使用NAT-T，是双方设备协商的结果，这是通过3，4个包来协商的。如果中间存在NAT设备，那两者就使用NAT-T</p>
+<p>根据RFC:<a href="https://tools.ietf.org/html/rfc3947#:~:text=The%20detection%20of%20support%20for%20NAT-Traversal%20and%20detection,packets%20whose%20source%20port%20is%20different%20from%20500.，" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc3947#:~:text=The%20detection%20of%20support%20for%20NAT-Traversal%20and%20detection,packets%20whose%20source%20port%20is%20different%20from%20500.，</a> NAT-T的协商过程是这样的</p>
+<p>The NAT-D payloads are included in the third and fourth packets of</p>
+<p>Main Mode, and in the second and third packets in the Aggressive</p>
+<p>Mode.</p>
+<p>From &lt;<a href="https://tools.ietf.org/html/rfc3947&gt;" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc3947&gt;</a></p>
+<p>The format of the NAT-D packet is</p>
+<p>1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8</p>
+<p>+---------------+---------------+---------------+---------------+</p>
+<p>| Next Payload  | RESERVED      | Payload length                |</p>
+<p>~                 HASH of the address and port                  ~</p>
+<p>The payload type for the NAT discovery payload is 20.</p>
+<p>The HASH is calculated as follows:</p>
+<p>HASH = HASH(CKY-I | CKY-R | IP | Port)   //根据cookie和IP、port进行计算</p>
+<p>This uses the negotiated HASH algorithm.  All data inside the HASH is</p>
+<p>in the network byte-order.  The IP is 4 octets for an IPv4 address</p>
+<p>and 16 octets for an IPv6 address.  The port number is encoded as a 2</p>
+<p>octet number in network byte-order.  The first NAT-D payload contains</p>
+<p>the remote end&#39;s IP address and port (i.e., the destination address</p>
+<p>of the UDP packet). //第一个NAT-D 是目标端口和Ip的哈希值</p>
+<p>The remaining NAT-D payloads contain possible</p>
+<p>local-end IP addresses and ports (i.e., all possible source addresses</p>
+<p>of the UDP packet).//第二个是源IP和端口的hash值</p>
+<p>If there is no NAT between the peers, the first NAT-D payload</p>
+<p>received should match one of the local NAT-D payloads (i.e., the</p>
+<p>local NAT-D payloads this host is sending out), and one of the other</p>
+<p>NAT-D payloads must match the remote end&#39;s IP address and port.  If</p>
+<p>the first check fails (i.e., first NAT-D payload does not match any</p>
+<p>of the local IP addresses and ports), it means that there is dynamic</p>
+<p>NAT between the peers, and this end should start sending keepalives</p>
+<p>as defined in the [RFC3948] (this end is behind the NAT).</p>
+<p>The CKY-I and CKY-R are the initiator and responder cookies.  They</p>
+<p>are added to the hash to make precomputation attacks for the IP</p>
+<p>address and port impossible.</p>
+<p>同时在必要的时候，位于NAT后的那一方应该发出keepalive包。</p>
+<p>第一个NAT-D，目标</p>
+<p>第二个NAT-D，是本地的hash值</p>
+<p>发起者innitiator</p>
+<p>Responder</p>
+<p>回复者</p>
+<p>如果没有NAT，则理论上对角的hash值是相等的。</p>
+<p>但是从上图可以看出， Azure的源hash, 与深信服的目标hash不一致，所以有NAT。</p>
+<p>所以Azure网关认为自己这边存在NAT。</p>
+<p>3、Azure的发出的第五个包，源端口已经使用4500， 这说明3,4个包的协商结果就是两者之间存在NAT设备。</p>
+<p>4、Azure网关的公共IP直接配在设备上，前端无NAT设备。</p></article>

@@ -1,0 +1,381 @@
+<article class="kb-article" data-title="授权 IP 地址范围访问 API server"><h1>授权 IP 地址范围访问 API server</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-11-04 18:55:15</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Basic lb会报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Basic lb会报错：</li>
+</ul>
+<ul>
+<li>不在授权范围内TCP握手会失败，如下：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>YaoYuejian</li>
+</ul>
+<ul>
+<li>Mooncake官网没有针对授权IP访问API server的文档，实际测试是支持的，要求az cli版本在2.0.76 或更高版本</li>
+</ul>
+<ul>
+<li>所以针对mooncake官网没有的文档，咱们还是先测试一下，以便给客户最后的结论</li>
+</ul>
+<ul>
+<li>新建集群</li>
+</ul>
+<ul>
+<li>更新现有集群</li>
+</ul>
+<ul>
+<li>（必须是standard类型的LB）</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;aadProfile&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;addonProfiles&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;agentPoolProfiles&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;availabilityZones&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;count&quot;: 1,</li>
+</ul>
+<ul>
+<li>&quot;maxCount&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;maxPods&quot;: 110,</li>
+</ul>
+<ul>
+<li>&quot;minCount&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;nodepool1&quot;,</li>
+</ul>
+<ul>
+<li>&quot;nodeTaints&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;orchestratorVersion&quot;: &quot;1.13.12&quot;,</li>
+</ul>
+<ul>
+<li>&quot;osDiskSizeGb&quot;: 100,</li>
+</ul>
+<ul>
+<li>&quot;osType&quot;: &quot;Linux&quot;,</li>
+</ul>
+<ul>
+<li>&quot;provisioningState&quot;: &quot;Succeeded&quot;,</li>
+</ul>
+<ul>
+<li>&quot;scaleSetEvictionPolicy&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;scaleSetPriority&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;AvailabilitySet&quot;,</li>
+</ul>
+<ul>
+<li>&quot;vmSize&quot;: &quot;Standard_DS2_v2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;vnetSubnetId&quot;: null</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;apiServerAccessProfile&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;authorizedIpRanges&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;210.12.171.116/32&quot;</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;dnsPrefix&quot;: &quot;myAKSClust-AKSRG-a81419&quot;,</li>
+</ul>
+<ul>
+<li>&quot;fqdn&quot;: &quot;myaksclust-aksrg-a81419-dc9ba8ce.hcp.chinanorth2.cx.prod.service.azk8s.cn&quot;,</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/a81419be-ffea-4be3-950d-07be68c9542e/resourcegroups/AKSRG/providers/Microsoft.ContainerService/managedClusters/myAKSCluster&quot;,</li>
+</ul>
+<ul>
+<li>&quot;identity&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;kubernetesVersion&quot;: &quot;1.13.12&quot;,</li>
+</ul>
+<ul>
+<li>&quot;linuxProfile&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;adminUsername&quot;: &quot;azureuser&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ssh&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;publicKeys&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;keyData&quot;: &quot;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQsWxU2KBhvuldqG/jd6dNotfdIJKj0/CJdfSNo5awVp4bGwZDkDhnaCt0Pi98i6BlhRESdwFaeqpl0oYtzlbtRtvS0oLc4OuAwFRAfZY4L5KiU5nfNE34c296NmTql3CFy9ZHwQLmypOP4ga5cmWEo3sonhNLxuvsZJbIPdwBWBAWTyzYi5ZfYLykQiClKmkk//Un6gtU0E8NBcI15bxMJq/BXoJroSRncNTEQZOoOfvO6CKyEpg2YECW7zXAkG0NsFW17EV3jmzXpNb2XIUv4RFda2O+lRRJFYdBGIpU71jgg//MsaLuS9Twal38FZTd8eJPf71DQdIBAs0rILcT&quot;</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>&quot;location&quot;: &quot;chinanorth2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;maxAgentPools&quot;: 1,</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;myAKSCluster&quot;,</li>
+</ul>
+<ul>
+<li>&quot;networkProfile&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;dnsServiceIp&quot;: &quot;10.0.0.10&quot;,</li>
+</ul>
+<ul>
+<li>&quot;dockerBridgeCidr&quot;: &quot;172.17.0.1/16&quot;,</li>
+</ul>
+<ul>
+<li>&quot;loadBalancerProfile&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;effectiveOutboundIps&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;id&quot;: &quot;/subscriptions/a81419be-ffea-4be3-950d-07be68c9542e/resourceGroups/MC_AKSRG_myAKSCluster_chinanorth2/providers/Microsoft.Network/publicIPAddresses/40a3ec2d-103d-426b-8a2b-afce874f6d77&quot;,</li>
+</ul>
+<ul>
+<li>&quot;resourceGroup&quot;: &quot;MC_AKSRG_myAKSCluster_chinanorth2&quot;</li>
+</ul>
+<ul>
+<li>&quot;managedOutboundIps&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;count&quot;: 1</li>
+</ul>
+<ul>
+<li>&quot;outboundIpPrefixes&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;outboundIps&quot;: null</li>
+</ul>
+<ul>
+<li>&quot;networkPlugin&quot;: &quot;kubenet&quot;,</li>
+</ul>
+<ul>
+<li>&quot;networkPolicy&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;podCidr&quot;: &quot;10.244.0.0/16&quot;,</li>
+</ul>
+<ul>
+<li>&quot;serviceCidr&quot;: &quot;10.0.0.0/16&quot;</li>
+</ul>
+<ul>
+<li>&quot;nodeResourceGroup&quot;: &quot;MC_AKSRG_myAKSCluster_chinanorth2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;privateFqdn&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;resourceGroup&quot;: &quot;AKSRG&quot;,</li>
+</ul>
+<ul>
+<li>&quot;servicePrincipalProfile&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;clientId&quot;: &quot;45dfe6f2-ffa3-43d6-bd85-3bc547812004&quot;,</li>
+</ul>
+<ul>
+<li>&quot;secret&quot;: null</li>
+</ul>
+<ul>
+<li>&quot;tags&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;type&quot;: &quot;Microsoft.ContainerService/ManagedClusters&quot;,</li>
+</ul>
+<ul>
+<li>&quot;windowsProfile&quot;: null</li>
+</ul>
+<ul>
+<li>------------------------------------------------</li>
+</ul>
+<ul>
+<li>20210527</li>
+</ul>
+<ul>
+<li>xuzheng补充：</li>
+</ul>
+<ul>
+<li>如果用户想修改或删除授权地址范围’可以参考以下信息：</li>
+</ul>
+<ul>
+<li>2021.11.4 Tian Tian Update</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查看当前集群授权的IP地址范围</li>
+</ul>
+<ul>
+<li>这一功能也可以直接在Portal中进行设置：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az aks create --resource-group AKSRG --name myAKSCluster --node-count 1  --api-server-authorized-ip-ranges  xx.xx.xx.xx/xx,xx.xx.xx.xx/xx --load-balancer-sku standard --vm-set-type AvailabilitySet --generate-ssh-keys</li>
+</ul>
+<ul>
+<li>az aks update  --resource-group AKSRG   --name AKS   --api-server-authorized-ip-ranges  xx.xx.xx.xx/xx</li>
+</ul>
+<ul>
+<li>az aks show -g aksrg -n myakscluster</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>&quot;loadBalancerSku&quot;: &quot;Standard&quot;,</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>&quot;enableAutoScaling&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;enableNodePublicIp&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;enablePrivateCluster&quot;: null</li>
+</ul>
+<ul>
+<li>&quot;enablePodSecurityPolicy&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;enableRbac&quot;: true,</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Global文档：<a href="https://docs.microsoft.com/zh-cn/azure/aks/api-server-authorized-ip-ranges" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/api-server-authorized-ip-ranges</a></li>
+</ul>
+<ul>
+<li>对于删除该地址范围，依然使用update命令，如：az aks update  --resource-group AKSRG   --name AKS   --api-server-authorized-ip-ranges  “” 即可。参考文档：<a href="https://docs.microsoft.com/zh-cn/azure/aks/api-server-authorized-ip-ranges#disable-authorized-ip-ranges" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/api-server-authorized-ip-ranges#disable-authorized-ip-ranges</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>YaoYuejian</p>
+<p>Mooncake官网没有针对授权IP访问API server的文档，实际测试是支持的，要求az cli版本在2.0.76 或更高版本</p>
+<p>Global文档：<a href="https://docs.microsoft.com/zh-cn/azure/aks/api-server-authorized-ip-ranges" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/api-server-authorized-ip-ranges</a></p>
+<p>所以针对mooncake官网没有的文档，咱们还是先测试一下，以便给客户最后的结论</p>
+<p>新建集群</p>
+<p>az aks create --resource-group AKSRG --name myAKSCluster --node-count 1  --api-server-authorized-ip-ranges  xx.xx.xx.xx/xx,xx.xx.xx.xx/xx --load-balancer-sku standard --vm-set-type AvailabilitySet --generate-ssh-keys</p>
+<p>更新现有集群</p>
+<p>（必须是standard类型的LB）</p>
+<p>az aks update  --resource-group AKSRG   --name AKS   --api-server-authorized-ip-ranges  xx.xx.xx.xx/xx</p>
+<p>Basic lb会报错：</p>
+<p>不在授权范围内TCP握手会失败，如下：</p>
+<p>查看当前集群授权的IP地址范围</p>
+<p>az aks show -g aksrg -n myakscluster</p>
+<p>{</p>
+<p>&quot;aadProfile&quot;: null,</p>
+<p>&quot;addonProfiles&quot;: null,</p>
+<p>&quot;agentPoolProfiles&quot;: [</p>
+<p>&quot;availabilityZones&quot;: null,</p>
+<p>&quot;count&quot;: 1,</p>
+<p>&quot;enableAutoScaling&quot;: null,</p>
+<p>&quot;enableNodePublicIp&quot;: null,</p>
+<p>&quot;maxCount&quot;: null,</p>
+<p>&quot;maxPods&quot;: 110,</p>
+<p>&quot;minCount&quot;: null,</p>
+<p>&quot;name&quot;: &quot;nodepool1&quot;,</p>
+<p>&quot;nodeTaints&quot;: null,</p>
+<p>&quot;orchestratorVersion&quot;: &quot;1.13.12&quot;,</p>
+<p>&quot;osDiskSizeGb&quot;: 100,</p>
+<p>&quot;osType&quot;: &quot;Linux&quot;,</p>
+<p>&quot;provisioningState&quot;: &quot;Succeeded&quot;,</p>
+<p>&quot;scaleSetEvictionPolicy&quot;: null,</p>
+<p>&quot;scaleSetPriority&quot;: null,</p>
+<p>&quot;type&quot;: &quot;AvailabilitySet&quot;,</p>
+<p>&quot;vmSize&quot;: &quot;Standard_DS2_v2&quot;,</p>
+<p>&quot;vnetSubnetId&quot;: null</p>
+<p>}</p>
+<p>],</p>
+<p>&quot;apiServerAccessProfile&quot;: {</p>
+<p>&quot;authorizedIpRanges&quot;: [</p>
+<p>&quot;210.12.171.116/32&quot;</p>
+<p>&quot;enablePrivateCluster&quot;: null</p>
+<p>},</p>
+<p>&quot;dnsPrefix&quot;: &quot;myAKSClust-AKSRG-a81419&quot;,</p>
+<p>&quot;enablePodSecurityPolicy&quot;: null,</p>
+<p>&quot;enableRbac&quot;: true,</p>
+<p>&quot;fqdn&quot;: &quot;myaksclust-aksrg-a81419-dc9ba8ce.hcp.chinanorth2.cx.prod.service.azk8s.cn&quot;,</p>
+<p>&quot;id&quot;: &quot;/subscriptions/a81419be-ffea-4be3-950d-07be68c9542e/resourcegroups/AKSRG/providers/Microsoft.ContainerService/managedClusters/myAKSCluster&quot;,</p>
+<p>&quot;identity&quot;: null,</p>
+<p>&quot;kubernetesVersion&quot;: &quot;1.13.12&quot;,</p>
+<p>&quot;linuxProfile&quot;: {</p>
+<p>&quot;adminUsername&quot;: &quot;azureuser&quot;,</p>
+<p>&quot;ssh&quot;: {</p>
+<p>&quot;publicKeys&quot;: [</p>
+<p>&quot;keyData&quot;: &quot;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQsWxU2KBhvuldqG/jd6dNotfdIJKj0/CJdfSNo5awVp4bGwZDkDhnaCt0Pi98i6BlhRESdwFaeqpl0oYtzlbtRtvS0oLc4OuAwFRAfZY4L5KiU5nfNE34c296NmTql3CFy9ZHwQLmypOP4ga5cmWEo3sonhNLxuvsZJbIPdwBWBAWTyzYi5ZfYLykQiClKmkk//Un6gtU0E8NBcI15bxMJq/BXoJroSRncNTEQZOoOfvO6CKyEpg2YECW7zXAkG0NsFW17EV3jmzXpNb2XIUv4RFda2O+lRRJFYdBGIpU71jgg//MsaLuS9Twal38FZTd8eJPf71DQdIBAs0rILcT&quot;</p>
+<p>]</p>
+<p>&quot;location&quot;: &quot;chinanorth2&quot;,</p>
+<p>&quot;maxAgentPools&quot;: 1,</p>
+<p>&quot;name&quot;: &quot;myAKSCluster&quot;,</p>
+<p>&quot;networkProfile&quot;: {</p>
+<p>&quot;dnsServiceIp&quot;: &quot;10.0.0.10&quot;,</p>
+<p>&quot;dockerBridgeCidr&quot;: &quot;172.17.0.1/16&quot;,</p>
+<p>&quot;loadBalancerProfile&quot;: {</p>
+<p>&quot;effectiveOutboundIps&quot;: [</p>
+<p>&quot;id&quot;: &quot;/subscriptions/a81419be-ffea-4be3-950d-07be68c9542e/resourceGroups/MC_AKSRG_myAKSCluster_chinanorth2/providers/Microsoft.Network/publicIPAddresses/40a3ec2d-103d-426b-8a2b-afce874f6d77&quot;,</p>
+<p>&quot;resourceGroup&quot;: &quot;MC_AKSRG_myAKSCluster_chinanorth2&quot;</p>
+<p>&quot;managedOutboundIps&quot;: {</p>
+<p>&quot;count&quot;: 1</p>
+<p>&quot;outboundIpPrefixes&quot;: null,</p>
+<p>&quot;outboundIps&quot;: null</p>
+<p>&quot;loadBalancerSku&quot;: &quot;Standard&quot;,</p>
+<p>&quot;networkPlugin&quot;: &quot;kubenet&quot;,</p>
+<p>&quot;networkPolicy&quot;: null,</p>
+<p>&quot;podCidr&quot;: &quot;10.244.0.0/16&quot;,</p>
+<p>&quot;serviceCidr&quot;: &quot;10.0.0.0/16&quot;</p>
+<p>&quot;nodeResourceGroup&quot;: &quot;MC_AKSRG_myAKSCluster_chinanorth2&quot;,</p>
+<p>&quot;privateFqdn&quot;: null,</p>
+<p>&quot;resourceGroup&quot;: &quot;AKSRG&quot;,</p>
+<p>&quot;servicePrincipalProfile&quot;: {</p>
+<p>&quot;clientId&quot;: &quot;45dfe6f2-ffa3-43d6-bd85-3bc547812004&quot;,</p>
+<p>&quot;secret&quot;: null</p>
+<p>&quot;tags&quot;: null,</p>
+<p>&quot;type&quot;: &quot;Microsoft.ContainerService/ManagedClusters&quot;,</p>
+<p>&quot;windowsProfile&quot;: null</p>
+<p>------------------------------------------------</p>
+<p>20210527</p>
+<p>xuzheng补充：</p>
+<p>如果用户想修改或删除授权地址范围’可以参考以下信息：</p>
+<p>对于删除该地址范围，依然使用update命令，如：az aks update  --resource-group AKSRG   --name AKS   --api-server-authorized-ip-ranges  “” 即可。参考文档：<a href="https://docs.microsoft.com/zh-cn/azure/aks/api-server-authorized-ip-ranges#disable-authorized-ip-ranges" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/api-server-authorized-ip-ranges#disable-authorized-ip-ranges</a></p>
+<p>2021.11.4 Tian Tian Update</p>
+<p>这一功能也可以直接在Portal中进行设置：</p></article>

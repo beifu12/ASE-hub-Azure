@@ -1,0 +1,485 @@
+<article class="kb-article" data-title="汇总未整理的信息"><h1>汇总未整理的信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-08-17 11:12:03</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>在远程访问时输入帐号名和密码后，出现黑屏现象，没有桌面，已经尝试了多个帐号都是这种情况。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>在远程访问时输入帐号名和密码后，出现黑屏现象，没有桌面，已经尝试了多个帐号都是这种情况。</li>
+</ul>
+<ul>
+<li>4.        虚拟机无法RDP</li>
+</ul>
+<ul>
+<li>5、由于没有远程桌面授权服务器（WINDOWS无法RDP链接）</li>
+</ul>
+<ul>
+<li>5.        虚拟机无法SSH</li>
+</ul>
+<ul>
+<li>导致虚拟机在启动过程中，无法正确获取平台公共IP地址。</li>
+</ul>
+<ul>
+<li>4        虚拟机无法RDP</li>
+</ul>
+<ul>
+<li>尽量让客户提供报错截图，判断无法RDP的原因</li>
+</ul>
+<ul>
+<li>5        虚拟机无法ssh</li>
+</ul>
+<ul>
+<li>4）        客户修改了/etc/table 中的挂载项，导致无法ssh，需要客户挂盘到另一台Vm注释掉挂载项</li>
+</ul>
+<ul>
+<li>7）        客户修改了/var/empty/sshd 的权限后无法连接，同样需要客户挂盘修改为正确的权限</li>
+</ul>
+<ul>
+<li>7        虚拟机重置密码失败</li>
+</ul>
+<ul>
+<li>7.        虚拟机密码重置失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2.        虚拟机黑屏或者白屏</li>
+</ul>
+<ul>
+<li>答：</li>
+</ul>
+<ul>
+<li>刚使用console方式，进入VM，看到RDP进程卡死，RDP服务重启不成功，使用强制kill掉RDP进程，然后再启动成功，经您测试可以成功链接。</li>
+</ul>
+<ul>
+<li>3.        虚拟机蓝屏死机</li>
+</ul>
+<ul>
+<li>2、psping</li>
+</ul>
+<ul>
+<li>4、ACIS查客户的VM WINDOWS系统日志是否有重启记录</li>
+</ul>
+<ul>
+<li>请参考以下操作：</li>
+</ul>
+<ul>
+<li>（1）、mstsc /v:139.217.23.167:60126 /admin</li>
+</ul>
+<ul>
+<li>（2）、把remote destop licensing移除（把勾去掉，点击下一步）</li>
+</ul>
+<ul>
+<li>7、用5986去安装VNC如果RDP的服务损坏</li>
+</ul>
+<ul>
+<li>4、重置远程访问</li>
+</ul>
+<ul>
+<li>5、客户改成了静态IP：</li>
+</ul>
+<ul>
+<li>由于客户修改了/etc/sysconfig/network-scripts/ifcfg-eth0网卡配置文件，改成了静态IP,</li>
+</ul>
+<ul>
+<li>6、CentOS Linux开启和关闭防火墙</li>
+</ul>
+<ul>
+<li>1） 临时生效，重启后复原</li>
+</ul>
+<ul>
+<li>开启： service iptables start</li>
+</ul>
+<ul>
+<li>关闭： service iptables stop</li>
+</ul>
+<ul>
+<li>、</li>
+</ul>
+<ul>
+<li>2） 永久性生效，重启后不会复原</li>
+</ul>
+<ul>
+<li>开启： chkconfig iptables on</li>
+</ul>
+<ul>
+<li>关闭： chkconfig iptables off</li>
+</ul>
+<ul>
+<li>7、以前接过linux VM ssh 连接频繁中断的问题，解决办法供大家参考：</li>
+</ul>
+<ul>
+<li>请参考下面的方法进行解决：</li>
+</ul>
+<ul>
+<li>编辑/etc/ssh/sshd_config ,调整以下参数：</li>
+</ul>
+<ul>
+<li>UseDNS   no</li>
+</ul>
+<ul>
+<li>GSSAPIAuthentication  no</li>
+</ul>
+<ul>
+<li>GSSAPICleanupCredentials no</li>
+</ul>
+<ul>
+<li>编辑完成后重新加载配置文件：service sshd reload</li>
+</ul>
+<ul>
+<li>1        虚拟机自动重启</li>
+</ul>
+<ul>
+<li>$t = (Get-Tenant -Fabric (Get-Fabric &lt;cluster name&gt;) -TenantName &lt;deploymentid&gt;)</li>
+</ul>
+<ul>
+<li>$t.Events</li>
+</ul>
+<ul>
+<li>$n = (Get-Node -Fabric (Get-Fabric &lt;cluster name&gt;) -Id &lt;node id&gt;)</li>
+</ul>
+<ul>
+<li>$n.Events</li>
+</ul>
+<ul>
+<li>2        虚拟机蓝屏和黑屏</li>
+</ul>
+<ul>
+<li>3        虚拟机蓝屏或死机</li>
+</ul>
+<ul>
+<li>6）        客户修改了/etc/sshd 目录下文件的权限，也需要客户挂盘修改为正确的权限</li>
+</ul>
+<ul>
+<li>1.        虚拟机自动重启</li>
+</ul>
+<ul>
+<li>答：ctrl+alt+delete 是否能调出任务管理器，重启Explorer.exe &amp; TermService 服务</li>
+</ul>
+<ul>
+<li>客户尝试在办公区以外的internet看是否能正常登陆</li>
+</ul>
+<ul>
+<li>如果以上方法都没有解决，客户可以接受重启虚机的情况下，尝试重启虚机，看是否可以正常访问</li>
+</ul>
+<ul>
+<li>答：抽取虚机的performance看是否由于占用资源过高导致死机</li>
+</ul>
+<ul>
+<li>重启虚机看是否可以正常登陆</li>
+</ul>
+<ul>
+<li>答：询问客户是否有做把虚机网卡改为静态IP,是否配置过防火墙以及第三方安全防护软件策略，管理平台是否配置过ACL以及NSG</li>
+</ul>
+<ul>
+<li>比如客户不愿意去做挂盘或者完全不会相关操作，最后可以用Console的方式协助解决问题</li>
+</ul>
+<ul>
+<li>询问客户是否有其他可登陆的帐户, 可以用新帐户登陆系统，对旧帐户进行Reset password</li>
+</ul>
+<ul>
+<li>尝试删除扩展，重新安装扩展</li>
+</ul>
+<ul>
+<li>尝试删除Wagent再重新安装, 再次尝试重置密码</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>上次的2016110156886也出现这种情况，但不是同一台机器。上次是通过重起解决问题，这次没有重起，保留现场。请尽快排查，谢谢！</li>
+</ul>
+<ul>
+<li>1、ACIS查询VM基本信息</li>
+</ul>
+<ul>
+<li>3、检查ACL和NSG</li>
+</ul>
+<ul>
+<li>通过console虚拟机进行检查，导致虚拟机无法正常连接的原因已经查明：</li>
+</ul>
+<ul>
+<li>可以看到/var/log/secure 中有如下报错记录：</li>
+</ul>
+<ul>
+<li>Nov 28 13:31:00 web sshd[62821]: reverse mapping checking getaddrinfo for 96.63.40.120.broad.fz.fj.dynamic.163data.com.cn [120.40.63.96] faild - POSSIBLE BREAK-IN ATTEMPT!</li>
+</ul>
+<ul>
+<li>1）        首先使用MDS 的SLA表查询是否是由于平台问题导致重启</li>
+</ul>
+<ul>
+<li>2）        如果非平台问题，使用ACIS 查询客户的历史操作记录，是否客户有关机操作</li>
+</ul>
+<ul>
+<li>3）        如果平台问题导致重启，排查步骤如下：</li>
+</ul>
+<ul>
+<li>A  登录jubox，查询node evnets 和 tenant events,是否有相关报错信息</li>
+</ul>
+<ul>
+<li>C  如果都无法排查原因，需要抽取waagent log 分析重启原因</li>
+</ul>
+<ul>
+<li>在ACIS 上排查VM是否有做NSG和ACL</li>
+</ul>
+<ul>
+<li>通过ACIS上抽取VM的agent log ，判断VM 的内部ip和平台分配的是否一致，判断是否手动修改了ip地址导致VM无法连接，可以在new portal上修改VM的内部ip（如果VM在虚拟网络）</li>
+</ul>
+<ul>
+<li>首先通过ACIS抽取VM的boot log ，判断无法ssh的原因，</li>
+</ul>
+<ul>
+<li>1）        sshd 无法启动失败，可以尝试在new portal 上重置ssh的配置文件</li>
+</ul>
+<ul>
+<li>答：查看下面平台信息</li>
+</ul>
+<ul>
+<li>FcTMMgmtSlaMeasurementEvent查看虚拟机SLA的信息</li>
+</ul>
+<ul>
+<li>MDS查看Node State变化情况</li>
+</ul>
+<ul>
+<li>如果没有查到具体问题，去看node events Check Tenant/Node Events ,</li>
+</ul>
+<ul>
+<li>如果发现有Event 17 or Xdisk error,  查看hostanalyzer获取Node的运行统计信息  找到有关xdisk 问题原因</li>
+</ul>
+<ul>
+<li>通过ACIS查看operation history  ACIS抓取Operation History 确认客户是否做相关操作</li>
+</ul>
+<ul>
+<li>如果平台正常，让客户提供/var/log所有日志，通过/var/log分析系统内部是否有异常</li>
+</ul>
+<ul>
+<li>虚机上是否有其他帐户，可以尝试用其他帐户登陆，确认不是由于虚机当前的User Profile文件损坏导致黑屏</li>
+</ul>
+<ul>
+<li>蓝屏让客户提供蓝屏的代码在微软网站查看蓝屏相关信息</li>
+</ul>
+<ul>
+<li>如果是Linux虚机，通过Console确认虚机是否也是处于死机状态，是否也不能做任何操作</li>
+</ul>
+<ul>
+<li>通过ACIS查看虚机的状态，是否正常运行</li>
+</ul>
+<ul>
+<li>ACIS抽取虚机的Screen snapshot确认虚机是否正常启动</li>
+</ul>
+<ul>
+<li>ACIS抽取ACL和NSG来确认没有做相关操作</li>
+</ul>
+<ul>
+<li>如果以上方法都不行，再通过Console进一步排查</li>
+</ul>
+<ul>
+<li>ACIS抽取虚机启动日志，确认虚机是否启动成功，如果虚机重启成功，再确认ssh服务是否已经正常启动</li>
+</ul>
+<ul>
+<li>查看平台扩展是否安装成功</li>
+</ul>
+<ul>
+<li>确认Wagent是否安装成功</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>6、通过Windows PowerShell来登录这台虚机，重启远程桌面服务</li>
+</ul>
+<ul>
+<li>命令有两种，一种是临时的，重启即复原；另外一种是永久性的，重启不会复原。</li>
+</ul>
+<ul>
+<li>SSH 服务会对客户的ip通过DNS进行反向解析PTR记录，如果客户端ip和域名发生变化可能导致连接被break</li>
+</ul>
+<ul>
+<li>B   还可以使用hostanalyzer 脚本获取VM所在node 的event log ，排查是否由于物理节点问题导致重启，以及查看脚本输出的report 信息排查是否是  由于iops 超500 导致的重启</li>
+</ul>
+<ul>
+<li>5）        客户升级了内核大致vm无法启动，centos6 需要客户挂盘修改/etc/grub.conf  的启动顺序，centos7 需要console 进入grub命令行调整启动的内核</li>
+</ul>
+<ul>
+<li>1）        windows 虚拟机 需要客户挂盘，在系统盘里生成脚本，修改密码</li>
+</ul>
+<ul>
+<li>2）        linux 虚拟机可以通过console 进入单用户模式修改密码，或者挂盘，然后使用chroot 切到后挂载的系统盘，使用passwd 命令重置密码</li>
+</ul>
+<ul>
+<li>Jumpbox上使用下面的命令获取Tenant/Node的Events</li>
+</ul>
+<ul>
+<li>如果鼠标和键盘不能做任何操作，通过Powershell 进入5986端口, 通过命令重启Explorer.exe &amp; TermService 服务</li>
+</ul>
+<ul>
+<li>重启恢复连接后，如果客户需要排查原因，让客户提供/var/log看是否能找是由于哪些进程过高导致死机，如果当前日志没有发现有相关信息，建议客户部署performance监控脚本，待下次复现时，让客户提供性能日志再进一步排查分析</li>
+</ul>
+<ul>
+<li>如果RDP内外网也都不能正常通信，通过Powershell 进入5986端口, 通过命令重启Explorer.exe &amp; TermService 服务，确认是否是由于RDP服务导致连接失败</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>使用psping 工具测试RDP端口是否能够ping通</li>
+</ul>
+<ul>
+<li>登录jubox 上ping VM的DIP以及RDP端口和其它端口是否能够正常响应</li>
+</ul>
+<ul>
+<li>2）        客户修改了sshd 的监听端口，却没有在portal 上修改endport的配置</li>
+</ul>
+<ul>
+<li>3）        客户修改了sshd 的监听端口为其它端口，而iptables的允许的还是22端口，需要挂盘到另一台Vm上修改iptables 的策略</li>
+</ul>
+<ul>
+<li>从公网和内网测试RDP端口是否正常通信，其他服务端口是否可以通信，并查看Psping反馈结果</li>
+</ul>
+<ul>
+<li>通过Jumbox从内网测试虚机Ping和Psping端口是否能正常通信</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>根据问题现象与上次情况相同，因此再次建议您打微软windows补丁 ，解决方案，如下：</li>
+</ul>
+<ul>
+<li>答：看报错，如果是丢失系统文件，建议可以挂盘修复复制系统丢失文件，如果还不行就挂盘导数据吧</li>
+</ul>
+<ul>
+<li>8、Windows RDP证书问题导致无法远程了连接解决方案</li>
+</ul>
+<ul>
+<li>建议客户重启虚拟机，或者使用ctrl+alt+end 键是否能调出VM的任务管理器，结束explorer 进程，然后重新打开此进程</li>
+</ul>
+<ul>
+<li>建议客户重启虚拟机，如果不行在ACIS 抽取VM的屏幕截图，查看相关的报错信息</li>
+</ul>
+<ul>
+<li>首先检查扩展的状态是否正常，如果可以建议客户在new portal 上删除扩展，然后再次重置密码，如果还不成功</li>
+</ul>
+<ul>
+<li>如果发现是由于VHD磁盘分区异常导致或者fstab写入以设备名称添加条目导致不能正常启动，提供客户虚机挂盘修复的操作</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>建议您开启系统更新，建议您参考，希望对您有所帮助：Update to add support for Generic Routing Encapsulation in Windows 8.1 and Windows Server 2012 R2 <a href="https://support.microsoft.com/zh-cn/kb/3022776" target="_blank" rel="noopener">https://support.microsoft.com/zh-cn/kb/3022776</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2.        虚拟机黑屏或者白屏</p>
+<p>答：</p>
+<p>在远程访问时输入帐号名和密码后，出现黑屏现象，没有桌面，已经尝试了多个帐号都是这种情况。</p>
+<p>上次的2016110156886也出现这种情况，但不是同一台机器。上次是通过重起解决问题，这次没有重起，保留现场。请尽快排查，谢谢！</p>
+<p>刚使用console方式，进入VM，看到RDP进程卡死，RDP服务重启不成功，使用强制kill掉RDP进程，然后再启动成功，经您测试可以成功链接。</p>
+<p>根据问题现象与上次情况相同，因此再次建议您打微软windows补丁 ，解决方案，如下：</p>
+<p>建议您开启系统更新，建议您参考，希望对您有所帮助：Update to add support for Generic Routing Encapsulation in Windows 8.1 and Windows Server 2012 R2 <a href="https://support.microsoft.com/zh-cn/kb/3022776" target="_blank" rel="noopener">https://support.microsoft.com/zh-cn/kb/3022776</a></p>
+<p>3.        虚拟机蓝屏死机</p>
+<p>答：看报错，如果是丢失系统文件，建议可以挂盘修复复制系统丢失文件，如果还不行就挂盘导数据吧</p>
+<p>4.        虚拟机无法RDP</p>
+<p>1、ACIS查询VM基本信息</p>
+<p>2、psping</p>
+<p>3、检查ACL和NSG</p>
+<p>4、ACIS查客户的VM WINDOWS系统日志是否有重启记录</p>
+<p>5、由于没有远程桌面授权服务器（WINDOWS无法RDP链接）</p>
+<p>请参考以下操作：</p>
+<p>（1）、mstsc /v:139.217.23.167:60126 /admin</p>
+<p>（2）、把remote destop licensing移除（把勾去掉，点击下一步）</p>
+<p>6、通过Windows PowerShell来登录这台虚机，重启远程桌面服务</p>
+<p>7、用5986去安装VNC如果RDP的服务损坏</p>
+<p>8、Windows RDP证书问题导致无法远程了连接解决方案</p>
+<p>5.        虚拟机无法SSH</p>
+<p>4、重置远程访问</p>
+<p>5、客户改成了静态IP：</p>
+<p>通过console虚拟机进行检查，导致虚拟机无法正常连接的原因已经查明：</p>
+<p>由于客户修改了/etc/sysconfig/network-scripts/ifcfg-eth0网卡配置文件，改成了静态IP,</p>
+<p>导致虚拟机在启动过程中，无法正确获取平台公共IP地址。</p>
+<p>6、CentOS Linux开启和关闭防火墙</p>
+<p>命令有两种，一种是临时的，重启即复原；另外一种是永久性的，重启不会复原。</p>
+<p>1） 临时生效，重启后复原</p>
+<p>开启： service iptables start</p>
+<p>关闭： service iptables stop</p>
+<p>、</p>
+<p>2） 永久性生效，重启后不会复原</p>
+<p>开启： chkconfig iptables on</p>
+<p>关闭： chkconfig iptables off</p>
+<p>7、以前接过linux VM ssh 连接频繁中断的问题，解决办法供大家参考：</p>
+<p>可以看到/var/log/secure 中有如下报错记录：</p>
+<p>Nov 28 13:31:00 web sshd[62821]: reverse mapping checking getaddrinfo for 96.63.40.120.broad.fz.fj.dynamic.163data.com.cn [120.40.63.96] faild - POSSIBLE BREAK-IN ATTEMPT!</p>
+<p>SSH 服务会对客户的ip通过DNS进行反向解析PTR记录，如果客户端ip和域名发生变化可能导致连接被break</p>
+<p>请参考下面的方法进行解决：</p>
+<p>编辑/etc/ssh/sshd_config ,调整以下参数：</p>
+<p>UseDNS   no</p>
+<p>GSSAPIAuthentication  no</p>
+<p>GSSAPICleanupCredentials no</p>
+<p>编辑完成后重新加载配置文件：service sshd reload</p>
+<p>1        虚拟机自动重启</p>
+<p>1）        首先使用MDS 的SLA表查询是否是由于平台问题导致重启</p>
+<p>2）        如果非平台问题，使用ACIS 查询客户的历史操作记录，是否客户有关机操作</p>
+<p>3）        如果平台问题导致重启，排查步骤如下：</p>
+<p>A  登录jubox，查询node evnets 和 tenant events,是否有相关报错信息</p>
+<p>$t = (Get-Tenant -Fabric (Get-Fabric &lt;cluster name&gt;) -TenantName &lt;deploymentid&gt;)</p>
+<p>$t.Events</p>
+<p>$n = (Get-Node -Fabric (Get-Fabric &lt;cluster name&gt;) -Id &lt;node id&gt;)</p>
+<p>$n.Events</p>
+<p>B   还可以使用hostanalyzer 脚本获取VM所在node 的event log ，排查是否由于物理节点问题导致重启，以及查看脚本输出的report 信息排查是否是  由于iops 超500 导致的重启</p>
+<p>C  如果都无法排查原因，需要抽取waagent log 分析重启原因</p>
+<p>2        虚拟机蓝屏和黑屏</p>
+<p>建议客户重启虚拟机，或者使用ctrl+alt+end 键是否能调出VM的任务管理器，结束explorer 进程，然后重新打开此进程</p>
+<p>3        虚拟机蓝屏或死机</p>
+<p>建议客户重启虚拟机，如果不行在ACIS 抽取VM的屏幕截图，查看相关的报错信息</p>
+<p>4        虚拟机无法RDP</p>
+<p>尽量让客户提供报错截图，判断无法RDP的原因</p>
+<p>使用psping 工具测试RDP端口是否能够ping通</p>
+<p>在ACIS 上排查VM是否有做NSG和ACL</p>
+<p>登录jubox 上ping VM的DIP以及RDP端口和其它端口是否能够正常响应</p>
+<p>通过ACIS上抽取VM的agent log ，判断VM 的内部ip和平台分配的是否一致，判断是否手动修改了ip地址导致VM无法连接，可以在new portal上修改VM的内部ip（如果VM在虚拟网络）</p>
+<p>5        虚拟机无法ssh</p>
+<p>首先通过ACIS抽取VM的boot log ，判断无法ssh的原因，</p>
+<p>1）        sshd 无法启动失败，可以尝试在new portal 上重置ssh的配置文件</p>
+<p>2）        客户修改了sshd 的监听端口，却没有在portal 上修改endport的配置</p>
+<p>3）        客户修改了sshd 的监听端口为其它端口，而iptables的允许的还是22端口，需要挂盘到另一台Vm上修改iptables 的策略</p>
+<p>4）        客户修改了/etc/table 中的挂载项，导致无法ssh，需要客户挂盘到另一台Vm注释掉挂载项</p>
+<p>5）        客户升级了内核大致vm无法启动，centos6 需要客户挂盘修改/etc/grub.conf  的启动顺序，centos7 需要console 进入grub命令行调整启动的内核</p>
+<p>6）        客户修改了/etc/sshd 目录下文件的权限，也需要客户挂盘修改为正确的权限</p>
+<p>7）        客户修改了/var/empty/sshd 的权限后无法连接，同样需要客户挂盘修改为正确的权限</p>
+<p>7        虚拟机重置密码失败</p>
+<p>首先检查扩展的状态是否正常，如果可以建议客户在new portal 上删除扩展，然后再次重置密码，如果还不成功</p>
+<p>1）        windows 虚拟机 需要客户挂盘，在系统盘里生成脚本，修改密码</p>
+<p>2）        linux 虚拟机可以通过console 进入单用户模式修改密码，或者挂盘，然后使用chroot 切到后挂载的系统盘，使用passwd 命令重置密码</p>
+<p>1.        虚拟机自动重启</p>
+<p>答：查看下面平台信息</p>
+<p>FcTMMgmtSlaMeasurementEvent查看虚拟机SLA的信息</p>
+<p>MDS查看Node State变化情况</p>
+<p>Jumpbox上使用下面的命令获取Tenant/Node的Events</p>
+<p>如果没有查到具体问题，去看node events Check Tenant/Node Events ,</p>
+<p>如果发现有Event 17 or Xdisk error,  查看hostanalyzer获取Node的运行统计信息  找到有关xdisk 问题原因</p>
+<p>通过ACIS查看operation history  ACIS抓取Operation History 确认客户是否做相关操作</p>
+<p>如果平台正常，让客户提供/var/log所有日志，通过/var/log分析系统内部是否有异常</p>
+<p>答：ctrl+alt+delete 是否能调出任务管理器，重启Explorer.exe &amp; TermService 服务</p>
+<p>如果鼠标和键盘不能做任何操作，通过Powershell 进入5986端口, 通过命令重启Explorer.exe &amp; TermService 服务</p>
+<p>虚机上是否有其他帐户，可以尝试用其他帐户登陆，确认不是由于虚机当前的User Profile文件损坏导致黑屏</p>
+<p>客户尝试在办公区以外的internet看是否能正常登陆</p>
+<p>如果以上方法都没有解决，客户可以接受重启虚机的情况下，尝试重启虚机，看是否可以正常访问</p>
+<p>答：抽取虚机的performance看是否由于占用资源过高导致死机</p>
+<p>蓝屏让客户提供蓝屏的代码在微软网站查看蓝屏相关信息</p>
+<p>如果是Linux虚机，通过Console确认虚机是否也是处于死机状态，是否也不能做任何操作</p>
+<p>重启虚机看是否可以正常登陆</p>
+<p>重启恢复连接后，如果客户需要排查原因，让客户提供/var/log看是否能找是由于哪些进程过高导致死机，如果当前日志没有发现有相关信息，建议客户部署performance监控脚本，待下次复现时，让客户提供性能日志再进一步排查分析</p>
+<p>答：询问客户是否有做把虚机网卡改为静态IP,是否配置过防火墙以及第三方安全防护软件策略，管理平台是否配置过ACL以及NSG</p>
+<p>通过ACIS查看虚机的状态，是否正常运行</p>
+<p>从公网和内网测试RDP端口是否正常通信，其他服务端口是否可以通信，并查看Psping反馈结果</p>
+<p>ACIS抽取虚机的Screen snapshot确认虚机是否正常启动</p>
+<p>ACIS抽取ACL和NSG来确认没有做相关操作</p>
+<p>通过Jumbox从内网测试虚机Ping和Psping端口是否能正常通信</p>
+<p>如果RDP内外网也都不能正常通信，通过Powershell 进入5986端口, 通过命令重启Explorer.exe &amp; TermService 服务，确认是否是由于RDP服务导致连接失败</p>
+<p>如果以上方法都不行，再通过Console进一步排查</p>
+<p>ACIS抽取虚机启动日志，确认虚机是否启动成功，如果虚机重启成功，再确认ssh服务是否已经正常启动</p>
+<p>如果发现是由于VHD磁盘分区异常导致或者fstab写入以设备名称添加条目导致不能正常启动，提供客户虚机挂盘修复的操作</p>
+<p>比如客户不愿意去做挂盘或者完全不会相关操作，最后可以用Console的方式协助解决问题</p>
+<p>7.        虚拟机密码重置失败</p>
+<p>询问客户是否有其他可登陆的帐户, 可以用新帐户登陆系统，对旧帐户进行Reset password</p>
+<p>查看平台扩展是否安装成功</p>
+<p>尝试删除扩展，重新安装扩展</p>
+<p>确认Wagent是否安装成功</p>
+<p>尝试删除Wagent再重新安装, 再次尝试重置密码</p></article>

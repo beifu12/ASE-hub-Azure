@@ -1,0 +1,278 @@
+<article class="kb-article" data-title="使用 restful api对CDN执行刷新缓存操作"><h1>使用 restful api对CDN执行刷新缓存操作</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-09-30 13:05:54</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题工单：SR_2017082105030_緩存刷新顯示問題</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题工单：SR_2017082105030_緩存刷新顯示問題</li>
+</ul>
+<ul>
+<li>keyID：b504bf0c-3a6b-4a4a-85b1-c37a7eda210</li>
+</ul>
+<ul>
+<li>AzureCDN b504bf0c-3a6b-4a4a-85b1-c37a7eda210a:11D174256943558955ECBFEB7338E50227659E81D32CA71D7AC62248EEB367E 【这个值对应下图中Authoriation的值】</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1、首先根据CDN api签名机制进行签名操作</li>
+</ul>
+<ul>
+<li>1）以官方C#示例代码为例 【测试环境vs 2013】</li>
+</ul>
+<ul>
+<li>由于官方C#示例代码中使用到 HttpUtility/HMACSHA256这两个类，因此需要在本示例Class1.cs文件中添加以下两个引用</li>
+</ul>
+<ul>
+<li>using System.Web;</li>
+</ul>
+<ul>
+<li>using System.Security.Cryptography;</li>
+</ul>
+<ul>
+<li>在此C#中添加一个静态方法testtest以便后续在webform1.aspx中好调用</li>
+</ul>
+<ul>
+<li>创建一个webform1.aspx，在此页面中添加以下调用 &lt;%=WebApplication1.Class1.testtest()%&gt;</li>
+</ul>
+<ul>
+<li>添加以下信息在web.config以便目标浏览</li>
+</ul>
+<ul>
+<li>&lt;system.webServer&gt;</li>
+</ul>
+<ul>
+<li>&lt;/system.webServer&gt;</li>
+</ul>
+<ul>
+<li>至此前期的准备工作完毕</li>
+</ul>
+<ul>
+<li>2）使用postman执行请求</li>
+</ul>
+<ul>
+<li>获取endpointid的操作如下</li>
+</ul>
+<ul>
+<li>根据上一步代码中请求的参数 string requestUrl, string requestTime, string keyID, string keyValue, string httpMethod进行准备</li>
+</ul>
+<ul>
+<li>httpmethod：get [根据请求方式定，参考官方文档]</li>
+</ul>
+<ul>
+<li>目前，已经获取到后续postman中需要的所有参数，在postman中填写对应参数</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;EndpointId&quot;: &quot;8bedb759-87d4-11e7-a54b-0017fa00a611&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Settings&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;CustomDomain&quot;: &quot;2dream.com.cn&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Host&quot;: &quot;martinpcloud.chinacloudapp.cn&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Origin&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;Addresses&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;martinpcloud.chinacloudapp.cn&quot;</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;SchemePort&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;Scheme&quot;: &quot;Http&quot;,</li>
+</ul>
+<ul>
+<li>&quot;HttpPort&quot;: 80</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;ICP&quot;: &quot;辽ICP13000266号-1&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ServiceType&quot;: &quot;Web&quot;,</li>
+</ul>
+<ul>
+<li>&quot;AllowedScheme&quot;: &quot;Http&quot;,</li>
+</ul>
+<ul>
+<li>&quot;CName&quot;: &quot;2dream.com.cn.mschcdn.com&quot;</li>
+</ul>
+<ul>
+<li>&quot;Status&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;LifetimeStatus&quot;: &quot;Normal&quot;,</li>
+</ul>
+<ul>
+<li>&quot;CNameConfigured&quot;: true,</li>
+</ul>
+<ul>
+<li>&quot;FreeTrialExpired&quot;: false,</li>
+</ul>
+<ul>
+<li>&quot;TimeLastUpdated&quot;: &quot;2017-08-23T08:40:52+00:00&quot;</li>
+</ul>
+<ul>
+<li>2）执行缓存刷新操作</li>
+</ul>
+<ul>
+<li>postman中执行的参数与获取endpointid的参数，最大不同需要添加一个body执行刷新的文件名称【json格式】，指定刷新的文件</li>
+</ul>
+<ul>
+<li>执行缓存刷新后，会返回tasktrackid  这个值就是接下来要获取刷新进度的purgeid的值</li>
+</ul>
+<ul>
+<li>这个是算法要求的,   过期时间，是请求的时间和URL中的时间相比，不超过5分钟。</li>
+</ul>
+<ul>
+<li>调用API取值的时间都是最新的，所以一般不会有过期问题</li>
+</ul>
+<ul>
+<li>您截图的时区，要用UTC时间，也就是北京时间 -8小时。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1） 基本所有的操作都需要endpointid这个值以便确认对哪个具体的cdn端点执行操作</li>
+</ul>
+<ul>
+<li>&quot;IcpVerifyStatus&quot;: &quot;IcpVerified&quot;,</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>requestTime  : 2017-08-24 03:07  [执行命令的当前时间 UTC format yyyy-MM-dd hh:mm:ss]</li>
+</ul>
+<ul>
+<li>执行以上命令后，获取到以下信息：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>&lt;directoryBrowse enabled=&quot;true&quot; /&gt;</li>
+</ul>
+<ul>
+<li>keyValue：GJlNDA5MzktMTBkZS00N2U1LWIyYzAtNWRlOTY3NmViMmE5    [keyid/keyvaule 可以通过CDN新管理门户密钥管理进行创建得到]</li>
+</ul>
+<ul>
+<li>&quot;Enabled&quot;: true,</li>
+</ul>
+<ul>
+<li>后续生成Authorization的操作与获取endpointid的方式相同，只不过需要修改传入的值</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：缓存刷新-添加缓存刷新 <a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-add-purge" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-add-purge</a></li>
+</ul>
+<ul>
+<li>缓存刷新-查询缓存刷新进度 <a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-query-purge" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-query-purge</a></li>
+</ul>
+<ul>
+<li>CDN API签名机制 <a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-signature" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-signature</a></li>
+</ul>
+<ul>
+<li>请求的URI：<a href="https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints?apiVersion=1.0" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints?apiVersion=1.0</a></li>
+</ul>
+<ul>
+<li>requestUrl   : <a href="https://restapi.cdn.azure.cn/subscriptions/26f0f62d-79b0-4f16-a276-bc77fda898a2/endpoints?apiVersion=1.0" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/26f0f62d-79b0-4f16-a276-bc77fda898a2/endpoints?apiVersion=1.0</a></li>
+</ul>
+<ul>
+<li>将以上参数填入到之前步骤中testtest方法中，运行该项目即可在这个地址【<a href="http://localhost:52066/WebForm1.aspx】获取到类似以下信息：" target="_blank" rel="noopener">http://localhost:52066/WebForm1.aspx】获取到类似以下信息：</a></li>
+</ul>
+<ul>
+<li>需要使用的请求URI  <a href="https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/purges?apiVersion=1.0" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/purges?apiVersion=1.0</a></li>
+</ul>
+<ul>
+<li>获取刷新进度的URI：<a href="https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/purges/{purgeId}?apiVersion=1.0" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/purges/{purgeId}?apiVersion=1.0</a>  获取刷新进度显示成功，同时客户端访问相应图片已被更新</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>问题工单：SR_2017082105030_緩存刷新顯示問題</p>
+<p>参考文档：缓存刷新-添加缓存刷新 <a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-add-purge" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-add-purge</a></p>
+<p>缓存刷新-查询缓存刷新进度 <a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-query-purge" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-query-purge</a></p>
+<p>CDN API签名机制 <a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-signature" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-signature</a></p>
+<p>1、首先根据CDN api签名机制进行签名操作</p>
+<p>1）以官方C#示例代码为例 【测试环境vs 2013】</p>
+<p>由于官方C#示例代码中使用到 HttpUtility/HMACSHA256这两个类，因此需要在本示例Class1.cs文件中添加以下两个引用</p>
+<p>using System.Web;</p>
+<p>using System.Security.Cryptography;</p>
+<p>在此C#中添加一个静态方法testtest以便后续在webform1.aspx中好调用</p>
+<p>创建一个webform1.aspx，在此页面中添加以下调用 &lt;%=WebApplication1.Class1.testtest()%&gt;</p>
+<p>添加以下信息在web.config以便目标浏览</p>
+<p>&lt;system.webServer&gt;</p>
+<p>&lt;directoryBrowse enabled=&quot;true&quot; /&gt;</p>
+<p>&lt;/system.webServer&gt;</p>
+<p>至此前期的准备工作完毕</p>
+<p>2）使用postman执行请求</p>
+<p>1） 基本所有的操作都需要endpointid这个值以便确认对哪个具体的cdn端点执行操作</p>
+<p>获取endpointid的操作如下</p>
+<p>请求的URI：<a href="https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints?apiVersion=1.0" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints?apiVersion=1.0</a></p>
+<p>根据上一步代码中请求的参数 string requestUrl, string requestTime, string keyID, string keyValue, string httpMethod进行准备</p>
+<p>requestUrl   : <a href="https://restapi.cdn.azure.cn/subscriptions/26f0f62d-79b0-4f16-a276-bc77fda898a2/endpoints?apiVersion=1.0" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/26f0f62d-79b0-4f16-a276-bc77fda898a2/endpoints?apiVersion=1.0</a></p>
+<p>requestTime  : 2017-08-24 03:07  [执行命令的当前时间 UTC format yyyy-MM-dd hh:mm:ss]</p>
+<p>keyID：b504bf0c-3a6b-4a4a-85b1-c37a7eda210</p>
+<p>keyValue：GJlNDA5MzktMTBkZS00N2U1LWIyYzAtNWRlOTY3NmViMmE5    [keyid/keyvaule 可以通过CDN新管理门户密钥管理进行创建得到]</p>
+<p>httpmethod：get [根据请求方式定，参考官方文档]</p>
+<p>将以上参数填入到之前步骤中testtest方法中，运行该项目即可在这个地址【<a href="http://localhost:52066/WebForm1.aspx】获取到类似以下信息：" target="_blank" rel="noopener">http://localhost:52066/WebForm1.aspx】获取到类似以下信息：</a></p>
+<p>AzureCDN b504bf0c-3a6b-4a4a-85b1-c37a7eda210a:11D174256943558955ECBFEB7338E50227659E81D32CA71D7AC62248EEB367E 【这个值对应下图中Authoriation的值】</p>
+<p>目前，已经获取到后续postman中需要的所有参数，在postman中填写对应参数</p>
+<p>执行以上命令后，获取到以下信息：</p>
+<p>{</p>
+<p>&quot;EndpointId&quot;: &quot;8bedb759-87d4-11e7-a54b-0017fa00a611&quot;,</p>
+<p>&quot;Settings&quot;: {</p>
+<p>&quot;CustomDomain&quot;: &quot;2dream.com.cn&quot;,</p>
+<p>&quot;Host&quot;: &quot;martinpcloud.chinacloudapp.cn&quot;,</p>
+<p>&quot;Origin&quot;: {</p>
+<p>&quot;Addresses&quot;: [</p>
+<p>&quot;martinpcloud.chinacloudapp.cn&quot;</p>
+<p>],</p>
+<p>&quot;SchemePort&quot;: {</p>
+<p>&quot;Scheme&quot;: &quot;Http&quot;,</p>
+<p>&quot;HttpPort&quot;: 80</p>
+<p>}</p>
+<p>},</p>
+<p>&quot;ICP&quot;: &quot;辽ICP13000266号-1&quot;,</p>
+<p>&quot;ServiceType&quot;: &quot;Web&quot;,</p>
+<p>&quot;AllowedScheme&quot;: &quot;Http&quot;,</p>
+<p>&quot;CName&quot;: &quot;2dream.com.cn.mschcdn.com&quot;</p>
+<p>&quot;Status&quot;: {</p>
+<p>&quot;Enabled&quot;: true,</p>
+<p>&quot;IcpVerifyStatus&quot;: &quot;IcpVerified&quot;,</p>
+<p>&quot;LifetimeStatus&quot;: &quot;Normal&quot;,</p>
+<p>&quot;CNameConfigured&quot;: true,</p>
+<p>&quot;FreeTrialExpired&quot;: false,</p>
+<p>&quot;TimeLastUpdated&quot;: &quot;2017-08-23T08:40:52+00:00&quot;</p>
+<p>2）执行缓存刷新操作</p>
+<p>需要使用的请求URI  <a href="https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/purges?apiVersion=1.0" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/purges?apiVersion=1.0</a></p>
+<p>后续生成Authorization的操作与获取endpointid的方式相同，只不过需要修改传入的值</p>
+<p>postman中执行的参数与获取endpointid的参数，最大不同需要添加一个body执行刷新的文件名称【json格式】，指定刷新的文件</p>
+<p>执行缓存刷新后，会返回tasktrackid  这个值就是接下来要获取刷新进度的purgeid的值</p>
+<p>获取刷新进度的URI：<a href="https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/purges/{purgeId}?apiVersion=1.0" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/purges/{purgeId}?apiVersion=1.0</a>  获取刷新进度显示成功，同时客户端访问相应图片已被更新</p>
+<p>这个是算法要求的,   过期时间，是请求的时间和URL中的时间相比，不超过5分钟。</p>
+<p>调用API取值的时间都是最新的，所以一般不会有过期问题</p>
+<p>您截图的时区，要用UTC时间，也就是北京时间 -8小时。</p></article>

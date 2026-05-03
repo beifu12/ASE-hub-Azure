@@ -1,0 +1,141 @@
+<article class="kb-article" data-title="配置用于Container的 Azure Monitor 的代理数据收集（针对标准输出的日志）"><h1>配置用于Container的 Azure Monitor 的代理数据收集（针对标准输出的日志）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-01-09 14:54:30</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20200604</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20200604</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20200604</li>
+</ul>
+<ul>
+<li>Azure Monitor 支持对AKS群集的监视，其中监视容器非常重要，特别是针对运行大规模包含多个应用程序的群集时。默认情况下除了可以收集内存及处理器等指标，容器日志也会被收集。</li>
+</ul>
+<ul>
+<li>下载ConfigMap yaml模板文件，以container-azm-ms-agentconfig.yaml名称保存</li>
+</ul>
+<ul>
+<li>参考这个文档修改日志收集器设置并保存</li>
+</ul>
+<ul>
+<li># In the absense of this configmap, default value for exclude_namespaces = [&quot;kube-system&quot;]</li>
+</ul>
+<ul>
+<li># In the absense of this cofigmap, default value for exclude_namespaces = [&quot;kube-system&quot;]</li>
+</ul>
+<ul>
+<li>将以上 container-azm-ms-agentconfig.yaml发送到api server进行部署</li>
+</ul>
+<ul>
+<li>在配置生效之前需要花费几分钟时间进行配置更改，期间所有AKS群集上的omsagent pods将会被重启，此重启是滚动的，不会在同一时间点全部重启。</li>
+</ul>
+<ul>
+<li>Note：</li>
+</ul>
+<ul>
+<li>从Container工作流中收集stdout、stderr以及环境变量所支持的最低代理版本为ciprod06142019；</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>客户需求：Container log数据量庞大，考虑成本控制，需要设置/修改Log A Workspace上container log的收集设置</li>
+</ul>
+<ul>
+<li>检查 Log Entry Source:</li>
+</ul>
+<ul>
+<li>ContainerLog</li>
+</ul>
+<ul>
+<li>| summarize count() by LogEntrySource</li>
+</ul>
+<ul>
+<li>[log_collection_settings]</li>
+</ul>
+<ul>
+<li>[log_collection_settings.stdout]</li>
+</ul>
+<ul>
+<li>[log_collection_settings.stderr]</li>
+</ul>
+<ul>
+<li>Container log的源是stdout和stderr，通过ConfigMap配置文件我们可以禁用这些源将日志传递到Azure Log Analytics中；</li>
+</ul>
+<ul>
+<li>禁用的具体影响：用户将不会在Log页面查询到Container log，如果服务出现异常，用户也不可以从Log页面及时查询Container log来获取相关日志信息；</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>kubectl apply -f container-azm-ms-agentconfig.yaml</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>enabled = true  //选择true，默认会应用到所有群集节点/pod，除非在exclude中指定namespace</li>
+</ul>
+<ul>
+<li>exclude_namespaces = [&quot;kube-system&quot;]</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：如果需要调整container log的收集设置，请参考以下步骤：</li>
+</ul>
+<ul>
+<li># In the absense of this configmap, default value for enabled is true</li>
+</ul>
+<ul>
+<li># exclude_namespaces setting holds good only if enabled is set to true</li>
+</ul>
+<ul>
+<li># kube-system log collection is disabled by default in the absence of &#39;log_collection_settings.stdout&#39; setting. If you want to enable kube-system, remove it from the following setting.</li>
+</ul>
+<ul>
+<li># If you want to continue to disable kube-system log collection keep this namespace in the following setting and add any other namespace you want to disable log collection to the array.</li>
+</ul>
+<ul>
+<li># Default value for enabled is true</li>
+</ul>
+<ul>
+<li># kube-system log collection is disabled by default in the absence of &#39;log_collection_settings.stderr&#39; setting. If you want to enable kube-system, remove it from the following setting.</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20200604</p>
+<p>Azure Monitor 支持对AKS群集的监视，其中监视容器非常重要，特别是针对运行大规模包含多个应用程序的群集时。默认情况下除了可以收集内存及处理器等指标，容器日志也会被收集。</p>
+<p>客户需求：Container log数据量庞大，考虑成本控制，需要设置/修改Log A Workspace上container log的收集设置</p>
+<p>解决方案：如果需要调整container log的收集设置，请参考以下步骤：</p>
+<p>检查 Log Entry Source:</p>
+<p>ContainerLog</p>
+<p>| summarize count() by LogEntrySource</p>
+<p>下载ConfigMap yaml模板文件，以container-azm-ms-agentconfig.yaml名称保存</p>
+<p>参考这个文档修改日志收集器设置并保存</p>
+<p>[log_collection_settings]</p>
+<p>[log_collection_settings.stdout]</p>
+<h1>In the absense of this configmap, default value for enabled is true</h1>
+<p>enabled = true  //选择true，默认会应用到所有群集节点/pod，除非在exclude中指定namespace</p>
+<h1>exclude_namespaces setting holds good only if enabled is set to true</h1>
+<h1>kube-system log collection is disabled by default in the absence of &#39;log_collection_settings.stdout&#39; setting. If you want to enable kube-system, remove it from the following setting.</h1>
+<h1>If you want to continue to disable kube-system log collection keep this namespace in the following setting and add any other namespace you want to disable log collection to the array.</h1>
+<h1>In the absense of this configmap, default value for exclude_namespaces = [&quot;kube-system&quot;]</h1>
+<p>exclude_namespaces = [&quot;kube-system&quot;]</p>
+<p>[log_collection_settings.stderr]</p>
+<h1>Default value for enabled is true</h1>
+<h1>kube-system log collection is disabled by default in the absence of &#39;log_collection_settings.stderr&#39; setting. If you want to enable kube-system, remove it from the following setting.</h1>
+<h1>In the absense of this cofigmap, default value for exclude_namespaces = [&quot;kube-system&quot;]</h1>
+<p>将以上 container-azm-ms-agentconfig.yaml发送到api server进行部署</p>
+<p>kubectl apply -f container-azm-ms-agentconfig.yaml</p>
+<p>在配置生效之前需要花费几分钟时间进行配置更改，期间所有AKS群集上的omsagent pods将会被重启，此重启是滚动的，不会在同一时间点全部重启。</p>
+<p>Note：</p>
+<p>从Container工作流中收集stdout、stderr以及环境变量所支持的最低代理版本为ciprod06142019；</p>
+<p>Container log的源是stdout和stderr，通过ConfigMap配置文件我们可以禁用这些源将日志传递到Azure Log Analytics中；</p>
+<p>禁用的具体影响：用户将不会在Log页面查询到Container log，如果服务出现异常，用户也不可以从Log页面及时查询Container log来获取相关日志信息；</p></article>

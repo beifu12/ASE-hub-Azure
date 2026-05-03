@@ -1,0 +1,71 @@
+<article class="kb-article" data-title="Windows 监控单块磁盘使用情况百分比"><h1>Windows 监控单块磁盘使用情况百分比</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-09-22 18:25:19</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>关于监控Windows 虚拟机单块磁盘剩余空间，可使用自定义Free Space来实现。 具体操作步骤如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>关于监控Windows 虚拟机单块磁盘剩余空间，可使用自定义Free Space来实现。 具体操作步骤如下：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1.  登录虚拟机，获取磁盘剩余空间的指标名称</li>
+</ul>
+<ul>
+<li>或者直接在Performance Monitor 最下方直接选择对应的Counter à 右键 à 属性à data à 记录Data处Counters的名称</li>
+</ul>
+<ul>
+<li>注：大小写及空格均要与该名称一致。 否则即使在门户完成添加，也不会正常显示指标值。</li>
+</ul>
+<ul>
+<li>3. 指标处可看到E盘的剩余空间百分比</li>
+</ul>
+<ul>
+<li>5.  收到警告邮件</li>
+</ul>
+<ul>
+<li>如有多块儿磁盘（包含系统盘、数据盘），依次按上述操作即可。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>关于监控Windows 虚拟机单块磁盘剩余空间，可使用自定义Free Space来实现。 具体操作步骤如下：</li>
+</ul>
+<ul>
+<li>在Performance Monito à 添加 à LogicalDisk à Free Space(选择相应磁盘) à Addà OK</li>
+</ul>
+<ul>
+<li>Performance Monitor à 右键 à 属性 à data à 记录Data处Counters的名称。如E盘剩余空间百分比  \LogicalDisk(E:)\% Free Space。</li>
+</ul>
+<ul>
+<li>2.  在门户上自定义收集的性能指标，需要为虚拟机开启来宾级别监视。  诊断设置—性能计数器—自定义—添加\LogicalDisk(E:)\% Free Space，并保存设置。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>4.  添加经典警报处也可看到E盘剩余空间百分比。 如果虚拟机位于中国东部2或者中国北部2，需要使用命令行的方式创建指标警报。具体请参考官方文档 《如何在中国东部 2 北部 2 为 Windows 虚拟机创建警报规则》 <a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-howto-create-alert-rules-in-china-east2-or-north2" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-howto-create-alert-rules-in-china-east2-or-north2</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>关于监控Windows 虚拟机单块磁盘剩余空间，可使用自定义Free Space来实现。 具体操作步骤如下：</p>
+<p>1.  登录虚拟机，获取磁盘剩余空间的指标名称</p>
+<p>在Performance Monito à 添加 à LogicalDisk à Free Space(选择相应磁盘) à Addà OK</p>
+<p>Performance Monitor à 右键 à 属性 à data à 记录Data处Counters的名称。如E盘剩余空间百分比  \LogicalDisk(E:)\% Free Space。</p>
+<p>或者直接在Performance Monitor 最下方直接选择对应的Counter à 右键 à 属性à data à 记录Data处Counters的名称</p>
+<p>注：大小写及空格均要与该名称一致。 否则即使在门户完成添加，也不会正常显示指标值。</p>
+<p>2.  在门户上自定义收集的性能指标，需要为虚拟机开启来宾级别监视。  诊断设置—性能计数器—自定义—添加\LogicalDisk(E:)\% Free Space，并保存设置。</p>
+<p>3. 指标处可看到E盘的剩余空间百分比</p>
+<p>4.  添加经典警报处也可看到E盘剩余空间百分比。 如果虚拟机位于中国东部2或者中国北部2，需要使用命令行的方式创建指标警报。具体请参考官方文档 《如何在中国东部 2 北部 2 为 Windows 虚拟机创建警报规则》 <a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-howto-create-alert-rules-in-china-east2-or-north2" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/virtual-machines/aog-virtual-machines-howto-create-alert-rules-in-china-east2-or-north2</a></p>
+<p>5.  收到警告邮件</p>
+<p>如有多块儿磁盘（包含系统盘、数据盘），依次按上述操作即可。</p></article>

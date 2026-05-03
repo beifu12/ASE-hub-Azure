@@ -1,0 +1,102 @@
+<article class="kb-article" data-title="[Share]initrd creation timeout导致VM复制失败"><h1>[Share]initrd creation timeout导致VM复制失败</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Site recovery Azure to Azure</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-03-31 11:21:27</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题描述：用户2台Ubuntu 16.04 VM启用复制失败，报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题描述：用户2台Ubuntu 16.04 VM启用复制失败，报错：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2026.3.31</li>
+</ul>
+<ul>
+<li>关联工单：20260325400915</li>
+</ul>
+<ul>
+<li>问题解决：清理系统中过多的Kernel，确保update-initramfs可以执行成功。</li>
+</ul>
+<ul>
+<li>用户清理了陈旧的安装包和系统内核：</li>
+</ul>
+<ul>
+<li>分步的清理系统多余内核指令：</li>
+</ul>
+<ul>
+<li>uname -r</li>
+</ul>
+<ul>
+<li># 2. 列出所有要删除的旧内核（预览，不删除）</li>
+</ul>
+<ul>
+<li>dpkg -l | awk &#39;/linux-image-[0-9]/ {print $2}&#39; | grep -v $(uname -r) | sort -Vr | tail -n +3</li>
+</ul>
+<ul>
+<li># 3. 批量删除（真正执行清理）</li>
+</ul>
+<ul>
+<li>dpkg -l | awk &#39;/linux-image-[0-9]/ {print $2}&#39; | grep -v $(uname -r) | sort -Vr | tail -n +3 | sudo xargs apt-get purge -y</li>
+</ul>
+<ul>
+<li>sudo apt autoremove --purge -y</li>
+</ul>
+<ul>
+<li>sudo update-grub</li>
+</ul>
+<ul>
+<li>重新为VM启动复制成功。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题排查：</li>
+</ul>
+<ul>
+<li>检查磁盘剩余空间：剩余空间不算很小，/还有几个GB的空间。</li>
+</ul>
+<ul>
+<li># 1. 查看当前运行的内核（确认不会被删）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>手动运行：sudo update-initramfs -u  -k all  ；正常情况下该指令很快就能执行完成，如果有问题执行耗时长一些并报错。（没有拿到用户侧确切的报错信息，根据用户反馈是该VM中安装的内核版本过多，安装了69个Kernel，这一指令要执行成功需要消耗大量的磁盘空间，并导致脚本执行超时或卡死）；根据当时排查的剩余空间可以肯定不够这69个Kernel重新生成initramfs了。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li># 4. 清理残留文件 + 修复引导</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>查看内核版本信息，确认ASR支持该Ubuntu版本16.04：这个版本没有特殊Kernel版本要求：<a href="https://learn.microsoft.com/en-us/azure/site-recovery/azure-to-azure-support-matrix#supported-ubuntu-kernel-versions-for-azure-vms" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/site-recovery/azure-to-azure-support-matrix#supported-ubuntu-kernel-versions-for-azure-vms</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026.3.31</p>
+<p>关联工单：20260325400915</p>
+<p>问题描述：用户2台Ubuntu 16.04 VM启用复制失败，报错：</p>
+<p>问题解决：清理系统中过多的Kernel，确保update-initramfs可以执行成功。</p>
+<p>问题排查：</p>
+<p>查看内核版本信息，确认ASR支持该Ubuntu版本16.04：这个版本没有特殊Kernel版本要求：<a href="https://learn.microsoft.com/en-us/azure/site-recovery/azure-to-azure-support-matrix#supported-ubuntu-kernel-versions-for-azure-vms" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/site-recovery/azure-to-azure-support-matrix#supported-ubuntu-kernel-versions-for-azure-vms</a></p>
+<p>检查磁盘剩余空间：剩余空间不算很小，/还有几个GB的空间。</p>
+<p>手动运行：sudo update-initramfs -u  -k all  ；正常情况下该指令很快就能执行完成，如果有问题执行耗时长一些并报错。（没有拿到用户侧确切的报错信息，根据用户反馈是该VM中安装的内核版本过多，安装了69个Kernel，这一指令要执行成功需要消耗大量的磁盘空间，并导致脚本执行超时或卡死）；根据当时排查的剩余空间可以肯定不够这69个Kernel重新生成initramfs了。</p>
+<p>用户清理了陈旧的安装包和系统内核：</p>
+<p>分步的清理系统多余内核指令：</p>
+<h1>1. 查看当前运行的内核（确认不会被删）</h1>
+<p>uname -r</p>
+<h1>2. 列出所有要删除的旧内核（预览，不删除）</h1>
+<p>dpkg -l | awk &#39;/linux-image-[0-9]/ {print $2}&#39; | grep -v $(uname -r) | sort -Vr | tail -n +3</p>
+<h1>3. 批量删除（真正执行清理）</h1>
+<p>dpkg -l | awk &#39;/linux-image-[0-9]/ {print $2}&#39; | grep -v $(uname -r) | sort -Vr | tail -n +3 | sudo xargs apt-get purge -y</p>
+<h1>4. 清理残留文件 + 修复引导</h1>
+<p>sudo apt autoremove --purge -y</p>
+<p>sudo update-grub</p>
+<p>重新为VM启动复制成功。</p></article>

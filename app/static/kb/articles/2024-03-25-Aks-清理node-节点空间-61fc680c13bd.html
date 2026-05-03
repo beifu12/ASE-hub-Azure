@@ -1,0 +1,68 @@
+<article class="kb-article" data-title="Aks 清理node 节点空间"><h1>Aks 清理node 节点空间</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-03-25 12:58:37</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：SR_20231208267295 _ 我想咨询一下，现在的k8s集群有一个节点的磁盘达到了80%，请问怎么解决呢</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：SR_20231208267295 _ 我想咨询一下，现在的k8s集群有一个节点的磁盘达到了80%，请问怎么解决呢</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考工单：SR_20231208267295 _ 我想咨询一下，现在的k8s集群有一个节点的磁盘达到了80%，请问怎么解决呢</li>
+</ul>
+<ul>
+<li>节点登陆</li>
+</ul>
+<ul>
+<li>常见可能原因如下：</li>
+</ul>
+<ul>
+<li>1.image 缓存过多，如何清理请参考：</li>
+</ul>
+<ul>
+<li>参考节点登陆，切换到root bash后执行</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2.pod 日志引用了host 主机的磁盘空间，此问题由pod 部署的yaml判断，mountpath 是否引用本地磁盘空间，重点检查pod 运行时间较长的</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/node-access" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/node-access</a></li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.io/zh-cn/docs/tasks/debug/debug-cluster/crictl/#%E6%8E%A5%E4%B8%8B%E6%9D%A5" target="_blank" rel="noopener">https://kubernetes.io/zh-cn/docs/tasks/debug/debug-cluster/crictl/#%E6%8E%A5%E4%B8%8B%E6%9D%A5</a></li>
+</ul>
+<ul>
+<li><a href="https://blog.csdn.net/zhijiesmile/article/details/121655812" target="_blank" rel="noopener">https://blog.csdn.net/zhijiesmile/article/details/121655812</a></li>
+</ul>
+<ul>
+<li>3.启用pod的生命周期管理，启用垃圾回收<a href="https://kubernetes.io/zh-cn/docs/concepts/workloads/pods/pod-lifecycle/" target="_blank" rel="noopener">https://kubernetes.io/zh-cn/docs/concepts/workloads/pods/pod-lifecycle/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023/12/15</p>
+<p>参考工单：SR_20231208267295 _ 我想咨询一下，现在的k8s集群有一个节点的磁盘达到了80%，请问怎么解决呢</p>
+<p>节点登陆</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/node-access" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/node-access</a></p>
+<p>常见可能原因如下：</p>
+<p>1.image 缓存过多，如何清理请参考：</p>
+<p>参考节点登陆，切换到root bash后执行</p>
+<p><a href="https://kubernetes.io/zh-cn/docs/tasks/debug/debug-cluster/crictl/#%E6%8E%A5%E4%B8%8B%E6%9D%A5" target="_blank" rel="noopener">https://kubernetes.io/zh-cn/docs/tasks/debug/debug-cluster/crictl/#%E6%8E%A5%E4%B8%8B%E6%9D%A5</a></p>
+<p><a href="https://blog.csdn.net/zhijiesmile/article/details/121655812" target="_blank" rel="noopener">https://blog.csdn.net/zhijiesmile/article/details/121655812</a></p>
+<p>2.pod 日志引用了host 主机的磁盘空间，此问题由pod 部署的yaml判断，mountpath 是否引用本地磁盘空间，重点检查pod 运行时间较长的</p>
+<p>3.启用pod的生命周期管理，启用垃圾回收<a href="https://kubernetes.io/zh-cn/docs/concepts/workloads/pods/pod-lifecycle/" target="_blank" rel="noopener">https://kubernetes.io/zh-cn/docs/concepts/workloads/pods/pod-lifecycle/</a></p></article>

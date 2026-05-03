@@ -1,0 +1,88 @@
+<article class="kb-article" data-title="CDN不能访问密钥保管库"><h1>CDN不能访问密钥保管库</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-26 17:38:43</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>如果在网络设置中选择Allow public access from all networks则CDN访问Keyvault正常，报错消失</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>如果在网络设置中选择Allow public access from all networks则CDN访问Keyvault正常，报错消失</li>
+</ul>
+<ul>
+<li>对于Azure China来说，无法实现允许部分网络访问Keyvault来配置CDN与Keyvault的集成</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2024.8.26</li>
+</ul>
+<ul>
+<li>问题描述</li>
+</ul>
+<ul>
+<li>查阅文档发现</li>
+</ul>
+<ul>
+<li>对于Azure Global来说CDN在KeyVault的受信任微软服务列表中Azure Key Vault 的虚拟网络服务终结点 | Microsoft Learn，所以客户可以在Keyvault防火墙中配置允许部分网络访问Keyvault。</li>
+</ul>
+<ul>
+<li>然而172.18.0.121的这类内网地址不支持加入到Keyvault防火墙白名单中</li>
+</ul>
+<ul>
+<li>问题原因</li>
+</ul>
+<ul>
+<li>Azure China中CDN不在Keyvault信任的微软服务列表中，且源地址不支持加入到防火墙白名单中</li>
+</ul>
+<ul>
+<li>对于Azure China来说，要正常配置CDN与Keyvault集成，必须在Keyvault网络设置中允许所有网络公共访问</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>配置CDN与KeyVault集成时提示权限问题无法访问密钥保管库，但已经检查过Keyvault中授予CDN应用程序的权限没有问题</li>
+</ul>
+<ul>
+<li>排查步骤</li>
+</ul>
+<ul>
+<li>经过确认客户Keyvault网络设置中配置了Allow public access from specific virtual networks and IP addresses并且勾选了Allow trusted Microsoft services to bypass this firewall的选项</li>
+</ul>
+<ul>
+<li>为Keyvault开启诊断设置，检查Keyvault的访问日志，发现此次访问的CDN节点源IP地址是172.18.0.121，因不在Keyvault防火墙的放行名单被拦截</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>然而Azure China CDN并不在Keyvault受信任的微软服务列表中Azure Key Vault 的虚拟网络服务终结点 | Azure Docs，故考虑是否能通过将CDN节点IP或网段加入到Keyvault防火墙白名单以修复此问题</li>
+</ul>
+<ul>
+<li>解决方案</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024.8.26</p>
+<p>问题描述</p>
+<p>配置CDN与KeyVault集成时提示权限问题无法访问密钥保管库，但已经检查过Keyvault中授予CDN应用程序的权限没有问题</p>
+<p>排查步骤</p>
+<p>经过确认客户Keyvault网络设置中配置了Allow public access from specific virtual networks and IP addresses并且勾选了Allow trusted Microsoft services to bypass this firewall的选项</p>
+<p>如果在网络设置中选择Allow public access from all networks则CDN访问Keyvault正常，报错消失</p>
+<p>查阅文档发现</p>
+<p>对于Azure Global来说CDN在KeyVault的受信任微软服务列表中Azure Key Vault 的虚拟网络服务终结点 | Microsoft Learn，所以客户可以在Keyvault防火墙中配置允许部分网络访问Keyvault。</p>
+<p>然而Azure China CDN并不在Keyvault受信任的微软服务列表中Azure Key Vault 的虚拟网络服务终结点 | Azure Docs，故考虑是否能通过将CDN节点IP或网段加入到Keyvault防火墙白名单以修复此问题</p>
+<p>为Keyvault开启诊断设置，检查Keyvault的访问日志，发现此次访问的CDN节点源IP地址是172.18.0.121，因不在Keyvault防火墙的放行名单被拦截</p>
+<p>然而172.18.0.121的这类内网地址不支持加入到Keyvault防火墙白名单中</p>
+<p>对于Azure China来说，无法实现允许部分网络访问Keyvault来配置CDN与Keyvault的集成</p>
+<p>问题原因</p>
+<p>Azure China中CDN不在Keyvault信任的微软服务列表中，且源地址不支持加入到防火墙白名单中</p>
+<p>解决方案</p>
+<p>对于Azure China来说，要正常配置CDN与Keyvault集成，必须在Keyvault网络设置中允许所有网络公共访问</p></article>

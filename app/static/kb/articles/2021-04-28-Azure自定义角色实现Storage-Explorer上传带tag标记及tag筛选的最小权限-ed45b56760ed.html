@@ -1,0 +1,55 @@
+<article class="kb-article" data-title="Azure自定义角色实现Storage Explorer上传带tag标记及tag筛选的最小权限"><h1>Azure自定义角色实现Storage Explorer上传带tag标记及tag筛选的最小权限</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-04-28 15:05:58</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>工单号：SR_2021042893801_[MS-LED]用户无法在使用Azure storage explorer上传文件时添加标记</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>工单号：SR_2021042893801_[MS-LED]用户无法在使用Azure storage explorer上传文件时添加标记</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>启用storage explorer中容器的tag筛选功能必须在存储账户级别进行赋权。为保证权限最小化，我再次克隆了读者角色并添加筛选器功能的权限。</li>
+</ul>
+<ul>
+<li>我账户在容器级别最终权限如下：</li>
+</ul>
+<ul>
+<li>自定义角色功能在修改权限后并不会立刻生效，需要等待几分钟。同时为了更快看到效果，Storage explorer工具也要进行连接清除和重新连接的操作。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>首先我在容器级别克隆了“存储blob数据参与者权限”，添加存储数据操作的3个权限。此步骤可以实现上传和修改带tags的blob文件。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>需求是限制用户在容器级别最小的上传下载权限，但是想增加使用storage explorer工具在上传文件时写tag的功能，并可以通过工具的筛选功能对tag进行筛选。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>官方文档：<a href="https://docs.azure.cn/zh-cn/role-based-access-control/resource-provider-operations#microsoftstorage" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/role-based-access-control/resource-provider-operations#microsoftstorage</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>WangZhaoqing</p>
+<p>工单号：SR_2021042893801_[MS-LED]用户无法在使用Azure storage explorer上传文件时添加标记</p>
+<p>官方文档：<a href="https://docs.azure.cn/zh-cn/role-based-access-control/resource-provider-operations#microsoftstorage" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/role-based-access-control/resource-provider-operations#microsoftstorage</a></p>
+<p>需求是限制用户在容器级别最小的上传下载权限，但是想增加使用storage explorer工具在上传文件时写tag的功能，并可以通过工具的筛选功能对tag进行筛选。</p>
+<p>首先我在容器级别克隆了“存储blob数据参与者权限”，添加存储数据操作的3个权限。此步骤可以实现上传和修改带tags的blob文件。</p>
+<p>启用storage explorer中容器的tag筛选功能必须在存储账户级别进行赋权。为保证权限最小化，我再次克隆了读者角色并添加筛选器功能的权限。</p>
+<p>我账户在容器级别最终权限如下：</p>
+<p>自定义角色功能在修改权限后并不会立刻生效，需要等待几分钟。同时为了更快看到效果，Storage explorer工具也要进行连接清除和重新连接的操作。</p></article>

@@ -1,0 +1,75 @@
+<article class="kb-article" data-title="RDP内部错误（IIS Crypto工具导致）"><h1>RDP内部错误（IIS Crypto工具导致）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-10-25 11:23:16</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20211224</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20211224</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20211224</li>
+</ul>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>case：SR__内部出现错误</li>
+</ul>
+<ul>
+<li>碰到RDP报内部错误的新原因，用户使用了IIS Crypto工具导致安全层认证问题引起内部错误。</li>
+</ul>
+<ul>
+<li>此问题解决方式也很暴力，直接进注册表</li>
+</ul>
+<ul>
+<li>HKLM SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL</li>
+</ul>
+<ul>
+<li>路径下删除工具添加的相关选项</li>
+</ul>
+<ul>
+<li>可以看出这个工具添加的值与注册表是匹配的，通常hashes与Key Exchanges中的设置对RDP登录影响较大</li>
+</ul>
+<ul>
+<li>清除注册表的配置后再次打开IIS Crypto工具时相关配置都会变为灰色，如有需要重新再勾选开启即可。</li>
+</ul>
+<ul>
+<li>此工单中测试直接勾选TLS 1.1 、TLS 1.2、AES 128、AES 256后是不会影响RDP登录的。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>但此链接中的解决方案并不能解决当前问题。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>用户问题网上的链接：<a href="https://www.windowstechupdates.com/remote-desktop-connection-internal-error-occurred/" target="_blank" rel="noopener">https://www.windowstechupdates.com/remote-desktop-connection-internal-error-occurred/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20211224</p>
+<p>WangZhaoqing</p>
+<p>case：SR__内部出现错误</p>
+<p>碰到RDP报内部错误的新原因，用户使用了IIS Crypto工具导致安全层认证问题引起内部错误。</p>
+<p>用户问题网上的链接：<a href="https://www.windowstechupdates.com/remote-desktop-connection-internal-error-occurred/" target="_blank" rel="noopener">https://www.windowstechupdates.com/remote-desktop-connection-internal-error-occurred/</a></p>
+<p>但此链接中的解决方案并不能解决当前问题。</p>
+<p>此问题解决方式也很暴力，直接进注册表</p>
+<p>HKLM SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL</p>
+<p>路径下删除工具添加的相关选项</p>
+<p>可以看出这个工具添加的值与注册表是匹配的，通常hashes与Key Exchanges中的设置对RDP登录影响较大</p>
+<p>清除注册表的配置后再次打开IIS Crypto工具时相关配置都会变为灰色，如有需要重新再勾选开启即可。</p>
+<p>此工单中测试直接勾选TLS 1.1 、TLS 1.2、AES 128、AES 256后是不会影响RDP登录的。</p></article>

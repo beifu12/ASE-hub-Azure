@@ -1,0 +1,84 @@
+<article class="kb-article" data-title="Windows虚拟机远程连接，提示An internal error has occurred（由于C:\ProgramData\Microsoft\Crypto\RSA\MachineKeys这个文件夹的权限以及里面的RDP machine key的权限问题，导致Remote Desktop证书无法续订）"><h1>Windows虚拟机远程连接，提示An internal error has occurred（由于C:\ProgramData\Microsoft\Crypto\RSA\MachineKeys这个文件夹的权限以及里面的RDP machine key的权限问题，导致Remote Desktop证书无法续订）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RDP_SSH</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2025-03-13 17:30:09</li>
+<li>JD 相关性: 售后排障; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Windows虚拟机远程连接时提示An internal error has occurred.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Windows虚拟机远程连接时提示An internal error has occurred.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>1．我们参考以下文档，更改SecurityLayer和UserAuthentication的键值为0后，可以RDP连接。</li>
+</ul>
+<ul>
+<li>reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services&quot; /v SecurityLayer /t REG_DWORD /d 0 /f</li>
+</ul>
+<ul>
+<li>reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services&quot; /v UserAuthentication /t REG_DWORD /d 0 /f</li>
+</ul>
+<ul>
+<li>实际操作中，我们将C:\ProgramData\Microsoft\Crypto\RSA\MachineKeys重命名，并Remote Desktop Services service后，这个文件夹以及里面的文件会重新生成。</li>
+</ul>
+<ul>
+<li>5．将SecurityLayer和UserAuthentication的键值还原后，可以RDP连接，问题解决。</li>
+</ul>
+<ul>
+<li>reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services&quot; /v SecurityLayer /t REG_DWORD /d 2 /f</li>
+</ul>
+<ul>
+<li>reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services&quot; /v UserAuthentication /t REG_DWORD /d 1 /f</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查和解决：</li>
+</ul>
+<ul>
+<li>2．我们检查以下服务都是正常启动的。</li>
+</ul>
+<ul>
+<li>3．我们参考以下步骤，查看Remote Desktop证书已经过期，删除过期的证书，并重启emote Desktop Services service服务后，证书没有生成。</li>
+</ul>
+<ul>
+<li>检查Remote Desktop证书重新生成。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>4．官方文档建议C:\ProgramData\Microsoft\Crypto\RSA\MachineKeys这个文件夹的权限以及里面的RDP machine key的权限。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/troubleshoot/windows-server/remote/internal-error-has-occurred-connecting-remote-machine#verify-if-the-error-is-related-to-the-encryption-negotiation" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/troubleshoot/windows-server/remote/internal-error-has-occurred-connecting-remote-machine#verify-if-the-error-is-related-to-the-encryption-negotiation</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025-03-13</p>
+<p>问题描述：</p>
+<p>Windows虚拟机远程连接时提示An internal error has occurred.</p>
+<p>排查和解决：</p>
+<p>1．我们参考以下文档，更改SecurityLayer和UserAuthentication的键值为0后，可以RDP连接。</p>
+<p><a href="https://learn.microsoft.com/en-us/troubleshoot/windows-server/remote/internal-error-has-occurred-connecting-remote-machine#verify-if-the-error-is-related-to-the-encryption-negotiation" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/troubleshoot/windows-server/remote/internal-error-has-occurred-connecting-remote-machine#verify-if-the-error-is-related-to-the-encryption-negotiation</a></p>
+<p>reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services&quot; /v SecurityLayer /t REG_DWORD /d 0 /f</p>
+<p>reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services&quot; /v UserAuthentication /t REG_DWORD /d 0 /f</p>
+<p>2．我们检查以下服务都是正常启动的。</p>
+<p>3．我们参考以下步骤，查看Remote Desktop证书已经过期，删除过期的证书，并重启emote Desktop Services service服务后，证书没有生成。</p>
+<p>4．官方文档建议C:\ProgramData\Microsoft\Crypto\RSA\MachineKeys这个文件夹的权限以及里面的RDP machine key的权限。</p>
+<p>实际操作中，我们将C:\ProgramData\Microsoft\Crypto\RSA\MachineKeys重命名，并Remote Desktop Services service后，这个文件夹以及里面的文件会重新生成。</p>
+<p>检查Remote Desktop证书重新生成。</p>
+<p>5．将SecurityLayer和UserAuthentication的键值还原后，可以RDP连接，问题解决。</p>
+<p>reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services&quot; /v SecurityLayer /t REG_DWORD /d 2 /f</p>
+<p>reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services&quot; /v UserAuthentication /t REG_DWORD /d 1 /f</p></article>

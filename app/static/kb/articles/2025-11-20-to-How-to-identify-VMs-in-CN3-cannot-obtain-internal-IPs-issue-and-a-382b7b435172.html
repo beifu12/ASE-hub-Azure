@@ -1,0 +1,881 @@
+<article class="kb-article" data-title="[to  ]How to identify VMs in CN3 cannot obtain internal IPs issue and action needed"><h1>[to  ]How to identify VMs in CN3 cannot obtain internal IPs issue and action needed</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-11-20 11:27:17</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>[to ]How to identify VMs in CN3 cannot obtain internal IPs issue and action needed</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>[to  ]How to identify VMs in CN3 cannot obtain internal IPs issue and action needed</li>
+</ul>
+<ul>
+<li>To improve the mitigation efficiency, if ICM 2 was raised by 21V regarding this issue, please let @Philip Wang know the ICM link, Philip will work as the POC to bridge communicate with PG.</li>
+</ul>
+<ul>
+<li>后续关于无法获取node ip地址的问题，如果我们给wasu升级Sev 2的工单后，再给css的Philip 在Teams留言一下，并把ICM号码给philip</li>
+</ul>
+<ul>
+<li>Please share the below information to PoD member, read through about how to identify the issue and the action needed. Follow the practice if same issue received.</li>
+</ul>
+<ul>
+<li>VMs in CN3 cannot obtain internal IPs</li>
+</ul>
+<ul>
+<li>The customer reported this issue on 11/22/2022 for the first time.</li>
+</ul>
+<ul>
+<li>[Symptoms]</li>
+</ul>
+<ul>
+<li>2.   OSProvisioningTimeOut</li>
+</ul>
+<ul>
+<li>5.   Provisioning State:    Failed</li>
+</ul>
+<ul>
+<li>在 System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket&amp; socket, IPAddress&amp; address, ConnectSocketState state, IAsyncResult asyncResult, Exception&amp; exception)</li>
+</ul>
+<ul>
+<li>--- 内部异常堆栈跟踪的结尾 ---</li>
+</ul>
+<ul>
+<li>---&gt; (内部异常 #0) System.Net.Http.HttpRequestException: 发送请求时出错。 ---&gt; System.Net.WebException: 无法连接到远程服务器 ---&gt; System.Net.Sockets.SocketException: 向一个无法连接的网络尝试了一个套接字操作。 168.63.129.16:80</li>
+</ul>
+<ul>
+<li>--- 内部异常堆栈跟踪的结尾 ---&lt;---</li>
+</ul>
+<ul>
+<li>[00000006] 2022-11-22T06:03:28.544Z [INFO]  Unable to get address from DHCP and no response from well known fabric address.</li>
+</ul>
+<ul>
+<li>[00000006] 2022-11-22T06:03:28.544Z [ERROR] Failed to obtain fabric URI. ControlSystem not initialized. Escalate to ICM - &#39;Cloudnet/VNET&#39;.</li>
+</ul>
+<ul>
+<li>2023-02-08 07:23:55,090 - azure.py[DEBUG]: dhclient error stream: Internet Systems Consortium DHCP Client 4.4.1</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.046337Z ERROR Daemon /proc/net/route contains no routes</li>
+</ul>
+<ul>
+<li>region, requestEntity, errorDetails</li>
+</ul>
+<ul>
+<li>errorDetails</li>
+</ul>
+<ul>
+<li>12ce75cd-4dbc-4403-a248-bf8d3ab53b09</li>
+</ul>
+<ul>
+<li>InternalDetail: RoleInstanceContainerProvisioningDetails: MediaStorageAccountName:ProvisionVmWithUpdate; MediaStorageHostName:ProvisionVmWithUpdate; MediaRelativeUrl:ProvisionVmWithUpdate; MediaTenantSecretId:00000000-0000-0000-0000-000000000000; ProvisioningResult:Timeout; ProvisioningResultMessage:; CertificateThumbprint:; RequestCreatedDateTime:1/1/0001 12:00:00 AM; LastUpdatedDateTime:1/1/0001 12:00:00 AM; RequestIncarnation:6d2e8f64-e78c-40f0-8bb2-478c27173694</li>
+</ul>
+<ul>
+<li>NM programming pending for version 9: Interface Id: 8c8a577c-54fc-41a1-a19d-7895d6a0d3ea_0017FA06CE62</li>
+</ul>
+<ul>
+<li>IsProgrammingPending: True</li>
+</ul>
+<ul>
+<li>IsDhcpRehydrationPending: True</li>
+</ul>
+<ul>
+<li>IsDhcpGoalStatePublishPending: False</li>
+</ul>
+<ul>
+<li>ProgrammingError : 2023-04-17 15:30:34.685 : SwitchPortNotPresent - Switchport not present</li>
+</ul>
+<ul>
+<li>ProgrammingErrorCodes : 1000</li>
+</ul>
+<ul>
+<li>1)  If it keeps reporting &quot;NM programming pending for version x&quot; and &quot;SwitchPortNotPresent - Switchport not present&quot;,  it must encounter the issue of unable to obtain IP and vfp rule exceptions.)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Tuesday, April 18, 2023</li>
+</ul>
+<ul>
+<li>2:47 PM</li>
+</ul>
+<ul>
+<li>[Action Needed]</li>
+</ul>
+<ul>
+<li>The key point is besides doing quick mitigation steps (redeploy the VMs to other node and renew the cert on the node), we needs PG&#39;s confirmation on below questions</li>
+</ul>
+<ul>
+<li>The list of nodes that have cert expired and cert expire risk.</li>
+</ul>
+<ul>
+<li>The ETA of permanent fix.  Because customer like</li>
+</ul>
+<ul>
+<li>[Background]</li>
+</ul>
+<ul>
+<li>PM replied it will still take another six weeks to complete the full deployment in IcM 373576575 on Apr 14 2023.</li>
+</ul>
+<ul>
+<li>1.  The VM should be locating at &quot;China North 3&quot; and mostly on these cluster (Possible but not limited to):</li>
+</ul>
+<ul>
+<li>ZQZ20PrdApp06</li>
+</ul>
+<ul>
+<li>ZQZ20PrdApp07</li>
+</ul>
+<ul>
+<li>ZQZ22PrdApp07</li>
+</ul>
+<ul>
+<li>ZQZ24PrdApp03</li>
+</ul>
+<ul>
+<li>3.  No network connection from &#39;Boot diagnostics</li>
+</ul>
+<ul>
+<li>4.  VM status is running, but Agent status is Not Ready.</li>
+</ul>
+<ul>
+<li>在 System.Net.Sockets.Socket.InternalEndConnect(IAsyncResult asyncResult)</li>
+</ul>
+<ul>
+<li>在 System.Net.Sockets.Socket.EndConnect(IAsyncResult asyncResult)</li>
+</ul>
+<ul>
+<li>在 System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)</li>
+</ul>
+<ul>
+<li>在 System.Net.Http.HttpClientHandler.GetResponseCallback(IAsyncResult ar)</li>
+</ul>
+<ul>
+<li>在 System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)</li>
+</ul>
+<ul>
+<li>DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 15 (xid=0xfdece74f)</li>
+</ul>
+<ul>
+<li>DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 12 (xid=0xfdece74f)</li>
+</ul>
+<ul>
+<li>No DHCPOFFERS received.</li>
+</ul>
+<ul>
+<li>No working leases in persistent database - sleeping.</li>
+</ul>
+<ul>
+<li>execve (/bin/true, ...): Permission denied</li>
+</ul>
+<ul>
+<li>Copyright 2004-2018 Internet Systems Consortium.</li>
+</ul>
+<ul>
+<li>All rights reserved.</li>
+</ul>
+<ul>
+<li>Listening on LPF/eth0/00:17:fa:05:4e:73</li>
+</ul>
+<ul>
+<li>Sending on   LPF/eth0/00:17:fa:05:4e:73</li>
+</ul>
+<ul>
+<li>Sending on   Socket/fallback</li>
+</ul>
+<ul>
+<li>DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 3 (xid=0x8dbaf46d)</li>
+</ul>
+<ul>
+<li>DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 7 (xid=0x8dbaf46d)</li>
+</ul>
+<ul>
+<li>DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 12 (xid=0x8dbaf46d)</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:23.017245Z WARNING Daemon Daemon ended with exception -- Sleep 15 seconds and restart daemon</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.032889Z INFO Daemon Run daemon</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.038805Z INFO Daemon Using cloud-init for provisioning</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.039751Z INFO Daemon Running CloudInit provisioning handler</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.042697Z INFO Daemon WireServer endpoint is not found. Rerun dhcp handler</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.043109Z INFO Daemon Test for route to 168.63.129.16</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.043544Z WARNING Daemon No route exists to 168.63.129.16</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.044322Z INFO Daemon looking for leases in path [/var/lib/dhcp/dhclient.*.leases]</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.044754Z INFO Daemon cached endpoint not found</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.045117Z INFO Daemon Cache exists [False]</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.045517Z INFO Daemon Send dhcp request</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.045925Z INFO Daemon Examine /proc/net/route for primary interface</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.046727Z WARNING Daemon Could not determine primary interface, please ensure /proc/net/route is correct</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.047111Z WARNING Daemon Contents of /proc/net/route:</li>
+</ul>
+<ul>
+<li>Iface        Destination        Gateway         Flags        RefCnt        Use        Metric        Mask                MTU        Window        IRTT</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.047514Z WARNING Daemon Primary interface examination will retry silently</li>
+</ul>
+<ul>
+<li>ApiQosEvent</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt;= datetime(&#39;2023-4-17 15:30:12&#39;) and TIMESTAMP &lt;= datetime(&#39;2023-4-17 16:05:53&#39;)</li>
+</ul>
+<ul>
+<li>| where subscriptionId == split(uri,&quot;/&quot;)[2]  and resourceName contains split(uri,&quot;/&quot;)[8]</li>
+</ul>
+<ul>
+<li>| where resultCode contains &quot;OSProvisioningTimedOut&quot;</li>
+</ul>
+<ul>
+<li>| extend startTime=PreciseTimeStamp-e2EDurationInMilliseconds*1ms</li>
+</ul>
+<ul>
+<li>| extend OperationDuration=e2EDurationInMilliseconds*1ms</li>
+</ul>
+<ul>
+<li>| project startTime, PreciseTimeStamp, OperationDuration, resourceGroupName, resourceName, operationName,  resultCode, httpStatusCode, operationId,correlationId,</li>
+</ul>
+<ul>
+<li>startTime</li>
+</ul>
+<ul>
+<li>PreciseTimeStamp</li>
+</ul>
+<ul>
+<li>OperationDuration</li>
+</ul>
+<ul>
+<li>resourceGroupName</li>
+</ul>
+<ul>
+<li>resourceName</li>
+</ul>
+<ul>
+<li>operationName</li>
+</ul>
+<ul>
+<li>resultCode</li>
+</ul>
+<ul>
+<li>httpStatusCode</li>
+</ul>
+<ul>
+<li>operationId</li>
+</ul>
+<ul>
+<li>correlationId</li>
+</ul>
+<ul>
+<li>region</li>
+</ul>
+<ul>
+<li>requestEntity</li>
+</ul>
+<ul>
+<li>2023-04-17 15:30:24.6170759</li>
+</ul>
+<ul>
+<li>2023-04-17 15:50:41.3080759</li>
+</ul>
+<ul>
+<li>00:20:16.6910000</li>
+</ul>
+<ul>
+<li>RG-PRD-CN3-NGBI-KC</li>
+</ul>
+<ul>
+<li>ngbiprdHvtZ-build-sparkworker8</li>
+</ul>
+<ul>
+<li>VirtualMachines.ResourceOperation.PUT</li>
+</ul>
+<ul>
+<li>OSProvisioningTimedOut</li>
+</ul>
+<ul>
+<li>201</li>
+</ul>
+<ul>
+<li>b7215782-6d7d-779c-de46-577f5eb4a2fa</li>
+</ul>
+<ul>
+<li>ChinaNorth3</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;ngbiprdHvtZ-build-sparkworker8&quot;,</li>
+</ul>
+<ul>
+<li>&quot;location&quot;: &quot;chinanorth3&quot;,</li>
+</ul>
+<ul>
+<li>&quot;tags&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;Environment&quot;: &quot;prod&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ProjectName&quot;: &quot;NGBI&quot;,</li>
+</ul>
+<ul>
+<li>&quot;TP Contact&quot;: &quot;&quot;,</li>
+</ul>
+<ul>
+<li>&quot;kyligence:cloud:vm-type&quot;: &quot;#buildworker#&quot;,</li>
+</ul>
+<ul>
+<li>&quot;kyligence:cloud:workspace&quot;: &quot;ngbiprdHvtZ&quot;</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;properties&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;hardwareProfile&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;vmSize&quot;: &quot;Standard_D16s_v3&quot;</li>
+</ul>
+<ul>
+<li>&quot;storageProfile&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;imageReference&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;publisher&quot;: &quot;Canonical&quot;,</li>
+</ul>
+<ul>
+<li>&quot;offer&quot;: &quot;UbuntuServer&quot;,</li>
+</ul>
+<ul>
+<li>&quot;version&quot;: &quot;latest&quot;</li>
+</ul>
+<ul>
+<li>&quot;networkProfile&quot;: {&quot;networkInterfaces&quot;:[{&quot;id&quot;:&quot;/subscriptions/9de90380-089b-4aeb-8db0-01068286f9d5/resourceGroups/RG-PRD-CN3-NGBI-KC/providers/Microsoft.Network/networkInterfaces/ngbiprdHvtZ-build-sparkworker0-8-nic&quot;,&quot;properties&quot;:{&quot;primary&quot;:false}}]},</li>
+</ul>
+<ul>
+<li>&quot;provisioningState&quot;: 0</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>DCMNMAgentProgrammingDurationEtwTable</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt;= datetime(&#39;2023-4-17 15:30:12&#39;) and TIMESTAMP &lt;= datetime(&#39;2023-4-17 16:05:53&#39;)</li>
+</ul>
+<ul>
+<li>| where Tenant  == &quot;ZQZ22PrdApp07&quot;</li>
+</ul>
+<ul>
+<li>| where * contains &quot;8c8a577c-54fc-41a1-a19d-7895d6a0d3ea&quot; //VM ContainerID</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp,message,interfaceId,programmingDelayInSeconds</li>
+</ul>
+<ul>
+<li>message</li>
+</ul>
+<ul>
+<li>interfaceId</li>
+</ul>
+<ul>
+<li>programmingDelayInSeconds</li>
+</ul>
+<ul>
+<li>2023-04-17 15:30:28.0926046</li>
+</ul>
+<ul>
+<li>NM programming required for version:5 CreateTime:4.14:23:10.5244523 ActivityId:00000000-0000-0000-0000-000000000000 InvocationContext:BatchUpdateNetworkResources</li>
+</ul>
+<ul>
+<li>8c8a577c-54fc-41a1-a19d-7895d6a0d3ea_0017FA06CE62 v5</li>
+</ul>
+<ul>
+<li>0</li>
+</ul>
+<ul>
+<li>2023-04-17 15:30:28.5619303</li>
+</ul>
+<ul>
+<li>NM programming required for version:6 CreateTime:4.14:23:10.9858548 ActivityId:444eb93c-b1a8-4c27-a426-8c39443d8fd7 InvocationContext:LBEngineClient.Monitor</li>
+</ul>
+<ul>
+<li>8c8a577c-54fc-41a1-a19d-7895d6a0d3ea_0017FA06CE62 v6</li>
+</ul>
+<ul>
+<li>2023-04-17 15:30:28.7018671</li>
+</ul>
+<ul>
+<li>NM programming required for version:7 CreateTime:4.14:23:11.1387961 ActivityId:444eb93c-b1a8-4c27-a426-8c39443d8fd7 InvocationContext:LBEngineClient.Monitor</li>
+</ul>
+<ul>
+<li>8c8a577c-54fc-41a1-a19d-7895d6a0d3ea_0017FA06CE62 v7</li>
+</ul>
+<ul>
+<li>2023-04-17 15:30:28.7396206</li>
+</ul>
+<ul>
+<li>NM programming started for version 7</li>
+</ul>
+<ul>
+<li>2023-04-17 15:30:33.9181686</li>
+</ul>
+<ul>
+<li>NM programming required for version:8 CreateTime:4.14:23:16.3527037 ActivityId:444eb93c-b1a8-4c27-a426-8c39443d8fd7 InvocationContext:SetRoleInstancesOperationalState</li>
+</ul>
+<ul>
+<li>8c8a577c-54fc-41a1-a19d-7895d6a0d3ea_0017FA06CE62 v8</li>
+</ul>
+<ul>
+<li>2023-04-17 15:30:33.9408059</li>
+</ul>
+<ul>
+<li>NM programming started for version 8</li>
+</ul>
+<ul>
+<li>2023-04-17 15:30:34.6531394</li>
+</ul>
+<ul>
+<li>8c8a577c-54fc-41a1-a19d-7895d6a0d3ea_0017FA06CE62 v9</li>
+</ul>
+<ul>
+<li>2023-04-17 15:30:34.6743882</li>
+</ul>
+<ul>
+<li>NM programming started for version 9</li>
+</ul>
+<ul>
+<li>2023-04-17 15:35:35.5347714</li>
+</ul>
+<ul>
+<li>RoleInstanceName: _ngbiprdHvtZ-build-sparkworker8</li>
+</ul>
+<ul>
+<li>IsRoleInstanceConnected: True</li>
+</ul>
+<ul>
+<li>ContainerId: 8c8a577c-54fc-41a1-a19d-7895d6a0d3ea</li>
+</ul>
+<ul>
+<li>MacAddress: 0017FA06CE62</li>
+</ul>
+<ul>
+<li>Network Container Id:</li>
+</ul>
+<ul>
+<li>IsLiveMigrationReady: False</li>
+</ul>
+<ul>
+<li>Interface has no CurrentComponents</li>
+</ul>
+<ul>
+<li>VirtualNetworkVersion : 46</li>
+</ul>
+<ul>
+<li>DhcpStatus : DdnsRequestHostName:, LastDhcpv4ResponseTime:0, LastDdnsRequestTime:0</li>
+</ul>
+<ul>
+<li>Interface has no DataPathMetrics</li>
+</ul>
+<ul>
+<li>300</li>
+</ul>
+<ul>
+<li>2023-04-17 15:36:35.7112870</li>
+</ul>
+<ul>
+<li>361</li>
+</ul>
+<ul>
+<li>……</li>
+</ul>
+<ul>
+<li>…</li>
+</ul>
+<ul>
+<li>..</li>
+</ul>
+<ul>
+<li>.</li>
+</ul>
+<ul>
+<li>2023-04-17 16:05:40.7913140</li>
+</ul>
+<ul>
+<li>2106</li>
+</ul>
+<ul>
+<li>Note:</li>
+</ul>
+<ul>
+<li>2) Normally,  you will see &quot;NM programming completed for version x&quot;</li>
+</ul>
+<ul>
+<li>Refer this IcM for more details:  Incident-383253457 Details - IcM (microsofticm.com)</li>
+</ul>
+<ul>
+<li>[Reference]</li>
+</ul>
+<ul>
+<li>Incident-359655279 Details - IcM (microsofticm.com)</li>
+</ul>
+<ul>
+<li>Incident-373576575 Details - IcM (microsofticm.com)</li>
+</ul>
+<ul>
+<li>Incident-350627046 Details - IcM (microsofticm.com)</li>
+</ul>
+<ul>
+<li>重建</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>As the VM start/deployment failure due to cannot get internal IP issue we received recently, here is the troubleshooting guidance and action needed.</li>
+</ul>
+<ul>
+<li>If you receive same issue, use the below method to Identify if it is the Cert issue on the Node. If yes, please open a sev2 to WASU, let WASU engage LSG Overlake -&gt; Triage team to investigate. In the meantime, have WASU to engage CEM-oncall to determine if we need to run this as an LSI (outage). If an outage is declared, we need LSG-overlake team to get the impacted subscription Ids to send Communications to the customers. With the impacted subscription Ids, the affected nodes can be identified as well.</li>
+</ul>
+<ul>
+<li>[Guest logs]</li>
+</ul>
+<ul>
+<li>1.   WaAppAgent.log (Windows):</li>
+</ul>
+<ul>
+<li>2.  Cloud-Init.log (Linux):</li>
+</ul>
+<ul>
+<li>3.  waagent.log (Linux):</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.043914Z INFO Daemon Checking for dhcp lease cache</li>
+</ul>
+<ul>
+<li>[Kusto Logs]</li>
+</ul>
+<ul>
+<li>Crp logs:</li>
+</ul>
+<ul>
+<li>| order by PreciseTimeStamp asc</li>
+</ul>
+<ul>
+<li>| order by startTime asc</li>
+</ul>
+<ul>
+<li>NMAgent programming log from NSM perspective</li>
+</ul>
+<ul>
+<li>IsTopologyUpdateComplete: True</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>let uri=&quot;/subscriptions/9de90380-089b-4aeb-8db0-01068286f9d5/resourceGroups/RG-PRD-CN3-NGBI-KC/providers/Microsoft.Compute/virtualMachines/ngbiprdHvtZ-build-sparkworker8&quot;;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>在 Microsoft.WindowsAzure.RoleContainer.Protocol.WireServerClient.GetResult[T](Uri uri, X509Certificate transportCertificate)</li>
+</ul>
+<ul>
+<li>在 Microsoft.WindowsAzure.RoleContainer.Protocol.ControlSystem.TestFabricUri(Uri fabricUri)</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.039507Z INFO Daemon Clean protocol and wireserver endpoint</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.041411Z INFO Daemon Detect protocol endpoints</li>
+</ul>
+<ul>
+<li>2023-02-13T07:26:38.042279Z INFO Daemon Clean protocol and wireserver endpoint</li>
+</ul>
+<ul>
+<li>&quot;sku&quot;: &quot;18.04-LTS&quot;,</li>
+</ul>
+<ul>
+<li>IsNetworkingStateSizeWithinThreshold: False</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>2023-02-13T07:26:38.037678Z INFO Daemon cloud-init is enabled: True</li>
+</ul>
+<ul>
+<li>NM programming required for version:9 CreateTime:4.14:23:17.0837245 ActivityId:444eb93c-b1a8-4c27-a426-8c39443d8fd7 InvocationContext:OnBecomePrimaryAndServiceEnabled</li>
+</ul>
+<ul>
+<li>IsRoleInstanceDisabled: False</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Let PG Refer ICM: <a href="https://portal.microsofticm.com/imp/v3/incidents/details/373576575/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/373576575/home</a> to identify if it is Cert issue on Node.</li>
+</ul>
+<ul>
+<li>[00000006] 2022-11-22T06:03:28.544Z [WARN]  TestFabricUri: Unable to reach fabric using <a href="http://168.63.129.16/:" target="_blank" rel="noopener">http://168.63.129.16/:</a> System.AggregateException: 发生一个或多个错误。 ---&gt; System.Net.Http.HttpRequestException: 发送请求时出错。 ---&gt; System.Net.WebException: 无法连接到远程服务器 ---&gt; System.Net.Sockets.SocketException: 向一个无法连接的网络尝试了一个套接字操作。 168.63.129.16:80</li>
+</ul>
+<ul>
+<li>For info, please visit  <a href="https://www.isc.org/software/dhcp/" target="_blank" rel="noopener">https://www.isc.org/software/dhcp/</a></li>
+</ul>
+<ul>
+<li>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://azcrpmc.kusto.chinacloudapi.cn/crp_allmc00" target="_blank" rel="noopener">https://azcrpmc.kusto.chinacloudapi.cn/crp_allmc00</a></li>
+</ul>
+<ul>
+<li>OS Provisioning for VM &#39;ngbiprdHvtZ-build-sparkworker8&#39; did not finish in the allotted time. The VM may still finish provisioning successfully. Please check provisioning state later. For details on how to check current provisioning state of Windows VMs, refer to <a href="https://aka.ms/WindowsVMLifecycle" target="_blank" rel="noopener">https://aka.ms/WindowsVMLifecycle</a> and Linux VMs, refer to <a href="https://aka.ms/LinuxVMLifecycle." target="_blank" rel="noopener">https://aka.ms/LinuxVMLifecycle.</a></li>
+</ul>
+<ul>
+<li>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://azurecm.chinanorth2.kusto.chinacloudapi.cn/azurecm" target="_blank" rel="noopener">https://azurecm.chinanorth2.kusto.chinacloudapi.cn/azurecm</a></li>
+</ul>
+<ul>
+<li>//#connect &quot;<a href="https://azurecm.chinanorth2.kusto.chinacloudapi.cn/azurecm&quot;" target="_blank" rel="noopener">https://azurecm.chinanorth2.kusto.chinacloudapi.cn/azurecm&quot;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>[to  ]How to identify VMs in CN3 cannot obtain internal IPs issue and action needed</p>
+<p>To improve the mitigation efficiency, if ICM 2 was raised by 21V regarding this issue, please let @Philip Wang know the ICM link, Philip will work as the POC to bridge communicate with PG.</p>
+<p>后续关于无法获取node ip地址的问题，如果我们给wasu升级Sev 2的工单后，再给css的Philip 在Teams留言一下，并把ICM号码给philip</p>
+<p>As the VM start/deployment failure due to cannot get internal IP issue we received recently, here is the troubleshooting guidance and action needed.</p>
+<p>Please share the below information to PoD member, read through about how to identify the issue and the action needed. Follow the practice if same issue received.</p>
+<p>VMs in CN3 cannot obtain internal IPs</p>
+<p>Tuesday, April 18, 2023</p>
+<p>2:47 PM</p>
+<p>[Action Needed]</p>
+<p>If you receive same issue, use the below method to Identify if it is the Cert issue on the Node. If yes, please open a sev2 to WASU, let WASU engage LSG Overlake -&gt; Triage team to investigate. In the meantime, have WASU to engage CEM-oncall to determine if we need to run this as an LSI (outage). If an outage is declared, we need LSG-overlake team to get the impacted subscription Ids to send Communications to the customers. With the impacted subscription Ids, the affected nodes can be identified as well.</p>
+<p>Let PG Refer ICM: <a href="https://portal.microsofticm.com/imp/v3/incidents/details/373576575/home" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/373576575/home</a> to identify if it is Cert issue on Node.</p>
+<p>The key point is besides doing quick mitigation steps (redeploy the VMs to other node and renew the cert on the node), we needs PG&#39;s confirmation on below questions</p>
+<p>The list of nodes that have cert expired and cert expire risk.</p>
+<p>The ETA of permanent fix.  Because customer like</p>
+<p>[Background]</p>
+<p>The customer reported this issue on 11/22/2022 for the first time.</p>
+<p>PM replied it will still take another six weeks to complete the full deployment in IcM 373576575 on Apr 14 2023.</p>
+<p>[Symptoms]</p>
+<p>1.  The VM should be locating at &quot;China North 3&quot; and mostly on these cluster (Possible but not limited to):</p>
+<p>ZQZ20PrdApp06</p>
+<p>ZQZ20PrdApp07</p>
+<p>ZQZ22PrdApp07</p>
+<p>ZQZ24PrdApp03</p>
+<p>2.   OSProvisioningTimeOut</p>
+<p>3.  No network connection from &#39;Boot diagnostics</p>
+<p>4.  VM status is running, but Agent status is Not Ready.</p>
+<p>5.   Provisioning State:    Failed</p>
+<p>[Guest logs]</p>
+<p>1.   WaAppAgent.log (Windows):</p>
+<p>[00000006] 2022-11-22T06:03:28.544Z [WARN]  TestFabricUri: Unable to reach fabric using <a href="http://168.63.129.16/:" target="_blank" rel="noopener">http://168.63.129.16/:</a> System.AggregateException: 发生一个或多个错误。 ---&gt; System.Net.Http.HttpRequestException: 发送请求时出错。 ---&gt; System.Net.WebException: 无法连接到远程服务器 ---&gt; System.Net.Sockets.SocketException: 向一个无法连接的网络尝试了一个套接字操作。 168.63.129.16:80</p>
+<p>在 System.Net.Sockets.Socket.InternalEndConnect(IAsyncResult asyncResult)</p>
+<p>在 System.Net.Sockets.Socket.EndConnect(IAsyncResult asyncResult)</p>
+<p>在 System.Net.ServicePoint.ConnectSocketInternal(Boolean connectFailure, Socket s4, Socket s6, Socket&amp; socket, IPAddress&amp; address, ConnectSocketState state, IAsyncResult asyncResult, Exception&amp; exception)</p>
+<p>--- 内部异常堆栈跟踪的结尾 ---</p>
+<p>在 System.Net.HttpWebRequest.EndGetResponse(IAsyncResult asyncResult)</p>
+<p>在 System.Net.Http.HttpClientHandler.GetResponseCallback(IAsyncResult ar)</p>
+<p>在 System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)</p>
+<p>在 Microsoft.WindowsAzure.RoleContainer.Protocol.WireServerClient.GetResult[T](Uri uri, X509Certificate transportCertificate)</p>
+<p>在 Microsoft.WindowsAzure.RoleContainer.Protocol.ControlSystem.TestFabricUri(Uri fabricUri)</p>
+<p>---&gt; (内部异常 #0) System.Net.Http.HttpRequestException: 发送请求时出错。 ---&gt; System.Net.WebException: 无法连接到远程服务器 ---&gt; System.Net.Sockets.SocketException: 向一个无法连接的网络尝试了一个套接字操作。 168.63.129.16:80</p>
+<p>--- 内部异常堆栈跟踪的结尾 ---&lt;---</p>
+<p>[00000006] 2022-11-22T06:03:28.544Z [INFO]  Unable to get address from DHCP and no response from well known fabric address.</p>
+<p>[00000006] 2022-11-22T06:03:28.544Z [ERROR] Failed to obtain fabric URI. ControlSystem not initialized. Escalate to ICM - &#39;Cloudnet/VNET&#39;.</p>
+<p>2.  Cloud-Init.log (Linux):</p>
+<p>DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 15 (xid=0xfdece74f)</p>
+<p>DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 12 (xid=0xfdece74f)</p>
+<p>No DHCPOFFERS received.</p>
+<p>No working leases in persistent database - sleeping.</p>
+<p>execve (/bin/true, ...): Permission denied</p>
+<p>2023-02-08 07:23:55,090 - azure.py[DEBUG]: dhclient error stream: Internet Systems Consortium DHCP Client 4.4.1</p>
+<p>Copyright 2004-2018 Internet Systems Consortium.</p>
+<p>All rights reserved.</p>
+<p>For info, please visit  <a href="https://www.isc.org/software/dhcp/" target="_blank" rel="noopener">https://www.isc.org/software/dhcp/</a></p>
+<p>Listening on LPF/eth0/00:17:fa:05:4e:73</p>
+<p>Sending on   LPF/eth0/00:17:fa:05:4e:73</p>
+<p>Sending on   Socket/fallback</p>
+<p>DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 3 (xid=0x8dbaf46d)</p>
+<p>DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 7 (xid=0x8dbaf46d)</p>
+<p>DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 12 (xid=0x8dbaf46d)</p>
+<p>3.  waagent.log (Linux):</p>
+<p>2023-02-13T07:26:23.017245Z WARNING Daemon Daemon ended with exception -- Sleep 15 seconds and restart daemon</p>
+<p>2023-02-13T07:26:38.032889Z INFO Daemon Run daemon</p>
+<p>2023-02-13T07:26:38.037678Z INFO Daemon cloud-init is enabled: True</p>
+<p>2023-02-13T07:26:38.038805Z INFO Daemon Using cloud-init for provisioning</p>
+<p>2023-02-13T07:26:38.039507Z INFO Daemon Clean protocol and wireserver endpoint</p>
+<p>2023-02-13T07:26:38.039751Z INFO Daemon Running CloudInit provisioning handler</p>
+<p>2023-02-13T07:26:38.041411Z INFO Daemon Detect protocol endpoints</p>
+<p>2023-02-13T07:26:38.042279Z INFO Daemon Clean protocol and wireserver endpoint</p>
+<p>2023-02-13T07:26:38.042697Z INFO Daemon WireServer endpoint is not found. Rerun dhcp handler</p>
+<p>2023-02-13T07:26:38.043109Z INFO Daemon Test for route to 168.63.129.16</p>
+<p>2023-02-13T07:26:38.043544Z WARNING Daemon No route exists to 168.63.129.16</p>
+<p>2023-02-13T07:26:38.043914Z INFO Daemon Checking for dhcp lease cache</p>
+<p>2023-02-13T07:26:38.044322Z INFO Daemon looking for leases in path [/var/lib/dhcp/dhclient.*.leases]</p>
+<p>2023-02-13T07:26:38.044754Z INFO Daemon cached endpoint not found</p>
+<p>2023-02-13T07:26:38.045117Z INFO Daemon Cache exists [False]</p>
+<p>2023-02-13T07:26:38.045517Z INFO Daemon Send dhcp request</p>
+<p>2023-02-13T07:26:38.045925Z INFO Daemon Examine /proc/net/route for primary interface</p>
+<p>2023-02-13T07:26:38.046337Z ERROR Daemon /proc/net/route contains no routes</p>
+<p>2023-02-13T07:26:38.046727Z WARNING Daemon Could not determine primary interface, please ensure /proc/net/route is correct</p>
+<p>2023-02-13T07:26:38.047111Z WARNING Daemon Contents of /proc/net/route:</p>
+<p>Iface        Destination        Gateway         Flags        RefCnt        Use        Metric        Mask                MTU        Window        IRTT</p>
+<p>2023-02-13T07:26:38.047514Z WARNING Daemon Primary interface examination will retry silently</p>
+<p>[Kusto Logs]</p>
+<p>Crp logs:</p>
+<p>let uri=&quot;/subscriptions/9de90380-089b-4aeb-8db0-01068286f9d5/resourceGroups/RG-PRD-CN3-NGBI-KC/providers/Microsoft.Compute/virtualMachines/ngbiprdHvtZ-build-sparkworker8&quot;;</p>
+<p>ApiQosEvent</p>
+<p>| where TIMESTAMP &gt;= datetime(&#39;2023-4-17 15:30:12&#39;) and TIMESTAMP &lt;= datetime(&#39;2023-4-17 16:05:53&#39;)</p>
+<p>| where subscriptionId == split(uri,&quot;/&quot;)[2]  and resourceName contains split(uri,&quot;/&quot;)[8]</p>
+<p>| where resultCode contains &quot;OSProvisioningTimedOut&quot;</p>
+<p>| order by PreciseTimeStamp asc</p>
+<p>| extend startTime=PreciseTimeStamp-e2EDurationInMilliseconds*1ms</p>
+<p>| extend OperationDuration=e2EDurationInMilliseconds*1ms</p>
+<p>| order by startTime asc</p>
+<p>| project startTime, PreciseTimeStamp, OperationDuration, resourceGroupName, resourceName, operationName,  resultCode, httpStatusCode, operationId,correlationId,</p>
+<p>region, requestEntity, errorDetails</p>
+<p>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://azcrpmc.kusto.chinacloudapi.cn/crp_allmc00" target="_blank" rel="noopener">https://azcrpmc.kusto.chinacloudapi.cn/crp_allmc00</a></p>
+<p>startTime</p>
+<p>PreciseTimeStamp</p>
+<p>OperationDuration</p>
+<p>resourceGroupName</p>
+<p>resourceName</p>
+<p>operationName</p>
+<p>resultCode</p>
+<p>httpStatusCode</p>
+<p>operationId</p>
+<p>correlationId</p>
+<p>region</p>
+<p>requestEntity</p>
+<p>errorDetails</p>
+<p>2023-04-17 15:30:24.6170759</p>
+<p>2023-04-17 15:50:41.3080759</p>
+<p>00:20:16.6910000</p>
+<p>RG-PRD-CN3-NGBI-KC</p>
+<p>ngbiprdHvtZ-build-sparkworker8</p>
+<p>VirtualMachines.ResourceOperation.PUT</p>
+<p>OSProvisioningTimedOut</p>
+<p>201</p>
+<p>12ce75cd-4dbc-4403-a248-bf8d3ab53b09</p>
+<p>b7215782-6d7d-779c-de46-577f5eb4a2fa</p>
+<p>ChinaNorth3</p>
+<p>{</p>
+<p>&quot;name&quot;: &quot;ngbiprdHvtZ-build-sparkworker8&quot;,</p>
+<p>&quot;location&quot;: &quot;chinanorth3&quot;,</p>
+<p>&quot;tags&quot;: {</p>
+<p>&quot;Environment&quot;: &quot;prod&quot;,</p>
+<p>&quot;ProjectName&quot;: &quot;NGBI&quot;,</p>
+<p>&quot;TP Contact&quot;: &quot;&quot;,</p>
+<p>&quot;kyligence:cloud:vm-type&quot;: &quot;#buildworker#&quot;,</p>
+<p>&quot;kyligence:cloud:workspace&quot;: &quot;ngbiprdHvtZ&quot;</p>
+<p>},</p>
+<p>&quot;properties&quot;: {</p>
+<p>&quot;hardwareProfile&quot;: {</p>
+<p>&quot;vmSize&quot;: &quot;Standard_D16s_v3&quot;</p>
+<p>&quot;storageProfile&quot;: {</p>
+<p>&quot;imageReference&quot;: {</p>
+<p>&quot;publisher&quot;: &quot;Canonical&quot;,</p>
+<p>&quot;offer&quot;: &quot;UbuntuServer&quot;,</p>
+<p>&quot;sku&quot;: &quot;18.04-LTS&quot;,</p>
+<p>&quot;version&quot;: &quot;latest&quot;</p>
+<p>&quot;networkProfile&quot;: {&quot;networkInterfaces&quot;:[{&quot;id&quot;:&quot;/subscriptions/9de90380-089b-4aeb-8db0-01068286f9d5/resourceGroups/RG-PRD-CN3-NGBI-KC/providers/Microsoft.Network/networkInterfaces/ngbiprdHvtZ-build-sparkworker0-8-nic&quot;,&quot;properties&quot;:{&quot;primary&quot;:false}}]},</p>
+<p>&quot;provisioningState&quot;: 0</p>
+<p>}</p>
+<p>OS Provisioning for VM &#39;ngbiprdHvtZ-build-sparkworker8&#39; did not finish in the allotted time. The VM may still finish provisioning successfully. Please check provisioning state later. For details on how to check current provisioning state of Windows VMs, refer to <a href="https://aka.ms/WindowsVMLifecycle" target="_blank" rel="noopener">https://aka.ms/WindowsVMLifecycle</a> and Linux VMs, refer to <a href="https://aka.ms/LinuxVMLifecycle." target="_blank" rel="noopener">https://aka.ms/LinuxVMLifecycle.</a></p>
+<p>InternalDetail: RoleInstanceContainerProvisioningDetails: MediaStorageAccountName:ProvisionVmWithUpdate; MediaStorageHostName:ProvisionVmWithUpdate; MediaRelativeUrl:ProvisionVmWithUpdate; MediaTenantSecretId:00000000-0000-0000-0000-000000000000; ProvisioningResult:Timeout; ProvisioningResultMessage:; CertificateThumbprint:; RequestCreatedDateTime:1/1/0001 12:00:00 AM; LastUpdatedDateTime:1/1/0001 12:00:00 AM; RequestIncarnation:6d2e8f64-e78c-40f0-8bb2-478c27173694</p>
+<p>NMAgent programming log from NSM perspective</p>
+<p>Execute: [Web] [Desktop] [Web (Lens)] [Desktop (SAW)] <a href="https://azurecm.chinanorth2.kusto.chinacloudapi.cn/azurecm" target="_blank" rel="noopener">https://azurecm.chinanorth2.kusto.chinacloudapi.cn/azurecm</a></p>
+<p>//#connect &quot;<a href="https://azurecm.chinanorth2.kusto.chinacloudapi.cn/azurecm&quot;" target="_blank" rel="noopener">https://azurecm.chinanorth2.kusto.chinacloudapi.cn/azurecm&quot;</a></p>
+<p>DCMNMAgentProgrammingDurationEtwTable</p>
+<p>| where TIMESTAMP &gt;= datetime(&#39;2023-4-17 15:30:12&#39;) and TIMESTAMP &lt;= datetime(&#39;2023-4-17 16:05:53&#39;)</p>
+<p>| where Tenant  == &quot;ZQZ22PrdApp07&quot;</p>
+<p>| where * contains &quot;8c8a577c-54fc-41a1-a19d-7895d6a0d3ea&quot; //VM ContainerID</p>
+<p>| project PreciseTimeStamp,message,interfaceId,programmingDelayInSeconds</p>
+<p>message</p>
+<p>interfaceId</p>
+<p>programmingDelayInSeconds</p>
+<p>2023-04-17 15:30:28.0926046</p>
+<p>NM programming required for version:5 CreateTime:4.14:23:10.5244523 ActivityId:00000000-0000-0000-0000-000000000000 InvocationContext:BatchUpdateNetworkResources</p>
+<p>8c8a577c-54fc-41a1-a19d-7895d6a0d3ea_0017FA06CE62 v5</p>
+<p>0</p>
+<p>2023-04-17 15:30:28.5619303</p>
+<p>NM programming required for version:6 CreateTime:4.14:23:10.9858548 ActivityId:444eb93c-b1a8-4c27-a426-8c39443d8fd7 InvocationContext:LBEngineClient.Monitor</p>
+<p>8c8a577c-54fc-41a1-a19d-7895d6a0d3ea_0017FA06CE62 v6</p>
+<p>2023-04-17 15:30:28.7018671</p>
+<p>NM programming required for version:7 CreateTime:4.14:23:11.1387961 ActivityId:444eb93c-b1a8-4c27-a426-8c39443d8fd7 InvocationContext:LBEngineClient.Monitor</p>
+<p>8c8a577c-54fc-41a1-a19d-7895d6a0d3ea_0017FA06CE62 v7</p>
+<p>2023-04-17 15:30:28.7396206</p>
+<p>NM programming started for version 7</p>
+<p>2023-04-17 15:30:33.9181686</p>
+<p>NM programming required for version:8 CreateTime:4.14:23:16.3527037 ActivityId:444eb93c-b1a8-4c27-a426-8c39443d8fd7 InvocationContext:SetRoleInstancesOperationalState</p>
+<p>8c8a577c-54fc-41a1-a19d-7895d6a0d3ea_0017FA06CE62 v8</p>
+<p>2023-04-17 15:30:33.9408059</p>
+<p>NM programming started for version 8</p>
+<p>2023-04-17 15:30:34.6531394</p>
+<p>NM programming required for version:9 CreateTime:4.14:23:17.0837245 ActivityId:444eb93c-b1a8-4c27-a426-8c39443d8fd7 InvocationContext:OnBecomePrimaryAndServiceEnabled</p>
+<p>8c8a577c-54fc-41a1-a19d-7895d6a0d3ea_0017FA06CE62 v9</p>
+<p>2023-04-17 15:30:34.6743882</p>
+<p>NM programming started for version 9</p>
+<p>2023-04-17 15:35:35.5347714</p>
+<p>NM programming pending for version 9: Interface Id: 8c8a577c-54fc-41a1-a19d-7895d6a0d3ea_0017FA06CE62</p>
+<p>RoleInstanceName: _ngbiprdHvtZ-build-sparkworker8</p>
+<p>IsRoleInstanceConnected: True</p>
+<p>IsRoleInstanceDisabled: False</p>
+<p>ContainerId: 8c8a577c-54fc-41a1-a19d-7895d6a0d3ea</p>
+<p>MacAddress: 0017FA06CE62</p>
+<p>Network Container Id:</p>
+<p>IsProgrammingPending: True</p>
+<p>IsDhcpRehydrationPending: True</p>
+<p>IsTopologyUpdateComplete: True</p>
+<p>IsDhcpGoalStatePublishPending: False</p>
+<p>IsLiveMigrationReady: False</p>
+<p>IsNetworkingStateSizeWithinThreshold: False</p>
+<p>ProgrammingError : 2023-04-17 15:30:34.685 : SwitchPortNotPresent - Switchport not present</p>
+<p>ProgrammingErrorCodes : 1000</p>
+<p>Interface has no CurrentComponents</p>
+<p>VirtualNetworkVersion : 46</p>
+<p>DhcpStatus : DdnsRequestHostName:, LastDhcpv4ResponseTime:0, LastDdnsRequestTime:0</p>
+<p>Interface has no DataPathMetrics</p>
+<p>300</p>
+<p>2023-04-17 15:36:35.7112870</p>
+<p>361</p>
+<p>……</p>
+<p>…</p>
+<p>..</p>
+<p>.</p>
+<p>2023-04-17 16:05:40.7913140</p>
+<p>2106</p>
+<p>Note:</p>
+<p>1)  If it keeps reporting &quot;NM programming pending for version x&quot; and &quot;SwitchPortNotPresent - Switchport not present&quot;,  it must encounter the issue of unable to obtain IP and vfp rule exceptions.)</p>
+<p>2) Normally,  you will see &quot;NM programming completed for version x&quot;</p>
+<p>Refer this IcM for more details:  Incident-383253457 Details - IcM (microsofticm.com)</p>
+<p>[Reference]</p>
+<p>Incident-359655279 Details - IcM (microsofticm.com)</p>
+<p>Incident-373576575 Details - IcM (microsofticm.com)</p>
+<p>Incident-350627046 Details - IcM (microsofticm.com)</p>
+<p>重建</p></article>

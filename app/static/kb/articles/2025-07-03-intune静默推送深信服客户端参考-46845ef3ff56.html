@@ -1,0 +1,90 @@
+<article class="kb-article" data-title="intune静默推送深信服客户端参考"><h1>intune静默推送深信服客户端参考</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-03 11:05:49</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户从深信服support得到以下资料：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户从深信服support得到以下资料：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>客户从深信服support得到以下资料：</li>
+</ul>
+<ul>
+<li>=========================================================================</li>
+</ul>
+<ul>
+<li>静默包带静默“silence”字样，包含aES管理端通讯地址信息，下载后请勿更改安装程序名</li>
+</ul>
+<ul>
+<li>-Silence= 是否静默安装，是设置为Y，不能小写，不设置默认为N，可不填</li>
+</ul>
+<ul>
+<li>-Ip= 安装平台IP，支持域名，如果有空格需要双引号</li>
+</ul>
+<ul>
+<li>AES安装参数如下：</li>
+</ul>
+<ul>
+<li>aes_installer.exe -Ip=edrinterconnection.sangfor.com.cn  -Port=443 -uid=64615385  -Silence=Y</li>
+</ul>
+<ul>
+<li>检测规则写法：</li>
+</ul>
+<ul>
+<li>因为软件的实际安装位置就是这里：</li>
+</ul>
+<ul>
+<li>静默安装选择必需的分配，选择设备组</li>
+</ul>
+<ul>
+<li>这样深信服客服端就可以正常推送安装和上报安装状态了，深信服后台可以看到设备上线。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>-SysCheck= 系统兼容性检查，当前系统是否支持安装，默认可不填为不检查，检查则设置为Y</li>
+</ul>
+<ul>
+<li>通过工具将exe转换成intunewin后，在intune portal添加win32 app</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>静默包支持带命令行参数安装，目前支持参数如下：</li>
+</ul>
+<ul>
+<li>安装命令写法示例：aes_installer.exe -Ip=edrinterconnection.sangfor.com.cn  -Port=443 -uid=64615385  -Silence=Y</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>-Port= 安装平台的端口</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>客户从深信服support得到以下资料：</p>
+<p>=========================================================================</p>
+<p>静默包带静默“silence”字样，包含aES管理端通讯地址信息，下载后请勿更改安装程序名</p>
+<p>静默包支持带命令行参数安装，目前支持参数如下：</p>
+<p>-Silence= 是否静默安装，是设置为Y，不能小写，不设置默认为N，可不填</p>
+<p>-Ip= 安装平台IP，支持域名，如果有空格需要双引号</p>
+<p>-Port= 安装平台的端口</p>
+<p>-SysCheck= 系统兼容性检查，当前系统是否支持安装，默认可不填为不检查，检查则设置为Y</p>
+<p>AES安装参数如下：</p>
+<p>aes_installer.exe -Ip=edrinterconnection.sangfor.com.cn  -Port=443 -uid=64615385  -Silence=Y</p>
+<p>通过工具将exe转换成intunewin后，在intune portal添加win32 app</p>
+<p>安装命令写法示例：aes_installer.exe -Ip=edrinterconnection.sangfor.com.cn  -Port=443 -uid=64615385  -Silence=Y</p>
+<p>检测规则写法：</p>
+<p>因为软件的实际安装位置就是这里：</p>
+<p>静默安装选择必需的分配，选择设备组</p>
+<p>这样深信服客服端就可以正常推送安装和上报安装状态了，深信服后台可以看到设备上线。</p></article>

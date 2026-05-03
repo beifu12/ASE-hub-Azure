@@ -4,109 +4,190 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASE Hub · 登录</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #E0EDF9 0%, #F0F6FC 40%, #FFFFFF 100%);
             min-height: 100vh; display: flex; align-items: center; justify-content: center;
         }
-        .bg-grid {
-            position: fixed; inset:0; background-image:
-                linear-gradient(rgba(0,120,212,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,120,212,0.03) 1px, transparent 1px);
-            background-size: 60px 60px; pointer-events: none;
+        .login-container {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 44px 40px 36px;
+            width: 400px;
+            max-width: 90vw;
+            box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.06), 0px 4px 8px rgba(0,0,0,0.04), 0px 12px 24px -8px rgba(0,0,0,0.08);
         }
-        .login-card {
-            position: relative; background: #161b22;
-            border: 1px solid #30363d; border-radius: 16px;
-            padding: 48px 40px; width: 420px; max-width: 90vw;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+        .login-brand {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: -0.3px;
+            color: #1A1A2E;
+            margin-bottom: 2px;
         }
-        .login-card::before {
-            content: ''; position: absolute; top:0; left:50%; transform:translateX(-50%);
-            width: 80px; height: 4px; background: linear-gradient(90deg, #0078d4, #4fc3f7);
-            border-radius: 0 0 4px 4px;
+        .login-brand span { color: #0078D4; }
+        .login-subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: #5E6C84;
+            margin-bottom: 32px;
+            font-weight: 400;
         }
-        .logo { text-align: center; margin-bottom: 8px; }
-        .logo-text { font-size: 32px; font-weight: 800; color: #e6edf3; letter-spacing: -0.5px; }
-        .logo-text span { color: #0078d4; }
-        .subtitle { text-align: center; color: #8b949e; font-size: 14px; margin-bottom: 32px; }
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; color: #c9d1d9; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #5E6C84;
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
         .form-group input {
-            width: 100%; padding: 12px 16px; background: #0d1117; border: 1px solid #30363d;
-            border-radius: 8px; color: #e6edf3; font-size: 15px; transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            padding: 10px 14px;
+            background: #FFFFFF;
+            border: 1px solid #C0C7D0;
+            border-radius: 6px;
+            color: #1A1A2E;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.15s, box-shadow 0.15s;
         }
-        .form-group input:focus { outline: none; border-color: #0078d4; box-shadow: 0 0 0 3px rgba(0,120,212,0.15); }
-        .form-group input::placeholder { color: #484f58; }
+        .form-group input:focus {
+            outline: none;
+            border-color: #0078D4;
+            box-shadow: 0 0 0 3px rgba(0,120,212,0.12);
+        }
+        .form-group input::placeholder { color: #9BA6B9; }
         .btn-login {
-            width: 100%; padding: 14px; margin-top: 8px; background: linear-gradient(135deg, #0078d4, #1a8fe3);
-            border: none; border-radius: 8px; color: #fff; font-size: 16px; font-weight: 600;
-            cursor: pointer; transition: opacity 0.2s, transform 0.1s; letter-spacing: 0.5px;
+            width: 100%;
+            padding: 11px;
+            margin-top: 8px;
+            background: #0078D4;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: background 0.15s;
+            letter-spacing: 0.2px;
         }
-        .btn-login:hover { opacity: 0.92; }
+        .btn-login:hover { background: #106EBE; }
         .btn-login:active { transform: scale(0.98); }
-        .error-msg { color: #f87171; font-size: 13px; text-align: center; margin-top: 16px; display: none; min-height: 20px; }
-        .footer-text { text-align: center; color: #484f58; font-size: 12px; margin-top: 24px; }
-        .loading .btn-login { opacity: 0.6; pointer-events: none; }
+        .error-msg {
+            color: #D13438;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 16px;
+            display: none;
+            background: #FDE7E8;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+        .footer-text {
+            text-align: center;
+            color: #9BA6B9;
+            font-size: 12px;
+            margin-top: 24px;
+        }
+        .input-icon {
+            position: relative;
+        }
+        .input-icon .icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        .input-icon input { padding-left: 36px; }
     </style>
 </head>
 <body>
-<div class="bg-grid"></div>
-<div class="login-card">
-    <div class="logo">
-        <div class="logo-text">ASE<span>Hub</span></div>
-    </div>
-    <p class="subtitle">Azure Solutions Engineer Hub · v2.0</p>
+<div class="login-container">
+    <div class="login-brand">ASE<span>Hub</span></div>
+    <p class="login-subtitle">Azure Solutions Engineer Hub</p>
+
     <div class="form-group">
         <label>用户名</label>
-        <input type="text" id="username" placeholder="输入用户名" autocomplete="username" autofocus>
+        <div class="input-icon">
+            <span class="icon">👤</span>
+            <input type="text" id="username" placeholder="输入用户名" autocomplete="username" autofocus>
+        </div>
     </div>
     <div class="form-group">
         <label>密码</label>
-        <input type="password" id="password" placeholder="输入密码" autocomplete="current-password">
+        <div class="input-icon">
+            <span class="icon">🔒</span>
+            <input type="password" id="password" placeholder="输入密码" autocomplete="current-password">
+        </div>
     </div>
+
     <button class="btn-login" onclick="handleLogin()">登 录</button>
     <div class="error-msg" id="error"></div>
     <p class="footer-text">私有实例 · 仅授权用户</p>
 </div>
 
 <script>
-const API = '/api';
+    const API = '/api';
 
-async function handleLogin() {
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
-    const errorEl = document.getElementById('error');
-    const btn = document.querySelector('.btn-login');
+    async function handleLogin() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const errorEl = document.getElementById('error');
+        const btn = document.querySelector('.btn-login');
 
-    errorEl.style.display = 'none';
-    if (!username || !password) {
-        errorEl.textContent = '请填写用户名和密码'; errorEl.style.display = 'block'; return;
-    }
-    btn.textContent = '登录中…'; btn.style.opacity = '0.7';
-    try {
-        const resp = await fetch(API + '/auth/login', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
-        });
-        const data = await resp.json();
-        if (!resp.ok) {
-            errorEl.textContent = data.detail || '用户名或密码错误';
-            errorEl.style.display = 'block'; btn.textContent = '登 录'; btn.style.opacity = '1'; return;
+        errorEl.style.display = 'none';
+        if (!username || !password) {
+            errorEl.textContent = '请填写用户名和密码';
+            errorEl.style.display = 'block';
+            return;
         }
-        localStorage.setItem('ase_token', data.access_token);
-        localStorage.setItem('ase_user', JSON.stringify(data.user));
-        window.location.href = '/';
-    } catch (e) {
-        errorEl.textContent = '网络错误，请重试'; errorEl.style.display = 'block';
-        btn.textContent = '登 录'; btn.style.opacity = '1';
-    }
-}
 
-document.getElementById('password').addEventListener('keydown', e => { if (e.key==='Enter') handleLogin(); });
-if (localStorage.getItem('ase_token')) window.location.href = '/';
+        btn.textContent = '登录中…';
+        btn.style.opacity = '0.7';
+
+        try {
+            const resp = await fetch(API + '/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+            });
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                errorEl.textContent = data.detail || '用户名或密码错误';
+                errorEl.style.display = 'block';
+                btn.textContent = '登 录';
+                btn.style.opacity = '1';
+                return;
+            }
+
+            localStorage.setItem('ase_token', data.access_token);
+            localStorage.setItem('ase_user', JSON.stringify(data.user));
+            window.location.href = '/';
+        } catch (e) {
+            errorEl.textContent = '网络错误，请重试';
+            errorEl.style.display = 'block';
+            btn.textContent = '登 录';
+            btn.style.opacity = '1';
+        }
+    }
+
+    document.getElementById('password').addEventListener('keydown', e => {
+        if (e.key === 'Enter') handleLogin();
+    });
+
+    if (localStorage.getItem('ase_token')) window.location.href = '/';
 </script>
 </body>
 </html>

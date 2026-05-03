@@ -1,0 +1,58 @@
+<article class="kb-article" data-title="存储账户开启large file share之后，需要对file share手动增加quota以提升性能。"><h1>存储账户开启large file share之后，需要对file share手动增加quota以提升性能。</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-06-28 18:07:47</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户开启了large file share，但是file share拷贝时IOPS被限制在1000左右。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户开启了large file share，但是file share拷贝时IOPS被限制在1000左右。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>客户开启了large file share，但是file share拷贝时IOPS被限制在1000左右。</li>
+</ul>
+<ul>
+<li>经测试，只要quota增加到大于5 TiB，file share的max IOPS会提升到10000。</li>
+</ul>
+<ul>
+<li>参考文档：Azure 文件可伸缩性和性能目标 | Microsoft Docs</li>
+</ul>
+<ul>
+<li>操作方法：</li>
+</ul>
+<ul>
+<li>首先将Maximum Capacity提升到100 TiB</li>
+</ul>
+<ul>
+<li>参考文档：创建 Azure 文件共享 - Azure Files | Microsoft Docs</li>
+</ul>
+<ul>
+<li>增加quota至大于5 TiB</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022-6-26</p>
+<p>客户开启了large file share，但是file share拷贝时IOPS被限制在1000左右。</p>
+<p>经测试，只要quota增加到大于5 TiB，file share的max IOPS会提升到10000。</p>
+<p>参考文档：Azure 文件可伸缩性和性能目标 | Microsoft Docs</p>
+<p>操作方法：</p>
+<p>首先将Maximum Capacity提升到100 TiB</p>
+<p>参考文档：创建 Azure 文件共享 - Azure Files | Microsoft Docs</p>
+<p>增加quota至大于5 TiB</p></article>

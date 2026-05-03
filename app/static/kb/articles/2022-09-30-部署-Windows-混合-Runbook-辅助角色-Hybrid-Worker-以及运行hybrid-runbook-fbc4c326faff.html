@@ -1,0 +1,141 @@
+<article class="kb-article" data-title="部署 Windows 混合 Runbook 辅助角色（Hybrid Worker)以及运行hybrid runbook"><h1>部署 Windows 混合 Runbook 辅助角色（Hybrid Worker)以及运行hybrid runbook</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Automation</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-09-30 14:35:22</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Zhang Lihong</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<ul>
+<li>进入工作区中，将准备作为Hybrid Worker的VM连接到工作区。</li>
+</ul>
+<ul>
+<li>Heartbeat</li>
+</ul>
+<ul>
+<li>| where Category == &quot;Direct Agent&quot;</li>
+</ul>
+<ul>
+<li>| where TimeGenerated &gt; ago(30m)</li>
+</ul>
+<ul>
+<li>cd &quot;C:\Program Files\Microsoft Monitoring Agent\Agent\AzureAutomation\&lt;version&gt;\HybridRegistration&quot;</li>
+</ul>
+<ul>
+<li>Import-Module .\HybridRegistration.psd1</li>
+</ul>
+<ul>
+<li>现在，使用以下语法运行 Add-HybridRunbookWorker cmdlet。</li>
+</ul>
+<ul>
+<li>Add-HybridRunbookWorker –GroupName &lt;String&gt; -Url &lt;Url&gt; -Key &lt;String&gt;</li>
+</ul>
+<ul>
+<li>对于 Url 参数，复制 URL 的值。</li>
+</ul>
+<ul>
+<li>对于 Key 参数，复制主访问密钥的值。</li>
+</ul>
+<ul>
+<li>对于 GroupName 参数，请使用混合 Runbook 辅助角色组的名称。 如果自动化帐户中已存在该组，则会将当前计算机添加到其中。 如果该组不存在，则将添加该组。</li>
+</ul>
+<ul>
+<li>如果需要，请设置 Verbose 参数以接收有关安装的详细信息。</li>
+</ul>
+<ul>
+<li>注册完成后，我们就可以在 自动化 -- 混合辅助角色组  中看到注册的hybrid worker信息。</li>
+</ul>
+<ul>
+<li>可以从github上下载安装</li>
+</ul>
+<ul>
+<li>需要注意的是，当我们在自动化中运行hybrid runbook时，要在点击  开始  后，在运行设置中选择 混合辅助角色</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>创建Log Analytics 工作区，混合 Runbook 辅助角色依赖于 Azure Monitor Log Analytics 工作区来安装和配置角色。</li>
+</ul>
+<ul>
+<li>连接成功后，在工作区中，运行以下查询，验证是否正在向工作区发送检测信号数据。</li>
+</ul>
+<ul>
+<li>然后登陆到Hybrid Worker虚拟机中。确认C:\Program Files\Microsoft Monitoring Agent\Agent是包含AzureAutomaiton包的。</li>
+</ul>
+<ul>
+<li>门户查看位置， 自动化 -  键</li>
+</ul>
+<ul>
+<li>8.  可在hybird worker的Microsoft-SMA日志中查看作业的运行状况。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>建议使用以下命令确认该创建Log Analytics 工作区AzureAutomation 包的推送是否为 True</li>
+</ul>
+<ul>
+<li>Get-AzOperationalInsightsIntelligencePack -ResourceGroupName &quot;zlhasr&quot; -WorkspaceName &quot;hybrid&quot;</li>
+</ul>
+<ul>
+<li>如果AzureAutomation 为False，请使用以下命令设置为true</li>
+</ul>
+<ul>
+<li>将代理配置为向 Log Analytics 工作区报告时，Azure 自动化功能会向下推送 HybridRegistration PowerShell 模块，其中包含 Add-HybridRunbookWorker cmdlet。 使用此 cmdlet 将 Runbook 环境安装到计算机上，并将其注册到 Azure 自动化。</li>
+</ul>
+<ul>
+<li>在管理员模式下打开 PowerShell 会话，并运行以下命令以导入模块。</li>
+</ul>
+<ul>
+<li>最后，在hybrider worker机器上安装所需的PowerShell模块。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>将runbook链接到计划时，也需要在 运行设置 中，设置为  混合辅助角色。这样runbook才会在hybrid worker上运行。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/Azure/azure-powershell/releases" target="_blank" rel="noopener">https://github.com/Azure/azure-powershell/releases</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang Lihong</p>
+<p>创建Log Analytics 工作区，混合 Runbook 辅助角色依赖于 Azure Monitor Log Analytics 工作区来安装和配置角色。</p>
+<p>建议使用以下命令确认该创建Log Analytics 工作区AzureAutomation 包的推送是否为 True</p>
+<p>Get-AzOperationalInsightsIntelligencePack -ResourceGroupName &quot;zlhasr&quot; -WorkspaceName &quot;hybrid&quot;</p>
+<p>如果AzureAutomation 为False，请使用以下命令设置为true</p>
+<p>进入工作区中，将准备作为Hybrid Worker的VM连接到工作区。</p>
+<p>连接成功后，在工作区中，运行以下查询，验证是否正在向工作区发送检测信号数据。</p>
+<p>Heartbeat</p>
+<p>| where Category == &quot;Direct Agent&quot;</p>
+<p>| where TimeGenerated &gt; ago(30m)</p>
+<p>然后登陆到Hybrid Worker虚拟机中。确认C:\Program Files\Microsoft Monitoring Agent\Agent是包含AzureAutomaiton包的。</p>
+<p>将代理配置为向 Log Analytics 工作区报告时，Azure 自动化功能会向下推送 HybridRegistration PowerShell 模块，其中包含 Add-HybridRunbookWorker cmdlet。 使用此 cmdlet 将 Runbook 环境安装到计算机上，并将其注册到 Azure 自动化。</p>
+<p>在管理员模式下打开 PowerShell 会话，并运行以下命令以导入模块。</p>
+<p>cd &quot;C:\Program Files\Microsoft Monitoring Agent\Agent\AzureAutomation\&lt;version&gt;\HybridRegistration&quot;</p>
+<p>Import-Module .\HybridRegistration.psd1</p>
+<p>现在，使用以下语法运行 Add-HybridRunbookWorker cmdlet。</p>
+<p>Add-HybridRunbookWorker –GroupName &lt;String&gt; -Url &lt;Url&gt; -Key &lt;String&gt;</p>
+<p>门户查看位置， 自动化 -  键</p>
+<p>对于 Url 参数，复制 URL 的值。</p>
+<p>对于 Key 参数，复制主访问密钥的值。</p>
+<p>对于 GroupName 参数，请使用混合 Runbook 辅助角色组的名称。 如果自动化帐户中已存在该组，则会将当前计算机添加到其中。 如果该组不存在，则将添加该组。</p>
+<p>如果需要，请设置 Verbose 参数以接收有关安装的详细信息。</p>
+<p>注册完成后，我们就可以在 自动化 -- 混合辅助角色组  中看到注册的hybrid worker信息。</p>
+<p>最后，在hybrider worker机器上安装所需的PowerShell模块。</p>
+<p>可以从github上下载安装</p>
+<p><a href="https://github.com/Azure/azure-powershell/releases" target="_blank" rel="noopener">https://github.com/Azure/azure-powershell/releases</a></p>
+<p>需要注意的是，当我们在自动化中运行hybrid runbook时，要在点击  开始  后，在运行设置中选择 混合辅助角色</p>
+<p>将runbook链接到计划时，也需要在 运行设置 中，设置为  混合辅助角色。这样runbook才会在hybrid worker上运行。</p>
+<p>8.  可在hybird worker的Microsoft-SMA日志中查看作业的运行状况。</p></article>

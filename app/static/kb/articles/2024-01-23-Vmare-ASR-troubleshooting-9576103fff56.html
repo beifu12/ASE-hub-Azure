@@ -1,0 +1,393 @@
+<article class="kb-article" data-title="Vmare ASR troubleshooting"><h1>Vmare ASR troubleshooting</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Site recovery VMware physical</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-01-23 17:08:41</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>源服务器与进程服务器或者进程服务器与 Azure 之间的连接问题通常会造成初始和进行中的复制失败。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>源服务器与进程服务器或者进程服务器与 Azure 之间的连接问题通常会造成初始和进行中的复制失败。</li>
+</ul>
+<ul>
+<li>尝试选择源计算机来通过 Site Recovery 启用复制时，计算机可能由于以下原因之一而不可用：</li>
+</ul>
+<ul>
+<li>vCenter 特权不足：如果未提供所需的权限来访问 vCenter，则发现虚拟机时可能会失败。 确保将为自动发现准备帐户中所述的权限添加到 vCenter 用户帐户。</li>
+</ul>
+<ul>
+<li>Azure Site Recovery 管理服务器：如果虚拟机用作管理服务器并充当以下一个或多个角色 - 配置服务器/横向扩展进程服务器/主目标服务器，则无法在门户中选择该虚拟机。 无法复制管理服务器。</li>
+</ul>
+<ul>
+<li>已通过 Azure Site Recovery 服务进行保护/故障转移：如果虚拟机已通过 Site Recovery 进行保护或故障转移，则无法在门户中选择保护该虚拟机。 确保要在门户中查找的虚拟机尚未由其他任何用户进行保护，或者位于不同的订阅下。</li>
+</ul>
+<ul>
+<li>等待重新启动：如果虚拟机正在等待重新启动，则你无法在 Azure 门户中选择该虚拟机。 请务必完成等待中的重新启动活动，并刷新配置服务器。 在此之后，虚拟机将在门户中列出。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>在还原 VMware VM 之前，请确保它满足 Azure 要求。</li>
+</ul>
+<ul>
+<li>支持矩阵：</li>
+</ul>
+<ul>
+<li>组件</li>
+</ul>
+<ul>
+<li>要求</li>
+</ul>
+<ul>
+<li>来宾操作系统</li>
+</ul>
+<ul>
+<li>来宾操作系统体系结构</li>
+</ul>
+<ul>
+<li>64 位。</li>
+</ul>
+<ul>
+<li>操作系统磁盘大小</li>
+</ul>
+<ul>
+<li>第 1 代计算机高达 2,048 GB。</li>
+</ul>
+<ul>
+<li>第 2 代计算机高达 4,095 GB。</li>
+</ul>
+<ul>
+<li>操作系统磁盘计数</li>
+</ul>
+<ul>
+<li>1</li>
+</ul>
+<ul>
+<li>不支持在不同磁盘上启动和进行系统分区。</li>
+</ul>
+<ul>
+<li>数据磁盘计数</li>
+</ul>
+<ul>
+<li>64 或更少。</li>
+</ul>
+<ul>
+<li>数据磁盘大小</li>
+</ul>
+<ul>
+<li>复制到托管磁盘时高达 32 TB（9.41 及更高版本）。</li>
+</ul>
+<ul>
+<li>复制到存储帐户时高达 4 TB。</li>
+</ul>
+<ul>
+<li>每个高级存储帐户最多可以托管 35 TB 的数据。</li>
+</ul>
+<ul>
+<li>最低磁盘大小要求 - 至少 1 GB。</li>
+</ul>
+<ul>
+<li>RAM</li>
+</ul>
+<ul>
+<li>Site Recovery 驱动程序消耗 6% 的 RAM。</li>
+</ul>
+<ul>
+<li>网络适配器</li>
+</ul>
+<ul>
+<li>支持多个适配器。</li>
+</ul>
+<ul>
+<li>共享 VHD</li>
+</ul>
+<ul>
+<li>不支持。</li>
+</ul>
+<ul>
+<li>FC 磁盘</li>
+</ul>
+<ul>
+<li>BitLocker</li>
+</ul>
+<ul>
+<li>VM 名称</li>
+</ul>
+<ul>
+<li>1 到 63 个字符。</li>
+</ul>
+<ul>
+<li>仅限于字母、数字和连字符。</li>
+</ul>
+<ul>
+<li>计算机名称必须以字母或数字开头和结尾。</li>
+</ul>
+<ul>
+<li>体系结构：</li>
+</ul>
+<ul>
+<li>复制过程</li>
+</ul>
+<ul>
+<li>为某台 VM 启用复制时，将使用指定的复制策略开始到 Azure 存储的初始复制。 注意以下事项：</li>
+</ul>
+<ul>
+<li>对于 VMware VM，复制是在块级别进行的，几乎连续进行，使用的是在 VM 上运行的移动服务代理。</li>
+</ul>
+<ul>
+<li>应用的任何复制策略设置：</li>
+</ul>
+<ul>
+<li>恢复点保留期。 此设置指定当发生中断时要回退的时间距离。 最长保留期为 15 天。</li>
+</ul>
+<ul>
+<li>应用一致的快照。 可以每隔 1 到 12 个小时获取一次应用一致的快照，具体取决于应用需求。 快照是标准的 Azure blob 快照。 在 VM 上运行的移动代理根据此设置请求 VSS 快照，并且会将该时间点标记为复制流中的一个应用一致点。</li>
+</ul>
+<ul>
+<li>备注</li>
+</ul>
+<ul>
+<li>恢复点保持期的值过高可能会影响存储成本，因为可能需要保存更多的恢复点。</li>
+</ul>
+<ul>
+<li>流量通过 Internet 复制到 Azure 存储公共终结点。 或者，可以结合使用 Azure ExpressRoute 和 Microsoft 对等互连。 仅在使用专用终结点时，才支持通过站点到站点虚拟专用网 (VPN) 将流量从本地站点复制到 Azure。</li>
+</ul>
+<ul>
+<li>初始复制操作可确保在启用复制时将计算机上的所有数据发送到 Azure。 完成初始复制后，开始将增量更改复制到 Azure。 针对机器跟踪的更改将发送到进程服务器。</li>
+</ul>
+<ul>
+<li>通信按如下方式发生：</li>
+</ul>
+<ul>
+<li>复制数据首先登陆 Azure 中的缓存存储帐户。 系统将处理这些日志，并将数据存储在 Azure 托管磁盘（称为 asrseeddisk）中。 将在此磁盘上创建恢复点。</li>
+</ul>
+<ul>
+<li>复制问题：</li>
+</ul>
+<ul>
+<li>Site Recovery 使用进程服务器接收和优化复制的数据，并将其发送到 Azure。</li>
+</ul>
+<ul>
+<li>了解如何监视进程服务器。</li>
+</ul>
+<ul>
+<li>具有相同实例 UUID 的两个虚拟机：如果 vCenter 中存在具有相同实例 UUID 的两个虚拟机，则配置服务器发现的第一个虚拟机将显示在 Azure 门户中。 若要解决此问题，请确保没有两个虚拟机具有相同的实例 UUID。 如果备份 VM 处于活动状态，并且已记录到发现记录，则这种情况会很常见。 请参阅使用 Azure Site Recovery 进行 VMware 到 Azure 的复制：如何清理重复或过时的条目来解决问题。</li>
+</ul>
+<ul>
+<li>如果系统中存在重复的条目，则在 Site Recovery 下复制的虚拟机将不会显示在 Azure 门户中。 详细了解如何删除过时的条目并解决问题。</li>
+</ul>
+<ul>
+<li>在过去“XXX”分钟内没有可供 VM 使用的崩溃一致性恢复点</li>
+</ul>
+<ul>
+<li>日志位置：</li>
+</ul>
+<ul>
+<li>ASR unified setup Installation for</li>
+</ul>
+<ul>
+<li>Configuration Server</li>
+</ul>
+<ul>
+<li>ASR Vault registration in Configuration Server</li>
+</ul>
+<ul>
+<li>C:\Program Files (x86)\Microsoft Azure Site Recovery\home\svsystems\pushinstallsvc</li>
+</ul>
+<ul>
+<li>Source Server</li>
+</ul>
+<ul>
+<li>Registration details of CS</li>
+</ul>
+<ul>
+<li>C:\Program Files (x86)\Microsoft Azure Site Recovery\agent</li>
+</ul>
+<ul>
+<li>Agent registration</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>使用 VMware 排查站点恢复的问题</li>
+</ul>
+<ul>
+<li>验证复制的计算机支持的操作系统。</li>
+</ul>
+<ul>
+<li>步骤 1：监视进程服务器运行状况</li>
+</ul>
+<ul>
+<li>[查看最佳做法]。(vmware-physical-azure-troubleshoot-process-server.md#best-practices-for-process-server-deployment)</li>
+</ul>
+<ul>
+<li>排查进程服务器运行状况问题。</li>
+</ul>
+<ul>
+<li>步骤 2：排查连接和复制问题</li>
+</ul>
+<ul>
+<li>若要解决这些问题，请排查连接和复制问题。</li>
+</ul>
+<ul>
+<li>步骤 3：排查不可用于复制的源计算机的问题</li>
+</ul>
+<ul>
+<li>vCenter 用户凭据不正确：确保在使用 OVF 模板或统一安装程序安装配置服务器时添加正确的 vCenter 凭据。 若要验证安装期间添加的凭据是否正确，请参阅修改用于自动发现的凭据。</li>
+</ul>
+<ul>
+<li>vCenter 未连接：检查 vCenter 是否处于已连接状态。 若要验证，请转到“恢复服务保管库”&gt;“Site Recovery 基础结构”&gt;“配置服务器”&gt; 单击相应的配置服务器 &gt; 右侧会打开一个边栏选项卡，其中显示了关联服务器的详细信息。 检查 vCenter 是否已连接。 如果其处于“未连接”状态，请解决问题，并在门户中刷新配置服务器。 在此之后，虚拟机不会在门户中列出。</li>
+</ul>
+<ul>
+<li>排查门户中处于灰显状态的受保护虚拟机的问题</li>
+</ul>
+<ul>
+<li>C:\ProgramData\ASRSetupLogs</li>
+</ul>
+<ul>
+<li>C:\ProgramData\ASRLogs\UploadedLogs</li>
+</ul>
+<ul>
+<li>Push installation logs</li>
+</ul>
+<ul>
+<li>Mobility agent installation logs</li>
+</ul>
+<ul>
+<li>C:\ProgramData\ASRSetupLogs\UploadedLogs</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>RPO 阈值。 此设置不影响复制。 它有助于监视。 如果当前 RPO 超出了你指定的阈值限制，则会引发事件，并且还可能会发送电子邮件。</li>
+</ul>
+<ul>
+<li>VM 通过 HTTPS 443 入站端口与本地设备通信，以进行复制管理。</li>
+</ul>
+<ul>
+<li>VM 通过 HTTPS 9443 入站端口将复制数据发送到设备。 可以修改此端口。</li>
+</ul>
+<ul>
+<li>设备接收复制数据、优化和加密数据，然后通过 443 出站端口将其发送到 Azure 存储。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>另一个原因是计算机已克隆。 当计算机在虚拟机监控程序之间移动时，如果 BIOS ID 发生更改，则移动代理会阻止复制。 Site Recovery 不支持克隆计算机复制。</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>建议在门户中监视进程服务器的运行状况，以确保它们已连接并正常运行，且正在对进程服务器关联的源计算机进行复制。</li>
+</ul>
+<ul>
+<li>ESXi 已关机：如果虚拟机所在的 ESXi 主机处于关机状态，则虚拟机将不会列出，或者在 Azure 门户中不可选择。 打开 ESXi 主机，并在门户中刷新配置服务器。 在此之后，虚拟机将在门户中列出。</li>
+</ul>
+<ul>
+<li>未找到 IP 或计算机没有 IP 地址：如果虚拟机没有关联有效的 IP 地址，则无法在 Azure 门户中选择该虚拟机。 请务必将有效的 IP 地址分配到虚拟机，并刷新配置服务器。 如果计算机没有有效 IP 地址与其 NIC 之一关联，则可能会导致此错误。 为所有 NIC 分配一个有效的 IP 地址或删除缺少 IP 的 NIC。 然后，虚拟机列在门户中。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/vmware-physical-azure-support-matrix" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/vmware-physical-azure-support-matrix</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-architecture-modernized&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-architecture-modernized&gt;</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-troubleshoot-replication" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-troubleshoot-replication</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>使用 VMware 排查站点恢复的问题</p>
+<p>在还原 VMware VM 之前，请确保它满足 Azure 要求。</p>
+<p>支持矩阵：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/vmware-physical-azure-support-matrix" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/vmware-physical-azure-support-matrix</a></p>
+<p>组件</p>
+<p>要求</p>
+<p>来宾操作系统</p>
+<p>验证复制的计算机支持的操作系统。</p>
+<p>来宾操作系统体系结构</p>
+<p>64 位。</p>
+<p>操作系统磁盘大小</p>
+<p>第 1 代计算机高达 2,048 GB。</p>
+<p>第 2 代计算机高达 4,095 GB。</p>
+<p>操作系统磁盘计数</p>
+<p>1</p>
+<p>不支持在不同磁盘上启动和进行系统分区。</p>
+<p>数据磁盘计数</p>
+<p>64 或更少。</p>
+<p>数据磁盘大小</p>
+<p>复制到托管磁盘时高达 32 TB（9.41 及更高版本）。</p>
+<p>复制到存储帐户时高达 4 TB。</p>
+<p>每个高级存储帐户最多可以托管 35 TB 的数据。</p>
+<p>最低磁盘大小要求 - 至少 1 GB。</p>
+<p>RAM</p>
+<p>Site Recovery 驱动程序消耗 6% 的 RAM。</p>
+<p>网络适配器</p>
+<p>支持多个适配器。</p>
+<p>共享 VHD</p>
+<p>不支持。</p>
+<p>FC 磁盘</p>
+<p>BitLocker</p>
+<p>VM 名称</p>
+<p>1 到 63 个字符。</p>
+<p>仅限于字母、数字和连字符。</p>
+<p>计算机名称必须以字母或数字开头和结尾。</p>
+<p>体系结构：</p>
+<p>From &lt;<a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-architecture-modernized&gt;" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-architecture-modernized&gt;</a></p>
+<p>复制过程</p>
+<p>为某台 VM 启用复制时，将使用指定的复制策略开始到 Azure 存储的初始复制。 注意以下事项：</p>
+<p>对于 VMware VM，复制是在块级别进行的，几乎连续进行，使用的是在 VM 上运行的移动服务代理。</p>
+<p>应用的任何复制策略设置：</p>
+<p>RPO 阈值。 此设置不影响复制。 它有助于监视。 如果当前 RPO 超出了你指定的阈值限制，则会引发事件，并且还可能会发送电子邮件。</p>
+<p>恢复点保留期。 此设置指定当发生中断时要回退的时间距离。 最长保留期为 15 天。</p>
+<p>应用一致的快照。 可以每隔 1 到 12 个小时获取一次应用一致的快照，具体取决于应用需求。 快照是标准的 Azure blob 快照。 在 VM 上运行的移动代理根据此设置请求 VSS 快照，并且会将该时间点标记为复制流中的一个应用一致点。</p>
+<p>备注</p>
+<p>恢复点保持期的值过高可能会影响存储成本，因为可能需要保存更多的恢复点。</p>
+<p>流量通过 Internet 复制到 Azure 存储公共终结点。 或者，可以结合使用 Azure ExpressRoute 和 Microsoft 对等互连。 仅在使用专用终结点时，才支持通过站点到站点虚拟专用网 (VPN) 将流量从本地站点复制到 Azure。</p>
+<p>初始复制操作可确保在启用复制时将计算机上的所有数据发送到 Azure。 完成初始复制后，开始将增量更改复制到 Azure。 针对机器跟踪的更改将发送到进程服务器。</p>
+<p>通信按如下方式发生：</p>
+<p>VM 通过 HTTPS 443 入站端口与本地设备通信，以进行复制管理。</p>
+<p>VM 通过 HTTPS 9443 入站端口将复制数据发送到设备。 可以修改此端口。</p>
+<p>设备接收复制数据、优化和加密数据，然后通过 443 出站端口将其发送到 Azure 存储。</p>
+<p>复制数据首先登陆 Azure 中的缓存存储帐户。 系统将处理这些日志，并将数据存储在 Azure 托管磁盘（称为 asrseeddisk）中。 将在此磁盘上创建恢复点。</p>
+<p>复制问题：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-troubleshoot-replication" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-troubleshoot-replication</a></p>
+<p>步骤 1：监视进程服务器运行状况</p>
+<p>Site Recovery 使用进程服务器接收和优化复制的数据，并将其发送到 Azure。</p>
+<p>建议在门户中监视进程服务器的运行状况，以确保它们已连接并正常运行，且正在对进程服务器关联的源计算机进行复制。</p>
+<p>了解如何监视进程服务器。</p>
+<p>[查看最佳做法]。(vmware-physical-azure-troubleshoot-process-server.md#best-practices-for-process-server-deployment)</p>
+<p>排查进程服务器运行状况问题。</p>
+<p>步骤 2：排查连接和复制问题</p>
+<p>源服务器与进程服务器或者进程服务器与 Azure 之间的连接问题通常会造成初始和进行中的复制失败。</p>
+<p>若要解决这些问题，请排查连接和复制问题。</p>
+<p>步骤 3：排查不可用于复制的源计算机的问题</p>
+<p>尝试选择源计算机来通过 Site Recovery 启用复制时，计算机可能由于以下原因之一而不可用：</p>
+<p>具有相同实例 UUID 的两个虚拟机：如果 vCenter 中存在具有相同实例 UUID 的两个虚拟机，则配置服务器发现的第一个虚拟机将显示在 Azure 门户中。 若要解决此问题，请确保没有两个虚拟机具有相同的实例 UUID。 如果备份 VM 处于活动状态，并且已记录到发现记录，则这种情况会很常见。 请参阅使用 Azure Site Recovery 进行 VMware 到 Azure 的复制：如何清理重复或过时的条目来解决问题。</p>
+<p>vCenter 用户凭据不正确：确保在使用 OVF 模板或统一安装程序安装配置服务器时添加正确的 vCenter 凭据。 若要验证安装期间添加的凭据是否正确，请参阅修改用于自动发现的凭据。</p>
+<p>vCenter 特权不足：如果未提供所需的权限来访问 vCenter，则发现虚拟机时可能会失败。 确保将为自动发现准备帐户中所述的权限添加到 vCenter 用户帐户。</p>
+<p>Azure Site Recovery 管理服务器：如果虚拟机用作管理服务器并充当以下一个或多个角色 - 配置服务器/横向扩展进程服务器/主目标服务器，则无法在门户中选择该虚拟机。 无法复制管理服务器。</p>
+<p>已通过 Azure Site Recovery 服务进行保护/故障转移：如果虚拟机已通过 Site Recovery 进行保护或故障转移，则无法在门户中选择保护该虚拟机。 确保要在门户中查找的虚拟机尚未由其他任何用户进行保护，或者位于不同的订阅下。</p>
+<p>vCenter 未连接：检查 vCenter 是否处于已连接状态。 若要验证，请转到“恢复服务保管库”&gt;“Site Recovery 基础结构”&gt;“配置服务器”&gt; 单击相应的配置服务器 &gt; 右侧会打开一个边栏选项卡，其中显示了关联服务器的详细信息。 检查 vCenter 是否已连接。 如果其处于“未连接”状态，请解决问题，并在门户中刷新配置服务器。 在此之后，虚拟机不会在门户中列出。</p>
+<p>ESXi 已关机：如果虚拟机所在的 ESXi 主机处于关机状态，则虚拟机将不会列出，或者在 Azure 门户中不可选择。 打开 ESXi 主机，并在门户中刷新配置服务器。 在此之后，虚拟机将在门户中列出。</p>
+<p>等待重新启动：如果虚拟机正在等待重新启动，则你无法在 Azure 门户中选择该虚拟机。 请务必完成等待中的重新启动活动，并刷新配置服务器。 在此之后，虚拟机将在门户中列出。</p>
+<p>未找到 IP 或计算机没有 IP 地址：如果虚拟机没有关联有效的 IP 地址，则无法在 Azure 门户中选择该虚拟机。 请务必将有效的 IP 地址分配到虚拟机，并刷新配置服务器。 如果计算机没有有效 IP 地址与其 NIC 之一关联，则可能会导致此错误。 为所有 NIC 分配一个有效的 IP 地址或删除缺少 IP 的 NIC。 然后，虚拟机列在门户中。</p>
+<p>排查门户中处于灰显状态的受保护虚拟机的问题</p>
+<p>如果系统中存在重复的条目，则在 Site Recovery 下复制的虚拟机将不会显示在 Azure 门户中。 详细了解如何删除过时的条目并解决问题。</p>
+<p>另一个原因是计算机已克隆。 当计算机在虚拟机监控程序之间移动时，如果 BIOS ID 发生更改，则移动代理会阻止复制。 Site Recovery 不支持克隆计算机复制。</p>
+<p>在过去“XXX”分钟内没有可供 VM 使用的崩溃一致性恢复点</p>
+<p>日志位置：</p>
+<p>ASR unified setup Installation for</p>
+<p>Configuration Server</p>
+<p>C:\ProgramData\ASRSetupLogs</p>
+<p>ASR Vault registration in Configuration Server</p>
+<p>C:\ProgramData\ASRLogs\UploadedLogs</p>
+<p>Push installation logs</p>
+<p>C:\Program Files (x86)\Microsoft Azure Site Recovery\home\svsystems\pushinstallsvc</p>
+<p>Mobility agent installation logs</p>
+<p>Source Server</p>
+<p>C:\ProgramData\ASRSetupLogs\UploadedLogs</p>
+<p>Registration details of CS</p>
+<p>C:\Program Files (x86)\Microsoft Azure Site Recovery\agent</p>
+<p>Agent registration</p></article>

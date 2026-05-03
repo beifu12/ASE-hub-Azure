@@ -1,0 +1,87 @@
+<article class="kb-article" data-title="Any restore from Azure fails"><h1>Any restore from Azure fails</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-01-13 18:36:29</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>DPM恢复数据报错(ID100070)</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>DPM恢复数据报错(ID100070)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_2019092052558_[MS-LED]需要有空闲的工程师提供足够的支持</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>=============</li>
+</ul>
+<ul>
+<li>选中的恢复点目标所在磁盘不支持NTFS格式</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>新添加一块儿NTFS格式磁盘作为恢复点目标，恢复成功，问题解决。</li>
+</ul>
+<ul>
+<li>参考链接：</li>
+</ul>
+<ul>
+<li>、</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>使用agent backup server 备份本地虚拟机至云端，实现备份。这一步已执行完毕。现在从云端还原到本地的过程遇到了 ID100070 的报错，希望协助查看。</li>
+</ul>
+<ul>
+<li>请您在备份服务器界面上进行以下操作：选择管理—联机—配置—查看“还原文件处设置”的值，并截图</li>
+</ul>
+<ul>
+<li>打开磁盘管理， 确认下该磁盘文件系统是否是NTFS？ 如不是，请截图给我们，谢谢。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://social.technet.microsoft.com/Forums/windowsserver/en-US/b6901cc7-f23e-480b-a41c-c255c13fa1e5/any-restore-from-azure-fails" target="_blank" rel="noopener">https://social.technet.microsoft.com/Forums/windowsserver/en-US/b6901cc7-f23e-480b-a41c-c255c13fa1e5/any-restore-from-azure-fails</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2019092052558_[MS-LED]需要有空闲的工程师提供足够的支持</p>
+<p>DPM恢复数据报错(ID100070)</p>
+<p>问题描述：</p>
+<p>==========</p>
+<p>使用agent backup server 备份本地虚拟机至云端，实现备份。这一步已执行完毕。现在从云端还原到本地的过程遇到了 ID100070 的报错，希望协助查看。</p>
+<p>问题原因：</p>
+<p>=============</p>
+<p>选中的恢复点目标所在磁盘不支持NTFS格式</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>新添加一块儿NTFS格式磁盘作为恢复点目标，恢复成功，问题解决。</p>
+<p>参考链接：</p>
+<p><a href="https://social.technet.microsoft.com/Forums/windowsserver/en-US/b6901cc7-f23e-480b-a41c-c255c13fa1e5/any-restore-from-azure-fails" target="_blank" rel="noopener">https://social.technet.microsoft.com/Forums/windowsserver/en-US/b6901cc7-f23e-480b-a41c-c255c13fa1e5/any-restore-from-azure-fails</a></p>
+<p>请您在备份服务器界面上进行以下操作：选择管理—联机—配置—查看“还原文件处设置”的值，并截图</p>
+<p>打开磁盘管理， 确认下该磁盘文件系统是否是NTFS？ 如不是，请截图给我们，谢谢。</p>
+<p>、</p></article>

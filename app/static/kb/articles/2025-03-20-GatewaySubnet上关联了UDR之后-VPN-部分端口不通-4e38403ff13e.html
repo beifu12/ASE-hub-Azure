@@ -1,0 +1,62 @@
+<article class="kb-article" data-title="GatewaySubnet上关联了UDR之后，VPN 部分端口不通"><h1>GatewaySubnet上关联了UDR之后，VPN 部分端口不通</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2025-03-20 16:28:35</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Lihaitao</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Lihaitao</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Lihaitao</li>
+</ul>
+<ul>
+<li>常见拓扑如下：Azure vm ---FW （NVA）---VPNGW-----------On-Premise VPNGW---FW---VM</li>
+</ul>
+<ul>
+<li>修改配置为：</li>
+</ul>
+<ul>
+<li>参考工单：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>SR_20250314343599_排查下流量过VPN的数据报文</li>
+</ul>
+<ul>
+<li>SR_20250318344088_DNS traffic from Azure is not reaching on-premise through S2S VPN</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>故障现象：通过vpn通信，有部分端口不可达。比如ping可以，443或3389端口都可以，但是22端口或53端口不通。</li>
+</ul>
+<ul>
+<li>GateweaySubnet上关联了路由表，并且禁用了 Route Propagation 传播网关路由，这样会导致网关工作异常，故障现象就是某些端口不可达。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>因为根据官网文档：<a href="https://docs.azure.cn/zh-cn/virtual-network/virtual-networks-udr-overview#border-gateway-protocol" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-network/virtual-networks-udr-overview#border-gateway-protocol</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Lihaitao</p>
+<p>常见拓扑如下：Azure vm ---FW （NVA）---VPNGW-----------On-Premise VPNGW---FW---VM</p>
+<p>故障现象：通过vpn通信，有部分端口不可达。比如ping可以，443或3389端口都可以，但是22端口或53端口不通。</p>
+<p>GateweaySubnet上关联了路由表，并且禁用了 Route Propagation 传播网关路由，这样会导致网关工作异常，故障现象就是某些端口不可达。</p>
+<p>因为根据官网文档：<a href="https://docs.azure.cn/zh-cn/virtual-network/virtual-networks-udr-overview#border-gateway-protocol" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-network/virtual-networks-udr-overview#border-gateway-protocol</a></p>
+<p>修改配置为：</p>
+<p>参考工单：</p>
+<p>SR_20250314343599_排查下流量过VPN的数据报文</p>
+<p>SR_20250318344088_DNS traffic from Azure is not reaching on-premise through S2S VPN</p></article>

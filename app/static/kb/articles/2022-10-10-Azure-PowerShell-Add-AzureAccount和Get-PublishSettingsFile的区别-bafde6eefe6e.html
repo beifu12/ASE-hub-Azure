@@ -1,0 +1,95 @@
+<article class="kb-article" data-title="[Azure][PowerShell] Add-AzureAccount和Get-PublishSettingsFile的区别"><h1>[Azure][PowerShell] Add-AzureAccount和Get-PublishSettingsFile的区别</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Powershell</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-10-10 17:45:35</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>据微软官方提供的文档，使用PowerShell管理Azure，登陆的方式有两种：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>据微软官方提供的文档，使用PowerShell管理Azure，登陆的方式有两种：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Add-AzureAccount –Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>$username = &#39;XXXXXXXX@XXXXXXXXXXX.partner.onmschina.cn&#39;</li>
+</ul>
+<ul>
+<li>$password = ConvertTo-SecureString -String &#39;XXXXXXXXXX&#39; -AsPlainText -Force</li>
+</ul>
+<ul>
+<li>$cred = New-Object System.Management.Automation.PSCredential($username, $password)</li>
+</ul>
+<ul>
+<li>Add-AzureAccount -Credential $cred -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>同样对于中国区的Azure，需要提供-Environment参数</li>
+</ul>
+<ul>
+<li>这两种方式的区别：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>据微软官方提供的文档，使用PowerShell管理Azure，登陆的方式有两种：</li>
+</ul>
+<ul>
+<li>使用Add-AzureAccount命令：</li>
+</ul>
+<ul>
+<li>对于中国区的Azure来说，使用这个命令需要提供-Environment参数：</li>
+</ul>
+<ul>
+<li>如果您不希望弹出登录框，可以使用下面的脚本（标黄色区域需要您自己的信息）：</li>
+</ul>
+<ul>
+<li>使用Get-AzurePublishSettingsFile命令下载Certificate文件</li>
+</ul>
+<ul>
+<li>Get-AzurePublishSettingsFile –Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>执行之后，会需要登陆到中国区的站点上下载后缀为.publishsetting的文件，下载到本地之后，在PowerShell中执行Import-AzurePublishSettingsFile &#39;publishsetting文件的本地地址，将该文件导入到PowerShell中，然后就能正常执行Azure PowerShell的其他命令了。</li>
+</ul>
+<ul>
+<li>对于Add-AzureAccount，只会在当前PowerShell的Session中保存这个Credential，当退出PowerShell之后，下次还需要执行Add-AzureAccount命令，因此如果使用的是公共的计算机，建议使用这种方式来进行登陆链接Azure。</li>
+</ul>
+<ul>
+<li>使用PublishSettingsFile的方式来管理，对于使用自己独立保管的电脑来管理Azure，是一种很便捷的方式，因为只要一次导入认证文件，以后就能够直接管理Azure而不需要再次导入或者登陆了。但是由于文件可能会被盗用（如果不需要在其他机器上导入，直接删除就可以了），并且PowerShell会记住导入的文件（可以通过Portal Setting删除对应的记录来Disable掉相关的文件），因此在安全性上就需要更小心。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>官方参考文档：<a href="http://azure.microsoft.com/en-us/documentation/articles/install-configure-powershell/" target="_blank" rel="noopener">http://azure.microsoft.com/en-us/documentation/articles/install-configure-powershell/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>据微软官方提供的文档，使用PowerShell管理Azure，登陆的方式有两种：</p>
+<p>使用Add-AzureAccount命令：</p>
+<p>对于中国区的Azure来说，使用这个命令需要提供-Environment参数：</p>
+<p>Add-AzureAccount –Environment AzureChinaCloud</p>
+<p>如果您不希望弹出登录框，可以使用下面的脚本（标黄色区域需要您自己的信息）：</p>
+<p>$username = &#39;XXXXXXXX@XXXXXXXXXXX.partner.onmschina.cn&#39;</p>
+<p>$password = ConvertTo-SecureString -String &#39;XXXXXXXXXX&#39; -AsPlainText -Force</p>
+<p>$cred = New-Object System.Management.Automation.PSCredential($username, $password)</p>
+<p>Add-AzureAccount -Credential $cred -Environment AzureChinaCloud</p>
+<p>使用Get-AzurePublishSettingsFile命令下载Certificate文件</p>
+<p>同样对于中国区的Azure，需要提供-Environment参数</p>
+<p>Get-AzurePublishSettingsFile –Environment AzureChinaCloud</p>
+<p>执行之后，会需要登陆到中国区的站点上下载后缀为.publishsetting的文件，下载到本地之后，在PowerShell中执行Import-AzurePublishSettingsFile &#39;publishsetting文件的本地地址，将该文件导入到PowerShell中，然后就能正常执行Azure PowerShell的其他命令了。</p>
+<p>这两种方式的区别：</p>
+<p>对于Add-AzureAccount，只会在当前PowerShell的Session中保存这个Credential，当退出PowerShell之后，下次还需要执行Add-AzureAccount命令，因此如果使用的是公共的计算机，建议使用这种方式来进行登陆链接Azure。</p>
+<p>使用PublishSettingsFile的方式来管理，对于使用自己独立保管的电脑来管理Azure，是一种很便捷的方式，因为只要一次导入认证文件，以后就能够直接管理Azure而不需要再次导入或者登陆了。但是由于文件可能会被盗用（如果不需要在其他机器上导入，直接删除就可以了），并且PowerShell会记住导入的文件（可以通过Portal Setting删除对应的记录来Disable掉相关的文件），因此在安全性上就需要更小心。</p>
+<p>官方参考文档：<a href="http://azure.microsoft.com/en-us/documentation/articles/install-configure-powershell/" target="_blank" rel="noopener">http://azure.microsoft.com/en-us/documentation/articles/install-configure-powershell/</a></p></article>

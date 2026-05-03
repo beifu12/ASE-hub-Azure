@@ -1,0 +1,80 @@
+<article class="kb-article" data-title="[Share] ACI的容器登陆"><h1>[Share] ACI的容器登陆</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: ACR</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-01 10:52:12</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>目前我们可以将bash命令传入。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>目前我们可以将bash命令传入。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>请参考文档：az container | Microsoft Learn</li>
+</ul>
+<ul>
+<li>需要使用Azcli 先登录到订阅中。</li>
+</ul>
+<ul>
+<li>sudo docker run -d --name azcliold mcr.microsoft.com/azure-cli:2.63.0-cbl-mariner2.0 tail -f /dev/null</li>
+</ul>
+<ul>
+<li>sudo docker exec -it azcliold bash</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查看容器运行。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>目前我们可以将bash命令传入。</li>
+</ul>
+<ul>
+<li>但是由于API 版本的问题我们无法在最新的Az cli中运行此命令。</li>
+</ul>
+<ul>
+<li>经过我的测试，该命令可以在 2.63.0的版本中使用。</li>
+</ul>
+<ul>
+<li>参考文档： 如何在 Docker 容器中运行 Azure CLI | Microsoft Learn</li>
+</ul>
+<ul>
+<li>使用以下的命令创建一个名为azcliold的容器，并指定2.63.0的版本运行。tail -f /dev/null 是一个保持容器运行的占位命令</li>
+</ul>
+<ul>
+<li>使用以下的命令进入容器中的bash。</li>
+</ul>
+<ul>
+<li>接着就可以使用以下的命令进入到容器实例中。</li>
+</ul>
+<ul>
+<li>az container exec --exec-command &quot;/bin/bash&quot; --name &lt;容器实例名称&gt;--resource-group &lt;资源组名称&gt;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025-06-27</p>
+<p>目前我们可以将bash命令传入。</p>
+<p>请参考文档：az container | Microsoft Learn</p>
+<p>需要使用Azcli 先登录到订阅中。</p>
+<p>但是由于API 版本的问题我们无法在最新的Az cli中运行此命令。</p>
+<p>经过我的测试，该命令可以在 2.63.0的版本中使用。</p>
+<p>参考文档： 如何在 Docker 容器中运行 Azure CLI | Microsoft Learn</p>
+<p>使用以下的命令创建一个名为azcliold的容器，并指定2.63.0的版本运行。tail -f /dev/null 是一个保持容器运行的占位命令</p>
+<p>sudo docker run -d --name azcliold mcr.microsoft.com/azure-cli:2.63.0-cbl-mariner2.0 tail -f /dev/null</p>
+<p>查看容器运行。</p>
+<p>使用以下的命令进入容器中的bash。</p>
+<p>sudo docker exec -it azcliold bash</p>
+<p>接着就可以使用以下的命令进入到容器实例中。</p>
+<p>az container exec --exec-command &quot;/bin/bash&quot; --name &lt;容器实例名称&gt;--resource-group &lt;资源组名称&gt;</p></article>

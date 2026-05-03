@@ -1,0 +1,200 @@
+<article class="kb-article" data-title="在AKS中安装使用Prometheus &amp; Grafana进行监控"><h1>在AKS中安装使用Prometheus &amp; Grafana进行监控</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: K8S</li>
+<li>最近修改: 2021-10-25 18:00:46</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20190821</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20190821</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20190821</li>
+</ul>
+<ul>
+<li>首先需要安装如下工具：</li>
+</ul>
+<ul>
+<li>安装git 或gitbash工具</li>
+</ul>
+<ul>
+<li>首先下载git 源中的helm charts</li>
+</ul>
+<ul>
+<li>1、安装Prometheus</li>
+</ul>
+<ul>
+<li>Pod名重启Node可能会发生改变</li>
+</ul>
+<ul>
+<li>获取Pod名称：kubectl get pods --namespace monitoring -l &quot;app=prometheus,component=server&quot; -o jsonpath=&quot;{.items[0].metadata.name}</li>
+</ul>
+<ul>
+<li>2、安装 Grafana</li>
+</ul>
+<ul>
+<li>为了保留监控数据需要使用 如下参数：</li>
+</ul>
+<ul>
+<li>persistence.accessModes={ReadWriteOnce}</li>
+</ul>
+<ul>
+<li>persistence.size=8Gi</li>
+</ul>
+<ul>
+<li>来创建持久卷。</li>
+</ul>
+<ul>
+<li>根据最后的提示做相应的转发设置并找到登录密码</li>
+</ul>
+<ul>
+<li>仍然使用deployment选择的pod做转发设置，当然直接选择pod也可以。</li>
+</ul>
+<ul>
+<li>到此如下通过helm安装的2个charts：</li>
+</ul>
+<ul>
+<li>默认grafana 为ClusterIP</li>
+</ul>
+<ul>
+<li>3、可以更改为LoadBlanacer 方式通过外网进行访问</li>
+</ul>
+<ul>
+<li>改为</li>
+</ul>
+<ul>
+<li>4、获取admin 密码：</li>
+</ul>
+<ul>
+<li>（base64需要Linux下执行，Windows下可以使用在线base64解密）</li>
+</ul>
+<ul>
+<li>按照上面获取的信息进行访问：</li>
+</ul>
+<ul>
+<li>5、进入Grafana的配置</li>
+</ul>
+<ul>
+<li>在grafana中导入</li>
+</ul>
+<ul>
+<li>导入时选择prometheus数据源</li>
+</ul>
+<ul>
+<li>导入后即可看到相应的数据了：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>进入后在Dashboard窗口添加数据源选择Prometheus</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如下是安装过程（操作环境为Windows，如在Linux下请您根据系统的命令规范进行调整）：</li>
+</ul>
+<ul>
+<li>执行helm命令进行安装（注如下helm使用了ssl验证，如果没有配置可去掉命令中—tls以及后面的部分，证书为安装helm时使用的证书。）</li>
+</ul>
+<ul>
+<li>按照最后提示的命令可设置prometheus所需要的端口转发进行本地访问测试：</li>
+</ul>
+<ul>
+<li>kubectl --namespace monitoring port-forward deployment/prometheus-server 9090</li>
+</ul>
+<ul>
+<li>kubectl get pods --namespace monitoring -l &quot;app=grafana,release=grafana&quot; -o jsonpath=&quot;{.items[0].metadata.name}&quot;</li>
+</ul>
+<ul>
+<li>kubectl --namespace monitoring port-forward deployment/grafana 3000</li>
+</ul>
+<ul>
+<li>kubectl edit svc grafana -n monitoring</li>
+</ul>
+<ul>
+<li>kubectl get secret --namespace monitoring grafana -o jsonpath=&quot;{.data.admin-password}&quot; | base64 --decode ; echo</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>helm install --name=prometheus .\charts\stable\prometheus\ --namespace monitoring --set rbac.create=true --tls --tls-ca-cert ca.cert.pem --tls-cert helm.cert.pem --tls-key helm.key.pem</li>
+</ul>
+<ul>
+<li># （从 Kubernetes v1.10 开始，kubectl port-forward 允许使用资源名称（例如服务名称）来选择匹配的 pod 来进行端口转发。）监听本地客户端的端口9090并转发进出到deployment/prometheus-server  选择的pod的9090端口。可用于测试。</li>
+</ul>
+<ul>
+<li>helm install --name=grafana .\charts\stable\grafana\ --set persistence.enabled=true --set persistence.accessModes={ReadWriteOnce} --set persistence.size=8Gi --namespace monitoring --tls --tls-ca-cert ca.cert.pem --tls-cert helm.cert.pem --tls-key helm.key.pem</li>
+</ul>
+<ul>
+<li>同样找到要做端口转发的pod来进行访问测试</li>
+</ul>
+<ul>
+<li>转发后可以通过本机localhost访问这个deployments的端口进行测试了：</li>
+</ul>
+<ul>
+<li>添加http URL为之前服务中看到的prometheus-server的ClusterIP。（此处有的教程中填写pod的endpoint IP和端口）</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>persistence.enabled=true</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>安装helm（参考<a href="https://docs.azure.cnzh-cn/aks/kubernetes-helm）" target="_blank" rel="noopener">https://docs.azure.cnzh-cn/aks/kubernetes-helm）</a></li>
+</ul>
+<ul>
+<li>git clone <a href="https://github.com/helm/charts.git" target="_blank" rel="noopener">https://github.com/helm/charts.git</a></li>
+</ul>
+<ul>
+<li>接下来可以到Grafana官网下载模板：<a href="https://grafana.com/grafana/dashboards" target="_blank" rel="noopener">https://grafana.com/grafana/dashboards</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20190821</p>
+<p>首先需要安装如下工具：</p>
+<p>安装git 或gitbash工具</p>
+<p>安装helm（参考<a href="https://docs.azure.cnzh-cn/aks/kubernetes-helm）" target="_blank" rel="noopener">https://docs.azure.cnzh-cn/aks/kubernetes-helm）</a></p>
+<p>如下是安装过程（操作环境为Windows，如在Linux下请您根据系统的命令规范进行调整）：</p>
+<p>首先下载git 源中的helm charts</p>
+<p>git clone <a href="https://github.com/helm/charts.git" target="_blank" rel="noopener">https://github.com/helm/charts.git</a></p>
+<p>1、安装Prometheus</p>
+<p>执行helm命令进行安装（注如下helm使用了ssl验证，如果没有配置可去掉命令中—tls以及后面的部分，证书为安装helm时使用的证书。）</p>
+<p>helm install --name=prometheus .\charts\stable\prometheus\ --namespace monitoring --set rbac.create=true --tls --tls-ca-cert ca.cert.pem --tls-cert helm.cert.pem --tls-key helm.key.pem</p>
+<p>按照最后提示的命令可设置prometheus所需要的端口转发进行本地访问测试：</p>
+<p>Pod名重启Node可能会发生改变</p>
+<p>获取Pod名称：kubectl get pods --namespace monitoring -l &quot;app=prometheus,component=server&quot; -o jsonpath=&quot;{.items[0].metadata.name}</p>
+<h1>（从 Kubernetes v1.10 开始，kubectl port-forward 允许使用资源名称（例如服务名称）来选择匹配的 pod 来进行端口转发。）监听本地客户端的端口9090并转发进出到deployment/prometheus-server  选择的pod的9090端口。可用于测试。</h1>
+<p>kubectl --namespace monitoring port-forward deployment/prometheus-server 9090</p>
+<p>2、安装 Grafana</p>
+<p>helm install --name=grafana .\charts\stable\grafana\ --set persistence.enabled=true --set persistence.accessModes={ReadWriteOnce} --set persistence.size=8Gi --namespace monitoring --tls --tls-ca-cert ca.cert.pem --tls-cert helm.cert.pem --tls-key helm.key.pem</p>
+<p>为了保留监控数据需要使用 如下参数：</p>
+<p>persistence.enabled=true</p>
+<p>persistence.accessModes={ReadWriteOnce}</p>
+<p>persistence.size=8Gi</p>
+<p>来创建持久卷。</p>
+<p>根据最后的提示做相应的转发设置并找到登录密码</p>
+<p>同样找到要做端口转发的pod来进行访问测试</p>
+<p>kubectl get pods --namespace monitoring -l &quot;app=grafana,release=grafana&quot; -o jsonpath=&quot;{.items[0].metadata.name}&quot;</p>
+<p>仍然使用deployment选择的pod做转发设置，当然直接选择pod也可以。</p>
+<p>kubectl --namespace monitoring port-forward deployment/grafana 3000</p>
+<p>转发后可以通过本机localhost访问这个deployments的端口进行测试了：</p>
+<p>到此如下通过helm安装的2个charts：</p>
+<p>默认grafana 为ClusterIP</p>
+<p>3、可以更改为LoadBlanacer 方式通过外网进行访问</p>
+<p>kubectl edit svc grafana -n monitoring</p>
+<p>改为</p>
+<p>4、获取admin 密码：</p>
+<p>kubectl get secret --namespace monitoring grafana -o jsonpath=&quot;{.data.admin-password}&quot; | base64 --decode ; echo</p>
+<p>（base64需要Linux下执行，Windows下可以使用在线base64解密）</p>
+<p>按照上面获取的信息进行访问：</p>
+<p>5、进入Grafana的配置</p>
+<p>进入后在Dashboard窗口添加数据源选择Prometheus</p>
+<p>添加http URL为之前服务中看到的prometheus-server的ClusterIP。（此处有的教程中填写pod的endpoint IP和端口）</p>
+<p>接下来可以到Grafana官网下载模板：<a href="https://grafana.com/grafana/dashboards" target="_blank" rel="noopener">https://grafana.com/grafana/dashboards</a></p>
+<p>在grafana中导入</p>
+<p>导入时选择prometheus数据源</p>
+<p>导入后即可看到相应的数据了：</p></article>

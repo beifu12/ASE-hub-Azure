@@ -1,0 +1,59 @@
+<article class="kb-article" data-title="Azure Sentinel Analytics rule ksuto query"><h1>Azure Sentinel Analytics rule ksuto query</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Microsoft Sentinel</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-01-02 16:36:12</li>
+<li>JD 相关性: Defender/Sentinel/安全</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>近期在处理Sentinel Analytics rule工单时，需要查询对应rule运行结果的具体信息，可以通过如下kusto语句查询：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>近期在处理Sentinel Analytics rule工单时，需要查询对应rule运行结果的具体信息，可以通过如下kusto语句查询：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>| where env_time &gt;= datetime(2024-12-13 00:00) and env_time &lt;= datetime(2024-12-31 23:59)</li>
+</ul>
+<ul>
+<li>| where customData has &quot;9d32173d-10d6-4f3e-a98b-9535c4cf0708&quot; //workspace ID</li>
+</ul>
+<ul>
+<li>| where customData has &quot;352512e8-50c7-442e-8fd4-1748f4049526&quot; // rule ID</li>
+</ul>
+<ul>
+<li>| where operationName contains &quot;ServiceBusJobQueueListener.ProcessMessageAsync&quot;</li>
+</ul>
+<ul>
+<li>| project env_time,operationId, operationName,resultType,durationMs,customData</li>
+</ul>
+<ul>
+<li>Rule ID可以从客户提供对应的json文件中获取：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>cluster(&#39;securityinsightsmc.chinaeast2.kusto.chinacloudapi.cn&#39;).database(&#39;SecurityInsightsMooncake&#39;).ServiceFabricOperations</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>近期在处理Sentinel Analytics rule工单时，需要查询对应rule运行结果的具体信息，可以通过如下kusto语句查询：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>近期在处理Sentinel Analytics rule工单时，需要查询对应rule运行结果的具体信息，可以通过如下kusto语句查询：</p>
+<p>cluster(&#39;securityinsightsmc.chinaeast2.kusto.chinacloudapi.cn&#39;).database(&#39;SecurityInsightsMooncake&#39;).ServiceFabricOperations</p>
+<p>| where env_time &gt;= datetime(2024-12-13 00:00) and env_time &lt;= datetime(2024-12-31 23:59)</p>
+<p>| where customData has &quot;9d32173d-10d6-4f3e-a98b-9535c4cf0708&quot; //workspace ID</p>
+<p>| where customData has &quot;352512e8-50c7-442e-8fd4-1748f4049526&quot; // rule ID</p>
+<p>| where operationName contains &quot;ServiceBusJobQueueListener.ProcessMessageAsync&quot;</p>
+<p>| project env_time,operationId, operationName,resultType,durationMs,customData</p>
+<p>Rule ID可以从客户提供对应的json文件中获取：</p></article>

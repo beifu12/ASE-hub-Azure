@@ -1,0 +1,86 @@
+<article class="kb-article" data-title="[VM][PowerShell] 保留公网IP（VIP）的操作方法"><h1>[VM][PowerShell] 保留公网IP（VIP）的操作方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Powershell</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-08-31 13:58:34</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>目前只能在Regional VNET中使用保留IP</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>目前只能在Regional VNET中使用保留IP</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>目前只能在Regional VNET中使用保留IP</li>
+</ul>
+<ul>
+<li>必须先保留IP，再创建虚拟机，不能为已经存在的虚拟机保留VIP</li>
+</ul>
+<ul>
+<li>保留IP是会额外计费的</li>
+</ul>
+<ul>
+<li>首先需要创建Regional VNET（创建好VNET之后下载网络配置文件，修改AffinityGroup和Location两个属性），假设我们创建的VNET名称为&#39;DanielVNET&#39;，其中的一个子网名称为&#39;SubNet1&#39;</li>
+</ul>
+<ul>
+<li>创建一个保留IP：</li>
+</ul>
+<ul>
+<li>接着在保留IP中创建虚拟机：</li>
+</ul>
+<ul>
+<li>首先指定subscription：</li>
+</ul>
+<ul>
+<li>接着创建VM：</li>
+</ul>
+<ul>
+<li>操作成功之后，使用get-azurereservedip就可以看到部署的VM了。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>操作成功后，使用get-azurereservedip查看保留的IP地址，ServiceName和DeploymentName为空。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>只能通过PowerShell来操作</li>
+</ul>
+<ul>
+<li>在PowerShell中输入下面的命令：$ReservedIP = new-azurereservedip -reservedipname &#39;ReservedIPforDaniel&#39; -label &#39;forTest&#39; -location &#39;China North&#39;</li>
+</ul>
+<ul>
+<li>Set-AzureSubscription -SubscriptionName &quot;XXXX&quot; -CurrentStorageAccountName &quot;YYYY&quot;</li>
+</ul>
+<ul>
+<li>new-azurevmconfig -name &#39;testVM&#39; -instancesize small -imagename get-azurevmimage[29].imagename | add-azureprovisioningconfig -windows -adminusername &#39;daniel&#39; -password &#39;Abcd1234&#39; | set-azuresubnet -subnetname &#39;SubNet1&#39; | new-azurevm -servicename &#39;cloudservice1&#39; -reservedipname ‘ReservedIPforDaniel’ -vnetname &#39;DanielVNET&#39;</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>可以通过关闭虚拟机，等一段时间再开启来验证VIP是否变化。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>目前只能在Regional VNET中使用保留IP</p>
+<p>只能通过PowerShell来操作</p>
+<p>必须先保留IP，再创建虚拟机，不能为已经存在的虚拟机保留VIP</p>
+<p>保留IP是会额外计费的</p>
+<p>首先需要创建Regional VNET（创建好VNET之后下载网络配置文件，修改AffinityGroup和Location两个属性），假设我们创建的VNET名称为&#39;DanielVNET&#39;，其中的一个子网名称为&#39;SubNet1&#39;</p>
+<p>创建一个保留IP：</p>
+<p>在PowerShell中输入下面的命令：$ReservedIP = new-azurereservedip -reservedipname &#39;ReservedIPforDaniel&#39; -label &#39;forTest&#39; -location &#39;China North&#39;</p>
+<p>操作成功后，使用get-azurereservedip查看保留的IP地址，ServiceName和DeploymentName为空。</p>
+<p>接着在保留IP中创建虚拟机：</p>
+<p>首先指定subscription：</p>
+<p>Set-AzureSubscription -SubscriptionName &quot;XXXX&quot; -CurrentStorageAccountName &quot;YYYY&quot;</p>
+<p>接着创建VM：</p>
+<p>new-azurevmconfig -name &#39;testVM&#39; -instancesize small -imagename get-azurevmimage[29].imagename | add-azureprovisioningconfig -windows -adminusername &#39;daniel&#39; -password &#39;Abcd1234&#39; | set-azuresubnet -subnetname &#39;SubNet1&#39; | new-azurevm -servicename &#39;cloudservice1&#39; -reservedipname ‘ReservedIPforDaniel’ -vnetname &#39;DanielVNET&#39;</p>
+<p>操作成功之后，使用get-azurereservedip就可以看到部署的VM了。</p>
+<p>可以通过关闭虚拟机，等一段时间再开启来验证VIP是否变化。</p></article>

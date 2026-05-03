@@ -1,0 +1,488 @@
+<article class="kb-article" data-title="2020/09/22关于网络计划维护将影响部分中国北部 2数据中心虚拟机的通知--20200922"><h1>2020/09/22关于网络计划维护将影响部分中国北部 2数据中心虚拟机的通知--20200922</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: 虚拟机常见问题整理汇总</li>
+<li>最近修改: 2021-05-25 14:02:51</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>即将到来的维护更新将于北京时间2020年10月11日16:00至2020年10月17日14:00进行，在此期间会影响您位于中国北部 2区域的虚拟机。计划维护期间 IaaS 虚拟机将迁移至新的网络硬件设备。维护开始后，每台虚拟机将至多出现15分钟不可用。系统磁盘及数据磁盘将保留，但临时磁盘将被重置。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>即将到来的维护更新将于北京时间2020年10月11日16:00至2020年10月17日14:00进行，在此期间会影响您位于中国北部 2区域的虚拟机。计划维护期间 IaaS 虚拟机将迁移至新的网络硬件设备。维护开始后，每台虚拟机将至多出现15分钟不可用。系统磁盘及数据磁盘将保留，但临时磁盘将被重置。</li>
+</ul>
+<ul>
+<li>&quot;650d9834-5250-403f-8eb9-a59af572d1b2&quot;,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Please be aware of the upcoming Planned Maintenance (2020/10/11-2020/10/17). The EDM email has been sent to customer.</li>
+</ul>
+<ul>
+<li>After discussion with CXP, we summarize the Key Information for your reference.</li>
+</ul>
+<ul>
+<li>Schedule</li>
+</ul>
+<ul>
+<li>Start Time (UTC+8)</li>
+</ul>
+<ul>
+<li>End Time (UTC+8)</li>
+</ul>
+<ul>
+<li>Customer Controlled Maintenance</li>
+</ul>
+<ul>
+<li>2020/10/11 16:00</li>
+</ul>
+<ul>
+<li>System Planned Maintenance</li>
+</ul>
+<ul>
+<li>2020/10/17 14:00</li>
+</ul>
+<ul>
+<li>Key Message</li>
+</ul>
+<ul>
+<li>This maintenance is related to TOR. And affected VM will be migrated.</li>
+</ul>
+<ul>
+<li>-----------------------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>Customer can follow below guidance to self migrate VMs.</li>
+</ul>
+<ul>
+<li>通过 Azure 门户</li>
+</ul>
+<ul>
+<li>对于经典和 Azure 资源管理器模型的虚拟机：</li>
+</ul>
+<ul>
+<li>登录Azure门户并导航至您希望迁移的虚拟机。</li>
+</ul>
+<ul>
+<li>点击“停止”以停止虚拟机并取消分配。请确保虚拟机状态已变为“已停止(已取消分配)”。</li>
+</ul>
+<ul>
+<li>在上一步状态切换完成后，点击“开始”。</li>
+</ul>
+<ul>
+<li>对于虚拟机规模集：</li>
+</ul>
+<ul>
+<li>登录Azure门户并导航至您希望迁移的虚拟机规模集。</li>
+</ul>
+<ul>
+<li>选择需迁移的虚拟机规模集并在左侧设置菜单选择“实例”。</li>
+</ul>
+<ul>
+<li>选择需迁移的虚拟机。</li>
+</ul>
+<ul>
+<li>点击“解除分配”以停止虚拟机并解除分配。请确保虚拟机状态已变为“已停止(已取消分配)”。</li>
+</ul>
+<ul>
+<li>样例：Stop-AzVM -ResourceGroupName &quot; ResourceGroupName&quot; -Name &quot;VirtualMachineName&quot;</li>
+</ul>
+<ul>
+<li>了解更多关于如何关闭虚拟机。</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt;= ago(69m)</li>
+</ul>
+<ul>
+<li>| where nodeId in (</li>
+</ul>
+<ul>
+<li>&quot;11949ef3-1d20-4086-83d8-ead391cd5790&quot;,</li>
+</ul>
+<ul>
+<li>&quot;11ab394a-a231-4a18-8091-6b3189cbd69e&quot;,</li>
+</ul>
+<ul>
+<li>&quot;2a8f7784-16d4-4990-85b4-7e6284c31965&quot;,</li>
+</ul>
+<ul>
+<li>&quot;2f9f710c-2991-4287-b2e7-2d67fd806d07&quot;,</li>
+</ul>
+<ul>
+<li>&quot;515e8dcf-98d8-404c-860f-070f5c451de2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;609cf531-0380-4e83-9dfe-5c62c4d2ff4c&quot;,</li>
+</ul>
+<ul>
+<li>&quot;6c7e0dc3-2c9f-4a4e-8106-7a574fbb0cc7&quot;,</li>
+</ul>
+<ul>
+<li>&quot;6e839dac-6dc9-41e1-af3d-14ea67964238&quot;,</li>
+</ul>
+<ul>
+<li>&quot;77e652fb-e78c-409f-a9da-f96464089100&quot;,</li>
+</ul>
+<ul>
+<li>&quot;7bac971e-4a9d-496c-8d34-213c23c04ab8&quot;,</li>
+</ul>
+<ul>
+<li>&quot;7d9395d5-b2f3-4aae-b3bd-6bc633bd3008&quot;,</li>
+</ul>
+<ul>
+<li>&quot;7e93be0a-0831-4e52-9510-88f5f6873240&quot;,</li>
+</ul>
+<ul>
+<li>&quot;b6f2fc55-5ac2-411f-8970-c65e8787dde1&quot;,</li>
+</ul>
+<ul>
+<li>&quot;cc88cfa1-38d2-4699-ac74-0ee36863bf4c&quot;,</li>
+</ul>
+<ul>
+<li>&quot;e55d8c63-726e-4fc8-898b-0cf980831772&quot;,</li>
+</ul>
+<ul>
+<li>&quot;f18a9962-4d65-4a52-ba1f-88dce573ecc7&quot;</li>
+</ul>
+<ul>
+<li>)</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, subscriptionId, Tenant, billingType, roleInstanceName, containerType, containerId, virtualMachineUniqueId</li>
+</ul>
+<ul>
+<li>| summarize arg_max(PreciseTimeStamp, *) by roleInstanceName</li>
+</ul>
+<ul>
+<li>And if there’s any related tickets, please reply to the email with some basic info.</li>
+</ul>
+<ul>
+<li>Stella Zhou</li>
+</ul>
+<ul>
+<li>Support Escalation Engineer, VM POD</li>
+</ul>
+<ul>
+<li>Mooncake (China Azure) Support Team,</li>
+</ul>
+<ul>
+<li>Customer Service &amp; Support (CSS), GCR region</li>
+</ul>
+<ul>
+<li>Office:  +86-21-61886566</li>
+</ul>
+<ul>
+<li>Email: jieyzhou@Microsoft.com</li>
+</ul>
+<ul>
+<li>From: 世纪互联客户服务中心 &lt;customersupport@mktedm.21vbluecloud.com&gt;</li>
+</ul>
+<ul>
+<li>Sent: 2020年9月11日 0:09</li>
+</ul>
+<ul>
+<li>To: Mooncake Service Notification Subscribers &lt;AzureMaintNotCN@microsoft.com&gt;</li>
+</ul>
+<ul>
+<li>Subject: [外部] 关于网络计划维护将影响部分中国北部 2数据中心虚拟机的通知</li>
+</ul>
+<ul>
+<li>您曾在 21Vianet 注册或订阅邮件，所以收到此邮件，如果不想继续收到此类邮件，请点击 退订</li>
+</ul>
+<ul>
+<li>主题:                                          关于网络计划维护将影响部分中国北部 2数据中心虚拟机的通知</li>
+</ul>
+<ul>
+<li>[for English readers, please click here to view English version]</li>
+</ul>
+<ul>
+<li>关于网络计划维护将影响部分中国北部 2数据中心虚拟机的通知</li>
+</ul>
+<ul>
+<li>尊敬的 Azure 客户：</li>
+</ul>
+<ul>
+<li>您收到此邮件是因为您正在使用 Azure 虚拟机。</li>
+</ul>
+<ul>
+<li>更多参考</li>
+</ul>
+<ul>
+<li>虚拟机维护类型介绍</li>
+</ul>
+<ul>
+<li>如何于虚拟机重启前15分钟获取虚拟机内部通知</li>
+</ul>
+<ul>
+<li>如有任何问题，可通过如下选项获得技术支持</li>
+</ul>
+<ul>
+<li>您可导航至 Azure 门户的“帮助和支持”页面获取技术支持</li>
+</ul>
+<ul>
+<li>[English Version]</li>
+</ul>
+<ul>
+<li>Scheduled network maintenance may affect one or more of your virtual machines in China North 2</li>
+</ul>
+<ul>
+<li>Dear Azure customer,</li>
+</ul>
+<ul>
+<li>You&#39;re receiving this notice because you currently use Azure Virtual Machines.</li>
+</ul>
+<ul>
+<li>An upcoming maintenance update will affect virtual machines (VMs) in China North 2, from 11 October 2020 16:00 CST until 17 October 2020 14:00 CST. During this planned maintenance window, IaaS virtual machines will be migrated to newer network hardware. Please expect each VM to be unavailable for up to 15 minutes after initiating the maintenance. Operating system and data disks will be retained, but temporary disks will be reset.</li>
+</ul>
+<ul>
+<li>See a list of your affected VMs at the bottom of this message.</li>
+</ul>
+<ul>
+<li>For both Classic and Azure Resource Manager (ARM) VMs:</li>
+</ul>
+<ul>
+<li>For VM scale sets:</li>
+</ul>
+<ul>
+<li>Example: Stop-AzVM -ResourceGroupName &quot; ResourceGroupName&quot; -Name &quot;VirtualMachineName&quot;</li>
+</ul>
+<ul>
+<li>Learn more about stopping an Azure VM.</li>
+</ul>
+<ul>
+<li>More information</li>
+</ul>
+<ul>
+<li>Types of maintenance performed on VMs</li>
+</ul>
+<ul>
+<li>Receive in-VM notification 15 minutes prior to a VM reboot</li>
+</ul>
+<ul>
+<li>Account Information:</li>
+</ul>
+<ul>
+<li>Subscription ID</li>
+</ul>
+<ul>
+<li>Virtual Machine Name</li>
+</ul>
+<ul>
+<li>Support options if you have additional questions:</li>
+</ul>
+<ul>
+<li>感谢关注！</li>
+</ul>
+<ul>
+<li>世纪互联 Microsoft Azure 团队, 北京市朝阳区酒仙桥路6号院电子城·国际电子总部6号楼12-14层 (100015)</li>
+</ul>
+<ul>
+<li>这封来自世纪互联的邮件是您或贵公司购买或参与的计划、服务或产品的重要部分。世纪互联尊重您的隐私，请阅读我们的隐私声明。</li>
+</ul>
+<ul>
+<li>为了能正常收到我们的信息，您可将 customersupport@mktedm.21vbluecloud.com 添加为联系人</li>
+</ul>
+<ul>
+<li>如果您不想继续收到邮件，请点此 退订；如果您有任何不满，请点此 投诉</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Kusto Query to get VM pending migration</li>
+</ul>
+<ul>
+<li>You may use below Kusto query to get VM list that still pending migration.</li>
+</ul>
+<ul>
+<li>Also if you receive ticket about VM unavailable after 2020/10/11 16:00, you may check whether the VM previously located in the listed nodes to determine if it is impacted by the maintenance.</li>
+</ul>
+<ul>
+<li>cluster(&#39;azurecm.chinanorth2.kusto.chinacloudapi.cn&#39;).database(&#39;azurecm&#39;).LogContainerSnapshot</li>
+</ul>
+<ul>
+<li>如果图片不显示，请查看 网页版本</li>
+</ul>
+<ul>
+<li>受影响的虚拟机列表请查看此邮件底部。</li>
+</ul>
+<ul>
+<li>Migrate using the Azure portal</li>
+</ul>
+<ul>
+<li>Log into the Azure portal and navigate to the VMs you want to migrate.</li>
+</ul>
+<ul>
+<li>Log into the Azure portal and navigate to the VM scale sets.</li>
+</ul>
+<ul>
+<li>Login to Azure Portal and navigate to the “Help + support” page to obtain technical support</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>为自行控制虚拟机受影响的时段，您可参考以下步骤通过 Azure 门户或 PowerShell 迁移您的部署。请您于北京时间2020年10月11日16:00前完成迁移操作。</li>
+</ul>
+<ul>
+<li>通过 Azure PowerShell</li>
+</ul>
+<ul>
+<li>请在 Azure PowerShell 中调用下列去除“StayProvisioned”标记的命令以关闭虚拟机。</li>
+</ul>
+<ul>
+<li>For more control over when your VMs will be affected, migrate your deployments using the Azure portal or PowerShell by following the steps below. You must complete the migration prior to 11 October 2020 16:00 CST.</li>
+</ul>
+<ul>
+<li>Select “Stop” to stop and deallocate the VM. Please ensure the VM status has transitioned to “Stop (deallocated)&quot;.</li>
+</ul>
+<ul>
+<li>Select “Start” only after the previous change in status has completed.</li>
+</ul>
+<ul>
+<li>Select a VM scale set and select “Instances” from the left-side settings menu.</li>
+</ul>
+<ul>
+<li>Select the VM you want to migrate.</li>
+</ul>
+<ul>
+<li>Select “Deallocate” to stop and deallocate the VM. Please ensure the VM status has transitioned to “Stop (deallocated)”.</li>
+</ul>
+<ul>
+<li>Migrate using PowerShell</li>
+</ul>
+<ul>
+<li>In Azure PowerShell, invoke the command to stop an Azure VM without a “StayProvisioned” flag.</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>在线创建工单： <a href="https://support.azure.cn/zh-cn/support/support-azure/" target="_blank" rel="noopener">https://support.azure.cn/zh-cn/support/support-azure/</a></li>
+</ul>
+<ul>
+<li>Submit support request online: <a href="https://support.azure.cn/en-us/support/support-azure/" target="_blank" rel="noopener">https://support.azure.cn/en-us/support/support-azure/</a></li>
+</ul>
+<ul>
+<li>www.21vbluecloud.com</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Please be aware of the upcoming Planned Maintenance (2020/10/11-2020/10/17). The EDM email has been sent to customer.</p>
+<p>After discussion with CXP, we summarize the Key Information for your reference.</p>
+<p>Schedule</p>
+<p>Start Time (UTC+8)</p>
+<p>End Time (UTC+8)</p>
+<p>Customer Controlled Maintenance</p>
+<p>2020/09/11</p>
+<p>2020/10/11 16:00</p>
+<p>System Planned Maintenance</p>
+<p>2020/10/17 14:00</p>
+<p>Key Message</p>
+<p>This maintenance is related to TOR. And affected VM will be migrated.</p>
+<p>-----------------------------------------------------------------------------</p>
+<p>即将到来的维护更新将于北京时间2020年10月11日16:00至2020年10月17日14:00进行，在此期间会影响您位于中国北部 2区域的虚拟机。计划维护期间 IaaS 虚拟机将迁移至新的网络硬件设备。维护开始后，每台虚拟机将至多出现15分钟不可用。系统磁盘及数据磁盘将保留，但临时磁盘将被重置。</p>
+<p>Customer can follow below guidance to self migrate VMs.</p>
+<p>为自行控制虚拟机受影响的时段，您可参考以下步骤通过 Azure 门户或 PowerShell 迁移您的部署。请您于北京时间2020年10月11日16:00前完成迁移操作。</p>
+<p>通过 Azure 门户</p>
+<p>对于经典和 Azure 资源管理器模型的虚拟机：</p>
+<p>登录Azure门户并导航至您希望迁移的虚拟机。</p>
+<p>点击“停止”以停止虚拟机并取消分配。请确保虚拟机状态已变为“已停止(已取消分配)”。</p>
+<p>在上一步状态切换完成后，点击“开始”。</p>
+<p>对于虚拟机规模集：</p>
+<p>登录Azure门户并导航至您希望迁移的虚拟机规模集。</p>
+<p>选择需迁移的虚拟机规模集并在左侧设置菜单选择“实例”。</p>
+<p>选择需迁移的虚拟机。</p>
+<p>点击“解除分配”以停止虚拟机并解除分配。请确保虚拟机状态已变为“已停止(已取消分配)”。</p>
+<p>通过 Azure PowerShell</p>
+<p>请在 Azure PowerShell 中调用下列去除“StayProvisioned”标记的命令以关闭虚拟机。</p>
+<p>样例：Stop-AzVM -ResourceGroupName &quot; ResourceGroupName&quot; -Name &quot;VirtualMachineName&quot;</p>
+<p>了解更多关于如何关闭虚拟机。</p>
+<p>Kusto Query to get VM pending migration</p>
+<p>You may use below Kusto query to get VM list that still pending migration.</p>
+<p>Also if you receive ticket about VM unavailable after 2020/10/11 16:00, you may check whether the VM previously located in the listed nodes to determine if it is impacted by the maintenance.</p>
+<p>cluster(&#39;azurecm.chinanorth2.kusto.chinacloudapi.cn&#39;).database(&#39;azurecm&#39;).LogContainerSnapshot</p>
+<p>| where PreciseTimeStamp &gt;= ago(69m)</p>
+<p>| where nodeId in (</p>
+<p>&quot;11949ef3-1d20-4086-83d8-ead391cd5790&quot;,</p>
+<p>&quot;11ab394a-a231-4a18-8091-6b3189cbd69e&quot;,</p>
+<p>&quot;2a8f7784-16d4-4990-85b4-7e6284c31965&quot;,</p>
+<p>&quot;2f9f710c-2991-4287-b2e7-2d67fd806d07&quot;,</p>
+<p>&quot;515e8dcf-98d8-404c-860f-070f5c451de2&quot;,</p>
+<p>&quot;609cf531-0380-4e83-9dfe-5c62c4d2ff4c&quot;,</p>
+<p>&quot;650d9834-5250-403f-8eb9-a59af572d1b2&quot;,</p>
+<p>&quot;6c7e0dc3-2c9f-4a4e-8106-7a574fbb0cc7&quot;,</p>
+<p>&quot;6e839dac-6dc9-41e1-af3d-14ea67964238&quot;,</p>
+<p>&quot;77e652fb-e78c-409f-a9da-f96464089100&quot;,</p>
+<p>&quot;7bac971e-4a9d-496c-8d34-213c23c04ab8&quot;,</p>
+<p>&quot;7d9395d5-b2f3-4aae-b3bd-6bc633bd3008&quot;,</p>
+<p>&quot;7e93be0a-0831-4e52-9510-88f5f6873240&quot;,</p>
+<p>&quot;b6f2fc55-5ac2-411f-8970-c65e8787dde1&quot;,</p>
+<p>&quot;cc88cfa1-38d2-4699-ac74-0ee36863bf4c&quot;,</p>
+<p>&quot;e55d8c63-726e-4fc8-898b-0cf980831772&quot;,</p>
+<p>&quot;f18a9962-4d65-4a52-ba1f-88dce573ecc7&quot;</p>
+<p>)</p>
+<p>| project PreciseTimeStamp, subscriptionId, Tenant, billingType, roleInstanceName, containerType, containerId, virtualMachineUniqueId</p>
+<p>| summarize arg_max(PreciseTimeStamp, *) by roleInstanceName</p>
+<p>And if there’s any related tickets, please reply to the email with some basic info.</p>
+<p>Stella Zhou</p>
+<p>Support Escalation Engineer, VM POD</p>
+<p>Mooncake (China Azure) Support Team,</p>
+<p>Customer Service &amp; Support (CSS), GCR region</p>
+<p>Office:  +86-21-61886566</p>
+<p>Email: jieyzhou@Microsoft.com</p>
+<p>From: 世纪互联客户服务中心 &lt;customersupport@mktedm.21vbluecloud.com&gt;</p>
+<p>Sent: 2020年9月11日 0:09</p>
+<p>To: Mooncake Service Notification Subscribers &lt;AzureMaintNotCN@microsoft.com&gt;</p>
+<p>Subject: [外部] 关于网络计划维护将影响部分中国北部 2数据中心虚拟机的通知</p>
+<p>如果图片不显示，请查看 网页版本</p>
+<p>您曾在 21Vianet 注册或订阅邮件，所以收到此邮件，如果不想继续收到此类邮件，请点击 退订</p>
+<p>主题:                                          关于网络计划维护将影响部分中国北部 2数据中心虚拟机的通知</p>
+<p>[for English readers, please click here to view English version]</p>
+<p>关于网络计划维护将影响部分中国北部 2数据中心虚拟机的通知</p>
+<p>尊敬的 Azure 客户：</p>
+<p>您收到此邮件是因为您正在使用 Azure 虚拟机。</p>
+<p>受影响的虚拟机列表请查看此邮件底部。</p>
+<p>更多参考</p>
+<p>虚拟机维护类型介绍</p>
+<p>如何于虚拟机重启前15分钟获取虚拟机内部通知</p>
+<p>如有任何问题，可通过如下选项获得技术支持</p>
+<p>您可导航至 Azure 门户的“帮助和支持”页面获取技术支持</p>
+<p>在线创建工单： <a href="https://support.azure.cn/zh-cn/support/support-azure/" target="_blank" rel="noopener">https://support.azure.cn/zh-cn/support/support-azure/</a></p>
+<p>[English Version]</p>
+<p>Scheduled network maintenance may affect one or more of your virtual machines in China North 2</p>
+<p>Dear Azure customer,</p>
+<p>You&#39;re receiving this notice because you currently use Azure Virtual Machines.</p>
+<p>An upcoming maintenance update will affect virtual machines (VMs) in China North 2, from 11 October 2020 16:00 CST until 17 October 2020 14:00 CST. During this planned maintenance window, IaaS virtual machines will be migrated to newer network hardware. Please expect each VM to be unavailable for up to 15 minutes after initiating the maintenance. Operating system and data disks will be retained, but temporary disks will be reset.</p>
+<p>See a list of your affected VMs at the bottom of this message.</p>
+<p>For more control over when your VMs will be affected, migrate your deployments using the Azure portal or PowerShell by following the steps below. You must complete the migration prior to 11 October 2020 16:00 CST.</p>
+<p>Migrate using the Azure portal</p>
+<p>For both Classic and Azure Resource Manager (ARM) VMs:</p>
+<p>Log into the Azure portal and navigate to the VMs you want to migrate.</p>
+<p>Select “Stop” to stop and deallocate the VM. Please ensure the VM status has transitioned to “Stop (deallocated)&quot;.</p>
+<p>Select “Start” only after the previous change in status has completed.</p>
+<p>For VM scale sets:</p>
+<p>Log into the Azure portal and navigate to the VM scale sets.</p>
+<p>Select a VM scale set and select “Instances” from the left-side settings menu.</p>
+<p>Select the VM you want to migrate.</p>
+<p>Select “Deallocate” to stop and deallocate the VM. Please ensure the VM status has transitioned to “Stop (deallocated)”.</p>
+<p>Migrate using PowerShell</p>
+<p>In Azure PowerShell, invoke the command to stop an Azure VM without a “StayProvisioned” flag.</p>
+<p>Example: Stop-AzVM -ResourceGroupName &quot; ResourceGroupName&quot; -Name &quot;VirtualMachineName&quot;</p>
+<p>Learn more about stopping an Azure VM.</p>
+<p>More information</p>
+<p>Types of maintenance performed on VMs</p>
+<p>Receive in-VM notification 15 minutes prior to a VM reboot</p>
+<p>Account Information:</p>
+<p>Subscription ID</p>
+<p>Virtual Machine Name</p>
+<p>Support options if you have additional questions:</p>
+<p>Login to Azure Portal and navigate to the “Help + support” page to obtain technical support</p>
+<p>Submit support request online: <a href="https://support.azure.cn/en-us/support/support-azure/" target="_blank" rel="noopener">https://support.azure.cn/en-us/support/support-azure/</a></p>
+<p>感谢关注！</p>
+<p>世纪互联 Microsoft Azure 团队, 北京市朝阳区酒仙桥路6号院电子城·国际电子总部6号楼12-14层 (100015)</p>
+<p>这封来自世纪互联的邮件是您或贵公司购买或参与的计划、服务或产品的重要部分。世纪互联尊重您的隐私，请阅读我们的隐私声明。</p>
+<p>www.21vbluecloud.com</p>
+<p>为了能正常收到我们的信息，您可将 customersupport@mktedm.21vbluecloud.com 添加为联系人</p>
+<p>如果您不想继续收到邮件，请点此 退订；如果您有任何不满，请点此 投诉</p></article>

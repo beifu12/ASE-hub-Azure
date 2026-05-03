@@ -1,0 +1,72 @@
+<article class="kb-article" data-title="批量为用户分配sessionhost"><h1>批量为用户分配sessionhost</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-23 14:39:44</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户使用avd个人主机池，并需要将AAD group的用户每人分配一台sessionhost，客户环境是100台。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户使用avd个人主机池，并需要将AAD group的用户每人分配一台sessionhost，客户环境是100台。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>客户使用avd个人主机池，并需要将AAD group的用户每人分配一台sessionhost，客户环境是100台。</li>
+</ul>
+<ul>
+<li>for($i=0;$i -le 1;$i++)</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>$user=Get-AzADGroupMember -GroupObjectId f7e5aa79-2a93-4754-ac38-ed00a8611826 |  Select DisplayName,UserPrincipalName</li>
+</ul>
+<ul>
+<li>$upn=Get-AzADUser -DisplayName $user.DisplayName[$i]</li>
+</ul>
+<ul>
+<li>$sessionhost=Get-AzWvdSessionHost -HostPoolName avd317  -ResourceGroupName avd317</li>
+</ul>
+<ul>
+<li>$sessionhost2=$sessionhost.Name.Split(&quot;/&quot;)[2*($i)+1]</li>
+</ul>
+<ul>
+<li>Update-AzWvdSessionHost -HostPoolName avd317  -Name $sessionhost2  -ResourceGroupName avd317 -AssignedUser $upn.UserPrincipalName</li>
+</ul>
+<ul>
+<li>Write-Output &quot;$i&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>脚本参考：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>客户使用avd个人主机池，并需要将AAD group的用户每人分配一台sessionhost，客户环境是100台。</p>
+<p>脚本参考：</p>
+<p>for($i=0;$i -le 1;$i++)</p>
+<p>{</p>
+<p>$user=Get-AzADGroupMember -GroupObjectId f7e5aa79-2a93-4754-ac38-ed00a8611826 |  Select DisplayName,UserPrincipalName</p>
+<p>$upn=Get-AzADUser -DisplayName $user.DisplayName[$i]</p>
+<p>$sessionhost=Get-AzWvdSessionHost -HostPoolName avd317  -ResourceGroupName avd317</p>
+<p>$sessionhost2=$sessionhost.Name.Split(&quot;/&quot;)[2*($i)+1]</p>
+<p>Update-AzWvdSessionHost -HostPoolName avd317  -Name $sessionhost2  -ResourceGroupName avd317 -AssignedUser $upn.UserPrincipalName</p>
+<p>Write-Output &quot;$i&quot;</p>
+<p>}</p></article>

@@ -1,0 +1,121 @@
+<article class="kb-article" data-title="SR_20230320218897_在Ubuntu上配置端口转发失败"><h1>SR_20230320218897_在Ubuntu上配置端口转发失败</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LinuxNetIssue</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-03-22 21:05:39</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题描述：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>系统环境/应用程序信息：</li>
+</ul>
+<ul>
+<li>===============</li>
+</ul>
+<ul>
+<li>Azure Ubuntu VM Network</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>Azure Ubuntu VM中启用内核级别的ip forwarding功能。</li>
+</ul>
+<ul>
+<li>Azure Ubuntu VM中配置如下iptables规则;</li>
+</ul>
+<ul>
+<li>iptables -t nat -A PREROUTING -d 10.2.0.5 -p tcp -m tcp --dport 30000 -j DNAT --to-destination 10.3.0.4:80</li>
+</ul>
+<ul>
+<li>iptables -t nat -A POSTROUTING -d 10.3.0.4 -o eth0 -j MASQUERADE</li>
+</ul>
+<ul>
+<li>Azure Ubuntu VM中禁用UFW，避免有额外的拦截。</li>
+</ul>
+<ul>
+<li>iptables -t nat -A OUTPUT -p tcp -d 10.2.0.5 --dport 30000 -j DNAT --to-destination 10.3.0.4:80</li>
+</ul>
+<ul>
+<li>补充iptables的工作流程图：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Azure VM Portal中找到充当转发器角色的NIC，并在ip configurations中启用“ip forwarding”功能。</li>
+</ul>
+<ul>
+<li>iptables -A FORWARD -i eth0 -j ACCEPT  #这条为可选项，确保filter表中Forward链不会阻拦流量就行；如果确认上面那两条配置后仍不通就配置这条。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>在Ubuntu上配置端口转发没有生效。</li>
+</ul>
+<ul>
+<li>借助iptables DNAT实现端口转发，测试端口连通性，如果是在本机上直接测试，数据包不会经NAT表的PREROUTING链处理，而本机又没有监听相应的端口，所以在其上telnet始终会显示refused.</li>
+</ul>
+<ul>
+<li>借助iptables配置端口转发的步骤：</li>
+</ul>
+<ul>
+<li>要实现在端口转发器自身telnet 其自身30000端口也能将数据包转发给目标IP及对应端口：</li>
+</ul>
+<ul>
+<li>可以在NAT表的OUTPUT链中增加如下DNAT规则，这样当数据包源IP为本机自身IP时也能进行DNAT转换，从而本机不用监听telnet的那个端口：</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://stuffphilwrites.com/2014/09/iptables-processing-flowchart/" target="_blank" rel="noopener">https://stuffphilwrites.com/2014/09/iptables-processing-flowchart/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>问题描述：</p>
+<p>=======</p>
+<p>在Ubuntu上配置端口转发没有生效。</p>
+<p>系统环境/应用程序信息：</p>
+<p>===============</p>
+<p>Azure Ubuntu VM Network</p>
+<p>问题原因：</p>
+<p>========</p>
+<p>借助iptables DNAT实现端口转发，测试端口连通性，如果是在本机上直接测试，数据包不会经NAT表的PREROUTING链处理，而本机又没有监听相应的端口，所以在其上telnet始终会显示refused.</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>借助iptables配置端口转发的步骤：</p>
+<p>Azure VM Portal中找到充当转发器角色的NIC，并在ip configurations中启用“ip forwarding”功能。</p>
+<p>Azure Ubuntu VM中启用内核级别的ip forwarding功能。</p>
+<p>Azure Ubuntu VM中配置如下iptables规则;</p>
+<p>iptables -t nat -A PREROUTING -d 10.2.0.5 -p tcp -m tcp --dport 30000 -j DNAT --to-destination 10.3.0.4:80</p>
+<p>iptables -t nat -A POSTROUTING -d 10.3.0.4 -o eth0 -j MASQUERADE</p>
+<p>iptables -A FORWARD -i eth0 -j ACCEPT  #这条为可选项，确保filter表中Forward链不会阻拦流量就行；如果确认上面那两条配置后仍不通就配置这条。</p>
+<p>Azure Ubuntu VM中禁用UFW，避免有额外的拦截。</p>
+<p>要实现在端口转发器自身telnet 其自身30000端口也能将数据包转发给目标IP及对应端口：</p>
+<p>可以在NAT表的OUTPUT链中增加如下DNAT规则，这样当数据包源IP为本机自身IP时也能进行DNAT转换，从而本机不用监听telnet的那个端口：</p>
+<p>iptables -t nat -A OUTPUT -p tcp -d 10.2.0.5 --dport 30000 -j DNAT --to-destination 10.3.0.4:80</p>
+<p>补充iptables的工作流程图：</p>
+<p><a href="https://stuffphilwrites.com/2014/09/iptables-processing-flowchart/" target="_blank" rel="noopener">https://stuffphilwrites.com/2014/09/iptables-processing-flowchart/</a></p></article>

@@ -1,0 +1,95 @@
+<article class="kb-article" data-title="使用 PowerShell  查询存储账号中表的数据"><h1>使用 PowerShell  查询存储账号中表的数据</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Powershell</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-08-05 12:12:01</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>通过PowerShell 查询表可以参考：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>通过PowerShell 查询表可以参考：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Install-Module -Name AzTable</li>
+</ul>
+<ul>
+<li>获取表中数据可以使用：</li>
+</ul>
+<ul>
+<li>$resourceGroup = &quot;zhangwx&quot;</li>
+</ul>
+<ul>
+<li>$storageAccountName = &quot;zhangsa&quot;</li>
+</ul>
+<ul>
+<li>$storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroup -Name $storageAccountName</li>
+</ul>
+<ul>
+<li>$ctx = $storageAccount.Context</li>
+</ul>
+<ul>
+<li>$tableName = &quot;WADMetricsPT1HP10DV2S20181022&quot;</li>
+</ul>
+<ul>
+<li>$cloudTable = (Get-AzStorageTable –§CName $tableName –§CContext $ctx).CloudTable</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#查看表名 $storageTable = Get-AzStorageTable –Name $tableName –Context $ctx</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>通过PowerShell 查询表可以参考：</li>
+</ul>
+<ul>
+<li>使用Get-AzTableRow 命令这需要您安装相应的模块</li>
+</ul>
+<ul>
+<li>Get-AzStorageTable –Context $ctx | select Name</li>
+</ul>
+<ul>
+<li>Get-AzTableRow -table $cloudTable -ColumnName &quot;CounterName&quot; -value &quot;\Memory\PercentUsedMemory&quot; -Operator Equal | ft</li>
+</ul>
+<ul>
+<li>以上命令获取表中CounterName值为\Memory\PercentUsedMemory的数据：</li>
+</ul>
+<ul>
+<li>命令更多的信息，请您访问作者主页</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/tables/table-storage-how-to-use-powershell#query-the-table-entities" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/tables/table-storage-how-to-use-powershell#query-the-table-entities</a></li>
+</ul>
+<ul>
+<li><a href="https://paulomarquesc.github.io/working-with-azure-storage-tables-from-powershell/" target="_blank" rel="noopener">https://paulomarquesc.github.io/working-with-azure-storage-tables-from-powershell/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/08/05</p>
+<p>通过PowerShell 查询表可以参考：</p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/tables/table-storage-how-to-use-powershell#query-the-table-entities" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/tables/table-storage-how-to-use-powershell#query-the-table-entities</a></p>
+<p>使用Get-AzTableRow 命令这需要您安装相应的模块</p>
+<p>Install-Module -Name AzTable</p>
+<p>获取表中数据可以使用：</p>
+<p>$resourceGroup = &quot;zhangwx&quot;</p>
+<p>$storageAccountName = &quot;zhangsa&quot;</p>
+<p>$storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroup -Name $storageAccountName</p>
+<p>$ctx = $storageAccount.Context</p>
+<p>#查看表名 $storageTable = Get-AzStorageTable –Name $tableName –Context $ctx</p>
+<p>Get-AzStorageTable –Context $ctx | select Name</p>
+<p>$tableName = &quot;WADMetricsPT1HP10DV2S20181022&quot;</p>
+<p>$cloudTable = (Get-AzStorageTable –§CName $tableName –§CContext $ctx).CloudTable</p>
+<p>Get-AzTableRow -table $cloudTable -ColumnName &quot;CounterName&quot; -value &quot;\Memory\PercentUsedMemory&quot; -Operator Equal | ft</p>
+<p>以上命令获取表中CounterName值为\Memory\PercentUsedMemory的数据：</p>
+<p>命令更多的信息，请您访问作者主页</p>
+<p><a href="https://paulomarquesc.github.io/working-with-azure-storage-tables-from-powershell/" target="_blank" rel="noopener">https://paulomarquesc.github.io/working-with-azure-storage-tables-from-powershell/</a></p></article>

@@ -1,0 +1,99 @@
+<article class="kb-article" data-title="[Shared] Entra ID Free的MFA信息变更"><h1>[Shared] Entra ID Free的MFA信息变更</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-02-28 15:30:13</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Create</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Create</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Create</li>
+</ul>
+<ul>
+<li>具体情况如下图：</li>
+</ul>
+<ul>
+<li>Free租户信息</li>
+</ul>
+<ul>
+<li>用户信息：</li>
+</ul>
+<ul>
+<li>两个用户均已启用MFA</li>
+</ul>
+<ul>
+<li>在每用户MFA界面直接对登录用户进行重置方式：</li>
+</ul>
+<ul>
+<li>对登录用户修改：</li>
+</ul>
+<ul>
+<li>对其他用户修改：</li>
+</ul>
+<ul>
+<li>然后就可以在登录完成后进行修改MFA信息：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>参考：SR_20240604297162_修改登录验证手机号后不生效</li>
+</ul>
+<ul>
+<li>目前测试下来发现,Free的租户无法使用全局管理员账户在MFA设置界面给自己更改MFA验证的手机号信息</li>
+</ul>
+<ul>
+<li>在门户位置也无法查看MFA对应的手机信息：</li>
+</ul>
+<ul>
+<li>查看当前登录用户：</li>
+</ul>
+<ul>
+<li>查看其他用户：</li>
+</ul>
+<ul>
+<li>登录过程需要完成一次验证：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>对于上述情况，可以建议客户使用其他管理员账户进行修改MFA验证信息，同时也和liu.huan老师沟通，可以通过以下链接进行自助重置MFA操作：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://account.activedirectory.windowsazure.cn/proofup.aspx?proofup=1" target="_blank" rel="noopener">https://account.activedirectory.windowsazure.cn/proofup.aspx?proofup=1</a> (复制打开链接)</li>
+</ul>
+<ul>
+<li><a href="https://aka.ms/ChinaMFASetup" target="_blank" rel="noopener">https://aka.ms/ChinaMFASetup</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Create</p>
+<p>2024-06-04</p>
+<p>参考：SR_20240604297162_修改登录验证手机号后不生效</p>
+<p>目前测试下来发现,Free的租户无法使用全局管理员账户在MFA设置界面给自己更改MFA验证的手机号信息</p>
+<p>具体情况如下图：</p>
+<p>Free租户信息</p>
+<p>用户信息：</p>
+<p>两个用户均已启用MFA</p>
+<p>在每用户MFA界面直接对登录用户进行重置方式：</p>
+<p>对登录用户修改：</p>
+<p>对其他用户修改：</p>
+<p>在门户位置也无法查看MFA对应的手机信息：</p>
+<p>查看当前登录用户：</p>
+<p>查看其他用户：</p>
+<p>对于上述情况，可以建议客户使用其他管理员账户进行修改MFA验证信息，同时也和liu.huan老师沟通，可以通过以下链接进行自助重置MFA操作：</p>
+<p><a href="https://account.activedirectory.windowsazure.cn/proofup.aspx?proofup=1" target="_blank" rel="noopener">https://account.activedirectory.windowsazure.cn/proofup.aspx?proofup=1</a> (复制打开链接)</p>
+<p>登录过程需要完成一次验证：</p>
+<p>然后就可以在登录完成后进行修改MFA信息：</p>
+<p><a href="https://aka.ms/ChinaMFASetup" target="_blank" rel="noopener">https://aka.ms/ChinaMFASetup</a></p></article>

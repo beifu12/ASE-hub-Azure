@@ -1,0 +1,67 @@
+<article class="kb-article" data-title="【share】登录aks node 节点查看k8s相关各项证书信息"><h1>【share】登录aks node 节点查看k8s相关各项证书信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-30 09:49:34</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>虽然文档中有关于aks 证书是否过期的测试方式， 但是就个人而言这种实感不是很强。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>虽然文档中有关于aks  证书是否过期的测试方式， 但是就个人而言这种实感不是很强。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>虽然文档中有关于aks  证书是否过期的测试方式， 但是就个人而言这种实感不是很强。</li>
+</ul>
+<ul>
+<li>可以考虑登录到node 节点 ， 在/etc/kubernetes/certs 下可以看到node 节点通信时需要的k8s 的各个证书，</li>
+</ul>
+<ul>
+<li>Azure Kubernetes 服务 (AKS) 中的证书轮换 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>过期时间。</li>
+</ul>
+<ul>
+<li>另外，讲个小技巧，一般这种“jmpDncw==”   以双等于号结尾的字符串普遍都是用base64 编码的，这是base64 编码的风格。</li>
+</ul>
+<ul>
+<li>Base64  编码的好处是保证数据内容以及结构传递的完整性，因为数据传递过程会经过很多介质，这些介质厂商不一，大家使用的技术、标准也不一，比如将一些换行等通过文字的形式进行传递，就可以</li>
+</ul>
+<ul>
+<li>保证数据结构的完整性。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>打印在当前输出下进行查看。</li>
+</ul>
+<ul>
+<li>如图显示了etc/kubernetes/certs 的证书 以及kubelet 的私钥文件 ； 以及查看了 apiserver.crt 的证书，里面包含了证书的</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>这些证书是用base64 编码的， 可以通过执行openssl x509 -in  &lt;证书文件名称&gt;  text -noout  转换为人类可读的内容</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>虽然文档中有关于aks  证书是否过期的测试方式， 但是就个人而言这种实感不是很强。</p>
+<p>可以考虑登录到node 节点 ， 在/etc/kubernetes/certs 下可以看到node 节点通信时需要的k8s 的各个证书，</p>
+<p>这些证书是用base64 编码的， 可以通过执行openssl x509 -in  &lt;证书文件名称&gt;  text -noout  转换为人类可读的内容</p>
+<p>打印在当前输出下进行查看。</p>
+<p>Azure Kubernetes 服务 (AKS) 中的证书轮换 - Azure Kubernetes Service | Azure Docs</p>
+<p>如图显示了etc/kubernetes/certs 的证书 以及kubelet 的私钥文件 ； 以及查看了 apiserver.crt 的证书，里面包含了证书的</p>
+<p>过期时间。</p>
+<p>另外，讲个小技巧，一般这种“jmpDncw==”   以双等于号结尾的字符串普遍都是用base64 编码的，这是base64 编码的风格。</p>
+<p>Base64  编码的好处是保证数据内容以及结构传递的完整性，因为数据传递过程会经过很多介质，这些介质厂商不一，大家使用的技术、标准也不一，比如将一些换行等通过文字的形式进行传递，就可以</p>
+<p>保证数据结构的完整性。</p></article>

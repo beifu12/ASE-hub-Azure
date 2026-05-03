@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="[Linux][Audit]Linux中audit日志的使用方法"><h1>[Linux][Audit]Linux中audit日志的使用方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-09-02 14:10:44</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>auditd服务的安装：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>auditd服务的安装：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>auditd服务的安装：</li>
+</ul>
+<ul>
+<li>yum list audit audit-libs</li>
+</ul>
+<ul>
+<li>audit.x86_64</li>
+</ul>
+<ul>
+<li>audit-libs.x86_64</li>
+</ul>
+<ul>
+<li>service auditd status</li>
+</ul>
+<ul>
+<li>auditd正在运行：</li>
+</ul>
+<ul>
+<li>auditd (pid  1328) is running...</li>
+</ul>
+<ul>
+<li>yum install audit audit-libs</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>以CentOS6.5为例，使用下面的方法确认auditd服务的安装情况：</li>
+</ul>
+<ul>
+<li>确认以下两个package是否安装：</li>
+</ul>
+<ul>
+<li>或者查看auditd服务是否running：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>如果未安装，使用下面的命令进行安装：</li>
+</ul>
+<ul>
+<li>auditd服务的配置文件在/etc/audit/auditd.conf中，配置文件内容以及重要命令注释如下：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>auditd服务的安装：</p>
+<p>以CentOS6.5为例，使用下面的方法确认auditd服务的安装情况：</p>
+<p>yum list audit audit-libs</p>
+<p>确认以下两个package是否安装：</p>
+<p>audit.x86_64</p>
+<p>audit-libs.x86_64</p>
+<p>或者查看auditd服务是否running：</p>
+<p>service auditd status</p>
+<p>auditd正在运行：</p>
+<p>auditd (pid  1328) is running...</p>
+<p>如果未安装，使用下面的命令进行安装：</p>
+<p>yum install audit audit-libs</p>
+<p>auditd服务的配置文件在/etc/audit/auditd.conf中，配置文件内容以及重要命令注释如下：</p></article>

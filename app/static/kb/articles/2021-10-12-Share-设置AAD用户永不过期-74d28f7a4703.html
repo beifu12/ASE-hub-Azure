@@ -1,0 +1,101 @@
+<article class="kb-article" data-title="【Share】设置AAD用户永不过期"><h1>【Share】设置AAD用户永不过期</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-10-12 11:21:10</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2020070838624_[MS-LED]AADConnect failed to sync</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2020070838624_[MS-LED]AADConnect failed to sync</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi all，</li>
+</ul>
+<ul>
+<li>#安装模块</li>
+</ul>
+<ul>
+<li>Install-Module -Name AzureAD</li>
+</ul>
+<ul>
+<li>#连接至AD</li>
+</ul>
+<ul>
+<li>Connect-AzureAD -AzureEnvironment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>#获取用户当前过期策略</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>#设置用户密码永不过期</li>
+</ul>
+<ul>
+<li>-------------------------------------</li>
+</ul>
+<ul>
+<li>历史工单</li>
+</ul>
+<ul>
+<li>SR_2020071539863_[TEC]如何设置AAD 账号永不过期</li>
+</ul>
+<ul>
+<li>如有任何问题，欢迎随时交流。</li>
+</ul>
+<ul>
+<li>Best Regards,</li>
+</ul>
+<ul>
+<li>Xiaojing Zuo | WATS</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>所以通过以下命令可以实现配置AAD用户（某个/所有）永不过期。</li>
+</ul>
+<ul>
+<li>Get-AzureADUser -ObjectId xiaojing3@microsoftinternal.partner.onmschina.cn | Select-Object UserPrincipalName, @{N=&quot;PasswordNeverExpires&quot;;E={$_.PasswordPolicies -contains &quot;DisablePasswordExpiration&quot;}</li>
+</ul>
+<ul>
+<li>Set-AzureADUser -ObjectId xiaojing3@microsoftinternal.partner.onmschina.cn -PasswordPolicies DisablePasswordExpiration</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>处理了一个工单SR_2020071039148_[MS-LED]自动化运行失败告警，客户提到“如何设置AAD用户永不过期” 问题。 根据之前历史工单中参考文档<a href="https://docs.microsoft.com/en-us/microsoft-365/admin/add-users/set-password-to-never-expire?view=o365-worldwide中描述，但是最后一段有点儿让人疑惑。经和css确认，AAD用户没有pwdLastSet这个属性。" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/microsoft-365/admin/add-users/set-password-to-never-expire?view=o365-worldwide中描述，但是最后一段有点儿让人疑惑。经和css确认，AAD用户没有pwdLastSet这个属性。</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020/7/23</p>
+<p>Hi all，</p>
+<p>处理了一个工单SR_2020071039148_[MS-LED]自动化运行失败告警，客户提到“如何设置AAD用户永不过期” 问题。 根据之前历史工单中参考文档<a href="https://docs.microsoft.com/en-us/microsoft-365/admin/add-users/set-password-to-never-expire?view=o365-worldwide中描述，但是最后一段有点儿让人疑惑。经和css确认，AAD用户没有pwdLastSet这个属性。" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/microsoft-365/admin/add-users/set-password-to-never-expire?view=o365-worldwide中描述，但是最后一段有点儿让人疑惑。经和css确认，AAD用户没有pwdLastSet这个属性。</a></p>
+<p>所以通过以下命令可以实现配置AAD用户（某个/所有）永不过期。</p>
+<p>#安装模块</p>
+<p>Install-Module -Name AzureAD</p>
+<p>#连接至AD</p>
+<p>Connect-AzureAD -AzureEnvironment AzureChinaCloud</p>
+<p>#获取用户当前过期策略</p>
+<p>Get-AzureADUser -ObjectId xiaojing3@microsoftinternal.partner.onmschina.cn | Select-Object UserPrincipalName, @{N=&quot;PasswordNeverExpires&quot;;E={$_.PasswordPolicies -contains &quot;DisablePasswordExpiration&quot;}</p>
+<p>}</p>
+<p>#设置用户密码永不过期</p>
+<p>Set-AzureADUser -ObjectId xiaojing3@microsoftinternal.partner.onmschina.cn -PasswordPolicies DisablePasswordExpiration</p>
+<p>-------------------------------------</p>
+<p>历史工单</p>
+<p>SR_2020071539863_[TEC]如何设置AAD 账号永不过期</p>
+<p>SR_2020070838624_[MS-LED]AADConnect failed to sync</p>
+<p>如有任何问题，欢迎随时交流。</p>
+<p>Best Regards,</p>
+<p>Xiaojing Zuo | WATS</p></article>

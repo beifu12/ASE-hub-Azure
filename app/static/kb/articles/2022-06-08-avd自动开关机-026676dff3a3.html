@@ -1,0 +1,140 @@
+<article class="kb-article" data-title="avd自动开关机"><h1>avd自动开关机</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-06-08 14:25:09</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>注意事项：</li>
+</ul>
+<ul>
+<li>在订阅级别分配给avd 这个服务主体的定制角色，即开关机的权限，经测试，该功能是正常，效果如图2</li>
+</ul>
+<ul>
+<li>自动关机：</li>
+</ul>
+<ul>
+<li>==============================</li>
+</ul>
+<ul>
+<li>自动化账号登陆：</li>
+</ul>
+<ul>
+<li>$cred = Get-AutomationPSCredential -Name &#39;Phoenixautocred&#39;</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Credential $cred -Environment azurechinacloud</li>
+</ul>
+<ul>
+<li>如缺失模块，请参考图2，导入您所需模块</li>
+</ul>
+<ul>
+<li>$UserSession = Get-AzWvdUserSession -HostPoolName AVD -ResourceGroupName AVD</li>
+</ul>
+<ul>
+<li>$SessionLimitTime  = (Get-Date).ToUniversalTime().AddHours(-4)</li>
+</ul>
+<ul>
+<li>$SessionHost = Get-AzWvdSessionHost -ResourceGroupName AVD -HostPoolName AVD</li>
+</ul>
+<ul>
+<li>foreach($Session in $UserSession){</li>
+</ul>
+<ul>
+<li>if($Session.CreateTime -lt $SessionLimitTime){</li>
+</ul>
+<ul>
+<li>foreach($SessionHostVM in $SessionHost){</li>
+</ul>
+<ul>
+<li>if($Session.UserPrincipalName -eq $SessionHostVM.AssignedUser){</li>
+</ul>
+<ul>
+<li>Stop-AzVM -Id $SessionHostVM.ResourceId -Force -Confirm:$false</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>===========================</li>
+</ul>
+<ul>
+<li>更多参数解读，请参考：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-AzContext -SubscriptionId &quot;97a20f90-b022-457f-95cd-72***********<strong>5&quot; -Tenant &quot;b388b808-0ec9-4a09-a414-a7c</strong>*************b&quot;</li>
+</ul>
+<ul>
+<li>后续再添加您的其他powershell命令，在本地调试通过再放在自动化账号中运行</li>
+</ul>
+<ul>
+<li>编写关机判断脚本personal类型：</li>
+</ul>
+<ul>
+<li>4小时disconnect自动关机脚本：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/role-based-access-control/role-assignments-powershell" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/role-based-access-control/role-assignments-powershell</a></li>
+</ul>
+<ul>
+<li>备注：Phoenixautocred为下图中的凭据，账号不能启用MFA，如启用MFA， 请参考链接<a href="https://docs.azure.cn/zh-cn/automation/create-run-as-account" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/create-run-as-account</a></li>
+</ul>
+<ul>
+<li>自动化关机请参考：<a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/automation/aog-automation-how-to-turn-on-off-vm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/automation/aog-automation-how-to-turn-on-off-vm</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/powershell/module/az.desktopvirtualization/get-azwvdusersession?view=azps-7.5.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/az.desktopvirtualization/get-azwvdusersession?view=azps-7.5.0</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022-06-08</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/start-virtual-machine-connect?tabs=azure-portal</a></p>
+<p>注意事项：</p>
+<p>在订阅级别分配给avd 这个服务主体的定制角色，即开关机的权限，经测试，该功能是正常，效果如图2</p>
+<p><a href="https://docs.azure.cn/zh-cn/role-based-access-control/role-assignments-powershell" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/role-based-access-control/role-assignments-powershell</a></p>
+<p>自动关机：</p>
+<p>==============================</p>
+<p>自动化账号登陆：</p>
+<p>$cred = Get-AutomationPSCredential -Name &#39;Phoenixautocred&#39;</p>
+<p>Set-AzContext -SubscriptionId &quot;97a20f90-b022-457f-95cd-72***********<strong>5&quot; -Tenant &quot;b388b808-0ec9-4a09-a414-a7c</strong>*************b&quot;</p>
+<p>Connect-AzAccount -Credential $cred -Environment azurechinacloud</p>
+<p>后续再添加您的其他powershell命令，在本地调试通过再放在自动化账号中运行</p>
+<p>备注：Phoenixautocred为下图中的凭据，账号不能启用MFA，如启用MFA， 请参考链接<a href="https://docs.azure.cn/zh-cn/automation/create-run-as-account" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/automation/create-run-as-account</a></p>
+<p>如缺失模块，请参考图2，导入您所需模块</p>
+<p>编写关机判断脚本personal类型：</p>
+<p>4小时disconnect自动关机脚本：</p>
+<p>$UserSession = Get-AzWvdUserSession -HostPoolName AVD -ResourceGroupName AVD</p>
+<p>$SessionLimitTime  = (Get-Date).ToUniversalTime().AddHours(-4)</p>
+<p>$SessionHost = Get-AzWvdSessionHost -ResourceGroupName AVD -HostPoolName AVD</p>
+<p>foreach($Session in $UserSession){</p>
+<p>if($Session.CreateTime -lt $SessionLimitTime){</p>
+<p>foreach($SessionHostVM in $SessionHost){</p>
+<p>if($Session.UserPrincipalName -eq $SessionHostVM.AssignedUser){</p>
+<p>Stop-AzVM -Id $SessionHostVM.ResourceId -Force -Confirm:$false</p>
+<p>}</p>
+<p>自动化关机请参考：<a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/automation/aog-automation-how-to-turn-on-off-vm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/automation/aog-automation-how-to-turn-on-off-vm</a></p>
+<p>===========================</p>
+<p>更多参数解读，请参考：</p>
+<p><a href="https://docs.microsoft.com/en-us/powershell/module/az.desktopvirtualization/get-azwvdusersession?view=azps-7.5.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/az.desktopvirtualization/get-azwvdusersession?view=azps-7.5.0</a></p></article>

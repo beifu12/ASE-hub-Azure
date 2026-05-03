@@ -1,0 +1,70 @@
+<article class="kb-article" data-title="APPGW v2端到端SSL证书上传注意问题"><h1>APPGW v2端到端SSL证书上传注意问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-01-10 09:59:03</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>如果后端服务器证书是signed by unknown intermediaries CA, 那么在这种情况下必须把签发这个intermediate CA的Root CA上传到httpsetting中</li>
+</ul>
+<ul>
+<li>参考工单：120020625000464/NET/NESTLE/SR_2020020604951_[TEC]get error message while configure the http setting with http</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>更新httpsetting时， 提示trustedRootCertificates 数据无效</li>
+</ul>
+<ul>
+<li>在AppGWv2中， 在上传trustrootcert时需要注意几点：</li>
+</ul>
+<ul>
+<li>如果后端服务器证书是由TrustCA签发的， 并且根证书在AppGW实例的TrustStore中， 那么勾选Use Well Known CA ，不需要手动上传trustrootcert。</li>
+</ul>
+<ul>
+<li>如果后端服务器使用的是自签名证书时， 在httpsetting中上传证书时， 需要上传自签名证书的root CA（ 不需要包含intermediate 中间证书）</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>出现证书data invalid的情况通常是上传的证书包含了中间证书信息， 而非纯粹的根证书信息</li>
+</ul>
+<ul>
+<li>调整使用知名的CA证书后，测试可以成功访问</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020/02/07</p>
+<p>问题现象：</p>
+<p>更新httpsetting时， 提示trustedRootCertificates 数据无效</p>
+<p>在AppGWv2中， 在上传trustrootcert时需要注意几点：</p>
+<p>如果后端服务器证书是signed by unknown intermediaries CA, 那么在这种情况下必须把签发这个intermediate CA的Root CA上传到httpsetting中</p>
+<p>如果后端服务器证书是由TrustCA签发的， 并且根证书在AppGW实例的TrustStore中， 那么勾选Use Well Known CA ，不需要手动上传trustrootcert。</p>
+<p>如果后端服务器使用的是自签名证书时， 在httpsetting中上传证书时， 需要上传自签名证书的root CA（ 不需要包含intermediate 中间证书）</p>
+<p>问题原因：</p>
+<p>出现证书data invalid的情况通常是上传的证书包含了中间证书信息， 而非纯粹的根证书信息</p>
+<p>解决方案：</p>
+<p>调整使用知名的CA证书后，测试可以成功访问</p>
+<p>参考工单：120020625000464/NET/NESTLE/SR_2020020604951_[TEC]get error message while configure the http setting with http</p></article>

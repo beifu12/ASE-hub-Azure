@@ -1,0 +1,209 @@
+<article class="kb-article" data-title="AKS 升级问题"><h1>AKS 升级问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: TroubleShooting</li>
+<li>最近修改: 2026-03-16 14:18:06</li>
+<li>JD 相关性: 售后排障; AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考案例: SR_20231220269500_手动升级cluster和所有的node pools遇到下面的问题，导致升级失败</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考案例:  SR_20231220269500_手动升级cluster和所有的node pools遇到下面的问题，导致升级失败</li>
+</ul>
+<ul>
+<li>参考工单:  SR_20231130265866_pod一直在pending状态</li>
+</ul>
+<ul>
+<li>客户集群升级后,  pod 一直显示pending状态，无法running</li>
+</ul>
+<ul>
+<li>在K8S中，如果Pod能容忍某个节点上的污点，那么Pod就可以调度到该节点。如果不能容忍，那就无法调度到该节点。</li>
+</ul>
+<ul>
+<li>参考文档:  k8s的pod状态异常，报had volume node affinity conflict - 简书 (jianshu.com)</li>
+</ul>
+<ul>
+<li>Zone value指向了北三可用性区域2 .  而在节点中没有可用性区域2的机器导致了pod无法被安排在node上.</li>
+</ul>
+<ul>
+<li>3,  pod 处于异常状态超时导致无法升级节点.</li>
+</ul>
+<ul>
+<li>Pod loki-0-0 处于terminating状态超时，导致无法升级节点.</li>
+</ul>
+<ul>
+<li>参考案例:  SR_20231221269623_AKS 升级失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zhangsong</li>
+</ul>
+<ul>
+<li>AKS 升级问题是AKS类型工单里最常见的问题之一,  通过最近接到的有关升级问题进行了总结,  分享以下内容希望能帮助到大家:</li>
+</ul>
+<ul>
+<li>AKS升级注意事项：</li>
+</ul>
+<ul>
+<li>1,  集群状态是否正常，AKS –-概述--状态----已成功（正在运行）</li>
+</ul>
+<ul>
+<li>6,  检测label  : 在 Azure Kubernetes 服务 (AKS) 群集中使用标签 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>跨版本升级的描述:</li>
+</ul>
+<ul>
+<li>遇到的一些升级问题:</li>
+</ul>
+<ul>
+<li>1,  PDB策略问题:</li>
+</ul>
+<ul>
+<li>原因:  如果 Pod 受到 Pod 中断预算 (PDB) 策略的保护，则可能会发生此错误。 在这种情况下，Pod 会阻止耗尽。</li>
+</ul>
+<ul>
+<li>关于PDB策略中的参数,  请参考cuijun之前的分享:</li>
+</ul>
+<ul>
+<li>【share】 pdb 中MIN AVAILABLE  pod和ALLOWED DISRUPTIONS  pod的换算关系问题 :</li>
+</ul>
+<ul>
+<li>Pdb 中 MIN AVAILABLE 和ALLOWED DISRUPTIONS 具有函数关系，</li>
+</ul>
+<ul>
+<li>具体为： 当前healthy 的pod - MIN AVAILABLE  pod =ALLOWED DISRUPTIONS  的pod</li>
+</ul>
+<ul>
+<li>如图，只能调控MIN AVAILABLE  参数，不能调控ALLOWED DISRUPTIONS， ALLOWED DISRUPTIONS 只是结果。</li>
+</ul>
+<ul>
+<li>2,   污点, 亲和性设置问题:</li>
+</ul>
+<ul>
+<li>0/5 nodes are available:2 node(s)had untolerated taint fagentpool:system},3 node(s)had</li>
+</ul>
+<ul>
+<li>volume node affinity conflict.preemption</li>
+</ul>
+<ul>
+<li>2 node(s)had untolerated taint fagentpool:system},   2个节点存在污点.</li>
+</ul>
+<ul>
+<li>参考如下文档:  5分钟搞懂K8S的污点和容忍度(理论+实战) - 知乎 (zhihu.com)</li>
+</ul>
+<ul>
+<li>3 node(s)had volume node affinity conflict.preemption</li>
+</ul>
+<ul>
+<li>node上有volume的节点亲和性冲突问题</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2,  检查证书是否到期：Azure Kubernetes 服务 (AKS) 中的证书轮换 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>3,  检查凭据是否到期：为 Azure Kubernetes 服务 (AKS) 群集更新或轮换凭据 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>4,  检查该订阅是都有足够的虚拟机配额（订阅---使用量及配额检查，如不满足，在升级前可以手动缩，释放一个节点配额），升级过程会额外创建一台虚拟机作为临时缓存，以保证业务不宕机</li>
+</ul>
+<ul>
+<li>5,  检查pdb策略,确认ingress 等第三方插件在目标版本受支持，业务pod在新版本aks正常运行，接口调用正常</li>
+</ul>
+<ul>
+<li>7,  查看可用的AKS升级版本 : Azure Kubernetes 服务 (AKS) 中支持的 Kubernetes 版本。 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>若要测试这种情况，请运行 kubectl get pdb -A，然后检查“允许的中断”值。 该值应为 1 或更大。如果 “允许的中断” 值为 0，则节点排出将在升级过程中失败。</li>
+</ul>
+<ul>
+<li>通过describe pod 查看到报错信息:</li>
+</ul>
+<ul>
+<li>查看pod Yaml文件未发现设置过容忍度，根据文档所述，如pod未设置容忍度，如果Node设置了污点，pod不会被调度到Node上</li>
+</ul>
+<ul>
+<li>查看了节点池亲和性设置,  3 node(s)had volume node affinity conflict ,  发现在PV yaml文件中查看到亲和性设置</li>
+</ul>
+<ul>
+<li>后台查看到报错:  Failed to upgrade cluster when reconciling VMSS Agent Pools: Category: ClientError; Code: UpgradeFailed; SubCode: DrainDidNotComplete; Message: Pod loki-0-0 still in state Pending on node aks-nodepool1-34176694-vmss00000f, pod termination grace period 1h20m0s was greater than remaining per node drain timeout</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>1, 使用命令kubectl delete pods pod_name --grace-period=0 --force 强制删除pod成功.</li>
+</ul>
+<ul>
+<li>如何使用 kubectl delete pod 命令删除 Kubernetes 中的 Pod (linux-console.net)</li>
+</ul>
+<ul>
+<li>2, 使用命令 az aks update -g MyResourceGroup -n MyManagedCluster 更新集群状态.</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>后台查看到报错:  Drain node aks-workers-71306577-vmss000002 failed when evicting pod istiod-1-18-2-66cb7ddbc4-n55cz. Eviction failed with Too many Requests error. This is often caused by a restrictive Pod Disruption Budget (PDB) policy.</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案:  参考文档 ---- 排查由于 PDB 导致的逐出失败而导致的 UpgradeFailed 错误 - Azure | Microsoft Learn</li>
+</ul>
+<ul>
+<li>解决方案:</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>文档:  <a href="https://learn.microsoft.com/zh-cn/cli/azure/aks?view=azure-cli-latest#az-aks-update" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/cli/azure/aks?view=azure-cli-latest#az-aks-update</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zhangsong</p>
+<p>AKS 升级问题是AKS类型工单里最常见的问题之一,  通过最近接到的有关升级问题进行了总结,  分享以下内容希望能帮助到大家:</p>
+<p>AKS升级注意事项：</p>
+<p>1,  集群状态是否正常，AKS –-概述--状态----已成功（正在运行）</p>
+<p>2,  检查证书是否到期：Azure Kubernetes 服务 (AKS) 中的证书轮换 - Azure Kubernetes Service | Azure Docs</p>
+<p>3,  检查凭据是否到期：为 Azure Kubernetes 服务 (AKS) 群集更新或轮换凭据 - Azure Kubernetes Service | Azure Docs</p>
+<p>4,  检查该订阅是都有足够的虚拟机配额（订阅---使用量及配额检查，如不满足，在升级前可以手动缩，释放一个节点配额），升级过程会额外创建一台虚拟机作为临时缓存，以保证业务不宕机</p>
+<p>5,  检查pdb策略,确认ingress 等第三方插件在目标版本受支持，业务pod在新版本aks正常运行，接口调用正常</p>
+<p>6,  检测label  : 在 Azure Kubernetes 服务 (AKS) 群集中使用标签 - Azure Kubernetes Service | Azure Docs</p>
+<p>7,  查看可用的AKS升级版本 : Azure Kubernetes 服务 (AKS) 中支持的 Kubernetes 版本。 - Azure Kubernetes Service | Azure Docs</p>
+<p>跨版本升级的描述:</p>
+<p>遇到的一些升级问题:</p>
+<p>1,  PDB策略问题:</p>
+<p>后台查看到报错:  Drain node aks-workers-71306577-vmss000002 failed when evicting pod istiod-1-18-2-66cb7ddbc4-n55cz. Eviction failed with Too many Requests error. This is often caused by a restrictive Pod Disruption Budget (PDB) policy.</p>
+<p>原因:  如果 Pod 受到 Pod 中断预算 (PDB) 策略的保护，则可能会发生此错误。 在这种情况下，Pod 会阻止耗尽。</p>
+<p>若要测试这种情况，请运行 kubectl get pdb -A，然后检查“允许的中断”值。 该值应为 1 或更大。如果 “允许的中断” 值为 0，则节点排出将在升级过程中失败。</p>
+<p>解决方案:  参考文档 ---- 排查由于 PDB 导致的逐出失败而导致的 UpgradeFailed 错误 - Azure | Microsoft Learn</p>
+<p>参考案例:  SR_20231220269500_手动升级cluster和所有的node pools遇到下面的问题，导致升级失败</p>
+<p>关于PDB策略中的参数,  请参考cuijun之前的分享:</p>
+<p>【share】 pdb 中MIN AVAILABLE  pod和ALLOWED DISRUPTIONS  pod的换算关系问题 :</p>
+<p>Pdb 中 MIN AVAILABLE 和ALLOWED DISRUPTIONS 具有函数关系，</p>
+<p>具体为： 当前healthy 的pod - MIN AVAILABLE  pod =ALLOWED DISRUPTIONS  的pod</p>
+<p>如图，只能调控MIN AVAILABLE  参数，不能调控ALLOWED DISRUPTIONS， ALLOWED DISRUPTIONS 只是结果。</p>
+<p>2,   污点, 亲和性设置问题:</p>
+<p>参考工单:  SR_20231130265866_pod一直在pending状态</p>
+<p>客户集群升级后,  pod 一直显示pending状态，无法running</p>
+<p>通过describe pod 查看到报错信息:</p>
+<p>0/5 nodes are available:2 node(s)had untolerated taint fagentpool:system},3 node(s)had</p>
+<p>volume node affinity conflict.preemption</p>
+<p>2 node(s)had untolerated taint fagentpool:system},   2个节点存在污点.</p>
+<p>参考如下文档:  5分钟搞懂K8S的污点和容忍度(理论+实战) - 知乎 (zhihu.com)</p>
+<p>在K8S中，如果Pod能容忍某个节点上的污点，那么Pod就可以调度到该节点。如果不能容忍，那就无法调度到该节点。</p>
+<p>查看pod Yaml文件未发现设置过容忍度，根据文档所述，如pod未设置容忍度，如果Node设置了污点，pod不会被调度到Node上</p>
+<p>3 node(s)had volume node affinity conflict.preemption</p>
+<p>node上有volume的节点亲和性冲突问题</p>
+<p>参考文档:  k8s的pod状态异常，报had volume node affinity conflict - 简书 (jianshu.com)</p>
+<p>查看了节点池亲和性设置,  3 node(s)had volume node affinity conflict ,  发现在PV yaml文件中查看到亲和性设置</p>
+<p>Zone value指向了北三可用性区域2 .  而在节点中没有可用性区域2的机器导致了pod无法被安排在node上.</p>
+<p>3,  pod 处于异常状态超时导致无法升级节点.</p>
+<p>后台查看到报错:  Failed to upgrade cluster when reconciling VMSS Agent Pools: Category: ClientError; Code: UpgradeFailed; SubCode: DrainDidNotComplete; Message: Pod loki-0-0 still in state Pending on node aks-nodepool1-34176694-vmss00000f, pod termination grace period 1h20m0s was greater than remaining per node drain timeout</p>
+<p>Pod loki-0-0 处于terminating状态超时，导致无法升级节点.</p>
+<p>参考案例:  SR_20231221269623_AKS 升级失败</p>
+<p>解决方案:</p>
+<p>1, 使用命令kubectl delete pods pod_name --grace-period=0 --force 强制删除pod成功.</p>
+<p>如何使用 kubectl delete pod 命令删除 Kubernetes 中的 Pod (linux-console.net)</p>
+<p>2, 使用命令 az aks update -g MyResourceGroup -n MyManagedCluster 更新集群状态.</p>
+<p>文档:  <a href="https://learn.microsoft.com/zh-cn/cli/azure/aks?view=azure-cli-latest#az-aks-update" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/cli/azure/aks?view=azure-cli-latest#az-aks-update</a></p></article>

@@ -1,0 +1,47 @@
+<article class="kb-article" data-title="Share | 关于China North 3 physical zones and logic zones"><h1>Share | 关于China North 3 physical zones and logic zones</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2023-07-10 16:42:41</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Jia.XIaolei</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>上周接了一个case “SR_20230623237208_EASv4 family unsupported in AZ zone 2”，其中客户在使用一个VM size在China North 3的3个zones创建虚拟机规模集时，portal提示zone-2 不支持此size；而我这边使用相同的size测试时，提示的却是zone-3不支持。</li>
+</ul>
+<ul>
+<li>后面升级CSS协助排查，了解到，我们每个订阅中看到的zone都是logic zone，后端对应physical zone， 而产品组为了平衡资源使用，每个订阅中看到的logic zone对应的physical zone是有可能不同的，即上方客户订阅的logic zone 2和我订阅的logic zone 3实际对应的后端physical zone是同一个。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在Kusto上可以通过如下查询语句进行确认，不过当前我们账号没有查询权限，需要请CSS同事帮忙。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Jia.XIaolei</p>
+<p>上周接了一个case “SR_20230623237208_EASv4 family unsupported in AZ zone 2”，其中客户在使用一个VM size在China North 3的3个zones创建虚拟机规模集时，portal提示zone-2 不支持此size；而我这边使用相同的size测试时，提示的却是zone-3不支持。</p>
+<p>后面升级CSS协助排查，了解到，我们每个订阅中看到的zone都是logic zone，后端对应physical zone， 而产品组为了平衡资源使用，每个订阅中看到的logic zone对应的physical zone是有可能不同的，即上方客户订阅的logic zone 2和我订阅的logic zone 3实际对应的后端physical zone是同一个。</p>
+<p>在Kusto上可以通过如下查询语句进行确认，不过当前我们账号没有查询权限，需要请CSS同事帮忙。</p></article>

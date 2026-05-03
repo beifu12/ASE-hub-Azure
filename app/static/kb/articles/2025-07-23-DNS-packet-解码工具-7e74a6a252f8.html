@@ -1,0 +1,158 @@
+<article class="kb-article" data-title="DNS packet 解码工具"><h1>DNS packet 解码工具</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DNS</li>
+<li>Section: DNS</li>
+<li>最近修改: 2025-07-23 15:08:11</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update----2025/07/23</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update----2025/07/23</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update----2025/07/23</li>
+</ul>
+<ul>
+<li>Please follow below steps to install DNS PacketData parser extension in Chrome, the extension .zip is attached.</li>
+</ul>
+<ul>
+<li>Download the zip and use any program to unzip it and proceed.</li>
+</ul>
+<ul>
+<li>-To Use in Chrome:</li>
+</ul>
+<ul>
+<li>-To Use in Edge:</li>
+</ul>
+<ul>
+<li>Go to Extensions as showing below:</li>
+</ul>
+<ul>
+<li>Make sure Developer Tool is turned on:</li>
+</ul>
+<ul>
+<li>=====================================================================================================</li>
+</ul>
+<ul>
+<li>====Internal only:</li>
+</ul>
+<ul>
+<li>Follow below steps convert the DNS PacketData</li>
+</ul>
+<ul>
+<li>Run cmd in ubuntu: sudo apt update &amp;&amp; sudo apt install python python-pip</li>
+</ul>
+<ul>
+<li>Python’s dnslib - Install it with sudo -H pip install dnslib</li>
+</ul>
+<ul>
+<li>Once the above is done, copy the below script into a text file and call it “decodens.py”:</li>
+</ul>
+<ul>
+<li>#/usr/bin/python</li>
+</ul>
+<ul>
+<li>#coding: utf-8</li>
+</ul>
+<ul>
+<li>import sys</li>
+</ul>
+<ul>
+<li>import dnslib</li>
+</ul>
+<ul>
+<li>print(dnspacket) # Print output</li>
+</ul>
+<ul>
+<li>Python3:</li>
+</ul>
+<ul>
+<li>#!/usr/bin/python3</li>
+</ul>
+<ul>
+<li>Make it executable by running “chmod +x decodens.py”</li>
+</ul>
+<ul>
+<li>run it passing the binary blob as the only parameter:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Once the extension is installed you can drag and drop as follows:</li>
+</ul>
+<ul>
+<li>Then drag and drop the unzipped folder:</li>
+</ul>
+<ul>
+<li>then Drag and drop the extension:</li>
+</ul>
+<ul>
+<li>Note that in order for this to work in Jarvis, you have to turn off the Jarvis Preview Feature as shown below:</li>
+</ul>
+<ul>
+<li>分享一个CSS 提供的DNS解包工具，能将Geneva日志中查询的二进制 DNS packet 数据解码成适合人类阅读的格式</li>
+</ul>
+<ul>
+<li>( validated to work on Ubuntu 18.04 LTS)</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>packethex = sys.argv[1] # This is the binary in hex encoding</li>
+</ul>
+<ul>
+<li>packet = packethex.decode(&#39;hex&#39;) # Packet decoded from hex</li>
+</ul>
+<ul>
+<li>dnspacket = dnslib.DNSRecord.parse(packet) # Parse binary and convert it into human readable strings</li>
+</ul>
+<ul>
+<li>packet = bytes.fromhex(packethex) # Packet decoded from hex</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/A217BDD3" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/A217BDD3</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update----2025/07/23</p>
+<p>Please follow below steps to install DNS PacketData parser extension in Chrome, the extension .zip is attached.</p>
+<p>Download the zip and use any program to unzip it and proceed.</p>
+<p>-To Use in Chrome:</p>
+<p>Once the extension is installed you can drag and drop as follows:</p>
+<p>Then drag and drop the unzipped folder:</p>
+<p>-To Use in Edge:</p>
+<p>Go to Extensions as showing below:</p>
+<p>Make sure Developer Tool is turned on:</p>
+<p>then Drag and drop the extension:</p>
+<p>Note that in order for this to work in Jarvis, you have to turn off the Jarvis Preview Feature as shown below:</p>
+<p>=====================================================================================================</p>
+<p>分享一个CSS 提供的DNS解包工具，能将Geneva日志中查询的二进制 DNS packet 数据解码成适合人类阅读的格式</p>
+<p><a href="https://portal.microsoftgeneva.com/s/A217BDD3" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/A217BDD3</a></p>
+<p>====Internal only:</p>
+<p>Follow below steps convert the DNS PacketData</p>
+<p>( validated to work on Ubuntu 18.04 LTS)</p>
+<p>Run cmd in ubuntu: sudo apt update &amp;&amp; sudo apt install python python-pip</p>
+<p>Python’s dnslib - Install it with sudo -H pip install dnslib</p>
+<p>Once the above is done, copy the below script into a text file and call it “decodens.py”:</p>
+<p>#/usr/bin/python</p>
+<p>#coding: utf-8</p>
+<p>import sys</p>
+<p>import dnslib</p>
+<p>packethex = sys.argv[1] # This is the binary in hex encoding</p>
+<p>packet = packethex.decode(&#39;hex&#39;) # Packet decoded from hex</p>
+<p>dnspacket = dnslib.DNSRecord.parse(packet) # Parse binary and convert it into human readable strings</p>
+<p>print(dnspacket) # Print output</p>
+<p>Python3:</p>
+<p>#!/usr/bin/python3</p>
+<p>packet = bytes.fromhex(packethex) # Packet decoded from hex</p>
+<p>Make it executable by running “chmod +x decodens.py”</p>
+<p>run it passing the binary blob as the only parameter:</p></article>

@@ -1,0 +1,179 @@
+<article class="kb-article" data-title="AFD问题收集"><h1>AFD问题收集</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Roadmap.one</li>
+<li>Section: Roadmap</li>
+<li>最近修改: 2025-10-10 17:53:31</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>序号</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>序号</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>序号</li>
+</ul>
+<ul>
+<li>问题描述</li>
+</ul>
+<ul>
+<li>反馈人</li>
+</ul>
+<ul>
+<li>其他</li>
+</ul>
+<ul>
+<li>1</li>
+</ul>
+<ul>
+<li>测试来看，解析域名得到的就是一个azure的IP地址，看sesvice tag中，AFD的地址也比较少，看起来并没有多少加速节点，能起到加速的作用吗？在加速这一块，与CDN相比是否并没有什么优势？海外测试解析到的也是同一个IP地址，那海外加速如何实现，需要借助其他产品吗？</li>
+</ul>
+<ul>
+<li>xinyuefeng</li>
+</ul>
+<ul>
+<li>2</li>
+</ul>
+<ul>
+<li>对于Data transfer from origin to Front Door计费这一块，文档中提到“If your origin is within Azure, the data egress from the Azure origin to Front Door isn&#39;t charged. However, you should determine whether those Azure services might bill you to process your requests.”目前看AFD都是在北三东三，那么源站跨数据中心的情况下，也没有出站流量费用吗？如果跨区域源站到AFD的流量也不收费的话，那么这是根据AFD的IP地址单独区分账单计算的吗？</li>
+</ul>
+<ul>
+<li>3</li>
+</ul>
+<ul>
+<li>Does Azure Front Door support CDN acceleration and global load balancing similar to Cloudflare?</li>
+</ul>
+<ul>
+<li>Fan Yu</li>
+</ul>
+<ul>
+<li>4</li>
+</ul>
+<ul>
+<li>目前查不到定价信息。需要了解Azure China如何定价。</li>
+</ul>
+<ul>
+<li>5</li>
+</ul>
+<ul>
+<li>目前查不到定价信息。根据global原先的定价，从源到edge的这部分方向的流量是免费的。需要了解Azure China如何定价。</li>
+</ul>
+<ul>
+<li>6</li>
+</ul>
+<ul>
+<li>也是根据原先global的定价来看，这两部分的流量是分开计费的。需要了解Azure China如何定价。</li>
+</ul>
+<ul>
+<li>7</li>
+</ul>
+<ul>
+<li>8</li>
+</ul>
+<ul>
+<li>Are there any China-specific compliance requirements (e.g., ICP filing)?</li>
+</ul>
+<ul>
+<li>9</li>
+</ul>
+<ul>
+<li>Tian Tian</li>
+</ul>
+<ul>
+<li>这个选项选了就不能取消，必须</li>
+</ul>
+<ul>
+<li>10</li>
+</ul>
+<ul>
+<li>源站与AFD 在同一区域，AFD 回源不收费吧？</li>
+</ul>
+<ul>
+<li>humingyue</li>
+</ul>
+<ul>
+<li>11</li>
+</ul>
+<ul>
+<li>源站探测的指标一直是0,并且源站也没有探测的请求日志</li>
+</ul>
+<ul>
+<li>wangshuwen</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>我理解应该是可以替代CDN来加速和实现负载就近进入接入点的，但是需要确认实际产品的设计。</li>
+</ul>
+<ul>
+<li>Unit prices (in RMB) for requests, outbound traffic, and WAF.</li>
+</ul>
+<ul>
+<li>Is traffic from backend servers to Front Door billed separately?</li>
+</ul>
+<ul>
+<li>Is the traffic from users to Front Door and from Front Door to backend servers aggregated in the statistics?</li>
+</ul>
+<ul>
+<li>客户的问题，需要确认前面第3个问题才能进一步回答了。</li>
+</ul>
+<ul>
+<li>这个基本已经确认的确是需要填写自定义域名，且有ICP备案。</li>
+</ul>
+<ul>
+<li>将这个步骤重来一遍</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Do we need to enable Azure CDN separately to achieve full acceleration?</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>序号</p>
+<p>问题描述</p>
+<p>反馈人</p>
+<p>其他</p>
+<p>1</p>
+<p>测试来看，解析域名得到的就是一个azure的IP地址，看sesvice tag中，AFD的地址也比较少，看起来并没有多少加速节点，能起到加速的作用吗？在加速这一块，与CDN相比是否并没有什么优势？海外测试解析到的也是同一个IP地址，那海外加速如何实现，需要借助其他产品吗？</p>
+<p>xinyuefeng</p>
+<p>2</p>
+<p>对于Data transfer from origin to Front Door计费这一块，文档中提到“If your origin is within Azure, the data egress from the Azure origin to Front Door isn&#39;t charged. However, you should determine whether those Azure services might bill you to process your requests.”目前看AFD都是在北三东三，那么源站跨数据中心的情况下，也没有出站流量费用吗？如果跨区域源站到AFD的流量也不收费的话，那么这是根据AFD的IP地址单独区分账单计算的吗？</p>
+<p>3</p>
+<p>Does Azure Front Door support CDN acceleration and global load balancing similar to Cloudflare?</p>
+<p>我理解应该是可以替代CDN来加速和实现负载就近进入接入点的，但是需要确认实际产品的设计。</p>
+<p>Fan Yu</p>
+<p>4</p>
+<p>Unit prices (in RMB) for requests, outbound traffic, and WAF.</p>
+<p>目前查不到定价信息。需要了解Azure China如何定价。</p>
+<p>5</p>
+<p>Is traffic from backend servers to Front Door billed separately?</p>
+<p>目前查不到定价信息。根据global原先的定价，从源到edge的这部分方向的流量是免费的。需要了解Azure China如何定价。</p>
+<p>6</p>
+<p>Is the traffic from users to Front Door and from Front Door to backend servers aggregated in the statistics?</p>
+<p>也是根据原先global的定价来看，这两部分的流量是分开计费的。需要了解Azure China如何定价。</p>
+<p>7</p>
+<p>Do we need to enable Azure CDN separately to achieve full acceleration?</p>
+<p>客户的问题，需要确认前面第3个问题才能进一步回答了。</p>
+<p>8</p>
+<p>Are there any China-specific compliance requirements (e.g., ICP filing)?</p>
+<p>这个基本已经确认的确是需要填写自定义域名，且有ICP备案。</p>
+<p>9</p>
+<p>Tian Tian</p>
+<p>这个选项选了就不能取消，必须</p>
+<p>将这个步骤重来一遍</p>
+<p>10</p>
+<p>源站与AFD 在同一区域，AFD 回源不收费吧？</p>
+<p>humingyue</p>
+<p>11</p>
+<p>源站探测的指标一直是0,并且源站也没有探测的请求日志</p>
+<p>wangshuwen</p></article>

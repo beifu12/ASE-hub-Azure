@@ -1,0 +1,166 @@
+<article class="kb-article" data-title="【Share】HCI群集节点因硬件故障导致需要重装操作系统并重新加入群集"><h1>【Share】HCI群集节点因硬件故障导致需要重装操作系统并重新加入群集</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2024-01-05 17:50:24</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<ul>
+<li>###由于截图中包含客户群集名称等信息，仅供内部参考，不要发送其他客户###</li>
+</ul>
+<ul>
+<li>在重新对HCI节点安装操作系统前，需要先在Failover cluster中将节点的 “角色”排出，将群集上的VM\存储等迁移到其他节点；</li>
+</ul>
+<ul>
+<li>1，请客户对问题节点更换损坏的硬件，重新安装操作系统，配置IP地址，DNS地址</li>
+</ul>
+<ul>
+<li>2，将节点加域：</li>
+</ul>
+<ul>
+<li>2,  在带外配置网卡 teaming, 虚拟交换机；</li>
+</ul>
+<ul>
+<li>Add-VMNetworkAdapter -SwitchName &quot;MGMTVSwitch&quot; -Name &quot;VMGMT&quot; -ManagementOS</li>
+</ul>
+<ul>
+<li>3，连接到WAC后，安装必要的角色：</li>
+</ul>
+<ul>
+<li>Add-VMNetworkAdapter -SwitchName &quot;SMBVSwitch&quot; -Name &quot;SMB01&quot; -ManagementOS</li>
+</ul>
+<ul>
+<li>Add-VMNetworkAdapter -SwitchName &quot;SMBVSwitch&quot; -Name &quot;SMB02&quot; -ManagementOS</li>
+</ul>
+<ul>
+<li>5，将节点加入群集：</li>
+</ul>
+<ul>
+<li>或：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>4，此时可以RDP到节点上，继续执行后面的配置步骤：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>New-VMSwitch -Name &quot;MGMTVSwitch&quot; -NetAdapterName &quot;Ethernet 2&quot;, &quot;Ethernet 4&quot; - EnableEmbeddedTeaming $true -AllowManagementOS $false</li>
+</ul>
+<ul>
+<li>New-NetIPAddress -InterfaceAlias &quot;vEthernet (VMGMT)&quot; -IPAddress 10.140.121.235 - PrefixLength 27 -DefaultGateway 10.140.121.224</li>
+</ul>
+<ul>
+<li>Set-DnsClientServerAddress -InterfaceAlias &quot;vEthernet (VMGMT)&quot; -ServerAddresses (&quot;192.168.199.7&quot;,&quot;192.168.199.8&quot;)</li>
+</ul>
+<ul>
+<li>New-VMSwitch -Name &quot;SMBVSwitch&quot; -NetAdapterName &quot;Ethernet&quot;, &quot;Ethernet 3&quot; - EnableEmbeddedTeaming $true -AllowManagementOS $false</li>
+</ul>
+<ul>
+<li>Set-VMNetworkAdapterVlan -VMNetworkAdapterName &quot;SMB01&quot; -VlanId 1290 -Access – ManagementOS</li>
+</ul>
+<ul>
+<li>Set-VMNetworkAdapterVlan -VMNetworkAdapterName &quot;SMB02&quot; -VlanId 1291 -Access – ManagementOS</li>
+</ul>
+<ul>
+<li>Set-VMNetworkAdapterTeamMapping -VMNetworkAdapterName &quot;SMB01&quot; - PhysicalNetAdapterName &quot;Ethernet&quot; -ManagementOS</li>
+</ul>
+<ul>
+<li>Set-VMNetworkAdapterTeamMapping -VMNetworkAdapterName &quot;SMB02&quot; - PhysicalNetAdapterName &quot;Ethernet 3&quot; -ManagementOS</li>
+</ul>
+<ul>
+<li>New-NetIPAddress -InterfaceAlias &quot;vEthernet (SMB01)&quot; -IPAddress 10.140.129.15 - PrefixLength 24</li>
+</ul>
+<ul>
+<li>New-NetIPAddress -InterfaceAlias &quot;vEthernet (SMB02)&quot; -IPAddress 10.140.129.145 - PrefixLength 24</li>
+</ul>
+<ul>
+<li>Set-DnsClient -InterfaceAlias &quot;vEthernet (SMB01)&quot; -RegisterThisConnectionsAddress $false</li>
+</ul>
+<ul>
+<li>Set-DnsClient -InterfaceAlias &quot;vEthernet (SMB02)&quot; -RegisterThisConnectionsAddress $false</li>
+</ul>
+<ul>
+<li>6，运行以下命令检查群集、节点状态：</li>
+</ul>
+<ul>
+<li>Get-NetAdapterRdma</li>
+</ul>
+<ul>
+<li>get-clusternode</li>
+</ul>
+<ul>
+<li>get-storagejob</li>
+</ul>
+<ul>
+<li>get-virtualdisk</li>
+</ul>
+<ul>
+<li>get-physicaldisk</li>
+</ul>
+<ul>
+<li>Get-AzureStackHCI</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Enable-NetAdapterRDMA -Name &quot;vEthernet (SMB01)&quot;</li>
+</ul>
+<ul>
+<li>Enable-NetAdapterRDMA -Name &quot;vEthernet (SMB02)&quot;</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Jia.Xiaolei</p>
+<p>###由于截图中包含客户群集名称等信息，仅供内部参考，不要发送其他客户###</p>
+<p>在重新对HCI节点安装操作系统前，需要先在Failover cluster中将节点的 “角色”排出，将群集上的VM\存储等迁移到其他节点；</p>
+<p>1，请客户对问题节点更换损坏的硬件，重新安装操作系统，配置IP地址，DNS地址</p>
+<p>2，将节点加域：</p>
+<p>2,  在带外配置网卡 teaming, 虚拟交换机；</p>
+<p>New-VMSwitch -Name &quot;MGMTVSwitch&quot; -NetAdapterName &quot;Ethernet 2&quot;, &quot;Ethernet 4&quot; - EnableEmbeddedTeaming $true -AllowManagementOS $false</p>
+<p>Add-VMNetworkAdapter -SwitchName &quot;MGMTVSwitch&quot; -Name &quot;VMGMT&quot; -ManagementOS</p>
+<p>New-NetIPAddress -InterfaceAlias &quot;vEthernet (VMGMT)&quot; -IPAddress 10.140.121.235 - PrefixLength 27 -DefaultGateway 10.140.121.224</p>
+<p>Set-DnsClientServerAddress -InterfaceAlias &quot;vEthernet (VMGMT)&quot; -ServerAddresses (&quot;192.168.199.7&quot;,&quot;192.168.199.8&quot;)</p>
+<p>3，连接到WAC后，安装必要的角色：</p>
+<p>4，此时可以RDP到节点上，继续执行后面的配置步骤：</p>
+<p>New-VMSwitch -Name &quot;SMBVSwitch&quot; -NetAdapterName &quot;Ethernet&quot;, &quot;Ethernet 3&quot; - EnableEmbeddedTeaming $true -AllowManagementOS $false</p>
+<p>Add-VMNetworkAdapter -SwitchName &quot;SMBVSwitch&quot; -Name &quot;SMB01&quot; -ManagementOS</p>
+<p>Enable-NetAdapterRDMA -Name &quot;vEthernet (SMB01)&quot;</p>
+<p>Add-VMNetworkAdapter -SwitchName &quot;SMBVSwitch&quot; -Name &quot;SMB02&quot; -ManagementOS</p>
+<p>Enable-NetAdapterRDMA -Name &quot;vEthernet (SMB02)&quot;</p>
+<p>Set-VMNetworkAdapterVlan -VMNetworkAdapterName &quot;SMB01&quot; -VlanId 1290 -Access – ManagementOS</p>
+<p>Set-VMNetworkAdapterVlan -VMNetworkAdapterName &quot;SMB02&quot; -VlanId 1291 -Access – ManagementOS</p>
+<p>Set-VMNetworkAdapterTeamMapping -VMNetworkAdapterName &quot;SMB01&quot; - PhysicalNetAdapterName &quot;Ethernet&quot; -ManagementOS</p>
+<p>Set-VMNetworkAdapterTeamMapping -VMNetworkAdapterName &quot;SMB02&quot; - PhysicalNetAdapterName &quot;Ethernet 3&quot; -ManagementOS</p>
+<p>New-NetIPAddress -InterfaceAlias &quot;vEthernet (SMB01)&quot; -IPAddress 10.140.129.15 - PrefixLength 24</p>
+<p>New-NetIPAddress -InterfaceAlias &quot;vEthernet (SMB02)&quot; -IPAddress 10.140.129.145 - PrefixLength 24</p>
+<p>Set-DnsClient -InterfaceAlias &quot;vEthernet (SMB01)&quot; -RegisterThisConnectionsAddress $false</p>
+<p>Set-DnsClient -InterfaceAlias &quot;vEthernet (SMB02)&quot; -RegisterThisConnectionsAddress $false</p>
+<p>5，将节点加入群集：</p>
+<p>或：</p>
+<p>6，运行以下命令检查群集、节点状态：</p>
+<p>Get-NetAdapterRdma</p>
+<p>get-clusternode</p>
+<p>get-storagejob</p>
+<p>get-virtualdisk</p>
+<p>get-physicaldisk</p>
+<p>Get-AzureStackHCI</p></article>

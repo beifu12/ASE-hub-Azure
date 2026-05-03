@@ -1,0 +1,53 @@
+<article class="kb-article" data-title="[Share] 命令行创建使用kubenet网络配置的AKS"><h1>[Share] 命令行创建使用kubenet网络配置的AKS</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-03-25 16:36:06</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>结果报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>结果报错：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>创建成功：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>最近发现在portal上创建AKS集群的时候，已经不提供kubenet网络模型部署了：</li>
+</ul>
+<ul>
+<li>经过查询必须要指定auto-upgrade-channel才能创建：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>但是文档上并没有说不支持kubenet模型，于是在powershell中尝试创建：</li>
+</ul>
+<ul>
+<li>az aks create --resource-group AKS --name akstest2 --node-count 2 --network-plugin kubenet --network-policy calico  --outbound-type loadBalancer --vnet-subnet-id &quot;/subscriptions/eae551d8-92de-41a1-bef9-a74aebffad7f/resourceGroups/AKS/providers/Microsoft.Network/virtualNetworks/AKS-vnet/subnets/default2&quot;  --generate-ssh-keys</li>
+</ul>
+<ul>
+<li>az aks create --resource-group AKS --name akstest1 --node-count 2 --network-plugin kubenet --network-policy calico --auto-upgrade-channel stable --outbound-type loadBalancer --vnet-subnet-id &quot;/subscriptions/eae551d8-92de-41a1-bef9-a74aebffad7f/resourceGroups/AKS/providers/Microsoft.Network/virtualNetworks/AKS-vnet/subnets/default2&quot;  --generate-ssh-keys</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/3/25</p>
+<p>最近发现在portal上创建AKS集群的时候，已经不提供kubenet网络模型部署了：</p>
+<p>但是文档上并没有说不支持kubenet模型，于是在powershell中尝试创建：</p>
+<p>az aks create --resource-group AKS --name akstest2 --node-count 2 --network-plugin kubenet --network-policy calico  --outbound-type loadBalancer --vnet-subnet-id &quot;/subscriptions/eae551d8-92de-41a1-bef9-a74aebffad7f/resourceGroups/AKS/providers/Microsoft.Network/virtualNetworks/AKS-vnet/subnets/default2&quot;  --generate-ssh-keys</p>
+<p>结果报错：</p>
+<p>经过查询必须要指定auto-upgrade-channel才能创建：</p>
+<p>az aks create --resource-group AKS --name akstest1 --node-count 2 --network-plugin kubenet --network-policy calico --auto-upgrade-channel stable --outbound-type loadBalancer --vnet-subnet-id &quot;/subscriptions/eae551d8-92de-41a1-bef9-a74aebffad7f/resourceGroups/AKS/providers/Microsoft.Network/virtualNetworks/AKS-vnet/subnets/default2&quot;  --generate-ssh-keys</p>
+<p>创建成功：</p></article>

@@ -1,0 +1,80 @@
+<article class="kb-article" data-title="【Share】Redhat9.4 按照文档上传自定义镜像后，Serial Console显示异常"><h1>【Share】Redhat9.4 按照文档上传自定义镜像后，Serial Console显示异常</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-02-14 15:02:06</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单： SR_20240829312611_按照微软提供的文档自制VHD上传，创建机器后无法正常连接访问</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单： SR_20240829312611_按照微软提供的文档自制VHD上传，创建机器后无法正常连接访问</li>
+</ul>
+<ul>
+<li>按照文档上传Redhat9.4镜像，Serial console 无法正常显示，一直停留在如下位置：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>##问题</li>
+</ul>
+<ul>
+<li>虚拟机可以正常登录，只有serial console一直卡在如上位置。</li>
+</ul>
+<ul>
+<li>客户也按照文档添加了如上参数，但是还是卡在问题截图中的booting…</li>
+</ul>
+<ul>
+<li>sudo grub2-mkconfig -o /boot/grub2/grub.cfg</li>
+</ul>
+<ul>
+<li>sudo grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg</li>
+</ul>
+<ul>
+<li>重启虚拟机，Serial console显示正常。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>然后运行如下命令重新生成grub配置：</li>
+</ul>
+<ul>
+<li>对于启用UEFI的VM，请运行以下命令：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>##排查及解决方法</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/virtual-machines/linux/redhat-create-upload-vhd" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/virtual-machines/linux/redhat-create-upload-vhd</a></li>
+</ul>
+<ul>
+<li>文档  <a href="https://learn.microsoft.com/en-us/azure/virtual-machines/linux/redhat-create-upload-vhd" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/virtual-machines/linux/redhat-create-upload-vhd</a> 中，根据 RHEL 8+ using Hyper-V Manager部分，/etc/default/grub 添加以下参数：</li>
+</ul>
+<ul>
+<li>根据文档 <a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/linux/serial-console-grub-proactive-configuration#red-hat-74-grub-configuration" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/linux/serial-console-grub-proactive-configuration#red-hat-74-grub-configuration</a> 中的Red hat 7.4+ GRUB configuration ，将 /etc/default/grub 修改为如下：</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/09/02</p>
+<p>参考工单： SR_20240829312611_按照微软提供的文档自制VHD上传，创建机器后无法正常连接访问</p>
+<p>##问题</p>
+<p>按照文档上传Redhat9.4镜像，Serial console 无法正常显示，一直停留在如下位置：</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/virtual-machines/linux/redhat-create-upload-vhd" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/virtual-machines/linux/redhat-create-upload-vhd</a></p>
+<p>##排查及解决方法</p>
+<p>虚拟机可以正常登录，只有serial console一直卡在如上位置。</p>
+<p>文档  <a href="https://learn.microsoft.com/en-us/azure/virtual-machines/linux/redhat-create-upload-vhd" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/virtual-machines/linux/redhat-create-upload-vhd</a> 中，根据 RHEL 8+ using Hyper-V Manager部分，/etc/default/grub 添加以下参数：</p>
+<p>客户也按照文档添加了如上参数，但是还是卡在问题截图中的booting…</p>
+<p>根据文档 <a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/linux/serial-console-grub-proactive-configuration#red-hat-74-grub-configuration" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/linux/serial-console-grub-proactive-configuration#red-hat-74-grub-configuration</a> 中的Red hat 7.4+ GRUB configuration ，将 /etc/default/grub 修改为如下：</p>
+<p>然后运行如下命令重新生成grub配置：</p>
+<p>sudo grub2-mkconfig -o /boot/grub2/grub.cfg</p>
+<p>对于启用UEFI的VM，请运行以下命令：</p>
+<p>sudo grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg</p>
+<p>重启虚拟机，Serial console显示正常。</p></article>

@@ -1,0 +1,113 @@
+<article class="kb-article" data-title="判断是否命中了 缓存"><h1>判断是否命中了 缓存</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2024-03-14 16:05:14</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>119090321000998/VM/3M China Limited/SR_2019082848059_[S500]无法缓存内容且向源地址发送重复请求</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>119090321000998/VM/3M China Limited/SR_2019082848059_[S500]无法缓存内容且向源地址发送重复请求</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>可通过如下方法，判断访问URL时是否命中了CDN缓存：</li>
+</ul>
+<ul>
+<li>a.参考响应中的Age部首，通常取值超过10我们可以判定请求内容并所访问的节点缓存；</li>
+</ul>
+<ul>
+<li>b.如果响应中不存在Age部首，且只有一条X-Cache部首，您可以参考X-Cache部首，如果取值中含有Hit可以判定缓存命中，如果取值为Miss可以判定未命中缓存；</li>
+</ul>
+<ul>
+<li>c.如果响应字段中存在多个X-Cache字段请参考如下释义：</li>
+</ul>
+<ul>
+<li>X-Cache-Lookup:Hit From MemCache   表示命中CDN节点的内存</li>
+</ul>
+<ul>
+<li>X-Cache-Lookup:Hit From Disktank   表示命中CDN节点的磁盘</li>
+</ul>
+<ul>
+<li>X-Cache-Lookup:Hit From Disktank3 Gz   表示命中CDN节点的Gzip压缩版本缓存</li>
+</ul>
+<ul>
+<li>X-Cache-Lookup:Hit From Upstream   表示没有命中CDN</li>
+</ul>
+<ul>
+<li>X-Cache-Lookup: Hit From Inner Cluster 表示从内部相邻节点或上层节点查找</li>
+</ul>
+<ul>
+<li>X-Daa-Tunnel: hop_count=3 表示一共查找了多少次内部/上层节点</li>
+</ul>
+<ul>
+<li>X-Cache-Lookup:Hit From MemCache 表示命中 CDN 节点的内存。</li>
+</ul>
+<ul>
+<li>X-Cache-Lookup:Hit From Disktank 表示命中 CDN 节点的磁盘。</li>
+</ul>
+<ul>
+<li>用户这里的hit from upsteam意思为回源</li>
+</ul>
+<ul>
+<li>只有出现标黄的部分才表示命中缓存</li>
+</ul>
+<ul>
+<li>而如果指定了max-age值，那么在此值内的时间里就不会重新访问服务器，例如：</li>
+</ul>
+<ul>
+<li>Cache-control: max-age=600</li>
+</ul>
+<ul>
+<li>表示当访问此网页后的600秒内再次访问不会去请求服务器</li>
+</ul>
+<ul>
+<li>X-Cache-Status: MISS from KS-CLOUD-TAIZ-MP-07-08 #没有命中</li>
+</ul>
+<ul>
+<li>X-Cache-Status: MISS from KS-CLOUD-FZ-CT-04-10#没有命中</li>
+</ul>
+<ul>
+<li>X-Cache-Status: HIT from KS-CLOUD-TS-CT-04-03 #命中</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如果指定cache-control的值为private、no-cache、must-revalidate，那么打开新窗口访问时都会重新访问服务器。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>119090321000998/VM/3M China Limited/SR_2019082848059_[S500]无法缓存内容且向源地址发送重复请求</p>
+<p>可通过如下方法，判断访问URL时是否命中了CDN缓存：</p>
+<p>a.参考响应中的Age部首，通常取值超过10我们可以判定请求内容并所访问的节点缓存；</p>
+<p>b.如果响应中不存在Age部首，且只有一条X-Cache部首，您可以参考X-Cache部首，如果取值中含有Hit可以判定缓存命中，如果取值为Miss可以判定未命中缓存；</p>
+<p>c.如果响应字段中存在多个X-Cache字段请参考如下释义：</p>
+<p>X-Cache-Lookup:Hit From MemCache   表示命中CDN节点的内存</p>
+<p>X-Cache-Lookup:Hit From Disktank   表示命中CDN节点的磁盘</p>
+<p>X-Cache-Lookup:Hit From Disktank3 Gz   表示命中CDN节点的Gzip压缩版本缓存</p>
+<p>X-Cache-Lookup:Hit From Upstream   表示没有命中CDN</p>
+<p>X-Cache-Lookup: Hit From Inner Cluster 表示从内部相邻节点或上层节点查找</p>
+<p>X-Daa-Tunnel: hop_count=3 表示一共查找了多少次内部/上层节点</p>
+<p>X-Cache-Lookup:Hit From MemCache 表示命中 CDN 节点的内存。</p>
+<p>X-Cache-Lookup:Hit From Disktank 表示命中 CDN 节点的磁盘。</p>
+<p>用户这里的hit from upsteam意思为回源</p>
+<p>只有出现标黄的部分才表示命中缓存</p>
+<p>如果指定cache-control的值为private、no-cache、must-revalidate，那么打开新窗口访问时都会重新访问服务器。</p>
+<p>而如果指定了max-age值，那么在此值内的时间里就不会重新访问服务器，例如：</p>
+<p>Cache-control: max-age=600</p>
+<p>表示当访问此网页后的600秒内再次访问不会去请求服务器</p>
+<p>X-Cache-Status: MISS from KS-CLOUD-TAIZ-MP-07-08 #没有命中</p>
+<p>X-Cache-Status: MISS from KS-CLOUD-FZ-CT-04-10#没有命中</p>
+<p>X-Cache-Status: HIT from KS-CLOUD-TS-CT-04-03 #命中</p></article>

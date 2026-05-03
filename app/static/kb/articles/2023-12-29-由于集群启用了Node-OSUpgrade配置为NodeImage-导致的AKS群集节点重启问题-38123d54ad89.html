@@ -1,0 +1,114 @@
+<article class="kb-article" data-title="由于集群启用了Node OSUpgrade配置为NodeImage , 导致的AKS群集节点重启问题"><h1>由于集群启用了Node OSUpgrade配置为NodeImage , 导致的AKS群集节点重启问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: TroubleShooting</li>
+<li>最近修改: 2023-12-29 09:53:30</li>
+<li>JD 相关性: 售后排障; AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>1, 如果设置了集群的upgradechannel , 请先将集群自动升级改为None 再调整Node OSUpgrade , 否则会出现报错.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>1,  如果设置了集群的upgradechannel ,  请先将集群自动升级改为None 再调整Node OSUpgrade ,  否则会出现报错.</li>
+</ul>
+<ul>
+<li>SR_20231212267876 _ aks群集节点状态失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zhangsong</li>
+</ul>
+<ul>
+<li>由于集群启用了 自动升级 Azure Kubernetes 服务 (AKS) 节点 OS 映像 - Azure Kubernetes Service | Azure Docs  Node OSUpgrade配置为：NodeImage 导致的AKS群集节点重启问题.</li>
+</ul>
+<ul>
+<li>关于node image的描述:</li>
+</ul>
+<ul>
+<li>如何调整NodeImage策略</li>
+</ul>
+<ul>
+<li>参考文档: 自动升级 Azure Kubernetes 服务 (AKS) 节点 OS 映像 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>将节点OS升级渠道更改为None.</li>
+</ul>
+<ul>
+<li>注意事项</li>
+</ul>
+<ul>
+<li>2,   Node OSUpgradechannel参数是az cli版本2.52开始新添加的参数，低版本不会显示,  如果cli版本过低请先升级:</li>
+</ul>
+<ul>
+<li>使用--node-os-upgrade-channel 参数需要az cli 2.52版本及以上.</li>
+</ul>
+<ul>
+<li>参考案例:</li>
+</ul>
+<ul>
+<li>SR_20231205266572 _ AKS群集节点重启问题分析</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>后台查看 在问题时间 :  平台启动了Upgrade node image version的操作, 群集会自动更新节点OS镜像，并且对新 VHD 的更新是中断性的。</li>
+</ul>
+<ul>
+<li>查看Node OSUpgrade配置是否为NodeImage</li>
+</ul>
+<ul>
+<li>通过工具ASI: Search for resources 查看:</li>
+</ul>
+<ul>
+<li>可以在events中查看到详细信息:  channel : 4  代表 node image</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>通过命令查看:</li>
+</ul>
+<ul>
+<li>az aks show --resource-group myResourceGroup --name myAKSCluster --query &quot;autoUpgradeProfile&quot;</li>
+</ul>
+<ul>
+<li>使用命令:</li>
+</ul>
+<ul>
+<li>az aks update --resource-group myResourceGroup --name myAKSCluster --node-os-upgrade-channel None</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>调整策略之后就不会出现node image “AKS 将使用新修补的 VHD 来更新节点，其中包含每周一次的安全修复和 bug 修复。 在维护时段和激增设置之后，对新 VHD 的更新是中断性的。 “的情况.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/cli/azure/release-notes-azure-cli#aks-4" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/cli/azure/release-notes-azure-cli#aks-4</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zhangsong</p>
+<p>由于集群启用了 自动升级 Azure Kubernetes 服务 (AKS) 节点 OS 映像 - Azure Kubernetes Service | Azure Docs  Node OSUpgrade配置为：NodeImage 导致的AKS群集节点重启问题.</p>
+<p>后台查看 在问题时间 :  平台启动了Upgrade node image version的操作, 群集会自动更新节点OS镜像，并且对新 VHD 的更新是中断性的。</p>
+<p>关于node image的描述:</p>
+<p>查看Node OSUpgrade配置是否为NodeImage</p>
+<p>通过命令查看:</p>
+<p>az aks show --resource-group myResourceGroup --name myAKSCluster --query &quot;autoUpgradeProfile&quot;</p>
+<p>通过工具ASI: Search for resources 查看:</p>
+<p>可以在events中查看到详细信息:  channel : 4  代表 node image</p>
+<p>如何调整NodeImage策略</p>
+<p>参考文档: 自动升级 Azure Kubernetes 服务 (AKS) 节点 OS 映像 - Azure Kubernetes Service | Azure Docs</p>
+<p>使用命令:</p>
+<p>az aks update --resource-group myResourceGroup --name myAKSCluster --node-os-upgrade-channel None</p>
+<p>将节点OS升级渠道更改为None.</p>
+<p>调整策略之后就不会出现node image “AKS 将使用新修补的 VHD 来更新节点，其中包含每周一次的安全修复和 bug 修复。 在维护时段和激增设置之后，对新 VHD 的更新是中断性的。 “的情况.</p>
+<p>注意事项</p>
+<p>1,  如果设置了集群的upgradechannel ,  请先将集群自动升级改为None 再调整Node OSUpgrade ,  否则会出现报错.</p>
+<p>2,   Node OSUpgradechannel参数是az cli版本2.52开始新添加的参数，低版本不会显示,  如果cli版本过低请先升级:</p>
+<p>使用--node-os-upgrade-channel 参数需要az cli 2.52版本及以上.</p>
+<p><a href="https://learn.microsoft.com/zh-cn/cli/azure/release-notes-azure-cli#aks-4" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/cli/azure/release-notes-azure-cli#aks-4</a></p>
+<p>参考案例:</p>
+<p>SR_20231205266572 _ AKS群集节点重启问题分析</p>
+<p>SR_20231212267876 _ aks群集节点状态失败</p></article>

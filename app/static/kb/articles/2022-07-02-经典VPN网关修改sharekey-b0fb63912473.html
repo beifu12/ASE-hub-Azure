@@ -1,0 +1,125 @@
+<article class="kb-article" data-title="经典VPN网关修改sharekey"><h1>经典VPN网关修改sharekey</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: 标准话术</li>
+<li>最近修改: 2022-07-02 05:50:17</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Id : 94abba7b-1310-4664-b9ae-50238c9b76a7</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Id                   : 94abba7b-1310-4664-b9ae-50238c9b76a7</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>//需要注意的是经典资源需要单独安装Azure 模块</li>
+</ul>
+<ul>
+<li>Install-Module -Name Azure  -Force</li>
+</ul>
+<ul>
+<li>Add-AzureAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>//选择订阅名称</li>
+</ul>
+<ul>
+<li>Select-AzureSubscription  &quot;NET-Li Xiaoyong(21V)&quot;</li>
+</ul>
+<ul>
+<li>AddressSpacePrefixes : {192.168.0.0/16}</li>
+</ul>
+<ul>
+<li>Location             : China North 2</li>
+</ul>
+<ul>
+<li>AffinityGroup        :</li>
+</ul>
+<ul>
+<li>DnsServers           : {}</li>
+</ul>
+<ul>
+<li>GatewayProfile       : Small</li>
+</ul>
+<ul>
+<li>GatewaySites         : {C8D88517_localtest}</li>
+</ul>
+<ul>
+<li>InUse                : True</li>
+</ul>
+<ul>
+<li>Label                :</li>
+</ul>
+<ul>
+<li>MigrationState       :</li>
+</ul>
+<ul>
+<li>Name                 : Group testS2S S2Stest</li>
+</ul>
+<ul>
+<li>State                : Created</li>
+</ul>
+<ul>
+<li>Subnets              : {default, GatewaySubnet}</li>
+</ul>
+<ul>
+<li>OperationDescription : Get-AzureVNetSite</li>
+</ul>
+<ul>
+<li>OperationId          : 5d0368c1-57d2-4915-8a66-ec40d33094ed</li>
+</ul>
+<ul>
+<li>OperationStatus      : Succeeded</li>
+</ul>
+<ul>
+<li>//设置经典VPN的参数sharekey</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>// VNetName不是portal的写入的Name，本地站点名称也并不是portal上看到的，都需要通过powershell获取</li>
+</ul>
+<ul>
+<li>Get-AzureVNetSite</li>
+</ul>
+<ul>
+<li>Set-AzureVNetGatewayKey -VNetName &#39;Group testS2S S2Stest&#39; -LocalNetworkSiteName &#39;C8D88517_localtest&#39;  -SharedKey abc123</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>//需要注意的是经典资源需要单独安装Azure 模块</p>
+<p>Install-Module -Name Azure  -Force</p>
+<p>Add-AzureAccount -Environment AzureChinaCloud</p>
+<p>//选择订阅名称</p>
+<p>Select-AzureSubscription  &quot;NET-Li Xiaoyong(21V)&quot;</p>
+<p>// VNetName不是portal的写入的Name，本地站点名称也并不是portal上看到的，都需要通过powershell获取</p>
+<p>Get-AzureVNetSite</p>
+<p>AddressSpacePrefixes : {192.168.0.0/16}</p>
+<p>Location             : China North 2</p>
+<p>AffinityGroup        :</p>
+<p>DnsServers           : {}</p>
+<p>GatewayProfile       : Small</p>
+<p>GatewaySites         : {C8D88517_localtest}</p>
+<p>Id                   : 94abba7b-1310-4664-b9ae-50238c9b76a7</p>
+<p>InUse                : True</p>
+<p>Label                :</p>
+<p>MigrationState       :</p>
+<p>Name                 : Group testS2S S2Stest</p>
+<p>State                : Created</p>
+<p>Subnets              : {default, GatewaySubnet}</p>
+<p>OperationDescription : Get-AzureVNetSite</p>
+<p>OperationId          : 5d0368c1-57d2-4915-8a66-ec40d33094ed</p>
+<p>OperationStatus      : Succeeded</p>
+<p>//设置经典VPN的参数sharekey</p>
+<p>Set-AzureVNetGatewayKey -VNetName &#39;Group testS2S S2Stest&#39; -LocalNetworkSiteName &#39;C8D88517_localtest&#39;  -SharedKey abc123</p></article>

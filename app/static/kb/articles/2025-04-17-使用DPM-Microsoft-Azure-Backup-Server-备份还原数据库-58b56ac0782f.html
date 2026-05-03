@@ -1,0 +1,481 @@
+<article class="kb-article" data-title="使用DPM （Microsoft Azure Backup Server）备份还原数据库"><h1>使用DPM （Microsoft Azure Backup Server）备份还原数据库</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: RecoveryService</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-04-17 15:04:20</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>管理员可以选择手动传输此初始备份（脱离网络），以免网络出现带宽拥塞现象。管理员还可以配置初始传输发生的时间。单击“下一步”。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>管理员可以选择手动传输此初始备份（脱离网络），以免网络出现带宽拥塞现象。管理员还可以配置初始传输发生的时间。单击“下一步”。</li>
+</ul>
+<ul>
+<li>升级预控报错，</li>
+</ul>
+<ul>
+<li>2017.9.21日使用Windows Server 2016 Datacenter 升级域控制器时报错。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>使用DPM （Microsoft Azure Backup Server）备份数据库</li>
+</ul>
+<ul>
+<li>实验环境：</li>
+</ul>
+<ul>
+<li>域控：zhangwxDC.test.local IP：10.0.0.4</li>
+</ul>
+<ul>
+<li>Backup server：zhangwxDPM.test.local IP：10.0.0.5</li>
+</ul>
+<ul>
+<li>数据库服务器：zhangwxDB.test.local IP： 10.0.0.6</li>
+</ul>
+<ul>
+<li>安装Microsoft Azure Backup Server，使用dpmadmin 登陆Backup server，该用户为域用户，本地管理员权限。</li>
+</ul>
+<ul>
+<li>安装Microsoft Azure Backup Server.</li>
+</ul>
+<ul>
+<li>首先安装.Net Framework 3.5</li>
+</ul>
+<ul>
+<li>我们选择安装新的SQL实例</li>
+</ul>
+<ul>
+<li>指定系统创建用户的密码</li>
+</ul>
+<ul>
+<li>点击Install开始安装，首先会跳出Azure Recovery Services Agent 安装。</li>
+</ul>
+<ul>
+<li>代理安装好后，继续安装backup Server，这个过程大概要1个小时</li>
+</ul>
+<ul>
+<li>安装成功。</li>
+</ul>
+<ul>
+<li>设置备份服务器</li>
+</ul>
+<ul>
+<li>主要分几个过程：</li>
+</ul>
+<ul>
+<li>安装代理到要保护的服务器</li>
+</ul>
+<ul>
+<li>设置磁盘存储空间用于存放短期备份数据</li>
+</ul>
+<ul>
+<li>建立保护组保护数据</li>
+</ul>
+<ul>
+<li>打开Microsoft Backup Server 添加为需要备份的服务器添加代理</li>
+</ul>
+<ul>
+<li>选择要安装代理的数据库服务器</li>
+</ul>
+<ul>
+<li>使用数据库服务器管理员权限的域用户</li>
+</ul>
+<ul>
+<li>注意安装过程中数据库防火墙的设置</li>
+</ul>
+<ul>
+<li>为了使保护代理能够通过防火墙与 DPM 服务器进行通信，需要设置防火墙例外。</li>
+</ul>
+<ul>
+<li>协议</li>
+</ul>
+<ul>
+<li>详细信息</li>
+</ul>
+<ul>
+<li>DCOM</li>
+</ul>
+<ul>
+<li>135/TCP</li>
+</ul>
+<ul>
+<li>动态</li>
+</ul>
+<ul>
+<li>1.打开 IIS 7.0 管理器，在“连接”窗格内，单击树中的服务器级别节点。</li>
+</ul>
+<ul>
+<li>2.在功能列表中双击“FTP 防火墙支持”图标。</li>
+</ul>
+<ul>
+<li>TCP</li>
+</ul>
+<ul>
+<li>5718/TCP</li>
+</ul>
+<ul>
+<li>5719/TCP</li>
+</ul>
+<ul>
+<li>DPM 数据通道基于 TCP。 DPM 和受保护的计算机均会发起连接，以便能执行诸如同步和恢复等 DPM 操作。</li>
+</ul>
+<ul>
+<li>DNS</li>
+</ul>
+<ul>
+<li>53/UDP</li>
+</ul>
+<ul>
+<li>在 DPM 与域控制器之间以及在受保护的计算机与域控制器之间使用，用于解析主机名。</li>
+</ul>
+<ul>
+<li>Kerberos</li>
+</ul>
+<ul>
+<li>88/UDP</li>
+</ul>
+<ul>
+<li>88/TCP</li>
+</ul>
+<ul>
+<li>LDAP</li>
+</ul>
+<ul>
+<li>389/TCP</li>
+</ul>
+<ul>
+<li>389/UDP</li>
+</ul>
+<ul>
+<li>NetBIOS</li>
+</ul>
+<ul>
+<li>137/UDP</li>
+</ul>
+<ul>
+<li>138/UDP</li>
+</ul>
+<ul>
+<li>139/TCP</li>
+</ul>
+<ul>
+<li>445/TCP</li>
+</ul>
+<ul>
+<li>在 DPM 与受保护的计算机之间、在 DPM 与域控制器之间以及在受保护的计算机与域控制器之间使用，用于执行其他操作。 用于直接在 TCP/IP 上托管的 SMB，以执行 DPM 功能。</li>
+</ul>
+<ul>
+<li>代理安装成功。</li>
+</ul>
+<ul>
+<li>建立备份保护组，单击“新建”创建新的保护组。</li>
+</ul>
+<ul>
+<li>DPM 会显示开始屏幕，其中包含有关如何创建保护组的指南。单击“下一步”选择“服务器”。</li>
+</ul>
+<ul>
+<li>如遇如下错误信息</li>
+</ul>
+<ul>
+<li>需要在数据库服务器上给NT AUTHORITY\SYSTEM sysadmin的权限</li>
+</ul>
+<ul>
+<li>如果 SharePoint 场有使用 SQL Server 别名配置的 SQL Server 数据库，请在 DPM 将要保护的前端 Web 服务器上安装 SQL Server 客户端组件。）</li>
+</ul>
+<ul>
+<li>接下来你会发现如下所示的屏幕。选择自己的数据库</li>
+</ul>
+<ul>
+<li>提供要创建的保护组的名称。请确保选择“我需要在线保护”选项。</li>
+</ul>
+<ul>
+<li>在“指定短期目标”屏幕中，提供创建磁盘备份点所需的输入。</li>
+</ul>
+<ul>
+<li>在这里我们可以看到，“保留期”设置为“5 天”，“同步频率”设置为“每 15 分钟一次”，这也是进行备份的频率。“快速完整备份”设置为“晚上 8:00”。</li>
+</ul>
+<ul>
+<li>选择短期存储的空间提示没有空间</li>
+</ul>
+<ul>
+<li>为备份服务器添加块硬盘</li>
+</ul>
+<ul>
+<li>然后添加备份所用存储</li>
+</ul>
+<ul>
+<li>添加备份所用存储结束</li>
+</ul>
+<ul>
+<li>接着建立保护组的操作</li>
+</ul>
+<ul>
+<li>DPM 会显示可用的总存储空间以及能够使用的磁盘空间。</li>
+</ul>
+<ul>
+<li>若要指定对数据源进行在线保护，请选择要通过 Azure 进行保护的数据库，然后单击“下一步”。</li>
+</ul>
+<ul>
+<li>您可以选择适合组织策略的备份计划和保留策略。</li>
+</ul>
+<ul>
+<li>选择保留策略计划。</li>
+</ul>
+<ul>
+<li>备份会在每天的晚上 9:00 进行一次，并且会保留 180 天。</li>
+</ul>
+<ul>
+<li>在星期六晚上 9:00  进行的备份会保留 104 周</li>
+</ul>
+<ul>
+<li>在最后一个星期六晚上 9:00进行的备份会保留 60 个月</li>
+</ul>
+<ul>
+<li>在 3 月的最后一个星期六晚上 9:00进行的备份会保留 10 年</li>
+</ul>
+<ul>
+<li>单击“下一步”，选择相应的选项将初始备份副本传输到 Azure。你可以选择“自动通过网络”或“脱机备份”。</li>
+</ul>
+<ul>
+<li>开始运行初次备份</li>
+</ul>
+<ul>
+<li>右键单击该数据库，然后选择“创建恢复点”。</li>
+</ul>
+<ul>
+<li>如在下拉列表中选择“在线保护”，然后单击“确定”。会在 Azure 中创建恢复点。</li>
+</ul>
+<ul>
+<li>还原数据库</li>
+</ul>
+<ul>
+<li>右键单击数据库名称，然后单击“恢复”。</li>
+</ul>
+<ul>
+<li>PM 会显示恢复点的详细信息。单击“下一步”。选择恢复类型“恢复到 SQL Server 的原始实例”。这将覆盖该数据库。单击“下一步”。</li>
+</ul>
+<ul>
+<li>在“指定恢复选项”屏幕上，你可以选择恢复选项（例如“网络带宽使用限制”），以便限制恢复操作所使用的带宽。单击“下一步”。</li>
+</ul>
+<ul>
+<li>在“摘要”屏幕上，你会看到目前提供的所有恢复配置。单击“恢复”。</li>
+</ul>
+<ul>
+<li>成功还原</li>
+</ul>
+<ul>
+<li>最后尝试了一下备份虚拟机。</li>
+</ul>
+<ul>
+<li>取消此处选择</li>
+</ul>
+<ul>
+<li>Create VMware Data Protection Group Microsoft Azure Backup Server :</li>
+</ul>
+<ul>
+<li>Microsoft Azure Backup Server: System State backup fails with the message replica is inconsistent:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>按如下步骤安装Microsoft Azure Backup Server</li>
+</ul>
+<ul>
+<li>进行安装前检查通过后便可以点击下一步</li>
+</ul>
+<ul>
+<li>选择备份保管库密钥文件，改密钥可以按如下步骤获取：</li>
+</ul>
+<ul>
+<li>下载好后变可进行验证了</li>
+</ul>
+<ul>
+<li>在 DPM 与域控制器之间以及在受保护的计算机与域控制器之间使用，用于验证连接终结点。</li>
+</ul>
+<ul>
+<li>在 DPM 与域控制器之间使用，用于执行查询。</li>
+</ul>
+<ul>
+<li>选择需要运行一致性检查的时间，然后单击“下一步”。</li>
+</ul>
+<ul>
+<li>如果出现如下错误，请等待一致性检查完成或重新运行一致性检查</li>
+</ul>
+<ul>
+<li>打开 DPM 服务器管理控制台，在“恢复”工作区，你可以在其中查看通过 DPM 备份的服务器。浏览所需的数据库，并选择还原点</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>DPM 控制协议使用 DCOM。 DPM 通过在保护代理上引发 DCOM 调用向保护代理发出命令。 保护代理通过在 DPM 服务器上引发 DCOM 调用来响应。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>为 SQL Server 的 DPM 实例 sqlservr.exe 配置传入例外，以允许在端口 80 上使用 TCP。报表服务器在端口 80 上侦听 HTTP 请求。 下表列出了 DPM 服务器与受保护服务器和客户端之间进行通信所必需的协议和端口。</li>
+</ul>
+<ul>
+<li>端口</li>
+</ul>
+<ul>
+<li>TCP 端口 135 是 DCOM 使用的 DCE 终结点解析点。</li>
+</ul>
+<ul>
+<li>默认情况下，DCOM 自动分配 TCP 端口范围 在 1024 到 65535 之间的端口。 但是，你可以使用组件服务来配置此范围。</li>
+</ul>
+<ul>
+<li>请注意，对于 DPM-代理通信，必须打开上限端口 1024 到 65535。 要查看端口，请执行下列步骤：</li>
+</ul>
+<ul>
+<li>3.为“数据通道端口范围”输入值范围。</li>
+</ul>
+<ul>
+<li>4.输入 FTP 服务的端口范围之后，在“操作”窗格中单击“应用”，以保存配置设置。</li>
+</ul>
+<ul>
+<li>DPM 在端口 5718 上与代理协调器通信，在端口 5719 上与保护代理通信。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>DPM 以 LocalSystem 帐户的形式运行。若要备份 SQL Server 数据库，DPM 需要对运行 SQL Server 的服务器的帐户具有 sysadmin 特权。备份之前，先在运行 SQL Server 的服务器上将 NT AUTHORITY\SYSTEM 设置为 sysadmin。</li>
+</ul>
+<ul>
+<li>解决方法（Provided by Ruifeng）</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>具体可参考：<a href="https://docs.microsoft.com/zh-cn/system-center/dpm/deploy-dpm-protection-agent" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/system-center/dpm/deploy-dpm-protection-agent</a></li>
+</ul>
+<ul>
+<li>可参考如下链接建立备份保护组：<a href="https://docs.azure.cn/zh-cn/backup/backup-azure-backup-sql" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/backup-azure-backup-sql</a></li>
+</ul>
+<ul>
+<li>（参考：<a href="https://docs.azure.cn/zh-cn/backup/backup-azure-backup-sharepoint" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/backup-azure-backup-sharepoint</a></li>
+</ul>
+<ul>
+<li><a href="https://www.virtualizationhowto.com/2018/04/create-vmware-data-protection-group-microsoft-azure-backup-server/" target="_blank" rel="noopener">https://www.virtualizationhowto.com/2018/04/create-vmware-data-protection-group-microsoft-azure-backup-server/</a></li>
+</ul>
+<ul>
+<li><a href="http://scug.be/wim/2016/04/22/microsoft-azure-backup-server-system-state-backup-fails-with-the-message-replica-is-inconsistent/" target="_blank" rel="noopener">http://scug.be/wim/2016/04/22/microsoft-azure-backup-server-system-state-backup-fails-with-the-message-replica-is-inconsistent/</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/system-center/dpm/what-s-new-in-dpm?view=sc-dpm-1807" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/system-center/dpm/what-s-new-in-dpm?view=sc-dpm-1807</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>使用DPM （Microsoft Azure Backup Server）备份数据库</p>
+<p>实验环境：</p>
+<p>域控：zhangwxDC.test.local IP：10.0.0.4</p>
+<p>Backup server：zhangwxDPM.test.local IP：10.0.0.5</p>
+<p>数据库服务器：zhangwxDB.test.local IP： 10.0.0.6</p>
+<p>安装Microsoft Azure Backup Server，使用dpmadmin 登陆Backup server，该用户为域用户，本地管理员权限。</p>
+<p>安装Microsoft Azure Backup Server.</p>
+<p>首先安装.Net Framework 3.5</p>
+<p>按如下步骤安装Microsoft Azure Backup Server</p>
+<p>进行安装前检查通过后便可以点击下一步</p>
+<p>我们选择安装新的SQL实例</p>
+<p>指定系统创建用户的密码</p>
+<p>点击Install开始安装，首先会跳出Azure Recovery Services Agent 安装。</p>
+<p>选择备份保管库密钥文件，改密钥可以按如下步骤获取：</p>
+<p>下载好后变可进行验证了</p>
+<p>代理安装好后，继续安装backup Server，这个过程大概要1个小时</p>
+<p>安装成功。</p>
+<p>设置备份服务器</p>
+<p>主要分几个过程：</p>
+<p>安装代理到要保护的服务器</p>
+<p>设置磁盘存储空间用于存放短期备份数据</p>
+<p>建立保护组保护数据</p>
+<p>打开Microsoft Backup Server 添加为需要备份的服务器添加代理</p>
+<p>选择要安装代理的数据库服务器</p>
+<p>使用数据库服务器管理员权限的域用户</p>
+<p>注意安装过程中数据库防火墙的设置</p>
+<p>具体可参考：<a href="https://docs.microsoft.com/zh-cn/system-center/dpm/deploy-dpm-protection-agent" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/system-center/dpm/deploy-dpm-protection-agent</a></p>
+<p>为了使保护代理能够通过防火墙与 DPM 服务器进行通信，需要设置防火墙例外。</p>
+<p>为 SQL Server 的 DPM 实例 sqlservr.exe 配置传入例外，以允许在端口 80 上使用 TCP。报表服务器在端口 80 上侦听 HTTP 请求。 下表列出了 DPM 服务器与受保护服务器和客户端之间进行通信所必需的协议和端口。</p>
+<p>协议</p>
+<p>端口</p>
+<p>详细信息</p>
+<p>DCOM</p>
+<p>135/TCP</p>
+<p>动态</p>
+<p>DPM 控制协议使用 DCOM。 DPM 通过在保护代理上引发 DCOM 调用向保护代理发出命令。 保护代理通过在 DPM 服务器上引发 DCOM 调用来响应。</p>
+<p>TCP 端口 135 是 DCOM 使用的 DCE 终结点解析点。</p>
+<p>默认情况下，DCOM 自动分配 TCP 端口范围 在 1024 到 65535 之间的端口。 但是，你可以使用组件服务来配置此范围。</p>
+<p>请注意，对于 DPM-代理通信，必须打开上限端口 1024 到 65535。 要查看端口，请执行下列步骤：</p>
+<p>1.打开 IIS 7.0 管理器，在“连接”窗格内，单击树中的服务器级别节点。</p>
+<p>2.在功能列表中双击“FTP 防火墙支持”图标。</p>
+<p>3.为“数据通道端口范围”输入值范围。</p>
+<p>4.输入 FTP 服务的端口范围之后，在“操作”窗格中单击“应用”，以保存配置设置。</p>
+<p>TCP</p>
+<p>5718/TCP</p>
+<p>5719/TCP</p>
+<p>DPM 数据通道基于 TCP。 DPM 和受保护的计算机均会发起连接，以便能执行诸如同步和恢复等 DPM 操作。</p>
+<p>DPM 在端口 5718 上与代理协调器通信，在端口 5719 上与保护代理通信。</p>
+<p>DNS</p>
+<p>53/UDP</p>
+<p>在 DPM 与域控制器之间以及在受保护的计算机与域控制器之间使用，用于解析主机名。</p>
+<p>Kerberos</p>
+<p>88/UDP</p>
+<p>88/TCP</p>
+<p>在 DPM 与域控制器之间以及在受保护的计算机与域控制器之间使用，用于验证连接终结点。</p>
+<p>LDAP</p>
+<p>389/TCP</p>
+<p>389/UDP</p>
+<p>在 DPM 与域控制器之间使用，用于执行查询。</p>
+<p>NetBIOS</p>
+<p>137/UDP</p>
+<p>138/UDP</p>
+<p>139/TCP</p>
+<p>445/TCP</p>
+<p>在 DPM 与受保护的计算机之间、在 DPM 与域控制器之间以及在受保护的计算机与域控制器之间使用，用于执行其他操作。 用于直接在 TCP/IP 上托管的 SMB，以执行 DPM 功能。</p>
+<p>代理安装成功。</p>
+<p>可参考如下链接建立备份保护组：<a href="https://docs.azure.cn/zh-cn/backup/backup-azure-backup-sql" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/backup-azure-backup-sql</a></p>
+<p>建立备份保护组，单击“新建”创建新的保护组。</p>
+<p>DPM 会显示开始屏幕，其中包含有关如何创建保护组的指南。单击“下一步”选择“服务器”。</p>
+<p>如遇如下错误信息</p>
+<p>需要在数据库服务器上给NT AUTHORITY\SYSTEM sysadmin的权限</p>
+<p>（参考：<a href="https://docs.azure.cn/zh-cn/backup/backup-azure-backup-sharepoint" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/backup-azure-backup-sharepoint</a></p>
+<p>DPM 以 LocalSystem 帐户的形式运行。若要备份 SQL Server 数据库，DPM 需要对运行 SQL Server 的服务器的帐户具有 sysadmin 特权。备份之前，先在运行 SQL Server 的服务器上将 NT AUTHORITY\SYSTEM 设置为 sysadmin。</p>
+<p>如果 SharePoint 场有使用 SQL Server 别名配置的 SQL Server 数据库，请在 DPM 将要保护的前端 Web 服务器上安装 SQL Server 客户端组件。）</p>
+<p>接下来你会发现如下所示的屏幕。选择自己的数据库</p>
+<p>提供要创建的保护组的名称。请确保选择“我需要在线保护”选项。</p>
+<p>在“指定短期目标”屏幕中，提供创建磁盘备份点所需的输入。</p>
+<p>在这里我们可以看到，“保留期”设置为“5 天”，“同步频率”设置为“每 15 分钟一次”，这也是进行备份的频率。“快速完整备份”设置为“晚上 8:00”。</p>
+<p>选择短期存储的空间提示没有空间</p>
+<p>为备份服务器添加块硬盘</p>
+<p>然后添加备份所用存储</p>
+<p>添加备份所用存储结束</p>
+<p>接着建立保护组的操作</p>
+<p>DPM 会显示可用的总存储空间以及能够使用的磁盘空间。</p>
+<p>管理员可以选择手动传输此初始备份（脱离网络），以免网络出现带宽拥塞现象。管理员还可以配置初始传输发生的时间。单击“下一步”。</p>
+<p>选择需要运行一致性检查的时间，然后单击“下一步”。</p>
+<p>若要指定对数据源进行在线保护，请选择要通过 Azure 进行保护的数据库，然后单击“下一步”。</p>
+<p>您可以选择适合组织策略的备份计划和保留策略。</p>
+<p>选择保留策略计划。</p>
+<p>备份会在每天的晚上 9:00 进行一次，并且会保留 180 天。</p>
+<p>在星期六晚上 9:00  进行的备份会保留 104 周</p>
+<p>在最后一个星期六晚上 9:00进行的备份会保留 60 个月</p>
+<p>在 3 月的最后一个星期六晚上 9:00进行的备份会保留 10 年</p>
+<p>单击“下一步”，选择相应的选项将初始备份副本传输到 Azure。你可以选择“自动通过网络”或“脱机备份”。</p>
+<p>开始运行初次备份</p>
+<p>如果出现如下错误，请等待一致性检查完成或重新运行一致性检查</p>
+<p>右键单击该数据库，然后选择“创建恢复点”。</p>
+<p>如在下拉列表中选择“在线保护”，然后单击“确定”。会在 Azure 中创建恢复点。</p>
+<p>还原数据库</p>
+<p>打开 DPM 服务器管理控制台，在“恢复”工作区，你可以在其中查看通过 DPM 备份的服务器。浏览所需的数据库，并选择还原点</p>
+<p>右键单击数据库名称，然后单击“恢复”。</p>
+<p>PM 会显示恢复点的详细信息。单击“下一步”。选择恢复类型“恢复到 SQL Server 的原始实例”。这将覆盖该数据库。单击“下一步”。</p>
+<p>在“指定恢复选项”屏幕上，你可以选择恢复选项（例如“网络带宽使用限制”），以便限制恢复操作所使用的带宽。单击“下一步”。</p>
+<p>在“摘要”屏幕上，你会看到目前提供的所有恢复配置。单击“恢复”。</p>
+<p>成功还原</p>
+<p>最后尝试了一下备份虚拟机。</p>
+<p>升级预控报错，</p>
+<p>2017.9.21日使用Windows Server 2016 Datacenter 升级域控制器时报错。</p>
+<p>解决方法（Provided by Ruifeng）</p>
+<p>取消此处选择</p>
+<p>Create VMware Data Protection Group Microsoft Azure Backup Server :</p>
+<p><a href="https://www.virtualizationhowto.com/2018/04/create-vmware-data-protection-group-microsoft-azure-backup-server/" target="_blank" rel="noopener">https://www.virtualizationhowto.com/2018/04/create-vmware-data-protection-group-microsoft-azure-backup-server/</a></p>
+<p>Microsoft Azure Backup Server: System State backup fails with the message replica is inconsistent:</p>
+<p><a href="http://scug.be/wim/2016/04/22/microsoft-azure-backup-server-system-state-backup-fails-with-the-message-replica-is-inconsistent/" target="_blank" rel="noopener">http://scug.be/wim/2016/04/22/microsoft-azure-backup-server-system-state-backup-fails-with-the-message-replica-is-inconsistent/</a></p>
+<p><a href="https://docs.microsoft.com/zh-cn/system-center/dpm/what-s-new-in-dpm?view=sc-dpm-1807" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/system-center/dpm/what-s-new-in-dpm?view=sc-dpm-1807</a></p></article>

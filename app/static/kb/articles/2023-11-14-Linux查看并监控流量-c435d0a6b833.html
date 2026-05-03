@@ -1,0 +1,169 @@
+<article class="kb-article" data-title="Linux查看并监控流量"><h1>Linux查看并监控流量</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LinuxNetIssue</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-11-14 15:50:00</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>关于对虚拟机流量的监控，可以采用这两个工具：nload和ifto。关于这两个工具的安装，参考：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>关于对虚拟机流量的监控，可以采用这两个工具：nload和ifto。关于这两个工具的安装，参考：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>关于对虚拟机流量的监控，可以采用这两个工具：nload和ifto。关于这两个工具的安装，参考：</li>
+</ul>
+<ul>
+<li>1、CentOS安装</li>
+</ul>
+<ul>
+<li>启用Epel的源</li>
+</ul>
+<ul>
+<li>yu install epel-release</li>
+</ul>
+<ul>
+<li>Yum 安装nload和iftop</li>
+</ul>
+<ul>
+<li>Yum install nload -y</li>
+</ul>
+<ul>
+<li>Yum install iftop -y</li>
+</ul>
+<ul>
+<li>2、Ubuntu安装</li>
+</ul>
+<ul>
+<li>如果是Ubuntu虚拟机可以直接</li>
+</ul>
+<ul>
+<li>Apt-get install nload</li>
+</ul>
+<ul>
+<li>Apt-get install iftop</li>
+</ul>
+<ul>
+<li>nload</li>
+</ul>
+<ul>
+<li>安装nload 之后，直接执行nload ，可以显示incoming和outgoing总的流量情况</li>
+</ul>
+<ul>
+<li>其中：Curr表示当前的下载/上传速度</li>
+</ul>
+<ul>
+<li>Avg表示从开机到现在平均的下载/上传速度</li>
+</ul>
+<ul>
+<li>MIN/MAX: 表示从开机到现在平均的最大/最小 下载/上传速度</li>
+</ul>
+<ul>
+<li>Ttl:表示虚拟机开启到现在总的下载和上传的数据总量</li>
+</ul>
+<ul>
+<li>为了说明这个监控流量的问题，我举个自己的虚拟机作为例子。</li>
+</ul>
+<ul>
+<li>调整Azure的监控，使监控从1/6  21:35开始， 统计数据到1/9 16:22（CST）</li>
+</ul>
+<ul>
+<li>从Azure的流量监控看，从1/6 21:35开始到1/9 16:22虚拟机总共输出364MB，输入700MB，共1.06GB的数据。但是这部分流量是付费的流量，虚拟机内网通信的流量不会计入到监控中。</li>
+</ul>
+<ul>
+<li>也就是说从虚拟机里面看，网卡的输出/输入 流量均大于监控显示的流量。因此这是一个正常的情况。</li>
+</ul>
+<ul>
+<li>iftop</li>
+</ul>
+<ul>
+<li>中间的&lt;= =&gt;这两个左右箭头，表示的是流量的方向。=&gt;表示发送。&lt;=表示接收</li>
+</ul>
+<ul>
+<li>最右侧的三个小列，这些实时参数分别表示外部IP连接到本机 2s 10s 40s 平均流量值</li>
+</ul>
+<ul>
+<li>TX：发送流量</li>
+</ul>
+<ul>
+<li>RX：接收流量</li>
+</ul>
+<ul>
+<li>TOTAL：总流量</li>
+</ul>
+<ul>
+<li>Cum：运行iftop到目前时间的总流量</li>
+</ul>
+<ul>
+<li>peak：运行iftop到目前时间流量峰值</li>
+</ul>
+<ul>
+<li>rates：分别表示过去 2s 10s 40s 的平均流量</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>从上面显示的情况，您可以查看虚拟机的流量的总体情况。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>上面的截图显示，我执行这个命令的时，我的虚拟机从开机到现在总共发送771MB，收到1.18GB的数据</li>
+</ul>
+<ul>
+<li>从下面的Last命令输出可以看出，从Last 命令可以看出，我的虚拟机在1/6 21:35开机， 运行到1/9 16:22（CST），共运行两天18小时47分钟</li>
+</ul>
+<ul>
+<li>通过该命令可以看到实时的网络带宽占用情况，可以找到哪个IP地址占用了网络带宽，继而通过 netstat -antup | grep IP地址 来查找相关的PID/Program name，定位哪个进程占用带宽，是否是未知进程。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>直接执行iftop  -P -n 可以显示哪些Ip正在与虚拟机进行通信，以及通信速度和端口信息</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>下面介绍这两个工具的使用方法，建议在root权限下使用</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>关于对虚拟机流量的监控，可以采用这两个工具：nload和ifto。关于这两个工具的安装，参考：</p>
+<p>1、CentOS安装</p>
+<p>启用Epel的源</p>
+<p>yu install epel-release</p>
+<p>Yum 安装nload和iftop</p>
+<p>Yum install nload -y</p>
+<p>Yum install iftop -y</p>
+<p>2、Ubuntu安装</p>
+<p>如果是Ubuntu虚拟机可以直接</p>
+<p>Apt-get install nload</p>
+<p>Apt-get install iftop</p>
+<p>下面介绍这两个工具的使用方法，建议在root权限下使用</p>
+<p>nload</p>
+<p>安装nload 之后，直接执行nload ，可以显示incoming和outgoing总的流量情况</p>
+<p>其中：Curr表示当前的下载/上传速度</p>
+<p>Avg表示从开机到现在平均的下载/上传速度</p>
+<p>MIN/MAX: 表示从开机到现在平均的最大/最小 下载/上传速度</p>
+<p>Ttl:表示虚拟机开启到现在总的下载和上传的数据总量</p>
+<p>上面的截图显示，我执行这个命令的时，我的虚拟机从开机到现在总共发送771MB，收到1.18GB的数据</p>
+<p>为了说明这个监控流量的问题，我举个自己的虚拟机作为例子。</p>
+<p>从下面的Last命令输出可以看出，从Last 命令可以看出，我的虚拟机在1/6 21:35开机， 运行到1/9 16:22（CST），共运行两天18小时47分钟</p>
+<p>调整Azure的监控，使监控从1/6  21:35开始， 统计数据到1/9 16:22（CST）</p>
+<p>从Azure的流量监控看，从1/6 21:35开始到1/9 16:22虚拟机总共输出364MB，输入700MB，共1.06GB的数据。但是这部分流量是付费的流量，虚拟机内网通信的流量不会计入到监控中。</p>
+<p>也就是说从虚拟机里面看，网卡的输出/输入 流量均大于监控显示的流量。因此这是一个正常的情况。</p>
+<p>从上面显示的情况，您可以查看虚拟机的流量的总体情况。</p>
+<p>iftop</p>
+<p>直接执行iftop  -P -n 可以显示哪些Ip正在与虚拟机进行通信，以及通信速度和端口信息</p>
+<p>中间的&lt;= =&gt;这两个左右箭头，表示的是流量的方向。=&gt;表示发送。&lt;=表示接收</p>
+<p>最右侧的三个小列，这些实时参数分别表示外部IP连接到本机 2s 10s 40s 平均流量值</p>
+<p>TX：发送流量</p>
+<p>RX：接收流量</p>
+<p>TOTAL：总流量</p>
+<p>Cum：运行iftop到目前时间的总流量</p>
+<p>peak：运行iftop到目前时间流量峰值</p>
+<p>rates：分别表示过去 2s 10s 40s 的平均流量</p>
+<p>通过该命令可以看到实时的网络带宽占用情况，可以找到哪个IP地址占用了网络带宽，继而通过 netstat -antup | grep IP地址 来查找相关的PID/Program name，定位哪个进程占用带宽，是否是未知进程。</p></article>

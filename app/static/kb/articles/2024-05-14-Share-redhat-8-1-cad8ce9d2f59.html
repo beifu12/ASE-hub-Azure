@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="【Share】redhat 8.1"><h1>【Share】redhat 8.1</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-05-14 17:08:30</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>update</li>
+</ul>
+<ul>
+<li>Yang zhenjiang</li>
+</ul>
+<ul>
+<li>我创建了一个共享映像，版本是redhat 8.1,如果大家需要测试redhat相关，可以使用此映像创建</li>
+</ul>
+<ul>
+<li>rpmlib(CaretInVersions) &lt;= 4.15.0-1 is needed by python39-pip-20.2.4-6.module_el8.5.0+897+68c4c210.noarch</li>
+</ul>
+<ul>
+<li>rpmlib(CaretInVersions) &lt;= 4.15.0-1 is needed by python39-pip-wheel-20.2.4-6.module_el8.5.0+897+68c4c210.noarch</li>
+</ul>
+<ul>
+<li>yum install epel-release -y</li>
+</ul>
+<ul>
+<li>yum install yum-utils -y</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Error: transaction check vs depsolve:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>我使用redhat自定义映像在安装azure cli时遇到一个问题，提示如下错误信息：</li>
+</ul>
+<ul>
+<li>在redhat机器中执行命令安装epel-release和yum-utils：</li>
+</ul>
+<ul>
+<li>之后重新安装azure cli即可成功</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>后续经过查询第三方文档和测试，可以通过以下方式进行安装成功：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>2024-02-02</p>
+<p>update</p>
+<p>Yang zhenjiang</p>
+<p>我创建了一个共享映像，版本是redhat 8.1,如果大家需要测试redhat相关，可以使用此映像创建</p>
+<p>我使用redhat自定义映像在安装azure cli时遇到一个问题，提示如下错误信息：</p>
+<p>Error: transaction check vs depsolve:</p>
+<p>rpmlib(CaretInVersions) &lt;= 4.15.0-1 is needed by python39-pip-20.2.4-6.module_el8.5.0+897+68c4c210.noarch</p>
+<p>rpmlib(CaretInVersions) &lt;= 4.15.0-1 is needed by python39-pip-wheel-20.2.4-6.module_el8.5.0+897+68c4c210.noarch</p>
+<p>后续经过查询第三方文档和测试，可以通过以下方式进行安装成功：</p>
+<p>在redhat机器中执行命令安装epel-release和yum-utils：</p>
+<p>yum install epel-release -y</p>
+<p>yum install yum-utils -y</p>
+<p>之后重新安装azure cli即可成功</p></article>

@@ -1,0 +1,60 @@
+<article class="kb-article" data-title="【share】如何设定使本地AD的账号选项，下一次登录必须更改密码，应用到云端"><h1>【share】如何设定使本地AD的账号选项，下一次登录必须更改密码，应用到云端</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-08-29 15:23:14</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>如何设定使本地AD的账号选项，下一次登录必须更改密码，应用到云端？</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>如何设定使本地AD的账号选项，下一次登录必须更改密码，应用到云端？</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>如何设定使本地AD的账号选项，下一次登录必须更改密码，应用到云端？</li>
+</ul>
+<ul>
+<li>开启下次登录必须更改密码</li>
+</ul>
+<ul>
+<li>本地的账号下一次登录必须更改密码，这一设定值同步到AzureAD。</li>
+</ul>
+<ul>
+<li>测试参考：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>本地账号已启用下次登录必须更改密码——测试验证成功</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>经测试验证 Set-ADSyncAADCompanyFeature 可以使用此命令</li>
+</ul>
+<ul>
+<li>此命令Set-ADSyncAADCompanyFeature -ForcePasswordChangeOnLogOn $true 可以生效到AAD，</li>
+</ul>
+<ul>
+<li>Set-ADSyncAADCompanyFeature -ForcePasswordChangeOnLogOn $true</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/8/29</p>
+<p>如何设定使本地AD的账号选项，下一次登录必须更改密码，应用到云端？</p>
+<p>经测试验证 Set-ADSyncAADCompanyFeature 可以使用此命令</p>
+<p>开启下次登录必须更改密码</p>
+<p>此命令Set-ADSyncAADCompanyFeature -ForcePasswordChangeOnLogOn $true 可以生效到AAD，</p>
+<p>本地的账号下一次登录必须更改密码，这一设定值同步到AzureAD。</p>
+<p>测试参考：</p>
+<p>Set-ADSyncAADCompanyFeature -ForcePasswordChangeOnLogOn $true</p>
+<p>本地账号已启用下次登录必须更改密码——测试验证成功</p></article>

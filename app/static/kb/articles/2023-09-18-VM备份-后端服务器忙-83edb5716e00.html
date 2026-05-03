@@ -1,0 +1,62 @@
+<article class="kb-article" data-title="VM备份 后端服务器忙"><h1>VM备份 后端服务器忙</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-09-18 16:52:40</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2019031112126_[MS-LED]虚拟机备份失败</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2019031112126_[MS-LED]虚拟机备份失败</li>
+</ul>
+<ul>
+<li>虚拟机计划备份任务失败</li>
+</ul>
+<ul>
+<li>尝试获取虚拟机ROCUVDB008 OS盘快照出现了“The server is busy.” statusCode: 503</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>======================================</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>平台级别排查：</li>
+</ul>
+<ul>
+<li>收集虚拟机内部日志（/var/log/azure/*）进一步排查：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>根据以往工单处理经验，这是一个偶发的问题，在尝试对磁盘做快照时出现了存储服务器忙响应超时（原因是在那个时刻到达blob的瞬时IO请求超出了blob的最高IOPS上限，所以部分IO Request被节流。），在这种情况出现时，手动重新发起备份操作即可解决。</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>3/9/2019 4:07:56 PM（UTC） 备份失败，报错信息是“ExtensionSnapshotFailedNoNetwork”有关该错误信息可能的原因可以参考：<a href="https://docs.azure.cn/zh-cn/backup/backup-azure-troubleshoot-vm-backup-fails-snapshot-timeout" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/backup-azure-troubleshoot-vm-backup-fails-snapshot-timeout</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2019031112126_[MS-LED]虚拟机备份失败</p>
+<p>问题描述：</p>
+<p>虚拟机计划备份任务失败</p>
+<p>解决方法：</p>
+<p>平台级别排查：</p>
+<p>======================================</p>
+<p>3/9/2019 4:07:56 PM（UTC） 备份失败，报错信息是“ExtensionSnapshotFailedNoNetwork”有关该错误信息可能的原因可以参考：<a href="https://docs.azure.cn/zh-cn/backup/backup-azure-troubleshoot-vm-backup-fails-snapshot-timeout" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/backup/backup-azure-troubleshoot-vm-backup-fails-snapshot-timeout</a></p>
+<p>收集虚拟机内部日志（/var/log/azure/*）进一步排查：</p>
+<p>尝试获取虚拟机ROCUVDB008 OS盘快照出现了“The server is busy.” statusCode: 503</p>
+<p>根据以往工单处理经验，这是一个偶发的问题，在尝试对磁盘做快照时出现了存储服务器忙响应超时（原因是在那个时刻到达blob的瞬时IO请求超出了blob的最高IOPS上限，所以部分IO Request被节流。），在这种情况出现时，手动重新发起备份操作即可解决。</p></article>

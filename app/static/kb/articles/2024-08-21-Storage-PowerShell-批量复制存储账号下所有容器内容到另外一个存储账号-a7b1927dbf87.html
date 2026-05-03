@@ -1,0 +1,131 @@
+<article class="kb-article" data-title="[Storage][PowerShell]批量复制存储账号下所有容器内容到另外一个存储账号"><h1>[Storage][PowerShell]批量复制存储账号下所有容器内容到另外一个存储账号</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Powershell</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-08-21 11:48:11</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>思路是利用Azure PS Get 容器下所有Container嵌套Azcopy 执行复制（参考工单2018091261924，感谢左大的思路、提示），参考：<a href="https://social.msdn.microsoft.com/Forums/sqlserver/en-US/a84c13e4-58d3-4524-9f8d-da003a4ed4aa/how-to-copy-all-containers-along-with-blobs-from-one-azure-storage-account-to-other-sto..." target="_blank" rel="noopener">https://social.msdn.microsoft.com/Forums/sqlserver/en-US/a84c13e4-58d3-4524-9f8d-da003a4ed4aa/how-to-copy-all-containers-along-with-blobs-from-one-azure-storage-account-to-other-sto...</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>思路是利用Azure PS Get 容器下所有Container嵌套Azcopy 执行复制（参考工单2018091261924，感谢左大的思路、提示），参考：<a href="https://social.msdn.microsoft.com/Forums/sqlserver/en-US/a84c13e4-58d3-4524-9f8d-da003a4ed4aa/how-to-copy-all-containers-along-with-blobs-from-one-azure-storage-account-to-other-storage-account，原命令需要做一些修改：" target="_blank" rel="noopener">https://social.msdn.microsoft.com/Forums/sqlserver/en-US/a84c13e4-58d3-4524-9f8d-da003a4ed4aa/how-to-copy-all-containers-along-with-blobs-from-one-azure-storage-account-to-other-storage-account，原命令需要做一些修改：</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>======================================================================================</li>
+</ul>
+<ul>
+<li>==================================================</li>
+</ul>
+<ul>
+<li>#复制的源存储账号名称</li>
+</ul>
+<ul>
+<li>$SourceStorageAccountName = &quot;xxx&quot;</li>
+</ul>
+<ul>
+<li>#复制的目标存储账号名称</li>
+</ul>
+<ul>
+<li>$DestStorageAccountName = &quot;xxxx&quot;</li>
+</ul>
+<ul>
+<li>#源存储账号访问密钥</li>
+</ul>
+<ul>
+<li>$SourceStorageKey = &quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx==&quot;</li>
+</ul>
+<ul>
+<li>#目标存储账号访问密钥</li>
+</ul>
+<ul>
+<li>$DestStorageKey = &quot; xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx==&quot;</li>
+</ul>
+<ul>
+<li>#源存储账号变量环境</li>
+</ul>
+<ul>
+<li>$StorageContext = New-AzureStorageContext -StorageAccountName $SourceStorageAccountName -StorageAccountKey $SourceStorageKey -Endpoint &quot;core.chinacloudapi.cn&quot;</li>
+</ul>
+<ul>
+<li>#获取源存储账号中的容器</li>
+</ul>
+<ul>
+<li>$containers = Get-AzureStorageContainer -Context $StorageContext</li>
+</ul>
+<ul>
+<li>#循环执行每一个容器（上一步get到的）内容的复制工作</li>
+</ul>
+<ul>
+<li>foreach ($c in $containers) {</li>
+</ul>
+<ul>
+<li>&quot;Transfer container &quot; + $c.Name</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>----------------------------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>测试环境运行结果（从中国北部到中国东部两个ARM存储账号间的copy，源存储账号中包含8个容器）</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>安装好Azcopy工具，默认的安装路径是“C:\&#39;Program Files (x86)&#39;\&#39;Microsoft SDKs&#39;\Azure\AzCopy\AzCopy.exe”请根据实际环境路径修改下面命令中对应的位置</li>
+</ul>
+<ul>
+<li>安装Azure PowerShell工具以管理员身份运行，登陆订阅</li>
+</ul>
+<ul>
+<li>修改下面命令标记黄色的参数，运行</li>
+</ul>
+<ul>
+<li>Invoke-Expression $cmd</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>思路是利用Azure PS Get 容器下所有Container嵌套Azcopy 执行复制（参考工单2018091261924，感谢左大的思路、提示），参考：<a href="https://social.msdn.microsoft.com/Forums/sqlserver/en-US/a84c13e4-58d3-4524-9f8d-da003a4ed4aa/how-to-copy-all-containers-along-with-blobs-from-one-azure-storage-account-to-other-storage-account，原命令需要做一些修改：" target="_blank" rel="noopener">https://social.msdn.microsoft.com/Forums/sqlserver/en-US/a84c13e4-58d3-4524-9f8d-da003a4ed4aa/how-to-copy-all-containers-along-with-blobs-from-one-azure-storage-account-to-other-storage-account，原命令需要做一些修改：</a></li>
+</ul>
+<ul>
+<li>$cmd = &quot;C:\&#39;Program Files (x86)&#39;\&#39;Microsoft SDKs&#39;\Azure\AzCopy\AzCopy.exe /Source:&quot; + $c.CloudBlobContainer.Uri.AbsoluteUri + &quot; /Dest:<a href="https://&quot;" target="_blank" rel="noopener">https://&quot;</a> + $DestStorageAccountName + &quot;.blob.core.chinacloudapi.cn/&quot; + $c.Name + &quot; /SourceKey:&quot; + $SourceStorageKey + &quot; /DestKey:&quot; + $DestStorageKey + &quot; /S&quot;</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>思路是利用Azure PS Get 容器下所有Container嵌套Azcopy 执行复制（参考工单2018091261924，感谢左大的思路、提示），参考：<a href="https://social.msdn.microsoft.com/Forums/sqlserver/en-US/a84c13e4-58d3-4524-9f8d-da003a4ed4aa/how-to-copy-all-containers-along-with-blobs-from-one-azure-storage-account-to-other-storage-account，原命令需要做一些修改：" target="_blank" rel="noopener">https://social.msdn.microsoft.com/Forums/sqlserver/en-US/a84c13e4-58d3-4524-9f8d-da003a4ed4aa/how-to-copy-all-containers-along-with-blobs-from-one-azure-storage-account-to-other-storage-account，原命令需要做一些修改：</a></p>
+<p>======================================================================================</p>
+<p>安装好Azcopy工具，默认的安装路径是“C:\&#39;Program Files (x86)&#39;\&#39;Microsoft SDKs&#39;\Azure\AzCopy\AzCopy.exe”请根据实际环境路径修改下面命令中对应的位置</p>
+<p>安装Azure PowerShell工具以管理员身份运行，登陆订阅</p>
+<p>修改下面命令标记黄色的参数，运行</p>
+<p>==================================================</p>
+<p>#复制的源存储账号名称</p>
+<p>$SourceStorageAccountName = &quot;xxx&quot;</p>
+<p>#复制的目标存储账号名称</p>
+<p>$DestStorageAccountName = &quot;xxxx&quot;</p>
+<p>#源存储账号访问密钥</p>
+<p>$SourceStorageKey = &quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx==&quot;</p>
+<p>#目标存储账号访问密钥</p>
+<p>$DestStorageKey = &quot; xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx==&quot;</p>
+<p>#源存储账号变量环境</p>
+<p>$StorageContext = New-AzureStorageContext -StorageAccountName $SourceStorageAccountName -StorageAccountKey $SourceStorageKey -Endpoint &quot;core.chinacloudapi.cn&quot;</p>
+<p>#获取源存储账号中的容器</p>
+<p>$containers = Get-AzureStorageContainer -Context $StorageContext</p>
+<p>#循环执行每一个容器（上一步get到的）内容的复制工作</p>
+<p>foreach ($c in $containers) {</p>
+<p>&quot;Transfer container &quot; + $c.Name</p>
+<p>$cmd = &quot;C:\&#39;Program Files (x86)&#39;\&#39;Microsoft SDKs&#39;\Azure\AzCopy\AzCopy.exe /Source:&quot; + $c.CloudBlobContainer.Uri.AbsoluteUri + &quot; /Dest:<a href="https://&quot;" target="_blank" rel="noopener">https://&quot;</a> + $DestStorageAccountName + &quot;.blob.core.chinacloudapi.cn/&quot; + $c.Name + &quot; /SourceKey:&quot; + $SourceStorageKey + &quot; /DestKey:&quot; + $DestStorageKey + &quot; /S&quot;</p>
+<p>Invoke-Expression $cmd</p>
+<p>}</p>
+<p>----------------------------------------------------------------------------------</p>
+<p>测试环境运行结果（从中国北部到中国东部两个ARM存储账号间的copy，源存储账号中包含8个容器）</p></article>

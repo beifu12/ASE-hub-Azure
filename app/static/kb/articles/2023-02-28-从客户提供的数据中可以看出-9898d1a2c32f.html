@@ -1,0 +1,814 @@
+<article class="kb-article" data-title="从客户提供的数据中可以看出："><h1>从客户提供的数据中可以看出：</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VM or Others 2</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-02-28 10:26:25</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>1. 由于在7/13日收集信息之前，已经对系统TCP等Performance参数进行优化，所以我们这次没有发现明显的由于系统负载而报错的信息</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>1.    由于在7/13日收集信息之前，已经对系统TCP等Performance参数进行优化，所以我们这次没有发现明显的由于系统负载而报错的信息</li>
+</ul>
+<ul>
+<li>cap9        09:34:11        09:36:15        254065(12.3%)        232794(11.3%)        147234(7.1%)        431316(20.9%)        396264(19.2%)        485503(23.6%)        50014(2.4%)</li>
+</ul>
+<ul>
+<li>小结：    从现象看起来是由于拥塞或者清洗导致</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1.    从一天的流量变化图：最高200Mbps左右，并不会对平台或者VM产生瓶颈</li>
+</ul>
+<ul>
+<li>3.    从TCP SYN请求数：目前来看是最大的Performance瓶颈</li>
+</ul>
+<ul>
+<li>2.    目前DDos策略限制为50Kbps，而客户触发DDos的当前值为98Kbps</li>
+</ul>
+<ul>
+<li>通过增加后端服务器来分流TCP SYN请求数量，根据目前信息，可能需要再增加2台至3台</li>
+</ul>
+<ul>
+<li>谢谢</li>
+</ul>
+<ul>
+<li>Best Regards,</li>
+</ul>
+<ul>
+<li>Xiaojing Fan</li>
+</ul>
+<ul>
+<li>From: Claire Dai</li>
+</ul>
+<ul>
+<li>Sent: Thursday, August 3, 2017 3:16 PM</li>
+</ul>
+<ul>
+<li>To: Xiaojing Fan &lt;xiaf@microsoft.com&gt;; Haoming Li &lt;Haoming.Li@microsoft.com&gt;; Bruce Pan &lt;chpa@microsoft.com&gt;; MK Wang &lt;mkwang@microsoft.com&gt;</li>
+</ul>
+<ul>
+<li>Cc: net &lt;net@oe.21vianet.com&gt;; Li Zhenshan &lt;li.zhenshan@oe.21vianet.com&gt;</li>
+</ul>
+<ul>
+<li>Subject: RE: RE: <strong>RE: </strong>RE: <strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</li>
+</ul>
+<ul>
+<li>Hi Xiaojing</li>
+</ul>
+<ul>
+<li>同花顺的数据在附件。他们系统是两台虚机，收到用户的HTTP request后回答空的response。 后台会有flume从这两台虚机收集日志。</li>
+</ul>
+<ul>
+<li>Thanks</li>
+</ul>
+<ul>
+<li>Claire</li>
+</ul>
+<ul>
+<li>From: Xiaojing Fan</li>
+</ul>
+<ul>
+<li>Sent: Thursday, August 3, 2017 11:20 AM</li>
+</ul>
+<ul>
+<li>To: Haoming Li &lt;Haoming.Li@microsoft.com&gt;; Bruce Pan &lt;chpa@microsoft.com&gt;; Claire Dai &lt;Chengrong.Dai@microsoft.com&gt;; MK Wang &lt;mkwang@microsoft.com&gt;</li>
+</ul>
+<ul>
+<li>Hi 各位,</li>
+</ul>
+<ul>
+<li>==== Remove Customer for internal discussion =====</li>
+</ul>
+<ul>
+<li>很感谢Claire第一时间将客户的反馈告知我们，根据和Claire的沟通，有如下更新</li>
+</ul>
+<ul>
+<li>1.    客户目前很难对当前架构作出更改</li>
+</ul>
+<ul>
+<li>2.    客户是通过DNS解析的轮询来进行流量分流，当前后端为2台AWS的EC2，测试阶段，他们会将其中一个A记录切换到Azure</li>
+</ul>
+<ul>
+<li>@Claire Dai，根据电话沟通，CSS会尝试基于Azure的环境给出方案来满足客户当前的应用场景，之后会和Bruce以及MK进行一些讨论。</li>
+</ul>
+<ul>
+<li>目前希望从客户了解的信息为：</li>
+</ul>
+<ul>
+<li>1.    前端域名：用于DNS轮询解析以及会产生大量TCP SYN的域名</li>
+</ul>
+<ul>
+<li>2.    两台EC2一天的流量图：In/Out</li>
+</ul>
+<ul>
+<li>3.    TCP SYN的请求数统计</li>
+</ul>
+<ul>
+<li>4.    TCP连接数统计</li>
+</ul>
+<ul>
+<li>From: Haoming Li</li>
+</ul>
+<ul>
+<li>Sent: Tuesday, July 25, 2017 11:30 AM</li>
+</ul>
+<ul>
+<li>To: Xiaojing Fan &lt;xiaf@microsoft.com&gt;; libenjun@myhexin.com; Bruce Pan &lt;chpa@microsoft.com&gt;; Li Zhenshan &lt;li.zhenshan@oe.21vianet.com&gt;; Claire Dai &lt;Chengrong.Dai@microsoft.com&gt;</li>
+</ul>
+<ul>
+<li>Cc: net &lt;net@oe.21vianet.com&gt;; zhuangweihong &lt;zhuangweihong@myhexin.com&gt;; 蔡宏坚 &lt;hjcai@tuling.com.cn&gt;; Eric Shen &lt;yushen@microsoft.com&gt;; youxiang@myhexin.com; guanpeng &lt;guanpeng@myhexin.com&gt;; 吴晓 &lt;wuxiao@myhexin.com&gt;; MK Wang &lt;mkwang@microsoft.com&gt;; Stan Peng &lt;junpen@microsoft.com&gt;; Jian Liu &lt;jial@microsoft.com&gt;; Heng Wei &lt;hengwei@microsoft.com&gt;</li>
+</ul>
+<ul>
+<li>明白了，谢谢，主要是客户问了几次，我添乱了，不好意思</li>
+</ul>
+<ul>
+<li>Regards,</li>
+</ul>
+<ul>
+<li>Stephen Li</li>
+</ul>
+<ul>
+<li>Sent from mobile, sorry for typo</li>
+</ul>
+<ul>
+<li>在 2017年7月25日 上午11:22，Xiaojing Fan &lt;xiaf@microsoft.com&gt;写道：</li>
+</ul>
+<ul>
+<li>Hi haoming,</li>
+</ul>
+<ul>
+<li>不好意思，考虑到您最近在休假，我刚刚和Claire更新了最近的关于该case的情况，Claire会和您进行沟通和讨论，如果有需要随时可以沟通。</li>
+</ul>
+<ul>
+<li>Sent: Tuesday, July 25, 2017 11:17 AM</li>
+</ul>
+<ul>
+<li>To: Xiaojing Fan &lt;xiaf@microsoft.com&gt;; libenjun@myhexin.com; Bruce Pan &lt;chpa@microsoft.com&gt;; Li Zhenshan &lt;li.zhenshan@oe.21vianet.com&gt;; Haoming Li &lt;Haoming.Li@microsoft.com&gt;; Claire Dai &lt;Chengrong.Dai@microsoft.com&gt;</li>
+</ul>
+<ul>
+<li>Xiaojing,本均，</li>
+</ul>
+<ul>
+<li>没看明白，下一步要做什么?和销售沟通?</li>
+</ul>
+<ul>
+<li>在 2017年7月25日 上午11:09，Xiaojing Fan &lt;xiaf@microsoft.com&gt;写道：</li>
+</ul>
+<ul>
+<li>Hi 李工,</li>
+</ul>
+<ul>
+<li>很高兴昨天与您进行电话沟通，目前情况如下：</li>
+</ul>
+<ul>
+<li>1.    贵公司可能很难对目前架构进行调整及进行分流</li>
+</ul>
+<ul>
+<li>2.    我们会将目前的情况跟销售团队进行交流</li>
+</ul>
+<ul>
+<li>如果有任何更新会及时通知你</li>
+</ul>
+<ul>
+<li>From: Xiaojing Fan [mailto:xiaf@microsoft.com]</li>
+</ul>
+<ul>
+<li>Sent: Wednesday, July 19, 2017 5:56 PM</li>
+</ul>
+<ul>
+<li>To: libenjun@myhexin.com; Bruce Pan &lt;chpa@microsoft.com&gt;; Li Zhenshan &lt;li.zhenshan@oe.21vianet.com&gt;; Haoming Li &lt;Haoming.Li@microsoft.com&gt;; Claire Dai &lt;Chengrong.Dai@microsoft.com&gt;</li>
+</ul>
+<ul>
+<li>很高兴与您电话沟通，以下是内容小结</li>
+</ul>
+<ul>
+<li>1.    介于您已经了解了该case的问题原因，我们会根据您的信息反馈给后台，让后台评估DDos的策略修改的可行性</li>
+</ul>
+<ul>
+<li>2.    同时您可以与应用部门讨论，根据目前的情况，从架构上是否可以进行分流（北京和上海）</li>
+</ul>
+<ul>
+<li>如果有任何更新，随时会与您进行沟通</li>
+</ul>
+<ul>
+<li>From: libenjun@myhexin.com [mailto:libenjun@myhexin.com]</li>
+</ul>
+<ul>
+<li>Sent: Wednesday, July 19, 2017 11:49 AM</li>
+</ul>
+<ul>
+<li>To: Xiaojing Fan &lt;xiaf@microsoft.com&gt;; Bruce Pan &lt;chpa@microsoft.com&gt;; Li Zhenshan &lt;li.zhenshan@oe.21vianet.com&gt;; Haoming Li &lt;Haoming.Li@microsoft.com&gt;; Claire Dai &lt;Chengrong.Dai@microsoft.com&gt;</li>
+</ul>
+<ul>
+<li>Subject: Re: RE: <strong>RE: </strong>RE: <strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</li>
+</ul>
+<ul>
+<li>您好，</li>
+</ul>
+<ul>
+<li>1.    类似该场景的VIP地址有多少，分别为哪些地址？</li>
+</ul>
+<ul>
+<li>2.    访问这些VIP的客户端主要来自哪些ISP运营商？</li>
+</ul>
+<ul>
+<li>访问这些VIP的客户端电信，联通，移动多有运营商的都会有。</li>
+</ul>
+<ul>
+<li>3.    这些VIP地址是否经常会有变动？</li>
+</ul>
+<ul>
+<li>微软云上的虚拟机VIP地址是绑定的公网地址，不会有变动的。</li>
+</ul>
+<ul>
+<li>________________________________________</li>
+</ul>
+<ul>
+<li>运维部   李均</li>
+</ul>
+<ul>
+<li>浙江核新同花顺网络信息股份有限公司</li>
+</ul>
+<ul>
+<li>手机：15168397191</li>
+</ul>
+<ul>
+<li>地址：浙江省杭州市余杭区五常街道同顺街18号同花顺大楼</li>
+</ul>
+<ul>
+<li>发件人： Xiaojing Fan</li>
+</ul>
+<ul>
+<li>发送时间： 2017-07-18 15:18</li>
+</ul>
+<ul>
+<li>收件人： libenjun@myhexin.com; Bruce Pan; Li Zhenshan; Haoming Li; Claire Dai</li>
+</ul>
+<ul>
+<li>抄送： net; zhuangweihong; 蔡宏坚; Eric Shen; youxiang; guanpeng; wuxiao; MK Wang; Stan Peng; Jian Liu; Heng Wei</li>
+</ul>
+<ul>
+<li>主题： RE: <strong>RE: </strong>RE: <strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</li>
+</ul>
+<ul>
+<li>您好 李工,</li>
+</ul>
+<ul>
+<li>很抱歉由于日志较多，同时我们Azure团队都非常重视你们的问题，所以花了几天时间来讨论</li>
+</ul>
+<ul>
+<li>File        Start        End        HandShake-1        HandShake-2        HandShake-3        PUSH        FIN        ACK        RESET</li>
+</ul>
+<ul>
+<li>cap2        09:28:49        09:29:17        239098(9.9%)        231731(9.6%)        232418(9.6%)        463406(19.1%)        443763(18.3%)        754124(31.2%)        16772(0.7%)</li>
+</ul>
+<ul>
+<li>cap7        09:31:49        09:32:41        313570(12.1%)        261361(10.1%)        334179(12.9%)        517175(20.0%)        466399(18.0%)        617003(23.8%)        23095(0.9%)</li>
+</ul>
+<ul>
+<li>cap8        09:32:41        09:34:11        330081(13.2%)        285425(11.5%)        250596(10.1%)        536276(21.5%)        444357(17.8%)        527342(21.2%)        52238(2.1%)</li>
+</ul>
+<ul>
+<li>cap1        09:37:04        09:37:50        120505(10.3%)        103647(10.3%)        122359(10.4%)        225075(19.2%)        222600(19.0%)        342446(29.2%)        8703(0.7%)</li>
+</ul>
+<ul>
+<li>（1）在09:32:41至09:36:15之间，TCP的三次握手成功率下降，以及RESET包增多</li>
+</ul>
+<ul>
+<li>（2）而在其他时间段，TCP Flow的分布属于正常</li>
+</ul>
+<ul>
+<li>补充：我们对6/29/2017也进行了调查，发现并没有触发DDos的报警，当时可能是系统层面的瓶颈造成</li>
+</ul>
+<ul>
+<li>由于贵公司业务上的特殊性，也就是每工作日早上9点30分至10点30分左右都会有TCP SYN高并发的场景需求，因此我们平台正在讨论为贵公司从策略上进行定制化的可行性</li>
+</ul>
+<ul>
+<li>以下内容可能需要贵公司进行描述和说明</li>
+</ul>
+<ul>
+<li>根据提供的信息，我们会反馈给后线团队来评估定制化的可行性</li>
+</ul>
+<ul>
+<li>如果您有任何问题或者需要开会讨论，请及时联系我们</li>
+</ul>
+<ul>
+<li>Sent: Tuesday, July 18, 2017 1:51 PM</li>
+</ul>
+<ul>
+<li>To: Bruce Pan &lt;chpa@microsoft.com&gt;; Xiaojing Fan &lt;xiaf@microsoft.com&gt;; Li Zhenshan &lt;li.zhenshan@oe.21vianet.com&gt;; Haoming Li &lt;Haoming.Li@microsoft.com&gt;; Claire Dai &lt;Chengrong.Dai@microsoft.com&gt;; Stan Peng &lt;junpen@microsoft.com&gt;; Jian Liu &lt;jial@microsoft.com&gt;; Heng Wei &lt;hengwei@microsoft.com&gt;</li>
+</ul>
+<ul>
+<li>Cc: net &lt;net@oe.21vianet.com&gt;; zhuangweihong &lt;zhuangweihong@myhexin.com&gt;; 蔡宏坚 &lt;hjcai@tuling.com.cn&gt;; Eric Shen &lt;yushen@microsoft.com&gt;; youxiang &lt;youxiang@myhexin.com&gt;; guanpeng &lt;guanpeng@myhexin.com&gt;; wuxiao &lt;wuxiao@myhexin.com&gt;</li>
+</ul>
+<ul>
+<li>Subject: Re: <strong>RE: </strong>RE: <strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</li>
+</ul>
+<ul>
+<li>你好，</li>
+</ul>
+<ul>
+<li>libenjun@myhexin.com</li>
+</ul>
+<ul>
+<li>发件人： Bruce Pan</li>
+</ul>
+<ul>
+<li>发送时间： 2017-07-12 14:28</li>
+</ul>
+<ul>
+<li>收件人： libenjun@myhexin.com; Xiaojing Fan; Li Zhenshan; Haoming Li; Claire Dai; Stan Peng; Jian Liu; Heng Wei</li>
+</ul>
+<ul>
+<li>抄送： net; zhuangweihong; 蔡宏坚; Eric Shen; youxiang@myhexin.com; guanpeng; 吴晓</li>
+</ul>
+<ul>
+<li>主题： ***<strong>SPAM</strong>*<strong>RE: </strong>RE: <strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</li>
+</ul>
+<ul>
+<li>李工，</li>
+</ul>
+<ul>
+<li>谢谢！</li>
+</ul>
+<ul>
+<li>Best regards,</li>
+</ul>
+<ul>
+<li>Bruce Pan</li>
+</ul>
+<ul>
+<li>Support Escalation Engineer, VMA POD</li>
+</ul>
+<ul>
+<li>Mooncake (China Azure) Support Team,</li>
+</ul>
+<ul>
+<li>Customer Service &amp; Support (CSS), GCR region</li>
+</ul>
+<ul>
+<li>Office:  +86-21-61886496</li>
+</ul>
+<ul>
+<li>Email: chpa@Microsoft.com</li>
+</ul>
+<ul>
+<li>Sent: Wednesday, July 12, 2017 2:17 PM</li>
+</ul>
+<ul>
+<li>Cc: net &lt;net@oe.21vianet.com&gt;; zhuangweihong &lt;zhuangweihong@myhexin.com&gt;; 蔡宏坚 &lt;hjcai@tuling.com.cn&gt;; Eric Shen &lt;yushen@microsoft.com&gt;; youxiang@myhexin.com; guanpeng &lt;guanpeng@myhexin.com&gt;; 吴晓 &lt;wuxiao@myhexin.com&gt;</li>
+</ul>
+<ul>
+<li>Subject: Re: <strong>RE: </strong>RE: <strong>RE: RE: </strong>RE: RE: <strong>答复: </strong>答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</li>
+</ul>
+<ul>
+<li>你好！</li>
+</ul>
+<ul>
+<li>同时你们这边也看下，还需要哪些数据，明天测试的时候一次都把需要数的数据日志提取出来，每一次测试都会影响我们线上的用户，后面没完没了的测试我们也没办法继续配合！</li>
+</ul>
+<ul>
+<li>发送时间： 2017-07-12 11:33</li>
+</ul>
+<ul>
+<li>主题： ***<strong>SPAM</strong>*<strong>RE: </strong>RE: <strong>RE: RE: </strong>RE: RE: <strong>答复: </strong>答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</li>
+</ul>
+<ul>
+<li>您好！</li>
+</ul>
+<ul>
+<li>我是参考您之前提供的截图，根据主机名对比来看的，如果您Zabbix里配置的跟实际主机名不一致，那请忽视我此前对此的疑问。</li>
+</ul>
+<ul>
+<li>1.        安排一个远程会议的时间，最好在9点左右就能开始（行情开始前就准备好前期工作），如果该问题可以长时间持续发生，那么可以根据您这边的时间来灵活安排。</li>
+</ul>
+<ul>
+<li>b.        等到问题复现时，多等待30秒。</li>
+</ul>
+<ul>
+<li>a.        # while true; do date &gt;&gt; /var/tmp/tcp_connections; echo &quot;There are &quot;<code>netstat -ant |grep -i ESTABLISHED |wc -l</code>&quot; tcp connections established&quot;  &gt;&gt; /var/tmp/tcp_connections; sleep 1; done &amp;</li>
+</ul>
+<ul>
+<li>b.        在客户端通过paping测试ssh连通性： # paping 42.159.238.248 -p 22</li>
+</ul>
+<ul>
+<li>Sent: Wednesday, July 12, 2017 9:15 AM</li>
+</ul>
+<ul>
+<li>Subject: Re: <strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</li>
+</ul>
+<ul>
+<li>我提取日志和截图是同一台服务器的aws_stat_202_17，不知道你从哪里看不是同一台？既然是对比我肯定给你的是一台正常没有问题的作参考。</li>
+</ul>
+<ul>
+<li>发送时间： 2017-07-10 10:36</li>
+</ul>
+<ul>
+<li>主题： ***<strong>SPAM</strong>*<strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</li>
+</ul>
+<ul>
+<li>•        您这边上传的AWS的服务器主机名为aws_stat_202_17，而不是您此前在邮件截图中提及的aws_stat_54，我想了解下服务器aws_stat_202_17是否在Zabbix监控中显示正常？</li>
+</ul>
+<ul>
+<li>•        根据您反馈的信息，服务器wry_stat_238_248的kernel参数在之后有调整，鉴于此，以下的分析总结都是基于日志分析，并不代表出现问题时的实际状态，还请您理解。</li>
+</ul>
+<ul>
+<li>•        对比分析两台服务器的kernel参数，关于Tcp相关的参数基本一致。</li>
+</ul>
+<ul>
+<li>•        对比分析两台服务器的性能指标，由于wry_stat_238_248是7/6日当天抓的，所以只能参考7/5日的性能数据。</li>
+</ul>
+<ul>
+<li>o        tcp-tw：</li>
+</ul>
+<ul>
+<li>§        AWS 达到上限500000</li>
+</ul>
+<ul>
+<li>§        Azure超过500000</li>
+</ul>
+<ul>
+<li>o        rxpck/s：</li>
+</ul>
+<ul>
+<li>§        AWS超过130000</li>
+</ul>
+<ul>
+<li>§        Azure低于40000</li>
+</ul>
+<ul>
+<li>o        Disk IO：</li>
+</ul>
+<ul>
+<li>§        AWS有大量读写</li>
+</ul>
+<ul>
+<li>§        Azure只有大量的写，没有大量的读</li>
+</ul>
+<ul>
+<li>o        CPU：</li>
+</ul>
+<ul>
+<li>§        AWS轻量</li>
+</ul>
+<ul>
+<li>§        Azure轻量</li>
+</ul>
+<ul>
+<li>o        Memory：</li>
+</ul>
+<ul>
+<li>§        AWS 99%</li>
+</ul>
+<ul>
+<li>§        Azure 75%</li>
+</ul>
+<ul>
+<li>o        综述：通过上述性能的分析，可以推断出，两台服务器的实际应用有明显的差异。Azure的网络包远远少于AWS的网络包，但是总的连接数却要超过AWS。</li>
+</ul>
+<ul>
+<li>简而言之：</li>
+</ul>
+<ul>
+<li>2.        关于其他业务层面的差异，需要深入了解业务逻辑在进行分析。</li>
+</ul>
+<ul>
+<li>由于内容较多，可以安排一个电话会议，进行交流。谢谢！</li>
+</ul>
+<ul>
+<li>Sent: Friday, July 7, 2017 2:32 PM</li>
+</ul>
+<ul>
+<li>Subject: Re: <strong>RE: RE: </strong>RE: RE: <strong>答复: </strong>答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</li>
+</ul>
+<ul>
+<li>两台的tcp_max_tw_buckets这个参数配置都差不多，没必要再去测试，目前这台机器已经下线，没有找到问题之前，我们不可能拿用户来做测试！</li>
+</ul>
+<ul>
+<li>发送时间： 2017-07-07 14:26</li>
+</ul>
+<ul>
+<li>主题： ***<strong>SPAM</strong>*<strong>RE: RE: </strong>RE: RE: <strong>答复: </strong>答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</li>
+</ul>
+<ul>
+<li>感谢您的协助和反馈，该虚拟机在修改了tcp_max_tw_buckets之后，此前的问题还能重现么？</li>
+</ul>
+<ul>
+<li>Sent: Friday, July 7, 2017 1:47 PM</li>
+</ul>
+<ul>
+<li>Subject: Re: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</li>
+</ul>
+<ul>
+<li>附件为提取的aws服务器sos日志。</li>
+</ul>
+<ul>
+<li>aws服务器配置为 16核32G内存，微软云为16核56G内存。</li>
+</ul>
+<ul>
+<li>发送时间： 2017-07-07 11:25</li>
+</ul>
+<ul>
+<li>主题： RE: Re: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2.    从TCP连接数统计：7000左右同样可以满足当前的VM Size（加上我们之前在VM的排查）</li>
+</ul>
+<ul>
+<li>目前排查信息：</li>
+</ul>
+<ul>
+<li>这个没弄明白你说的这个vip是指的什么，是不是微软云上此业务的虚拟机服务器的公网ip地址：如果是这个的话，目前只有一台42.159.238.248，问题排查好了后续还会再上两台相同业务的虚拟机。</li>
+</ul>
+<ul>
+<li>以下是目前排查的结果：</li>
+</ul>
+<ul>
+<li>2.    统计了其中一些抓包文件中的TCP Flow的分布，以下是TCP Flow中的三次握手，PUSH，FIN，ACK，RESET包 （由于统计中的数据包很多并非是完整数据包，因此统计可能存在误差）</li>
+</ul>
+<ul>
+<li>（3）通过观察cap7的I/O图（黑色是TCP SYN，黄色是TCP SYN/ACK ），可以发现09:33:20左右TCP分布有一个下降趋势，之后一直处于起伏状态</li>
+</ul>
+<ul>
+<li>3.    根据以上分析我们重新对Azure的防护设备进行分析排查，发现在7/13/2017以及7/6/2017的早上9点30分左右，都相继触发了多次TCP SYN Flood的报警，因此平台对该行为流量进行了清洗</li>
+</ul>
+<ul>
+<li>后续排查</li>
+</ul>
+<ul>
+<li>这个问题上次抓包以后，现在排查的进度怎么了，有没有什么进展？</li>
+</ul>
+<ul>
+<li>感谢您的大力支持，为了确保数据收集的准确，我发一个会议邀请，来一起抓包和获取其他数据。</li>
+</ul>
+<ul>
+<li>那就明天早上9点钟我们上线，到时候再抓包提供给你们，如果还是解决不了我们就不用了。这个业务我们用一个普通的机器可以实现，而在微软云上，需要用这么久的时间来调试，还是解决不了这个问题？</li>
+</ul>
+<ul>
+<li>我们自己也看了，虽然aws这台日志里面也有报错，但是这台在盘中相同大小的流量和相同请求量的情况下没有出现问题。如果要抓包，也只能你们那边抓取，在出现问题的时候我们这里是没法访问这台服务器的。</li>
+</ul>
+<ul>
+<li>非常感谢您的反馈，根据您提供的日志，我进行了分析和排查。以下是一些总结，供参考。</li>
+</ul>
+<ul>
+<li>o        服务器wry_stat_238_248，通过/var/log/secure日志，可以看到sshd服务可以正常接收到来自客户端210.51.244.184的请求，不过该请求并没有实际输入账号密码进行登录。由此可以推断出，该时刻网络进站访问应该正常，是否有出站异常，由于没有网络包来进行分析，无法判断。</li>
+</ul>
+<ul>
+<li>o        服务器wry_stat_238_248，通过/var/log/message日志，可以看到有大量的TCP: time wait bucket table overflow。由此推断，在出现overflow的时间点，一些正常TCP session会受此影响而中断。包括SSH服务，Zabbix服务亦或是其他正常的业务访问。但是该现象不是一个持续性的现象（有时一分钟报一次，有时候一分钟报十几次）。由于缺乏Zabbix日志以及网络包进行分析，无法确定Zabbix丢失数据是否受此影响。</li>
+</ul>
+<ul>
+<li>•        关于服务器aws_stat_202_17，我们在/var/log/message日志中，也能看到大量的TCP: time wait bucket table overflow，同时也可以看到大量的out of memory的报错。在这种情况下，该服务器的运行性能也是很糟糕的，同时正常的TCP session也会受到影响而中断。</li>
+</ul>
+<ul>
+<li>1.        故障时间点Jul  6 09:28:00 至 Jul  6 09:46:00之间，Azure虚拟机的网络接收没有问题，SSH服务运行正常，Zabbix没有数据需要从Zabbix进行排查或者重现问题通过抓取网络包进行分析。</li>
+</ul>
+<ul>
+<li>tcp_max_tw_buckets  昨天出问题的时候设置的  655350，这个是昨天下午修改的，同时我查看aws服务器设置的值为 500000,</li>
+</ul>
+<ul>
+<li>感谢您的协助，根据您提供的sosreport，进行了分析和排查，总结如下：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>3.        在此前我看过的Azure和AWS服务器上，各自开启tcpdump抓包, 具体命令参考如下：</li>
+</ul>
+<ul>
+<li>a.        执行命令启动抓包：# /usr/sbin/tcpdump -i eth0 host -C 500 -W 10 -w /var/tmp/tcpdump.cap &amp;                 è如果流量特别大，可以考虑增加分包的数量，以覆盖更长的时间。</li>
+</ul>
+<ul>
+<li>c.        执行命令关闭抓包：# ps -ef |grep -i tcpdump</li>
+</ul>
+<ul>
+<li>d.        执行命令关闭抓包：# kill -9 10692</li>
+</ul>
+<ul>
+<li>4.        执行下列命令，获取实时tcp连接数以及网络连通性。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>1.    关于stat.10jqka.com.cn域名的公网DNS解析分析：通过第三方工具可以初步看出解析是随机轮询的，也就是说，是可以通过多个A记录来分摊TCP请求流量的，但是不一定能完全模拟实际应用场景</li>
+</ul>
+<ul>
+<li>3.    平台说明了DDos策略对单个VIP进行限制，也就是说可以用多个VIP分流来尝试规避策略限制</li>
+</ul>
+<ul>
+<li>建议：</li>
+</ul>
+<ul>
+<li>同时也非常感谢您的大力支持，既然您同意我们进行下一步测试，那么建议如下：</li>
+</ul>
+<ul>
+<li>2.        如果您这边丢失了SSH连接，我们可以通过后台登录虚拟机的console进行下列操作。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="http://www.wangsutong.com/wstCeba/dns/dns-test!result.action?id=15801a28ad2548538f3258601f4e8b58" target="_blank" rel="noopener">http://www.wangsutong.com/wstCeba/dns/dns-test!result.action?id=15801a28ad2548538f3258601f4e8b58</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>1.    从一天的流量变化图：最高200Mbps左右，并不会对平台或者VM产生瓶颈</p>
+<p>2.    从TCP连接数统计：7000左右同样可以满足当前的VM Size（加上我们之前在VM的排查）</p>
+<p>3.    从TCP SYN请求数：目前来看是最大的Performance瓶颈</p>
+<p>目前排查信息：</p>
+<p>1.    关于stat.10jqka.com.cn域名的公网DNS解析分析：通过第三方工具可以初步看出解析是随机轮询的，也就是说，是可以通过多个A记录来分摊TCP请求流量的，但是不一定能完全模拟实际应用场景</p>
+<p><a href="http://www.wangsutong.com/wstCeba/dns/dns-test!result.action?id=15801a28ad2548538f3258601f4e8b58" target="_blank" rel="noopener">http://www.wangsutong.com/wstCeba/dns/dns-test!result.action?id=15801a28ad2548538f3258601f4e8b58</a></p>
+<p>2.    目前DDos策略限制为50Kbps，而客户触发DDos的当前值为98Kbps</p>
+<p>3.    平台说明了DDos策略对单个VIP进行限制，也就是说可以用多个VIP分流来尝试规避策略限制</p>
+<p>建议：</p>
+<p>通过增加后端服务器来分流TCP SYN请求数量，根据目前信息，可能需要再增加2台至3台</p>
+<p>谢谢</p>
+<p>Best Regards,</p>
+<p>Xiaojing Fan</p>
+<p>From: Claire Dai</p>
+<p>Sent: Thursday, August 3, 2017 3:16 PM</p>
+<p>To: Xiaojing Fan &lt;xiaf@microsoft.com&gt;; Haoming Li &lt;Haoming.Li@microsoft.com&gt;; Bruce Pan &lt;chpa@microsoft.com&gt;; MK Wang &lt;mkwang@microsoft.com&gt;</p>
+<p>Cc: net &lt;net@oe.21vianet.com&gt;; Li Zhenshan &lt;li.zhenshan@oe.21vianet.com&gt;</p>
+<p>Subject: RE: RE: <strong>RE: </strong>RE: <strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</p>
+<p>Hi Xiaojing</p>
+<p>同花顺的数据在附件。他们系统是两台虚机，收到用户的HTTP request后回答空的response。 后台会有flume从这两台虚机收集日志。</p>
+<p>Thanks</p>
+<p>Claire</p>
+<p>From: Xiaojing Fan</p>
+<p>Sent: Thursday, August 3, 2017 11:20 AM</p>
+<p>To: Haoming Li &lt;Haoming.Li@microsoft.com&gt;; Bruce Pan &lt;chpa@microsoft.com&gt;; Claire Dai &lt;Chengrong.Dai@microsoft.com&gt;; MK Wang &lt;mkwang@microsoft.com&gt;</p>
+<p>Hi 各位,</p>
+<p>==== Remove Customer for internal discussion =====</p>
+<p>很感谢Claire第一时间将客户的反馈告知我们，根据和Claire的沟通，有如下更新</p>
+<p>1.    客户目前很难对当前架构作出更改</p>
+<p>2.    客户是通过DNS解析的轮询来进行流量分流，当前后端为2台AWS的EC2，测试阶段，他们会将其中一个A记录切换到Azure</p>
+<p>@Claire Dai，根据电话沟通，CSS会尝试基于Azure的环境给出方案来满足客户当前的应用场景，之后会和Bruce以及MK进行一些讨论。</p>
+<p>目前希望从客户了解的信息为：</p>
+<p>1.    前端域名：用于DNS轮询解析以及会产生大量TCP SYN的域名</p>
+<p>2.    两台EC2一天的流量图：In/Out</p>
+<p>3.    TCP SYN的请求数统计</p>
+<p>4.    TCP连接数统计</p>
+<p>From: Haoming Li</p>
+<p>Sent: Tuesday, July 25, 2017 11:30 AM</p>
+<p>To: Xiaojing Fan &lt;xiaf@microsoft.com&gt;; libenjun@myhexin.com; Bruce Pan &lt;chpa@microsoft.com&gt;; Li Zhenshan &lt;li.zhenshan@oe.21vianet.com&gt;; Claire Dai &lt;Chengrong.Dai@microsoft.com&gt;</p>
+<p>Cc: net &lt;net@oe.21vianet.com&gt;; zhuangweihong &lt;zhuangweihong@myhexin.com&gt;; 蔡宏坚 &lt;hjcai@tuling.com.cn&gt;; Eric Shen &lt;yushen@microsoft.com&gt;; youxiang@myhexin.com; guanpeng &lt;guanpeng@myhexin.com&gt;; 吴晓 &lt;wuxiao@myhexin.com&gt;; MK Wang &lt;mkwang@microsoft.com&gt;; Stan Peng &lt;junpen@microsoft.com&gt;; Jian Liu &lt;jial@microsoft.com&gt;; Heng Wei &lt;hengwei@microsoft.com&gt;</p>
+<p>明白了，谢谢，主要是客户问了几次，我添乱了，不好意思</p>
+<p>Regards,</p>
+<p>Stephen Li</p>
+<p>Sent from mobile, sorry for typo</p>
+<p>在 2017年7月25日 上午11:22，Xiaojing Fan &lt;xiaf@microsoft.com&gt;写道：</p>
+<p>Hi haoming,</p>
+<p>不好意思，考虑到您最近在休假，我刚刚和Claire更新了最近的关于该case的情况，Claire会和您进行沟通和讨论，如果有需要随时可以沟通。</p>
+<p>Sent: Tuesday, July 25, 2017 11:17 AM</p>
+<p>To: Xiaojing Fan &lt;xiaf@microsoft.com&gt;; libenjun@myhexin.com; Bruce Pan &lt;chpa@microsoft.com&gt;; Li Zhenshan &lt;li.zhenshan@oe.21vianet.com&gt;; Haoming Li &lt;Haoming.Li@microsoft.com&gt;; Claire Dai &lt;Chengrong.Dai@microsoft.com&gt;</p>
+<p>Xiaojing,本均，</p>
+<p>没看明白，下一步要做什么?和销售沟通?</p>
+<p>在 2017年7月25日 上午11:09，Xiaojing Fan &lt;xiaf@microsoft.com&gt;写道：</p>
+<p>Hi 李工,</p>
+<p>很高兴昨天与您进行电话沟通，目前情况如下：</p>
+<p>1.    贵公司可能很难对目前架构进行调整及进行分流</p>
+<p>2.    我们会将目前的情况跟销售团队进行交流</p>
+<p>如果有任何更新会及时通知你</p>
+<p>From: Xiaojing Fan [mailto:xiaf@microsoft.com]</p>
+<p>Sent: Wednesday, July 19, 2017 5:56 PM</p>
+<p>To: libenjun@myhexin.com; Bruce Pan &lt;chpa@microsoft.com&gt;; Li Zhenshan &lt;li.zhenshan@oe.21vianet.com&gt;; Haoming Li &lt;Haoming.Li@microsoft.com&gt;; Claire Dai &lt;Chengrong.Dai@microsoft.com&gt;</p>
+<p>很高兴与您电话沟通，以下是内容小结</p>
+<p>1.    介于您已经了解了该case的问题原因，我们会根据您的信息反馈给后台，让后台评估DDos的策略修改的可行性</p>
+<p>2.    同时您可以与应用部门讨论，根据目前的情况，从架构上是否可以进行分流（北京和上海）</p>
+<p>如果有任何更新，随时会与您进行沟通</p>
+<p>From: libenjun@myhexin.com [mailto:libenjun@myhexin.com]</p>
+<p>Sent: Wednesday, July 19, 2017 11:49 AM</p>
+<p>To: Xiaojing Fan &lt;xiaf@microsoft.com&gt;; Bruce Pan &lt;chpa@microsoft.com&gt;; Li Zhenshan &lt;li.zhenshan@oe.21vianet.com&gt;; Haoming Li &lt;Haoming.Li@microsoft.com&gt;; Claire Dai &lt;Chengrong.Dai@microsoft.com&gt;</p>
+<p>Subject: Re: RE: <strong>RE: </strong>RE: <strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</p>
+<p>您好，</p>
+<p>1.    类似该场景的VIP地址有多少，分别为哪些地址？</p>
+<p>这个没弄明白你说的这个vip是指的什么，是不是微软云上此业务的虚拟机服务器的公网ip地址：如果是这个的话，目前只有一台42.159.238.248，问题排查好了后续还会再上两台相同业务的虚拟机。</p>
+<p>2.    访问这些VIP的客户端主要来自哪些ISP运营商？</p>
+<p>访问这些VIP的客户端电信，联通，移动多有运营商的都会有。</p>
+<p>3.    这些VIP地址是否经常会有变动？</p>
+<p>微软云上的虚拟机VIP地址是绑定的公网地址，不会有变动的。</p>
+<p>________________________________________</p>
+<p>运维部   李均</p>
+<p>浙江核新同花顺网络信息股份有限公司</p>
+<p>手机：15168397191</p>
+<p>地址：浙江省杭州市余杭区五常街道同顺街18号同花顺大楼</p>
+<p>发件人： Xiaojing Fan</p>
+<p>发送时间： 2017-07-18 15:18</p>
+<p>收件人： libenjun@myhexin.com; Bruce Pan; Li Zhenshan; Haoming Li; Claire Dai</p>
+<p>抄送： net; zhuangweihong; 蔡宏坚; Eric Shen; youxiang; guanpeng; wuxiao; MK Wang; Stan Peng; Jian Liu; Heng Wei</p>
+<p>主题： RE: <strong>RE: </strong>RE: <strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</p>
+<p>您好 李工,</p>
+<p>很抱歉由于日志较多，同时我们Azure团队都非常重视你们的问题，所以花了几天时间来讨论</p>
+<p>以下是目前排查的结果：</p>
+<p>1.    由于在7/13日收集信息之前，已经对系统TCP等Performance参数进行优化，所以我们这次没有发现明显的由于系统负载而报错的信息</p>
+<p>2.    统计了其中一些抓包文件中的TCP Flow的分布，以下是TCP Flow中的三次握手，PUSH，FIN，ACK，RESET包 （由于统计中的数据包很多并非是完整数据包，因此统计可能存在误差）</p>
+<p>File        Start        End        HandShake-1        HandShake-2        HandShake-3        PUSH        FIN        ACK        RESET</p>
+<p>cap2        09:28:49        09:29:17        239098(9.9%)        231731(9.6%)        232418(9.6%)        463406(19.1%)        443763(18.3%)        754124(31.2%)        16772(0.7%)</p>
+<p>cap7        09:31:49        09:32:41        313570(12.1%)        261361(10.1%)        334179(12.9%)        517175(20.0%)        466399(18.0%)        617003(23.8%)        23095(0.9%)</p>
+<p>cap8        09:32:41        09:34:11        330081(13.2%)        285425(11.5%)        250596(10.1%)        536276(21.5%)        444357(17.8%)        527342(21.2%)        52238(2.1%)</p>
+<p>cap9        09:34:11        09:36:15        254065(12.3%)        232794(11.3%)        147234(7.1%)        431316(20.9%)        396264(19.2%)        485503(23.6%)        50014(2.4%)</p>
+<p>cap1        09:37:04        09:37:50        120505(10.3%)        103647(10.3%)        122359(10.4%)        225075(19.2%)        222600(19.0%)        342446(29.2%)        8703(0.7%)</p>
+<p>（1）在09:32:41至09:36:15之间，TCP的三次握手成功率下降，以及RESET包增多</p>
+<p>（2）而在其他时间段，TCP Flow的分布属于正常</p>
+<p>（3）通过观察cap7的I/O图（黑色是TCP SYN，黄色是TCP SYN/ACK ），可以发现09:33:20左右TCP分布有一个下降趋势，之后一直处于起伏状态</p>
+<p>小结：    从现象看起来是由于拥塞或者清洗导致</p>
+<p>3.    根据以上分析我们重新对Azure的防护设备进行分析排查，发现在7/13/2017以及7/6/2017的早上9点30分左右，都相继触发了多次TCP SYN Flood的报警，因此平台对该行为流量进行了清洗</p>
+<p>补充：我们对6/29/2017也进行了调查，发现并没有触发DDos的报警，当时可能是系统层面的瓶颈造成</p>
+<p>后续排查</p>
+<p>由于贵公司业务上的特殊性，也就是每工作日早上9点30分至10点30分左右都会有TCP SYN高并发的场景需求，因此我们平台正在讨论为贵公司从策略上进行定制化的可行性</p>
+<p>以下内容可能需要贵公司进行描述和说明</p>
+<p>根据提供的信息，我们会反馈给后线团队来评估定制化的可行性</p>
+<p>如果您有任何问题或者需要开会讨论，请及时联系我们</p>
+<p>Sent: Tuesday, July 18, 2017 1:51 PM</p>
+<p>To: Bruce Pan &lt;chpa@microsoft.com&gt;; Xiaojing Fan &lt;xiaf@microsoft.com&gt;; Li Zhenshan &lt;li.zhenshan@oe.21vianet.com&gt;; Haoming Li &lt;Haoming.Li@microsoft.com&gt;; Claire Dai &lt;Chengrong.Dai@microsoft.com&gt;; Stan Peng &lt;junpen@microsoft.com&gt;; Jian Liu &lt;jial@microsoft.com&gt;; Heng Wei &lt;hengwei@microsoft.com&gt;</p>
+<p>Cc: net &lt;net@oe.21vianet.com&gt;; zhuangweihong &lt;zhuangweihong@myhexin.com&gt;; 蔡宏坚 &lt;hjcai@tuling.com.cn&gt;; Eric Shen &lt;yushen@microsoft.com&gt;; youxiang &lt;youxiang@myhexin.com&gt;; guanpeng &lt;guanpeng@myhexin.com&gt;; wuxiao &lt;wuxiao@myhexin.com&gt;</p>
+<p>Subject: Re: <strong>RE: </strong>RE: <strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</p>
+<p>你好，</p>
+<p>这个问题上次抓包以后，现在排查的进度怎么了，有没有什么进展？</p>
+<p>libenjun@myhexin.com</p>
+<p>发件人： Bruce Pan</p>
+<p>发送时间： 2017-07-12 14:28</p>
+<p>收件人： libenjun@myhexin.com; Xiaojing Fan; Li Zhenshan; Haoming Li; Claire Dai; Stan Peng; Jian Liu; Heng Wei</p>
+<p>抄送： net; zhuangweihong; 蔡宏坚; Eric Shen; youxiang@myhexin.com; guanpeng; 吴晓</p>
+<p>主题： ***<strong>SPAM</strong>*<strong>RE: </strong>RE: <strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</p>
+<p>李工，</p>
+<p>感谢您的大力支持，为了确保数据收集的准确，我发一个会议邀请，来一起抓包和获取其他数据。</p>
+<p>谢谢！</p>
+<p>Best regards,</p>
+<p>Bruce Pan</p>
+<p>Support Escalation Engineer, VMA POD</p>
+<p>Mooncake (China Azure) Support Team,</p>
+<p>Customer Service &amp; Support (CSS), GCR region</p>
+<p>Office:  +86-21-61886496</p>
+<p>Email: chpa@Microsoft.com</p>
+<p>Sent: Wednesday, July 12, 2017 2:17 PM</p>
+<p>Cc: net &lt;net@oe.21vianet.com&gt;; zhuangweihong &lt;zhuangweihong@myhexin.com&gt;; 蔡宏坚 &lt;hjcai@tuling.com.cn&gt;; Eric Shen &lt;yushen@microsoft.com&gt;; youxiang@myhexin.com; guanpeng &lt;guanpeng@myhexin.com&gt;; 吴晓 &lt;wuxiao@myhexin.com&gt;</p>
+<p>Subject: Re: <strong>RE: </strong>RE: <strong>RE: RE: </strong>RE: RE: <strong>答复: </strong>答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</p>
+<p>你好！</p>
+<p>那就明天早上9点钟我们上线，到时候再抓包提供给你们，如果还是解决不了我们就不用了。这个业务我们用一个普通的机器可以实现，而在微软云上，需要用这么久的时间来调试，还是解决不了这个问题？</p>
+<p>同时你们这边也看下，还需要哪些数据，明天测试的时候一次都把需要数的数据日志提取出来，每一次测试都会影响我们线上的用户，后面没完没了的测试我们也没办法继续配合！</p>
+<p>发送时间： 2017-07-12 11:33</p>
+<p>主题： ***<strong>SPAM</strong>*<strong>RE: </strong>RE: <strong>RE: RE: </strong>RE: RE: <strong>答复: </strong>答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</p>
+<p>您好！</p>
+<p>我是参考您之前提供的截图，根据主机名对比来看的，如果您Zabbix里配置的跟实际主机名不一致，那请忽视我此前对此的疑问。</p>
+<p>同时也非常感谢您的大力支持，既然您同意我们进行下一步测试，那么建议如下：</p>
+<p>1.        安排一个远程会议的时间，最好在9点左右就能开始（行情开始前就准备好前期工作），如果该问题可以长时间持续发生，那么可以根据您这边的时间来灵活安排。</p>
+<p>2.        如果您这边丢失了SSH连接，我们可以通过后台登录虚拟机的console进行下列操作。</p>
+<p>3.        在此前我看过的Azure和AWS服务器上，各自开启tcpdump抓包, 具体命令参考如下：</p>
+<p>a.        执行命令启动抓包：# /usr/sbin/tcpdump -i eth0 host -C 500 -W 10 -w /var/tmp/tcpdump.cap &amp;                 è如果流量特别大，可以考虑增加分包的数量，以覆盖更长的时间。</p>
+<p>b.        等到问题复现时，多等待30秒。</p>
+<p>c.        执行命令关闭抓包：# ps -ef |grep -i tcpdump</p>
+<p>d.        执行命令关闭抓包：# kill -9 10692</p>
+<p>4.        执行下列命令，获取实时tcp连接数以及网络连通性。</p>
+<p>a.        # while true; do date &gt;&gt; /var/tmp/tcp_connections; echo &quot;There are &quot;<code>netstat -ant |grep -i ESTABLISHED |wc -l</code>&quot; tcp connections established&quot;  &gt;&gt; /var/tmp/tcp_connections; sleep 1; done &amp;</p>
+<p>b.        在客户端通过paping测试ssh连通性： # paping 42.159.238.248 -p 22</p>
+<p>Sent: Wednesday, July 12, 2017 9:15 AM</p>
+<p>Subject: Re: <strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</p>
+<p>我提取日志和截图是同一台服务器的aws_stat_202_17，不知道你从哪里看不是同一台？既然是对比我肯定给你的是一台正常没有问题的作参考。</p>
+<p>我们自己也看了，虽然aws这台日志里面也有报错，但是这台在盘中相同大小的流量和相同请求量的情况下没有出现问题。如果要抓包，也只能你们那边抓取，在出现问题的时候我们这里是没法访问这台服务器的。</p>
+<p>发送时间： 2017-07-10 10:36</p>
+<p>主题： ***<strong>SPAM</strong>*<strong>RE: </strong>RE: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</p>
+<p>非常感谢您的反馈，根据您提供的日志，我进行了分析和排查。以下是一些总结，供参考。</p>
+<p>•        您这边上传的AWS的服务器主机名为aws_stat_202_17，而不是您此前在邮件截图中提及的aws_stat_54，我想了解下服务器aws_stat_202_17是否在Zabbix监控中显示正常？</p>
+<p>•        根据您反馈的信息，服务器wry_stat_238_248的kernel参数在之后有调整，鉴于此，以下的分析总结都是基于日志分析，并不代表出现问题时的实际状态，还请您理解。</p>
+<p>o        服务器wry_stat_238_248，通过/var/log/secure日志，可以看到sshd服务可以正常接收到来自客户端210.51.244.184的请求，不过该请求并没有实际输入账号密码进行登录。由此可以推断出，该时刻网络进站访问应该正常，是否有出站异常，由于没有网络包来进行分析，无法判断。</p>
+<p>o        服务器wry_stat_238_248，通过/var/log/message日志，可以看到有大量的TCP: time wait bucket table overflow。由此推断，在出现overflow的时间点，一些正常TCP session会受此影响而中断。包括SSH服务，Zabbix服务亦或是其他正常的业务访问。但是该现象不是一个持续性的现象（有时一分钟报一次，有时候一分钟报十几次）。由于缺乏Zabbix日志以及网络包进行分析，无法确定Zabbix丢失数据是否受此影响。</p>
+<p>•        关于服务器aws_stat_202_17，我们在/var/log/message日志中，也能看到大量的TCP: time wait bucket table overflow，同时也可以看到大量的out of memory的报错。在这种情况下，该服务器的运行性能也是很糟糕的，同时正常的TCP session也会受到影响而中断。</p>
+<p>•        对比分析两台服务器的kernel参数，关于Tcp相关的参数基本一致。</p>
+<p>•        对比分析两台服务器的性能指标，由于wry_stat_238_248是7/6日当天抓的，所以只能参考7/5日的性能数据。</p>
+<p>o        tcp-tw：</p>
+<p>§        AWS 达到上限500000</p>
+<p>§        Azure超过500000</p>
+<p>o        rxpck/s：</p>
+<p>§        AWS超过130000</p>
+<p>§        Azure低于40000</p>
+<p>o        Disk IO：</p>
+<p>§        AWS有大量读写</p>
+<p>§        Azure只有大量的写，没有大量的读</p>
+<p>o        CPU：</p>
+<p>§        AWS轻量</p>
+<p>§        Azure轻量</p>
+<p>o        Memory：</p>
+<p>§        AWS 99%</p>
+<p>§        Azure 75%</p>
+<p>o        综述：通过上述性能的分析，可以推断出，两台服务器的实际应用有明显的差异。Azure的网络包远远少于AWS的网络包，但是总的连接数却要超过AWS。</p>
+<p>简而言之：</p>
+<p>1.        故障时间点Jul  6 09:28:00 至 Jul  6 09:46:00之间，Azure虚拟机的网络接收没有问题，SSH服务运行正常，Zabbix没有数据需要从Zabbix进行排查或者重现问题通过抓取网络包进行分析。</p>
+<p>2.        关于其他业务层面的差异，需要深入了解业务逻辑在进行分析。</p>
+<p>由于内容较多，可以安排一个电话会议，进行交流。谢谢！</p>
+<p>Sent: Friday, July 7, 2017 2:32 PM</p>
+<p>Subject: Re: <strong>RE: RE: </strong>RE: RE: <strong>答复: </strong>答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</p>
+<p>两台的tcp_max_tw_buckets这个参数配置都差不多，没必要再去测试，目前这台机器已经下线，没有找到问题之前，我们不可能拿用户来做测试！</p>
+<p>发送时间： 2017-07-07 14:26</p>
+<p>主题： ***<strong>SPAM</strong>*<strong>RE: RE: </strong>RE: RE: <strong>答复: </strong>答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</p>
+<p>感谢您的协助和反馈，该虚拟机在修改了tcp_max_tw_buckets之后，此前的问题还能重现么？</p>
+<p>Sent: Friday, July 7, 2017 1:47 PM</p>
+<p>Subject: Re: RE: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</p>
+<p>tcp_max_tw_buckets  昨天出问题的时候设置的  655350，这个是昨天下午修改的，同时我查看aws服务器设置的值为 500000,</p>
+<p>附件为提取的aws服务器sos日志。</p>
+<p>aws服务器配置为 16核32G内存，微软云为16核56G内存。</p>
+<p>发送时间： 2017-07-07 11:25</p>
+<p>主题： RE: Re: <strong>RE: RE: </strong>答复: **答复: 答复: SR_2017062995523 _ [MS-LED]虚拟机外部请求进不去</p>
+<p>感谢您的协助，根据您提供的sosreport，进行了分析和排查，总结如下：</p></article>

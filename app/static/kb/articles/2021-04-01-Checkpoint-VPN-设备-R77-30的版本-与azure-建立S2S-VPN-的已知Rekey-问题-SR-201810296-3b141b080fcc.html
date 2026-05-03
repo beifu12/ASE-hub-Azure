@@ -1,0 +1,442 @@
+<article class="kb-article" data-title="Checkpoint VPN 设备（R77.30的版本）与azure 建立S2S VPN 的已知Rekey 问题--SR_2018102969641_[T100]onprimise的设备和azure 虚机不稳定"><h1>Checkpoint VPN 设备（R77.30的版本）与azure 建立S2S VPN 的已知Rekey 问题--SR_2018102969641_[T100]onprimise的设备和azure 虚机不稳定</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-04-01 22:01:35</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>从后台来看一直以来这条连接就不太稳定，不定期的出现隧道中断2分钟或者5分钟的情况，而隧道变为disconnected状态发生变化的原因主要有以下几种，多数是由于本地设备无法响应，或者与Azure端协商超时导致：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>从后台来看一直以来这条连接就不太稳定，不定期的出现隧道中断2分钟或者5分钟的情况，而隧道变为disconnected状态发生变化的原因主要有以下几种，多数是由于本地设备无法响应，或者与Azure端协商超时导致：</li>
+</ul>
+<ul>
+<li>Azure端IKE SA life time 默认是28800秒，从后台的报错日志来看， 每次都是等到Azure端的SA到期后向本地发起rekey进行重新协商，这时本地不接受或者收到了Azure端重新协商的请求但是不给Azure端回包， 才导致协商超时从而造成VPN隧道中断。</li>
+</ul>
+<ul>
+<li>针对上面这种现象， 主要有两种可能：</li>
+</ul>
+<ul>
+<li>对应后台日志报错如下， Azure端向本地发送DPD keep alive 报文，但是每次都收到了本地发来的unexpected message response , 在连续发了3次后由于受到的response不正确导致协商超时。</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [user] |183.91.155.193|IkeHandleNDIkeV2 failed with HRESULT 0x80073640(ERROR_IPSEC_IKE_UNEXPECTED_MESSAGE_ID)</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [user] |183.91.155.193|IkeProcessPacket failed with HRESULT 0x80073640(ERROR_IPSEC_IKE_UNEXPECTED_MESSAGE_ID)</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Queued Informational request to MMSA 000000D7CB6BA710 context 000000D7CB67E910 with qmsa 0000000000000000, error 0 and empty info 1</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Dpd has lowered max IKEv2 retransmit count to 3 ------------------&gt;重传3次后失败</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Processing InformationalReqCtxt context 000000D7CB67EFA0 with qmsa 0000000000000000 error 0 empty info 1</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Cleaning up mmSa: 000000D7CB6BA710. Error 13805(ERROR_IPSEC_IKE_TIMED_OUT)</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|QM done. Cleaning up qmSa 000000D7CB69BF70.  Error 13805(ERROR_IPSEC_IKE_TIMED_OUT)----------&gt;重传3次后DPD time out</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=========</li>
+</ul>
+<ul>
+<li>=============</li>
+</ul>
+<ul>
+<li>1， 查VPN 连接的历史信息显示：</li>
+</ul>
+<ul>
+<li>1， Main mode SA assumed to be invalid because peer stopped responding.</li>
+</ul>
+<ul>
+<li>2， RemoteCrashTriggered</li>
+</ul>
+<ul>
+<li>3， DPD timed out</li>
+</ul>
+<ul>
+<li>1． 对应问题发生的时间段，后台并没有对VPN实例进行维护和升级。</li>
+</ul>
+<ul>
+<li>2． 在VPN隧道中断之前对应183.91.155.193的这条连接一直是有流量进出的。</li>
+</ul>
+<ul>
+<li>3．  同一时间对应52.22.41.73的这条隧道连接是正常的，一直有流量进出的。 只有对183.91.155.193的这条连接出现DPD time out， 所以可以排除VPN实例本身的问题。</li>
+</ul>
+<ul>
+<li>如下图所示，183.91.155.193隧道在10-29-2018 11:19~10-29-2018 11:21之间中断了两分钟， 所以隧道内流量为0。但是对应52.22.41.73这条隧道的连接流量是正常的， 其中上边的两条代表52.22.41.73的出入流量， 下边两条代表的是183.91.155.193出入流量</li>
+</ul>
+<ul>
+<li>SA life time只对本地有效，代表的是协商的key在本地的有效时间， 比如本地配置为3600秒的话，每到3600秒后，会删除旧的SA发起重新协商重新进行秘钥交互等。</li>
+</ul>
+<ul>
+<li>1． 本地设备配置的SA life time 的比Azure端的小， 这时候本地SA 到期后会给Azure端发rekey协商的请求， 但是从后台日志来看，Azure端没有收到本地来的rekey消息。</li>
+</ul>
+<ul>
+<li>2． 本地设备配置的SA life time 的比Azure端的大， 所以每次都是等到Azure端SA到期后进行rekey协商， 但是这时候本地却不接受Azure端发起的重新协商的请求，只有在本地流量的触发下才会重新建立VPN隧道。</li>
+</ul>
+<ul>
+<li>1） 第一阶段 480分钟， 这与Azure第一阶段的lifetime参数配置一致</li>
+</ul>
+<ul>
+<li>2） 第二阶段3600秒，一般是用于policy-based的VPN上</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|Sending Packet</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|iCookie 75382ee5b34d057c rCookie e5f0f845c398dc8d</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|Exchange type: IKEv2 Informational Mode Length 76 NextPayload ENCR Flags 0x8 Messid 0x000000ea</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|IF-Luid: 1688850111922176</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|IF-Index: 14</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|Dpd has lowered max IKEv2 retransmit count to 3</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|Rounding off last retransmission interval from 8 to 2 to meet overall DPD guarantee</li>
+</ul>
+<ul>
+<li>[0]035C.0E50::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|Original arrival IF index 13</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|Received packet</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|IF-Luid: 1688850111922176</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|Profile ID: 1</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|iCookie 75382ee5b34d057c rCookie e5f0f845c398dc8d</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|Exchange type: IKEv2 Informational Mode Length 356 NextPayload NOTIFY Flags 0x8 Messid 0x000000ea</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 8438|183.91.155.193|mmSa: 0x000000D7CB6BA710</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 8438|183.91.155.193|Bad message ID:  Expected messId 1 Received messId ea  ------------&gt;此处的updated response id应该是eb， 但是收到本地发来的messid是ea</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 8438|183.91.155.193|Not starting a new IKEv2 request because work already in progress: sa 000000D7CB6BA710</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Schedule next periodic DPD attempt for mmSa 000000D7CB6BA710 context 000000D7CB6A04C0</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|MM retrans exhausted: context 000000D7CB6A0100, mmSa 000000D7CB6BA710</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|queuing invalidation of MM SA 000000D7CB6BA710</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|TimerContext 000000D7CB6A0100, Old ref 2</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Clearing IKEv2 Work-in-progress flag, MM SA 000000D7CB6BA710</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Postponed entry 000000D7CB6C8A00</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Setting IKEv2 Work-in-progress flag, MM SA 000000D7CB6BA710</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Construct IKEHeader</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Construct ENCRYPT</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Sending Packet</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|iCookie 75382ee5b34d057c rCookie e5f0f845c398dc8d</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Exchange type: IKEv2 Informational Mode Length 76 NextPayload ENCR Flags 0x8 Messid 0x000000ea</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|IF-Luid: 1688850111922176</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|IF-Index: 14</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Destroying TimerContext 000000D7CB6A0100, type 0</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|TimerContext 000000D7CB6A0100, Old ref 1</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Freeing TimerContext 000000D7CB6A0100</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Created new TimerContext 000000D7CB6A0C40, type 0</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Destroying TimerContext 000000D7CB6A1280, type 15</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|TimerContext 000000D7CB6A1280, Old ref 2</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|TimerContext 000000D7CB6A1280, Old ref 1</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Freeing TimerContext 000000D7CB6A1280</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Not starting a new IKEv2 request because work already in progress: sa 000000D7CB6BA710</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Postponed entry 000000D7CB6C8AA0</li>
+</ul>
+<ul>
+<li>综上，</li>
+</ul>
+<ul>
+<li>用户提供的本地设备的配置：</li>
+</ul>
+<ul>
+<li>1）本地设备在第一第二阶段的策略配置上并没有什么问题</li>
+</ul>
+<ul>
+<li>【最终结果】</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>最近遇到一个工单是用户的check point 设备与azure 建立的S2S VPN 会V定期将近28400秒左右中断2分钟的情况。 经过查询check point 使用的R77.30的版本有已知的rekey 问题。</li>
+</ul>
+<ul>
+<li>问题排查经过：</li>
+</ul>
+<ul>
+<li>【初步排查情况】</li>
+</ul>
+<ul>
+<li>4．  Azure端对应配置的第一阶段的lifetime配置是默认的28800，从后台看183.91.155.193这条隧道每次大概up 28460秒左右就出现中断，所以怀疑可能是在IKE协商过程中，某一端sa life time到期后，rekey失败导致IKE协商失败造成隧道中断。怀疑可能和本地设备IKE Rekey机制有关，还需要收集本地VPN设备相关信息供下一步排查：</li>
+</ul>
+<ul>
+<li>【二次排查的情况】</li>
+</ul>
+<ul>
+<li>目前了解到本地check point的lifetime参数配置如下：</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [user] |183.91.155.193|IkeCheckNewIncomingReqMessageId failed with Windows error 13888(ERROR_IPSEC_IKE_UNEXPECTED_MESSAGE_ID)</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [user] |183.91.155.193|IkeCheckNewIncomingReqMessageId failed with HRESULT 0x80073640(ERROR_IPSEC_IKE_UNEXPECTED_MESSAGE_ID)</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|QM SA inbound traffic current:234432, previous: 234432</li>
+</ul>
+<ul>
+<li>我们认为调整life time参数并不会解决现在的问题，需要用户排查清楚本地设备的配置情况。您也可以同时将以下本地信息发过来，我们一起帮助查看。</li>
+</ul>
+<ul>
+<li>1． 详细参数配置截图，包括第一第二阶段的策略等， check point软件版本等。</li>
+</ul>
+<ul>
+<li>2. 并在本地VPN设备上开启debug， 并且确认为什么Check point会向Azure端发送IKEv1的Identity protection消息。</li>
+</ul>
+<ul>
+<li>【第三次排查的情况】</li>
+</ul>
+<ul>
+<li>2）本地Check point和Azure端第一阶段的life time都是28800（即480分钟）， 理论上本地和Azure端的sa信息会同时到期， 这个时候Azure端向本地发rekey的消息，但是在我们这个环境中， 抓包显示本地设备并没有做出正确的响应。因此我们搜集了很多资料，查看了check point的官网，发现对应特定的软件版本如”R77, R77.10, R77.20, R77.30”存在如下问题：</li>
+</ul>
+<ul>
+<li>“如果IKEv2的协商是由对端发起的，site to site隧道会定期的中断， 这是因为check point无法对对端发过来的rekey消息做出正确的响应导致, 参见</li>
+</ul>
+<ul>
+<li>查看了check point的官网，发现对应特定的软件版本如”R77, R77.10, R77.20, R77.30”存在如下问题：</li>
+</ul>
+<ul>
+<li>因此怀疑以上原因导致Azure 与本地CheckPoint 设备之间rekey协商失败，导致S2S连接中断。</li>
+</ul>
+<ul>
+<li>与check point 的支持工程师确认了R77.30的版本不支rekey, 需要升级软件版本（打补丁的方式)解决这个问题。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|Local Address: 139.219.96.202.500 Protocol 0</li>
+</ul>
+<ul>
+<li>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|Peer Address: 183.91.155.193.500 Protocol 0</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|Local Address: 139.219.96.202.500 Protocol 0</li>
+</ul>
+<ul>
+<li>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|Peer Address: 183.91.155.193.500 Protocol 0</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Local Address: 139.219.96.202.500 Protocol 0</li>
+</ul>
+<ul>
+<li>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Peer Address: 183.91.155.193.500 Protocol 0</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>所以目前调整life time参数并不会解决现在的问题，根据后台的日志记录， 几乎每隔大概八个小时就会出现一次VPN隧道中断的问题， 后台尝试在10:24左右抓到了最近一次隧道中断的事件， 中断原因是IKE Main Mode failure.</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>同时我们发现对应隧道中断期间， 本地设备一直在向Azure端发 IKEv1的Identity protection消息， 这个现象不太正常。建议用户联系check point厂商帮助排查本地设备问题。</li>
+</ul>
+<ul>
+<li>我们在check point官网上查询到了解决这个问题的方法，但是由于我们没有相应的权限， 所以无法查看具体内容。同时由于我们不是check point相关的专家，后续建议用户在check point同时也开一个工单， 对R77.30版本中的bug list 进行充分了解，以及提供响应的解决办法。</li>
+</ul>
+<ul>
+<li>建议最终用户协调本地团队和CheckPoint Support工程师是否存在以上问题和相关解决方案。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&amp;solutionid=sk112137“" target="_blank" rel="noopener">https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&amp;solutionid=sk112137“</a></li>
+</ul>
+<ul>
+<li>也查询到check point在R80.10版本之前并不支持rfc中标准的rekey功能（<a href="https://tools.ietf.org/html/rfc5996），" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc5996），</a> 当lifetime 到期后check point不会做rekey，而是向Azure端重新发起了IKE_init 协商, 具体请参见check point官网关于问题“ref=0242116“的描述.</li>
+</ul>
+<ul>
+<li><a href="https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&amp;solutionid=sk116157" target="_blank" rel="noopener">https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&amp;solutionid=sk116157</a></li>
+</ul>
+<ul>
+<li>也查询到check point在R80.10版本之前并不支持rfc中标准的rekey功能（<a href="https://tools.ietf.org/html/rfc5996），" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc5996），</a> 当lifetime 到期后check point不会做rekey，而是向Azure端重新发起了IKE_init 协商, 具体请参见check point官网关于问题“ref=0242116“的描述</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2018-11-08</p>
+<p>问题描述：</p>
+<p>=========</p>
+<p>最近遇到一个工单是用户的check point 设备与azure 建立的S2S VPN 会V定期将近28400秒左右中断2分钟的情况。 经过查询check point 使用的R77.30的版本有已知的rekey 问题。</p>
+<p>问题排查经过：</p>
+<p>=============</p>
+<p>1， 查VPN 连接的历史信息显示：</p>
+<p>从后台来看一直以来这条连接就不太稳定，不定期的出现隧道中断2分钟或者5分钟的情况，而隧道变为disconnected状态发生变化的原因主要有以下几种，多数是由于本地设备无法响应，或者与Azure端协商超时导致：</p>
+<p>1， Main mode SA assumed to be invalid because peer stopped responding.</p>
+<p>2， RemoteCrashTriggered</p>
+<p>3， DPD timed out</p>
+<p>【初步排查情况】</p>
+<p>1． 对应问题发生的时间段，后台并没有对VPN实例进行维护和升级。</p>
+<p>2． 在VPN隧道中断之前对应183.91.155.193的这条连接一直是有流量进出的。</p>
+<p>3．  同一时间对应52.22.41.73的这条隧道连接是正常的，一直有流量进出的。 只有对183.91.155.193的这条连接出现DPD time out， 所以可以排除VPN实例本身的问题。</p>
+<p>如下图所示，183.91.155.193隧道在10-29-2018 11:19~10-29-2018 11:21之间中断了两分钟， 所以隧道内流量为0。但是对应52.22.41.73这条隧道的连接流量是正常的， 其中上边的两条代表52.22.41.73的出入流量， 下边两条代表的是183.91.155.193出入流量</p>
+<p>4．  Azure端对应配置的第一阶段的lifetime配置是默认的28800，从后台看183.91.155.193这条隧道每次大概up 28460秒左右就出现中断，所以怀疑可能是在IKE协商过程中，某一端sa life time到期后，rekey失败导致IKE协商失败造成隧道中断。怀疑可能和本地设备IKE Rekey机制有关，还需要收集本地VPN设备相关信息供下一步排查：</p>
+<p>SA life time只对本地有效，代表的是协商的key在本地的有效时间， 比如本地配置为3600秒的话，每到3600秒后，会删除旧的SA发起重新协商重新进行秘钥交互等。</p>
+<p>Azure端IKE SA life time 默认是28800秒，从后台的报错日志来看， 每次都是等到Azure端的SA到期后向本地发起rekey进行重新协商，这时本地不接受或者收到了Azure端重新协商的请求但是不给Azure端回包， 才导致协商超时从而造成VPN隧道中断。</p>
+<p>针对上面这种现象， 主要有两种可能：</p>
+<p>1． 本地设备配置的SA life time 的比Azure端的小， 这时候本地SA 到期后会给Azure端发rekey协商的请求， 但是从后台日志来看，Azure端没有收到本地来的rekey消息。</p>
+<p>2． 本地设备配置的SA life time 的比Azure端的大， 所以每次都是等到Azure端SA到期后进行rekey协商， 但是这时候本地却不接受Azure端发起的重新协商的请求，只有在本地流量的触发下才会重新建立VPN隧道。</p>
+<p>【二次排查的情况】</p>
+<p>目前了解到本地check point的lifetime参数配置如下：</p>
+<p>1） 第一阶段 480分钟， 这与Azure第一阶段的lifetime参数配置一致</p>
+<p>2） 第二阶段3600秒，一般是用于policy-based的VPN上</p>
+<p>所以目前调整life time参数并不会解决现在的问题，根据后台的日志记录， 几乎每隔大概八个小时就会出现一次VPN隧道中断的问题， 后台尝试在10:24左右抓到了最近一次隧道中断的事件， 中断原因是IKE Main Mode failure.</p>
+<p>对应后台日志报错如下， Azure端向本地发送DPD keep alive 报文，但是每次都收到了本地发来的unexpected message response , 在连续发了3次后由于受到的response不正确导致协商超时。</p>
+<p>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|Sending Packet</p>
+<p>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|iCookie 75382ee5b34d057c rCookie e5f0f845c398dc8d</p>
+<p>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|Exchange type: IKEv2 Informational Mode Length 76 NextPayload ENCR Flags 0x8 Messid 0x000000ea</p>
+<p>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|Local Address: 139.219.96.202.500 Protocol 0</p>
+<p>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|Peer Address: 183.91.155.193.500 Protocol 0</p>
+<p>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|IF-Luid: 1688850111922176</p>
+<p>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|IF-Index: 14</p>
+<p>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|Dpd has lowered max IKEv2 retransmit count to 3</p>
+<p>[0]035C.03A0::11/01/2018-02:24:35.871 [ikeext] 8438|183.91.155.193|Rounding off last retransmission interval from 8 to 2 to meet overall DPD guarantee</p>
+<p>[0]035C.0E50::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|Original arrival IF index 13</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|Received packet</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|Local Address: 139.219.96.202.500 Protocol 0</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|Peer Address: 183.91.155.193.500 Protocol 0</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|IF-Luid: 1688850111922176</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|Profile ID: 1</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|iCookie 75382ee5b34d057c rCookie e5f0f845c398dc8d</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 0|183.91.155.193|Exchange type: IKEv2 Informational Mode Length 356 NextPayload NOTIFY Flags 0x8 Messid 0x000000ea</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 8438|183.91.155.193|mmSa: 0x000000D7CB6BA710</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 8438|183.91.155.193|Bad message ID:  Expected messId 1 Received messId ea  ------------&gt;此处的updated response id应该是eb， 但是收到本地发来的messid是ea</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [user] |183.91.155.193|IkeCheckNewIncomingReqMessageId failed with Windows error 13888(ERROR_IPSEC_IKE_UNEXPECTED_MESSAGE_ID)</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [user] |183.91.155.193|IkeCheckNewIncomingReqMessageId failed with HRESULT 0x80073640(ERROR_IPSEC_IKE_UNEXPECTED_MESSAGE_ID)</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [user] |183.91.155.193|IkeHandleNDIkeV2 failed with HRESULT 0x80073640(ERROR_IPSEC_IKE_UNEXPECTED_MESSAGE_ID)</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [user] |183.91.155.193|IkeProcessPacket failed with HRESULT 0x80073640(ERROR_IPSEC_IKE_UNEXPECTED_MESSAGE_ID)</p>
+<p>[0]035C.1ADC::11/01/2018-02:24:35.885 [ikeext] 8438|183.91.155.193|Not starting a new IKEv2 request because work already in progress: sa 000000D7CB6BA710</p>
+<p>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Queued Informational request to MMSA 000000D7CB6BA710 context 000000D7CB67E910 with qmsa 0000000000000000, error 0 and empty info 1</p>
+<p>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Schedule next periodic DPD attempt for mmSa 000000D7CB6BA710 context 000000D7CB6A04C0</p>
+<p>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Dpd has lowered max IKEv2 retransmit count to 3 ------------------&gt;重传3次后失败</p>
+<p>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|MM retrans exhausted: context 000000D7CB6A0100, mmSa 000000D7CB6BA710</p>
+<p>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|queuing invalidation of MM SA 000000D7CB6BA710</p>
+<p>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|TimerContext 000000D7CB6A0100, Old ref 2</p>
+<p>[0]035C.03A0::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Clearing IKEv2 Work-in-progress flag, MM SA 000000D7CB6BA710</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Postponed entry 000000D7CB6C8A00</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Setting IKEv2 Work-in-progress flag, MM SA 000000D7CB6BA710</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Processing InformationalReqCtxt context 000000D7CB67EFA0 with qmsa 0000000000000000 error 0 empty info 1</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|QM SA inbound traffic current:234432, previous: 234432</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Construct IKEHeader</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Construct ENCRYPT</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Sending Packet</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|iCookie 75382ee5b34d057c rCookie e5f0f845c398dc8d</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Exchange type: IKEv2 Informational Mode Length 76 NextPayload ENCR Flags 0x8 Messid 0x000000ea</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Local Address: 139.219.96.202.500 Protocol 0</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Peer Address: 183.91.155.193.500 Protocol 0</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|IF-Luid: 1688850111922176</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|IF-Index: 14</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Destroying TimerContext 000000D7CB6A0100, type 0</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|TimerContext 000000D7CB6A0100, Old ref 1</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Freeing TimerContext 000000D7CB6A0100</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Created new TimerContext 000000D7CB6A0C40, type 0</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Destroying TimerContext 000000D7CB6A1280, type 15</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|TimerContext 000000D7CB6A1280, Old ref 2</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|TimerContext 000000D7CB6A1280, Old ref 1</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Freeing TimerContext 000000D7CB6A1280</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Not starting a new IKEv2 request because work already in progress: sa 000000D7CB6BA710</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Postponed entry 000000D7CB6C8AA0</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|Cleaning up mmSa: 000000D7CB6BA710. Error 13805(ERROR_IPSEC_IKE_TIMED_OUT)</p>
+<p>[0]035C.0D7C::11/01/2018-02:24:36.882 [ikeext] 8438|183.91.155.193|QM done. Cleaning up qmSa 000000D7CB69BF70.  Error 13805(ERROR_IPSEC_IKE_TIMED_OUT)----------&gt;重传3次后DPD time out</p>
+<p>同时我们发现对应隧道中断期间， 本地设备一直在向Azure端发 IKEv1的Identity protection消息， 这个现象不太正常。建议用户联系check point厂商帮助排查本地设备问题。</p>
+<p>综上，</p>
+<p>我们认为调整life time参数并不会解决现在的问题，需要用户排查清楚本地设备的配置情况。您也可以同时将以下本地信息发过来，我们一起帮助查看。</p>
+<p>1． 详细参数配置截图，包括第一第二阶段的策略等， check point软件版本等。</p>
+<p>2. 并在本地VPN设备上开启debug， 并且确认为什么Check point会向Azure端发送IKEv1的Identity protection消息。</p>
+<p>用户提供的本地设备的配置：</p>
+<p>【第三次排查的情况】</p>
+<p>1）本地设备在第一第二阶段的策略配置上并没有什么问题</p>
+<p>2）本地Check point和Azure端第一阶段的life time都是28800（即480分钟）， 理论上本地和Azure端的sa信息会同时到期， 这个时候Azure端向本地发rekey的消息，但是在我们这个环境中， 抓包显示本地设备并没有做出正确的响应。因此我们搜集了很多资料，查看了check point的官网，发现对应特定的软件版本如”R77, R77.10, R77.20, R77.30”存在如下问题：</p>
+<p>“如果IKEv2的协商是由对端发起的，site to site隧道会定期的中断， 这是因为check point无法对对端发过来的rekey消息做出正确的响应导致, 参见</p>
+<p><a href="https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&amp;solutionid=sk112137“" target="_blank" rel="noopener">https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&amp;solutionid=sk112137“</a></p>
+<p>也查询到check point在R80.10版本之前并不支持rfc中标准的rekey功能（<a href="https://tools.ietf.org/html/rfc5996），" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc5996），</a> 当lifetime 到期后check point不会做rekey，而是向Azure端重新发起了IKE_init 协商, 具体请参见check point官网关于问题“ref=0242116“的描述.</p>
+<p>我们在check point官网上查询到了解决这个问题的方法，但是由于我们没有相应的权限， 所以无法查看具体内容。同时由于我们不是check point相关的专家，后续建议用户在check point同时也开一个工单， 对R77.30版本中的bug list 进行充分了解，以及提供响应的解决办法。</p>
+<p><a href="https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&amp;solutionid=sk116157" target="_blank" rel="noopener">https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&amp;solutionid=sk116157</a></p>
+<p>查看了check point的官网，发现对应特定的软件版本如”R77, R77.10, R77.20, R77.30”存在如下问题：</p>
+<p>也查询到check point在R80.10版本之前并不支持rfc中标准的rekey功能（<a href="https://tools.ietf.org/html/rfc5996），" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc5996），</a> 当lifetime 到期后check point不会做rekey，而是向Azure端重新发起了IKE_init 协商, 具体请参见check point官网关于问题“ref=0242116“的描述</p>
+<p>因此怀疑以上原因导致Azure 与本地CheckPoint 设备之间rekey协商失败，导致S2S连接中断。</p>
+<p>建议最终用户协调本地团队和CheckPoint Support工程师是否存在以上问题和相关解决方案。</p>
+<p>【最终结果】</p>
+<p>与check point 的支持工程师确认了R77.30的版本不支rekey, 需要升级软件版本（打补丁的方式)解决这个问题。</p></article>

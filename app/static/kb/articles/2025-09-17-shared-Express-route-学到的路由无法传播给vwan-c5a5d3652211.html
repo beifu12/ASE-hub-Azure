@@ -1,0 +1,163 @@
+<article class="kb-article" data-title="【shared】Express route 学到的路由无法传播给vwan"><h1>【shared】Express route 学到的路由无法传播给vwan</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-17 16:43:15</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>maxiao</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>maxiao</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>maxiao</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>客户的ER可以看到地端传过来的路由，但是vhub里看不到同样的路由</li>
+</ul>
+<ul>
+<li>ER：</li>
+</ul>
+<ul>
+<li>Vhub:</li>
+</ul>
+<ul>
+<li>然后到javirs actions中输入如下图指令：</li>
+</ul>
+<ul>
+<li>sh ip bgp vpnv4 vrf &#39;VRF ID&#39;</li>
+</ul>
+<ul>
+<li>这个时候就可以看到客户的带ASN的路由情况</li>
+</ul>
+<ul>
+<li>|where GatewayId == &#39;a506004a-7622-4878-8a45-de800045d74f&#39;</li>
+</ul>
+<ul>
+<li>|where TIMESTAMP &gt; datetime(&#39;2025-09-12 02:00:00&#39;) and TIMESTAMP &lt; datetime(&#39;2025-9-12 06:00:00&#39;)</li>
+</ul>
+<ul>
+<li>|where Message contains &quot;&lt;BGP&gt;&quot;</li>
+</ul>
+<ul>
+<li>|project PreciseTimeStamp , RoleInstance , Message</li>
+</ul>
+<ul>
+<li>Gateway ID需要从ER gateway的child gateway来获取</li>
+</ul>
+<ul>
+<li>| where Tenant contains &quot;armrg-1a114619-03aa-4acd-b2a5-48db24170052&quot;         //armrg-RouteService Id</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt; datetime(&#39;2025-09-12 02:00:16&#39;) and TIMESTAMP &lt;  datetime(&#39;2025-09-12 06:45:16&#39;)</li>
+</ul>
+<ul>
+<li>| where Message contains &quot;&lt;BGP&gt;&quot;</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP, RoleInstance, Message</li>
+</ul>
+<ul>
+<li>通过dumprouting可以看到该路由建立了2天22h</li>
+</ul>
+<ul>
+<li>这个是azure by design的行为，该问题是route server/vhub向地端传播路由时会添加这个community，然后如果是VPN gateway会把这个community移除，所以不会产生任何问题。</li>
+</ul>
+<ul>
+<li>问题本质是azure防止路由回环的设计，如果客户一定需要这样配置，只需要由客户地端删除该community即可</li>
+</ul>
+<ul>
+<li>删除后可以看到路由已经被vhub正常学到：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查思路：</li>
+</ul>
+<ul>
+<li>除了在dumprouting来查看ER的BGP路由，也可以使用另一种方式来查看客户的ER BGP路由，这种方式可以看到客户的ASN，而dumprouting无法看到：</li>
+</ul>
+<ul>
+<li>首先在ASC上如下图位置获取到用户的VRF ID</li>
+</ul>
+<ul>
+<li>之后查看客户vhub路由，发现显然问题不是由ASN引起的：</li>
+</ul>
+<ul>
+<li>这时候就需要BGP日志来进一步排查了:</li>
+</ul>
+<ul>
+<li>Kusto Gateway BGP log:</li>
+</ul>
+<ul>
+<li>cluster(&#39;aznwchinamc.chinanorth2&#39;).database(&#39;aznwmds&#39;).GatewayTenantLogsTable</li>
+</ul>
+<ul>
+<li>Kusto Vhub BGP log:</li>
+</ul>
+<ul>
+<li>cluster(&#39;aznwchinamc.chinanorth2&#39;).database(&#39;aznwmds&#39;).RouteServiceBgpLogsTable</li>
+</ul>
+<ul>
+<li>调整日志时间到路由开始传播的时间点发现如下log:</li>
+</ul>
+<ul>
+<li>日志表示该路由是因为community 65517：65517被drop的</li>
+</ul>
+<ul>
+<li>但是express route gateway 并不会移除这个community，所以当客户把这个路由从地端传回azure时，express route gateaay 会检测MSEE传播过来的这个community并drop该路由。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Route id需要从vhub里获取</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>maxiao</p>
+<p>问题描述：</p>
+<p>客户的ER可以看到地端传过来的路由，但是vhub里看不到同样的路由</p>
+<p>ER：</p>
+<p>Vhub:</p>
+<p>排查思路：</p>
+<p>除了在dumprouting来查看ER的BGP路由，也可以使用另一种方式来查看客户的ER BGP路由，这种方式可以看到客户的ASN，而dumprouting无法看到：</p>
+<p>首先在ASC上如下图位置获取到用户的VRF ID</p>
+<p>然后到javirs actions中输入如下图指令：</p>
+<p>sh ip bgp vpnv4 vrf &#39;VRF ID&#39;</p>
+<p>这个时候就可以看到客户的带ASN的路由情况</p>
+<p>之后查看客户vhub路由，发现显然问题不是由ASN引起的：</p>
+<p>这时候就需要BGP日志来进一步排查了:</p>
+<p>Kusto Gateway BGP log:</p>
+<p>cluster(&#39;aznwchinamc.chinanorth2&#39;).database(&#39;aznwmds&#39;).GatewayTenantLogsTable</p>
+<p>|where GatewayId == &#39;a506004a-7622-4878-8a45-de800045d74f&#39;</p>
+<p>|where TIMESTAMP &gt; datetime(&#39;2025-09-12 02:00:00&#39;) and TIMESTAMP &lt; datetime(&#39;2025-9-12 06:00:00&#39;)</p>
+<p>|where Message contains &quot;&lt;BGP&gt;&quot;</p>
+<p>|project PreciseTimeStamp , RoleInstance , Message</p>
+<p>Gateway ID需要从ER gateway的child gateway来获取</p>
+<p>Kusto Vhub BGP log:</p>
+<p>cluster(&#39;aznwchinamc.chinanorth2&#39;).database(&#39;aznwmds&#39;).RouteServiceBgpLogsTable</p>
+<p>| where Tenant contains &quot;armrg-1a114619-03aa-4acd-b2a5-48db24170052&quot;         //armrg-RouteService Id</p>
+<p>| where TIMESTAMP &gt; datetime(&#39;2025-09-12 02:00:16&#39;) and TIMESTAMP &lt;  datetime(&#39;2025-09-12 06:45:16&#39;)</p>
+<p>| where Message contains &quot;&lt;BGP&gt;&quot;</p>
+<p>| project TIMESTAMP, RoleInstance, Message</p>
+<p>Route id需要从vhub里获取</p>
+<p>通过dumprouting可以看到该路由建立了2天22h</p>
+<p>调整日志时间到路由开始传播的时间点发现如下log:</p>
+<p>日志表示该路由是因为community 65517：65517被drop的</p>
+<p>这个是azure by design的行为，该问题是route server/vhub向地端传播路由时会添加这个community，然后如果是VPN gateway会把这个community移除，所以不会产生任何问题。</p>
+<p>但是express route gateway 并不会移除这个community，所以当客户把这个路由从地端传回azure时，express route gateaay 会检测MSEE传播过来的这个community并drop该路由。</p>
+<p>问题本质是azure防止路由回环的设计，如果客户一定需要这样配置，只需要由客户地端删除该community即可</p>
+<p>删除后可以看到路由已经被vhub正常学到：</p></article>

@@ -1,0 +1,104 @@
+<article class="kb-article" data-title="Aks-lsi"><h1>Aks-lsi</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Performance</li>
+<li>Section: Bug</li>
+<li>最近修改: 2022-08-30 17:18:58</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错：</li>
+</ul>
+<ul>
+<li>SupportedState: &quot;Unsupported&quot; PodState: &quot;&quot; ResourceState: &quot;&quot; AddOnPodState: &quot;Error execing into pod tunnelfront-6d7dd95cd8-5lrzh on node aks-agentpool-82483739-0: unable to upgrade connection: Authorization error (user=masterclient, verb=create, resource=nodes, subresource=proxy)&quot; TelemetryState: &quot;&quot;</li>
+</ul>
+<ul>
+<li>customers running Ubuntu 18.04 (bionic) VMs recently upgraded to systemd version 237-3ubuntu10.54 reported experiencing DNS errors. Canonical / Ubuntu have publicly released the following</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>//插件，node状态，常用</li>
+</ul>
+<ul>
+<li>cluster(&#39;akscn&#39;).database(&#39;AKSprod&#39;).BlackboxMonitoringActivity</li>
+</ul>
+<ul>
+<li>| where (TIMESTAMP &gt;= datetime(2022-8-30T00:27:00Z) and TIMESTAMP &lt; datetime(2022-8-30T23:00:00Z))</li>
+</ul>
+<ul>
+<li>| where subscriptionID contains &quot;c2c5c47f-3565-4675-a2a2-3f56e89c35de&quot;</li>
+</ul>
+<ul>
+<li>| where clusterName == &quot;prod-aks&quot;</li>
+</ul>
+<ul>
+<li>//| where state != &quot;Healthy&quot;</li>
+</ul>
+<ul>
+<li>//| where resourceName contains &quot;aze2-aks01-p&quot;</li>
+</ul>
+<ul>
+<li>//| where PreciseTimeStamp &gt; ago(1d)</li>
+</ul>
+<ul>
+<li>//| where([&quot;state&quot;] != &quot;Healthy&quot; or podsState != &quot;Healthy&quot; or addonPodsState != &quot;Healthy&quot;)</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, state, [&#39;reason&#39;], Underlay, msg, ccpNamespace, tunnelVersion,ccpIP</li>
+</ul>
+<ul>
+<li>===================================</li>
+</ul>
+<ul>
+<li>Temp fix.</li>
+</ul>
+<ul>
+<li>1. Add/Uncomment # FallbackDNS=168.63.129.16</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>1. Edit /etc/systemd/resolved.conf</li>
+</ul>
+<ul>
+<li>1. Restart systemd-resolved sudo systemctl restart systemd-resolved.service</li>
+</ul>
+<ul>
+<li>1. Confirm dns working with systemd-resolve google.com</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://bugs.launchpad.net/ubuntu/+source/systemd/+bug/1988119" target="_blank" rel="noopener">https://bugs.launchpad.net/ubuntu/+source/systemd/+bug/1988119</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>//插件，node状态，常用</p>
+<p>cluster(&#39;akscn&#39;).database(&#39;AKSprod&#39;).BlackboxMonitoringActivity</p>
+<p>| where (TIMESTAMP &gt;= datetime(2022-8-30T00:27:00Z) and TIMESTAMP &lt; datetime(2022-8-30T23:00:00Z))</p>
+<p>| where subscriptionID contains &quot;c2c5c47f-3565-4675-a2a2-3f56e89c35de&quot;</p>
+<p>| where clusterName == &quot;prod-aks&quot;</p>
+<p>//| where state != &quot;Healthy&quot;</p>
+<p>//| where resourceName contains &quot;aze2-aks01-p&quot;</p>
+<p>//| where PreciseTimeStamp &gt; ago(1d)</p>
+<p>//| where([&quot;state&quot;] != &quot;Healthy&quot; or podsState != &quot;Healthy&quot; or addonPodsState != &quot;Healthy&quot;)</p>
+<p>| project PreciseTimeStamp, state, [&#39;reason&#39;], Underlay, msg, ccpNamespace, tunnelVersion,ccpIP</p>
+<p>报错：</p>
+<p>SupportedState: &quot;Unsupported&quot; PodState: &quot;&quot; ResourceState: &quot;&quot; AddOnPodState: &quot;Error execing into pod tunnelfront-6d7dd95cd8-5lrzh on node aks-agentpool-82483739-0: unable to upgrade connection: Authorization error (user=masterclient, verb=create, resource=nodes, subresource=proxy)&quot; TelemetryState: &quot;&quot;</p>
+<p>===================================</p>
+<p>customers running Ubuntu 18.04 (bionic) VMs recently upgraded to systemd version 237-3ubuntu10.54 reported experiencing DNS errors. Canonical / Ubuntu have publicly released the following</p>
+<p><a href="https://bugs.launchpad.net/ubuntu/+source/systemd/+bug/1988119" target="_blank" rel="noopener">https://bugs.launchpad.net/ubuntu/+source/systemd/+bug/1988119</a></p>
+<p>Temp fix.</p>
+<p>1. Edit /etc/systemd/resolved.conf</p>
+<p>1. Add/Uncomment # FallbackDNS=168.63.129.16</p>
+<p>1. Restart systemd-resolved sudo systemctl restart systemd-resolved.service</p>
+<p>1. Confirm dns working with systemd-resolve google.com</p></article>

@@ -1,0 +1,171 @@
+<article class="kb-article" data-title="【share】 a100 安装gpu"><h1>【share】 a100 安装gpu</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-04-23 17:01:58</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户在东3创建 Standard_NCads_A100_v4 size 虚拟机 报错资源不足</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户在东3创建  Standard_NCads_A100_v4 size 虚拟机 报错资源不足</li>
+</ul>
+<ul>
+<li>&quot;status&quot;: &quot;Failed&quot;,</li>
+</ul>
+<ul>
+<li>&quot;error&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;code&quot;: &quot;AllocationFailed&quot;,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Johnny</li>
+</ul>
+<ul>
+<li>update</li>
+</ul>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>通过后台icm得知，目前东3 针对这个size的虚拟机cpu 共有2880 核：</li>
+</ul>
+<ul>
+<li>TimeStamp</li>
+</ul>
+<ul>
+<li>ClusterName</li>
+</ul>
+<ul>
+<li>TotalCores</li>
+</ul>
+<ul>
+<li>UsedCores</li>
+</ul>
+<ul>
+<li>9/11/2024</li>
+</ul>
+<ul>
+<li>NTG20PrdGPC01</li>
+</ul>
+<ul>
+<li>2880</li>
+</ul>
+<ul>
+<li>2712</li>
+</ul>
+<ul>
+<li>目前只有东三能够安装a100 的size ，目前我们申请不了东三的a100, 因此我们没有测试环境。</li>
+</ul>
+<ul>
+<li>经过和客户的测试，在ubuntu 22.04      Size ： Standard_NC96ads_A100_v4</li>
+</ul>
+<ul>
+<li>安装 cuda-keyring_1.1-1_all.deb    是没有问题的， 请周知。</li>
+</ul>
+<ul>
+<li>另外，一般来说 NV A10 只能安装GRID 驱动程序  ；A100 需要安装 cuda 驱动程序。</li>
+</ul>
+<ul>
+<li>有一种说法，mooncake 的 host os  version 可能不是最新的，因此不能安装最新板的 GRID， 首选 次版本进行安装测试。</li>
+</ul>
+<ul>
+<li>A10V5 机型 需要安装grid 驱动程序</li>
+</ul>
+<ul>
+<li>A10V5 ubuntu 请参考：</li>
+</ul>
+<ul>
+<li>sudo apt-get update</li>
+</ul>
+<ul>
+<li>sudo apt upgrade -y</li>
+</ul>
+<ul>
+<li>sudo reboot</li>
+</ul>
+<ul>
+<li>sudo apt install gcc make -y</li>
+</ul>
+<ul>
+<li>sudo apt-get install linux-headers-$(uname -r)</li>
+</ul>
+<ul>
+<li>ll</li>
+</ul>
+<ul>
+<li>sudo sh NV-grid.run</li>
+</ul>
+<ul>
+<li>nvidia-smi</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>&quot;message&quot;: &quot;Allocation failed. We do not have sufficient capacity for the requested VM size in this region. Read more about improving likelihood of allocation success at  <a href="http://aka.ms/allocation-guidance&quot;" target="_blank" rel="noopener">http://aka.ms/allocation-guidance&quot;</a></li>
+</ul>
+<ul>
+<li>环境下按照 文档<a href="https://learn.microsoft.com/zh-cn/azure/virtual-machines/linux/n-series-driver-setup#ubuntu" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-machines/linux/n-series-driver-setup#ubuntu</a></li>
+</ul>
+<ul>
+<li>wget <a href="https://download.microsoft.com/download/c/e/9/ce913061-ccf1-4c88-94ff-294e48c55439/NVIDIA-Linux-x86_64-525.85.05-grid-azure.run" target="_blank" rel="noopener">https://download.microsoft.com/download/c/e/9/ce913061-ccf1-4c88-94ff-294e48c55439/NVIDIA-Linux-x86_64-525.85.05-grid-azure.run</a> -O NV-grid.run</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/3/5</p>
+<p>Johnny</p>
+<p>2024/09/12</p>
+<p>update</p>
+<p>Update</p>
+<p>客户在东3创建  Standard_NCads_A100_v4 size 虚拟机 报错资源不足</p>
+<p>{</p>
+<p>&quot;status&quot;: &quot;Failed&quot;,</p>
+<p>&quot;error&quot;: {</p>
+<p>&quot;code&quot;: &quot;AllocationFailed&quot;,</p>
+<p>&quot;message&quot;: &quot;Allocation failed. We do not have sufficient capacity for the requested VM size in this region. Read more about improving likelihood of allocation success at  <a href="http://aka.ms/allocation-guidance&quot;" target="_blank" rel="noopener">http://aka.ms/allocation-guidance&quot;</a></p>
+<p>}</p>
+<p>通过后台icm得知，目前东3 针对这个size的虚拟机cpu 共有2880 核：</p>
+<p>TimeStamp</p>
+<p>ClusterName</p>
+<p>TotalCores</p>
+<p>UsedCores</p>
+<p>9/11/2024</p>
+<p>NTG20PrdGPC01</p>
+<p>2880</p>
+<p>2712</p>
+<p>目前只有东三能够安装a100 的size ，目前我们申请不了东三的a100, 因此我们没有测试环境。</p>
+<p>经过和客户的测试，在ubuntu 22.04      Size ： Standard_NC96ads_A100_v4</p>
+<p>环境下按照 文档<a href="https://learn.microsoft.com/zh-cn/azure/virtual-machines/linux/n-series-driver-setup#ubuntu" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/virtual-machines/linux/n-series-driver-setup#ubuntu</a></p>
+<p>安装 cuda-keyring_1.1-1_all.deb    是没有问题的， 请周知。</p>
+<p>另外，一般来说 NV A10 只能安装GRID 驱动程序  ；A100 需要安装 cuda 驱动程序。</p>
+<p>有一种说法，mooncake 的 host os  version 可能不是最新的，因此不能安装最新板的 GRID， 首选 次版本进行安装测试。</p>
+<p>A10V5 机型 需要安装grid 驱动程序</p>
+<p>A10V5 ubuntu 请参考：</p>
+<p>sudo apt-get update</p>
+<p>sudo apt upgrade -y</p>
+<p>sudo reboot</p>
+<p>sudo apt install gcc make -y</p>
+<p>sudo apt-get install linux-headers-$(uname -r)</p>
+<p>wget <a href="https://download.microsoft.com/download/c/e/9/ce913061-ccf1-4c88-94ff-294e48c55439/NVIDIA-Linux-x86_64-525.85.05-grid-azure.run" target="_blank" rel="noopener">https://download.microsoft.com/download/c/e/9/ce913061-ccf1-4c88-94ff-294e48c55439/NVIDIA-Linux-x86_64-525.85.05-grid-azure.run</a> -O NV-grid.run</p>
+<p>ll</p>
+<p>sudo sh NV-grid.run</p>
+<p>nvidia-smi</p></article>

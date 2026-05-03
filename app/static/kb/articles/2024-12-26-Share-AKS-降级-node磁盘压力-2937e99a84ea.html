@@ -1,0 +1,69 @@
+<article class="kb-article" data-title="【Share】AKS 降级 node磁盘压力"><h1>【Share】AKS 降级 node磁盘压力</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-12-26 09:32:39</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Wang Yu</li>
+</ul>
+<ul>
+<li>在服务运行状况--》资源运行状况--》AKS集群中可以看到AKS降级，node 磁盘压力：</li>
+</ul>
+<ul>
+<li>在node事件中可以看到磁盘空间压力大(可用空间不足)，触发了节点压力驱逐：</li>
+</ul>
+<ul>
+<li>节点压力驱逐是K8S原生功能，详细信息您可参考K8S官方链接：</li>
+</ul>
+<ul>
+<li>节点压力驱逐 | Kubernetes</li>
+</ul>
+<ul>
+<li>节点池默认会在节点磁盘使用率达到85%时自动清理降低磁盘使用率：</li>
+</ul>
+<ul>
+<li>自定义 Azure Kubernetes 服务 (AKS) 节点池的节点配置 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>DiskPressure包括的驱逐信号：</li>
+</ul>
+<ul>
+<li>DiskPressure包括的驱逐信号默认是硬驱逐：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Wang Yu</p>
+<p>在服务运行状况--》资源运行状况--》AKS集群中可以看到AKS降级，node 磁盘压力：</p>
+<p>在node事件中可以看到磁盘空间压力大(可用空间不足)，触发了节点压力驱逐：</p>
+<p>节点压力驱逐是K8S原生功能，详细信息您可参考K8S官方链接：</p>
+<p>节点压力驱逐 | Kubernetes</p>
+<p>节点池默认会在节点磁盘使用率达到85%时自动清理降低磁盘使用率：</p>
+<p>自定义 Azure Kubernetes 服务 (AKS) 节点池的节点配置 - Azure Kubernetes Service | Azure Docs</p>
+<p>DiskPressure包括的驱逐信号：</p>
+<p>DiskPressure包括的驱逐信号默认是硬驱逐：</p></article>

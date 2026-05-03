@@ -1,0 +1,88 @@
+<article class="kb-article" data-title="Ingress className 定义以及API 变化"><h1>Ingress className 定义以及API 变化</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-08-09 15:39:27</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_20220802181005_AKS 集群负载连接不通</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_20220802181005_AKS 集群负载连接不通</li>
+</ul>
+<ul>
+<li>我们使用ingress-nginx 4.0.13 在AKS 1.24 上测试，在annotations中指定className的情况下，会报错</li>
+</ul>
+<ul>
+<li>ingress class annotation is not equal to the expected by Ingress Controller&quot; 与客户报错一致，而且ingress无法访问，在spec中指定className则无此问题</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Fuzhangliang</li>
+</ul>
+<ul>
+<li>ingress的定义有两个重要的变化：</li>
+</ul>
+<ul>
+<li>1、第一个是ingressClassName的定义方式已经有变化，需要定义在spec字段中</li>
+</ul>
+<ul>
+<li>2、第二个是ingress 的API版本发生变化，beta版API将不支持</li>
+</ul>
+<ul>
+<li>如下两个工单的问题都是AKS升级之后ingress访问不了的问题。</li>
+</ul>
+<ul>
+<li>Case</li>
+</ul>
+<ul>
+<li>TechnicalPoint</li>
+</ul>
+<ul>
+<li>SR_20220705175609_Ingress Controller is not working after the AKS upgrade</li>
+</ul>
+<ul>
+<li>So it needed to change apiVersion in r ingress  from  extensions/v1beta1 to networking.k8s.io/v1：</li>
+</ul>
+<ul>
+<li>（截图方式已经弃用）</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Ingress 中ingressClassName在1.19以及以后的集群中建议定义在spec字段中，在annotation中定义的方式已经弃用：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://kubernetes.io/docs/concepts/services-networking/ingress/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/services-networking/ingress/</a></li>
+</ul>
+<ul>
+<li>Ingress 的API版本已经更新，Beta版本不再支持，Beta versions of Ingress will be removed from K8s after version 1.22, please refer : <a href="https://kubernetes.io/blog/2021/07/26/update-with-ingress-nginx/" target="_blank" rel="noopener">https://kubernetes.io/blog/2021/07/26/update-with-ingress-nginx/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Fuzhangliang</p>
+<p>ingress的定义有两个重要的变化：</p>
+<p>1、第一个是ingressClassName的定义方式已经有变化，需要定义在spec字段中</p>
+<p>2、第二个是ingress 的API版本发生变化，beta版API将不支持</p>
+<p>如下两个工单的问题都是AKS升级之后ingress访问不了的问题。</p>
+<p>Case</p>
+<p>TechnicalPoint</p>
+<p>SR_20220802181005_AKS 集群负载连接不通</p>
+<p>Ingress 中ingressClassName在1.19以及以后的集群中建议定义在spec字段中，在annotation中定义的方式已经弃用：</p>
+<p><a href="https://kubernetes.io/docs/concepts/services-networking/ingress/" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/services-networking/ingress/</a></p>
+<p>我们使用ingress-nginx 4.0.13 在AKS 1.24 上测试，在annotations中指定className的情况下，会报错</p>
+<p>ingress class annotation is not equal to the expected by Ingress Controller&quot; 与客户报错一致，而且ingress无法访问，在spec中指定className则无此问题</p>
+<p>SR_20220705175609_Ingress Controller is not working after the AKS upgrade</p>
+<p>Ingress 的API版本已经更新，Beta版本不再支持，Beta versions of Ingress will be removed from K8s after version 1.22, please refer : <a href="https://kubernetes.io/blog/2021/07/26/update-with-ingress-nginx/" target="_blank" rel="noopener">https://kubernetes.io/blog/2021/07/26/update-with-ingress-nginx/</a></p>
+<p>So it needed to change apiVersion in r ingress  from  extensions/v1beta1 to networking.k8s.io/v1：</p>
+<p>（截图方式已经弃用）</p></article>

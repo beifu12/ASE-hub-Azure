@@ -1,0 +1,203 @@
+<article class="kb-article" data-title="Application Gateway  CPU 100% regex issue in"><h1>Application Gateway  CPU 100% regex issue in</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Bug</li>
+<li>最近修改: 2022-01-25 16:08:19</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Application Gateway CPU 100% regex issue in</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Application Gateway  CPU 100% regex issue in</li>
+</ul>
+<ul>
+<li>Application Gateway  CPU 100% regex issue in our code</li>
+</ul>
+<ul>
+<li>It was a regex issue in our code</li>
+</ul>
+<ul>
+<li>案例2：from Yunjia &amp;  Haitao [REG: 117091416335688] POD NET | HMC | SR_2017091409621 | 应用程序网关的生产环境有问题，但是Azure界面没有显示报错</li>
+</ul>
+<ul>
+<li>AppGW的FailedRequestCount 和 Latency都有明显下降</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Subject</li>
+</ul>
+<ul>
+<li>From</li>
+</ul>
+<ul>
+<li>Li Xiaobing</li>
+</ul>
+<ul>
+<li>To</li>
+</ul>
+<ul>
+<li>azure_wats</li>
+</ul>
+<ul>
+<li>Sent</li>
+</ul>
+<ul>
+<li>2017年9月4日 10:34</li>
+</ul>
+<ul>
+<li>Hi All,</li>
+</ul>
+<ul>
+<li>存在BUG的版本为: GatewayVersion: 14.1.35.4</li>
+</ul>
+<ul>
+<li>应用程序网关两个实例的CPU使用率:</li>
+</ul>
+<ul>
+<li>联系WASU升级版本:</li>
+</ul>
+<ul>
+<li>the 2nd one has competed now, it took about 18 mins.</li>
+</ul>
+<ul>
+<li>两个应用程序网关实例会交替重启，测试时没有丢包，但不确保每次升级都不丢包</li>
+</ul>
+<ul>
+<li>If the version is &lt; 14.7 and you see CPU usage of WaWorkerHost process maxes out feel free to upgrade to 14.7.24.10</li>
+</ul>
+<ul>
+<li>that&#39;s the kind of investigation that PG would do as well</li>
+</ul>
+<ul>
+<li>GatewayVersion: 14.1.35.4</li>
+</ul>
+<ul>
+<li>DeploymentId: 93bfa5b1daec41ceabfb7cd50b12e5a3</li>
+</ul>
+<ul>
+<li>根据部署ID查Cluster</li>
+</ul>
+<ul>
+<li>Jack (李小兵) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>Support direct line: 010-56060237   Customer support hot line: 400-089-0365</li>
+</ul>
+<ul>
+<li>If you have any feedback about my work, please contact me or my manager Zhang Tao on zhang.tao5@oe.21vianet.com</li>
+</ul>
+<ul>
+<li>Hi Haitao,</li>
+</ul>
+<ul>
+<li>感谢与客户沟通~ 以下小结：</li>
+</ul>
+<ul>
+<li>根据与后线产品组的沟通，</li>
+</ul>
+<ul>
+<li>Application Gateway &quot;14.1.35.4&quot; 版本的Instance中，存在进程资源占用率过高问题，这是由此版本Instance本身进程BUG导致。</li>
+</ul>
+<ul>
+<li>对于&quot;14.7.24.10&quot;以后版本的Application Gateway都不会出现这个问题。</li>
+</ul>
+<ul>
+<li>我们将客户的App GW 版本升级后，从后台数据可以看到：</li>
+</ul>
+<ul>
+<li>Instance本身CPU和进程Process Time回归正常范围</li>
+</ul>
+<ul>
+<li>后台数据FYI</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如查看客户访问量低但CPU使用量很高，可联系WASU进行升级</li>
+</ul>
+<ul>
+<li>查看客户应用程序网关版本</li>
+</ul>
+<ul>
+<li>查看客户应用程序网关CPU使用率</li>
+</ul>
+<ul>
+<li>经客户同意降为B级，等待客户的观察结果。如有更新或什么疑问随时联系我~</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>最近接了两个应用程序网关CPU 100%的Case, PG说是代码中一个正则表达式引起的将应用程序网关版本升级到 &quot;GatewayVersion&quot;: &quot;14.7.24.10&quot; 可修复，PG一个多月前说近期会在Mooncake统一升级。</li>
+</ul>
+<ul>
+<li>后线产品组已发现此问题并发布了版本升级补丁，对于已有的老版本AppGW，将Application Gateway版本升级为&quot;14.7.24.10&quot;后，此问题被修复。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>登录: <a href="http://aka.ms/jarvis-dsts-mc" target="_blank" rel="noopener">http://aka.ms/jarvis-dsts-mc</a></li>
+</ul>
+<ul>
+<li>Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></li>
+</ul>
+<ul>
+<li>Cloud solution consulting: 400-161-6585   Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<ul>
+<li>AppGW Instance 进程情况： <a href="https://jarvis-west.dc.ad.msft.net/CC5F4AD7" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/CC5F4AD7</a></li>
+</ul>
+<ul>
+<li>AppGW 请求失败/延迟情况：<a href="https://jarvis-west.dc.ad.msft.net/63510C4B" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/63510C4B</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Application Gateway  CPU 100% regex issue in</p>
+<p>Subject</p>
+<p>Application Gateway  CPU 100% regex issue in our code</p>
+<p>From</p>
+<p>Li Xiaobing</p>
+<p>To</p>
+<p>azure_wats</p>
+<p>Sent</p>
+<p>2017年9月4日 10:34</p>
+<p>Hi All,</p>
+<p>最近接了两个应用程序网关CPU 100%的Case, PG说是代码中一个正则表达式引起的将应用程序网关版本升级到 &quot;GatewayVersion&quot;: &quot;14.7.24.10&quot; 可修复，PG一个多月前说近期会在Mooncake统一升级。</p>
+<p>存在BUG的版本为: GatewayVersion: 14.1.35.4</p>
+<p>如查看客户访问量低但CPU使用量很高，可联系WASU进行升级</p>
+<p>应用程序网关两个实例的CPU使用率:</p>
+<p>联系WASU升级版本:</p>
+<p>the 2nd one has competed now, it took about 18 mins.</p>
+<p>两个应用程序网关实例会交替重启，测试时没有丢包，但不确保每次升级都不丢包</p>
+<p>It was a regex issue in our code</p>
+<p>If the version is &lt; 14.7 and you see CPU usage of WaWorkerHost process maxes out feel free to upgrade to 14.7.24.10</p>
+<p>that&#39;s the kind of investigation that PG would do as well</p>
+<p>查看客户应用程序网关版本</p>
+<p>GatewayVersion: 14.1.35.4</p>
+<p>DeploymentId: 93bfa5b1daec41ceabfb7cd50b12e5a3</p>
+<p>根据部署ID查Cluster</p>
+<p>查看客户应用程序网关CPU使用率</p>
+<p>登录: <a href="http://aka.ms/jarvis-dsts-mc" target="_blank" rel="noopener">http://aka.ms/jarvis-dsts-mc</a></p>
+<p>Jack (李小兵) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060237   Customer support hot line: 400-089-0365</p>
+<p>Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></p>
+<p>Cloud solution consulting: 400-161-6585   Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>If you have any feedback about my work, please contact me or my manager Zhang Tao on zhang.tao5@oe.21vianet.com</p>
+<p>案例2：from Yunjia &amp;  Haitao [REG: 117091416335688] POD NET | HMC | SR_2017091409621 | 应用程序网关的生产环境有问题，但是Azure界面没有显示报错</p>
+<p>Hi Haitao,</p>
+<p>感谢与客户沟通~ 以下小结：</p>
+<p>根据与后线产品组的沟通，</p>
+<p>Application Gateway &quot;14.1.35.4&quot; 版本的Instance中，存在进程资源占用率过高问题，这是由此版本Instance本身进程BUG导致。</p>
+<p>后线产品组已发现此问题并发布了版本升级补丁，对于已有的老版本AppGW，将Application Gateway版本升级为&quot;14.7.24.10&quot;后，此问题被修复。</p>
+<p>对于&quot;14.7.24.10&quot;以后版本的Application Gateway都不会出现这个问题。</p>
+<p>我们将客户的App GW 版本升级后，从后台数据可以看到：</p>
+<p>AppGW的FailedRequestCount 和 Latency都有明显下降</p>
+<p>Instance本身CPU和进程Process Time回归正常范围</p>
+<p>经客户同意降为B级，等待客户的观察结果。如有更新或什么疑问随时联系我~</p>
+<p>后台数据FYI</p>
+<p>AppGW Instance 进程情况： <a href="https://jarvis-west.dc.ad.msft.net/CC5F4AD7" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/CC5F4AD7</a></p>
+<p>AppGW 请求失败/延迟情况：<a href="https://jarvis-west.dc.ad.msft.net/63510C4B" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/63510C4B</a></p></article>

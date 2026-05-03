@@ -1,0 +1,74 @@
+<article class="kb-article" data-title="如何获取文件共享操作记录中的ip地址以及对应的客户端资源信息"><h1>如何获取文件共享操作记录中的ip地址以及对应的客户端资源信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-25 17:42:11</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<ul>
+<li>Ipv6的地址是同一区域的资源访问文件共享时转换后的地址</li>
+</ul>
+<ul>
+<li>Ipv4地址为不同区域的资源访问文件共享的实际公网出口ip,隐去了最后一段。</li>
+</ul>
+<ul>
+<li>如我的测试信息中的地址为：fde4:8dba:3600:6322:6b36:0:ac13:b</li>
+</ul>
+<ul>
+<li>Ipv4 地址也可以从上表中查出对应的信息。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过Jarvis，查询XSMBPerfMetric的日志，可以看到client 显示为以下两种形式：</li>
+</ul>
+<ul>
+<li>打开ASC，并导航到storage account -&gt; Tools， 输入IPV6地址和订阅ID, 点击“Run&quot;，获得对应IPv4的地址</li>
+</ul>
+<ul>
+<li>根据如下的Jarvis action，获得该IP地址关联的网卡，并在ASC里根据网卡的名字找到对应的虚拟机</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>一种为ipv6+端口号，一种为ipv4最后一段为.x+端口号</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/4E9EBB01" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/4E9EBB01</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/677C39C8?genevatraceguid=d1e72c23-4c57-4434-977c-f52bf2be3df2" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/677C39C8?genevatraceguid=d1e72c23-4c57-4434-977c-f52bf2be3df2</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Zhang Lihong</p>
+<p>通过Jarvis，查询XSMBPerfMetric的日志，可以看到client 显示为以下两种形式：</p>
+<p>一种为ipv6+端口号，一种为ipv4最后一段为.x+端口号</p>
+<p>Ipv6的地址是同一区域的资源访问文件共享时转换后的地址</p>
+<p>Ipv4地址为不同区域的资源访问文件共享的实际公网出口ip,隐去了最后一段。</p>
+<p><a href="https://portal.microsoftgeneva.com/s/4E9EBB01" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/4E9EBB01</a></p>
+<p>如我的测试信息中的地址为：fde4:8dba:3600:6322:6b36:0:ac13:b</p>
+<p>打开ASC，并导航到storage account -&gt; Tools， 输入IPV6地址和订阅ID, 点击“Run&quot;，获得对应IPv4的地址</p>
+<p>根据如下的Jarvis action，获得该IP地址关联的网卡，并在ASC里根据网卡的名字找到对应的虚拟机</p>
+<p><a href="https://portal.microsoftgeneva.com/677C39C8?genevatraceguid=d1e72c23-4c57-4434-977c-f52bf2be3df2" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/677C39C8?genevatraceguid=d1e72c23-4c57-4434-977c-f52bf2be3df2</a></p>
+<p>Ipv4 地址也可以从上表中查出对应的信息。</p></article>

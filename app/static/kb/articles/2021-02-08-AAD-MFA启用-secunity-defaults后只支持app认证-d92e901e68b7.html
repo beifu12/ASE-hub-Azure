@@ -1,0 +1,90 @@
+<article class="kb-article" data-title="AAD MFA启用 secunity defaults后只支持app认证"><h1>AAD MFA启用 secunity defaults后只支持app认证</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-02-08 15:34:18</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>johnny</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>johnny</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>johnny</li>
+</ul>
+<ul>
+<li>开启安全默认值后，不支持传统的电话短信认证，只支持app认证。</li>
+</ul>
+<ul>
+<li>测试如下：</li>
+</ul>
+<ul>
+<li>开启安全默认值：</li>
+</ul>
+<ul>
+<li>点击MFA页面:</li>
+</ul>
+<ul>
+<li>需要安装micsoft authenticator：</li>
+</ul>
+<ul>
+<li>然后我创建了一个普通用户test2 输入新密码时也会提示MFA认证：</li>
+</ul>
+<ul>
+<li>且这个账号并没有强制开启MFA：</li>
+</ul>
+<ul>
+<li>开启安全默认后，使用test2账号登录是仍然是要求MFA的。</li>
+</ul>
+<ul>
+<li>另外，目前针对中国区的安卓手机micsoft authenticator 对于安卓系统 只能用code, 不能用notification。</li>
+</ul>
+<ul>
+<li>请大家注意。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>会出现选择身份验证方式，只有移动应用一种：</li>
+</ul>
+<ul>
+<li>而开启安全默认后允许的身份验证方法只有如下两种：</li>
+</ul>
+<ul>
+<li>要求身份验证：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>而我将test2开启MFA后：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/active-directory/fundamentals/concept-fundamentals-security-defaults" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/active-directory/fundamentals/concept-fundamentals-security-defaults</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>johnny</p>
+<p>开启安全默认值后，不支持传统的电话短信认证，只支持app认证。</p>
+<p>测试如下：</p>
+<p>开启安全默认值：</p>
+<p>点击MFA页面:</p>
+<p>会出现选择身份验证方式，只有移动应用一种：</p>
+<p>而开启安全默认后允许的身份验证方法只有如下两种：</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/active-directory/fundamentals/concept-fundamentals-security-defaults" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/active-directory/fundamentals/concept-fundamentals-security-defaults</a></p>
+<p>需要安装micsoft authenticator：</p>
+<p>然后我创建了一个普通用户test2 输入新密码时也会提示MFA认证：</p>
+<p>要求身份验证：</p>
+<p>且这个账号并没有强制开启MFA：</p>
+<p>而我将test2开启MFA后：</p>
+<p>开启安全默认后，使用test2账号登录是仍然是要求MFA的。</p>
+<p>另外，目前针对中国区的安卓手机micsoft authenticator 对于安卓系统 只能用code, 不能用notification。</p>
+<p>请大家注意。</p></article>

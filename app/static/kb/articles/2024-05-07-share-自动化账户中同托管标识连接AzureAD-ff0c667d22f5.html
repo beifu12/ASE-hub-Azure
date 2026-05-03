@@ -1,0 +1,124 @@
+<article class="kb-article" data-title="【share】自动化账户中同托管标识连接AzureAD"><h1>【share】自动化账户中同托管标识连接AzureAD</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-05-07 16:01:03</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>但服务主体方式在自动化账户中退役，客户的user 开了MFA无法交互登录</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>但服务主体方式在自动化账户中退役，客户的user 开了MFA无法交互登录</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Connect-AzureAD</li>
+</ul>
+<ul>
+<li>显示的是用服务主体或用户名密码登录</li>
+</ul>
+<ul>
+<li>用以下方式使用自动化账户的托管标识连接Connect-AzureAD</li>
+</ul>
+<ul>
+<li>首先，取得您自动化账户的托管标识</li>
+</ul>
+<ul>
+<li>以下为我的测试  自动化账户case0844    托管标识的对象id 0b68c84e-b060-4f72-953f-94d0eb5c00e0</li>
+</ul>
+<ul>
+<li>我测试的runbook</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Identity -Environment AzureChinaCloud #登录azure</li>
+</ul>
+<ul>
+<li>$t=Get-AzAccessToken #拿到AzAccessToken</li>
+</ul>
+<ul>
+<li>Connect-AzureAD -AadAccessToken $t.Token -AzureEnvironmentName AzureChinaCloud -AccountId $t.UserId -TenantId $t.TenantId #登录AzureAD</li>
+</ul>
+<ul>
+<li>Connect-AzureAD 参考文档</li>
+</ul>
+<ul>
+<li>需要给托管标识id 0b68c84e-b060-4f72-953f-94d0eb5c00e0授权</li>
+</ul>
+<ul>
+<li>搜索pim</li>
+</ul>
+<ul>
+<li>Microsoft Entra角色</li>
+</ul>
+<ul>
+<li>分配</li>
+</ul>
+<ul>
+<li>添加分配</li>
+</ul>
+<ul>
+<li>我这边选择的是全局管理员</li>
+</ul>
+<ul>
+<li>成员搜索  托管标识id 0b68c84e-b060-4f72-953f-94d0eb5c00e0</li>
+</ul>
+<ul>
+<li>添加分配需要输入理由</li>
+</ul>
+<ul>
+<li>测试我的runbook</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>自动化账户安装好powershell 5运行时的 AzureAD模块</li>
+</ul>
+<ul>
+<li>Get-AzureADDevice #拿到tenant下的device (AzureAD命令)</li>
+</ul>
+<ul>
+<li>可以拿到tenant下的device(命令 Get-AzureADDevice 运行成功)</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/powershell/module/azuread/connect-azuread?view=azureadps-2.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/azuread/connect-azuread?view=azureadps-2.0</a></li>
+</ul>
+<ul>
+<li>我这边测试，用自动化账户的托管标识可以连接到 AzureAD(需用PIM给自动化账户的托管标识分配AAD权限，PIM使用需要相应的许可 <a href="https://docs.azure.cn/zh-cn/entra/id-governance/licensing-fundamentals)" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/id-governance/licensing-fundamentals)</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Connect-AzureAD</p>
+<p><a href="https://learn.microsoft.com/en-us/powershell/module/azuread/connect-azuread?view=azureadps-2.0" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/powershell/module/azuread/connect-azuread?view=azureadps-2.0</a></p>
+<p>显示的是用服务主体或用户名密码登录</p>
+<p>但服务主体方式在自动化账户中退役，客户的user 开了MFA无法交互登录</p>
+<p>用以下方式使用自动化账户的托管标识连接Connect-AzureAD</p>
+<p>我这边测试，用自动化账户的托管标识可以连接到 AzureAD(需用PIM给自动化账户的托管标识分配AAD权限，PIM使用需要相应的许可 <a href="https://docs.azure.cn/zh-cn/entra/id-governance/licensing-fundamentals)" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/id-governance/licensing-fundamentals)</a></p>
+<p>首先，取得您自动化账户的托管标识</p>
+<p>以下为我的测试  自动化账户case0844    托管标识的对象id 0b68c84e-b060-4f72-953f-94d0eb5c00e0</p>
+<p>自动化账户安装好powershell 5运行时的 AzureAD模块</p>
+<p>我测试的runbook</p>
+<p>Connect-AzAccount -Identity -Environment AzureChinaCloud #登录azure</p>
+<p>$t=Get-AzAccessToken #拿到AzAccessToken</p>
+<p>Connect-AzureAD -AadAccessToken $t.Token -AzureEnvironmentName AzureChinaCloud -AccountId $t.UserId -TenantId $t.TenantId #登录AzureAD</p>
+<p>Get-AzureADDevice #拿到tenant下的device (AzureAD命令)</p>
+<p>Connect-AzureAD 参考文档</p>
+<p>需要给托管标识id 0b68c84e-b060-4f72-953f-94d0eb5c00e0授权</p>
+<p>搜索pim</p>
+<p>Microsoft Entra角色</p>
+<p>分配</p>
+<p>添加分配</p>
+<p>我这边选择的是全局管理员</p>
+<p>成员搜索  托管标识id 0b68c84e-b060-4f72-953f-94d0eb5c00e0</p>
+<p>添加分配需要输入理由</p>
+<p>测试我的runbook</p>
+<p>可以拿到tenant下的device(命令 Get-AzureADDevice 运行成功)</p></article>

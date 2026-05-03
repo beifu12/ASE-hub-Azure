@@ -1,0 +1,58 @@
+<article class="kb-article" data-title="Aad_Myapp 跳转"><h1>Aad_Myapp 跳转</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2023-07-04 17:12:32</li>
+<li>JD 相关性: 交付流程/客户支持; Azure AD; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>AAD Myapps portal 应用点击之后跳转的是 应用的主页。如图1. 此时需要满足该应用的的重定向url 有值，经过测试发现不论该值是否是真实地url都可以， 如图 2</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>AAD Myapps portal 应用点击之后跳转的是 应用的主页。如图1. 此时需要满足该应用的的重定向url 有值，经过测试发现不论该值是否是真实地url都可以， 如图 2</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>图1</li>
+</ul>
+<ul>
+<li>图2</li>
+</ul>
+<ul>
+<li>Update-AzADServicePrincipal -DisplayName &quot;mywebtest&quot; -ObjectId &quot;a4b98553-863f-4ad4-a66e-8b6ffaf61833&quot; -Homepage $uri</li>
+</ul>
+<ul>
+<li>Docs link :</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>AAD Myapps portal 应用点击之后跳转的是 应用的主页。如图1. 此时需要满足该应用的的重定向url 有值，经过测试发现不论该值是否是真实地url都可以， 如图 2</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>填充应用层序的主页，可以参考使用powershell 命令 ：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>$uri = &quot;<a href="https://www.bilibili.com&quot;" target="_blank" rel="noopener">https://www.bilibili.com&quot;</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/powershell/module/az.resources/update-azadserviceprincipal?view=azps-9.7.1" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/module/az.resources/update-azadserviceprincipal?view=azps-9.7.1</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>AAD Myapps portal 应用点击之后跳转的是 应用的主页。如图1. 此时需要满足该应用的的重定向url 有值，经过测试发现不论该值是否是真实地url都可以， 如图 2</p>
+<p>图1</p>
+<p>图2</p>
+<p>填充应用层序的主页，可以参考使用powershell 命令 ：</p>
+<p>$uri = &quot;<a href="https://www.bilibili.com&quot;" target="_blank" rel="noopener">https://www.bilibili.com&quot;</a></p>
+<p>Update-AzADServicePrincipal -DisplayName &quot;mywebtest&quot; -ObjectId &quot;a4b98553-863f-4ad4-a66e-8b6ffaf61833&quot; -Homepage $uri</p>
+<p>Docs link :</p>
+<p><a href="https://learn.microsoft.com/zh-cn/powershell/module/az.resources/update-azadserviceprincipal?view=azps-9.7.1" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/powershell/module/az.resources/update-azadserviceprincipal?view=azps-9.7.1</a></p></article>

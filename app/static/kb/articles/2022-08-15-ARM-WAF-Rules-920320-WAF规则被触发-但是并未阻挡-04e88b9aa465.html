@@ -1,0 +1,66 @@
+<article class="kb-article" data-title="[ARM-WAF-Rules-920320]WAF规则被触发，但是并未阻挡"><h1>[ARM-WAF-Rules-920320]WAF规则被触发，但是并未阻挡</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-08-15 10:30:57</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>119011619554430|Pod Net|MS-LED|时代地产|SR_2019011603071|APP GW|Azure app gateway访问报错502</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>119011619554430|Pod Net|MS-LED|时代地产|SR_2019011603071|APP GW|Azure app gateway访问报错502</li>
+</ul>
+<ul>
+<li>Error - Anomaly Score of 4.</li>
+</ul>
+<ul>
+<li>如果触发多个规则，则会统计每个规则的异常分数并计算总和。如果总和超过5分，则触发规则949110，应用程序性网关会阻止Http连接并返回Http Error Code 403。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>针对应用程序网关触发规则920320但未阻挡Http请求的情况，产品组反馈如下：</li>
+</ul>
+<ul>
+<li>规则 “920320” 对应的规则定义如下，其中&quot;Severity“类型为”NOTICE“</li>
+</ul>
+<ul>
+<li>针对不同的&quot;Severity“类如下：</li>
+</ul>
+<ul>
+<li>Critical - Anomaly Score of 5.</li>
+</ul>
+<ul>
+<li>Warning - Anomaly Score of 3.</li>
+</ul>
+<ul>
+<li>Notice - Anomaly Score of 2.</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Azure 应用程序网关防火墙使用异常评分系统来确定威胁级别。每次匹配规则时会增加异常分数，并在达到异常阈值时阻止。请求可能会触发1个或多个规则但如果未超过异常阈值则不会被阻止，这样做的目的是为了减少错误阻挡。在最终用户使用测试脚本进行测试时，Http请求只匹配了标题缺失规则，威胁级别未达到异常阈值，因此应用程序网关未阻挡Http请求。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2019/01/18</p>
+<p>119011619554430|Pod Net|MS-LED|时代地产|SR_2019011603071|APP GW|Azure app gateway访问报错502</p>
+<p>针对应用程序网关触发规则920320但未阻挡Http请求的情况，产品组反馈如下：</p>
+<p>Azure 应用程序网关防火墙使用异常评分系统来确定威胁级别。每次匹配规则时会增加异常分数，并在达到异常阈值时阻止。请求可能会触发1个或多个规则但如果未超过异常阈值则不会被阻止，这样做的目的是为了减少错误阻挡。在最终用户使用测试脚本进行测试时，Http请求只匹配了标题缺失规则，威胁级别未达到异常阈值，因此应用程序网关未阻挡Http请求。</p>
+<p>规则 “920320” 对应的规则定义如下，其中&quot;Severity“类型为”NOTICE“</p>
+<p>针对不同的&quot;Severity“类如下：</p>
+<p>Critical - Anomaly Score of 5.</p>
+<p>Error - Anomaly Score of 4.</p>
+<p>Warning - Anomaly Score of 3.</p>
+<p>Notice - Anomaly Score of 2.</p>
+<p>如果触发多个规则，则会统计每个规则的异常分数并计算总和。如果总和超过5分，则触发规则949110，应用程序性网关会阻止Http连接并返回Http Error Code 403。</p></article>

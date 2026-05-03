@@ -336,3 +336,34 @@ async def api_translate_zh2en(q: str = "", email: str = ""):
     if not q.strip():
         return {"error": "Query parameter 'q' required"}
     return universal_translator.translate_zh2en(q.strip(), email or None)
+
+
+# ═══════════ KB SEARCH ═══════════
+
+from app.services import kb_search
+
+
+@router.get("/kb/search")
+async def api_kb_search(
+    q: str = "",
+    domain: str = "",
+    service: str = "",
+    page: int = 1,
+    page_size: int = 20
+):
+    """Search Azure KB articles with full-text search."""
+    if not q.strip():
+        return {"results": [], "total": 0, "page": 1}
+    return kb_search.search_kb(q.strip(), domain, service, page, page_size)
+
+
+@router.get("/kb/services")
+async def api_kb_services():
+    """Get KB domains and services for filtering."""
+    return kb_search.get_services()
+
+
+@router.get("/kb/stats")
+async def api_kb_stats():
+    """Get KB statistics."""
+    return kb_search.get_statistics()

@@ -1,0 +1,129 @@
+<article class="kb-article" data-title="【Share】使用循环语句配合Az CLI导出所有资源组角色授权"><h1>【Share】使用循环语句配合Az CLI导出所有资源组角色授权</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-01 04:00:07</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>源自客户查看大量资源组、授权的需求，我这边撰写了一个脚本，可以将资源组、登录账户、角色、和授权范围，输出成CSV。供大家参考，如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>源自客户查看大量资源组、授权的需求，我这边撰写了一个脚本，可以将资源组、登录账户、角色、和授权范围，输出成CSV。供大家参考，如下：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li># 设置输出 CSV 文件名</li>
+</ul>
+<ul>
+<li>$OutputCSV = &quot;role_assignments.csv&quot;</li>
+</ul>
+<ul>
+<li># 创建 CSV 文件并添加表头</li>
+</ul>
+<ul>
+<li>@&quot;</li>
+</ul>
+<ul>
+<li>ResourceGroup,PrincipalName,PrincipalType,Role,Scope</li>
+</ul>
+<ul>
+<li>&quot;@ | Out-File -FilePath $OutputCSV -Encoding utf8</li>
+</ul>
+<ul>
+<li># 获取订阅下的所有资源组</li>
+</ul>
+<ul>
+<li>$ResourceGroups = az group list  --output json| ConvertFrom-Json</li>
+</ul>
+<ul>
+<li># 对每个资源组执行循环</li>
+</ul>
+<ul>
+<li>foreach ($Group in $ResourceGroups.Name) {</li>
+</ul>
+<ul>
+<li># 获取该资源组的所有角色分配（包括继承）</li>
+</ul>
+<ul>
+<li>$RoleAssignments = az role assignment list --include-inherited --resource-group $Group --output json | ConvertFrom-Json</li>
+</ul>
+<ul>
+<li># 将分配信息追加到 CSV 文件中</li>
+</ul>
+<ul>
+<li>foreach ($Assignment in $RoleAssignments) {</li>
+</ul>
+<ul>
+<li>Add-Content -Path $OutputCSV -Value @&quot;</li>
+</ul>
+<ul>
+<li>$($Group),$($Assignment.principalName),$($Assignment.principalType),$($Assignment.roleDefinitionName),$($Assignment.scope)</li>
+</ul>
+<ul>
+<li>&quot;@</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>Write-Host &quot;CSV file &#39;$OutputCSV&#39; has been created with the role assignments.&quot;</li>
+</ul>
+<ul>
+<li>3、输出示例：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>源自客户查看大量资源组、授权的需求，我这边撰写了一个脚本，可以将资源组、登录账户、角色、和授权范围，输出成CSV。供大家参考，如下：</li>
+</ul>
+<ul>
+<li>1、请打开Powershell ISE 新建空白脚本并提前设置路径到D盘，方便导出查看文件，并登录，如果有多个订阅，请提前设置订阅：</li>
+</ul>
+<ul>
+<li>az cloud set -n AzureChinaCloud 切换到中国Azure后使用az login登录</li>
+</ul>
+<ul>
+<li>az account set   --subscription &lt;SubscriptionId&gt;  切换订阅</li>
+</ul>
+<ul>
+<li>2、运行以下脚本即将信息导出到D盘</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/9/14</p>
+<p>源自客户查看大量资源组、授权的需求，我这边撰写了一个脚本，可以将资源组、登录账户、角色、和授权范围，输出成CSV。供大家参考，如下：</p>
+<p>1、请打开Powershell ISE 新建空白脚本并提前设置路径到D盘，方便导出查看文件，并登录，如果有多个订阅，请提前设置订阅：</p>
+<p>az cloud set -n AzureChinaCloud 切换到中国Azure后使用az login登录</p>
+<p>az account set   --subscription &lt;SubscriptionId&gt;  切换订阅</p>
+<p>2、运行以下脚本即将信息导出到D盘</p>
+<h1>设置输出 CSV 文件名</h1>
+<p>$OutputCSV = &quot;role_assignments.csv&quot;</p>
+<h1>创建 CSV 文件并添加表头</h1>
+<p>@&quot;</p>
+<p>ResourceGroup,PrincipalName,PrincipalType,Role,Scope</p>
+<p>&quot;@ | Out-File -FilePath $OutputCSV -Encoding utf8</p>
+<h1>获取订阅下的所有资源组</h1>
+<p>$ResourceGroups = az group list  --output json| ConvertFrom-Json</p>
+<h1>对每个资源组执行循环</h1>
+<p>foreach ($Group in $ResourceGroups.Name) {</p>
+<h1>获取该资源组的所有角色分配（包括继承）</h1>
+<p>$RoleAssignments = az role assignment list --include-inherited --resource-group $Group --output json | ConvertFrom-Json</p>
+<h1>将分配信息追加到 CSV 文件中</h1>
+<p>foreach ($Assignment in $RoleAssignments) {</p>
+<p>Add-Content -Path $OutputCSV -Value @&quot;</p>
+<p>$($Group),$($Assignment.principalName),$($Assignment.principalType),$($Assignment.roleDefinitionName),$($Assignment.scope)</p>
+<p>&quot;@</p>
+<p>}</p>
+<p>Write-Host &quot;CSV file &#39;$OutputCSV&#39; has been created with the role assignments.&quot;</p>
+<p>3、输出示例：</p></article>

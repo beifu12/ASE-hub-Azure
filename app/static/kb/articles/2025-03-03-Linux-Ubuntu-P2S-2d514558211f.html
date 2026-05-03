@@ -1,0 +1,138 @@
+<article class="kb-article" data-title="Linux Ubuntu P2S"><h1>Linux Ubuntu P2S</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2025-03-03 18:32:58</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>RE: [REG:118072018620177] Pod Net|T100|Nestle|SR_2018072050733|VPN|点到站点连接</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>RE: [REG:118072018620177] Pod Net|T100|Nestle|SR_2018072050733|VPN|点到站点连接</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>RE: [REG:118072018620177] Pod Net|T100|Nestle|SR_2018072050733|VPN|点到站点连接</li>
+</ul>
+<ul>
+<li>根据沟通请将以下测试总结反馈客户：</li>
+</ul>
+<ul>
+<li>apt-get install strongswan-ikev2 strongswan-plugin-eap-tls</li>
+</ul>
+<ul>
+<li>apt-get install libstrongswan-standard-plugins</li>
+</ul>
+<ul>
+<li>sudo sed -i &#39;s/\sload =.*/ load = no/g&#39; /etc/strongswan.d/charon/{af-alg,ctr,gcrypt}.conf</li>
+</ul>
+<ul>
+<li>/etc/ipsec.conf</li>
+</ul>
+<ul>
+<li>config setup</li>
+</ul>
+<ul>
+<li>conn azure</li>
+</ul>
+<ul>
+<li>尝试使用Windows Server建立P2S连接，Linux 服务器与Windows Server建立连接通过NAT实现与VPN 网关连接。在测试过程中发现，Windows Server实现NAT转换是基于网卡的，可以Linux 服务器可以实现通过Windows Server NAT转换访问Internet。但是Windows Server在建立P2S连接时会建立PPP连接获得P2S连接地址，但是Windows Sever 不支持通过该地址实现NAT 和流量转发。</li>
+</ul>
+<ul>
+<li>PPP adapter Orealtestvnet:</li>
+</ul>
+<ul>
+<li>Connection-specific DNS Suffix  . :</li>
+</ul>
+<ul>
+<li>IPv4 Address. . . . . . . . . . . : 172.16.100.130</li>
+</ul>
+<ul>
+<li>Subnet Mask . . . . . . . . . . . : 255.255.255.255</li>
+</ul>
+<ul>
+<li>Default Gateway . . . . . . . . . :</li>
+</ul>
+<ul>
+<li>因此针对当前环境Ubuntu 16.0.10实现和Azure VPN 网关P2S连接没有找到合适的实施方案。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Ubuntu 16.0.10 不支持 strongSwan GUI（下面一篇小兵的测试文档其实是可以的）。 如果想要使用 Ubuntu 16.0.10，则必须使用命令行。测试使用命令行如下反复测试P2S连接失败。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>keyexchange=ikev2</li>
+</ul>
+<ul>
+<li>type=tunnel</li>
+</ul>
+<ul>
+<li>leftfirewall=yes</li>
+</ul>
+<ul>
+<li>left=%any</li>
+</ul>
+<ul>
+<li>leftauth=eap-tls</li>
+</ul>
+<ul>
+<li>leftid=%client # use the DNS alternative name prefixed with the %</li>
+</ul>
+<ul>
+<li>right=azuregateway-00112233-4455-6677-8899-aabbccddeeff-aabbccddeeff.cloudapp.net # Azure VPN gateway address</li>
+</ul>
+<ul>
+<li>rightid=%azuregateway-00112233-4455-6677-8899-aabbccddeeff-aabbccddeeff.cloudapp.net # Azure VPN gateway address, prefixed with %</li>
+</ul>
+<ul>
+<li>rightsubnet=0.0.0.0/0</li>
+</ul>
+<ul>
+<li>leftsourceip=%config</li>
+</ul>
+<ul>
+<li>auto=add</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>在Linux安装P2S连接需要使用strongSwan, Ubuntu 17.0.4支持 strongSwan GUI，配置步骤参考文档<a href="https://docs.microsoft.com/zh-cn/azure/vpn-gateway/point-to-site-vpn-client-configuration-azure-cert#install" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/vpn-gateway/point-to-site-vpn-client-configuration-azure-cert#install</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>RE: [REG:118072018620177] Pod Net|T100|Nestle|SR_2018072050733|VPN|点到站点连接</p>
+<p>根据沟通请将以下测试总结反馈客户：</p>
+<p>在Linux安装P2S连接需要使用strongSwan, Ubuntu 17.0.4支持 strongSwan GUI，配置步骤参考文档<a href="https://docs.microsoft.com/zh-cn/azure/vpn-gateway/point-to-site-vpn-client-configuration-azure-cert#install" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/vpn-gateway/point-to-site-vpn-client-configuration-azure-cert#install</a></p>
+<p>Ubuntu 16.0.10 不支持 strongSwan GUI（下面一篇小兵的测试文档其实是可以的）。 如果想要使用 Ubuntu 16.0.10，则必须使用命令行。测试使用命令行如下反复测试P2S连接失败。</p>
+<p>apt-get install strongswan-ikev2 strongswan-plugin-eap-tls</p>
+<p>apt-get install libstrongswan-standard-plugins</p>
+<p>sudo sed -i &#39;s/\sload =.*/ load = no/g&#39; /etc/strongswan.d/charon/{af-alg,ctr,gcrypt}.conf</p>
+<p>/etc/ipsec.conf</p>
+<p>config setup</p>
+<p>conn azure</p>
+<p>keyexchange=ikev2</p>
+<p>type=tunnel</p>
+<p>leftfirewall=yes</p>
+<p>left=%any</p>
+<p>leftauth=eap-tls</p>
+<p>leftid=%client # use the DNS alternative name prefixed with the %</p>
+<p>right=azuregateway-00112233-4455-6677-8899-aabbccddeeff-aabbccddeeff.cloudapp.net # Azure VPN gateway address</p>
+<p>rightid=%azuregateway-00112233-4455-6677-8899-aabbccddeeff-aabbccddeeff.cloudapp.net # Azure VPN gateway address, prefixed with %</p>
+<p>rightsubnet=0.0.0.0/0</p>
+<p>leftsourceip=%config</p>
+<p>auto=add</p>
+<p>尝试使用Windows Server建立P2S连接，Linux 服务器与Windows Server建立连接通过NAT实现与VPN 网关连接。在测试过程中发现，Windows Server实现NAT转换是基于网卡的，可以Linux 服务器可以实现通过Windows Server NAT转换访问Internet。但是Windows Server在建立P2S连接时会建立PPP连接获得P2S连接地址，但是Windows Sever 不支持通过该地址实现NAT 和流量转发。</p>
+<p>PPP adapter Orealtestvnet:</p>
+<p>Connection-specific DNS Suffix  . :</p>
+<p>IPv4 Address. . . . . . . . . . . : 172.16.100.130</p>
+<p>Subnet Mask . . . . . . . . . . . : 255.255.255.255</p>
+<p>Default Gateway . . . . . . . . . :</p>
+<p>因此针对当前环境Ubuntu 16.0.10实现和Azure VPN 网关P2S连接没有找到合适的实施方案。</p></article>

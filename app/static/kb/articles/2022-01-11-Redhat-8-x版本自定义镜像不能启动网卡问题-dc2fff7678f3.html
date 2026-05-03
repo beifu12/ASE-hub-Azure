@@ -1,0 +1,90 @@
+<article class="kb-article" data-title="Redhat 8.x版本自定义镜像不能启动网卡问题"><h1>Redhat 8.x版本自定义镜像不能启动网卡问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-01-11 13:45:53</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2021年9月7日</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2021年9月7日</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2021年9月7日</li>
+</ul>
+<ul>
+<li>johnny</li>
+</ul>
+<ul>
+<li>关于redhat 8.x版本默认已经不安装network 服务了，改为使用networkmanager服务统一管理网络，所以引起当前工单问题（根源原因）</li>
+</ul>
+<ul>
+<li>这个工单客户使用自己的镜像，创建虚拟机后不能ssh。</li>
+</ul>
+<ul>
+<li>而之前redhat7.x 中，除了networkmanager，还有network服务。</li>
+</ul>
+<ul>
+<li>But yesterday in serial console , your eth0 configure file set is.</li>
+</ul>
+<ul>
+<li>And in rhel or centos 8.x use Networkmanager not use network.service.</li>
+</ul>
+<ul>
+<li>补充知识点：</li>
+</ul>
+<ul>
+<li># nmcli con mod eth0 connection.autoconnect yes ipv4.method auto</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过console排查，是网卡没有启动，没有获取ip地址。</li>
+</ul>
+<ul>
+<li>排查配置文件发现，客户配置了NM_controlled = no ，这样networkmanager就不能管理网卡。</li>
+</ul>
+<ul>
+<li>所以，如果大家之后遇到rhel8.x或者centos8.x没有启动网卡的问题，可以排查一下网卡配置文件的NM_controlled = no选项</li>
+</ul>
+<ul>
+<li>I check my centos 8.x vm :</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>最终确认，是客户镜像在本地运行的脚本配置了NM_controlled = no这个选项导致问题。</li>
+</ul>
+<ul>
+<li>nmcli命令是从redhat 7.x开始使用的网络命令connection.autoconnect ，相对于网卡配置文件中 noboot 选项</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>That not configure NM_controlled = no</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021年9月7日</p>
+<p>johnny</p>
+<p>关于redhat 8.x版本默认已经不安装network 服务了，改为使用networkmanager服务统一管理网络，所以引起当前工单问题（根源原因）</p>
+<p>这个工单客户使用自己的镜像，创建虚拟机后不能ssh。</p>
+<p>通过console排查，是网卡没有启动，没有获取ip地址。</p>
+<p>排查配置文件发现，客户配置了NM_controlled = no ，这样networkmanager就不能管理网卡。</p>
+<p>而之前redhat7.x 中，除了networkmanager，还有network服务。</p>
+<p>最终确认，是客户镜像在本地运行的脚本配置了NM_controlled = no这个选项导致问题。</p>
+<p>所以，如果大家之后遇到rhel8.x或者centos8.x没有启动网卡的问题，可以排查一下网卡配置文件的NM_controlled = no选项</p>
+<p>I check my centos 8.x vm :</p>
+<p>That not configure NM_controlled = no</p>
+<p>But yesterday in serial console , your eth0 configure file set is.</p>
+<p>And in rhel or centos 8.x use Networkmanager not use network.service.</p>
+<p>补充知识点：</p>
+<h1>nmcli con mod eth0 connection.autoconnect yes ipv4.method auto</h1>
+<p>nmcli命令是从redhat 7.x开始使用的网络命令connection.autoconnect ，相对于网卡配置文件中 noboot 选项</p></article>

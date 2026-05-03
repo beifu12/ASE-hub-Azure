@@ -1,0 +1,136 @@
+<article class="kb-article" data-title="为东2，北2Windows虚拟机设置经典警报监控CPU"><h1>为东2，北2Windows虚拟机设置经典警报监控CPU</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-20 14:04:03</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2019111863392_[S500]虚拟机管理告警</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2019111863392_[S500]虚拟机管理告警</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_2019111863392_[S500]虚拟机管理告警</li>
+</ul>
+<ul>
+<li>感谢您的耐心等待。基于测试为您提供如下参考：</li>
+</ul>
+<ul>
+<li>一、对于平台指标的警报，您使用 虚拟机—警报—新建预警规则，根据提示设置即可。</li>
+</ul>
+<ul>
+<li>二、目前，设置虚拟机内存等来宾级别指标的警报时，需要使用经典警报。</li>
+</ul>
+<ul>
+<li>前提条件：经典警报需要启用来宾级别监视，需要在虚拟机开启的情况下才能开启。参考下图：</li>
+</ul>
+<ul>
+<li>对于东部和北部的虚拟机，您直接在门户上参考下图添加即可。</li>
+</ul>
+<ul>
+<li>对于东部2和北部2的虚拟机，设置方法如下：</li>
+</ul>
+<ul>
+<li>当前在门户上对中国东部2和中国北部2的虚拟机创建经典警报规则时，会有如下提示</li>
+</ul>
+<ul>
+<li>样例如下：</li>
+</ul>
+<ul>
+<li># 创建发送邮件规则，请将参数替换为您的邮件地址</li>
+</ul>
+<ul>
+<li>$actionEmail = New-AzAlertRuleEmail -CustomEmail zhang.lihong@oe.21vianet.com</li>
+</ul>
+<ul>
+<li># 创建警报规则，请根据实际情况调整参数</li>
+</ul>
+<ul>
+<li>相关解释：</li>
+</ul>
+<ul>
+<li>Name:规则名称</li>
+</ul>
+<ul>
+<li>Location：请填写China East或者China North</li>
+</ul>
+<ul>
+<li>ResourceGroup:保存警报的资源组名称</li>
+</ul>
+<ul>
+<li>TargetResourceId:虚拟机的资源ID</li>
+</ul>
+<ul>
+<li>MetricName：</li>
+</ul>
+<ul>
+<li>WindowSize：时间间隔</li>
+</ul>
+<ul>
+<li>TimeAggregationOperator：聚合方式</li>
+</ul>
+<ul>
+<li>警报邮件样例如下：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在诊断设置 “启用来宾级别监视”后，请参考如下位置获取指标名称</li>
+</ul>
+<ul>
+<li>创建完成后，您可以在  虚拟机 – 警报 – 选择警报所在的资源组，然后点击 “查看经典警报” 看到相应的规则，并进行更改。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>2．可以使用PowerShell绕过该报错创建规则</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Add-AzMetricAlertRule -Name east2win1cpu -Location &quot;China North&quot; -ResourceGroup &quot;zlhrgn&quot; -TargetResourceId &quot;/subscriptions/f1f6673a-8b2e-41c0-b35a-1******/resourceGroups/adrg/providers/Microsoft.Compute/virtualMachines/adclient2012&quot; -MetricName &quot;\Processor Information(_Total)\% Processor Time&quot; -Operator GreaterThan -Threshold 0.1 -WindowSize 00:05:00 -TimeAggregationOperator Average -Action $actionEmail</li>
+</ul>
+<ul>
+<li>Threshold：阈值</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>点击该警报，是可以通过门户来编辑的</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：<a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-classic-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-classic-portal</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2019111863392_[S500]虚拟机管理告警</p>
+<p>感谢您的耐心等待。基于测试为您提供如下参考：</p>
+<p>一、对于平台指标的警报，您使用 虚拟机—警报—新建预警规则，根据提示设置即可。</p>
+<p>二、目前，设置虚拟机内存等来宾级别指标的警报时，需要使用经典警报。</p>
+<p>前提条件：经典警报需要启用来宾级别监视，需要在虚拟机开启的情况下才能开启。参考下图：</p>
+<p>对于东部和北部的虚拟机，您直接在门户上参考下图添加即可。</p>
+<p>参考文档：<a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-classic-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/alerts-classic-portal</a></p>
+<p>对于东部2和北部2的虚拟机，设置方法如下：</p>
+<p>当前在门户上对中国东部2和中国北部2的虚拟机创建经典警报规则时，会有如下提示</p>
+<p>2．可以使用PowerShell绕过该报错创建规则</p>
+<p>样例如下：</p>
+<h1>创建发送邮件规则，请将参数替换为您的邮件地址</h1>
+<p>$actionEmail = New-AzAlertRuleEmail -CustomEmail zhang.lihong@oe.21vianet.com</p>
+<h1>创建警报规则，请根据实际情况调整参数</h1>
+<p>Add-AzMetricAlertRule -Name east2win1cpu -Location &quot;China North&quot; -ResourceGroup &quot;zlhrgn&quot; -TargetResourceId &quot;/subscriptions/f1f6673a-8b2e-41c0-b35a-1******/resourceGroups/adrg/providers/Microsoft.Compute/virtualMachines/adclient2012&quot; -MetricName &quot;\Processor Information(_Total)\% Processor Time&quot; -Operator GreaterThan -Threshold 0.1 -WindowSize 00:05:00 -TimeAggregationOperator Average -Action $actionEmail</p>
+<p>相关解释：</p>
+<p>Name:规则名称</p>
+<p>Location：请填写China East或者China North</p>
+<p>ResourceGroup:保存警报的资源组名称</p>
+<p>TargetResourceId:虚拟机的资源ID</p>
+<p>MetricName：</p>
+<p>在诊断设置 “启用来宾级别监视”后，请参考如下位置获取指标名称</p>
+<p>Threshold：阈值</p>
+<p>WindowSize：时间间隔</p>
+<p>TimeAggregationOperator：聚合方式</p>
+<p>创建完成后，您可以在  虚拟机 – 警报 – 选择警报所在的资源组，然后点击 “查看经典警报” 看到相应的规则，并进行更改。</p>
+<p>点击该警报，是可以通过门户来编辑的</p>
+<p>警报邮件样例如下：</p></article>

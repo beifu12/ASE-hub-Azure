@@ -1,0 +1,130 @@
+<article class="kb-article" data-title="ASM(Classic) ReservedIP迁移到ARM下不迁移虚拟机，只迁移保留的虚拟IP"><h1>ASM(Classic) ReservedIP迁移到ARM下不迁移虚拟机，只迁移保留的虚拟IP</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2023-05-06 16:02:49</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>不迁移虚拟机，只迁移保留的虚拟IP：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>不迁移虚拟机，只迁移保留的虚拟IP：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>不迁移虚拟机，只迁移保留的虚拟IP：</li>
+</ul>
+<ul>
+<li>指定将要登录到Azure China:</li>
+</ul>
+<ul>
+<li>Add-AzureAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>在弹出的浏览器窗口中输入Azure订阅账号和密码。</li>
+</ul>
+<ul>
+<li>获取要迁移的那个Public IP的保留名称：</li>
+</ul>
+<ul>
+<li>解除Public IP与Cloud Service的关联, ServiceName在Get-AzureReservedIP的输出中有，对应的Classic VM保持Running状态不要关机：</li>
+</ul>
+<ul>
+<li>准备迁移到ARM模式中，将黄色部分替换成相应IP的ReservedIPName：：</li>
+</ul>
+<ul>
+<li>Move-AzureReservedIP -ReservedIPName &#39;myReservedIP&#39; -Prepare</li>
+</ul>
+<ul>
+<li>如果此时不想继续迁移了，则可以中止迁移操作，且是唯一的回退到ASM （Classic）机会：</li>
+</ul>
+<ul>
+<li>Move-AzureReservedIP -ReservedIPName &#39;myReservedIP&#39; -Abort</li>
+</ul>
+<ul>
+<li>提交完成最终的迁移操作：</li>
+</ul>
+<ul>
+<li>Move-AzureReservedIP -ReservedIPName &#39;myReservedIP&#39; -Commit</li>
+</ul>
+<ul>
+<li>测试网络连通性，业务连通性。</li>
+</ul>
+<ul>
+<li>注意：</li>
+</ul>
+<ul>
+<li>公网IP从ASM(Classic)迁移到ARM模式后不支持回退到ASM（Classic）模式下。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>验证是否可以迁移，将黄色部分替换成相应IP的ReservedIPName：</li>
+</ul>
+<ul>
+<li>$validate = Move-AzureReservedIP -ReservedIPName &#39;myReservedIP&#39; -Validate</li>
+</ul>
+<ul>
+<li>$validate</li>
+</ul>
+<ul>
+<li>如果验证成功，继续进行第5步；如果失败请执行以下指令查看具体的验证失败原因：</li>
+</ul>
+<ul>
+<li>$validate.validationmessages</li>
+</ul>
+<ul>
+<li>迁移完成后该公网IP会自动放到一个叫xxxxx-Migrated的资源组中，xxx为ReservedIPName，根据需要再将其迁移到目标资源组中，直接Azure Portal上点击资源组名称处的（move）链接进行操作。</li>
+</ul>
+<ul>
+<li>Azure Portal把新创建出来的ARM模式下的VM找到，点击其网卡，进行公网IP的变更：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Classic Reserved Public IP迁移到ARM模式下的步骤，根据文档描述只有如下几步，在PowerShell中使用Classic Module相关指令：</li>
+</ul>
+<ul>
+<li>Get-AzureReservedIP</li>
+</ul>
+<ul>
+<li>Remove-AzureReservedIPAssociation -ReservedIPName &#39;myReservedIP&#39;  -ServiceName ‘ServiceName’</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>迁移完成后该Public IP SKU为Basic，如果您新建的ARM模式下的VM Public IP SKU为Standard，此时在Azure Portal中找到那个Public IP，然后进行SKU的升级，Overview里就会有提示信息，根据提示操作。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>不迁移虚拟机，只迁移保留的虚拟IP：</p>
+<p>Classic Reserved Public IP迁移到ARM模式下的步骤，根据文档描述只有如下几步，在PowerShell中使用Classic Module相关指令：</p>
+<p>指定将要登录到Azure China:</p>
+<p>Add-AzureAccount -Environment AzureChinaCloud</p>
+<p>在弹出的浏览器窗口中输入Azure订阅账号和密码。</p>
+<p>获取要迁移的那个Public IP的保留名称：</p>
+<p>Get-AzureReservedIP</p>
+<p>解除Public IP与Cloud Service的关联, ServiceName在Get-AzureReservedIP的输出中有，对应的Classic VM保持Running状态不要关机：</p>
+<p>Remove-AzureReservedIPAssociation -ReservedIPName &#39;myReservedIP&#39;  -ServiceName ‘ServiceName’</p>
+<p>验证是否可以迁移，将黄色部分替换成相应IP的ReservedIPName：</p>
+<p>$validate = Move-AzureReservedIP -ReservedIPName &#39;myReservedIP&#39; -Validate</p>
+<p>$validate</p>
+<p>如果验证成功，继续进行第5步；如果失败请执行以下指令查看具体的验证失败原因：</p>
+<p>$validate.validationmessages</p>
+<p>准备迁移到ARM模式中，将黄色部分替换成相应IP的ReservedIPName：：</p>
+<p>Move-AzureReservedIP -ReservedIPName &#39;myReservedIP&#39; -Prepare</p>
+<p>如果此时不想继续迁移了，则可以中止迁移操作，且是唯一的回退到ASM （Classic）机会：</p>
+<p>Move-AzureReservedIP -ReservedIPName &#39;myReservedIP&#39; -Abort</p>
+<p>提交完成最终的迁移操作：</p>
+<p>Move-AzureReservedIP -ReservedIPName &#39;myReservedIP&#39; -Commit</p>
+<p>迁移完成后该公网IP会自动放到一个叫xxxxx-Migrated的资源组中，xxx为ReservedIPName，根据需要再将其迁移到目标资源组中，直接Azure Portal上点击资源组名称处的（move）链接进行操作。</p>
+<p>迁移完成后该Public IP SKU为Basic，如果您新建的ARM模式下的VM Public IP SKU为Standard，此时在Azure Portal中找到那个Public IP，然后进行SKU的升级，Overview里就会有提示信息，根据提示操作。</p>
+<p>Azure Portal把新创建出来的ARM模式下的VM找到，点击其网卡，进行公网IP的变更：</p>
+<p>测试网络连通性，业务连通性。</p>
+<p>注意：</p>
+<p>公网IP从ASM(Classic)迁移到ARM模式后不支持回退到ASM（Classic）模式下。</p></article>

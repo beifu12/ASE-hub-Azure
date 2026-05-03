@@ -1,0 +1,222 @@
+<article class="kb-article" data-title="虚拟机创建时间-1"><h1>虚拟机创建时间-1</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-11-24 09:07:00</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>try {$osdisk = Get-AzureRmDisk -DiskName $vm.StorageProfile.OsDisk.Name -ResourceGroupName $vm.ResourceGroupName -ErrorAction SilentlyContinue</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>try {$osdisk = Get-AzureRmDisk -DiskName $vm.StorageProfile.OsDisk.Name -ResourceGroupName $vm.ResourceGroupName -ErrorAction SilentlyContinue</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>注意：该信息已失效，作为存档备查</li>
+</ul>
+<ul>
+<li>$vm = get-azurermvm -name &#39;VMName&#39; -ResourceGroupName &#39;RG&#39;</li>
+</ul>
+<ul>
+<li>$VMs = Get-AzureRMVM</li>
+</ul>
+<ul>
+<li>foreach ($vm in $VMs) {</li>
+</ul>
+<ul>
+<li>$vmCreationTime = $null</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>#If could not find a match</li>
+</ul>
+<ul>
+<li>if($vmCreationTime -eq $null)</li>
+</ul>
+<ul>
+<li>#Disk method</li>
+</ul>
+<ul>
+<li>#Managed Disk</li>
+</ul>
+<ul>
+<li>$osdisk = $null</li>
+</ul>
+<ul>
+<li>$vmCreationTime = $($osdisk.TimeCreated)}</li>
+</ul>
+<ul>
+<li>catch {}</li>
+</ul>
+<ul>
+<li>if($osdisk -ne $null)</li>
+</ul>
+<ul>
+<li>#Obviously flaws here if used an existing disk but its good enough. For unmanaged looks like I can do:</li>
+</ul>
+<ul>
+<li>if($osdisk -eq $null)</li>
+</ul>
+<ul>
+<li>#Unmanaged Disk</li>
+</ul>
+<ul>
+<li>$vmosdiskloc = $vm.StorageProfile.OsDisk.vhd.Uri</li>
+</ul>
+<ul>
+<li>$storaccount = Get-AzureRmStorageAccount | where {$_.StorageAccountName -eq $vmosdiskstorageact}</li>
+</ul>
+<ul>
+<li>$vmosdiskcontainer = $vmosdiskloc.Substring(8).Split(&quot;/&quot;)[1]  #extract the middle path between location and vhd which would be the container</li>
+</ul>
+<ul>
+<li>$vmosdiskname = $vmosdiskloc.Substring(8).Split(&quot;/&quot;)[2]</li>
+</ul>
+<ul>
+<li>$OSBlob = Get-AzureStorageBlob -Context $storaccount.Context -Container $vmosdiskcontainer -Blob $vmosdiskname</li>
+</ul>
+<ul>
+<li>try {$vmCreationTime = [datetime]::ParseExact(($OSBlob.Name.Substring(($OSBlob.Name.Length-18),14)),&#39;yyyyMMddHHmmss&#39;,$null)}</li>
+</ul>
+<ul>
+<li>catch { $vmCreationTime = $null}</li>
+</ul>
+<ul>
+<li>if($vmCreationTime -ne $null)</li>
+</ul>
+<ul>
+<li>#VM image reference</li>
+</ul>
+<ul>
+<li>输出结果示例：</li>
+</ul>
+<ul>
+<li>119061721000379_PODVM | T100 | Nestle (China) Ltd., | SR_2019061732864_[T100]获取相关虚拟机信息</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>目前Azure平台没有直接提供有关虚拟机创建时间的字段供查询，我们已经向Azure论坛提交了一个对应的需求反馈：</li>
+</ul>
+<ul>
+<li>$logs = Get-AzureRmLog -ResourceId $vm.Id -StartTime (Get-Date).AddDays(-90)</li>
+</ul>
+<ul>
+<li>foreach($log in $logs)</li>
+</ul>
+<ul>
+<li>if(($log.OperationName.Value -eq &#39;Microsoft.Compute/virtualMachines/write&#39;) -and ($log.SubStatus.Value -eq &#39;Created&#39;))</li>
+</ul>
+<ul>
+<li>Write-Output &quot;- Found VM creation at $($log.EventTimestamp) for VM $($log.Id.split(&quot;/&quot;)[8]) in Resource Group $($log.ResourceGroupName) found in Azure logs&quot;</li>
+</ul>
+<ul>
+<li># write-output &quot;   - ID $($log.Id)&quot;</li>
+</ul>
+<ul>
+<li>$vmCreationTime = $($log.EventTimestamp)</li>
+</ul>
+<ul>
+<li>#$log</li>
+</ul>
+<ul>
+<li>{ Write-Output &quot;VM creation at $vmCreationTime for VM $($log.Id.split(&quot;/&quot;)[8]) in Resource Group $($log.ResourceGroupName) via managed disk creation time&quot;  }</li>
+</ul>
+<ul>
+<li>{  Write-Output &quot;VM creation at $vmCreationTime for VM $($log.Id.split(&quot;/&quot;)[8]) in Resource Group $($log.ResourceGroupName) via date in page blob for OS disk&quot; }</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>另外，关于虚拟机所使用的镜像，我们可以使用如下powershell 命令获得：</li>
+</ul>
+<ul>
+<li>两个需求整合到一起的测试脚本供您参考：</li>
+</ul>
+<ul>
+<li>根据截图发现您使用的脚本是完整脚本的一部分，即显示90天内创建的虚拟机信息。这是准确的信息。</li>
+</ul>
+<ul>
+<li>而对于超过90天的虚拟机创建时间，该脚本将尝试列出该虚拟机所使用的托管磁盘或非托管磁盘的创建时间，以此作为判断虚拟机创建时间的依据。如磁盘创建时间与虚拟机创建时间不一致（如用户自行从磁盘创建），那么得到的结果会不准确。</li>
+</ul>
+<ul>
+<li>以下是完整脚本：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>$vm.Name + &quot; : &quot; + $vm.StorageProfile.ImageReference.Offer + &quot; &quot; + $vm.StorageProfile.ImageReference.sku</li>
+</ul>
+<ul>
+<li>$vm.Name + &quot; image : &quot; + $vm.StorageProfile.ImageReference.Offer + &quot; &quot; + $vm.StorageProfile.ImageReference.sku</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://feedback.azure.com/forums/34192--general-feedback/suggestions/37888021-request-add-a-firstcreationtime-field-for-azure-vm" target="_blank" rel="noopener">https://feedback.azure.com/forums/34192--general-feedback/suggestions/37888021-request-add-a-firstcreationtime-field-for-azure-vm</a></li>
+</ul>
+<ul>
+<li>而通过网络搜索，我们找到三方个人博客中有获取虚拟机创建时间的方式： <a href="https://savilltech.com/2018/02/13/checking-the-creation-time-of-an-azure-iaas-vm/" target="_blank" rel="noopener">https://savilltech.com/2018/02/13/checking-the-creation-time-of-an-azure-iaas-vm/</a>  。  我们对该方式进行了测试，发现可以起到一定作用。但由于相关namespace或者命令即将被弃用，烦请您根据自身需求酌情考虑是否采用。</li>
+</ul>
+<ul>
+<li>$vmosdiskstorageact = $vmosdiskloc.Substring(8).Split(&quot;.&quot;)[0]  #extract out the storage account name by removing the https:// then finding the first part before period (.)</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>注意：该信息已失效，作为存档备查</p>
+<p>目前Azure平台没有直接提供有关虚拟机创建时间的字段供查询，我们已经向Azure论坛提交了一个对应的需求反馈：</p>
+<p><a href="https://feedback.azure.com/forums/34192--general-feedback/suggestions/37888021-request-add-a-firstcreationtime-field-for-azure-vm" target="_blank" rel="noopener">https://feedback.azure.com/forums/34192--general-feedback/suggestions/37888021-request-add-a-firstcreationtime-field-for-azure-vm</a></p>
+<p>而通过网络搜索，我们找到三方个人博客中有获取虚拟机创建时间的方式： <a href="https://savilltech.com/2018/02/13/checking-the-creation-time-of-an-azure-iaas-vm/" target="_blank" rel="noopener">https://savilltech.com/2018/02/13/checking-the-creation-time-of-an-azure-iaas-vm/</a>  。  我们对该方式进行了测试，发现可以起到一定作用。但由于相关namespace或者命令即将被弃用，烦请您根据自身需求酌情考虑是否采用。</p>
+<p>另外，关于虚拟机所使用的镜像，我们可以使用如下powershell 命令获得：</p>
+<p>$vm = get-azurermvm -name &#39;VMName&#39; -ResourceGroupName &#39;RG&#39;</p>
+<p>$vm.Name + &quot; : &quot; + $vm.StorageProfile.ImageReference.Offer + &quot; &quot; + $vm.StorageProfile.ImageReference.sku</p>
+<p>两个需求整合到一起的测试脚本供您参考：</p>
+<p>$VMs = Get-AzureRMVM</p>
+<p>foreach ($vm in $VMs) {</p>
+<p>$logs = Get-AzureRmLog -ResourceId $vm.Id -StartTime (Get-Date).AddDays(-90)</p>
+<p>$vmCreationTime = $null</p>
+<p>foreach($log in $logs)</p>
+<p>{</p>
+<p>if(($log.OperationName.Value -eq &#39;Microsoft.Compute/virtualMachines/write&#39;) -and ($log.SubStatus.Value -eq &#39;Created&#39;))</p>
+<p>Write-Output &quot;- Found VM creation at $($log.EventTimestamp) for VM $($log.Id.split(&quot;/&quot;)[8]) in Resource Group $($log.ResourceGroupName) found in Azure logs&quot;</p>
+<h1>write-output &quot;   - ID $($log.Id)&quot;</h1>
+<p>$vmCreationTime = $($log.EventTimestamp)</p>
+<p>#$log</p>
+<p>}</p>
+<p>#If could not find a match</p>
+<p>if($vmCreationTime -eq $null)</p>
+<p>#Disk method</p>
+<p>#Managed Disk</p>
+<p>$osdisk = $null</p>
+<p>try {$osdisk = Get-AzureRmDisk -DiskName $vm.StorageProfile.OsDisk.Name -ResourceGroupName $vm.ResourceGroupName -ErrorAction SilentlyContinue</p>
+<p>$vmCreationTime = $($osdisk.TimeCreated)}</p>
+<p>catch {}</p>
+<p>if($osdisk -ne $null)</p>
+<p>{ Write-Output &quot;VM creation at $vmCreationTime for VM $($log.Id.split(&quot;/&quot;)[8]) in Resource Group $($log.ResourceGroupName) via managed disk creation time&quot;  }</p>
+<p>#Obviously flaws here if used an existing disk but its good enough. For unmanaged looks like I can do:</p>
+<p>if($osdisk -eq $null)</p>
+<p>#Unmanaged Disk</p>
+<p>$vmosdiskloc = $vm.StorageProfile.OsDisk.vhd.Uri</p>
+<p>$vmosdiskstorageact = $vmosdiskloc.Substring(8).Split(&quot;.&quot;)[0]  #extract out the storage account name by removing the https:// then finding the first part before period (.)</p>
+<p>$storaccount = Get-AzureRmStorageAccount | where {$_.StorageAccountName -eq $vmosdiskstorageact}</p>
+<p>$vmosdiskcontainer = $vmosdiskloc.Substring(8).Split(&quot;/&quot;)[1]  #extract the middle path between location and vhd which would be the container</p>
+<p>$vmosdiskname = $vmosdiskloc.Substring(8).Split(&quot;/&quot;)[2]</p>
+<p>$OSBlob = Get-AzureStorageBlob -Context $storaccount.Context -Container $vmosdiskcontainer -Blob $vmosdiskname</p>
+<p>try {$vmCreationTime = [datetime]::ParseExact(($OSBlob.Name.Substring(($OSBlob.Name.Length-18),14)),&#39;yyyyMMddHHmmss&#39;,$null)}</p>
+<p>catch { $vmCreationTime = $null}</p>
+<p>if($vmCreationTime -ne $null)</p>
+<p>{  Write-Output &quot;VM creation at $vmCreationTime for VM $($log.Id.split(&quot;/&quot;)[8]) in Resource Group $($log.ResourceGroupName) via date in page blob for OS disk&quot; }</p>
+<p>#VM image reference</p>
+<p>$vm.Name + &quot; image : &quot; + $vm.StorageProfile.ImageReference.Offer + &quot; &quot; + $vm.StorageProfile.ImageReference.sku</p>
+<p>输出结果示例：</p>
+<p>根据截图发现您使用的脚本是完整脚本的一部分，即显示90天内创建的虚拟机信息。这是准确的信息。</p>
+<p>而对于超过90天的虚拟机创建时间，该脚本将尝试列出该虚拟机所使用的托管磁盘或非托管磁盘的创建时间，以此作为判断虚拟机创建时间的依据。如磁盘创建时间与虚拟机创建时间不一致（如用户自行从磁盘创建），那么得到的结果会不准确。</p>
+<p>以下是完整脚本：</p>
+<p>119061721000379_PODVM | T100 | Nestle (China) Ltd., | SR_2019061732864_[T100]获取相关虚拟机信息</p></article>

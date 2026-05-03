@@ -1,0 +1,78 @@
+<article class="kb-article" data-title="【Share】LA工作区30000 results的限制，以及ADE获取工作区数据的workaround"><h1>【Share】LA工作区30000 results的限制，以及ADE获取工作区数据的workaround</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-01 10:16:02</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>在LA日志查询中，目前results有30000条目限制，导出成CSV也是30000条：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>在LA日志查询中，目前results有30000条目限制，导出成CSV也是30000条：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>导出CSV，不论是导出展示的条目，还是导出所有条目，都没有突破30000限制：</li>
+</ul>
+<ul>
+<li>访问ADE链接：</li>
+</ul>
+<ul>
+<li>Perf</li>
+</ul>
+<ul>
+<li>| where (TimeGenerated &gt;= datetime(2024-10-30T00:00:00Z) and TimeGenerated &lt; datetime(2024-10-31T23:59:59Z))</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在LA日志查询中，目前results有30000条目限制，导出成CSV也是30000条：</li>
+</ul>
+<ul>
+<li>我们验证了目前LA工作区30000条的限制，下载的Excel表格都为30000条</li>
+</ul>
+<ul>
+<li>点击当前工作区的数据库，查询对应的表名，可以适当加上时间如：</li>
+</ul>
+<ul>
+<li>查询完毕后，可以看到条目可以超过30000条：</li>
+</ul>
+<ul>
+<li>之后可以Export导出到Excel，就可以自行筛选查看日志数据了。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>提供Azure Data Explorer (ADE) 查询LA工作区方案，作为workaround，连接LA工作区的URL，可以检索到30000条以上的日志：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://dataexplorer.azure.cn/" target="_blank" rel="noopener">https://dataexplorer.azure.cn/</a></li>
+</ul>
+<ul>
+<li>Add添加Connection URL：<a href="https://adx.monitor.azure.cn" target="_blank" rel="noopener">https://adx.monitor.azure.cn</a> ＋ 订阅ID</li>
+</ul>
+<ul>
+<li><a href="https://adx.monitor.azure.cn/subscriptions/&lt;subscription-id&gt;/resourcegroups/&lt;resource-group-name&gt;/providers/microsoft.operationalinsights/workspaces/&lt;workspace-name&gt;" target="_blank" rel="noopener">https://adx.monitor.azure.cn/subscriptions/&lt;subscription-id&gt;/resourcegroups/&lt;resource-group-name&gt;/providers/microsoft.operationalinsights/workspaces/&lt;workspace-name&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>在LA日志查询中，目前results有30000条目限制，导出成CSV也是30000条：</p>
+<p>导出CSV，不论是导出展示的条目，还是导出所有条目，都没有突破30000限制：</p>
+<p>我们验证了目前LA工作区30000条的限制，下载的Excel表格都为30000条</p>
+<p>提供Azure Data Explorer (ADE) 查询LA工作区方案，作为workaround，连接LA工作区的URL，可以检索到30000条以上的日志：</p>
+<p>访问ADE链接：</p>
+<p><a href="https://dataexplorer.azure.cn/" target="_blank" rel="noopener">https://dataexplorer.azure.cn/</a></p>
+<p>Add添加Connection URL：<a href="https://adx.monitor.azure.cn" target="_blank" rel="noopener">https://adx.monitor.azure.cn</a> ＋ 订阅ID</p>
+<p><a href="https://adx.monitor.azure.cn/subscriptions/&lt;subscription-id&gt;/resourcegroups/&lt;resource-group-name&gt;/providers/microsoft.operationalinsights/workspaces/&lt;workspace-name&gt;" target="_blank" rel="noopener">https://adx.monitor.azure.cn/subscriptions/&lt;subscription-id&gt;/resourcegroups/&lt;resource-group-name&gt;/providers/microsoft.operationalinsights/workspaces/&lt;workspace-name&gt;</a></p>
+<p>点击当前工作区的数据库，查询对应的表名，可以适当加上时间如：</p>
+<p>Perf</p>
+<p>| where (TimeGenerated &gt;= datetime(2024-10-30T00:00:00Z) and TimeGenerated &lt; datetime(2024-10-31T23:59:59Z))</p>
+<p>查询完毕后，可以看到条目可以超过30000条：</p>
+<p>之后可以Export导出到Excel，就可以自行筛选查看日志数据了。</p></article>

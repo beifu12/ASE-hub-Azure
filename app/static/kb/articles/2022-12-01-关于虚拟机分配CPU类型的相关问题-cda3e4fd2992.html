@@ -1,0 +1,56 @@
+<article class="kb-article" data-title="关于虚拟机分配CPU类型的相关问题"><h1>关于虚拟机分配CPU类型的相关问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: 标准话术和流程</li>
+<li>最近修改: 2022-12-01 14:31:35</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>对于数据中心中物理硬件设备的信息，由于数据中心的硬件设备在不断的扩容和维护，因此无法保证在同一个数据中心的所有硬件都是同一个型号。而针对于云计算平台中IaaS服务，其中的一个特性就是用户不再需要关心物理设备的具体类型，而重点关心实际虚拟机的业务和处理能力。而平台服务的提供商（比如21世纪互联）会保障提供用户的相应计算能力需求。例如对于A系列的虚拟机，A0到A4，Azure平台会提供一个服务器池，这个池中可能包含多种主机类型并对单个主机的处理能力进行划分。当用户有虚拟机需求的时候，系统会在其中一个主机上分配所需的资源...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>对于数据中心中物理硬件设备的信息，由于数据中心的硬件设备在不断的扩容和维护，因此无法保证在同一个数据中心的所有硬件都是同一个型号。而针对于云计算平台中IaaS服务，其中的一个特性就是用户不再需要关心物理设备的具体类型，而重点关心实际虚拟机的业务和处理能力。而平台服务的提供商（比如21世纪互联）会保障提供用户的相应计算能力需求。例如对于A系列的虚拟机，A0到A4，Azure平台会提供一个服务器池，这个池中可能包含多种主机类型并对单个主机的处理能力进行划分。当用户有虚拟机需求的时候，系统会在其中一个主机上分配所需的资源，尽管物理主机的型号有差异，但是我们一定是会保证该主机可以提供指定要求的计算能力。实际上，虚拟机在部署完成之后，由于系统平台的维护动作，也有可能导致虚拟机转移到不同的物理设备上，但无论如何，平台会保证虚拟机的处理器性能满足标准。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>-------------------------------------------------------------------------------------</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>用户对于虚拟机硬件的选择权：  我查询了D系列azure  虚拟机的文档。 截止到2022/11/26日， 目前只有Dv5 和Dsv5 系列、Ddv5 和Ddsv5 系列 的虚拟机是明确指定了后台主机的CPU类型。也就是说，后台处理Dv5 和Dsv5 系列、Ddv5 和Ddsv5 系列的主机池的主机都是有统一型号组成，这也是为了满足一些生产负载对于CPU类型的特别需求而设计。如果您的生产环境的确对于主机类型有要求，建议您可以采用这些类型。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>针对于A系列虚拟机的计算能力，A 系列和 Av2 系列 VM 可以部署在各种不同的硬件类型和处理器上。 根据硬件限制大小，为运行中的实例提供一致的处理器性能，不论硬件部署的位置。在Azure平台中，我们使用ACU（Azure Computer Unit，<a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/acu" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/acu</a> ），提供一种比较 Azure SKU 的计算 (CPU) 性能的方法。 ACU 目前在小型 (Standard_A1) VM 上标准为 100，而所有其他 SKU 表示 SKU 在运行标准基准测试时大约可以有多快。具体的数据您可以参照<a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/sizes-general。" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/sizes-general。</a> 同时，我们也不回避即使我们选择了同一种大小的虚拟机，在尽可能保证一致性的前提下，在生产测试中也会产生一定的性能差异，这些差异可能和物理主机架构，测试工具，生产需求以及计算类型相关，甚至使用同一个测试系统产生的数据都会有一定的差异。但问题关键不是在于是否存在差异，而是不同的结果是否都达到该虚拟机大小所应该具有的计算能力。</li>
+</ul>
+<ul>
+<li>针对于虚拟机基本型和标准型的区别，基本级的虚拟机大小与同等的标准级大小具有类似的配置，但价格要低 20% 之多，因为它不具备 Azure 负载平衡器和自动伸缩功能。基本级虚拟机适合开发/测试工作负载、批处理应用、不需要负载平衡器的生产应用, 或者您希望在其中使用自定义负载平衡器的应用。这些大小仍然提供完整的 Azure 计算可用性 SLA。在最新的虚机机创建向导程序的大小选择页面中，我们也列出了这两种虚拟机的区别。更多内容请参考<a href="https://www.azure.cn/blog/2014/07/02/basic-tier-virtual-machines" target="_blank" rel="noopener">https://www.azure.cn/blog/2014/07/02/basic-tier-virtual-machines</a></li>
+</ul>
+<ul>
+<li>用户对于虚拟机硬件的选择权，在目前为止，只有Dv2系列和F系列的虚拟机是明确指定了后台主机的CPU类型。也就是说，后台处理Dv2系列和F系列的主机池的主机都是有统一型号组成，这也是为了满足一些生产负载对于CPU类型的特别需求而设计。如果您的生产环境的确对于主机类型有要求，建议您可以采用这些类型。同时，由于用户对于这种虚机的需求加大，21世纪互联也调整了Dv2和F系列的收费标准。目前，这两种序列的虚机也是最具信价比的类型。推荐您也可以比较一下具体的价格。具体关于Dv2和F系列的CPU信息，可以参照<a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/sizes-general" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/sizes-general</a> 和<a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/sizes-compute" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/sizes-compute</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/ddv5-ddsv5-series" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/ddv5-ddsv5-series</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/dv5-dsv5-series" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/dv5-dsv5-series</a>        --- update by 崔军  2022.12.01</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>对于数据中心中物理硬件设备的信息，由于数据中心的硬件设备在不断的扩容和维护，因此无法保证在同一个数据中心的所有硬件都是同一个型号。而针对于云计算平台中IaaS服务，其中的一个特性就是用户不再需要关心物理设备的具体类型，而重点关心实际虚拟机的业务和处理能力。而平台服务的提供商（比如21世纪互联）会保障提供用户的相应计算能力需求。例如对于A系列的虚拟机，A0到A4，Azure平台会提供一个服务器池，这个池中可能包含多种主机类型并对单个主机的处理能力进行划分。当用户有虚拟机需求的时候，系统会在其中一个主机上分配所需的资源，尽管物理主机的型号有差异，但是我们一定是会保证该主机可以提供指定要求的计算能力。实际上，虚拟机在部署完成之后，由于系统平台的维护动作，也有可能导致虚拟机转移到不同的物理设备上，但无论如何，平台会保证虚拟机的处理器性能满足标准。</p>
+<p>针对于A系列虚拟机的计算能力，A 系列和 Av2 系列 VM 可以部署在各种不同的硬件类型和处理器上。 根据硬件限制大小，为运行中的实例提供一致的处理器性能，不论硬件部署的位置。在Azure平台中，我们使用ACU（Azure Computer Unit，<a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/acu" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/acu</a> ），提供一种比较 Azure SKU 的计算 (CPU) 性能的方法。 ACU 目前在小型 (Standard_A1) VM 上标准为 100，而所有其他 SKU 表示 SKU 在运行标准基准测试时大约可以有多快。具体的数据您可以参照<a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/sizes-general。" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/sizes-general。</a> 同时，我们也不回避即使我们选择了同一种大小的虚拟机，在尽可能保证一致性的前提下，在生产测试中也会产生一定的性能差异，这些差异可能和物理主机架构，测试工具，生产需求以及计算类型相关，甚至使用同一个测试系统产生的数据都会有一定的差异。但问题关键不是在于是否存在差异，而是不同的结果是否都达到该虚拟机大小所应该具有的计算能力。</p>
+<p>针对于虚拟机基本型和标准型的区别，基本级的虚拟机大小与同等的标准级大小具有类似的配置，但价格要低 20% 之多，因为它不具备 Azure 负载平衡器和自动伸缩功能。基本级虚拟机适合开发/测试工作负载、批处理应用、不需要负载平衡器的生产应用, 或者您希望在其中使用自定义负载平衡器的应用。这些大小仍然提供完整的 Azure 计算可用性 SLA。在最新的虚机机创建向导程序的大小选择页面中，我们也列出了这两种虚拟机的区别。更多内容请参考<a href="https://www.azure.cn/blog/2014/07/02/basic-tier-virtual-machines" target="_blank" rel="noopener">https://www.azure.cn/blog/2014/07/02/basic-tier-virtual-machines</a></p>
+<p>用户对于虚拟机硬件的选择权，在目前为止，只有Dv2系列和F系列的虚拟机是明确指定了后台主机的CPU类型。也就是说，后台处理Dv2系列和F系列的主机池的主机都是有统一型号组成，这也是为了满足一些生产负载对于CPU类型的特别需求而设计。如果您的生产环境的确对于主机类型有要求，建议您可以采用这些类型。同时，由于用户对于这种虚机的需求加大，21世纪互联也调整了Dv2和F系列的收费标准。目前，这两种序列的虚机也是最具信价比的类型。推荐您也可以比较一下具体的价格。具体关于Dv2和F系列的CPU信息，可以参照<a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/sizes-general" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/sizes-general</a> 和<a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/sizes-compute" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/sizes-compute</a></p>
+<p>-------------------------------------------------------------------------------------</p>
+<p>用户对于虚拟机硬件的选择权：  我查询了D系列azure  虚拟机的文档。 截止到2022/11/26日， 目前只有Dv5 和Dsv5 系列、Ddv5 和Ddsv5 系列 的虚拟机是明确指定了后台主机的CPU类型。也就是说，后台处理Dv5 和Dsv5 系列、Ddv5 和Ddsv5 系列的主机池的主机都是有统一型号组成，这也是为了满足一些生产负载对于CPU类型的特别需求而设计。如果您的生产环境的确对于主机类型有要求，建议您可以采用这些类型。</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/ddv5-ddsv5-series" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/ddv5-ddsv5-series</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/dv5-dsv5-series" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/dv5-dsv5-series</a>        --- update by 崔军  2022.12.01</p></article>

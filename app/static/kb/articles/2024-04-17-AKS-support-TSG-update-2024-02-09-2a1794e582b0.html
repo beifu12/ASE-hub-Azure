@@ -1,0 +1,123 @@
+<article class="kb-article" data-title="AKS support TSG update 2024/02/09"><h1>AKS support TSG update 2024/02/09</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: AKS Operation guideline</li>
+<li>最近修改: 2024-04-17 17:18:20</li>
+<li>JD 相关性: 交付流程/客户支持; AKS/容器; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>We received 3 cases/BMW regarding this issue.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>We received 3 cases/BMW regarding this issue.</li>
+</ul>
+<ul>
+<li>Update your Ubuntu 22.04 node image to at least 202401.17.1 which is running runc 1.1.9-2 that contains the backported fix.</li>
+</ul>
+<ul>
+<li>In Mooncake, the image(202401.17.1) has already been deployed to all supported regions.</li>
+</ul>
+<ul>
+<li>Issue/symptoms</li>
+</ul>
+<ul>
+<li>Error message</li>
+</ul>
+<ul>
+<li>Azure Linux worker node images older than 202401.17.2 (new node image has patched runc 1.1.9-4)</li>
+</ul>
+<ul>
+<li>Ubuntu 22.04 images older than 202401.17.1 (new node image has patched runc 1.1.9-2)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Here I want to reclaim some points:</li>
+</ul>
+<ul>
+<li>From CVE description, the In runc 1.1.11 and earlier would be impacted by the this CVE.</li>
+</ul>
+<ul>
+<li>Recent vulnerability CVE-2024-21626allows an attacker to use a malicious image to escape from a container and gain access to the host OS of a worker node</li>
+</ul>
+<ul>
+<li>N/A – customers are raising cases stating that they are concerned about the impact to their environment(s) and they want to know how to fix</li>
+</ul>
+<ul>
+<li>Cause</li>
+</ul>
+<ul>
+<li>Mitigation if any</li>
+</ul>
+<ul>
+<li>The new images are rolling out quickly globally and have already reached several regions.</li>
+</ul>
+<ul>
+<li>Reference ICMs</li>
+</ul>
+<ul>
+<li>Status</li>
+</ul>
+<ul>
+<li>Rollout of patched node images in progress</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>How to diagnose / Identify/ Validate</li>
+</ul>
+<ul>
+<li>Use command runc --versionon a worker node to check the version if needed.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>As titled, PG team has fixed a new reported CVE issue. Details are as follows:</li>
+</ul>
+<ul>
+<li>For AKS image, if the runc version is at 1.1.9-2 or newer, the issue is fixed.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Recent exploit – more info: <a href="https://snyk.io/blog/leaky-vessels-docker-runc-container-breakout-vulnerabilities/" target="_blank" rel="noopener">https://snyk.io/blog/leaky-vessels-docker-runc-container-breakout-vulnerabilities/</a></li>
+</ul>
+<ul>
+<li>Cx needs to wait for the new node images to reach their region – they can track this here: <a href="https://releases.aks.azure.com/webpage/index.html" target="_blank" rel="noopener">https://releases.aks.azure.com/webpage/index.html</a></li>
+</ul>
+<ul>
+<li>Reference IcM:  <a href="https://portal.microsofticm.com/imp/v3/incidents/incident/466387498/summary" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/incident/466387498/summary</a></li>
+</ul>
+<ul>
+<li>Public GitHub issue:  <a href="https://github.com/Azure/AKS/issues/4080" target="_blank" rel="noopener">https://github.com/Azure/AKS/issues/4080</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>We received 3 cases/BMW regarding this issue.</p>
+<p>As titled, PG team has fixed a new reported CVE issue. Details are as follows:</p>
+<p>Here I want to reclaim some points:</p>
+<p>From CVE description, the In runc 1.1.11 and earlier would be impacted by the this CVE.</p>
+<p>For AKS image, if the runc version is at 1.1.9-2 or newer, the issue is fixed.</p>
+<p>Update your Ubuntu 22.04 node image to at least 202401.17.1 which is running runc 1.1.9-2 that contains the backported fix.</p>
+<p>In Mooncake, the image(202401.17.1) has already been deployed to all supported regions.</p>
+<p>Issue/symptoms</p>
+<p>Recent vulnerability CVE-2024-21626allows an attacker to use a malicious image to escape from a container and gain access to the host OS of a worker node</p>
+<p>Error message</p>
+<p>N/A – customers are raising cases stating that they are concerned about the impact to their environment(s) and they want to know how to fix</p>
+<p>Cause</p>
+<p>Recent exploit – more info: <a href="https://snyk.io/blog/leaky-vessels-docker-runc-container-breakout-vulnerabilities/" target="_blank" rel="noopener">https://snyk.io/blog/leaky-vessels-docker-runc-container-breakout-vulnerabilities/</a></p>
+<p>How to diagnose / Identify/ Validate</p>
+<p>Azure Linux worker node images older than 202401.17.2 (new node image has patched runc 1.1.9-4)</p>
+<p>Ubuntu 22.04 images older than 202401.17.1 (new node image has patched runc 1.1.9-2)</p>
+<p>Use command runc --versionon a worker node to check the version if needed.</p>
+<p>Mitigation if any</p>
+<p>Cx needs to wait for the new node images to reach their region – they can track this here: <a href="https://releases.aks.azure.com/webpage/index.html" target="_blank" rel="noopener">https://releases.aks.azure.com/webpage/index.html</a></p>
+<p>The new images are rolling out quickly globally and have already reached several regions.</p>
+<p>Reference ICMs</p>
+<p>Reference IcM:  <a href="https://portal.microsofticm.com/imp/v3/incidents/incident/466387498/summary" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/incident/466387498/summary</a></p>
+<p>Public GitHub issue:  <a href="https://github.com/Azure/AKS/issues/4080" target="_blank" rel="noopener">https://github.com/Azure/AKS/issues/4080</a></p>
+<p>Status</p>
+<p>Rollout of patched node images in progress</p></article>

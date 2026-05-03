@@ -1,0 +1,88 @@
+<article class="kb-article" data-title="APPGW部署失败错误提示VMExtensionError"><h1>APPGW部署失败错误提示VMExtensionError</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-11-02 14:04:51</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_20210719109439_[S500]部署WAFv2失败</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_20210719109439_[S500]部署WAFv2失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Step4、由此我们做出以下分析</li>
+</ul>
+<ul>
+<li>LocalAddress              Network              NextHop           SourcePeer          Origin                         AsPath</li>
+</ul>
+<ul>
+<li>10.10.31.254            0.0.0.0/0        192.168.200.1        192.168.200.1            EBgp                          65166</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>最终用户部署WAF v2失败，Portal报错显示InternalServerError.</li>
+</ul>
+<ul>
+<li>查表AsyncWorkerLogsTable</li>
+</ul>
+<ul>
+<li>排查步骤如下:</li>
+</ul>
+<ul>
+<li>Step1、检查了NSG、UDR以及VNet中DNS信息没有问题（ASC即可查询）</li>
+</ul>
+<ul>
+<li>Step2、查询了客户的订阅配额信息（未达到配额）</li>
+</ul>
+<ul>
+<li>Step3、在订阅中查找到了客户不同的Subnet中存在了ER和VPN 网关信息,通过ER BGP信息中查看到存在</li>
+</ul>
+<ul>
+<li>2. 查看AppGW所在虚拟网络，虚拟网络中的VPN gateway从对端(192.168.200.1)学习到了0.0.0.0/0的默认路由，会导致AppGW部署中一些通信流量流向VPN对端。由于在虚拟网络中部署AppGW时，是需要internet的直接路径的，用于一些平台管理层面的流量。因此AppGW部署失败的原因应该是该默认路由的宣告导致。</li>
+</ul>
+<ul>
+<li>3. 查看同一虚拟网络中另一个V1 AppGW所在子网(SNT-Transit-AG-DMZ-19)，是有通过使用 UDR 将 0.0.0.0/0 定向到 Internet的，因此可以正常工作。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>1. 根据后台日志显示，AppGW部署失败的原因是由于在部署AppGW实例时，拉取依赖资源时timeout导致。</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/7924C038" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/7924C038</a></li>
+</ul>
+<ul>
+<li>&quot;StatusMessage&quot;: { &quot;status&quot;: &quot;Failed&quot;, &quot;error&quot;: { &quot;code&quot;: &quot;VMExtensionProvisioningError&quot;, &quot;message&quot;: &quot;VM has reported a failure when processing extension &#39;CustomScriptExtensions&#39;. Error message: \&quot;Enable failed: failed to execute command: command terminated with exit status=4\n[stdout]\n\n[stderr]\n % Total % Received % Xferd Average Speed Time Time Time Current\n Dload Upload Total Spent Left Speed\n\r 0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0\r100 2797 100 2797 0 0 435k 0 --:--:-- --:--:-- --:--:-- 455k\nfailed: Connection timed out.\nfailed: Connection timed out.\nfailed: Connection timed out.\nfailed: Connection timed out.\nfailed: Connection timed out.\n\&quot;\r\n\r\nMore information on troubleshooting is available at <a href="https://aka.ms/VMExtensionCSELinuxTroubleshoot" target="_blank" rel="noopener">https://aka.ms/VMExtensionCSELinuxTroubleshoot</a> &quot;, &quot;target&quot;: null, &quot;details&quot;: null, &quot;additionalInfo&quot;: null } },</li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/555950F5?genevatraceguid=2d7cbb2a-87ad-4fa2-b4f9-4b05f60d75e1" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/555950F5?genevatraceguid=2d7cbb2a-87ad-4fa2-b4f9-4b05f60d75e1</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/07/20</p>
+<p>SR_20210719109439_[S500]部署WAFv2失败</p>
+<p>最终用户部署WAF v2失败，Portal报错显示InternalServerError.</p>
+<p>查表AsyncWorkerLogsTable</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/7924C038" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/7924C038</a></p>
+<p>&quot;StatusMessage&quot;: { &quot;status&quot;: &quot;Failed&quot;, &quot;error&quot;: { &quot;code&quot;: &quot;VMExtensionProvisioningError&quot;, &quot;message&quot;: &quot;VM has reported a failure when processing extension &#39;CustomScriptExtensions&#39;. Error message: \&quot;Enable failed: failed to execute command: command terminated with exit status=4\n[stdout]\n\n[stderr]\n % Total % Received % Xferd Average Speed Time Time Time Current\n Dload Upload Total Spent Left Speed\n\r 0 0 0 0 0 0 0 0 --:--:-- --:--:-- --:--:-- 0\r100 2797 100 2797 0 0 435k 0 --:--:-- --:--:-- --:--:-- 455k\nfailed: Connection timed out.\nfailed: Connection timed out.\nfailed: Connection timed out.\nfailed: Connection timed out.\nfailed: Connection timed out.\n\&quot;\r\n\r\nMore information on troubleshooting is available at <a href="https://aka.ms/VMExtensionCSELinuxTroubleshoot" target="_blank" rel="noopener">https://aka.ms/VMExtensionCSELinuxTroubleshoot</a> &quot;, &quot;target&quot;: null, &quot;details&quot;: null, &quot;additionalInfo&quot;: null } },</p>
+<p>排查步骤如下:</p>
+<p>Step1、检查了NSG、UDR以及VNet中DNS信息没有问题（ASC即可查询）</p>
+<p>Step2、查询了客户的订阅配额信息（未达到配额）</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/555950F5?genevatraceguid=2d7cbb2a-87ad-4fa2-b4f9-4b05f60d75e1" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/555950F5?genevatraceguid=2d7cbb2a-87ad-4fa2-b4f9-4b05f60d75e1</a></p>
+<p>Step3、在订阅中查找到了客户不同的Subnet中存在了ER和VPN 网关信息,通过ER BGP信息中查看到存在</p>
+<p>Step4、由此我们做出以下分析</p>
+<p>1. 根据后台日志显示，AppGW部署失败的原因是由于在部署AppGW实例时，拉取依赖资源时timeout导致。</p>
+<p>2. 查看AppGW所在虚拟网络，虚拟网络中的VPN gateway从对端(192.168.200.1)学习到了0.0.0.0/0的默认路由，会导致AppGW部署中一些通信流量流向VPN对端。由于在虚拟网络中部署AppGW时，是需要internet的直接路径的，用于一些平台管理层面的流量。因此AppGW部署失败的原因应该是该默认路由的宣告导致。</p>
+<p>LocalAddress              Network              NextHop           SourcePeer          Origin                         AsPath</p>
+<p>10.10.31.254            0.0.0.0/0        192.168.200.1        192.168.200.1            EBgp                          65166</p>
+<p>3. 查看同一虚拟网络中另一个V1 AppGW所在子网(SNT-Transit-AG-DMZ-19)，是有通过使用 UDR 将 0.0.0.0/0 定向到 Internet的，因此可以正常工作。</p></article>

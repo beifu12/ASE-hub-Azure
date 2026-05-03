@@ -1,0 +1,213 @@
+<article class="kb-article" data-title="Ubuntu修改内核启动顺序"><h1>Ubuntu修改内核启动顺序</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-14 13:25:23</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>又尝试修改 /etc/default/grub，改为`Ubuntu, with Linux 4.15.0-1023-azure&#39;也没成功，且报错如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>又尝试修改 /etc/default/grub，改为`Ubuntu, with Linux 4.15.0-1023-azure&#39;也没成功，且报错如下：</li>
+</ul>
+<ul>
+<li>报错文本：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>update</li>
+</ul>
+<ul>
+<li>Hi ，由于Ubuntu使用grub2，所以该内核启动顺序有比较大的出入，坑比较多写在了最后</li>
+</ul>
+<ul>
+<li>先讲一下grub.cfg文件（grub2）中的启动顺序：</li>
+</ul>
+<ul>
+<li>这个截图中第一条menuentry就是0</li>
+</ul>
+<ul>
+<li>submenu是1</li>
+</ul>
+<ul>
+<li>submenu下的 menuentry 接着排 0 1 2</li>
+</ul>
+<ul>
+<li>关键是在/etc/default/grub</li>
+</ul>
+<ul>
+<li>文件中修改时，比如想改为 &#39;Ubuntu, with Linux 4.15.0-1028-azure (recovery mode)&#39;作为默认启动项。</li>
+</ul>
+<ul>
+<li>那么就写 GRUB_DEFAULT=&quot;1&gt;2&quot;</li>
+</ul>
+<ul>
+<li>=================================================</li>
+</ul>
+<ul>
+<li>以下是实际测试结果：</li>
+</ul>
+<ul>
+<li>我的ububtu系统目前有三个版本的内核：</li>
+</ul>
+<ul>
+<li>当前启动内核是：</li>
+</ul>
+<ul>
+<li>我修改 /etc/default/grub，改为1&gt;4成功:</li>
+</ul>
+<ul>
+<li>重启后内核更新成功：</li>
+</ul>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>更新完成后，可以看到grub.cfg和grub.cfg_bak文件大小已经发生了改变：</li>
+</ul>
+<ul>
+<li>/os挂载的就是问题虚拟机的系统盘</li>
+</ul>
+<ul>
+<li>交换OS磁盘后，虚拟机成功切换了内核启动成功了：</li>
+</ul>
+<ul>
+<li>最好使用centos8上的grub2-mkconfig才成功的。</li>
+</ul>
+<ul>
+<li>==============================</li>
+</ul>
+<ul>
+<li>测试时的坑：(这是按照以前grub时的方法修改的都不生效)</li>
+</ul>
+<ul>
+<li>我改为使用4.15.0-1023启动：</li>
+</ul>
+<ul>
+<li>我数了一下从以menuentry 开头 带版本号的行 &#39;Ubuntu, with Linux 4.15.xx&#39;</li>
+</ul>
+<ul>
+<li>4.15.0-1023是第四行：</li>
+</ul>
+<ul>
+<li>我修改 /etc/default/grub，改为4没成功</li>
+</ul>
+<ul>
+<li>update-grub</li>
+</ul>
+<ul>
+<li>Generating grub configuration file ...</li>
+</ul>
+<ul>
+<li>Found linux image: /boot/vmlinuz-4.15.0-1028-azure</li>
+</ul>
+<ul>
+<li>Found initrd image: /boot/initrd.img-4.15.0-1028-azure</li>
+</ul>
+<ul>
+<li>Found linux image: /boot/vmlinuz-4.15.0-1025-azure</li>
+</ul>
+<ul>
+<li>Found initrd image: /boot/initrd.img-4.15.0-1025-azure</li>
+</ul>
+<ul>
+<li>Found linux image: /boot/vmlinuz-4.15.0-1023-azure</li>
+</ul>
+<ul>
+<li>Found initrd image: /boot/initrd.img-4.15.0-1023-azure</li>
+</ul>
+<ul>
+<li>Warning: Please don&#39;t use old title <code>Ubuntu, with Linux 4.15.0-1023-azure&#39; for GRUB_DEFAULT, use </code>Advanced options for Ubuntu&gt;Ubuntu, with Linux 4.15.0-1023-azure&#39; (for versions before 2.00) or `gnulinux-advanced-ed4c6bf6-c0e4-4aae-997f-fc7c5e4dc95a&gt;gnulinux-4.15.0-1023-azure-advanced-ed4c6bf6-c0e4-4aae-997f-fc7c5e4dc95a&#39; (for 2.00 or later)</li>
+</ul>
+<ul>
+<li>Found memtest86+ image: /boot/memtest86+.elf</li>
+</ul>
+<ul>
+<li>Found memtest86+ image: /boot/memtest86+.bin</li>
+</ul>
+<ul>
+<li>done</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Nancy note：在16.04中测试，上述步骤完成后，还需要执行sudo update-grub再重启，才能成功。</li>
+</ul>
+<ul>
+<li>重启查看没成功。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>正常修改/etc/default/grub后要想生效需要使用 update-grub命令更新grub</li>
+</ul>
+<ul>
+<li>这里后很多坑，我使用Ubuntu里的grub-mkconfig 命令反复测试多次都没有成功。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>但是挂盘修复的时候update-grub更新的是当前系统的grub，不会修改需要修复磁盘的的grub</li>
+</ul>
+<ul>
+<li>所以如果想挂盘修复成功，可以使用grub2-mkconfig -o 加挂载磁盘的 grub路径：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2018-11-1</p>
+<p>update</p>
+<p>2023-02-10</p>
+<p>Hi ，由于Ubuntu使用grub2，所以该内核启动顺序有比较大的出入，坑比较多写在了最后</p>
+<p>先讲一下grub.cfg文件（grub2）中的启动顺序：</p>
+<p>这个截图中第一条menuentry就是0</p>
+<p>submenu是1</p>
+<p>submenu下的 menuentry 接着排 0 1 2</p>
+<p>关键是在/etc/default/grub</p>
+<p>文件中修改时，比如想改为 &#39;Ubuntu, with Linux 4.15.0-1028-azure (recovery mode)&#39;作为默认启动项。</p>
+<p>那么就写 GRUB_DEFAULT=&quot;1&gt;2&quot;</p>
+<p>=================================================</p>
+<p>以下是实际测试结果：</p>
+<p>我的ububtu系统目前有三个版本的内核：</p>
+<p>当前启动内核是：</p>
+<p>我修改 /etc/default/grub，改为1&gt;4成功:</p>
+<p>Nancy note：在16.04中测试，上述步骤完成后，还需要执行sudo update-grub再重启，才能成功。</p>
+<p>重启后内核更新成功：</p>
+<p>Update</p>
+<p>========</p>
+<p>正常修改/etc/default/grub后要想生效需要使用 update-grub命令更新grub</p>
+<p>但是挂盘修复的时候update-grub更新的是当前系统的grub，不会修改需要修复磁盘的的grub</p>
+<p>所以如果想挂盘修复成功，可以使用grub2-mkconfig -o 加挂载磁盘的 grub路径：</p>
+<p>更新完成后，可以看到grub.cfg和grub.cfg_bak文件大小已经发生了改变：</p>
+<p>/os挂载的就是问题虚拟机的系统盘</p>
+<p>交换OS磁盘后，虚拟机成功切换了内核启动成功了：</p>
+<p>这里后很多坑，我使用Ubuntu里的grub-mkconfig 命令反复测试多次都没有成功。</p>
+<p>最好使用centos8上的grub2-mkconfig才成功的。</p>
+<p>==============================</p>
+<p>测试时的坑：(这是按照以前grub时的方法修改的都不生效)</p>
+<p>我改为使用4.15.0-1023启动：</p>
+<p>我数了一下从以menuentry 开头 带版本号的行 &#39;Ubuntu, with Linux 4.15.xx&#39;</p>
+<p>4.15.0-1023是第四行：</p>
+<p>我修改 /etc/default/grub，改为4没成功</p>
+<p>重启查看没成功。</p>
+<p>又尝试修改 /etc/default/grub，改为`Ubuntu, with Linux 4.15.0-1023-azure&#39;也没成功，且报错如下：</p>
+<p>报错文本：</p>
+<p>update-grub</p>
+<p>Generating grub configuration file ...</p>
+<p>Found linux image: /boot/vmlinuz-4.15.0-1028-azure</p>
+<p>Found initrd image: /boot/initrd.img-4.15.0-1028-azure</p>
+<p>Found linux image: /boot/vmlinuz-4.15.0-1025-azure</p>
+<p>Found initrd image: /boot/initrd.img-4.15.0-1025-azure</p>
+<p>Found linux image: /boot/vmlinuz-4.15.0-1023-azure</p>
+<p>Found initrd image: /boot/initrd.img-4.15.0-1023-azure</p>
+<p>Warning: Please don&#39;t use old title <code>Ubuntu, with Linux 4.15.0-1023-azure&#39; for GRUB_DEFAULT, use </code>Advanced options for Ubuntu&gt;Ubuntu, with Linux 4.15.0-1023-azure&#39; (for versions before 2.00) or `gnulinux-advanced-ed4c6bf6-c0e4-4aae-997f-fc7c5e4dc95a&gt;gnulinux-4.15.0-1023-azure-advanced-ed4c6bf6-c0e4-4aae-997f-fc7c5e4dc95a&#39; (for 2.00 or later)</p>
+<p>Found memtest86+ image: /boot/memtest86+.elf</p>
+<p>Found memtest86+ image: /boot/memtest86+.bin</p>
+<p>done</p></article>

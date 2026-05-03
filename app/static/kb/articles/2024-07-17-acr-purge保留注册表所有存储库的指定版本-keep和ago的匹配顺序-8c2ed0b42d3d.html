@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="acr purge保留注册表所有存储库的指定版本，keep和ago的匹配顺序"><h1>acr purge保留注册表所有存储库的指定版本，keep和ago的匹配顺序</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: ACR</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-17 11:18:25</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>1. 命令不加--fileter是不是就代表针对整个存储库执行了保留几个版本的策略?</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>1. 命令不加--fileter是不是就代表针对整个存储库执行了保留几个版本的策略?</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>acr purge --filter ‘imagename:.*’ --keep 保留最新tag的数量 --ago 0d</li>
+</ul>
+<ul>
+<li>回复：--fileter是一个必选项，您可以使用--filter &quot;.*:.*&quot;匹配容器注册表中的所有存储库。</li>
+</ul>
+<ul>
+<li>例如：</li>
+</ul>
+<ul>
+<li>运行截图参考：</li>
+</ul>
+<ul>
+<li>2.保留几个版本的策略如果最近一年都没有新的版本，那么整个库会删掉么？还是会继续保留一年前的最后三个版本?</li>
+</ul>
+<ul>
+<li>回复：--keep 是指定保留最新的 x 个待删除标记。 最新标记由标记的上次修改时间确定。</li>
+</ul>
+<ul>
+<li>也就是说，先匹配—ago中的修改时间，比如，过去365天之前有修改的标记匹配，其他不匹配。</li>
+</ul>
+<ul>
+<li>然后在匹配的这些标记保留最新的X个，其余的删除。未匹配的不做操作。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>1. 命令不加--fileter是不是就代表针对整个存储库执行了保留几个版本的策略?</li>
+</ul>
+<ul>
+<li>az acr run --cmd &quot;$PURGE_CMD&quot; --registry myregistry /dev/null</li>
+</ul>
+<ul>
+<li>注：-dry-run - 指定不删除任何数据，但其输出与在没有此标志的情况下运行此命令时的输出相同。 此参数有助于测试清除命令，确保它不会无意中删除要保留的数据。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>PURGE_CMD=&quot;acr purge --filter &quot;.*:.*&quot; --keep 1 --ago 0d --dry-run&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：<a href="https://docs.azure.cn/zh-cn/container-registry/container-registry-auto-purge" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/container-registry/container-registry-auto-purge</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-07-17</p>
+<p>1. 命令不加--fileter是不是就代表针对整个存储库执行了保留几个版本的策略?</p>
+<p>acr purge --filter ‘imagename:.*’ --keep 保留最新tag的数量 --ago 0d</p>
+<p>回复：--fileter是一个必选项，您可以使用--filter &quot;.*:.*&quot;匹配容器注册表中的所有存储库。</p>
+<p>例如：</p>
+<p>PURGE_CMD=&quot;acr purge --filter &quot;.*:.*&quot; --keep 1 --ago 0d --dry-run&quot;</p>
+<p>az acr run --cmd &quot;$PURGE_CMD&quot; --registry myregistry /dev/null</p>
+<p>注：-dry-run - 指定不删除任何数据，但其输出与在没有此标志的情况下运行此命令时的输出相同。 此参数有助于测试清除命令，确保它不会无意中删除要保留的数据。</p>
+<p>运行截图参考：</p>
+<p>2.保留几个版本的策略如果最近一年都没有新的版本，那么整个库会删掉么？还是会继续保留一年前的最后三个版本?</p>
+<p>回复：--keep 是指定保留最新的 x 个待删除标记。 最新标记由标记的上次修改时间确定。</p>
+<p>参考文档：<a href="https://docs.azure.cn/zh-cn/container-registry/container-registry-auto-purge" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/container-registry/container-registry-auto-purge</a></p>
+<p>也就是说，先匹配—ago中的修改时间，比如，过去365天之前有修改的标记匹配，其他不匹配。</p>
+<p>然后在匹配的这些标记保留最新的X个，其余的删除。未匹配的不做操作。</p></article>

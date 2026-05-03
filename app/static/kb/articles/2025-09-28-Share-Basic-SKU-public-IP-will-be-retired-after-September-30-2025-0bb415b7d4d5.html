@@ -1,0 +1,149 @@
+<article class="kb-article" data-title="【Share】Basic SKU public IP will be retired after September 30, 2025"><h1>【Share】Basic SKU public IP will be retired after September 30, 2025</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2025-09-28 15:51:01</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>c. 如果在2025年09/30到期之后，没有没有升级到标准类型， 那些持有基本IP的资源将无法正常工作， 平台也不能强制将其升级到标准类型</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>c. 如果在2025年09/30到期之后，没有没有升级到标准类型， 那些持有基本IP的资源将无法正常工作， 平台也不能强制将其升级到标准类型</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Lihaitao</li>
+</ul>
+<ul>
+<li>微软公网也有说明：</li>
+</ul>
+<ul>
+<li>根据与后线团队的进一步沟通，小结如下供大家参考：</li>
+</ul>
+<ul>
+<li>a. 在2025年09/30之后， basic 类型公网IP退役后， 用户将不能再使用具有基本IP地址的资源。 例如负载均衡等（Azure Cloud Services除外）</li>
+</ul>
+<ul>
+<li>b. 在2025年09/30到期之后， 用户将不能再将basic IP升级到标准类型，即升级需要在此之前完成</li>
+</ul>
+<ul>
+<li>d. 在2025年09/30 基本IP退役后，平台将不再对基本IP提供支持</li>
+</ul>
+<ul>
+<li>进一步了解到：</li>
+</ul>
+<ul>
+<li>31 March 2025之前 可以创建，可以使用</li>
+</ul>
+<ul>
+<li>30 September 2025 之后，不能使用，不提供支持。</li>
+</ul>
+<ul>
+<li>客户可能会问到的一些问题：</li>
+</ul>
+<ul>
+<li>3. 不升级的话，会有什么影响；</li>
+</ul>
+<ul>
+<li>6.非basic是standard吗？</li>
+</ul>
+<ul>
+<li>是的；</li>
+</ul>
+<ul>
+<li>7.如果basic要改非basic，怎么保留原有IP地址？特别是AGW和VPNGW</li>
+</ul>
+<ul>
+<li>目前是不能保留原有IP地址，要重建新的IP地址；</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>近期可能会有客户收到如下通知，并咨询基本SKU的公共IP地址退役的问题</li>
+</ul>
+<ul>
+<li>31 March 2025 到  30 September 2025 不能创建Basic SKU，但是可以使用已有的</li>
+</ul>
+<ul>
+<li>1. 在2025年以后，azure的basic sku IP是否可以继续使用以及是否会受到影响 ？</li>
+</ul>
+<ul>
+<li>现在~2025年3月31日：用户可以创建新的Basic SKU Public IP，且可以使用；</li>
+</ul>
+<ul>
+<li>2025年3月31日~2025年9月30日：用户不能创建新的Basic SKU Public IP，但是可以使用之前创建的；</li>
+</ul>
+<ul>
+<li>2025年9月30日开始：用户既不能创建也不能使用Basic SKU Public IP；</li>
+</ul>
+<ul>
+<li>2. 在2025年以后，basic sku ip是否还会提供支持？</li>
+</ul>
+<ul>
+<li>2025年9月30日后，没有对Basic SKU Public IP的支持计划；</li>
+</ul>
+<ul>
+<li>不升级的话，2025年9月30日之后相关服务将不可用（Azure Cloud Services除外：If you have any Basic SKU public IP addresses deployed in Azure Cloud Services (extended support), those deployments will not be affected by this retirement and you don&#39;t need to take any action for them.）</li>
+</ul>
+<ul>
+<li>4. Vpngw，appgw等服务，无法关机或者取消公网IP的关联关系，如何升级到标准SKU？</li>
+</ul>
+<ul>
+<li>需要在2025年9月30日之前重建VPN，将APPGW升级到V2，具体请参考：Upgrading a basic public IP address to standard SKU - Guidance | Microsoft Learn</li>
+</ul>
+<ul>
+<li>5.AGWv1什么时候能够支持非basic的SKU？</li>
+</ul>
+<ul>
+<li>AGW1不会支持非basic的SKU，需要用户将APPGW V1升级到V2，文档也已经更新：Upgrading a basic public IP address to standard SKU - Guidance | Microsoft Learn；</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://azure.microsoft.com/en-au/updates/upgrade-to-standard-sku-public-ip-addresses-in-azure-by-30-september-2025-basic-sku-will-be-retired/" target="_blank" rel="noopener">https://azure.microsoft.com/en-au/updates/upgrade-to-standard-sku-public-ip-addresses-in-azure-by-30-september-2025-basic-sku-will-be-retired/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Lihaitao</p>
+<p>2024/02/22</p>
+<p>近期可能会有客户收到如下通知，并咨询基本SKU的公共IP地址退役的问题</p>
+<p>微软公网也有说明：</p>
+<p><a href="https://azure.microsoft.com/en-au/updates/upgrade-to-standard-sku-public-ip-addresses-in-azure-by-30-september-2025-basic-sku-will-be-retired/" target="_blank" rel="noopener">https://azure.microsoft.com/en-au/updates/upgrade-to-standard-sku-public-ip-addresses-in-azure-by-30-september-2025-basic-sku-will-be-retired/</a></p>
+<p>根据与后线团队的进一步沟通，小结如下供大家参考：</p>
+<p>a. 在2025年09/30之后， basic 类型公网IP退役后， 用户将不能再使用具有基本IP地址的资源。 例如负载均衡等（Azure Cloud Services除外）</p>
+<p>b. 在2025年09/30到期之后， 用户将不能再将basic IP升级到标准类型，即升级需要在此之前完成</p>
+<p>c. 如果在2025年09/30到期之后，没有没有升级到标准类型， 那些持有基本IP的资源将无法正常工作， 平台也不能强制将其升级到标准类型</p>
+<p>d. 在2025年09/30 基本IP退役后，平台将不再对基本IP提供支持</p>
+<p>进一步了解到：</p>
+<p>31 March 2025之前 可以创建，可以使用</p>
+<p>31 March 2025 到  30 September 2025 不能创建Basic SKU，但是可以使用已有的</p>
+<p>30 September 2025 之后，不能使用，不提供支持。</p>
+<p>客户可能会问到的一些问题：</p>
+<p>1. 在2025年以后，azure的basic sku IP是否可以继续使用以及是否会受到影响 ？</p>
+<p>现在~2025年3月31日：用户可以创建新的Basic SKU Public IP，且可以使用；</p>
+<p>2025年3月31日~2025年9月30日：用户不能创建新的Basic SKU Public IP，但是可以使用之前创建的；</p>
+<p>2025年9月30日开始：用户既不能创建也不能使用Basic SKU Public IP；</p>
+<p>2. 在2025年以后，basic sku ip是否还会提供支持？</p>
+<p>2025年9月30日后，没有对Basic SKU Public IP的支持计划；</p>
+<p>3. 不升级的话，会有什么影响；</p>
+<p>不升级的话，2025年9月30日之后相关服务将不可用（Azure Cloud Services除外：If you have any Basic SKU public IP addresses deployed in Azure Cloud Services (extended support), those deployments will not be affected by this retirement and you don&#39;t need to take any action for them.）</p>
+<p>4. Vpngw，appgw等服务，无法关机或者取消公网IP的关联关系，如何升级到标准SKU？</p>
+<p>需要在2025年9月30日之前重建VPN，将APPGW升级到V2，具体请参考：Upgrading a basic public IP address to standard SKU - Guidance | Microsoft Learn</p>
+<p>5.AGWv1什么时候能够支持非basic的SKU？</p>
+<p>AGW1不会支持非basic的SKU，需要用户将APPGW V1升级到V2，文档也已经更新：Upgrading a basic public IP address to standard SKU - Guidance | Microsoft Learn；</p>
+<p>6.非basic是standard吗？</p>
+<p>是的；</p>
+<p>7.如果basic要改非basic，怎么保留原有IP地址？特别是AGW和VPNGW</p>
+<p>目前是不能保留原有IP地址，要重建新的IP地址；</p></article>

@@ -1,0 +1,319 @@
+<article class="kb-article" data-title="Log Analytics Agent排错指南"><h1>Log Analytics Agent排错指南</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-07-26 13:56:32</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>代理运行不正常，检测信号无法正常工作</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>代理运行不正常，检测信号无法正常工作</li>
+</ul>
+<ul>
+<li>2020/11/03 08:44:30: ERROR: null(0): EventId=1 Priority=ERROR Job 10B65B80-B048-413C-B1FF-2341EC407ADD :</li>
+</ul>
+<ul>
+<li>DSC Engine Error :</li>
+</ul>
+<ul>
+<li>Error Message Inventory mof does not exist.</li>
+</ul>
+<ul>
+<li>Error Code : 1</li>
+</ul>
+<ul>
+<li>问题二：无法通过代理连接到 Azure Monitor</li>
+</ul>
+<ul>
+<li>在我的这个客户CASE里面，以上几个问题全部遇到，以及绝大部分采用了”重装大法”</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>以下是Azure Monitor的一个简单示意架构图</li>
+</ul>
+<ul>
+<li>近日在帮一个客户借助Azure Monitor服务实现企业级云原生监控平台，就使用到了上述若干组件。先看下效果图</li>
+</ul>
+<ul>
+<li>今天这里就简单总结一下遇到的问题以及对应的解决办法</li>
+</ul>
+<ul>
+<li>问题一：代理通信问题：</li>
+</ul>
+<ul>
+<li>代理系统日志无效</li>
+</ul>
+<ul>
+<li>代理的 CPU/内存使用率高</li>
+</ul>
+<ul>
+<li>代理存在安装问题</li>
+</ul>
+<ul>
+<li>代理自定义日志无效</li>
+</ul>
+<ul>
+<li>收集代理日志</li>
+</ul>
+<ul>
+<li>文件</li>
+</ul>
+<ul>
+<li>路径</li>
+</ul>
+<ul>
+<li>解决办法：</li>
+</ul>
+<ul>
+<li>sudo su omsagent -c ‘python /opt/microsoft/omsconfig/Scripts/GetDscConfiguration.py’</li>
+</ul>
+<ul>
+<li>#tar zxvf paping_1.5.5_x86-64_linux.tar.gz</li>
+</ul>
+<ul>
+<li>./paping -p 443 -c 10 [WorkSpaceID].ods.opinsights.azure.cn</li>
+</ul>
+<ul>
+<li>./paping -p 443 -c 10 [WorkSpaceID]. oms.opinsights.azure.cn</li>
+</ul>
+<ul>
+<li>重新启动OMSAgent</li>
+</ul>
+<ul>
+<li>sudo /opt/microsoft/omsagent/bin/service_control restart [WorkSpaceID]</li>
+</ul>
+<ul>
+<li>sudo /opt/microsoft/omsagent/bin/omsadmin.sh -l</li>
+</ul>
+<ul>
+<li>/opt/microsoft/omsagent/bin/omsadmin.sh -w &lt;Workspace ID&gt; -s &lt;Workspace Key&gt; -p &lt;Proxy Conf&gt; -v</li>
+</ul>
+<ul>
+<li>sudo rm -rf /etc/opt/microsoft/omsagent</li>
+</ul>
+<ul>
+<li>sudo rm -rf /var/opt/microsoft/omsagent</li>
+</ul>
+<ul>
+<li>sudo rm -rf /opt/microsoft/omsagent</li>
+</ul>
+<ul>
+<li>sudo yum remove -y scx omi omsagent omsconfig auoms</li>
+</ul>
+<ul>
+<li>sh onboard_agent.sh -w [WorkSpaceID] -s [WorkSpace Key] -d opinsights.azure.cn</li>
+</ul>
+<ul>
+<li>执行清除卸载Agent</li>
+</ul>
+<ul>
+<li>sudo sh purge_omsagent.sh</li>
+</ul>
+<ul>
+<li>再次点击”连接”应该就工作正常了</li>
+</ul>
+<ul>
+<li>Heartbeat | where OSType == ‘Linux’ | summarize arg_max(TimeGenerated, *) by SourceComputerId | sort by Computer | render table</li>
+</ul>
+<ul>
+<li>最后，在这个CASE的解决中非常感谢世纪互联蓝云技术专家的大力支持。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>云计算时代，越来越多的企业将其IT基础架构迁移到公有云平台提供业务支撑，传统上我们可以自己部署一套例如ZABBIX监控平台，外加日志分析平台ELK（Elasticsearch、Logstash、Kibana）实现全局监控，但是当业务迁移到公有云平台时，其监视内容就不仅仅是传统的计算、存储、网络、硬件设备了，还需要对云平台做监视，以便清楚的知道公有云平台运行状况是否影响”我”的业务，这个时候就是云原生监控平台的价值体现了，以Microsoft Azure为例，借助Azure Monitor可以：</li>
+</ul>
+<ul>
+<li>但是在实施过程中也遇到不少问题，尤其是日志分析服务Log Analytics，发现无法正常推送Log Analytics Agent（又称为OMSAgent），</li>
+</ul>
+<ul>
+<li>无法通过Azure Portal卸载或者通过Log Analytics 断开 VM 连接</li>
+</ul>
+<ul>
+<li>使用Log Analytics 故障排除工具查找和诊断 Log Analytics 代理问题，主要检查：</li>
+</ul>
+<ul>
+<li>代理未启动，无法连接到 Log Analytic 服务</li>
+</ul>
+<ul>
+<li>sudo /opt/microsoft/omsagent/bin/troubleshooter</li>
+</ul>
+<ul>
+<li>收集并分析Log Analytics Agent for Linux日志</li>
+</ul>
+<ul>
+<li>Log Analytics Linux 代理日志文件</li>
+</ul>
+<ul>
+<li>/var/opt/microsoft/omsagent/&lt;workspace id&gt;/log/omsagent.log</li>
+</ul>
+<ul>
+<li>Log Analytics 代理配置日志文件</li>
+</ul>
+<ul>
+<li>/var/opt/microsoft/omsconfig/omsconfig.log</li>
+</ul>
+<ul>
+<li>通过日志可以发现Omsconfig.log中看到有报错信息：</li>
+</ul>
+<ul>
+<li>安装PaPing，检查防火墙</li>
+</ul>
+<ul>
+<li>检查防火墙：(黄色部分替换为对应的WorkSpaceID)</li>
+</ul>
+<ul>
+<li>验证更改是否生效</li>
+</ul>
+<ul>
+<li>问题三：在 Azure 门户中，log Analytics 代理扩展标记为失败状态：预配失败</li>
+</ul>
+<ul>
+<li>Azure Portal中断开log Analytics连接</li>
+</ul>
+<ul>
+<li>Azure Portal删除VM扩展</li>
+</ul>
+<ul>
+<li>问题四：无法断开log Analytics无法删除VM扩展，获取Agent状况</li>
+</ul>
+<ul>
+<li>返回log Analytics Portal，查看Agent状况【应该处于未连接状态】</li>
+</ul>
+<ul>
+<li>此时我们就可以检索当前连接到Log Analytics 工作区的CPU负载情况（Top10）</li>
+</ul>
+<ul>
+<li>最后需要注意的是，当我们针对某一特定主机做日志查询与分析的时候，一定要看Log Analytics工作区里显示的名称，发现computer参数调取的是虚拟机的计算机名称，而不是Azure Portal中虚拟机名称。</li>
+</ul>
+<ul>
+<li>以上，就是Log Analytics Agent排错的答题思路，希望可以帮助到大家。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>将以下命令粘贴到具有 Log Analytics 代理的计算机上的终端窗口中，可以运行故障排除工具：</li>
+</ul>
+<ul>
+<li>运行命令：</li>
+</ul>
+<ul>
+<li>此命令返回代理从门户网站看到的配置，包括系统日志设置，Linux性能计数器和自定义日志。根据提示完成相关建议操作</li>
+</ul>
+<ul>
+<li>使用以下命令（启用 -v 选项）通过 Log Analytics Linux 代理重新载入到 Azure Monitor。 它允许通过代理服务器重新连接到 Azure Monitor 的代理。</li>
+</ul>
+<ul>
+<li>使用下面的命令清除之前产生的配置文件</li>
+</ul>
+<ul>
+<li>使用下面的命令联机下载Agent</li>
+</ul>
+<ul>
+<li>使用下面的命令解压并安装Agent</li>
+</ul>
+<ul>
+<li>登录VM直接联机下载清除脚本卸载当前Agent【传说中的重启重装换电脑的第二大法宝】</li>
+</ul>
+<ul>
+<li>使用如下命令可以遍历整个Log Analytics 工作区的服务器信息</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>在开始之前首先查看Azure Linux Agent是否正常运行，可以管理 Linux 与 FreeBSD 预配，以及 VM 与 Azure 底层控制器之间的交互，它是实现其他IaaS VM扩展的前提， 除了提供预配功能的 Linux 代理外，Azure 还提供对某些 Linux OS 使用 cloud-init 的选项。如果非正常运行或者版本较低建议您重新安装或者升级到较新版本。可参考官方网站：<a href="https://docs.microsoft.com/zh-cn/azure/virtual-machines/extensions/agent-linux" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-machines/extensions/agent-linux</a></li>
+</ul>
+<ul>
+<li>#wget <a href="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/paping/paping_1.5.5_x86-64_linux.tar.gz" target="_blank" rel="noopener">https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/paping/paping_1.5.5_x86-64_linux.tar.gz</a></li>
+</ul>
+<ul>
+<li>wget <a href="https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh" target="_blank" rel="noopener">https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh</a> –no-check-certificate</li>
+</ul>
+<ul>
+<li>wget <a href="https://raw.githubusercontent.com/microsoft/OMS-Agent-for-Linux/master/tools/purge_omsagent.sh" target="_blank" rel="noopener">https://raw.githubusercontent.com/microsoft/OMS-Agent-for-Linux/master/tools/purge_omsagent.sh</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="http://365vcloud.net/2020/12/10/log-analytics-troubleshooting/&gt;" target="_blank" rel="noopener">http://365vcloud.net/2020/12/10/log-analytics-troubleshooting/&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>云计算时代，越来越多的企业将其IT基础架构迁移到公有云平台提供业务支撑，传统上我们可以自己部署一套例如ZABBIX监控平台，外加日志分析平台ELK（Elasticsearch、Logstash、Kibana）实现全局监控，但是当业务迁移到公有云平台时，其监视内容就不仅仅是传统的计算、存储、网络、硬件设备了，还需要对云平台做监视，以便清楚的知道公有云平台运行状况是否影响”我”的业务，这个时候就是云原生监控平台的价值体现了，以Microsoft Azure为例，借助Azure Monitor可以：</p>
+<p>以下是Azure Monitor的一个简单示意架构图</p>
+<p>近日在帮一个客户借助Azure Monitor服务实现企业级云原生监控平台，就使用到了上述若干组件。先看下效果图</p>
+<p>但是在实施过程中也遇到不少问题，尤其是日志分析服务Log Analytics，发现无法正常推送Log Analytics Agent（又称为OMSAgent），</p>
+<p>无法通过Azure Portal卸载或者通过Log Analytics 断开 VM 连接</p>
+<p>今天这里就简单总结一下遇到的问题以及对应的解决办法</p>
+<p>在开始之前首先查看Azure Linux Agent是否正常运行，可以管理 Linux 与 FreeBSD 预配，以及 VM 与 Azure 底层控制器之间的交互，它是实现其他IaaS VM扩展的前提， 除了提供预配功能的 Linux 代理外，Azure 还提供对某些 Linux OS 使用 cloud-init 的选项。如果非正常运行或者版本较低建议您重新安装或者升级到较新版本。可参考官方网站：<a href="https://docs.microsoft.com/zh-cn/azure/virtual-machines/extensions/agent-linux" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-machines/extensions/agent-linux</a></p>
+<p>问题一：代理通信问题：</p>
+<p>使用Log Analytics 故障排除工具查找和诊断 Log Analytics 代理问题，主要检查：</p>
+<p>代理运行不正常，检测信号无法正常工作</p>
+<p>代理未启动，无法连接到 Log Analytic 服务</p>
+<p>代理系统日志无效</p>
+<p>代理的 CPU/内存使用率高</p>
+<p>代理存在安装问题</p>
+<p>代理自定义日志无效</p>
+<p>收集代理日志</p>
+<p>将以下命令粘贴到具有 Log Analytics 代理的计算机上的终端窗口中，可以运行故障排除工具：</p>
+<p>sudo /opt/microsoft/omsagent/bin/troubleshooter</p>
+<p>收集并分析Log Analytics Agent for Linux日志</p>
+<p>文件</p>
+<p>路径</p>
+<p>Log Analytics Linux 代理日志文件</p>
+<p>/var/opt/microsoft/omsagent/&lt;workspace id&gt;/log/omsagent.log</p>
+<p>Log Analytics 代理配置日志文件</p>
+<p>/var/opt/microsoft/omsconfig/omsconfig.log</p>
+<p>通过日志可以发现Omsconfig.log中看到有报错信息：</p>
+<p>2020/11/03 08:44:30: ERROR: null(0): EventId=1 Priority=ERROR Job 10B65B80-B048-413C-B1FF-2341EC407ADD :</p>
+<p>DSC Engine Error :</p>
+<p>Error Message Inventory mof does not exist.</p>
+<p>Error Code : 1</p>
+<p>解决办法：</p>
+<p>运行命令：</p>
+<p>sudo su omsagent -c ‘python /opt/microsoft/omsconfig/Scripts/GetDscConfiguration.py’</p>
+<p>此命令返回代理从门户网站看到的配置，包括系统日志设置，Linux性能计数器和自定义日志。根据提示完成相关建议操作</p>
+<p>安装PaPing，检查防火墙</p>
+<p>#wget <a href="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/paping/paping_1.5.5_x86-64_linux.tar.gz" target="_blank" rel="noopener">https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/paping/paping_1.5.5_x86-64_linux.tar.gz</a></p>
+<p>#tar zxvf paping_1.5.5_x86-64_linux.tar.gz</p>
+<p>检查防火墙：(黄色部分替换为对应的WorkSpaceID)</p>
+<p>./paping -p 443 -c 10 [WorkSpaceID].ods.opinsights.azure.cn</p>
+<p>./paping -p 443 -c 10 [WorkSpaceID]. oms.opinsights.azure.cn</p>
+<p>重新启动OMSAgent</p>
+<p>sudo /opt/microsoft/omsagent/bin/service_control restart [WorkSpaceID]</p>
+<p>验证更改是否生效</p>
+<p>sudo /opt/microsoft/omsagent/bin/omsadmin.sh -l</p>
+<p>问题二：无法通过代理连接到 Azure Monitor</p>
+<p>使用以下命令（启用 -v 选项）通过 Log Analytics Linux 代理重新载入到 Azure Monitor。 它允许通过代理服务器重新连接到 Azure Monitor 的代理。</p>
+<p>/opt/microsoft/omsagent/bin/omsadmin.sh -w &lt;Workspace ID&gt; -s &lt;Workspace Key&gt; -p &lt;Proxy Conf&gt; -v</p>
+<p>问题三：在 Azure 门户中，log Analytics 代理扩展标记为失败状态：预配失败</p>
+<p>Azure Portal中断开log Analytics连接</p>
+<p>Azure Portal删除VM扩展</p>
+<p>使用下面的命令清除之前产生的配置文件</p>
+<p>sudo rm -rf /etc/opt/microsoft/omsagent</p>
+<p>sudo rm -rf /var/opt/microsoft/omsagent</p>
+<p>sudo rm -rf /opt/microsoft/omsagent</p>
+<p>sudo yum remove -y scx omi omsagent omsconfig auoms</p>
+<p>使用下面的命令联机下载Agent</p>
+<p>wget <a href="https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh" target="_blank" rel="noopener">https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh</a> –no-check-certificate</p>
+<p>使用下面的命令解压并安装Agent</p>
+<p>sh onboard_agent.sh -w [WorkSpaceID] -s [WorkSpace Key] -d opinsights.azure.cn</p>
+<p>问题四：无法断开log Analytics无法删除VM扩展，获取Agent状况</p>
+<p>登录VM直接联机下载清除脚本卸载当前Agent【传说中的重启重装换电脑的第二大法宝】</p>
+<p>wget <a href="https://raw.githubusercontent.com/microsoft/OMS-Agent-for-Linux/master/tools/purge_omsagent.sh" target="_blank" rel="noopener">https://raw.githubusercontent.com/microsoft/OMS-Agent-for-Linux/master/tools/purge_omsagent.sh</a></p>
+<p>执行清除卸载Agent</p>
+<p>sudo sh purge_omsagent.sh</p>
+<p>返回log Analytics Portal，查看Agent状况【应该处于未连接状态】</p>
+<p>再次点击”连接”应该就工作正常了</p>
+<p>在我的这个客户CASE里面，以上几个问题全部遇到，以及绝大部分采用了”重装大法”</p>
+<p>此时我们就可以检索当前连接到Log Analytics 工作区的CPU负载情况（Top10）</p>
+<p>最后需要注意的是，当我们针对某一特定主机做日志查询与分析的时候，一定要看Log Analytics工作区里显示的名称，发现computer参数调取的是虚拟机的计算机名称，而不是Azure Portal中虚拟机名称。</p>
+<p>使用如下命令可以遍历整个Log Analytics 工作区的服务器信息</p>
+<p>Heartbeat | where OSType == ‘Linux’ | summarize arg_max(TimeGenerated, *) by SourceComputerId | sort by Computer | render table</p>
+<p>以上，就是Log Analytics Agent排错的答题思路，希望可以帮助到大家。</p>
+<p>最后，在这个CASE的解决中非常感谢世纪互联蓝云技术专家的大力支持。</p>
+<p>From &lt;<a href="http://365vcloud.net/2020/12/10/log-analytics-troubleshooting/&gt;" target="_blank" rel="noopener">http://365vcloud.net/2020/12/10/log-analytics-troubleshooting/&gt;</a></p></article>

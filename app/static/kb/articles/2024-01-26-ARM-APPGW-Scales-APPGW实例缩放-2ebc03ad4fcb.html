@@ -1,0 +1,159 @@
+<article class="kb-article" data-title="[ARM-APPGW-Scales]APPGW实例缩放"><h1>[ARM-APPGW-Scales]APPGW实例缩放</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-01-26 09:53:48</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>当减少实例个数时，每个遗留的实例都会有分别一段时间无法处理请求，这是预期内的行为。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>当减少实例个数时，每个遗留的实例都会有分别一段时间无法处理请求，这是预期内的行为。</li>
+</ul>
+<ul>
+<li>由于我们AppGW v1 在后台使用了CloudService（Classic）架构部署，“减少实例个数”的行为相当于对这个部署做了一次Rest Upgrade Deployment，按照Cloud Service的逻辑就会对剩余的实例做一次UD (Update Domain) walk，因此剩余实例 (Instance 0 和 Instance 1) 会受到更新影响一段时间无法处理请求（测试和日志显示大约需要7分钟）。</li>
+</ul>
+<ul>
+<li>减少实例个数一定是在业务低谷期做的操作，因此请求数不应该很多。当一个实例更新、无法处理请求，不会造成 其他几台实例CPU突然飙高。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20190614</li>
+</ul>
+<ul>
+<li>在处理：119060625000786/NET/Decathlon (Shanghai) Sports Co., Ltd./SR_2019060430595_[HIPO]APPGW实例个数收缩过程中的行为及CPU等状况 过程中。</li>
+</ul>
+<ul>
+<li>（以下内容仅用于内部）</li>
+</ul>
+<ul>
+<li>==================================================================================================</li>
+</ul>
+<ul>
+<li>关于影响</li>
+</ul>
+<ul>
+<li>实际业务影响：</li>
+</ul>
+<ul>
+<li>由于实例的更新是UD walk，因此可以保障每个时刻有实例在正常运行，处理AppGW的请求，实际业务不受到影响。</li>
+</ul>
+<ul>
+<li>每个实例CPU影响：</li>
+</ul>
+<ul>
+<li>结合用户的例子来说，业务请求一直都被正常处理；CPU方面两台剩余实例因更新导致了自己的CPU变高。</li>
+</ul>
+<ul>
+<li>In_0不处理请求时（06-04-2019 00:04:56 到 06-04-2019 00:13:09），实例1/2/3/4四台仍在处理请求，这段时间除了黄线（In_0）其他CPU都很低。</li>
+</ul>
+<ul>
+<li>In_0更新操作在00:12:02开始，如下图它自己（黄线）CPU突增也就是在00:13。</li>
+</ul>
+<ul>
+<li>In_1也类似，更新操作大约在00:19:48开始，它自己（绿线）CPU突增在00:19-00:20。其他时段CPU比较均衡。</li>
+</ul>
+<ul>
+<li>可以传达给客户的版本参考如下：</li>
+</ul>
+<ul>
+<li>减少实例个数时，每个遗留的实例会分别做模块配置更新、可能一段时间不处理请求，这是预期的行为。</li>
+</ul>
+<ul>
+<li>这个更新是逐更新域的，AppGW实例在被部署时保证落在了不同更新域，因此保证正常情况下：每个时刻都有实例在正常处理请求，实际业务不会中断。</li>
+</ul>
+<ul>
+<li>在我们上次的减少实例操作中，所有实际业务的请求都成功返回结果。</li>
+</ul>
+<ul>
+<li>在配置更新时，这台实例CPU会短暂升高（根据我们这次的日志大约升高持续1-2分钟）。由于是逐一更新、且发生在业务较低的时候，也不会因为这个更新导致其他实例业务量猛增、CPU上升。</li>
+</ul>
+<ul>
+<li>虽然此次仅涉及了减少实例的过程，但后台的UD (Update Domain) walk机制理论上同样适用于增加实例。</li>
+</ul>
+<ul>
+<li>此次工单中，之前另一张表（颗粒度5 min）就仅能体现出实例1的CPU增高，实例0很不明显。</li>
+</ul>
+<ul>
+<li>有问题随时讨论。</li>
+</ul>
+<ul>
+<li>英文版参考（该案例涉及具体场景4-2)：</li>
+</ul>
+<ul>
+<li>When reducing instance count of AppGW (4-&gt;2), the remaining 2 instances will also be re-configured one by one, since we deploy the AppGW as a Cloudservice in the background, which will do an Update Domain on the remaining instances in case of a scale down.</li>
+</ul>
+<ul>
+<li>New requests won’t go to the updating instance, therefore some old connections on that instance would be impacted , this is expected by design. But since the update work is one by one, so it can ensure at least one available instance serving the requests.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>注意到在实例缩减时，剩余的实例也分别有过一段时间不处理请求，且CPU会显著升高，产品组已经对此确认：</li>
+</ul>
+<ul>
+<li>We learn that the traffic volume is not high, but still recommend to avoid scaling down during peak hours in case possible impact if any,</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>我们与后台和上次与您处理工单的同事再次做了确认，对于剩余的这两台实例：自更新开始，新的业务请求就不会被发到这台实例上，这台实例上正在等待后端回复或长连接可能会被终止。因此也建议减少实例个数的操作只会在业务低谷操作尽可能减少影响。</li>
+</ul>
+<ul>
+<li>同时，参考APPGW CPU时，建议使用该表（颗粒度可达1 min）</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>该实例在更新过程中，本身的CPU会上升。这是由于当时它在做部署（安装ARR模块、重新配置IIS相关设置等，更多详细行为可以参考这里：<a href="https://jarvis-west.dc.ad.msft.net/2543EA55" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/2543EA55</a></li>
+</ul>
+<ul>
+<li>下图截取自：<a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/35DFE771" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/35DFE771</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/35DFE771" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/35DFE771</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/1AF48663" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/1AF48663</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20190614</p>
+<p>在处理：119060625000786/NET/Decathlon (Shanghai) Sports Co., Ltd./SR_2019060430595_[HIPO]APPGW实例个数收缩过程中的行为及CPU等状况 过程中。</p>
+<p>注意到在实例缩减时，剩余的实例也分别有过一段时间不处理请求，且CPU会显著升高，产品组已经对此确认：</p>
+<p>（以下内容仅用于内部）</p>
+<p>==================================================================================================</p>
+<p>当减少实例个数时，每个遗留的实例都会有分别一段时间无法处理请求，这是预期内的行为。</p>
+<p>由于我们AppGW v1 在后台使用了CloudService（Classic）架构部署，“减少实例个数”的行为相当于对这个部署做了一次Rest Upgrade Deployment，按照Cloud Service的逻辑就会对剩余的实例做一次UD (Update Domain) walk，因此剩余实例 (Instance 0 和 Instance 1) 会受到更新影响一段时间无法处理请求（测试和日志显示大约需要7分钟）。</p>
+<p>关于影响</p>
+<p>实际业务影响：</p>
+<p>由于实例的更新是UD walk，因此可以保障每个时刻有实例在正常运行，处理AppGW的请求，实际业务不受到影响。</p>
+<p>每个实例CPU影响：</p>
+<p>减少实例个数一定是在业务低谷期做的操作，因此请求数不应该很多。当一个实例更新、无法处理请求，不会造成 其他几台实例CPU突然飙高。</p>
+<p>该实例在更新过程中，本身的CPU会上升。这是由于当时它在做部署（安装ARR模块、重新配置IIS相关设置等，更多详细行为可以参考这里：<a href="https://jarvis-west.dc.ad.msft.net/2543EA55" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/2543EA55</a></p>
+<p>结合用户的例子来说，业务请求一直都被正常处理；CPU方面两台剩余实例因更新导致了自己的CPU变高。</p>
+<p>In_0不处理请求时（06-04-2019 00:04:56 到 06-04-2019 00:13:09），实例1/2/3/4四台仍在处理请求，这段时间除了黄线（In_0）其他CPU都很低。</p>
+<p>In_0更新操作在00:12:02开始，如下图它自己（黄线）CPU突增也就是在00:13。</p>
+<p>In_1也类似，更新操作大约在00:19:48开始，它自己（绿线）CPU突增在00:19-00:20。其他时段CPU比较均衡。</p>
+<p>下图截取自：<a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/35DFE771" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/35DFE771</a></p>
+<p>可以传达给客户的版本参考如下：</p>
+<p>减少实例个数时，每个遗留的实例会分别做模块配置更新、可能一段时间不处理请求，这是预期的行为。</p>
+<p>这个更新是逐更新域的，AppGW实例在被部署时保证落在了不同更新域，因此保证正常情况下：每个时刻都有实例在正常处理请求，实际业务不会中断。</p>
+<p>我们与后台和上次与您处理工单的同事再次做了确认，对于剩余的这两台实例：自更新开始，新的业务请求就不会被发到这台实例上，这台实例上正在等待后端回复或长连接可能会被终止。因此也建议减少实例个数的操作只会在业务低谷操作尽可能减少影响。</p>
+<p>在我们上次的减少实例操作中，所有实际业务的请求都成功返回结果。</p>
+<p>在配置更新时，这台实例CPU会短暂升高（根据我们这次的日志大约升高持续1-2分钟）。由于是逐一更新、且发生在业务较低的时候，也不会因为这个更新导致其他实例业务量猛增、CPU上升。</p>
+<p>虽然此次仅涉及了减少实例的过程，但后台的UD (Update Domain) walk机制理论上同样适用于增加实例。</p>
+<p>同时，参考APPGW CPU时，建议使用该表（颗粒度可达1 min）</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/dashboard/share/35DFE771" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/dashboard/share/35DFE771</a></p>
+<p>此次工单中，之前另一张表（颗粒度5 min）就仅能体现出实例1的CPU增高，实例0很不明显。</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/1AF48663" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/1AF48663</a></p>
+<p>有问题随时讨论。</p>
+<p>英文版参考（该案例涉及具体场景4-2)：</p>
+<p>When reducing instance count of AppGW (4-&gt;2), the remaining 2 instances will also be re-configured one by one, since we deploy the AppGW as a Cloudservice in the background, which will do an Update Domain on the remaining instances in case of a scale down.</p>
+<p>New requests won’t go to the updating instance, therefore some old connections on that instance would be impacted , this is expected by design. But since the update work is one by one, so it can ensure at least one available instance serving the requests.</p>
+<p>We learn that the traffic volume is not high, but still recommend to avoid scaling down during peak hours in case possible impact if any,</p></article>

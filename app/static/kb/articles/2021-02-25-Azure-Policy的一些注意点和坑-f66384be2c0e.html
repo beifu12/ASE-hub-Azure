@@ -1,0 +1,77 @@
+<article class="kb-article" data-title="Azure Policy的一些注意点和坑"><h1>Azure Policy的一些注意点和坑</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Advisory Policy</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-02-25 17:40:27</li>
+<li>JD 相关性: Defender/Sentinel/安全; Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>重新分配策略或计划的作用域到其他订阅时，提示“..指定的策略定义超出作用域..”，是由于您策略或计划的定义位置是当前订阅，因此，无法分配到其他订阅。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>重新分配策略或计划的作用域到其他订阅时，提示“..指定的策略定义超出作用域..”，是由于您策略或计划的定义位置是当前订阅，因此，无法分配到其他订阅。</li>
+</ul>
+<ul>
+<li>SR_2021021279943_[S500]unable to enforce the sql server  with minimum tls version 1.2 with deployIfNotExist effect.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>会在  策略 –&gt; 分配 中显示。因此，安全中心默认策略不需要Policy再进行配置。</li>
+</ul>
+<ul>
+<li>当部署了DeployIfNotExists 策略，也就是在条件满足时将执行模板部署的策略后，默认此分配对新创建的资源有效，也就是新创建资源满足条件时，就会执行模板部署。对现有资源会检测符合性，但不会执行部署，可以手动部署修正任务。</li>
+</ul>
+<ul>
+<li>在进行DeployIfNotExists的策略时，通过会写一些existenceCondition的属性，请注意以下这个坑。</li>
+</ul>
+<ul>
+<li>参考工单：</li>
+</ul>
+<ul>
+<li>SR_2021020779383_[S500]安全中心的内置Azure Policy</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1. 可以参考以下文档查看安全中心启用的安全策略。</li>
+</ul>
+<ul>
+<li>门户查看安全策略截图参考：</li>
+</ul>
+<ul>
+<li>通过安全中心 –&gt; 安全策略 –&gt; 选择具体订阅 -&gt; 查看有效策略  中显示的 安全中心默认策略</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/security-center/tutorial-security-policy" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/security-center/tutorial-security-policy</a></li>
+</ul>
+<ul>
+<li>参考文档：<a href="https://docs.azure.cn/zh-cn/governance/policy/concepts/definition-structure#definition-location" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/governance/policy/concepts/definition-structure#definition-location</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/governance/policy/concepts/effects#deployifnotexists" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/governance/policy/concepts/effects#deployifnotexists</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-2-25</p>
+<p>1. 可以参考以下文档查看安全中心启用的安全策略。</p>
+<p><a href="https://docs.azure.cn/zh-cn/security-center/tutorial-security-policy" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/security-center/tutorial-security-policy</a></p>
+<p>门户查看安全策略截图参考：</p>
+<p>通过安全中心 –&gt; 安全策略 –&gt; 选择具体订阅 -&gt; 查看有效策略  中显示的 安全中心默认策略</p>
+<p>会在  策略 –&gt; 分配 中显示。因此，安全中心默认策略不需要Policy再进行配置。</p>
+<p>重新分配策略或计划的作用域到其他订阅时，提示“..指定的策略定义超出作用域..”，是由于您策略或计划的定义位置是当前订阅，因此，无法分配到其他订阅。</p>
+<p>参考文档：<a href="https://docs.azure.cn/zh-cn/governance/policy/concepts/definition-structure#definition-location" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/governance/policy/concepts/definition-structure#definition-location</a></p>
+<p>当部署了DeployIfNotExists 策略，也就是在条件满足时将执行模板部署的策略后，默认此分配对新创建的资源有效，也就是新创建资源满足条件时，就会执行模板部署。对现有资源会检测符合性，但不会执行部署，可以手动部署修正任务。</p>
+<p>在进行DeployIfNotExists的策略时，通过会写一些existenceCondition的属性，请注意以下这个坑。</p>
+<p><a href="https://docs.azure.cn/zh-cn/governance/policy/concepts/effects#deployifnotexists" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/governance/policy/concepts/effects#deployifnotexists</a></p>
+<p>参考工单：</p>
+<p>SR_2021020779383_[S500]安全中心的内置Azure Policy</p>
+<p>SR_2021021279943_[S500]unable to enforce the sql server  with minimum tls version 1.2 with deployIfNotExist effect.</p></article>

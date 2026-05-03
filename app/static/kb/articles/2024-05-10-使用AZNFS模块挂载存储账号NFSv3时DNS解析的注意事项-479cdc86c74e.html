@@ -1,0 +1,97 @@
+<article class="kb-article" data-title="使用AZNFS模块挂载存储账号NFSv3时DNS解析的注意事项"><h1>使用AZNFS模块挂载存储账号NFSv3时DNS解析的注意事项</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DNS</li>
+<li>Section: DNS</li>
+<li>最近修改: 2024-05-10 12:01:39</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_20240411287742_为Linux用NFS协议挂载Blob，Blob的PrivateEndpoint的Firewall和网络设置中无法添加同订阅下的vNet</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_20240411287742_为Linux用NFS协议挂载Blob，Blob的PrivateEndpoint的Firewall和网络设置中无法添加同订阅下的vNet</li>
+</ul>
+<ul>
+<li>根据Github的解释，这是AZNFS模块的一个特性，其设计的目的是为了应对在Blob出现偶然的硬件故障等情况时，其终结点的IP地址发生变化。而实现这个功能的机制就是一直使用DNS解析去检测。包括最初挂载，也只会使用DNS解析的结果。所以无论/etc/hosts中怎么配置，都不会影响AZNFS的工作。AZNFS只会使用DNS解析，不会使用/etc/hosts。参考Github说明：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>相关工单：</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>客户使用了切片存储账号，启用了专用终结点。本地和云端通过VPN连接。客户的需求是在本地Linux上挂载存储账号blob为NFSv3，并且需要走VPN使用专用终结点连接。</li>
+</ul>
+<ul>
+<li>另外，客户使用本地DNS服务，并且明确表示不会使用任何Azure的DNS服务。为了不影响访问其他存储账号的公共终结点，客户在本地Linux上添加了/etc/hosts解析。</li>
+</ul>
+<ul>
+<li>（扩展：存储账号只能通过于域名访问，使用IP地址或者是privatelink的域名都是不可以的。所以客户曾经提出用专用终结点的IP地址直接挂载，这个肯定是不行的。）</li>
+</ul>
+<ul>
+<li>但是在Mount的时候，通过Blob日志发现，本地Linux一直在使用本地的公网IP连接存储账号的公共终结点，而不会走VPN访问存储账号的专用终结点。</li>
+</ul>
+<ul>
+<li>正常情况下，需要借助Azure平台的private DNS zone来解决此问题。但是客户表示不会用Azure的DNS服务。</li>
+</ul>
+<ul>
+<li>如果在客户本地DNS上创建blob的zone，会影响访问其余blob的公共终结点。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题排查：</li>
+</ul>
+<ul>
+<li>经过测试抓包发现，AZNFS模块并不会检查/etc/hosts，而是只会使用DNS解析的结果。</li>
+</ul>
+<ul>
+<li>最后确认，不使用AZNFS模块来进行挂载。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Mount的命令：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>mount -t aznfs -o sec=sys,vers=3,nolock,proto=tcp &lt;storage-account-name&gt;.blob.core.windows.net:/&lt;storage-account-name&gt;/&lt;container-name&gt;  /nfsdata</li>
+</ul>
+<ul>
+<li>mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp &lt;storage-account-name&gt;.blob.core.windows.net:/&lt;storage-account-name&gt;/&lt;container-name&gt;  /nfsdata</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Mount的操作步骤： <a href="https://learn.microsoft.com/en-us/azure/storage/blobs/network-file-system-protocol-support-how-to" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/storage/blobs/network-file-system-protocol-support-how-to</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/Azure/AZNFS-mount/blob/main/README.md" target="_blank" rel="noopener">https://github.com/Azure/AZNFS-mount/blob/main/README.md</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>相关工单：</p>
+<p>SR_20240411287742_为Linux用NFS协议挂载Blob，Blob的PrivateEndpoint的Firewall和网络设置中无法添加同订阅下的vNet</p>
+<p>问题描述：</p>
+<p>客户使用了切片存储账号，启用了专用终结点。本地和云端通过VPN连接。客户的需求是在本地Linux上挂载存储账号blob为NFSv3，并且需要走VPN使用专用终结点连接。</p>
+<p>另外，客户使用本地DNS服务，并且明确表示不会使用任何Azure的DNS服务。为了不影响访问其他存储账号的公共终结点，客户在本地Linux上添加了/etc/hosts解析。</p>
+<p>Mount的操作步骤： <a href="https://learn.microsoft.com/en-us/azure/storage/blobs/network-file-system-protocol-support-how-to" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/storage/blobs/network-file-system-protocol-support-how-to</a></p>
+<p>Mount的命令：</p>
+<p>mount -t aznfs -o sec=sys,vers=3,nolock,proto=tcp &lt;storage-account-name&gt;.blob.core.windows.net:/&lt;storage-account-name&gt;/&lt;container-name&gt;  /nfsdata</p>
+<p>（扩展：存储账号只能通过于域名访问，使用IP地址或者是privatelink的域名都是不可以的。所以客户曾经提出用专用终结点的IP地址直接挂载，这个肯定是不行的。）</p>
+<p>但是在Mount的时候，通过Blob日志发现，本地Linux一直在使用本地的公网IP连接存储账号的公共终结点，而不会走VPN访问存储账号的专用终结点。</p>
+<p>问题排查：</p>
+<p>经过测试抓包发现，AZNFS模块并不会检查/etc/hosts，而是只会使用DNS解析的结果。</p>
+<p>根据Github的解释，这是AZNFS模块的一个特性，其设计的目的是为了应对在Blob出现偶然的硬件故障等情况时，其终结点的IP地址发生变化。而实现这个功能的机制就是一直使用DNS解析去检测。包括最初挂载，也只会使用DNS解析的结果。所以无论/etc/hosts中怎么配置，都不会影响AZNFS的工作。AZNFS只会使用DNS解析，不会使用/etc/hosts。参考Github说明：</p>
+<p><a href="https://github.com/Azure/AZNFS-mount/blob/main/README.md" target="_blank" rel="noopener">https://github.com/Azure/AZNFS-mount/blob/main/README.md</a></p>
+<p>解决方案：</p>
+<p>正常情况下，需要借助Azure平台的private DNS zone来解决此问题。但是客户表示不会用Azure的DNS服务。</p>
+<p>如果在客户本地DNS上创建blob的zone，会影响访问其余blob的公共终结点。</p>
+<p>最后确认，不使用AZNFS模块来进行挂载。</p>
+<p>mount -t nfs -o sec=sys,vers=3,nolock,proto=tcp &lt;storage-account-name&gt;.blob.core.windows.net:/&lt;storage-account-name&gt;/&lt;container-name&gt;  /nfsdata</p></article>

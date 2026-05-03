@@ -1,0 +1,79 @@
+<article class="kb-article" data-title="VM备份 系统内部组件问题"><h1>VM备份 系统内部组件问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-09-18 17:12:00</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_20210820116712_[S500]Azure Backup failure because of COM+ error... - TrackingID#2109100050000818</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_20210820116712_[S500]Azure Backup failure because of COM+ error... - TrackingID#2109100050000818</li>
+</ul>
+<ul>
+<li>问题描述: 虚拟机/subscriptions/adf7e4a8-c607-4833-89c3-83ade1bff8f3/resourceGroups/rs_wms_prod/providers/Microsoft.Compute/virtualMachines/scaleappyj2备份失败。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>The IaasVmProvider service terminated unexpectedly.  It has done this 1 time(s).   (8月1日)</li>
+</ul>
+<ul>
+<li>....</li>
+</ul>
+<ul>
+<li>The IaasVmProvider service terminated unexpectedly.  It has done this 56 time(s).  （8月13日）</li>
+</ul>
+<ul>
+<li>IaasVMprovider服务终止的原因如下：</li>
+</ul>
+<ul>
+<li>In the impacted machine, open the Registry Editor by typing regedit in the Run window.</li>
+</ul>
+<ul>
+<li>Go to the HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\SubSystems - windows</li>
+</ul>
+<ul>
+<li>Right-click on Windows shared section and click modify.</li>
+</ul>
+<ul>
+<li>Update the value with Windows SharedSection=1024,20480,4096.</li>
+</ul>
+<ul>
+<li>Once the registry is updated with above value, reboot the server and retry the backup operation.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>当前进展 :通过后台日志确认，该虚拟机从8月1日起备份失败，8月13日到8月17日备份成功，自18日开始再次备份失败。Windows内部日志显示，从1日开始报错“ A desktop heap allocation failure” 后，一直报错“The IaasVmProvider service terminated unexpectedly”到13日。虚拟机于13日12:10:58重启，之后备份恢复正常，于18日再次报出类似错误。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>原因分析：备份失败的原因是由于iaasvmprovider 服务无法正常工作，而该异常是由于windows内部less desktop heap size引起。</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：通过修改windows注册表修复该问题。具体如下：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_20210820116712_[S500]Azure Backup failure because of COM+ error... - TrackingID#2109100050000818</p>
+<p>问题描述: 虚拟机/subscriptions/adf7e4a8-c607-4833-89c3-83ade1bff8f3/resourceGroups/rs_wms_prod/providers/Microsoft.Compute/virtualMachines/scaleappyj2备份失败。</p>
+<p>当前进展 :通过后台日志确认，该虚拟机从8月1日起备份失败，8月13日到8月17日备份成功，自18日开始再次备份失败。Windows内部日志显示，从1日开始报错“ A desktop heap allocation failure” 后，一直报错“The IaasVmProvider service terminated unexpectedly”到13日。虚拟机于13日12:10:58重启，之后备份恢复正常，于18日再次报出类似错误。</p>
+<p>The IaasVmProvider service terminated unexpectedly.  It has done this 1 time(s).   (8月1日)</p>
+<p>....</p>
+<p>The IaasVmProvider service terminated unexpectedly.  It has done this 56 time(s).  （8月13日）</p>
+<p>IaasVMprovider服务终止的原因如下：</p>
+<p>原因分析：备份失败的原因是由于iaasvmprovider 服务无法正常工作，而该异常是由于windows内部less desktop heap size引起。</p>
+<p>解决方案：通过修改windows注册表修复该问题。具体如下：</p>
+<p>In the impacted machine, open the Registry Editor by typing regedit in the Run window.</p>
+<p>Go to the HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\SubSystems - windows</p>
+<p>Right-click on Windows shared section and click modify.</p>
+<p>Update the value with Windows SharedSection=1024,20480,4096.</p>
+<p>Once the registry is updated with above value, reboot the server and retry the backup operation.</p></article>

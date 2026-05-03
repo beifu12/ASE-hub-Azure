@@ -1,0 +1,292 @@
+<article class="kb-article" data-title="在同一可用性集VM无法访问公网问题"><h1>在同一可用性集VM无法访问公网问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LB</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-02-07 14:54:00</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>给Test3绑定标准公网IP，Test1,Test2 无法访问互联网。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>给Test3绑定标准公网IP，Test1,Test2 无法访问互联网。</li>
+</ul>
+<ul>
+<li>VM关联在标准公共LB中，且配置出站规则或者负载规则中启用使用此IP作为出站源IP。那么仅有该后端池的VM能够访问互联网。其他VM无法访问。</li>
+</ul>
+<ul>
+<li>如果关联VM在内部公共LB，那么始终无法访问。</li>
+</ul>
+<ul>
+<li>给Test3重新绑定标准公网IP，成功绑定，因为test1跟Test3为同一子网。Test1测试无法进行出站访问</li>
+</ul>
+<ul>
+<li>curl: (7) Failed to connect to myip.ipip.net port 80: Connection timed out</li>
+</ul>
+<ul>
+<li>如果给Test1或Test3绑定了基本公网IP，因为该子网已经有了标准LB，那么会直接提示报错。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>测试环境：</li>
+</ul>
+<ul>
+<li>3台VM（均在一个可用性集中）：</li>
+</ul>
+<ul>
+<li>Test1： 10.20.4.5  --  subnet1</li>
+</ul>
+<ul>
+<li>Test2： 10.20.3.4  --  subnet2</li>
+</ul>
+<ul>
+<li>Test3： 10.20.4.6  --  subnet1</li>
+</ul>
+<ul>
+<li>公网IP：</li>
+</ul>
+<ul>
+<li>基本类型公网IP：40.73.26.226</li>
+</ul>
+<ul>
+<li>标准类型公网IP：40.73.7.48</li>
+</ul>
+<ul>
+<li>负载均衡器：</li>
+</ul>
+<ul>
+<li>内部基本LB：InternalBasicLB  10.20.1.5</li>
+</ul>
+<ul>
+<li>外部基本LB：ExternalBasicLB  40.73.7.156</li>
+</ul>
+<ul>
+<li>内部标准LB：InternalStandardLB   10.20.0.4</li>
+</ul>
+<ul>
+<li>外部标准LB：ExternalStandardLB  40.73.7.48</li>
+</ul>
+<ul>
+<li>NatGateway:  139.217.116.78</li>
+</ul>
+<ul>
+<li>=========================</li>
+</ul>
+<ul>
+<li>绑定不同类型公网IP测试</li>
+</ul>
+<ul>
+<li>测试情况1：</li>
+</ul>
+<ul>
+<li>没有绑定公网IP，没有绑定任何LB，NATGW 时，平台会默认给VM动态分配一个出站IP来使用访问互联网。</li>
+</ul>
+<ul>
+<li>测试情况2：</li>
+</ul>
+<ul>
+<li>给Test1 绑定基本公网IP。Test2, Test3均可以正常访问互联网。</li>
+</ul>
+<ul>
+<li>[guoyuan@test2 ~]$ curl myip.ipip.net</li>
+</ul>
+<ul>
+<li>当前 IP：139.217.66.46  来自于：中国 北京 北京  电信/联通</li>
+</ul>
+<ul>
+<li>[root@test3 ~]# curl myip.ipip.net</li>
+</ul>
+<ul>
+<li>当前 IP：40.73.1.113  来自于：中国 北京 北京  电信/联通</li>
+</ul>
+<ul>
+<li>[root@test2 ~]#</li>
+</ul>
+<ul>
+<li>结论：绑定基本类型的公网IP给可用性集的任意VM，集群其他VM出站访问均不受影响。</li>
+</ul>
+<ul>
+<li>测试情况3：</li>
+</ul>
+<ul>
+<li>===============</li>
+</ul>
+<ul>
+<li>绑定不同类型LB</li>
+</ul>
+<ul>
+<li>将Test1 添加到基本公共LB后端池中，平台会动态分配一个公网IP公可用性集内的VM出站使用。</li>
+</ul>
+<ul>
+<li>[guoyuan@test1 ~]$ curl myip.ipip.net</li>
+</ul>
+<ul>
+<li>当前 IP：139.217.95.229  来自于：中国 北京 北京  电信/联通</li>
+</ul>
+<ul>
+<li>将Test1添加到基本内部LB后端池中，平台会动态分配一个公网IP公可用性集内的VM出站使用。</li>
+</ul>
+<ul>
+<li>[guoyuan@test3 ~]$ curl myip.ipip.net</li>
+</ul>
+<ul>
+<li>[guoyuan@test3 ~]$</li>
+</ul>
+<ul>
+<li>当前 IP：40.73.7.48  来自于：中国 北京 北京  电信/联通</li>
+</ul>
+<ul>
+<li>测试情况4:</li>
+</ul>
+<ul>
+<li>将Test1 添加到标准内部LB中，则所有VM均不能访问互联网。</li>
+</ul>
+<ul>
+<li>结论：</li>
+</ul>
+<ul>
+<li>VM关联在基本类型的LB后端池中，所有VM会使用平台分配的随机IP作为出站。</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>NAT网关</li>
+</ul>
+<ul>
+<li>将NAT网关关联VM Test2所在子网。</li>
+</ul>
+<ul>
+<li>默认情况下，其他VM使用默认平台分配的IP作为出站，Test2使用NAT的IP作为出站。</li>
+</ul>
+<ul>
+<li>给Test3绑定基本公网IP可以成功绑定。所有VM出站没有问题。</li>
+</ul>
+<ul>
+<li>当前 IP：40.73.26.226  来自于：中国 北京 北京  电信/联通</li>
+</ul>
+<ul>
+<li>当前 IP：139.217.91.228  来自于：中国 北京 北京  电信/联通</li>
+</ul>
+<ul>
+<li>[root@test1 ~]# curl myip.ipip.net</li>
+</ul>
+<ul>
+<li>测试情况4：</li>
+</ul>
+<ul>
+<li>给Test2绑定标准公网IP，可以成功绑定，但是出站会使用NAT的IP，优先级最高。</li>
+</ul>
+<ul>
+<li>结论：绑定标准类型的公网IP会影响当前子网的其他VM出站（NAT子网不受影响）。</li>
+</ul>
+<ul>
+<li>=================</li>
+</ul>
+<ul>
+<li>总结：</li>
+</ul>
+<ul>
+<li>未能保存网络接口</li>
+</ul>
+<ul>
+<li>基本公网IP--基本LB，  标准公网IP--标准LB---NAT网关</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>仅有该Test可以访问公网，其他VM无法访问。在portal可以看到该IP。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>绑定公网IP提示SKU报错：</li>
+</ul>
+<ul>
+<li>未能保存网络接口“test1303”的 IP 地址更改。错误: 无法在包含基本 SKU 公共 IP 地址或基本 SKU 负载均衡器的子网上部署 NAT 网关 RG-North2/providers/Microsoft.Network/natGateways/natgateway&#39;&gt;natgateway。子网 /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/TestGroup/providers/Microsoft.Network/virtualNetworks/VirNet1/subnets/subnet4 中的 NIC /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/TestGroup/providers/Microsoft.Network/networkInterfaces/test1303/ipConfigurations/ipconfig1 引用了基本 SKU 公共 IP 地址或负载均衡器 /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/Test</li>
+</ul>
+<ul>
+<li>不管是绑定基本还是标准，均不能混用，包括基本和标准LB，如果不同类型的SKU就会报错。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>将Test1添加到标准公共LB中。且配置了出站规则或负载均衡规则启用使用出站源IP的SNAT转换相同IP。</li>
+</ul>
+<ul>
+<li>如果有的机器可以访问公网，有的机器不能访问，建议首先查看是否是在一个可用性集，如果在一个可用性集，那么有没有可用性集中的其他VM绑定了标准公网IP，如果绑定了公网IP就会某些VM访问不了外网。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/02/07</p>
+<p>测试环境：</p>
+<p>3台VM（均在一个可用性集中）：</p>
+<p>Test1： 10.20.4.5  --  subnet1</p>
+<p>Test2： 10.20.3.4  --  subnet2</p>
+<p>Test3： 10.20.4.6  --  subnet1</p>
+<p>公网IP：</p>
+<p>基本类型公网IP：40.73.26.226</p>
+<p>标准类型公网IP：40.73.7.48</p>
+<p>负载均衡器：</p>
+<p>内部基本LB：InternalBasicLB  10.20.1.5</p>
+<p>外部基本LB：ExternalBasicLB  40.73.7.156</p>
+<p>内部标准LB：InternalStandardLB   10.20.0.4</p>
+<p>外部标准LB：ExternalStandardLB  40.73.7.48</p>
+<p>NatGateway:  139.217.116.78</p>
+<p>=========================</p>
+<p>绑定不同类型公网IP测试</p>
+<p>测试情况1：</p>
+<p>没有绑定公网IP，没有绑定任何LB，NATGW 时，平台会默认给VM动态分配一个出站IP来使用访问互联网。</p>
+<p>测试情况2：</p>
+<p>给Test1 绑定基本公网IP。Test2, Test3均可以正常访问互联网。</p>
+<p>[guoyuan@test2 ~]$ curl myip.ipip.net</p>
+<p>当前 IP：139.217.66.46  来自于：中国 北京 北京  电信/联通</p>
+<p>[root@test3 ~]# curl myip.ipip.net</p>
+<p>当前 IP：40.73.1.113  来自于：中国 北京 北京  电信/联通</p>
+<p>[root@test2 ~]#</p>
+<p>结论：绑定基本类型的公网IP给可用性集的任意VM，集群其他VM出站访问均不受影响。</p>
+<p>测试情况3：</p>
+<p>给Test3绑定标准公网IP，Test1,Test2 无法访问互联网。</p>
+<p>===============</p>
+<p>绑定不同类型LB</p>
+<p>将Test1 添加到基本公共LB后端池中，平台会动态分配一个公网IP公可用性集内的VM出站使用。</p>
+<p>[guoyuan@test1 ~]$ curl myip.ipip.net</p>
+<p>当前 IP：139.217.95.229  来自于：中国 北京 北京  电信/联通</p>
+<p>将Test1添加到基本内部LB后端池中，平台会动态分配一个公网IP公可用性集内的VM出站使用。</p>
+<p>[guoyuan@test3 ~]$ curl myip.ipip.net</p>
+<p>[guoyuan@test3 ~]$</p>
+<p>将Test1添加到标准公共LB中。且配置了出站规则或负载均衡规则启用使用出站源IP的SNAT转换相同IP。</p>
+<p>仅有该Test可以访问公网，其他VM无法访问。在portal可以看到该IP。</p>
+<p>当前 IP：40.73.7.48  来自于：中国 北京 北京  电信/联通</p>
+<p>测试情况4:</p>
+<p>将Test1 添加到标准内部LB中，则所有VM均不能访问互联网。</p>
+<p>结论：</p>
+<p>VM关联在基本类型的LB后端池中，所有VM会使用平台分配的随机IP作为出站。</p>
+<p>VM关联在标准公共LB中，且配置出站规则或者负载规则中启用使用此IP作为出站源IP。那么仅有该后端池的VM能够访问互联网。其他VM无法访问。</p>
+<p>如果关联VM在内部公共LB，那么始终无法访问。</p>
+<p>==============</p>
+<p>NAT网关</p>
+<p>将NAT网关关联VM Test2所在子网。</p>
+<p>默认情况下，其他VM使用默认平台分配的IP作为出站，Test2使用NAT的IP作为出站。</p>
+<p>给Test3绑定基本公网IP可以成功绑定。所有VM出站没有问题。</p>
+<p>当前 IP：40.73.26.226  来自于：中国 北京 北京  电信/联通</p>
+<p>给Test3重新绑定标准公网IP，成功绑定，因为test1跟Test3为同一子网。Test1测试无法进行出站访问</p>
+<p>当前 IP：139.217.91.228  来自于：中国 北京 北京  电信/联通</p>
+<p>[root@test1 ~]# curl myip.ipip.net</p>
+<p>curl: (7) Failed to connect to myip.ipip.net port 80: Connection timed out</p>
+<p>测试情况4：</p>
+<p>给Test2绑定标准公网IP，可以成功绑定，但是出站会使用NAT的IP，优先级最高。</p>
+<p>结论：绑定标准类型的公网IP会影响当前子网的其他VM出站（NAT子网不受影响）。</p>
+<p>=================</p>
+<p>总结：</p>
+<p>如果有的机器可以访问公网，有的机器不能访问，建议首先查看是否是在一个可用性集，如果在一个可用性集，那么有没有可用性集中的其他VM绑定了标准公网IP，如果绑定了公网IP就会某些VM访问不了外网。</p>
+<p>绑定公网IP提示SKU报错：</p>
+<p>如果给Test1或Test3绑定了基本公网IP，因为该子网已经有了标准LB，那么会直接提示报错。</p>
+<p>未能保存网络接口</p>
+<p>未能保存网络接口“test1303”的 IP 地址更改。错误: 无法在包含基本 SKU 公共 IP 地址或基本 SKU 负载均衡器的子网上部署 NAT 网关 RG-North2/providers/Microsoft.Network/natGateways/natgateway&#39;&gt;natgateway。子网 /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/TestGroup/providers/Microsoft.Network/virtualNetworks/VirNet1/subnets/subnet4 中的 NIC /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/TestGroup/providers/Microsoft.Network/networkInterfaces/test1303/ipConfigurations/ipconfig1 引用了基本 SKU 公共 IP 地址或负载均衡器 /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/Test</p>
+<p>不管是绑定基本还是标准，均不能混用，包括基本和标准LB，如果不同类型的SKU就会报错。</p>
+<p>基本公网IP--基本LB，  标准公网IP--标准LB---NAT网关</p></article>

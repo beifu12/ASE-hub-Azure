@@ -1,0 +1,44 @@
+<article class="kb-article" data-title="[ARM-APPGW-SSL Profile] SSL Profile"><h1>[ARM-APPGW-SSL Profile] SSL Profile</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-06-25 15:24:32</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20210625</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20210625</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20210625</li>
+</ul>
+<ul>
+<li>APPGW SSL Profile：</li>
+</ul>
+<ul>
+<li>上传的客户端证书上传到trusted client root cert list里， 不在同一个trust store里， 所以不能用于后端。现在是public preview的阶段， 中国还不能用。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>这个就是client authentication , 验证客户端证书， It is front-end only,  和后端没有关系。 当设置这个的时候，  AppGw will always ask for client certificate from connecting users, validate that the certificate is trusted in its trusted client root cert list and is not part of revoked cert list. If these validation pass, it allows the connection to be established.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20210625</p>
+<p>APPGW SSL Profile：</p>
+<p>这个就是client authentication , 验证客户端证书， It is front-end only,  和后端没有关系。 当设置这个的时候，  AppGw will always ask for client certificate from connecting users, validate that the certificate is trusted in its trusted client root cert list and is not part of revoked cert list. If these validation pass, it allows the connection to be established.</p>
+<p>上传的客户端证书上传到trusted client root cert list里， 不在同一个trust store里， 所以不能用于后端。现在是public preview的阶段， 中国还不能用。</p></article>

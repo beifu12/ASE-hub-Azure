@@ -1,0 +1,136 @@
+<article class="kb-article" data-title="当LVM 的PV为未分区的磁盘时，磁盘在门户上扩容后，如何扩容LVM文件系统"><h1>当LVM 的PV为未分区的磁盘时，磁盘在门户上扩容后，如何扩容LVM文件系统</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-03-16 09:50:41</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：SR_2019092553304_[MS-LED]第二块磁盘LVM扩容失败</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：SR_2019092553304_[MS-LED]第二块磁盘LVM扩容失败</li>
+</ul>
+<ul>
+<li>问题：客户将数据磁盘在门户上由760G扩容到1.2T后，发现磁盘之前做了LVM，是直接将磁盘（磁盘并没有分区）加入到PV，然后在LVM中创建的文件系统。fdisk -l发现没有分区表，创建分区会影响现有环境的数据，LVM无法扩容。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2019--9-25</li>
+</ul>
+<ul>
+<li>[root@mhspbicdh05 cdhuser]# fdisk /dev/sdc</li>
+</ul>
+<ul>
+<li>Welcome to fdisk (util-linux 2.23.2).</li>
+</ul>
+<ul>
+<li>Changes will remain in memory only, until you decide to write them.</li>
+</ul>
+<ul>
+<li>Be careful before using the write command.</li>
+</ul>
+<ul>
+<li>Device does not contain a recognized partition table</li>
+</ul>
+<ul>
+<li>Building a new DOS disklabel with disk identifier 0x3e27172f.</li>
+</ul>
+<ul>
+<li>Command (m for help): d</li>
+</ul>
+<ul>
+<li>No partition is defined yet!</li>
+</ul>
+<ul>
+<li>Command (m for help):</li>
+</ul>
+<ul>
+<li>经研究发现使用pvresize可以解决此问题。</li>
+</ul>
+<ul>
+<li>测试过程如下：</li>
+</ul>
+<ul>
+<li>1. 在门户上附加了一块760G的数据磁盘，然后在系统中创建LVM</li>
+</ul>
+<ul>
+<li>2. 挂载并创建了一个测试文件test.txt</li>
+</ul>
+<ul>
+<li>4. 执行pvresize /dev/sdd</li>
+</ul>
+<ul>
+<li>6．执行lvextend -l +100%FREE /dev/vg03/lv03   ，扩展lv</li>
+</ul>
+<ul>
+<li>8． 使用resize2fs /dev/vg03/lv03  拉伸文件系统。</li>
+</ul>
+<ul>
+<li>xfs系统使用xfs_growfs</li>
+</ul>
+<ul>
+<li>9．文件系统拉伸完成</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查找了下，官网上的步骤也是直接加入磁盘到PV</li>
+</ul>
+<ul>
+<li>3．在门户上对磁盘进行扩容到1023G，登陆到系统中使用lsblk查看设备已经扩容，使用pvs,vgs,lvs查看还是原来的大小</li>
+</ul>
+<ul>
+<li>5．查看pv和vg的大小都已经更改，lv还是原来的大小</li>
+</ul>
+<ul>
+<li>7.再次lvs查看，发现已经扩容了。文件系统还是原来的大小。</li>
+</ul>
+<ul>
+<li>10. 查看数据是保留的。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/configure-lvm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/configure-lvm</a></li>
+</ul>
+<ul>
+<li><a href="https://www.cnblogs.com/blog-lhong/p/11712069.html" target="_blank" rel="noopener">https://www.cnblogs.com/blog-lhong/p/11712069.html</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2019--9-25</p>
+<p>参考工单：SR_2019092553304_[MS-LED]第二块磁盘LVM扩容失败</p>
+<p>问题：客户将数据磁盘在门户上由760G扩容到1.2T后，发现磁盘之前做了LVM，是直接将磁盘（磁盘并没有分区）加入到PV，然后在LVM中创建的文件系统。fdisk -l发现没有分区表，创建分区会影响现有环境的数据，LVM无法扩容。</p>
+<p>[root@mhspbicdh05 cdhuser]# fdisk /dev/sdc</p>
+<p>Welcome to fdisk (util-linux 2.23.2).</p>
+<p>Changes will remain in memory only, until you decide to write them.</p>
+<p>Be careful before using the write command.</p>
+<p>Device does not contain a recognized partition table</p>
+<p>Building a new DOS disklabel with disk identifier 0x3e27172f.</p>
+<p>Command (m for help): d</p>
+<p>No partition is defined yet!</p>
+<p>Command (m for help):</p>
+<p>查找了下，官网上的步骤也是直接加入磁盘到PV</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/linux/configure-lvm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/linux/configure-lvm</a></p>
+<p>经研究发现使用pvresize可以解决此问题。</p>
+<p>测试过程如下：</p>
+<p>1. 在门户上附加了一块760G的数据磁盘，然后在系统中创建LVM</p>
+<p>2. 挂载并创建了一个测试文件test.txt</p>
+<p>3．在门户上对磁盘进行扩容到1023G，登陆到系统中使用lsblk查看设备已经扩容，使用pvs,vgs,lvs查看还是原来的大小</p>
+<p>4. 执行pvresize /dev/sdd</p>
+<p>5．查看pv和vg的大小都已经更改，lv还是原来的大小</p>
+<p>6．执行lvextend -l +100%FREE /dev/vg03/lv03   ，扩展lv</p>
+<p>7.再次lvs查看，发现已经扩容了。文件系统还是原来的大小。</p>
+<p>8． 使用resize2fs /dev/vg03/lv03  拉伸文件系统。</p>
+<p>xfs系统使用xfs_growfs</p>
+<p>9．文件系统拉伸完成</p>
+<p>10. 查看数据是保留的。</p>
+<p><a href="https://www.cnblogs.com/blog-lhong/p/11712069.html" target="_blank" rel="noopener">https://www.cnblogs.com/blog-lhong/p/11712069.html</a></p></article>

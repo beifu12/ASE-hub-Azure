@@ -1,0 +1,146 @@
+<article class="kb-article" data-title="Centos 7 启用图形化界面的步骤"><h1>Centos 7 启用图形化界面的步骤</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-07-25 11:43:44</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>测试环境：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>测试环境：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>测试环境：</li>
+</ul>
+<ul>
+<li>[root@centos70 ~]# uname -a</li>
+</ul>
+<ul>
+<li>Linux centos70 3.10.0-123.20.1.el7.x86_64 #1 SMP Thu Jan 29 18:05:33 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux</li>
+</ul>
+<ul>
+<li>yum groupinstall &quot;X Window System&quot;</li>
+</ul>
+<ul>
+<li>yum install gnome-classic-session gnome-terminal nautilus-open-terminal control-center liberation-mono-fonts</li>
+</ul>
+<ul>
+<li>设置默认启动图形化</li>
+</ul>
+<ul>
+<li>unlink  /etc/systemd/system/default.target</li>
+</ul>
+<ul>
+<li>ln -sf /lib/systemd/system/graphical.target /etc/systemd/system/default.target</li>
+</ul>
+<ul>
+<li>安装vnc server</li>
+</ul>
+<ul>
+<li>yum install tigervnc-server –y</li>
+</ul>
+<ul>
+<li>配置vnc</li>
+</ul>
+<ul>
+<li>cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service</li>
+</ul>
+<ul>
+<li>vi /etc/systemd/system/vncserver@:1.service</li>
+</ul>
+<ul>
+<li>测试中使用root用户进行登陆。请对以上配置文件信息进行如下修改</li>
+</ul>
+<ul>
+<li>重启systemd</li>
+</ul>
+<ul>
+<li>systemctl daemon-reload</li>
+</ul>
+<ul>
+<li>设置vnc用户密码</li>
+</ul>
+<ul>
+<li>vncpasswd</li>
+</ul>
+<ul>
+<li>启动vnc并设置开机启动</li>
+</ul>
+<ul>
+<li>[root@centos70 ~]# systemctl start vncserver@:1.service</li>
+</ul>
+<ul>
+<li>[root@centos70 ~]# netstat -anop|grep vnc</li>
+</ul>
+<ul>
+<li>tcp        0      0 0.0.0.0:5901            0.0.0.0:*               LISTEN      33802/Xvnc           off (0.00/0/0)</li>
+</ul>
+<ul>
+<li>tcp6       0      0 :::5901                 :::*                    LISTEN      33802/Xvnc           off (0.00/0/0)</li>
+</ul>
+<ul>
+<li>在windows系统中 使用vnc链接</li>
+</ul>
+<ul>
+<li>链接成功界面：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>操作步骤：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>ExecStart=/sbin/runuser -l root -c &quot;/usr/bin/vncserver %i&quot;</li>
+</ul>
+<ul>
+<li>PIDFile=/root/.vnc/%H%i.pid</li>
+</ul>
+<ul>
+<li>虚拟机内部查看vnc的侦听端口后，并在azure端启用相应端点</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>[root@centos70 ~]# systemctl enable vncserver@:1.service</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>测试环境：</p>
+<p>[root@centos70 ~]# uname -a</p>
+<p>Linux centos70 3.10.0-123.20.1.el7.x86_64 #1 SMP Thu Jan 29 18:05:33 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux</p>
+<p>操作步骤：</p>
+<p>yum groupinstall &quot;X Window System&quot;</p>
+<p>yum install gnome-classic-session gnome-terminal nautilus-open-terminal control-center liberation-mono-fonts</p>
+<p>设置默认启动图形化</p>
+<p>unlink  /etc/systemd/system/default.target</p>
+<p>ln -sf /lib/systemd/system/graphical.target /etc/systemd/system/default.target</p>
+<p>安装vnc server</p>
+<p>yum install tigervnc-server –y</p>
+<p>配置vnc</p>
+<p>cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:1.service</p>
+<p>vi /etc/systemd/system/vncserver@:1.service</p>
+<p>测试中使用root用户进行登陆。请对以上配置文件信息进行如下修改</p>
+<p>ExecStart=/sbin/runuser -l root -c &quot;/usr/bin/vncserver %i&quot;</p>
+<p>PIDFile=/root/.vnc/%H%i.pid</p>
+<p>重启systemd</p>
+<p>systemctl daemon-reload</p>
+<p>设置vnc用户密码</p>
+<p>vncpasswd</p>
+<p>启动vnc并设置开机启动</p>
+<p>[root@centos70 ~]# systemctl start vncserver@:1.service</p>
+<p>[root@centos70 ~]# systemctl enable vncserver@:1.service</p>
+<p>虚拟机内部查看vnc的侦听端口后，并在azure端启用相应端点</p>
+<p>[root@centos70 ~]# netstat -anop|grep vnc</p>
+<p>tcp        0      0 0.0.0.0:5901            0.0.0.0:*               LISTEN      33802/Xvnc           off (0.00/0/0)</p>
+<p>tcp6       0      0 :::5901                 :::*                    LISTEN      33802/Xvnc           off (0.00/0/0)</p>
+<p>在windows系统中 使用vnc链接</p>
+<p>链接成功界面：</p></article>

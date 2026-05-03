@@ -1,0 +1,270 @@
+<article class="kb-article" data-title="[Share] Firewall网络规则和应用程序规则导出脚本"><h1>[Share] Firewall网络规则和应用程序规则导出脚本</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AzureFW</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-05-22 12:16:42</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<h1>第一次使用请登录到 Azure China 账户</h1>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li># 第一次使用请登录到 Azure China 账户</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li># 第一次使用请登录到 Azure China 账户</li>
+</ul>
+<ul>
+<li># Connect-AzAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>#—— 输入参数 Firewall Policy Name, Firewall Policy Resource Group ——</li>
+</ul>
+<ul>
+<li>$fpname = &quot;Firewall Policy Name&quot;</li>
+</ul>
+<ul>
+<li>$fprg   = &quot;Firewall Policy Resource Group&quot;</li>
+</ul>
+<ul>
+<li>$fprcgNATname = &quot;DefaultNetworkRuleCollectionGroup&quot;</li>
+</ul>
+<ul>
+<li>$fprcgAPPname = &quot;DefaultApplicationRuleCollectionGroup&quot;</li>
+</ul>
+<ul>
+<li>#—— 获取防火墙策略对象 ——</li>
+</ul>
+<ul>
+<li>$fp = Get-AzFirewallPolicy -Name $fpname -ResourceGroupName $fprg</li>
+</ul>
+<ul>
+<li>#—— 获取该策略下的Nat Rule Collection Group ——</li>
+</ul>
+<ul>
+<li>$rcgNAT = Get-AzFirewallPolicyRuleCollectionGroup -Name $fprcgNATname -AzureFirewallPolicy $fp</li>
+</ul>
+<ul>
+<li>$rcgApp = Get-AzFirewallPolicyRuleCollectionGroup -Name $fprcgAPPname -AzureFirewallPolicy $fp</li>
+</ul>
+<ul>
+<li>#—— 确保输出目录存在 ——</li>
+</ul>
+<ul>
+<li>$outputRoot = Join-Path -Path (Get-Location) -ChildPath $fpname</li>
+</ul>
+<ul>
+<li>if (-not (Test-Path $outputRoot)) {</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>$returnObjNAT  = @()</li>
+</ul>
+<ul>
+<li>$returnObjAPP  = @()</li>
+</ul>
+<ul>
+<li>#—— 遍历每个 Rule Collection Group 并导出 ——</li>
+</ul>
+<ul>
+<li>foreach ($rulecol in $rcgNAT.Properties.RuleCollection) {</li>
+</ul>
+<ul>
+<li>foreach ($rule in $rulecol.Rules) {</li>
+</ul>
+<ul>
+<li>$properties = [ordered]@{</li>
+</ul>
+<ul>
+<li>$obj = New-Object psobject -Property $properties</li>
+</ul>
+<ul>
+<li>$returnObjNAT += $obj</li>
+</ul>
+<ul>
+<li># 构造输出文件路径，并导出 CSV</li>
+</ul>
+<ul>
+<li>$csvPath = Join-Path -Path $outputRoot -ChildPath &quot;$($rcgNAT.Name).csv&quot;</li>
+</ul>
+<ul>
+<li>$returnObjNAT | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8</li>
+</ul>
+<ul>
+<li>Write-Host &quot;已导出规则集合组 &#39;$($rcgNAT.Name)&#39; 到文件：$csvPath&quot;</li>
+</ul>
+<ul>
+<li>foreach ($rulecol in $rcgApp.Properties.RuleCollection) {</li>
+</ul>
+<ul>
+<li>$returnObjAPP += $obj</li>
+</ul>
+<ul>
+<li>$csvPath = Join-Path -Path $outputRoot -ChildPath &quot;$($rcgApp.Name).csv&quot;</li>
+</ul>
+<ul>
+<li>$returnObjAPP | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8</li>
+</ul>
+<ul>
+<li>Write-Host &quot;已导出规则集合组 &#39;$($rcgApp.Name)&#39; 到文件：$csvPath&quot;</li>
+</ul>
+<ul>
+<li>$fpname = &quot;Test_premium_d689da&quot;</li>
+</ul>
+<ul>
+<li>$fprg   = &quot;Test-Jasper-N2&quot;</li>
+</ul>
+<ul>
+<li>| Select-Object Name, MemberType, Definition `</li>
+</ul>
+<ul>
+<li>| Format-Table -AutoSize</li>
+</ul>
+<ul>
+<li>对应门户：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>P.S.可用使用 Get-Member 确认对象上到底有哪些属性</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>New-Item -ItemType Directory -Path $outputRoot | Out-Null</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>RulePriority        = $rulecol.Priority;</li>
+</ul>
+<ul>
+<li>RuleCollectionName  = $rulecol.Name;</li>
+</ul>
+<ul>
+<li>RuleType            = $rulecol.RuleCollectionType;</li>
+</ul>
+<ul>
+<li>ActionType          = $rulecol.Action.Type;</li>
+</ul>
+<ul>
+<li>RuleName            = $rule.Name;</li>
+</ul>
+<ul>
+<li>SourceAddresses     = $rule.SourceAddresses     -join &quot;, &quot;;</li>
+</ul>
+<ul>
+<li>SourceIPGroups      = $rule.SourceIPGroups      -join &quot;, &quot;;</li>
+</ul>
+<ul>
+<li>DestinationPorts    = $rule.DestinationPorts    -join &quot;, &quot;;</li>
+</ul>
+<ul>
+<li>Protocols           = $rule.Protocols           -join &quot;, &quot;;</li>
+</ul>
+<ul>
+<li>DestinationAddresses= $rule.DestinationAddresses-join &quot;, &quot;;</li>
+</ul>
+<ul>
+<li>DestinationIPGroups = $rule.DestinationIPGroups -join &quot;, &quot;;</li>
+</ul>
+<ul>
+<li>DestinationFQDNs    = $rule.DestinationFQDNs    -join &quot;, &quot;;</li>
+</ul>
+<ul>
+<li>Protocols = ($rule.Protocols |ForEach-Object { &quot;$($_.ProtocolType):$($_.Port)&quot; }) -join &#39;,&#39;;</li>
+</ul>
+<ul>
+<li>TargetFqdns         = $rule.TargetFqdns         -join &quot;, &quot;;</li>
+</ul>
+<ul>
+<li>TargetUrls          = $rule.TargetUrls          -join &quot;, &quot;;</li>
+</ul>
+<ul>
+<li>FqdnTags            = $rule.FqdnTags            -join &quot;, &quot;;</li>
+</ul>
+<ul>
+<li>WebCategories       = $rule.WebCategories       -join &quot;, &quot;;</li>
+</ul>
+<ul>
+<li>TerminateTLS        = $rule.TerminateTLS        -join &quot;, &quot;;</li>
+</ul>
+<ul>
+<li>HttpHeadersToInsert = $rule.HttpHeadersToInsert -join &quot;, &quot;;</li>
+</ul>
+<ul>
+<li>$rcgApp.Properties.RuleCollection.Rules.Protocols | Get-Member</li>
+</ul>
+<ul>
+<li>$rcgApp.Properties.RuleCollection.Rules.Protocols结果如图：</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<h1>第一次使用请登录到 Azure China 账户</h1>
+<h1>Connect-AzAccount -Environment AzureChinaCloud</h1>
+<p>#—— 输入参数 Firewall Policy Name, Firewall Policy Resource Group ——</p>
+<p>$fpname = &quot;Firewall Policy Name&quot;</p>
+<p>$fprg   = &quot;Firewall Policy Resource Group&quot;</p>
+<p>$fprcgNATname = &quot;DefaultNetworkRuleCollectionGroup&quot;</p>
+<p>$fprcgAPPname = &quot;DefaultApplicationRuleCollectionGroup&quot;</p>
+<p>#—— 获取防火墙策略对象 ——</p>
+<p>$fp = Get-AzFirewallPolicy -Name $fpname -ResourceGroupName $fprg</p>
+<p>#—— 获取该策略下的Nat Rule Collection Group ——</p>
+<p>$rcgNAT = Get-AzFirewallPolicyRuleCollectionGroup -Name $fprcgNATname -AzureFirewallPolicy $fp</p>
+<p>$rcgApp = Get-AzFirewallPolicyRuleCollectionGroup -Name $fprcgAPPname -AzureFirewallPolicy $fp</p>
+<p>#—— 确保输出目录存在 ——</p>
+<p>$outputRoot = Join-Path -Path (Get-Location) -ChildPath $fpname</p>
+<p>if (-not (Test-Path $outputRoot)) {</p>
+<p>New-Item -ItemType Directory -Path $outputRoot | Out-Null</p>
+<p>}</p>
+<p>$returnObjNAT  = @()</p>
+<p>$returnObjAPP  = @()</p>
+<p>#—— 遍历每个 Rule Collection Group 并导出 ——</p>
+<p>foreach ($rulecol in $rcgNAT.Properties.RuleCollection) {</p>
+<p>foreach ($rule in $rulecol.Rules) {</p>
+<p>$properties = [ordered]@{</p>
+<p>RulePriority        = $rulecol.Priority;</p>
+<p>RuleCollectionName  = $rulecol.Name;</p>
+<p>RuleType            = $rulecol.RuleCollectionType;</p>
+<p>ActionType          = $rulecol.Action.Type;</p>
+<p>RuleName            = $rule.Name;</p>
+<p>SourceAddresses     = $rule.SourceAddresses     -join &quot;, &quot;;</p>
+<p>SourceIPGroups      = $rule.SourceIPGroups      -join &quot;, &quot;;</p>
+<p>DestinationPorts    = $rule.DestinationPorts    -join &quot;, &quot;;</p>
+<p>Protocols           = $rule.Protocols           -join &quot;, &quot;;</p>
+<p>DestinationAddresses= $rule.DestinationAddresses-join &quot;, &quot;;</p>
+<p>DestinationIPGroups = $rule.DestinationIPGroups -join &quot;, &quot;;</p>
+<p>DestinationFQDNs    = $rule.DestinationFQDNs    -join &quot;, &quot;;</p>
+<p>$obj = New-Object psobject -Property $properties</p>
+<p>$returnObjNAT += $obj</p>
+<h1>构造输出文件路径，并导出 CSV</h1>
+<p>$csvPath = Join-Path -Path $outputRoot -ChildPath &quot;$($rcgNAT.Name).csv&quot;</p>
+<p>$returnObjNAT | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8</p>
+<p>Write-Host &quot;已导出规则集合组 &#39;$($rcgNAT.Name)&#39; 到文件：$csvPath&quot;</p>
+<p>foreach ($rulecol in $rcgApp.Properties.RuleCollection) {</p>
+<p>Protocols = ($rule.Protocols |ForEach-Object { &quot;$($_.ProtocolType):$($_.Port)&quot; }) -join &#39;,&#39;;</p>
+<p>TargetFqdns         = $rule.TargetFqdns         -join &quot;, &quot;;</p>
+<p>TargetUrls          = $rule.TargetUrls          -join &quot;, &quot;;</p>
+<p>FqdnTags            = $rule.FqdnTags            -join &quot;, &quot;;</p>
+<p>WebCategories       = $rule.WebCategories       -join &quot;, &quot;;</p>
+<p>TerminateTLS        = $rule.TerminateTLS        -join &quot;, &quot;;</p>
+<p>HttpHeadersToInsert = $rule.HttpHeadersToInsert -join &quot;, &quot;;</p>
+<p>$returnObjAPP += $obj</p>
+<p>$csvPath = Join-Path -Path $outputRoot -ChildPath &quot;$($rcgApp.Name).csv&quot;</p>
+<p>$returnObjAPP | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8</p>
+<p>Write-Host &quot;已导出规则集合组 &#39;$($rcgApp.Name)&#39; 到文件：$csvPath&quot;</p>
+<p>P.S.可用使用 Get-Member 确认对象上到底有哪些属性</p>
+<p>$fpname = &quot;Test_premium_d689da&quot;</p>
+<p>$fprg   = &quot;Test-Jasper-N2&quot;</p>
+<p>$rcgApp.Properties.RuleCollection.Rules.Protocols | Get-Member</p>
+<p>| Select-Object Name, MemberType, Definition `</p>
+<p>| Format-Table -AutoSize</p>
+<p>$rcgApp.Properties.RuleCollection.Rules.Protocols结果如图：</p>
+<p>对应门户：</p></article>

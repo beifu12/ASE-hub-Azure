@@ -1,0 +1,68 @@
+<article class="kb-article" data-title="[Windows][PerMon] Windows使用Performance Monitor监控机器性能指标"><h1>[Windows][PerMon] Windows使用Performance Monitor监控机器性能指标</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Performance</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-20 16:23:43</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>1. 使用管理员权限打开CMD窗口</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>1. 使用管理员权限打开CMD窗口</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1. 使用管理员权限打开CMD窗口</li>
+</ul>
+<ul>
+<li>2. 配置Perfmon信息</li>
+</ul>
+<ul>
+<li>黄色高亮部分您可以自行设置。</li>
+</ul>
+<ul>
+<li>3. 开启Perfmon</li>
+</ul>
+<ul>
+<li>4. 复现问题</li>
+</ul>
+<ul>
+<li>5. 停止Perfmon</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Logman create counter Perf-2Second -f bincirc -max 500 -c &quot;\LogicalDisk(*)\*&quot; &quot;\Memory\*&quot; &quot;\Network Interface(*)\*&quot; &quot;\Paging File(*)\*&quot; &quot;\PhysicalDisk(*)\*&quot; &quot;\Server\*&quot; &quot;\System\*&quot; &quot;\Process(*)\*&quot; &quot;\Processor(*)\*&quot;  &quot;\Cache\*&quot; -si 00:00:02 -o C:\PerfMonLogs\Perf-2Second.blg</li>
+</ul>
+<ul>
+<li>Logman start Perf-2Second</li>
+</ul>
+<ul>
+<li>Logman stop Perf-2Second</li>
+</ul>
+<ul>
+<li>6. 将您出问题节点的System Event Logs, Application Event Logs 以及Perfmon logs（C:\PerfMonLogs\Perf-2Second.blg）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>1. 使用管理员权限打开CMD窗口</p>
+<p>2. 配置Perfmon信息</p>
+<p>Logman create counter Perf-2Second -f bincirc -max 500 -c &quot;\LogicalDisk(*)\*&quot; &quot;\Memory\*&quot; &quot;\Network Interface(*)\*&quot; &quot;\Paging File(*)\*&quot; &quot;\PhysicalDisk(*)\*&quot; &quot;\Server\*&quot; &quot;\System\*&quot; &quot;\Process(*)\*&quot; &quot;\Processor(*)\*&quot;  &quot;\Cache\*&quot; -si 00:00:02 -o C:\PerfMonLogs\Perf-2Second.blg</p>
+<p>黄色高亮部分您可以自行设置。</p>
+<p>3. 开启Perfmon</p>
+<p>Logman start Perf-2Second</p>
+<p>4. 复现问题</p>
+<p>5. 停止Perfmon</p>
+<p>Logman stop Perf-2Second</p>
+<p>6. 将您出问题节点的System Event Logs, Application Event Logs 以及Perfmon logs（C:\PerfMonLogs\Perf-2Second.blg）</p></article>

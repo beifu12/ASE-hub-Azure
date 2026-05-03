@@ -1,0 +1,365 @@
+<article class="kb-article" data-title="[Closed]SR_2018062144280_[MS-LED]添加复制项失败 MYSQL ASR"><h1>[Closed]SR_2018062144280_[MS-LED]添加复制项失败 MYSQL ASR</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Site recovery VMware physical</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-01-08 10:33:56</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>用于高级故障排除的日志集合</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>用于高级故障排除的日志集合</li>
+</ul>
+<ul>
+<li>以下工具可帮助进行高级故障排除：</li>
+</ul>
+<ul>
+<li>ASR Mobility Service在Linux客户端安装失败</li>
+</ul>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>客户使用ASR将本地VMware客户端复制到Azure，在部分CentOS 7.8上安装Mobility Service失败。</li>
+</ul>
+<ul>
+<li>报错“Agent you are trying to install/upgrade is not built for , can not be installed on this Operating System. Aborting.”</li>
+</ul>
+<ul>
+<li>根据报错提示，初步判断为操作系统版本或Kernel版本与移动服务版本不匹配，将移动服务版本9.29替换为9.30（Microsoft-ASR_UA_9.30.0.0_RHEL7-64_GA_22Oct2019_Release.tar）之后，部署成功。</li>
+</ul>
+<ul>
+<li>可以看到， 当centos 7.8使用9.29进行安装的时候， 变量OS返回为空， 导致了日志中输出也没有显示操作系统版本，进而失败， 但是9.30没有这个问题：</li>
+</ul>
+<ul>
+<li>这也解释了为什么centos7.2不会在这里报错。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1.       清理这两台虚拟机现有的信息和环境</li>
+</ul>
+<ul>
+<li>1）  在Azure ASR中，禁用两台虚拟机的复制。</li>
+</ul>
+<ul>
+<li>在门户中的ASR vault下，转到“受保护的项” &gt; “复制的项”，右键单击计算机，再单击“禁用复制”。在“禁用复制”页中，选择禁用复制并删除(推荐) 。</li>
+</ul>
+<ul>
+<li>mysql  -hlocalhost -uroot  -p</li>
+</ul>
+<ul>
+<li>mysql&gt; use svsdb1;</li>
+</ul>
+<ul>
+<li>mysql&gt; select id as hostid, name, ipaddress, ostype as operatingsystem, from_unixtime(lasthostupdatetime) as heartbeat from hosts where name!=&#39;InMageProfiler&#39;\G;</li>
+</ul>
+<ul>
+<li>语法：Unregister-ASRComponent.pl -IPAddress &lt;IP_ADDRESS_OF_MACHINE_TO_UNREGISTER&gt; -Component &lt;Source/ PS / MT&gt;</li>
+</ul>
+<ul>
+<li>例如，若需要取消虚拟机&quot;OnPrem-VM01&quot; （ 10.0.0.4）的注册，则运行</li>
+</ul>
+<ul>
+<li>perl Unregister-ASRComponent.pl -IPAddress 10.0.0.4 -Component Source</li>
+</ul>
+<ul>
+<li>3）  删除两台虚拟机上的mobility Agent.</li>
+</ul>
+<ul>
+<li>以 root 用户身份在 Linux 服务器上登录。</li>
+</ul>
+<ul>
+<li>uninstall.sh -Y</li>
+</ul>
+<ul>
+<li>2.       重新为两台虚拟机启用复制。</li>
+</ul>
+<ul>
+<li>ASR收集日志</li>
+</ul>
+<ul>
+<li>Wednesday, June 27, 2018</li>
+</ul>
+<ul>
+<li>2:48 PM</li>
+</ul>
+<ul>
+<li>工具会做基本的环境判断，若识别不出，则会让用户手动选择环境。对于VMware环境，请选择ASR with VMware。 对于Standalone的环境，请选择ASR with Hyper-V。</li>
+</ul>
+<ul>
+<li>保留默认选择，点击Next。</li>
+</ul>
+<ul>
+<li>运行完成后日志会保留在如下文件夹，请将文件打包上传。</li>
+</ul>
+<ul>
+<li>Thursday, July 12, 2018</li>
+</ul>
+<ul>
+<li>10:01 AM</li>
+</ul>
+<ul>
+<li>参考文档</li>
+</ul>
+<ul>
+<li>您可以参考以下截图进行Hyper-V主机日志收集,</li>
+</ul>
+<ul>
+<li>sdp是有case ID相关的, key会过期。</li>
+</ul>
+<ul>
+<li>对于不带 VMM 的 Hyper-V，请下载此工具，并在 Hyper-V 主机上运行该工具来收集日志。</li>
+</ul>
+<ul>
+<li>2020年8月20日, 星期四</li>
+</ul>
+<ul>
+<li>14:08</li>
+</ul>
+<ul>
+<li>Lu Yitong</li>
+</ul>
+<ul>
+<li>Linux版本：</li>
+</ul>
+<ul>
+<li>Linux version 3.10.0-327.el7.x86_64 (builder@kbuilder.dev.centos.org) (gcc version 4.8.3 20140911 (Red Hat 4.8.3-9) (GCC) ) #1 SMP Thu Nov 19 22:10:57 UTC 2015</li>
+</ul>
+<ul>
+<li>CentOS Linux release 7.8.2003 (Core)</li>
+</ul>
+<ul>
+<li>代理版本：</li>
+</ul>
+<ul>
+<li>Microsoft-ASR_UA_9.29.0.0_RHEL7-64_GA_12Sep2019_Release.tar.gz</li>
+</ul>
+<ul>
+<li>官网提示支持centos7.0-7.8:</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>关于CentOS 7.8，移动代理是从９.３３开始支持的（在独立的移动代理文档可以找到）：</li>
+</ul>
+<ul>
+<li>Microsoft-ASR_UA_9.30.0.0_RHEL7-64_GA_22Oct2019_Release.tar</li>
+</ul>
+<ul>
+<li>OS_details.sh：</li>
+</ul>
+<ul>
+<li>elif grep -q &#39;Red Hat Enterprise Linux Server release 7.[0-7]&#39; /etc/redhat-release || \</li>
+</ul>
+<ul>
+<li>if [ <code>uname -m</code> = &quot;x86_64&quot; ]; then</li>
+</ul>
+<ul>
+<li>fi</li>
+</ul>
+<ul>
+<li>elif grep -q &#39;Red Hat Enterprise Linux Server release 7.*&#39; /etc/redhat-release || \</li>
+</ul>
+<ul>
+<li>“Agent you are trying to install/upgrade is not built for , can not be installed on this Operating System. Aborting.”</li>
+</ul>
+<ul>
+<li>=====================================</li>
+</ul>
+<ul>
+<li>最后，关于文档中没有提到CentOS的版本及Kernel版本与Mobility Service版本的支持关系说明，文档的问题，产品组已经在进行内部讨论这一需求，争取更新到以下文档中：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>我们后台的排查如下：</li>
+</ul>
+<ul>
+<li>由于早于90天的数据无法查询，从现有日志中看到对batcore和corelistener的信息记录有重复或冲突，如两个虚拟机的NIC一致，或者batcore记录到了corelistener的IP等。在配置服务器上的CBEngine.errlog记录两台虚拟机在使用同一个ID在与配置服务器通信，并发生冲突，导致复制信息无法正确获取。进一步查看，发现该ID d1e57c5d-6e39-434a-897a-12d4abc7c7c5 实际上是由Mobility Service Agent生成的AgentGeneratedId。该ID在安装agent的时候生成。考虑到corelistener是在batcore配置了ASR后克隆的虚拟机，因此，两台虚拟机可能使用了同一个ID，导致复制异常。</li>
+</ul>
+<ul>
+<li>2）  在配置服务器上，检查两台虚拟机信息是否正确：</li>
+</ul>
+<ul>
+<li>注意查看batcore和corelistener的信息是否正确。若不正确，请按下面步骤进行清理:</li>
+</ul>
+<ul>
+<li>将Standalone和VMware环境的收集集成到一起了。收集VMware中的日志，请按下面步骤执行：</li>
+</ul>
+<ul>
+<li>在搜索框输入“MSDT”,然后从项目选择MSDT.exe，按照屏幕指示在这台电脑上运行诊断包。</li>
+</ul>
+<ul>
+<li>对于 VMM，请使用支持诊断平台 (SDP) 工具执行 Site Recovery 日志收集。(C:\ProgramData\VMMlogs)</li>
+</ul>
+<ul>
+<li>排查过程：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>以管理员身份打开mysql的命令行，执行命令查看所有注册的虚拟机的信息：(C:\programdata\asr\home\svsystems\etc\amethyst.conf里找密码)</li>
+</ul>
+<ul>
+<li>在命令行中切换到C:\home\svsystems\bin（根据安装情况，盘符可能不同）。</li>
+</ul>
+<ul>
+<li>运行命令注销</li>
+</ul>
+<ul>
+<li>在终端中转到 /user/local/ASR，请运行以下命令卸载移动服务：</li>
+</ul>
+<ul>
+<li>我们下载了Microsoft-ASR_UA_9.29.0.0_RHEL7-64_GA_12Sep2019_Release.tar.gz和Microsoft-ASR_UA_9.30.0.0_RHEL7-64_GA_22Oct2019_Release.tar， 并对其安装脚本进行了比对：</li>
+</ul>
+<ul>
+<li>grep -q &#39;Red Hat Enterprise Linux Workstation release 7.[0-7]&#39; /etc/redhat-release || \</li>
+</ul>
+<ul>
+<li>grep -q &#39;CentOS Linux release 7.[0-7]&#39; /etc/redhat-release; then</li>
+</ul>
+<ul>
+<li>grep -q &#39;Red Hat Enterprise Linux Workstation release 7.*&#39; /etc/redhat-release || \</li>
+</ul>
+<ul>
+<li>grep -q &#39;CentOS Linux release 7.*&#39; /etc/redhat-release; then</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>OS=&quot;RHEL7-64&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>2018/3/13日之前被保护的虚拟机batcore (172.16.16.77)的复制状态正常，2018/3/22克隆了该虚拟机为corelistener(172.16.16.77)，并在随后的时间里对其进行了配置，2018/4/17日为了保护该虚拟机，将其注册到配置服务器。随后发现batcore在Azure中的保护状态不正常，于2017/4/27日禁用了复制。2016/6/21日再次为batcore启用复制后，复制状态依旧不正常，复制进度卡在50%左右，于是禁用复制。2018/6/22日尝试为corelistener启用复制后，该虚拟机的复制进度一致卡在0%。</li>
+</ul>
+<ul>
+<li>基于此，我们的建议如下清理现有的复制环境后，重新为每个虚拟机安装Mobility Service Agent ，生成新的ID，再启用复制保护虚拟机。</li>
+</ul>
+<ul>
+<li>将配置服务器注册到新的保管库</li>
+</ul>
+<ul>
+<li>根据情况选择对应的选项。对于客户的情况，建议在配置服务器和被复制的虚拟机上都收集下日志。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考链接：<a href="https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx" target="_blank" rel="noopener">https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx</a></li>
+</ul>
+<ul>
+<li>参考链接：<a href="https://docs.azure.cn/zh-cn/site-recovery/vmware-azure-install-mobility-service#uninstall-mobility-service-on-a-linux-computer" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/vmware-azure-install-mobility-service#uninstall-mobility-service-on-a-linux-computer</a></li>
+</ul>
+<ul>
+<li><a href="https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx" target="_blank" rel="noopener">https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-manage-configuration-server" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-manage-configuration-server</a></li>
+</ul>
+<ul>
+<li>从 <a href="http://aka.ms/asrsdp下载收集工具到配置服务器，并运行" target="_blank" rel="noopener">http://aka.ms/asrsdp下载收集工具到配置服务器，并运行</a></li>
+</ul>
+<ul>
+<li><a href="https://support.microsoft.com/zh-cn/help/3037569/sdp-3-21382d70-df1d-4c0c-bdc6-9ba62752e851-asr-branch-to-azure-trouble" target="_blank" rel="noopener">https://support.microsoft.com/zh-cn/help/3037569/sdp-3-21382d70-df1d-4c0c-bdc6-9ba62752e851-asr-branch-to-azure-trouble</a></li>
+</ul>
+<ul>
+<li>麻烦您协助收集详细日志： <a href="https://docs.azure.cn/zh-cn/site-recovery/hyper-v-azure-troubleshoot#log-collection-for-advanced-troubleshooting" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/hyper-v-azure-troubleshoot#log-collection-for-advanced-troubleshooting</a></li>
+</ul>
+<ul>
+<li><a href="https://support.microsoft.com/en-us/help/3005185/how-to-troubleshoot-azure-recovery-services" target="_blank" rel="noopener">https://support.microsoft.com/en-us/help/3005185/how-to-troubleshoot-azure-recovery-services</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/site-recovery/vmware-physical-azure-support-matrix#replicated-machines" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/vmware-physical-azure-support-matrix#replicated-machines</a></li>
+</ul>
+<ul>
+<li><a href="https://support.microsoft.com/en-us/help/4564347/update-rollup-46-for-azure-site-recovery" target="_blank" rel="noopener">https://support.microsoft.com/en-us/help/4564347/update-rollup-46-for-azure-site-recovery</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2018/3/13日之前被保护的虚拟机batcore (172.16.16.77)的复制状态正常，2018/3/22克隆了该虚拟机为corelistener(172.16.16.77)，并在随后的时间里对其进行了配置，2018/4/17日为了保护该虚拟机，将其注册到配置服务器。随后发现batcore在Azure中的保护状态不正常，于2017/4/27日禁用了复制。2016/6/21日再次为batcore启用复制后，复制状态依旧不正常，复制进度卡在50%左右，于是禁用复制。2018/6/22日尝试为corelistener启用复制后，该虚拟机的复制进度一致卡在0%。</p>
+<p>我们后台的排查如下：</p>
+<p>由于早于90天的数据无法查询，从现有日志中看到对batcore和corelistener的信息记录有重复或冲突，如两个虚拟机的NIC一致，或者batcore记录到了corelistener的IP等。在配置服务器上的CBEngine.errlog记录两台虚拟机在使用同一个ID在与配置服务器通信，并发生冲突，导致复制信息无法正确获取。进一步查看，发现该ID d1e57c5d-6e39-434a-897a-12d4abc7c7c5 实际上是由Mobility Service Agent生成的AgentGeneratedId。该ID在安装agent的时候生成。考虑到corelistener是在batcore配置了ASR后克隆的虚拟机，因此，两台虚拟机可能使用了同一个ID，导致复制异常。</p>
+<p>基于此，我们的建议如下清理现有的复制环境后，重新为每个虚拟机安装Mobility Service Agent ，生成新的ID，再启用复制保护虚拟机。</p>
+<p>1.       清理这两台虚拟机现有的信息和环境</p>
+<p>1）  在Azure ASR中，禁用两台虚拟机的复制。</p>
+<p>在门户中的ASR vault下，转到“受保护的项” &gt; “复制的项”，右键单击计算机，再单击“禁用复制”。在“禁用复制”页中，选择禁用复制并删除(推荐) 。</p>
+<p>2）  在配置服务器上，检查两台虚拟机信息是否正确：</p>
+<p>参考链接：<a href="https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx" target="_blank" rel="noopener">https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx</a></p>
+<p>mysql  -hlocalhost -uroot  -p</p>
+<p>以管理员身份打开mysql的命令行，执行命令查看所有注册的虚拟机的信息：(C:\programdata\asr\home\svsystems\etc\amethyst.conf里找密码)</p>
+<p>mysql&gt; use svsdb1;</p>
+<p>mysql&gt; select id as hostid, name, ipaddress, ostype as operatingsystem, from_unixtime(lasthostupdatetime) as heartbeat from hosts where name!=&#39;InMageProfiler&#39;\G;</p>
+<p>注意查看batcore和corelistener的信息是否正确。若不正确，请按下面步骤进行清理:</p>
+<p>在命令行中切换到C:\home\svsystems\bin（根据安装情况，盘符可能不同）。</p>
+<p>运行命令注销</p>
+<p>语法：Unregister-ASRComponent.pl -IPAddress &lt;IP_ADDRESS_OF_MACHINE_TO_UNREGISTER&gt; -Component &lt;Source/ PS / MT&gt;</p>
+<p>例如，若需要取消虚拟机&quot;OnPrem-VM01&quot; （ 10.0.0.4）的注册，则运行</p>
+<p>perl Unregister-ASRComponent.pl -IPAddress 10.0.0.4 -Component Source</p>
+<p>3）  删除两台虚拟机上的mobility Agent.</p>
+<p>参考链接：<a href="https://docs.azure.cn/zh-cn/site-recovery/vmware-azure-install-mobility-service#uninstall-mobility-service-on-a-linux-computer" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/vmware-azure-install-mobility-service#uninstall-mobility-service-on-a-linux-computer</a></p>
+<p>以 root 用户身份在 Linux 服务器上登录。</p>
+<p>在终端中转到 /user/local/ASR，请运行以下命令卸载移动服务：</p>
+<p>uninstall.sh -Y</p>
+<p><a href="https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx" target="_blank" rel="noopener">https://social.technet.microsoft.com/wiki/contents/articles/32026.asr-vmware-to-azure-how-to-cleanup-duplicatestale-entries.aspx</a></p>
+<p>2.       重新为两台虚拟机启用复制。</p>
+<p>将配置服务器注册到新的保管库</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-manage-configuration-server" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/site-recovery/vmware-azure-manage-configuration-server</a></p>
+<p>ASR收集日志</p>
+<p>Wednesday, June 27, 2018</p>
+<p>2:48 PM</p>
+<p>将Standalone和VMware环境的收集集成到一起了。收集VMware中的日志，请按下面步骤执行：</p>
+<p>从 <a href="http://aka.ms/asrsdp下载收集工具到配置服务器，并运行" target="_blank" rel="noopener">http://aka.ms/asrsdp下载收集工具到配置服务器，并运行</a></p>
+<p>工具会做基本的环境判断，若识别不出，则会让用户手动选择环境。对于VMware环境，请选择ASR with VMware。 对于Standalone的环境，请选择ASR with Hyper-V。</p>
+<p>保留默认选择，点击Next。</p>
+<p>根据情况选择对应的选项。对于客户的情况，建议在配置服务器和被复制的虚拟机上都收集下日志。</p>
+<p>运行完成后日志会保留在如下文件夹，请将文件打包上传。</p>
+<p>Thursday, July 12, 2018</p>
+<p>10:01 AM</p>
+<p>参考文档</p>
+<p><a href="https://support.microsoft.com/zh-cn/help/3037569/sdp-3-21382d70-df1d-4c0c-bdc6-9ba62752e851-asr-branch-to-azure-trouble" target="_blank" rel="noopener">https://support.microsoft.com/zh-cn/help/3037569/sdp-3-21382d70-df1d-4c0c-bdc6-9ba62752e851-asr-branch-to-azure-trouble</a></p>
+<p>您可以参考以下截图进行Hyper-V主机日志收集,</p>
+<p>sdp是有case ID相关的, key会过期。</p>
+<p>在搜索框输入“MSDT”,然后从项目选择MSDT.exe，按照屏幕指示在这台电脑上运行诊断包。</p>
+<p>麻烦您协助收集详细日志： <a href="https://docs.azure.cn/zh-cn/site-recovery/hyper-v-azure-troubleshoot#log-collection-for-advanced-troubleshooting" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/hyper-v-azure-troubleshoot#log-collection-for-advanced-troubleshooting</a></p>
+<p>用于高级故障排除的日志集合</p>
+<p>以下工具可帮助进行高级故障排除：</p>
+<p>对于 VMM，请使用支持诊断平台 (SDP) 工具执行 Site Recovery 日志收集。(C:\ProgramData\VMMlogs)</p>
+<p>对于不带 VMM 的 Hyper-V，请下载此工具，并在 Hyper-V 主机上运行该工具来收集日志。</p>
+<p><a href="https://support.microsoft.com/en-us/help/3005185/how-to-troubleshoot-azure-recovery-services" target="_blank" rel="noopener">https://support.microsoft.com/en-us/help/3005185/how-to-troubleshoot-azure-recovery-services</a></p>
+<p>ASR Mobility Service在Linux客户端安装失败</p>
+<p>2020年8月20日, 星期四</p>
+<p>14:08</p>
+<p>Lu Yitong</p>
+<p>问题现象：</p>
+<p>客户使用ASR将本地VMware客户端复制到Azure，在部分CentOS 7.8上安装Mobility Service失败。</p>
+<p>Linux版本：</p>
+<p>Linux version 3.10.0-327.el7.x86_64 (builder@kbuilder.dev.centos.org) (gcc version 4.8.3 20140911 (Red Hat 4.8.3-9) (GCC) ) #1 SMP Thu Nov 19 22:10:57 UTC 2015</p>
+<p>CentOS Linux release 7.8.2003 (Core)</p>
+<p>代理版本：</p>
+<p>Microsoft-ASR_UA_9.29.0.0_RHEL7-64_GA_12Sep2019_Release.tar.gz</p>
+<p>官网提示支持centos7.0-7.8:</p>
+<p><a href="https://docs.azure.cn/zh-cn/site-recovery/vmware-physical-azure-support-matrix#replicated-machines" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/vmware-physical-azure-support-matrix#replicated-machines</a></p>
+<p>报错“Agent you are trying to install/upgrade is not built for , can not be installed on this Operating System. Aborting.”</p>
+<p>排查过程：</p>
+<p>根据报错提示，初步判断为操作系统版本或Kernel版本与移动服务版本不匹配，将移动服务版本9.29替换为9.30（Microsoft-ASR_UA_9.30.0.0_RHEL7-64_GA_22Oct2019_Release.tar）之后，部署成功。</p>
+<p>问题原因：</p>
+<p>关于CentOS 7.8，移动代理是从９.３３开始支持的（在独立的移动代理文档可以找到）：</p>
+<p><a href="https://support.microsoft.com/en-us/help/4564347/update-rollup-46-for-azure-site-recovery" target="_blank" rel="noopener">https://support.microsoft.com/en-us/help/4564347/update-rollup-46-for-azure-site-recovery</a></p>
+<p>我们下载了Microsoft-ASR_UA_9.29.0.0_RHEL7-64_GA_12Sep2019_Release.tar.gz和Microsoft-ASR_UA_9.30.0.0_RHEL7-64_GA_22Oct2019_Release.tar， 并对其安装脚本进行了比对：</p>
+<p>Microsoft-ASR_UA_9.30.0.0_RHEL7-64_GA_22Oct2019_Release.tar</p>
+<p>OS_details.sh：</p>
+<p>elif grep -q &#39;Red Hat Enterprise Linux Server release 7.[0-7]&#39; /etc/redhat-release || \</p>
+<p>grep -q &#39;Red Hat Enterprise Linux Workstation release 7.[0-7]&#39; /etc/redhat-release || \</p>
+<p>grep -q &#39;CentOS Linux release 7.[0-7]&#39; /etc/redhat-release; then</p>
+<p>if [ <code>uname -m</code> = &quot;x86_64&quot; ]; then</p>
+<p>OS=&quot;RHEL7-64&quot;</p>
+<p>fi</p>
+<p>elif grep -q &#39;Red Hat Enterprise Linux Server release 7.*&#39; /etc/redhat-release || \</p>
+<p>grep -q &#39;Red Hat Enterprise Linux Workstation release 7.*&#39; /etc/redhat-release || \</p>
+<p>grep -q &#39;CentOS Linux release 7.*&#39; /etc/redhat-release; then</p>
+<p>可以看到， 当centos 7.8使用9.29进行安装的时候， 变量OS返回为空， 导致了日志中输出也没有显示操作系统版本，进而失败， 但是9.30没有这个问题：</p>
+<p>“Agent you are trying to install/upgrade is not built for , can not be installed on this Operating System. Aborting.”</p>
+<p>这也解释了为什么centos7.2不会在这里报错。</p>
+<p>=====================================</p>
+<p>最后，关于文档中没有提到CentOS的版本及Kernel版本与Mobility Service版本的支持关系说明，文档的问题，产品组已经在进行内部讨论这一需求，争取更新到以下文档中：</p></article>

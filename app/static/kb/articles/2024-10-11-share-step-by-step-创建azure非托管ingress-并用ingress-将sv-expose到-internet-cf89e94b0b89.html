@@ -1,0 +1,282 @@
+<article class="kb-article" data-title="【share】step by step 创建azure非托管ingress ，并用ingress 将sv expose到  internet"><h1>【share】step by step 创建azure非托管ingress ，并用ingress 将sv expose到  internet</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-10-11 14:15:27</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<h1>注意，关于如下报错：</h1>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li># 注意，关于如下报错：</li>
+</ul>
+<ul>
+<li>Error: template: ingress-nginx/templates/controller-role.yaml:48:9: executing &quot;ingress-nginx/templates/controller-role.yaml&quot; at &lt;ne (index .Values.controller.extraArgs &quot;update-status&quot;) &quot;false&quot;&gt;: error calling ne: incompatible types for comparison</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>9/26</li>
+</ul>
+<ul>
+<li>一  、 部署非托管ingress</li>
+</ul>
+<ul>
+<li>您可以按照如下文档部署非托管的ingress</li>
+</ul>
+<ul>
+<li>Aks 提供的部署非托管ingress 文档： 创建非管理的入口控制器 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>1、 # 因为拉取国外镜像有限制，因此将需要拉取的镜像地址改为镜像加速地址</li>
+</ul>
+<ul>
+<li># 将远程仓库的模板yaml 的某个文件下载到本地：</li>
+</ul>
+<ul>
+<li>#将values.yaml   中所有的镜像url  registry.k8s.io 替换为registryk8s.azk8s.cn</li>
+</ul>
+<ul>
+<li>sed -i &#39;s/registry\.k8s\.io/registryk8s.azk8s.cn/g&#39; values.yaml</li>
+</ul>
+<ul>
+<li>2、 部署Ingress</li>
+</ul>
+<ul>
+<li># upgrade ：It will install the controller in the default namespace, creating that namespace if it doesn&#39;t already exist</li>
+</ul>
+<ul>
+<li>#ingress-nginx：这是你要使用的 Helm chart 的名称。这个 chart 的名称和 release 名称相同。在 Helm chart 中定义了应用程序的配置和资源。</li>
+</ul>
+<ul>
+<li># --set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path&quot;=/healthz  这个是lb设置运行探测的路径， 如果没有设置这个参数，那么</li>
+</ul>
+<ul>
+<li>LB 的运行状况探测 路径默认就是/</li>
+</ul>
+<ul>
+<li>#另外 虽然helm 是由 go 写的， 但是go 的index 函数 和 helm 的 index 函数是不一样的，go 语言中也没有ne 这个判断符，“xxx” 代表的是string</li>
+</ul>
+<ul>
+<li>需要在values.yaml 中将如图部分改为</li>
+</ul>
+<ul>
+<li>#azure lb 注意事项：</li>
+</ul>
+<ul>
+<li>Azure lb 有个特性，如果运行状况探测不成功，不会向后端转流量。</li>
+</ul>
+<ul>
+<li># helm  uninstall  ingress 的实例 ，pod 会被删除， 但是创建的ingress 不会被删除</li>
+</ul>
+<ul>
+<li>#还有一点，healthz  目前已经属于弃用状态，当然按照上面部署是没问题的， 因为镜像源中  nginx.conf 中的配置也是如下图内容。</li>
+</ul>
+<ul>
+<li>如果希望改为改用 livez 和 readyz 终结点。 镜像的ingress.conf 需要改为</li>
+</ul>
+<ul>
+<li>二、通过ingress expose service</li>
+</ul>
+<ul>
+<li>需求：   有一个pod 需要借助ingress暴露到外网</li>
+</ul>
+<ul>
+<li>大致思路：</li>
+</ul>
+<ul>
+<li>Ingress  本身是一个 nginx 的七层协议，</li>
+</ul>
+<ul>
+<li>目前这个ingress 是部署在k8s 集群内部的。</li>
+</ul>
+<ul>
+<li>Ingress 通过和 azure lb 集成，将ingress 的流量借助4层lb暴露出去。</li>
+</ul>
+<ul>
+<li>暴露到外网的大致走向是：</li>
+</ul>
+<ul>
+<li>部署服务的pod ---》SVC (类型 cluster ip) ---》ingress ---&gt; ingress的 azure  lb （这是公网ip 地址）</li>
+</ul>
+<ul>
+<li>客户端访问时候走的就是相反路径。</li>
+</ul>
+<ul>
+<li>将如下 azure-vote-front 的svc 由 ingress 代理出去</li>
+</ul>
+<ul>
+<li>我的ingress yaml 内容：</li>
+</ul>
+<ul>
+<li>cat ingress-instance/expose-vote.yaml</li>
+</ul>
+<ul>
+<li>apiVersion: networking.k8s.io/v1</li>
+</ul>
+<ul>
+<li>kind: Ingress</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: azure-vote-ingress</li>
+</ul>
+<ul>
+<li>annotations:</li>
+</ul>
+<ul>
+<li>kubernetes.io/ingress.class: &quot;nginx&quot;  # ￕ￢￀￯ￖﾸﾶﾨ￁ￋￊﾹￓￃ nginx Ingress ﾿￘ￖￆￆ</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>rules:</li>
+</ul>
+<ul>
+<li>- host: cjtest.saikun.top  # ￌ￦ﾻﾻￎﾪￄ￣ﾵￄￓￃ</li>
+</ul>
+<ul>
+<li>http:</li>
+</ul>
+<ul>
+<li>paths:</li>
+</ul>
+<ul>
+<li>- path: /</li>
+</ul>
+<ul>
+<li>pathType: Prefix</li>
+</ul>
+<ul>
+<li>backend:</li>
+</ul>
+<ul>
+<li>service:</li>
+</ul>
+<ul>
+<li>name: azure-vote-front</li>
+</ul>
+<ul>
+<li>port:</li>
+</ul>
+<ul>
+<li>number: 80</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>我 以下步骤依据的是上面的第一个文档：   Ingress 部署的官方指导 的文档</li>
+</ul>
+<ul>
+<li>Azure portal lb  实例的指标 “health probe status” 就是判断 lb 到后端的探针是否成功的依据。</li>
+</ul>
+<ul>
+<li>具体步骤：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>#解析这条命令：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>#ingress-nginx：这是你要安装或升级的 Helm release 的名称。在 Helm 中，release 是安装 chart 的一个实例，命名 ingress-nginx 使得你可以通过这个名称来管理这个实例。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Ingress 部署的官方指导（官方指的是k8S）:  <a href="https://kubernetes.github.io/ingress-nginx/deploy/#quick-start" target="_blank" rel="noopener">https://kubernetes.github.io/ingress-nginx/deploy/#quick-start</a></li>
+</ul>
+<ul>
+<li>ingress 的模板包： <a href="https://github.com/kubernetes/ingress-nginx/releases/download/helm-chart-4.11.2/ingress-nginx-4.11.2.tgz" target="_blank" rel="noopener">https://github.com/kubernetes/ingress-nginx/releases/download/helm-chart-4.11.2/ingress-nginx-4.11.2.tgz</a></li>
+</ul>
+<ul>
+<li># 镜像加速参考： <a href="https://github.com/Azure/container-service-for-azure-china/tree/master/aks" target="_blank" rel="noopener">https://github.com/Azure/container-service-for-azure-china/tree/master/aks</a></li>
+</ul>
+<ul>
+<li>helm show values ingress-nginx/ingress-nginx &gt; values.yaml       #（repo  ingress-nginx 的url 是 <a href="https://kubernetes.github.io/ingress-nginx" target="_blank" rel="noopener">https://kubernetes.github.io/ingress-nginx</a> ）</li>
+</ul>
+<ul>
+<li>helm upgrade --install ingress-nginx ingress-nginx     --set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path&quot;=/healthz   --repo <a href="https://kubernetes.github.io/ingress-nginx" target="_blank" rel="noopener">https://kubernetes.github.io/ingress-nginx</a>  -f values.yaml</li>
+</ul>
+<ul>
+<li>#--repo <a href="https://kubernetes.github.io/ingress-nginx：" target="_blank" rel="noopener">https://kubernetes.github.io/ingress-nginx：</a>  这个参数指定了 Helm chart 仓库的 URL。在这个例子中，ingress-nginx chart 存放在</li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.github.io/ingress-nginx" target="_blank" rel="noopener">https://kubernetes.github.io/ingress-nginx</a> 这个仓库中。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>9/26</p>
+<p>一  、 部署非托管ingress</p>
+<p>您可以按照如下文档部署非托管的ingress</p>
+<p>Ingress 部署的官方指导（官方指的是k8S）:  <a href="https://kubernetes.github.io/ingress-nginx/deploy/#quick-start" target="_blank" rel="noopener">https://kubernetes.github.io/ingress-nginx/deploy/#quick-start</a></p>
+<p>ingress 的模板包： <a href="https://github.com/kubernetes/ingress-nginx/releases/download/helm-chart-4.11.2/ingress-nginx-4.11.2.tgz" target="_blank" rel="noopener">https://github.com/kubernetes/ingress-nginx/releases/download/helm-chart-4.11.2/ingress-nginx-4.11.2.tgz</a></p>
+<p>Aks 提供的部署非托管ingress 文档： 创建非管理的入口控制器 - Azure Kubernetes Service | Azure Docs</p>
+<p>我 以下步骤依据的是上面的第一个文档：   Ingress 部署的官方指导 的文档</p>
+<p>1、 # 因为拉取国外镜像有限制，因此将需要拉取的镜像地址改为镜像加速地址</p>
+<h1>镜像加速参考： <a href="https://github.com/Azure/container-service-for-azure-china/tree/master/aks" target="_blank" rel="noopener">https://github.com/Azure/container-service-for-azure-china/tree/master/aks</a></h1>
+<h1>将远程仓库的模板yaml 的某个文件下载到本地：</h1>
+<p>helm show values ingress-nginx/ingress-nginx &gt; values.yaml       #（repo  ingress-nginx 的url 是 <a href="https://kubernetes.github.io/ingress-nginx" target="_blank" rel="noopener">https://kubernetes.github.io/ingress-nginx</a> ）</p>
+<p>#将values.yaml   中所有的镜像url  registry.k8s.io 替换为registryk8s.azk8s.cn</p>
+<p>sed -i &#39;s/registry\.k8s\.io/registryk8s.azk8s.cn/g&#39; values.yaml</p>
+<p>2、 部署Ingress</p>
+<p>helm upgrade --install ingress-nginx ingress-nginx     --set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path&quot;=/healthz   --repo <a href="https://kubernetes.github.io/ingress-nginx" target="_blank" rel="noopener">https://kubernetes.github.io/ingress-nginx</a>  -f values.yaml</p>
+<p>#解析这条命令：</p>
+<h1>upgrade ：It will install the controller in the default namespace, creating that namespace if it doesn&#39;t already exist</h1>
+<p>#ingress-nginx：这是你要安装或升级的 Helm release 的名称。在 Helm 中，release 是安装 chart 的一个实例，命名 ingress-nginx 使得你可以通过这个名称来管理这个实例。</p>
+<p>#ingress-nginx：这是你要使用的 Helm chart 的名称。这个 chart 的名称和 release 名称相同。在 Helm chart 中定义了应用程序的配置和资源。</p>
+<p>#--repo <a href="https://kubernetes.github.io/ingress-nginx：" target="_blank" rel="noopener">https://kubernetes.github.io/ingress-nginx：</a>  这个参数指定了 Helm chart 仓库的 URL。在这个例子中，ingress-nginx chart 存放在</p>
+<p><a href="https://kubernetes.github.io/ingress-nginx" target="_blank" rel="noopener">https://kubernetes.github.io/ingress-nginx</a> 这个仓库中。</p>
+<h1>--set controller.service.annotations.&quot;service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path&quot;=/healthz  这个是lb设置运行探测的路径， 如果没有设置这个参数，那么</h1>
+<p>LB 的运行状况探测 路径默认就是/</p>
+<h1>注意，关于如下报错：</h1>
+<p>Error: template: ingress-nginx/templates/controller-role.yaml:48:9: executing &quot;ingress-nginx/templates/controller-role.yaml&quot; at &lt;ne (index .Values.controller.extraArgs &quot;update-status&quot;) &quot;false&quot;&gt;: error calling ne: incompatible types for comparison</p>
+<p>#另外 虽然helm 是由 go 写的， 但是go 的index 函数 和 helm 的 index 函数是不一样的，go 语言中也没有ne 这个判断符，“xxx” 代表的是string</p>
+<p>需要在values.yaml 中将如图部分改为</p>
+<p>#azure lb 注意事项：</p>
+<p>Azure lb 有个特性，如果运行状况探测不成功，不会向后端转流量。</p>
+<p>Azure portal lb  实例的指标 “health probe status” 就是判断 lb 到后端的探针是否成功的依据。</p>
+<h1>helm  uninstall  ingress 的实例 ，pod 会被删除， 但是创建的ingress 不会被删除</h1>
+<p>#还有一点，healthz  目前已经属于弃用状态，当然按照上面部署是没问题的， 因为镜像源中  nginx.conf 中的配置也是如下图内容。</p>
+<p>如果希望改为改用 livez 和 readyz 终结点。 镜像的ingress.conf 需要改为</p>
+<p>二、通过ingress expose service</p>
+<p>需求：   有一个pod 需要借助ingress暴露到外网</p>
+<p>大致思路：</p>
+<p>Ingress  本身是一个 nginx 的七层协议，</p>
+<p>目前这个ingress 是部署在k8s 集群内部的。</p>
+<p>Ingress 通过和 azure lb 集成，将ingress 的流量借助4层lb暴露出去。</p>
+<p>暴露到外网的大致走向是：</p>
+<p>部署服务的pod ---》SVC (类型 cluster ip) ---》ingress ---&gt; ingress的 azure  lb （这是公网ip 地址）</p>
+<p>客户端访问时候走的就是相反路径。</p>
+<p>具体步骤：</p>
+<p>将如下 azure-vote-front 的svc 由 ingress 代理出去</p>
+<p>我的ingress yaml 内容：</p>
+<p>cat ingress-instance/expose-vote.yaml</p>
+<p>apiVersion: networking.k8s.io/v1</p>
+<p>kind: Ingress</p>
+<p>metadata:</p>
+<p>name: azure-vote-ingress</p>
+<p>annotations:</p>
+<p>kubernetes.io/ingress.class: &quot;nginx&quot;  # ￕ￢￀￯ￖﾸﾶﾨ￁ￋￊﾹￓￃ nginx Ingress ﾿￘ￖￆￆ</p>
+<p>spec:</p>
+<p>rules:</p>
+<ul>
+<li>host: cjtest.saikun.top  # ￌ￦ﾻﾻￎﾪￄ￣ﾵￄￓￃ</li>
+</ul>
+<p>http:</p>
+<p>paths:</p>
+<ul>
+<li>path: /</li>
+</ul>
+<p>pathType: Prefix</p>
+<p>backend:</p>
+<p>service:</p>
+<p>name: azure-vote-front</p>
+<p>port:</p>
+<p>number: 80</p></article>

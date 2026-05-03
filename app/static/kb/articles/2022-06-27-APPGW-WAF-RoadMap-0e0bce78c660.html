@@ -1,0 +1,278 @@
+<article class="kb-article" data-title="APPGW/WAF RoadMap"><h1>APPGW/WAF RoadMap</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Roadmap.one</li>
+<li>Section: Roadmap</li>
+<li>最近修改: 2022-06-27 19:59:56</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>openssl 探测wafv2 完整证书链返回 异常结果的分析</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>openssl 探测wafv2 完整证书链返回 异常结果的分析</li>
+</ul>
+<ul>
+<li>SNI导致SSL会话失败的无法访问：[ARM-APPGW-multi-site-SNI]APPGW 携带SNI规则  (Onenote KB)</li>
+</ul>
+<ul>
+<li>[ARM-APPGW-multi-site-SNI]微信支付回调无法正常访问APPGW</li>
+</ul>
+<ul>
+<li>如何解决当 Web 应用绑定了主机名而无法使用应用程序网关的问题</li>
+</ul>
+<ul>
+<li>APPGW+WebAPP后端运行状态异常等原因导致的无法访问：</li>
+</ul>
+<ul>
+<li>b.       证书不匹配状态未知：[ARM-APPGW-multi-site-SNI]AppGW多站点后端HTTPS探测失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>完成情况</li>
+</ul>
+<ul>
+<li>Level 300</li>
+</ul>
+<ul>
+<li>胡明月</li>
+</ul>
+<ul>
+<li>张立鹤</li>
+</ul>
+<ul>
+<li>傅张良</li>
+</ul>
+<ul>
+<li>王书文</li>
+</ul>
+<ul>
+<li>辛岳凤</li>
+</ul>
+<ul>
+<li>边明凯</li>
+</ul>
+<ul>
+<li>李镇山</li>
+</ul>
+<ul>
+<li>李海涛</li>
+</ul>
+<ul>
+<li>周昆</li>
+</ul>
+<ul>
+<li>姚月建</li>
+</ul>
+<ul>
+<li>何少博</li>
+</ul>
+<ul>
+<li>曹峥</li>
+</ul>
+<ul>
+<li>王彬</li>
+</ul>
+<ul>
+<li>Document</li>
+</ul>
+<ul>
+<li>使用应用程序网关配置应用服务：</li>
+</ul>
+<ul>
+<li>Test</li>
+</ul>
+<ul>
+<li>V2应用程序网关证书上传：</li>
+</ul>
+<ul>
+<li>Lina关于证书链培训文档及视频位置</li>
+</ul>
+<ul>
+<li>Azure 使用Terraform创建具备Public和Private IP的APPGWv2</li>
+</ul>
+<ul>
+<li>将 Azure 应用程序网关和 Web 应用程序防火墙从 v1 迁移到 v2</li>
+</ul>
+<ul>
+<li>如何用 OpenSSL 创建自签名证书</li>
+</ul>
+<ul>
+<li>Need to Pay attention</li>
+</ul>
+<ul>
+<li>如何快速定位应用程序网关 WAF 功能拦截问题</li>
+</ul>
+<ul>
+<li>使用应用程序网关的环境下配置 NSG 的注意事项</li>
+</ul>
+<ul>
+<li>有哪些原因可能会导致后端运行状况返回未知状态？</li>
+</ul>
+<ul>
+<li>有关V2版应用程序网关NSG规则</li>
+</ul>
+<ul>
+<li>Limitation</li>
+</ul>
+<ul>
+<li>APPGW HTTPseting 证书 V2 必须是受信任的颁发机构证书，不支持无链的单个自签名证书：</li>
+</ul>
+<ul>
+<li>Level 400</li>
+</ul>
+<ul>
+<li>使用应用程序网关通过 HTTP 或 HTTPS 公开 AKS 服务</li>
+</ul>
+<ul>
+<li>[ARM-APPGW-multi-site-SNI] terraform 推APP GW侦听器证书和实际访问不一致(Onenote KB)</li>
+</ul>
+<ul>
+<li>应用程序网关WAF排除列表</li>
+</ul>
+<ul>
+<li>替代后端路径功能-\\172.31.20.65\Share$\WATS 2019 培训\20190428-APPGW替代后端路径-By Caozheng</li>
+</ul>
+<ul>
+<li>配置和实践基于URL重定向规则</li>
+</ul>
+<ul>
+<li>[ARM-APPGW-CLI-Redirect-Path]appgw删除基于路径的重定向配置 (Onenote KB)</li>
+</ul>
+<ul>
+<li>如何安装使用新应用程序网关的应用程序网关入口控制器 (AGIC)</li>
+</ul>
+<ul>
+<li>向AKS  POD服务添加运行状况探测</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如何排查应用程序网关返回 HTTP Code 502 或客户端得到应用程序网关响应慢的问题(一)</li>
+</ul>
+<ul>
+<li>如何排查应用程序网关返回 HTTP Code 502 或客户端得到应用程序网关响应慢的问题(二)</li>
+</ul>
+<ul>
+<li>APPGW V1/V2 关联NSG的注意事项（导致无法访问、诊断日志异常，请求日志异常，健康状态异常）：</li>
+</ul>
+<ul>
+<li>a.       由探测失败：检查自定义健康探测</li>
+</ul>
+<ul>
+<li>d.       UDR NSG导致未知：[ARM-APPGW-TroubleShooting-Backend-Unknown]APPGW 配置UDR后状态显示为Unknown</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>通过 Azure PowerShell 使用 Azure 应用程序网关定向 Web 流量：</li>
+</ul>
+<ul>
+<li>部署APPGWv2+Nginx/Apache/Tomcat/IIS 的多站点SSL, 并使用openssl命令查看访问时使用的证书</li>
+</ul>
+<ul>
+<li>通过 Azure PowerShell 在应用程序网关上使用自定义规则配置 Web 应用程序防火墙 v2</li>
+</ul>
+<ul>
+<li>使用Azure PowerShell/CLI 配置，删除基于重定向的路由规则:</li>
+</ul>
+<ul>
+<li>[ARM-APPGW-PowerShell-Redirect-Path]appgw删除基于路径的重定向配置  (Onenote KB)</li>
+</ul>
+<ul>
+<li>重写 Azure 应用程序网关中的 HTTP 请求和响应标头 - Azure PowerShell</li>
+</ul>
+<ul>
+<li>1. 目前portal还不支持门户配置V2版应用程序网关的http请求和响应标头，目前支持Azure PowerShell, Azure CLI。</li>
+</ul>
+<ul>
+<li>2. (待进一步验证)目前V2版WAF还不支持自定义策略，powershell虽然能配置，但是实际不能生效。如果客户希望实现限制某些路径不被访问，可以使用基于路径的重定向策略限制某些路径的访问</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>通过APPGW实现基于路径重新和端口重定向：实现abc.com:8080/def 转发成abc.com</li>
+</ul>
+<ul>
+<li>c.       状态码不匹配：请检查后端资源是否存在，检查收到的状态码</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/application-gateway/quick-create-powershell" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/quick-create-powershell</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/application-gateway/configure-web-app-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/configure-web-app-portal</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/application-gateway/certificates-for-backend-authentication" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/certificates-for-backend-authentication</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/application-gateway/ssl-overview#end-to-end-ssl-with-the-v2-sku" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/ssl-overview#end-to-end-ssl-with-the-v2-sku</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>完成情况</p>
+<p>Level 300</p>
+<p>胡明月</p>
+<p>张立鹤</p>
+<p>傅张良</p>
+<p>王书文</p>
+<p>辛岳凤</p>
+<p>边明凯</p>
+<p>李镇山</p>
+<p>李海涛</p>
+<p>周昆</p>
+<p>姚月建</p>
+<p>何少博</p>
+<p>曹峥</p>
+<p>王彬</p>
+<p>Document</p>
+<p>通过 Azure PowerShell 使用 Azure 应用程序网关定向 Web 流量：</p>
+<p><a href="https://docs.azure.cn/zh-cn/application-gateway/quick-create-powershell" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/quick-create-powershell</a></p>
+<p>使用应用程序网关配置应用服务：</p>
+<p><a href="https://docs.azure.cn/zh-cn/application-gateway/configure-web-app-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/configure-web-app-portal</a></p>
+<p>Test</p>
+<p>V2应用程序网关证书上传：</p>
+<p><a href="https://docs.azure.cn/zh-cn/application-gateway/certificates-for-backend-authentication" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/certificates-for-backend-authentication</a></p>
+<p>openssl 探测wafv2 完整证书链返回 异常结果的分析</p>
+<p>Lina关于证书链培训文档及视频位置</p>
+<p>Azure 使用Terraform创建具备Public和Private IP的APPGWv2</p>
+<p>部署APPGWv2+Nginx/Apache/Tomcat/IIS 的多站点SSL, 并使用openssl命令查看访问时使用的证书</p>
+<p>将 Azure 应用程序网关和 Web 应用程序防火墙从 v1 迁移到 v2</p>
+<p>如何用 OpenSSL 创建自签名证书</p>
+<p>Need to Pay attention</p>
+<p>SNI导致SSL会话失败的无法访问：[ARM-APPGW-multi-site-SNI]APPGW 携带SNI规则  (Onenote KB)</p>
+<p>[ARM-APPGW-multi-site-SNI]微信支付回调无法正常访问APPGW</p>
+<p>如何解决当 Web 应用绑定了主机名而无法使用应用程序网关的问题</p>
+<p>如何快速定位应用程序网关 WAF 功能拦截问题</p>
+<p>如何排查应用程序网关返回 HTTP Code 502 或客户端得到应用程序网关响应慢的问题(一)</p>
+<p>如何排查应用程序网关返回 HTTP Code 502 或客户端得到应用程序网关响应慢的问题(二)</p>
+<p>APPGW V1/V2 关联NSG的注意事项（导致无法访问、诊断日志异常，请求日志异常，健康状态异常）：</p>
+<p>使用应用程序网关的环境下配置 NSG 的注意事项</p>
+<p>有哪些原因可能会导致后端运行状况返回未知状态？</p>
+<p>有关V2版应用程序网关NSG规则</p>
+<p>Limitation</p>
+<p>APPGW HTTPseting 证书 V2 必须是受信任的颁发机构证书，不支持无链的单个自签名证书：</p>
+<p><a href="https://docs.azure.cn/zh-cn/application-gateway/ssl-overview#end-to-end-ssl-with-the-v2-sku" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/ssl-overview#end-to-end-ssl-with-the-v2-sku</a></p>
+<p>Level 400</p>
+<p>使用应用程序网关通过 HTTP 或 HTTPS 公开 AKS 服务</p>
+<p>[ARM-APPGW-multi-site-SNI] terraform 推APP GW侦听器证书和实际访问不一致(Onenote KB)</p>
+<p>应用程序网关WAF排除列表</p>
+<p>替代后端路径功能-\\172.31.20.65\Share$\WATS 2019 培训\20190428-APPGW替代后端路径-By Caozheng</p>
+<p>通过 Azure PowerShell 在应用程序网关上使用自定义规则配置 Web 应用程序防火墙 v2</p>
+<p>配置和实践基于URL重定向规则</p>
+<p>使用Azure PowerShell/CLI 配置，删除基于重定向的路由规则:</p>
+<p>[ARM-APPGW-CLI-Redirect-Path]appgw删除基于路径的重定向配置 (Onenote KB)</p>
+<p>[ARM-APPGW-PowerShell-Redirect-Path]appgw删除基于路径的重定向配置  (Onenote KB)</p>
+<p>重写 Azure 应用程序网关中的 HTTP 请求和响应标头 - Azure PowerShell</p>
+<p>如何安装使用新应用程序网关的应用程序网关入口控制器 (AGIC)</p>
+<p>通过APPGW实现基于路径重新和端口重定向：实现abc.com:8080/def 转发成abc.com</p>
+<p>向AKS  POD服务添加运行状况探测</p>
+<p>APPGW+WebAPP后端运行状态异常等原因导致的无法访问：</p>
+<p>a.       由探测失败：检查自定义健康探测</p>
+<p>b.       证书不匹配状态未知：[ARM-APPGW-multi-site-SNI]AppGW多站点后端HTTPS探测失败</p>
+<p>c.       状态码不匹配：请检查后端资源是否存在，检查收到的状态码</p>
+<p>d.       UDR NSG导致未知：[ARM-APPGW-TroubleShooting-Backend-Unknown]APPGW 配置UDR后状态显示为Unknown</p>
+<p>1. 目前portal还不支持门户配置V2版应用程序网关的http请求和响应标头，目前支持Azure PowerShell, Azure CLI。</p>
+<p>2. (待进一步验证)目前V2版WAF还不支持自定义策略，powershell虽然能配置，但是实际不能生效。如果客户希望实现限制某些路径不被访问，可以使用基于路径的重定向策略限制某些路径的访问</p></article>

@@ -1,0 +1,539 @@
+<article class="kb-article" data-title="VM无法访问平台 DNS 168.63.129.16"><h1>VM无法访问平台 DNS 168.63.129.16</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DNS</li>
+<li>Section: DNS</li>
+<li>最近修改: 2026-03-23 19:58:48</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20220111142876虚拟机升级配置后，出站网络异常</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20220111142876虚拟机升级配置后，出站网络异常</li>
+</ul>
+<ul>
+<li>问题现象:</li>
+</ul>
+<ul>
+<li>通过以下探测无法解析和ping通</li>
+</ul>
+<ul>
+<li>Cache pruning timeout: 30 seconds</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Psping 168.63.129.16:53</li>
+</ul>
+<ul>
+<li>VM内部之间访问正常，配置第三方平台DNS也可正常解析</li>
+</ul>
+<ul>
+<li>Rule : &quot;OUT UDP    00-00-00-00-00-00=&gt;00-00-00-00-00-00;192.168.100.4:12345 =&gt; 168.63.129.16:53 1</li>
+</ul>
+<ul>
+<li>LAYER PROCESSING</li>
+</ul>
+<ul>
+<li>================</li>
+</ul>
+<ul>
+<li>LAYER : VFP_DIAGNOSTICS_LAYER_STATEFUL</li>
+</ul>
+<ul>
+<li>Friendly name : VFP_DIAGNOSTICS_LAYER_STATEFUL</li>
+</ul>
+<ul>
+<li>Flags : 0x1 Default Allow</li>
+</ul>
+<ul>
+<li>Priority : 8</li>
+</ul>
+<ul>
+<li>RULE : OUTGOING_IPV4_ALLOW_ALL_RULE</li>
+</ul>
+<ul>
+<li>Friendly name : OUTGOING_IPV4_ALLOW_ALL_RULE</li>
+</ul>
+<ul>
+<li>Priority : 1000</li>
+</ul>
+<ul>
+<li>Flags : 1 terminating</li>
+</ul>
+<ul>
+<li>Type : allow</li>
+</ul>
+<ul>
+<li>Conditions:</li>
+</ul>
+<ul>
+<li>&lt;none&gt;</li>
+</ul>
+<ul>
+<li>Flow TTL: 0</li>
+</ul>
+<ul>
+<li>FlagsEx : 0</li>
+</ul>
+<ul>
+<li>TRANSPOSITION :</li>
+</ul>
+<ul>
+<li>Flow Action:</li>
+</ul>
+<ul>
+<li>Eth:Ignore</li>
+</ul>
+<ul>
+<li>IP:Ignore</li>
+</ul>
+<ul>
+<li>Transport:Ignore</li>
+</ul>
+<ul>
+<li>LAYER : VFP_DEFAULT_METER_LAYER_STATELESS</li>
+</ul>
+<ul>
+<li>Friendly name : VFP_DEFAULT_METER_LAYER_STATELESS</li>
+</ul>
+<ul>
+<li>Priority : 10</li>
+</ul>
+<ul>
+<li>RULE : AgentComm</li>
+</ul>
+<ul>
+<li>Friendly name : AgentComm</li>
+</ul>
+<ul>
+<li>Priority : 4800</li>
+</ul>
+<ul>
+<li>Destination IP : 168.63.129.16/32</li>
+</ul>
+<ul>
+<li>LAYER : VFP_DEFAULT_LAYER_STATEFULL</li>
+</ul>
+<ul>
+<li>Friendly name : VFP_DEFAULT_LAYER_STATEFULL</li>
+</ul>
+<ul>
+<li>Priority : 20</li>
+</ul>
+<ul>
+<li>RULE : VNET_DNS_REQUEST</li>
+</ul>
+<ul>
+<li>Friendly name : VNET_DNS_REQUEST</li>
+</ul>
+<ul>
+<li>Flags : 3 terminating stateful</li>
+</ul>
+<ul>
+<li>Destination ports : 53-53</li>
+</ul>
+<ul>
+<li>Flow TTL: 255</li>
+</ul>
+<ul>
+<li>LAYER : SLB_VNAT_LAYER</li>
+</ul>
+<ul>
+<li>Friendly name : SLB_VNAT_LAYER</li>
+</ul>
+<ul>
+<li>Flags : 0x1, Default Allow</li>
+</ul>
+<ul>
+<li>Priority : 25</li>
+</ul>
+<ul>
+<li>RULE :</li>
+</ul>
+<ul>
+<li>Friendly name : SLB_DEFAULT_RULE</li>
+</ul>
+<ul>
+<li>Priority : 65535</li>
+</ul>
+<ul>
+<li>LAYER : VFP_DEFAULT_TRANSPOSITION_LAYER_STATELESS</li>
+</ul>
+<ul>
+<li>Friendly name : VFP_DEFAULT_TRANSPOSITION_LAYER_STATELESS</li>
+</ul>
+<ul>
+<li>Priority : 27</li>
+</ul>
+<ul>
+<li>RULE : CatchAllIpv4MeterRule</li>
+</ul>
+<ul>
+<li>Friendly name : CatchAllIpv4MeterRule</li>
+</ul>
+<ul>
+<li>LAYER : VNET_VFP_PRIVATEIP_NAT_STATEFUL</li>
+</ul>
+<ul>
+<li>Friendly name : VNET_VFP_PRIVATEIP_NAT_STATEFUL</li>
+</ul>
+<ul>
+<li>Priority : 28</li>
+</ul>
+<ul>
+<li>LAYER : SLB_CA_REDIRECT_LAYER</li>
+</ul>
+<ul>
+<li>Friendly name : SLB_CA_REDIRECT_LAYER</li>
+</ul>
+<ul>
+<li>Priority : 29</li>
+</ul>
+<ul>
+<li>LAYER : VNET_VFP_DEFAULT_LAYER_STATELESS</li>
+</ul>
+<ul>
+<li>Friendly name : VNET_VFP_DEFAULT_LAYER_STATELESS</li>
+</ul>
+<ul>
+<li>Priority : 30</li>
+</ul>
+<ul>
+<li>RULE : VNET_VFP_RULE_IPV4_OUT_FULL_REWRITE_1</li>
+</ul>
+<ul>
+<li>Friendly name : VNET_VFP_RULE_IPV4_OUT_FULL_REWRITE_1</li>
+</ul>
+<ul>
+<li>Priority : 200</li>
+</ul>
+<ul>
+<li>Type : mapout</li>
+</ul>
+<ul>
+<li>Destination IP : 168.63.129.16/32,192.168.100.1/32,192.168.100.2/32,192.168.100.3/32,169.254.0.0/16</li>
+</ul>
+<ul>
+<li>Source IP : 192.168.100.4/32</li>
+</ul>
+<ul>
+<li>Map space : VNET_VFP_DEFAULT_MAP_SPACE</li>
+</ul>
+<ul>
+<li>Rewrite Address: 10.218.40.48        FlagsEx : 0</li>
+</ul>
+<ul>
+<li>Eth:Modify(SMAC:00-17-FA-00-23-CC,DMAC:E4-1D-2D-F9-FE-64)</li>
+</ul>
+<ul>
+<li>IP:Modify(SIP:10.218.40.48,DIP:10.218.40.10)</li>
+</ul>
+<ul>
+<li>LAYER : VFP_DEFAULT_GUARD_LAYER_STATELESS</li>
+</ul>
+<ul>
+<li>Friendly name : VFP_DEFAULT_GUARD_LAYER_STATELESS</li>
+</ul>
+<ul>
+<li>Priority : 40</li>
+</ul>
+<ul>
+<li>RULE : GUARD_ALLOW_PA_OR_DSR_OR_VM_VIP_SRCIP_OUTGOING</li>
+</ul>
+<ul>
+<li>Friendly name : GUARD_ALLOW_PA_OR_DSR_OR_VM_VIP_SRCIP_OUTGOING</li>
+</ul>
+<ul>
+<li>Source IP : 10.218.40.48/32,169.254.251.0/24,169.254.252.0/22,10.218.40.48/32</li>
+</ul>
+<ul>
+<li>LAYER : SLB_NAT_LAYER</li>
+</ul>
+<ul>
+<li>Friendly name : SLB_NAT_LAYER</li>
+</ul>
+<ul>
+<li>Priority : 50</li>
+</ul>
+<ul>
+<li>Friendly name : SLB_SNAT_RULE</li>
+</ul>
+<ul>
+<li>Priority : 512</li>
+</ul>
+<ul>
+<li>Destination IP : 10.0.0.0-10.255.255.255,25.0.0.0-25.0.255.255,25.4.0.0-25.7.255.255,25.28.0.0-25.31.255.255,25.33.80.0-25.33.95.255,25.41.3.0-25.41.3.127,25.142.0.0-25.143.255.255,25.128.0.0-25.131.255.255,25.144.0.0-25.159.255.255,25.224.0.0-25.239.255.255,25.244.0.0-25.247.255.255,25.248.0.0-25.255.255.255,25.192.0.0-25.223.255.255,25.160.0.0-25.191.255.255,25.64.0.0-25.127.255.255,40.72.193.0-40.72.193.255,40.126.88.64-40.126.88.79,40.126.88.144-40.126.88.159,40.126.88.160-40.126.88.175,42.159.140.0-42.159.140.63,42.159.208.64-42.159.208.127,100.64.0.0-100.127.255.255,139.217.160.32-139.217.160.47,169.254.0.0-169.254.255.255,224.0.0.0-239.255.255.255</li>
+</ul>
+<ul>
+<li>Source IP : 10.218.40.48</li>
+</ul>
+<ul>
+<li>Flow TTL: 240</li>
+</ul>
+<ul>
+<li>MSS delta: 20,0</li>
+</ul>
+<ul>
+<li>Transport:Ignore MSSDelta:20</li>
+</ul>
+<ul>
+<li>LAYER : SLB_DECAP_LAYER_STATEFUL</li>
+</ul>
+<ul>
+<li>Friendly name : SLB_DECAP_LAYER_STATEFUL</li>
+</ul>
+<ul>
+<li>Priority : 100</li>
+</ul>
+<ul>
+<li>LAYER : VNET_SDN_OFFLOAD_LAYER_STATELESS</li>
+</ul>
+<ul>
+<li>Friendly name : VNET_SDN_OFFLOAD_LAYER_STATELESS</li>
+</ul>
+<ul>
+<li>RULE : DEFAULT_ALLOW_SDN_OFFLOAD_OUT</li>
+</ul>
+<ul>
+<li>Friendly name : DEFAULT_ALLOW_SDN_OFFLOAD_OUT</li>
+</ul>
+<ul>
+<li>LAYER : VFP_NEXT_HOP_MAC_LOOKUP_LAYER_STATELESS</li>
+</ul>
+<ul>
+<li>Friendly name : VFP_NEXT_HOP_MAC_LOOKUP_LAYER_STATELESS</li>
+</ul>
+<ul>
+<li>RULE : MAC_LOOKUP_OUTGOING_IPV4_RULE</li>
+</ul>
+<ul>
+<li>Friendly name : MAC_LOOKUP_OUTGOING_IPV4_RULE</li>
+</ul>
+<ul>
+<li>Type : paroute</li>
+</ul>
+<ul>
+<li>Rule Data:</li>
+</ul>
+<ul>
+<li>Using default compartment</li>
+</ul>
+<ul>
+<li>Eth:Modify(DMAC:E4-1D-2D-F9-FE-64)</li>
+</ul>
+<ul>
+<li>IP:Modify()</li>
+</ul>
+<ul>
+<li>FINAL TRANSPOSITION :</li>
+</ul>
+<ul>
+<li>TUPLES PROCESSING COMPLETE</li>
+</ul>
+<ul>
+<li>==========================</li>
+</ul>
+<ul>
+<li>Command process-tuples succeeded!</li>
+</ul>
+<ul>
+<li>结论:</li>
+</ul>
+<ul>
+<li>•        正常VM（以实验VM为例，内网IP地址为10.0.1.4）</li>
+</ul>
+<ul>
+<li>o        Src: 10.0.1.4 -&gt; Dst: 168.63.129.16</li>
+</ul>
+<ul>
+<li>o        数据包经过宿主机(Node)转发 ，源和目的IP地址会被NAT成Src: VM Platform IP -&gt; Dst: Node IP</li>
+</ul>
+<ul>
+<li>•        问题VM （内网IP地址10.1.0.4)</li>
+</ul>
+<ul>
+<li>o        Src: 10.1.0.4 -&gt; Dst: 168.63.129.16</li>
+</ul>
+<ul>
+<li>o        数据包经过宿主机(Node) 转发，源和目的IP地址会被NAT成Src: VM Public IP, Dst: Node IP</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查思路：</li>
+</ul>
+<ul>
+<li>步骤一</li>
+</ul>
+<ul>
+<li>ASC上Diagnostics 结果是正常的</li>
+</ul>
+<ul>
+<li>步骤二</li>
+</ul>
+<ul>
+<li>之后检查了Process Tuples数据包的封装，链接如下:</li>
+</ul>
+<ul>
+<li>步骤三:</li>
+</ul>
+<ul>
+<li>168.63.129.16为Node内部地址，将源地址NAT成VM公网IP地址是不符合预期的，我们查看了多台正常VM宿主机上的规则，可以看到在访问168.63.129.16时，源地址均被NAT成了VM Platform IP而非VM Public IP。</li>
+</ul>
+<ul>
+<li>因此目前看起来问题是VM调度到该Node上时，宿主机上该VM的规则没有被正确program导致，最终用户确认，通过进行Redploy，VM重新调度并重新部署规则恢复正常。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Protocols : 17,6</li>
+</ul>
+<ul>
+<li>Cache pruning threshold: 1</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Nslookup www.baidu.com 168.63.129.16</li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/E7DEBD3C?genevatraceguid=3eadb81c-3d57-45e1-80fb-5b897b94dfe4" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/E7DEBD3C?genevatraceguid=3eadb81c-3d57-45e1-80fb-5b897b94dfe4</a></li>
+</ul>
+<ul>
+<li>格式化去空格json文件 <a href="https://www.bejson.com/jsonviewernew/" target="_blank" rel="noopener">https://www.bejson.com/jsonviewernew/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20220111142876虚拟机升级配置后，出站网络异常</p>
+<p>问题现象:</p>
+<p>通过以下探测无法解析和ping通</p>
+<p>Nslookup www.baidu.com 168.63.129.16</p>
+<p>Psping 168.63.129.16:53</p>
+<p>排查思路：</p>
+<p>步骤一</p>
+<p>VM内部之间访问正常，配置第三方平台DNS也可正常解析</p>
+<p>ASC上Diagnostics 结果是正常的</p>
+<p>步骤二</p>
+<p>之后检查了Process Tuples数据包的封装，链接如下:</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/E7DEBD3C?genevatraceguid=3eadb81c-3d57-45e1-80fb-5b897b94dfe4" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/E7DEBD3C?genevatraceguid=3eadb81c-3d57-45e1-80fb-5b897b94dfe4</a></p>
+<p>步骤三:</p>
+<p>格式化去空格json文件 <a href="https://www.bejson.com/jsonviewernew/" target="_blank" rel="noopener">https://www.bejson.com/jsonviewernew/</a></p>
+<p>Rule : &quot;OUT UDP    00-00-00-00-00-00=&gt;00-00-00-00-00-00;192.168.100.4:12345 =&gt; 168.63.129.16:53 1</p>
+<p>LAYER PROCESSING</p>
+<p>================</p>
+<p>LAYER : VFP_DIAGNOSTICS_LAYER_STATEFUL</p>
+<p>Friendly name : VFP_DIAGNOSTICS_LAYER_STATEFUL</p>
+<p>Flags : 0x1 Default Allow</p>
+<p>Priority : 8</p>
+<p>RULE : OUTGOING_IPV4_ALLOW_ALL_RULE</p>
+<p>Friendly name : OUTGOING_IPV4_ALLOW_ALL_RULE</p>
+<p>Priority : 1000</p>
+<p>Flags : 1 terminating</p>
+<p>Type : allow</p>
+<p>Conditions:</p>
+<p>&lt;none&gt;</p>
+<p>Flow TTL: 0</p>
+<p>FlagsEx : 0</p>
+<p>TRANSPOSITION :</p>
+<p>Flow Action:</p>
+<p>Eth:Ignore</p>
+<p>IP:Ignore</p>
+<p>Transport:Ignore</p>
+<p>LAYER : VFP_DEFAULT_METER_LAYER_STATELESS</p>
+<p>Friendly name : VFP_DEFAULT_METER_LAYER_STATELESS</p>
+<p>Priority : 10</p>
+<p>RULE : AgentComm</p>
+<p>Friendly name : AgentComm</p>
+<p>Priority : 4800</p>
+<p>Destination IP : 168.63.129.16/32</p>
+<p>LAYER : VFP_DEFAULT_LAYER_STATEFULL</p>
+<p>Friendly name : VFP_DEFAULT_LAYER_STATEFULL</p>
+<p>Priority : 20</p>
+<p>RULE : VNET_DNS_REQUEST</p>
+<p>Friendly name : VNET_DNS_REQUEST</p>
+<p>Flags : 3 terminating stateful</p>
+<p>Protocols : 17,6</p>
+<p>Destination ports : 53-53</p>
+<p>Flow TTL: 255</p>
+<p>LAYER : SLB_VNAT_LAYER</p>
+<p>Friendly name : SLB_VNAT_LAYER</p>
+<p>Flags : 0x1, Default Allow</p>
+<p>Priority : 25</p>
+<p>RULE :</p>
+<p>Friendly name : SLB_DEFAULT_RULE</p>
+<p>Priority : 65535</p>
+<p>LAYER : VFP_DEFAULT_TRANSPOSITION_LAYER_STATELESS</p>
+<p>Friendly name : VFP_DEFAULT_TRANSPOSITION_LAYER_STATELESS</p>
+<p>Priority : 27</p>
+<p>RULE : CatchAllIpv4MeterRule</p>
+<p>Friendly name : CatchAllIpv4MeterRule</p>
+<p>LAYER : VNET_VFP_PRIVATEIP_NAT_STATEFUL</p>
+<p>Friendly name : VNET_VFP_PRIVATEIP_NAT_STATEFUL</p>
+<p>Priority : 28</p>
+<p>LAYER : SLB_CA_REDIRECT_LAYER</p>
+<p>Friendly name : SLB_CA_REDIRECT_LAYER</p>
+<p>Priority : 29</p>
+<p>LAYER : VNET_VFP_DEFAULT_LAYER_STATELESS</p>
+<p>Friendly name : VNET_VFP_DEFAULT_LAYER_STATELESS</p>
+<p>Priority : 30</p>
+<p>RULE : VNET_VFP_RULE_IPV4_OUT_FULL_REWRITE_1</p>
+<p>Friendly name : VNET_VFP_RULE_IPV4_OUT_FULL_REWRITE_1</p>
+<p>Priority : 200</p>
+<p>Type : mapout</p>
+<p>Destination IP : 168.63.129.16/32,192.168.100.1/32,192.168.100.2/32,192.168.100.3/32,169.254.0.0/16</p>
+<p>Source IP : 192.168.100.4/32</p>
+<p>Map space : VNET_VFP_DEFAULT_MAP_SPACE</p>
+<p>Rewrite Address: 10.218.40.48        FlagsEx : 0</p>
+<p>Eth:Modify(SMAC:00-17-FA-00-23-CC,DMAC:E4-1D-2D-F9-FE-64)</p>
+<p>IP:Modify(SIP:10.218.40.48,DIP:10.218.40.10)</p>
+<p>LAYER : VFP_DEFAULT_GUARD_LAYER_STATELESS</p>
+<p>Friendly name : VFP_DEFAULT_GUARD_LAYER_STATELESS</p>
+<p>Priority : 40</p>
+<p>RULE : GUARD_ALLOW_PA_OR_DSR_OR_VM_VIP_SRCIP_OUTGOING</p>
+<p>Friendly name : GUARD_ALLOW_PA_OR_DSR_OR_VM_VIP_SRCIP_OUTGOING</p>
+<p>Source IP : 10.218.40.48/32,169.254.251.0/24,169.254.252.0/22,10.218.40.48/32</p>
+<p>LAYER : SLB_NAT_LAYER</p>
+<p>Friendly name : SLB_NAT_LAYER</p>
+<p>Priority : 50</p>
+<p>Friendly name : SLB_SNAT_RULE</p>
+<p>Priority : 512</p>
+<p>Destination IP : 10.0.0.0-10.255.255.255,25.0.0.0-25.0.255.255,25.4.0.0-25.7.255.255,25.28.0.0-25.31.255.255,25.33.80.0-25.33.95.255,25.41.3.0-25.41.3.127,25.142.0.0-25.143.255.255,25.128.0.0-25.131.255.255,25.144.0.0-25.159.255.255,25.224.0.0-25.239.255.255,25.244.0.0-25.247.255.255,25.248.0.0-25.255.255.255,25.192.0.0-25.223.255.255,25.160.0.0-25.191.255.255,25.64.0.0-25.127.255.255,40.72.193.0-40.72.193.255,40.126.88.64-40.126.88.79,40.126.88.144-40.126.88.159,40.126.88.160-40.126.88.175,42.159.140.0-42.159.140.63,42.159.208.64-42.159.208.127,100.64.0.0-100.127.255.255,139.217.160.32-139.217.160.47,169.254.0.0-169.254.255.255,224.0.0.0-239.255.255.255</p>
+<p>Source IP : 10.218.40.48</p>
+<p>Flow TTL: 240</p>
+<p>MSS delta: 20,0</p>
+<p>Transport:Ignore MSSDelta:20</p>
+<p>LAYER : SLB_DECAP_LAYER_STATEFUL</p>
+<p>Friendly name : SLB_DECAP_LAYER_STATEFUL</p>
+<p>Priority : 100</p>
+<p>LAYER : VNET_SDN_OFFLOAD_LAYER_STATELESS</p>
+<p>Friendly name : VNET_SDN_OFFLOAD_LAYER_STATELESS</p>
+<p>RULE : DEFAULT_ALLOW_SDN_OFFLOAD_OUT</p>
+<p>Friendly name : DEFAULT_ALLOW_SDN_OFFLOAD_OUT</p>
+<p>LAYER : VFP_NEXT_HOP_MAC_LOOKUP_LAYER_STATELESS</p>
+<p>Friendly name : VFP_NEXT_HOP_MAC_LOOKUP_LAYER_STATELESS</p>
+<p>RULE : MAC_LOOKUP_OUTGOING_IPV4_RULE</p>
+<p>Friendly name : MAC_LOOKUP_OUTGOING_IPV4_RULE</p>
+<p>Type : paroute</p>
+<p>Rule Data:</p>
+<p>Using default compartment</p>
+<p>Cache pruning threshold: 1</p>
+<p>Cache pruning timeout: 30 seconds</p>
+<p>Eth:Modify(DMAC:E4-1D-2D-F9-FE-64)</p>
+<p>IP:Modify()</p>
+<p>FINAL TRANSPOSITION :</p>
+<p>TUPLES PROCESSING COMPLETE</p>
+<p>==========================</p>
+<p>Command process-tuples succeeded!</p>
+<p>结论:</p>
+<p>•        正常VM（以实验VM为例，内网IP地址为10.0.1.4）</p>
+<p>o        Src: 10.0.1.4 -&gt; Dst: 168.63.129.16</p>
+<p>o        数据包经过宿主机(Node)转发 ，源和目的IP地址会被NAT成Src: VM Platform IP -&gt; Dst: Node IP</p>
+<p>•        问题VM （内网IP地址10.1.0.4)</p>
+<p>o        Src: 10.1.0.4 -&gt; Dst: 168.63.129.16</p>
+<p>o        数据包经过宿主机(Node) 转发，源和目的IP地址会被NAT成Src: VM Public IP, Dst: Node IP</p>
+<p>168.63.129.16为Node内部地址，将源地址NAT成VM公网IP地址是不符合预期的，我们查看了多台正常VM宿主机上的规则，可以看到在访问168.63.129.16时，源地址均被NAT成了VM Platform IP而非VM Public IP。</p>
+<p>因此目前看起来问题是VM调度到该Node上时，宿主机上该VM的规则没有被正确program导致，最终用户确认，通过进行Redploy，VM重新调度并重新部署规则恢复正常。</p></article>

@@ -1,0 +1,96 @@
+<article class="kb-article" data-title="【Share】存储账户TLS升级1.2，SQL Server备份报错"><h1>【Share】存储账户TLS升级1.2，SQL Server备份报错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-15 11:16:38</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>存储账户 TLS 升级1.2后，SQLserver 的备份文件上传报错</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>存储账户 TLS 升级1.2后，SQLserver 的备份文件上传报错</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>存储账户： sapdevstore 容器：sapbackup</li>
+</ul>
+<ul>
+<li>客户端：Windows server 2012 SQLserver 2012SP4</li>
+</ul>
+<ul>
+<li>Msg 3271, Level 16, State 1, Line 4</li>
+</ul>
+<ul>
+<li>Msg 3013, Level 16, State 1, Line 4</li>
+</ul>
+<ul>
+<li>BACKUP DATABASE is terminating abnormally.</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>[HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727] &quot;SystemDefaultTlsVersions&quot;=dword:00000001 &quot;SchUseStrongCrypto&quot;=dword:00000001</li>
+</ul>
+<ul>
+<li>[HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319] &quot;SystemDefaultTlsVersions&quot;=dword:00000001 &quot;SchUseStrongCrypto&quot;=dword:00000001</li>
+</ul>
+<ul>
+<li>[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v2.0.50727] &quot;SystemDefaultTlsVersions&quot;=dword:00000001 &quot;SchUseStrongCrypto&quot;=dword:00000001</li>
+</ul>
+<ul>
+<li>[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319] &quot;SystemDefaultTlsVersions&quot;=dword:00000001 &quot;SchUseStrongCrypto&quot;=dword:00000001</li>
+</ul>
+<ul>
+<li>针对 Microsoft SQL Server 的 TLS 1.2 支持 - SQL Server | Microsoft Learn</li>
+</ul>
+<ul>
+<li>按照上面内容添加注册表配置后，SQL Server可以使用TLS 1.2完成备份</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>需要检查Windows客户端TLS配置，和. NETFramework注册表配置</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>A nonrecoverable I/O error occurred on file &quot; <a href="https://sapdevstore.blob.core.chinacloudapi.cn/sapbackup/ECD_Diff_2025_10_26_20_02_52.bak:&quot;" target="_blank" rel="noopener">https://sapdevstore.blob.core.chinacloudapi.cn/sapbackup/ECD_Diff_2025_10_26_20_02_52.bak:&quot;</a> Backup to URL received an exception from the remote endpoint. Exception Message: The remote server returned an error: (400) Bad Request..</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/10</p>
+<p>问题描述：</p>
+<p>=======</p>
+<p>存储账户： sapdevstore 容器：sapbackup</p>
+<p>客户端：Windows server 2012 SQLserver 2012SP4</p>
+<p>存储账户 TLS 升级1.2后，SQLserver 的备份文件上传报错</p>
+<p>Msg 3271, Level 16, State 1, Line 4</p>
+<p>A nonrecoverable I/O error occurred on file &quot; <a href="https://sapdevstore.blob.core.chinacloudapi.cn/sapbackup/ECD_Diff_2025_10_26_20_02_52.bak:&quot;" target="_blank" rel="noopener">https://sapdevstore.blob.core.chinacloudapi.cn/sapbackup/ECD_Diff_2025_10_26_20_02_52.bak:&quot;</a> Backup to URL received an exception from the remote endpoint. Exception Message: The remote server returned an error: (400) Bad Request..</p>
+<p>Msg 3013, Level 16, State 1, Line 4</p>
+<p>BACKUP DATABASE is terminating abnormally.</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>需要检查Windows客户端TLS配置，和. NETFramework注册表配置</p>
+<p>[HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v2.0.50727] &quot;SystemDefaultTlsVersions&quot;=dword:00000001 &quot;SchUseStrongCrypto&quot;=dword:00000001</p>
+<p>[HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\.NETFramework\v4.0.30319] &quot;SystemDefaultTlsVersions&quot;=dword:00000001 &quot;SchUseStrongCrypto&quot;=dword:00000001</p>
+<p>[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v2.0.50727] &quot;SystemDefaultTlsVersions&quot;=dword:00000001 &quot;SchUseStrongCrypto&quot;=dword:00000001</p>
+<p>[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework\v4.0.30319] &quot;SystemDefaultTlsVersions&quot;=dword:00000001 &quot;SchUseStrongCrypto&quot;=dword:00000001</p>
+<p>针对 Microsoft SQL Server 的 TLS 1.2 支持 - SQL Server | Microsoft Learn</p>
+<p>按照上面内容添加注册表配置后，SQL Server可以使用TLS 1.2完成备份</p></article>

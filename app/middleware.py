@@ -40,7 +40,7 @@ from fastapi.responses import RedirectResponse, JSONResponse as GateJSON
 
 async def login_gate_middleware(request: Request, call_next):
     """Require authentication for all non-public paths."""
-    PUBLIC = ["/login", "/api/auth/login", "/api/auth/status", "/api/health", "/static/"]
+    PUBLIC = ["/login", "/api/auth/login", "/api/auth/status", "/api/health", "/api/kb/", "/static/"]
     path = request.url.path
     if any(path.startswith(p) for p in PUBLIC):
         return await call_next(request)

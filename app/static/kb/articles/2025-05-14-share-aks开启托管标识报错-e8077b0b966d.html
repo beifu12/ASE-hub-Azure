@@ -1,0 +1,138 @@
+<article class="kb-article" data-title="【share】aks开启托管标识报错"><h1>【share】aks开启托管标识报错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-05-14 11:25:31</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>The command failed with an unexpected error. Here is the traceback:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>The command failed with an unexpected error. Here is the traceback:</li>
+</ul>
+<ul>
+<li>AttributeError: module &#39;azure.core.pipeline.policies&#39; has no attribute &#39;SensitiveHeaderCleanupPolicy&#39;</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>lvfengnan</li>
+</ul>
+<ul>
+<li>升级az cli 到最新版本 az upgrade，移除该extension  az extension remove --name aks-preview</li>
+</ul>
+<ul>
+<li>The behavior of this command has been altered by the following extension: aks-preview</li>
+</ul>
+<ul>
+<li>module &#39;azure.core.pipeline.policies&#39; has no attribute &#39;SensitiveHeaderCleanupPolicy&#39;</li>
+</ul>
+<ul>
+<li>Traceback (most recent call last):</li>
+</ul>
+<ul>
+<li>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\knack/cli.py&quot;, line 233, in invoke</li>
+</ul>
+<ul>
+<li>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/__init__.py&quot;, line 663, in execute</li>
+</ul>
+<ul>
+<li>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/__init__.py&quot;, line 726, in _run_jobs_serially</li>
+</ul>
+<ul>
+<li>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/__init__.py&quot;, line 697, in _run_job</li>
+</ul>
+<ul>
+<li>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/__init__.py&quot;, line 333, in __call__</li>
+</ul>
+<ul>
+<li>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/command_operation.py&quot;, line 112, in handler</li>
+</ul>
+<ul>
+<li>File &quot;C:\Users\zbin\.azure\cliextensions\aks-preview\azext_aks_preview\_client_factory.py&quot;, line 31, in cf_managed_clusters</li>
+</ul>
+<ul>
+<li>return get_container_service_client(cli_ctx).managed_clusters</li>
+</ul>
+<ul>
+<li>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</li>
+</ul>
+<ul>
+<li>File &quot;C:\Users\zbin\.azure\cliextensions\aks-preview\azext_aks_preview\_client_factory.py&quot;, line 23, in get_container_service_client</li>
+</ul>
+<ul>
+<li>return get_mgmt_service_client(cli_ctx, CUSTOM_MGMT_AKS_PREVIEW, subscription_id=subscription_id)</li>
+</ul>
+<ul>
+<li>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</li>
+</ul>
+<ul>
+<li>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/client_factory.py&quot;, line 83, in get_mgmt_service_client</li>
+</ul>
+<ul>
+<li>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/client_factory.py&quot;, line 251, in _get_mgmt_service_client</li>
+</ul>
+<ul>
+<li>File &quot;C:\Users\zbin\.azure\cliextensions\aks-preview\azext_aks_preview\vendored_sdks\azure_mgmt_preview_aks\_container_service_client.py&quot;, line 98, in __init__</li>
+</ul>
+<ul>
+<li>policies.SensitiveHeaderCleanupPolicy(**kwargs) if self._config.redirect_policy else None,</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>执行命令报错如下</li>
+</ul>
+<ul>
+<li>az aks update  --resource-group asus-scrm-uat  --name asus-scrm-uat-aks  --enable-managed-identity</li>
+</ul>
+<ul>
+<li>重新执行命令az aks update  --resource-group asus-scrm-uat  --name asus-scrm-uat-aks  --enable-managed-identity</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>原因是老版的extension有bug，升级az并不会升级extension，az upgrade后，移除掉extension，再次执行后会自动安装最新的extension</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>修复办法</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>To check existing issues, please visit: <a href="https://github.com/Azure/azure-cli/issues" target="_blank" rel="noopener">https://github.com/Azure/azure-cli/issues</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>lvfengnan</p>
+<p>执行命令报错如下</p>
+<p>az aks update  --resource-group asus-scrm-uat  --name asus-scrm-uat-aks  --enable-managed-identity</p>
+<p>修复办法</p>
+<p>升级az cli 到最新版本 az upgrade，移除该extension  az extension remove --name aks-preview</p>
+<p>重新执行命令az aks update  --resource-group asus-scrm-uat  --name asus-scrm-uat-aks  --enable-managed-identity</p>
+<p>原因是老版的extension有bug，升级az并不会升级extension，az upgrade后，移除掉extension，再次执行后会自动安装最新的extension</p>
+<p>The behavior of this command has been altered by the following extension: aks-preview</p>
+<p>The command failed with an unexpected error. Here is the traceback:</p>
+<p>module &#39;azure.core.pipeline.policies&#39; has no attribute &#39;SensitiveHeaderCleanupPolicy&#39;</p>
+<p>Traceback (most recent call last):</p>
+<p>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\knack/cli.py&quot;, line 233, in invoke</p>
+<p>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/__init__.py&quot;, line 663, in execute</p>
+<p>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/__init__.py&quot;, line 726, in _run_jobs_serially</p>
+<p>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/__init__.py&quot;, line 697, in _run_job</p>
+<p>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/__init__.py&quot;, line 333, in __call__</p>
+<p>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/command_operation.py&quot;, line 112, in handler</p>
+<p>File &quot;C:\Users\zbin\.azure\cliextensions\aks-preview\azext_aks_preview\_client_factory.py&quot;, line 31, in cf_managed_clusters</p>
+<p>return get_container_service_client(cli_ctx).managed_clusters</p>
+<p>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</p>
+<p>File &quot;C:\Users\zbin\.azure\cliextensions\aks-preview\azext_aks_preview\_client_factory.py&quot;, line 23, in get_container_service_client</p>
+<p>return get_mgmt_service_client(cli_ctx, CUSTOM_MGMT_AKS_PREVIEW, subscription_id=subscription_id)</p>
+<p>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</p>
+<p>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/client_factory.py&quot;, line 83, in get_mgmt_service_client</p>
+<p>File &quot;D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/commands/client_factory.py&quot;, line 251, in _get_mgmt_service_client</p>
+<p>File &quot;C:\Users\zbin\.azure\cliextensions\aks-preview\azext_aks_preview\vendored_sdks\azure_mgmt_preview_aks\_container_service_client.py&quot;, line 98, in __init__</p>
+<p>policies.SensitiveHeaderCleanupPolicy(**kwargs) if self._config.redirect_policy else None,</p>
+<p>AttributeError: module &#39;azure.core.pipeline.policies&#39; has no attribute &#39;SensitiveHeaderCleanupPolicy&#39;</p>
+<p>To check existing issues, please visit: <a href="https://github.com/Azure/azure-cli/issues" target="_blank" rel="noopener">https://github.com/Azure/azure-cli/issues</a></p></article>

@@ -1,0 +1,406 @@
+<article class="kb-article" data-title="Performance"><h1>Performance</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Performance</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-03-10 10:49:04</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>(1) 使用管理员权限打开CMD窗口</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>(1) 使用管理员权限打开CMD窗口</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>(1) 使用管理员权限打开CMD窗口</li>
+</ul>
+<ul>
+<li>(2) 配置Perfmon信息</li>
+</ul>
+<ul>
+<li>黄色高亮部分您可以自行设置。</li>
+</ul>
+<ul>
+<li>(3) 开启Perfmon</li>
+</ul>
+<ul>
+<li>(4) 等待问题复现</li>
+</ul>
+<ul>
+<li>(5) 停止Perfmon</li>
+</ul>
+<ul>
+<li>Avg. Disk Queue Length 这一段</li>
+</ul>
+<ul>
+<li>Podnet | IcM 31165688 | Sev 3 | VM visit slowly (SR_2017020971625)</li>
+</ul>
+<ul>
+<li>Update customer’s further feedback info as follow:</li>
+</ul>
+<ul>
+<li>被SYN网络包攻击的时候，VM直接登陆不了。</li>
+</ul>
+<ul>
+<li>针对这个问题，</li>
+</ul>
+<ul>
+<li>客户复现问题</li>
+</ul>
+<ul>
+<li>将生成的日志tar包发给我们分析一下。</li>
+</ul>
+<ul>
+<li>如果是其他问题， 我们再就案例继续分析。</li>
+</ul>
+<ul>
+<li>Optimize your Linux VM on Azure</li>
+</ul>
+<ul>
+<li>SR_2017012470357_[MS-LED]应用程序调用虚机缓慢</li>
+</ul>
+<ul>
+<li>/etc/security/limits.conf</li>
+</ul>
+<ul>
+<li>默认：</li>
+</ul>
+<ul>
+<li>* soft nofile 20480</li>
+</ul>
+<ul>
+<li>* hard nofile 20480</li>
+</ul>
+<ul>
+<li>更改后的参数：</li>
+</ul>
+<ul>
+<li>*         hard    nofile      500000</li>
+</ul>
+<ul>
+<li>*         soft    nofile      500000</li>
+</ul>
+<ul>
+<li>root      hard    nofile      500000</li>
+</ul>
+<ul>
+<li>root      soft    nofile      500000</li>
+</ul>
+<ul>
+<li>/etc/security/limits.d/90-nproc.conf</li>
+</ul>
+<ul>
+<li>系统默认参数：</li>
+</ul>
+<ul>
+<li>*          soft    nproc     1024</li>
+</ul>
+<ul>
+<li>root       soft    nproc     unlimited</li>
+</ul>
+<ul>
+<li>修改后的参数：</li>
+</ul>
+<ul>
+<li>*         soft     nproc 65535</li>
+</ul>
+<ul>
+<li>*         hard     nproc 65535</li>
+</ul>
+<ul>
+<li>root      soft     nproc     unlimited</li>
+</ul>
+<ul>
+<li>/etc/sysctl.conf</li>
+</ul>
+<ul>
+<li>客户默认参数：</li>
+</ul>
+<ul>
+<li>net.core.wmem_max = 124928</li>
+</ul>
+<ul>
+<li>net.core.rmem_max = 124928</li>
+</ul>
+<ul>
+<li>net.core.wmem_default = 124928</li>
+</ul>
+<ul>
+<li>net.core.rmem_default = 124928</li>
+</ul>
+<ul>
+<li>net.ipv4.tcp_mem = 10848864     14465152        21697728</li>
+</ul>
+<ul>
+<li>net.ipv4.tcp_wmem = 4096        16384   4194304</li>
+</ul>
+<ul>
+<li>net.ipv4.tcp_rmem = 4096        87380   4194304</li>
+</ul>
+<ul>
+<li>net.core.wmem_max = 67108864</li>
+</ul>
+<ul>
+<li>net.core.rmem_max = 67108864</li>
+</ul>
+<ul>
+<li>net.ipv4.tcp_wmem = 4096        87380   67108864</li>
+</ul>
+<ul>
+<li>net.ipv4.tcp_rmem = 4096        87380   67108864</li>
+</ul>
+<ul>
+<li>Hi ALL,</li>
+</ul>
+<ul>
+<li>1．         配置打开文件数量限制：</li>
+</ul>
+<ul>
+<li>将以下内容添加到 /etc/security/limits.conf</li>
+</ul>
+<ul>
+<li>*         soft     nofile      500000</li>
+</ul>
+<ul>
+<li>root     hard    nofile      500000</li>
+</ul>
+<ul>
+<li>root     soft    nofile      500000</li>
+</ul>
+<ul>
+<li>2． 配置系统和用户的最大进程数限制</li>
+</ul>
+<ul>
+<li>将一下内容添加到/etc/security/limits.d/90-nproc.conf</li>
+</ul>
+<ul>
+<li>*         soft      nproc 65535</li>
+</ul>
+<ul>
+<li>root      hard    nproc     unlimited</li>
+</ul>
+<ul>
+<li>3．配置网络读写缓存区域大小</li>
+</ul>
+<ul>
+<li>编辑/etc/sysctl.conf将下面内存添加进去。并执行sysctl -p</li>
+</ul>
+<ul>
+<li>修改网卡读写缓冲区大小</li>
+</ul>
+<ul>
+<li>修改TCP协议的缓冲区大小</li>
+</ul>
+<ul>
+<li>ulimit -Su</li>
+</ul>
+<ul>
+<li>ulimit -Hu</li>
+</ul>
+<ul>
+<li>查查最大打开文件数量：</li>
+</ul>
+<ul>
+<li>ulimit -Sn</li>
+</ul>
+<ul>
+<li>ulimit -Hn</li>
+</ul>
+<ul>
+<li>另外，根据我们以往的经验，升级到CPU处理速度更快的D v2系列也往往是最直接的提升性能的方式，特别是应用对CPU计算频率有要求的情况。</li>
+</ul>
+<ul>
+<li>[REG:117082516238584] POD-PLAT|SR_2017082505845_[MS-LED]vm问题</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Logman create counter Perf-2Second -f bincirc -max 500 -c &quot;\LogicalDisk(*)\*&quot; &quot;\Memory\*&quot; &quot;\Network Interface(*)\*&quot; &quot;\Paging File(*)\*&quot; &quot;\PhysicalDisk(*)\*&quot; &quot;\Server\*&quot; &quot;\System\*&quot; &quot;\Process(*)\*&quot; &quot;\Processor(*)\*&quot;  &quot;\Cache\*&quot; -si 00:00:02 -o C:\PerfMonLogs\Perf-2Second.blg</li>
+</ul>
+<ul>
+<li>Logman create counter Perf-2Second -f bincirc -max 500 -c &quot;\LogicalDisk(*)\*&quot; &quot;\Memory\*&quot; &quot;\Network Interface(*)\*&quot; &quot;\Paging File(*)\*&quot; &quot;\PhysicalDisk(*)\*&quot; &quot;\Server\*&quot; &quot;\System\*&quot; &quot;\Process(*)\*&quot; &quot;\Processor(*)\*&quot;  &quot;\Cache\*&quot; -si 00:00:02 -o C:\PerfMonLogs\Perf-2Second.blg</li>
+</ul>
+<ul>
+<li>Logman start Perf-2Second</li>
+</ul>
+<ul>
+<li>Logman stop Perf-2Second</li>
+</ul>
+<ul>
+<li>Logman delete Perf-2Second</li>
+</ul>
+<ul>
+<li>不攻击时就看不到” netstat -n | grep :80 | grep SYN | wc –l ；netstat -n | grep :80 | grep tcp | wc –l”数据了。你们看下我的流量就知道了。全是syn攻击 ，而且作为机房，你们要去排查啊。这样流失客户很麻烦。</li>
+</ul>
+<ul>
+<li>客户说”你们看下我的流量就知道了。全是syn攻击 ，而且作为机房，你们要去排查啊”，Networking team已经排查了，客户确实遭到了SYN Floood攻击。</li>
+</ul>
+<ul>
+<li>Linux内核中的net.ipv4.tcp_max_syn_backlog参数决定了SYN_RECV状态队列的数量，一般默认值为128或512或1024（与操作系统或主机硬件有关），即超过这个数量，系统将不再接受新的TCP连接请求。客户受到SYN flood攻击后，建立大量半连接， SYN_RECV队列瞬间就满了（参见客户提供的netstat截图），没办法建立新连接，所以VM无法SSH登陆。</li>
+</ul>
+<ul>
+<li>查看最大用户进程：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在Linux中执行命令&quot;sysctl -a | grep net.ipv4.tcp_max_syn_backlog&quot;或 “sudo cat /proc/sys/net/ipv4/tcp_max_syn_backlog”可以看到 Linux队列的最大半连接容量。我的是128（我的虚机型号A2，系统Ubuntu 16.10），我估计客户的也是128（客户虚机型号A1）。这个默认值对于Web服务器来说是远远不够的，一次简单的SYN攻击就足以将其完全占用。因此，解决该问题最简单的办法就是增大tcp_max_syn_backlog默认值。</li>
+</ul>
+<ul>
+<li>在Linux中执行命令&quot;sysctl -w net.ipv4.tcp_max_syn_backlog=2048&quot;，这样就可以将队列SYN最大半连接数容量值改为2048了。 还可以对net.core.somaxconn（增大完成连接上限），net.ipv4.tcp_synack_retries（减少重传次数），net.ipv4.netfilter.ip_conntrack_tcp_timeout_syn_recv（缩短半连接超时时间）进行调整完成一步优化。另外请保持开启net.ipv4.tcp_syncookies。（网上方法很多）</li>
+</ul>
+<ul>
+<li>下载附件中的脚本到/var/tmp并解压tar -zxvf linux-reports.tar.gz</li>
+</ul>
+<ul>
+<li>执行./linux-reports.sh, 脚本需要root权限来执行同时需要您输入一个15位的case 号（客户随便输入一个）</li>
+</ul>
+<ul>
+<li>第一步和第二步，仅对后续会话进程有效。请通过下面命令看设置是否成功：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>但 “被SYN网络包攻击的时候，VM直接登陆不了”这个问题应*先*请客户自己进行Linux内核参数调优。DDoS清洗机制基本都是阈值触发的，触发阈值后才会进行清洗，所以客户应该先保证自己的主机不是瓶颈。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>----- 请WATS Team与客户沟通，如果客户使用的是tcp_max_syn_backlog默认值，则酌情给予以下建议。</li>
+</ul>
+<ul>
+<li>首先，我们建议用户在执行他的应用程序的过程中收集一下系统的运行状态信息，可以参考如下步骤收集：</li>
+</ul>
+<ul>
+<li>如果瓶颈在内存方面，可以建议用户启动一下swap分区。</li>
+</ul>
+<ul>
+<li>如果瓶颈在存储方面，可以建议用户升级虚拟机到DS系列。</li>
+</ul>
+<ul>
+<li>如果瓶颈在计算方面，可以建议用户升级一下虚拟机到二代虚拟机</li>
+</ul>
+<ul>
+<li>再补充一下原参数与调整后的对比，如果测试下来，对性能有影响，建议将参数（特别是网络部分）的先修改回来，再做其他调整。</li>
+</ul>
+<ul>
+<li>根据我们的沟通，现就客户虚拟机系统配置基本参数调整建议如下：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://blogs.msdn.microsoft.com/ntdebugging/2014/12/09/disk-performance-internals/" target="_blank" rel="noopener">https://blogs.msdn.microsoft.com/ntdebugging/2014/12/09/disk-performance-internals/</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-linux-optimization" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-linux-optimization</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>(1) 使用管理员权限打开CMD窗口</p>
+<p>(2) 配置Perfmon信息</p>
+<p>Logman create counter Perf-2Second -f bincirc -max 500 -c &quot;\LogicalDisk(*)\*&quot; &quot;\Memory\*&quot; &quot;\Network Interface(*)\*&quot; &quot;\Paging File(*)\*&quot; &quot;\PhysicalDisk(*)\*&quot; &quot;\Server\*&quot; &quot;\System\*&quot; &quot;\Process(*)\*&quot; &quot;\Processor(*)\*&quot;  &quot;\Cache\*&quot; -si 00:00:02 -o C:\PerfMonLogs\Perf-2Second.blg</p>
+<p>Logman create counter Perf-2Second -f bincirc -max 500 -c &quot;\LogicalDisk(*)\*&quot; &quot;\Memory\*&quot; &quot;\Network Interface(*)\*&quot; &quot;\Paging File(*)\*&quot; &quot;\PhysicalDisk(*)\*&quot; &quot;\Server\*&quot; &quot;\System\*&quot; &quot;\Process(*)\*&quot; &quot;\Processor(*)\*&quot;  &quot;\Cache\*&quot; -si 00:00:02 -o C:\PerfMonLogs\Perf-2Second.blg</p>
+<p>黄色高亮部分您可以自行设置。</p>
+<p>(3) 开启Perfmon</p>
+<p>Logman start Perf-2Second</p>
+<p>(4) 等待问题复现</p>
+<p>(5) 停止Perfmon</p>
+<p>Logman stop Perf-2Second</p>
+<p>Logman delete Perf-2Second</p>
+<p><a href="https://blogs.msdn.microsoft.com/ntdebugging/2014/12/09/disk-performance-internals/" target="_blank" rel="noopener">https://blogs.msdn.microsoft.com/ntdebugging/2014/12/09/disk-performance-internals/</a></p>
+<p>Avg. Disk Queue Length 这一段</p>
+<p>Podnet | IcM 31165688 | Sev 3 | VM visit slowly (SR_2017020971625)</p>
+<p>Update customer’s further feedback info as follow:</p>
+<p>被SYN网络包攻击的时候，VM直接登陆不了。</p>
+<p>不攻击时就看不到” netstat -n | grep :80 | grep SYN | wc –l ；netstat -n | grep :80 | grep tcp | wc –l”数据了。你们看下我的流量就知道了。全是syn攻击 ，而且作为机房，你们要去排查啊。这样流失客户很麻烦。</p>
+<p>客户说”你们看下我的流量就知道了。全是syn攻击 ，而且作为机房，你们要去排查啊”，Networking team已经排查了，客户确实遭到了SYN Floood攻击。</p>
+<p>但 “被SYN网络包攻击的时候，VM直接登陆不了”这个问题应*先*请客户自己进行Linux内核参数调优。DDoS清洗机制基本都是阈值触发的，触发阈值后才会进行清洗，所以客户应该先保证自己的主机不是瓶颈。</p>
+<p>----- 请WATS Team与客户沟通，如果客户使用的是tcp_max_syn_backlog默认值，则酌情给予以下建议。</p>
+<p>Linux内核中的net.ipv4.tcp_max_syn_backlog参数决定了SYN_RECV状态队列的数量，一般默认值为128或512或1024（与操作系统或主机硬件有关），即超过这个数量，系统将不再接受新的TCP连接请求。客户受到SYN flood攻击后，建立大量半连接， SYN_RECV队列瞬间就满了（参见客户提供的netstat截图），没办法建立新连接，所以VM无法SSH登陆。</p>
+<p>在Linux中执行命令&quot;sysctl -a | grep net.ipv4.tcp_max_syn_backlog&quot;或 “sudo cat /proc/sys/net/ipv4/tcp_max_syn_backlog”可以看到 Linux队列的最大半连接容量。我的是128（我的虚机型号A2，系统Ubuntu 16.10），我估计客户的也是128（客户虚机型号A1）。这个默认值对于Web服务器来说是远远不够的，一次简单的SYN攻击就足以将其完全占用。因此，解决该问题最简单的办法就是增大tcp_max_syn_backlog默认值。</p>
+<p>在Linux中执行命令&quot;sysctl -w net.ipv4.tcp_max_syn_backlog=2048&quot;，这样就可以将队列SYN最大半连接数容量值改为2048了。 还可以对net.core.somaxconn（增大完成连接上限），net.ipv4.tcp_synack_retries（减少重传次数），net.ipv4.netfilter.ip_conntrack_tcp_timeout_syn_recv（缩短半连接超时时间）进行调整完成一步优化。另外请保持开启net.ipv4.tcp_syncookies。（网上方法很多）</p>
+<p>针对这个问题，</p>
+<p>首先，我们建议用户在执行他的应用程序的过程中收集一下系统的运行状态信息，可以参考如下步骤收集：</p>
+<p>下载附件中的脚本到/var/tmp并解压tar -zxvf linux-reports.tar.gz</p>
+<p>执行./linux-reports.sh, 脚本需要root权限来执行同时需要您输入一个15位的case 号（客户随便输入一个）</p>
+<p>客户复现问题</p>
+<p>将生成的日志tar包发给我们分析一下。</p>
+<p>如果瓶颈在内存方面，可以建议用户启动一下swap分区。</p>
+<p>如果瓶颈在存储方面，可以建议用户升级虚拟机到DS系列。</p>
+<p>如果瓶颈在计算方面，可以建议用户升级一下虚拟机到二代虚拟机</p>
+<p>如果是其他问题， 我们再就案例继续分析。</p>
+<p>Optimize your Linux VM on Azure</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-linux-optimization" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-linux-optimization</a></p>
+<p>SR_2017012470357_[MS-LED]应用程序调用虚机缓慢</p>
+<p>再补充一下原参数与调整后的对比，如果测试下来，对性能有影响，建议将参数（特别是网络部分）的先修改回来，再做其他调整。</p>
+<p>/etc/security/limits.conf</p>
+<p>默认：</p>
+<ul>
+<li>soft nofile 20480</li>
+</ul>
+<ul>
+<li>hard nofile 20480</li>
+</ul>
+<p>更改后的参数：</p>
+<ul>
+<li>hard    nofile      500000</li>
+</ul>
+<ul>
+<li>soft    nofile      500000</li>
+</ul>
+<p>root      hard    nofile      500000</p>
+<p>root      soft    nofile      500000</p>
+<p>/etc/security/limits.d/90-nproc.conf</p>
+<p>系统默认参数：</p>
+<ul>
+<li>soft    nproc     1024</li>
+</ul>
+<p>root       soft    nproc     unlimited</p>
+<p>修改后的参数：</p>
+<ul>
+<li>soft     nproc 65535</li>
+</ul>
+<ul>
+<li>hard     nproc 65535</li>
+</ul>
+<p>root      soft     nproc     unlimited</p>
+<p>/etc/sysctl.conf</p>
+<p>客户默认参数：</p>
+<p>net.core.wmem_max = 124928</p>
+<p>net.core.rmem_max = 124928</p>
+<p>net.core.wmem_default = 124928</p>
+<p>net.core.rmem_default = 124928</p>
+<p>net.ipv4.tcp_mem = 10848864     14465152        21697728</p>
+<p>net.ipv4.tcp_wmem = 4096        16384   4194304</p>
+<p>net.ipv4.tcp_rmem = 4096        87380   4194304</p>
+<p>net.core.wmem_max = 67108864</p>
+<p>net.core.rmem_max = 67108864</p>
+<p>net.ipv4.tcp_wmem = 4096        87380   67108864</p>
+<p>net.ipv4.tcp_rmem = 4096        87380   67108864</p>
+<p>Hi ALL,</p>
+<p>根据我们的沟通，现就客户虚拟机系统配置基本参数调整建议如下：</p>
+<p>1．         配置打开文件数量限制：</p>
+<p>将以下内容添加到 /etc/security/limits.conf</p>
+<ul>
+<li>soft     nofile      500000</li>
+</ul>
+<p>root     hard    nofile      500000</p>
+<p>root     soft    nofile      500000</p>
+<p>2． 配置系统和用户的最大进程数限制</p>
+<p>将一下内容添加到/etc/security/limits.d/90-nproc.conf</p>
+<ul>
+<li>soft      nproc 65535</li>
+</ul>
+<p>root      hard    nproc     unlimited</p>
+<p>3．配置网络读写缓存区域大小</p>
+<p>编辑/etc/sysctl.conf将下面内存添加进去。并执行sysctl -p</p>
+<p>修改网卡读写缓冲区大小</p>
+<p>修改TCP协议的缓冲区大小</p>
+<p>第一步和第二步，仅对后续会话进程有效。请通过下面命令看设置是否成功：</p>
+<p>查看最大用户进程：</p>
+<p>ulimit -Su</p>
+<p>ulimit -Hu</p>
+<p>查查最大打开文件数量：</p>
+<p>ulimit -Sn</p>
+<p>ulimit -Hn</p>
+<p>另外，根据我们以往的经验，升级到CPU处理速度更快的D v2系列也往往是最直接的提升性能的方式，特别是应用对CPU计算频率有要求的情况。</p>
+<p>[REG:117082516238584] POD-PLAT|SR_2017082505845_[MS-LED]vm问题</p></article>

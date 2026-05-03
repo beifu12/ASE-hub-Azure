@@ -1,0 +1,123 @@
+<article class="kb-article" data-title="修复系统内部删除omsagent的不能正常链接工作区的一例子（CentOS）"><h1>修复系统内部删除omsagent的不能正常链接工作区的一例子（CentOS）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Performance</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-01-25 09:20:25</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>当在系统内部直接删除omsagent 包后，虚拟机的扩展出现失败的状态。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>当在系统内部直接删除omsagent 包后，虚拟机的扩展出现失败的状态。</li>
+</ul>
+<ul>
+<li>操作超时后虚机活动日志会出现</li>
+</ul>
+<ul>
+<li>但通过这种方法卸载的软件，安装后会有报错提示：</li>
+</ul>
+<ul>
+<li>安装后任然报错，请使用如下方法再进行删除一遍</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang Wenxin</li>
+</ul>
+<ul>
+<li>LA上会长时间出现正在disconnecting的状态。</li>
+</ul>
+<ul>
+<li>测试重新安装</li>
+</ul>
+<ul>
+<li>python -V</li>
+</ul>
+<ul>
+<li>sudo sh ./omsagent-1.13.9-0.universal.x64.sh  --install  -w &lt;workspace id&gt; -s &lt;shared key&gt;  -d opinsights.azure.cn</li>
+</ul>
+<ul>
+<li>安装时可以在LA的如下位置找到工作区id 和Key</li>
+</ul>
+<ul>
+<li>安装之前如果这些软件仍然存在，需要提前卸载</li>
+</ul>
+<ul>
+<li>sudo yum remove omi auoms</li>
+</ul>
+<ul>
+<li>sudo sh ./omsagent-1.13.9-0.universal.x64.sh --remove</li>
+</ul>
+<ul>
+<li>然后在进行安装：</li>
+</ul>
+<ul>
+<li>没有邮件的错误提示</li>
+</ul>
+<ul>
+<li>如果是升级安装可以使用</li>
+</ul>
+<ul>
+<li>sudo sh ./omsagent-1.13.9-0.universal.x64.sh --upgrade  -w &lt;workspace id&gt; -s &lt;shared key&gt;  -d opinsights.azure.cn</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如果这时通过卸载扩展，并在虚拟机的扩展中观察到Transitioning的状态</li>
+</ul>
+<ul>
+<li>首先确认安装的python版本为2</li>
+</ul>
+<ul>
+<li>安装后需要关闭重启虚拟机，再次查看扩展正常</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>下载安装脚本</li>
+</ul>
+<ul>
+<li>通过如下命令安装</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>&quot;statusMessage&quot;: &quot;{\&quot;status\&quot;:\&quot;Failed\&quot;,\&quot;error\&quot;:{\&quot;code\&quot;:\&quot;ResourceOperationFailure\&quot;,\&quot;message\&quot;:\&quot;The resource operation completed with terminal provisioning state &#39;Failed&#39;.\&quot;,\&quot;details\&quot;:[{\&quot;code\&quot;:\&quot;VMExtensionProvisioningTimeout\&quot;,\&quot;message\&quot;:\&quot;Provisioning of VM extension OmsAgentForLinux has timed out. Extension provisioning has taken too long to complete. The extension did not report a message. More information on troubleshooting is available at <a href="https://aka.ms/VMExtensionOMSAgentLinuxTroubleshoot\&quot;}]}}&quot;," target="_blank" rel="noopener">https://aka.ms/VMExtensionOMSAgentLinuxTroubleshoot\&quot;}]}}&quot;,</a></li>
+</ul>
+<ul>
+<li>wget <a href="https://github.com/microsoft/OMS-Agent-for-Linux/releases/download/OMSAgent_v1.13.9-0/omsagent-1.13.9-0.universal.x64.sh" target="_blank" rel="noopener">https://github.com/microsoft/OMS-Agent-for-Linux/releases/download/OMSAgent_v1.13.9-0/omsagent-1.13.9-0.universal.x64.sh</a></li>
+</ul>
+<ul>
+<li>最新的下载地址可以访问： <a href="https://github.com/microsoft/OMS-Agent-for-Linux#azure-install-guide" target="_blank" rel="noopener">https://github.com/microsoft/OMS-Agent-for-Linux#azure-install-guide</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Zhang Wenxin</p>
+<p>当在系统内部直接删除omsagent 包后，虚拟机的扩展出现失败的状态。</p>
+<p>如果这时通过卸载扩展，并在虚拟机的扩展中观察到Transitioning的状态</p>
+<p>LA上会长时间出现正在disconnecting的状态。</p>
+<p>操作超时后虚机活动日志会出现</p>
+<p>&quot;statusMessage&quot;: &quot;{\&quot;status\&quot;:\&quot;Failed\&quot;,\&quot;error\&quot;:{\&quot;code\&quot;:\&quot;ResourceOperationFailure\&quot;,\&quot;message\&quot;:\&quot;The resource operation completed with terminal provisioning state &#39;Failed&#39;.\&quot;,\&quot;details\&quot;:[{\&quot;code\&quot;:\&quot;VMExtensionProvisioningTimeout\&quot;,\&quot;message\&quot;:\&quot;Provisioning of VM extension OmsAgentForLinux has timed out. Extension provisioning has taken too long to complete. The extension did not report a message. More information on troubleshooting is available at <a href="https://aka.ms/VMExtensionOMSAgentLinuxTroubleshoot\&quot;}]}}&quot;," target="_blank" rel="noopener">https://aka.ms/VMExtensionOMSAgentLinuxTroubleshoot\&quot;}]}}&quot;,</a></p>
+<p>测试重新安装</p>
+<p>首先确认安装的python版本为2</p>
+<p>python -V</p>
+<p>下载安装脚本</p>
+<p>wget <a href="https://github.com/microsoft/OMS-Agent-for-Linux/releases/download/OMSAgent_v1.13.9-0/omsagent-1.13.9-0.universal.x64.sh" target="_blank" rel="noopener">https://github.com/microsoft/OMS-Agent-for-Linux/releases/download/OMSAgent_v1.13.9-0/omsagent-1.13.9-0.universal.x64.sh</a></p>
+<p>最新的下载地址可以访问： <a href="https://github.com/microsoft/OMS-Agent-for-Linux#azure-install-guide" target="_blank" rel="noopener">https://github.com/microsoft/OMS-Agent-for-Linux#azure-install-guide</a></p>
+<p>通过如下命令安装</p>
+<p>sudo sh ./omsagent-1.13.9-0.universal.x64.sh  --install  -w &lt;workspace id&gt; -s &lt;shared key&gt;  -d opinsights.azure.cn</p>
+<p>安装时可以在LA的如下位置找到工作区id 和Key</p>
+<p>安装之前如果这些软件仍然存在，需要提前卸载</p>
+<p>sudo yum remove omi auoms</p>
+<p>但通过这种方法卸载的软件，安装后会有报错提示：</p>
+<p>安装后任然报错，请使用如下方法再进行删除一遍</p>
+<p>sudo sh ./omsagent-1.13.9-0.universal.x64.sh --remove</p>
+<p>然后在进行安装：</p>
+<p>没有邮件的错误提示</p>
+<p>安装后需要关闭重启虚拟机，再次查看扩展正常</p>
+<p>如果是升级安装可以使用</p>
+<p>sudo sh ./omsagent-1.13.9-0.universal.x64.sh --upgrade  -w &lt;workspace id&gt; -s &lt;shared key&gt;  -d opinsights.azure.cn</p></article>

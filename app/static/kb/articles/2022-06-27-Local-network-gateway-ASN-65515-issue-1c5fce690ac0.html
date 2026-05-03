@@ -1,0 +1,45 @@
+<article class="kb-article" data-title="Local network gateway ASN 65515 issue"><h1>Local network gateway ASN 65515 issue</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-06-27 23:32:58</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>65515为azure保留的ASN,所以本地网络网关中ASN不能配置65515，除非连接的对端为Azure China VWAN VPN（ASN无法修改为其他，只能为65515）；若客户对端为global azure 的VWAN VPN（ASN：65515），此情况下就无法支持。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>65515为azure保留的ASN,所以本地网络网关中ASN不能配置65515，除非连接的对端为Azure China VWAN VPN（ASN无法修改为其他，只能为65515）；若客户对端为global azure 的VWAN VPN（ASN：65515），此情况下就无法支持。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>更多介绍请参考：</li>
+</ul>
+<ul>
+<li>VNG-vWan interconnect across cloud instances would work only if BGP is not configured. Customer can configure static routes on the local network gateway instead to get this working.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>参考工单：2107040010000031/NET/Commvault Software Technology (Beijing) Co., Ltd/SR_20210703106455_[MS-LED]Not able to deploy the Local network gateway - TrackingID#2107040010000031</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>If customer needs to configure BGP for the VNG-vWan connection, then this is not supported in a cross-cloud scenario. This is because we have checks in place to validate the BGP ASN and the LNG IpAddress, and these checks will fail if the vWan is not in the same cloud as the LNG - this is the failure that we have observed when trying to configure VNG-vWan interconnect with BGP below. Unfortunately, there is no workaround for this.</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-08-09</p>
+<p>参考工单：2107040010000031/NET/Commvault Software Technology (Beijing) Co., Ltd/SR_20210703106455_[MS-LED]Not able to deploy the Local network gateway - TrackingID#2107040010000031</p>
+<p>65515为azure保留的ASN,所以本地网络网关中ASN不能配置65515，除非连接的对端为Azure China VWAN VPN（ASN无法修改为其他，只能为65515）；若客户对端为global azure 的VWAN VPN（ASN：65515），此情况下就无法支持。</p>
+<p>更多介绍请参考：</p>
+<p>VNG-vWan interconnect across cloud instances would work only if BGP is not configured. Customer can configure static routes on the local network gateway instead to get this working.</p>
+<p>If customer needs to configure BGP for the VNG-vWan connection, then this is not supported in a cross-cloud scenario. This is because we have checks in place to validate the BGP ASN and the LNG IpAddress, and these checks will fail if the vWan is not in the same cloud as the LNG - this is the failure that we have observed when trying to configure VNG-vWan interconnect with BGP below. Unfortunately, there is no workaround for this.</p></article>

@@ -1,0 +1,183 @@
+<article class="kb-article" data-title="Linux 小技巧，模拟 CPU和内存100%的命令和脚本"><h1>Linux 小技巧，模拟 CPU和内存100%的命令和脚本</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-07-15 15:19:50</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2021年7月15日</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2021年7月15日</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2021年7月15日</li>
+</ul>
+<ul>
+<li>模拟CPU 100%</li>
+</ul>
+<ul>
+<li>for i in <code>seq 1 10</code>; do dd if=/dev/zero of=/dev/null &amp; done</li>
+</ul>
+<ul>
+<li>模拟内存100%：</li>
+</ul>
+<ul>
+<li>[root@centos751 ~]# cat mem.sh</li>
+</ul>
+<ul>
+<li>#!/bin/bash</li>
+</ul>
+<ul>
+<li>################################################################</li>
+</ul>
+<ul>
+<li>#       mem used script</li>
+</ul>
+<ul>
+<li>#       eg. ./mem.sh 60G &amp; to start testing</li>
+</ul>
+<ul>
+<li>#       eg. ./mem.sh stop  to stop testing and clear env</li>
+</ul>
+<ul>
+<li>#       update: 2019-1-22  pansaky</li>
+</ul>
+<ul>
+<li>start()</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>if [ -d /tmp/memory ];then</li>
+</ul>
+<ul>
+<li>else</li>
+</ul>
+<ul>
+<li>sudo mkdir /tmp/memory</li>
+</ul>
+<ul>
+<li>fi</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>stop()</li>
+</ul>
+<ul>
+<li>rm -rf /tmp/memory/block</li>
+</ul>
+<ul>
+<li>umount /tmp/memory</li>
+</ul>
+<ul>
+<li>rmdir /tmp/memory</li>
+</ul>
+<ul>
+<li>echo &quot;clear env is done!&quot;</li>
+</ul>
+<ul>
+<li>main()</li>
+</ul>
+<ul>
+<li>if [ $num == &#39;stop&#39; ];then</li>
+</ul>
+<ul>
+<li>stop</li>
+</ul>
+<ul>
+<li>elif [ $user != &quot;root&quot; ];then</li>
+</ul>
+<ul>
+<li>echo &quot;please use the \&quot;root\&quot; excute script!&quot;</li>
+</ul>
+<ul>
+<li>exit 1</li>
+</ul>
+<ul>
+<li>start</li>
+</ul>
+<ul>
+<li>if [ $# = 2 -o $# = 1 ];then</li>
+</ul>
+<ul>
+<li>main</li>
+</ul>
+<ul>
+<li>echo &#39;Usage: &lt;./mem.sh 60G &amp;&gt; to start  or &lt;./mem.sh stop&gt;  to clear env&#39;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>echo &quot;the dir &quot;/tmp/memory&quot; is already exist!, use it.&quot; &gt;&gt; mem.log</li>
+</ul>
+<ul>
+<li>echo &quot;Do not remove the dir \&quot;/tmp/memory\&quot;, please check &quot;</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>num=$1</li>
+</ul>
+<ul>
+<li>user=root</li>
+</ul>
+<ul>
+<li>mount -t tmpfs -o size=$num tmpfs /tmp/memory</li>
+</ul>
+<ul>
+<li>dd if=/dev/zero of=/tmp/memory/block &gt;&gt; mem.log 2&gt;&amp;1</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021年7月15日</p>
+<p>模拟CPU 100%</p>
+<p>for i in <code>seq 1 10</code>; do dd if=/dev/zero of=/dev/null &amp; done</p>
+<p>模拟内存100%：</p>
+<p>[root@centos751 ~]# cat mem.sh</p>
+<p>#!/bin/bash</p>
+<p>################################################################</p>
+<h1>mem used script</h1>
+<h1>eg. ./mem.sh 60G &amp; to start testing</h1>
+<h1>eg. ./mem.sh stop  to stop testing and clear env</h1>
+<h1>update: 2019-1-22  pansaky</h1>
+<p>num=$1</p>
+<p>user=root</p>
+<p>start()</p>
+<p>{</p>
+<p>if [ -d /tmp/memory ];then</p>
+<p>echo &quot;the dir &quot;/tmp/memory&quot; is already exist!, use it.&quot; &gt;&gt; mem.log</p>
+<p>else</p>
+<p>sudo mkdir /tmp/memory</p>
+<p>mount -t tmpfs -o size=$num tmpfs /tmp/memory</p>
+<p>fi</p>
+<p>dd if=/dev/zero of=/tmp/memory/block &gt;&gt; mem.log 2&gt;&amp;1</p>
+<p>}</p>
+<p>stop()</p>
+<p>rm -rf /tmp/memory/block</p>
+<p>umount /tmp/memory</p>
+<p>rmdir /tmp/memory</p>
+<p>echo &quot;Do not remove the dir \&quot;/tmp/memory\&quot;, please check &quot;</p>
+<p>echo &quot;clear env is done!&quot;</p>
+<p>main()</p>
+<p>if [ $num == &#39;stop&#39; ];then</p>
+<p>stop</p>
+<p>elif [ $user != &quot;root&quot; ];then</p>
+<p>echo &quot;please use the \&quot;root\&quot; excute script!&quot;</p>
+<p>exit 1</p>
+<p>start</p>
+<p>if [ $# = 2 -o $# = 1 ];then</p>
+<p>main</p>
+<p>echo &#39;Usage: &lt;./mem.sh 60G &amp;&gt; to start  or &lt;./mem.sh stop&gt;  to clear env&#39;</p></article>

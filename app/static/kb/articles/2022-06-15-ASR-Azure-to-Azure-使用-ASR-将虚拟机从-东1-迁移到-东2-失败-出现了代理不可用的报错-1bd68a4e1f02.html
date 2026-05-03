@@ -1,0 +1,59 @@
+<article class="kb-article" data-title="ASR Azure to Azure | 使用 ASR 将虚拟机从 东1 迁移到 东2 失败，出现了代理不可用的报错。"><h1>ASR Azure to Azure | 使用 ASR 将虚拟机从 东1 迁移到 东2 失败，出现了代理不可用的报错。</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Site recovery Azure to Azure</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-06-15 11:33:38</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>使用 ASR 将虚拟机从 东1 迁移到 东2 失败，出现了代理不可用的报错。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>使用 ASR 将虚拟机从 东1 迁移到 东2 失败，出现了代理不可用的报错。</li>
+</ul>
+<ul>
+<li>由于代理不可用导致无法创建复制项</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>部分 VM 需先重启以完成移动服务的升级，但是虚拟机重启后未能自动启动 waagent 。之后手动开启了 waagent 服务，并且将其加入自启动服务中。但是随后发现该机器系统盘使用率达到 100%，导致复制不能继续进行。扩容磁盘后，即可实现复制。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>部分 VM 的 waagent 更新/重新安装 后还是无法正常运行。之后在 /var/log/waagent 日志中发现“/usr/bin/openssl: No such file or directory”的报错。通过查看 /usr/bin/ 下 openssl 文件，发现存在一个软链接，并且原有文件被重命名为了 openssl.old。但其实软链接中的 /usr/local/openssl/bin/openssl 文件并不存在。之后恢复了 openssl.old 到 openssl。再次重启 waagent 服务之后，代理状态恢复正常，启用复制即可成功完成。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>部分 VM 通过该链接 <a href="https://docs.microsoft.com/zh-cn/azure/virtual-machines/extensions/update-linux-agent" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-machines/extensions/update-linux-agent</a> （如何更新 VM 上的 Azure Linux 代理） 里面的命令更新 Linux waagent 后即可成功启用复制项。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>问题描述：</p>
+<p>==============</p>
+<p>使用 ASR 将虚拟机从 东1 迁移到 东2 失败，出现了代理不可用的报错。</p>
+<p>问题原因：</p>
+<p>由于代理不可用导致无法创建复制项</p>
+<p>解决方案：</p>
+<p>部分 VM 通过该链接 <a href="https://docs.microsoft.com/zh-cn/azure/virtual-machines/extensions/update-linux-agent" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-machines/extensions/update-linux-agent</a> （如何更新 VM 上的 Azure Linux 代理） 里面的命令更新 Linux waagent 后即可成功启用复制项。</p>
+<p>部分 VM 的 waagent 更新/重新安装 后还是无法正常运行。之后在 /var/log/waagent 日志中发现“/usr/bin/openssl: No such file or directory”的报错。通过查看 /usr/bin/ 下 openssl 文件，发现存在一个软链接，并且原有文件被重命名为了 openssl.old。但其实软链接中的 /usr/local/openssl/bin/openssl 文件并不存在。之后恢复了 openssl.old 到 openssl。再次重启 waagent 服务之后，代理状态恢复正常，启用复制即可成功完成。</p>
+<p>部分 VM 需先重启以完成移动服务的升级，但是虚拟机重启后未能自动启动 waagent 。之后手动开启了 waagent 服务，并且将其加入自启动服务中。但是随后发现该机器系统盘使用率达到 100%，导致复制不能继续进行。扩容磁盘后，即可实现复制。</p></article>

@@ -1,0 +1,71 @@
+<article class="kb-article" data-title="[Share][AAD][B2C]自定义策略用户登录页面提示信息修改为中文"><h1>[Share][AAD][B2C]自定义策略用户登录页面提示信息修改为中文</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-05-18 11:40:09</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>官网相关信息参考文档：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>官网相关信息参考文档：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>官网相关信息参考文档：</li>
+</ul>
+<ul>
+<li>测试结果截图：</li>
+</ul>
+<ul>
+<li>修改自定义策略的扩展文件TrustFrameworkExtensions.xml下面内容</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>测试环境中可以成功修改中文的报错提示信息步骤：</li>
+</ul>
+<ul>
+<li>修改自定义策略TrustFrameworkBase.xml 中TechnicalProfile Id=&quot;login-NonInteractive 部分注释掉 “&lt;Item Key=&quot;grant_type&quot;&gt;password&lt;/Item&gt;”并设置中文提示信息可以成功显示中文</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>根据下面github中解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>在 Azure Active Directory B2C 中使用自定义策略来本地化应用程序的用户界面：<a href="https://docs.azure.cn/zh-cn/active-directory-b2c/custom-policy-localization" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/custom-policy-localization</a></li>
+</ul>
+<ul>
+<li>简体中文语言代码：<a href="https://docs.azure.cn/zh-cn/active-directory-b2c/user-flow-language-customization#supported-languages" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/user-flow-language-customization#supported-languages</a></li>
+</ul>
+<ul>
+<li>本地化：<a href="https://docs.azure.cn/zh-cn/active-directory-b2c/localization" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/localization</a></li>
+</ul>
+<ul>
+<li>github参考资源：<a href="https://github.com/MicrosoftDocs/azure-docs/issues/70538" target="_blank" rel="noopener">https://github.com/MicrosoftDocs/azure-docs/issues/70538</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/MicrosoftDocs/azure-docs/issues/70538" target="_blank" rel="noopener">https://github.com/MicrosoftDocs/azure-docs/issues/70538</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021/05/18</p>
+<p>官网相关信息参考文档：</p>
+<p>在 Azure Active Directory B2C 中使用自定义策略来本地化应用程序的用户界面：<a href="https://docs.azure.cn/zh-cn/active-directory-b2c/custom-policy-localization" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/custom-policy-localization</a></p>
+<p>简体中文语言代码：<a href="https://docs.azure.cn/zh-cn/active-directory-b2c/user-flow-language-customization#supported-languages" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/user-flow-language-customization#supported-languages</a></p>
+<p>本地化：<a href="https://docs.azure.cn/zh-cn/active-directory-b2c/localization" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/localization</a></p>
+<p>github参考资源：<a href="https://github.com/MicrosoftDocs/azure-docs/issues/70538" target="_blank" rel="noopener">https://github.com/MicrosoftDocs/azure-docs/issues/70538</a></p>
+<p>测试环境中可以成功修改中文的报错提示信息步骤：</p>
+<p>测试结果截图：</p>
+<p>修改自定义策略的扩展文件TrustFrameworkExtensions.xml下面内容</p>
+<p>根据下面github中解决方案：</p>
+<p><a href="https://github.com/MicrosoftDocs/azure-docs/issues/70538" target="_blank" rel="noopener">https://github.com/MicrosoftDocs/azure-docs/issues/70538</a></p>
+<p>修改自定义策略TrustFrameworkBase.xml 中TechnicalProfile Id=&quot;login-NonInteractive 部分注释掉 “&lt;Item Key=&quot;grant_type&quot;&gt;password&lt;/Item&gt;”并设置中文提示信息可以成功显示中文</p></article>

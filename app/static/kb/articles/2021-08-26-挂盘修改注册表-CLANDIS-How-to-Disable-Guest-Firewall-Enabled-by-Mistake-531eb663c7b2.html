@@ -1,0 +1,163 @@
+<article class="kb-article" data-title="挂盘修改注册表 CLANDIS: How to Disable Guest Firewall Enabled by Mistake"><h1>挂盘修改注册表 CLANDIS: How to Disable Guest Firewall Enabled by Mistake</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2021-08-26 14:31:39</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>CLANDIS: How to Disable Guest Firewall Enabled by Mistake</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>CLANDIS: How to Disable Guest Firewall Enabled by Mistake</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Modified date &amp; Time</li>
+</ul>
+<ul>
+<li>11/16/2013 12:53 AM</li>
+</ul>
+<ul>
+<li>Azure Component</li>
+</ul>
+<ul>
+<li>VKB Ready</li>
+</ul>
+<ul>
+<li>Internal</li>
+</ul>
+<ul>
+<li>External</li>
+</ul>
+<ul>
+<li>Published to VKB</li>
+</ul>
+<ul>
+<li>Archive</li>
+</ul>
+<ul>
+<li>SUMMARY</li>
+</ul>
+<ul>
+<li>For compliance reasons we are not able to make changes to the guest operating system on customer&#39;s behalf.</li>
+</ul>
+<ul>
+<li>DIAGNOSTICS</li>
+</ul>
+<ul>
+<li>Once the VM is stopped, click Delete, and on the fly-up menu, select Keep the attached disks. This will deprovision the VM, but the disk/VHD file remains as-is with no changes whatsoever.</li>
+</ul>
+<ul>
+<li>Now run Regedit to open the registry and select HKEY_LOCAL_MACHINE</li>
+</ul>
+<ul>
+<li>On the File menu, select Load Hive</li>
+</ul>
+<ul>
+<li>Browse to Windows\system32\config on the attached drive (probably F: ) and choose the SYSTEM file and click Open.</li>
+</ul>
+<ul>
+<li>In the Key Name field, type Repair and click OK.</li>
+</ul>
+<ul>
+<li>HKEY_LOCAL_MACHINE\Repair\ControlSet001\services\SharedAccess\Parameters\FirewallPolicy\PublicProfile</li>
+</ul>
+<ul>
+<li>HKEY_LOCAL_MACHINE\Repair\ControlSet001\services\SharedAccess\Parameters\FirewallPolicy\Standardprofile</li>
+</ul>
+<ul>
+<li>On the left pane, scroll back up to the top, and select the Repair key under HKEY_LOCAL_MACHINE. Then on the File menu, select Unload Hive.</li>
+</ul>
+<ul>
+<li>MORE INFO</li>
+</ul>
+<ul>
+<li>RDP: How to Turn Off Windows Firewall on a VM that was not Accessible via RDP Due to Port Block</li>
+</ul>
+<ul>
+<li>KEYWORDS</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>First create a new VM that you will use to troubleshoot the problem VM. Create this troubleshooting VM in the same cloud service as the problem VM.</li>
+</ul>
+<ul>
+<li>Use a Windows Server 2012 R2 gallery image to create the troubleshooting VM (although any Windows image should work for this).</li>
+</ul>
+<ul>
+<li>In the management portal, go to Virtual Machines, select the problem VM, select Shutdown, and wait for the status to reflect Stopped (Deallocated).</li>
+</ul>
+<ul>
+<li>Once the problem VM is removed (but the disks remain), on the Dashboard of the newly created troubleshooting VM, select Attach Disk, and select the disk for the problem VM.</li>
+</ul>
+<ul>
+<li>After that attach disk operation completes, RDP into the troubleshooting VM, launch the Disk Management tool (diskmgmt.msc), and make sure you see the disk you attached from the problem VM - it will likely be the F: drive.</li>
+</ul>
+<ul>
+<li>In the management portal, on the Dashboard of the troubleshooting VM, select Detach to detach the problem VM’s disk.</li>
+</ul>
+<ul>
+<li>Recreate the problem VM from that same disk by going to New (at the very bottom left of the portal), then Compute, then Virtual Machines, then From Gallery, then select My Disks and select the problem VM’s disk, then provide the remaining details the same way it was created the first time (cloud service, virtual network, etc.).</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>CLANDIS: How to Disable Guest Firewall Enabled by Mistake</li>
+</ul>
+<ul>
+<li>You can use the following steps to disable the Windows guest firewall. You can do this by attaching the OS disk of the problem VM to another VM in Azure so you can edit the registry to disable the firewall so customers can RDP back into it.</li>
+</ul>
+<ul>
+<li>Perform the following steps to temporarily disable the guest firewall so you can RDP to the VM:</li>
+</ul>
+<ul>
+<li>Under HKEY_LOCAL_MACHINE, navigate down to HKEY_LOCAL_MACHINE\Repair\ControlSet001\services\SharedAccess\Parameters\FirewallPolicy\Domainprofile and set EnableFirewall to 0.</li>
+</ul>
+<ul>
+<li>Also set EnableFirewall to 0 in the following locations:</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>CLANDIS: How to Disable Guest Firewall Enabled by Mistake</p>
+<p>Modified date &amp; Time</p>
+<p>11/16/2013 12:53 AM</p>
+<p>Azure Component</p>
+<p>VKB Ready</p>
+<p>Internal</p>
+<p>External</p>
+<p>Published to VKB</p>
+<p>Archive</p>
+<p>SUMMARY</p>
+<p>For compliance reasons we are not able to make changes to the guest operating system on customer&#39;s behalf.</p>
+<p>You can use the following steps to disable the Windows guest firewall. You can do this by attaching the OS disk of the problem VM to another VM in Azure so you can edit the registry to disable the firewall so customers can RDP back into it.</p>
+<p>DIAGNOSTICS</p>
+<p>Perform the following steps to temporarily disable the guest firewall so you can RDP to the VM:</p>
+<p>First create a new VM that you will use to troubleshoot the problem VM. Create this troubleshooting VM in the same cloud service as the problem VM.</p>
+<p>Use a Windows Server 2012 R2 gallery image to create the troubleshooting VM (although any Windows image should work for this).</p>
+<p>In the management portal, go to Virtual Machines, select the problem VM, select Shutdown, and wait for the status to reflect Stopped (Deallocated).</p>
+<p>Once the VM is stopped, click Delete, and on the fly-up menu, select Keep the attached disks. This will deprovision the VM, but the disk/VHD file remains as-is with no changes whatsoever.</p>
+<p>Once the problem VM is removed (but the disks remain), on the Dashboard of the newly created troubleshooting VM, select Attach Disk, and select the disk for the problem VM.</p>
+<p>After that attach disk operation completes, RDP into the troubleshooting VM, launch the Disk Management tool (diskmgmt.msc), and make sure you see the disk you attached from the problem VM - it will likely be the F: drive.</p>
+<p>Now run Regedit to open the registry and select HKEY_LOCAL_MACHINE</p>
+<p>On the File menu, select Load Hive</p>
+<p>Browse to Windows\system32\config on the attached drive (probably F: ) and choose the SYSTEM file and click Open.</p>
+<p>In the Key Name field, type Repair and click OK.</p>
+<p>Under HKEY_LOCAL_MACHINE, navigate down to HKEY_LOCAL_MACHINE\Repair\ControlSet001\services\SharedAccess\Parameters\FirewallPolicy\Domainprofile and set EnableFirewall to 0.</p>
+<p>Also set EnableFirewall to 0 in the following locations:</p>
+<p>HKEY_LOCAL_MACHINE\Repair\ControlSet001\services\SharedAccess\Parameters\FirewallPolicy\PublicProfile</p>
+<p>HKEY_LOCAL_MACHINE\Repair\ControlSet001\services\SharedAccess\Parameters\FirewallPolicy\Standardprofile</p>
+<p>On the left pane, scroll back up to the top, and select the Repair key under HKEY_LOCAL_MACHINE. Then on the File menu, select Unload Hive.</p>
+<p>In the management portal, on the Dashboard of the troubleshooting VM, select Detach to detach the problem VM’s disk.</p>
+<p>Recreate the problem VM from that same disk by going to New (at the very bottom left of the portal), then Compute, then Virtual Machines, then From Gallery, then select My Disks and select the problem VM’s disk, then provide the remaining details the same way it was created the first time (cloud service, virtual network, etc.).</p>
+<p>MORE INFO</p>
+<p>RDP: How to Turn Off Windows Firewall on a VM that was not Accessible via RDP Due to Port Block</p>
+<p>KEYWORDS</p></article>

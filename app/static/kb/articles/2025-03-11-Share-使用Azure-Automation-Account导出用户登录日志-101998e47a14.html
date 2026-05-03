@@ -1,0 +1,84 @@
+<article class="kb-article" data-title="Share | 使用Azure Automation Account导出用户登录日志"><h1>Share | 使用Azure Automation Account导出用户登录日志</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-03-11 19:36:09</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<ul>
+<li>Install-Module -name AzureAdPreview -AllowClobber</li>
+</ul>
+<ul>
+<li>将模块上传到需要使用的Automation Account中：</li>
+</ul>
+<ul>
+<li>在Automation Account中创建一个“Credential”</li>
+</ul>
+<ul>
+<li>+++++++++++++++++++++++++++++</li>
+</ul>
+<ul>
+<li>$StartDate = (Get-Date).AddDays(-1); $StartDate = Get-Date($StartDate) -format yyyy-MM-dd</li>
+</ul>
+<ul>
+<li>$Cred = Get-AutomationPSCredential -Name jxl</li>
+</ul>
+<ul>
+<li>Connect-AzureAD -AzureEnvironmentName AzureChinaCloud -Credential $Cred</li>
+</ul>
+<ul>
+<li>测试上方Runbook:</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在本地Powershell安装AzureADPreview 模块，需要注意的是，如果之前安装过AzureAD模块，需要先将其卸载：</li>
+</ul>
+<ul>
+<li>导航到模块安装位置，通常为“C:\Program Files\WindowsPowerShell\Modules”，找到“AzureADPreview”目录并将其压缩保存为AzureADPreview.zip</li>
+</ul>
+<ul>
+<li>参考下方Runbook脚本，需要替换下Credential的名称：</li>
+</ul>
+<ul>
+<li>Get-AzureADAuditSignInLogs | Where-Object { ($_.AppDisplayName -match &#39;Ibiza Portal&#39;) -and ($_.CreatedDateTime -gt $StartDate)} | select CreatedDateTime, UserPrincipalName, IsInteractive, AppDisplayName, IpAddress, TokenIssuerType, @{Name = &#39;DeviceOS&#39;; Expression = {$_.DeviceDetail.OperatingSystem}}|ft</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Jia.Xiaolei</p>
+<p>在本地Powershell安装AzureADPreview 模块，需要注意的是，如果之前安装过AzureAD模块，需要先将其卸载：</p>
+<p>Install-Module -name AzureAdPreview -AllowClobber</p>
+<p>导航到模块安装位置，通常为“C:\Program Files\WindowsPowerShell\Modules”，找到“AzureADPreview”目录并将其压缩保存为AzureADPreview.zip</p>
+<p>将模块上传到需要使用的Automation Account中：</p>
+<p>在Automation Account中创建一个“Credential”</p>
+<p>参考下方Runbook脚本，需要替换下Credential的名称：</p>
+<p>+++++++++++++++++++++++++++++</p>
+<p>$StartDate = (Get-Date).AddDays(-1); $StartDate = Get-Date($StartDate) -format yyyy-MM-dd</p>
+<p>$Cred = Get-AutomationPSCredential -Name jxl</p>
+<p>Connect-AzureAD -AzureEnvironmentName AzureChinaCloud -Credential $Cred</p>
+<p>Get-AzureADAuditSignInLogs | Where-Object { ($_.AppDisplayName -match &#39;Ibiza Portal&#39;) -and ($_.CreatedDateTime -gt $StartDate)} | select CreatedDateTime, UserPrincipalName, IsInteractive, AppDisplayName, IpAddress, TokenIssuerType, @{Name = &#39;DeviceOS&#39;; Expression = {$_.DeviceDetail.OperatingSystem}}|ft</p>
+<p>测试上方Runbook:</p></article>

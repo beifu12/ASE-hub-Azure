@@ -1,0 +1,297 @@
+<article class="kb-article" data-title="Azure Linux 如何通过ssh 链接"><h1>Azure Linux 如何通过ssh 链接</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-04-28 14:14:19</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>azure linux镜像无法在镜像市场中找到，且为了进一步了解</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>azure linux镜像无法在镜像市场中找到，且为了进一步了解</li>
+</ul>
+<ul>
+<li>Banner /etc/issue.net</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>将aks vmss instance的磁盘导出为快照：</li>
+</ul>
+<ul>
+<li>默认root账号和初始配置的账号密码都不知道，所以需要通过 serial console 配置密码：</li>
+</ul>
+<ul>
+<li>然后ssh默认配置不允许访问：</li>
+</ul>
+<ul>
+<li>PermitUserEnvironment no</li>
+</ul>
+<ul>
+<li>HostbasedAuthentication no</li>
+</ul>
+<ul>
+<li>PermitEmptyPasswords no</li>
+</ul>
+<ul>
+<li># some PAM modules and threads)</li>
+</ul>
+<ul>
+<li>ChallengeResponseAuthentication no</li>
+</ul>
+<ul>
+<li>PasswordAuthentication no</li>
+</ul>
+<ul>
+<li>X11Forwarding no</li>
+</ul>
+<ul>
+<li>#MaxStartups 10:30:60</li>
+</ul>
+<ul>
+<li># Mariner AKS CIS Benchmark: Ensure SSH access is limited</li>
+</ul>
+<ul>
+<li>DenyUsers root omsagent nxautomation</li>
+</ul>
+<ul>
+<li>且系统限制了配置系统用户(小于1000号的用户)：</li>
+</ul>
+<ul>
+<li>root@azurelinux [ ~ ]# yum install httpd</li>
+</ul>
+<ul>
+<li>Refreshing metadata for: &#39;CBL-Mariner Official Extras 2.0 x86_64&#39;</li>
+</ul>
+<ul>
+<li>Refreshing metadata for: &#39;CBL-Mariner Official Nvidia 2.0 x86_64&#39;</li>
+</ul>
+<ul>
+<li>Refreshing metadata for: &#39;CBL-Mariner Official Base 2.0 x86_64&#39;</li>
+</ul>
+<ul>
+<li>Refreshing metadata for: &#39;CBL-Mariner Official Microsoft 2.0 x86_64&#39;</li>
+</ul>
+<ul>
+<li>mariner-official-microsoft               34759 100%</li>
+</ul>
+<ul>
+<li>Installing:</li>
+</ul>
+<ul>
+<li>lua                      x86_64             5.4.4-1.cm2              mariner-official-base 631.78k           239.70k</li>
+</ul>
+<ul>
+<li>httpd                    x86_64             2.4.58-1.cm2             mariner-official-base   4.88M             1.54M</li>
+</ul>
+<ul>
+<li>Total installed size:   5.49M</li>
+</ul>
+<ul>
+<li>Total download size:   1.77M</li>
+</ul>
+<ul>
+<li>Is this ok [y/N]: y</li>
+</ul>
+<ul>
+<li>lua                                     245449 100%</li>
+</ul>
+<ul>
+<li>httpd                                  1611989 100%</li>
+</ul>
+<ul>
+<li>Testing transaction</li>
+</ul>
+<ul>
+<li>Running transaction</li>
+</ul>
+<ul>
+<li>Installing/Updating: lua-5.4.4-1.cm2.x86_64</li>
+</ul>
+<ul>
+<li>Installing/Updating: httpd-2.4.58-1.cm2.x86_64</li>
+</ul>
+<ul>
+<li>useradd warning: apache&#39;s uid 25 outside of the UID_MIN 1000 and UID_MAX 60000 range.</li>
+</ul>
+<ul>
+<li>修改为1后，可以正常添加apache账户：</li>
+</ul>
+<ul>
+<li>之前启动apache服务可以正常运行：</li>
+</ul>
+<ul>
+<li>root@azurelinux [ ~ ]# systemctl status httpd</li>
+</ul>
+<ul>
+<li>* httpd.service - The Apache HTTP Server</li>
+</ul>
+<ul>
+<li>Active: active (running) since Sun 2024-04-28 05:56:24 UTC; 6s ago</li>
+</ul>
+<ul>
+<li>Process: 23741 ExecStart=/usr/sbin/httpd -k start (code=exited, status=0/SUCCESS)</li>
+</ul>
+<ul>
+<li>Main PID: 23742 (httpd)</li>
+</ul>
+<ul>
+<li>Tasks: 82 (limit: 9196)</li>
+</ul>
+<ul>
+<li>Memory: 11.6M</li>
+</ul>
+<ul>
+<li>CPU: 27ms</li>
+</ul>
+<ul>
+<li>CGroup: /system.slice/httpd.service</li>
+</ul>
+<ul>
+<li>|-23742 /usr/sbin/httpd -k start</li>
+</ul>
+<ul>
+<li>|-23743 /usr/sbin/httpd -k start</li>
+</ul>
+<ul>
+<li>|-23744 /usr/sbin/httpd -k start</li>
+</ul>
+<ul>
+<li>`-23745 /usr/sbin/httpd -k start</li>
+</ul>
+<ul>
+<li>Apr 28 05:56:24 azurelinux systemd[1]: Starting The Apache HTTP Server...</li>
+</ul>
+<ul>
+<li>Apr 28 05:56:24 azurelinux systemd[1]: httpd.service: Can&#39;t open PID file /run/httpd/httpd.pid (yet?) after start: Ope&gt;</li>
+</ul>
+<ul>
+<li>Apr 28 05:56:24 azurelinux systemd[1]: Started The Apache HTTP Server.</li>
+</ul>
+<ul>
+<li>总结，azure linux 目前用起来有些不习惯，他很多配置用的是Ubuntu系统的，比如网络使用netplan，但是apt包管理器默认又没有，默认使用的是yum或者dnf（这又是centos惯用的），比较混搭，且针对aks 做了一些优化</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>PermitRootLogin no</li>
+</ul>
+<ul>
+<li>Loaded plugin: tdnfrepogpgcheck</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az snapshot create -g MC_aks_aks1292_chinanorth3 --source $id --name azurelinux-snap</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>id=$(az vmss show -g MC_aks_aks1292_chinanorth3 -n aks-agentpool-10665355-vmss --instance-id 2 --query storageProfile.osDisk.managedDisk.id -o tsv)</li>
+</ul>
+<ul>
+<li># similar for protocol version 2</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li># 5.2.8 Ensure SSH root login is disabled</li>
+</ul>
+<ul>
+<li># 5.2.10 Ensure SSH PermitUserEnvironment is disabled</li>
+</ul>
+<ul>
+<li># To enable empty passwords, change to yes (NOT RECOMMENDED)</li>
+</ul>
+<ul>
+<li># Change to yes to enable challenge-response passwords (beware issues with</li>
+</ul>
+<ul>
+<li># Change to no to disable tunnelled clear text passwords</li>
+</ul>
+<ul>
+<li># 5.2.4 Ensure SSH X11 forwarding is disabled</li>
+</ul>
+<ul>
+<li>需要修改才能支持使用root ssh登录：</li>
+</ul>
+<ul>
+<li>需要修改 /etc/login.defs 配置文件：</li>
+</ul>
+<ul>
+<li>Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; vendor preset: disabled)</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/4/28</p>
+<p>azure linux镜像无法在镜像市场中找到，且为了进一步了解</p>
+<p>将aks vmss instance的磁盘导出为快照：</p>
+<p>id=$(az vmss show -g MC_aks_aks1292_chinanorth3 -n aks-agentpool-10665355-vmss --instance-id 2 --query storageProfile.osDisk.managedDisk.id -o tsv)</p>
+<p>az snapshot create -g MC_aks_aks1292_chinanorth3 --source $id --name azurelinux-snap</p>
+<p>默认root账号和初始配置的账号密码都不知道，所以需要通过 serial console 配置密码：</p>
+<p>然后ssh默认配置不允许访问：</p>
+<h1>5.2.8 Ensure SSH root login is disabled</h1>
+<p>PermitRootLogin no</p>
+<h1>5.2.10 Ensure SSH PermitUserEnvironment is disabled</h1>
+<p>PermitUserEnvironment no</p>
+<h1>similar for protocol version 2</h1>
+<p>HostbasedAuthentication no</p>
+<h1>To enable empty passwords, change to yes (NOT RECOMMENDED)</h1>
+<p>PermitEmptyPasswords no</p>
+<h1>Change to yes to enable challenge-response passwords (beware issues with</h1>
+<h1>some PAM modules and threads)</h1>
+<p>ChallengeResponseAuthentication no</p>
+<h1>Change to no to disable tunnelled clear text passwords</h1>
+<p>PasswordAuthentication no</p>
+<h1>5.2.4 Ensure SSH X11 forwarding is disabled</h1>
+<p>X11Forwarding no</p>
+<p>#MaxStartups 10:30:60</p>
+<p>Banner /etc/issue.net</p>
+<h1>Mariner AKS CIS Benchmark: Ensure SSH access is limited</h1>
+<p>DenyUsers root omsagent nxautomation</p>
+<p>需要修改才能支持使用root ssh登录：</p>
+<p>且系统限制了配置系统用户(小于1000号的用户)：</p>
+<p>root@azurelinux [ ~ ]# yum install httpd</p>
+<p>Loaded plugin: tdnfrepogpgcheck</p>
+<p>Refreshing metadata for: &#39;CBL-Mariner Official Extras 2.0 x86_64&#39;</p>
+<p>Refreshing metadata for: &#39;CBL-Mariner Official Nvidia 2.0 x86_64&#39;</p>
+<p>Refreshing metadata for: &#39;CBL-Mariner Official Base 2.0 x86_64&#39;</p>
+<p>Refreshing metadata for: &#39;CBL-Mariner Official Microsoft 2.0 x86_64&#39;</p>
+<p>mariner-official-microsoft               34759 100%</p>
+<p>Installing:</p>
+<p>lua                      x86_64             5.4.4-1.cm2              mariner-official-base 631.78k           239.70k</p>
+<p>httpd                    x86_64             2.4.58-1.cm2             mariner-official-base   4.88M             1.54M</p>
+<p>Total installed size:   5.49M</p>
+<p>Total download size:   1.77M</p>
+<p>Is this ok [y/N]: y</p>
+<p>lua                                     245449 100%</p>
+<p>httpd                                  1611989 100%</p>
+<p>Testing transaction</p>
+<p>Running transaction</p>
+<p>Installing/Updating: lua-5.4.4-1.cm2.x86_64</p>
+<p>Installing/Updating: httpd-2.4.58-1.cm2.x86_64</p>
+<p>useradd warning: apache&#39;s uid 25 outside of the UID_MIN 1000 and UID_MAX 60000 range.</p>
+<p>需要修改 /etc/login.defs 配置文件：</p>
+<p>修改为1后，可以正常添加apache账户：</p>
+<p>之前启动apache服务可以正常运行：</p>
+<p>root@azurelinux [ ~ ]# systemctl status httpd</p>
+<ul>
+<li>httpd.service - The Apache HTTP Server</li>
+</ul>
+<p>Loaded: loaded (/usr/lib/systemd/system/httpd.service; disabled; vendor preset: disabled)</p>
+<p>Active: active (running) since Sun 2024-04-28 05:56:24 UTC; 6s ago</p>
+<p>Process: 23741 ExecStart=/usr/sbin/httpd -k start (code=exited, status=0/SUCCESS)</p>
+<p>Main PID: 23742 (httpd)</p>
+<p>Tasks: 82 (limit: 9196)</p>
+<p>Memory: 11.6M</p>
+<p>CPU: 27ms</p>
+<p>CGroup: /system.slice/httpd.service</p>
+<p>|-23742 /usr/sbin/httpd -k start</p>
+<p>|-23743 /usr/sbin/httpd -k start</p>
+<p>|-23744 /usr/sbin/httpd -k start</p>
+<p>`-23745 /usr/sbin/httpd -k start</p>
+<p>Apr 28 05:56:24 azurelinux systemd[1]: Starting The Apache HTTP Server...</p>
+<p>Apr 28 05:56:24 azurelinux systemd[1]: httpd.service: Can&#39;t open PID file /run/httpd/httpd.pid (yet?) after start: Ope&gt;</p>
+<p>Apr 28 05:56:24 azurelinux systemd[1]: Started The Apache HTTP Server.</p>
+<p>总结，azure linux 目前用起来有些不习惯，他很多配置用的是Ubuntu系统的，比如网络使用netplan，但是apt包管理器默认又没有，默认使用的是yum或者dnf（这又是centos惯用的），比较混搭，且针对aks 做了一些优化</p></article>

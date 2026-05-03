@@ -1,0 +1,280 @@
+<article class="kb-article" data-title="ModSecurity和OWASP规则区别"><h1>ModSecurity和OWASP规则区别</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-10-12 10:32:07</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>&quot;message&quot;: &quot;Access denied with code 400 (phase 2). Match of \&quot;eq 0\&quot; against \&quot;REQBODY_ERROR\&quot; required. &quot;,</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>&quot;message&quot;: &quot;Access denied with code 400 (phase 2). Match of \&quot;eq 0\&quot; against \&quot;REQBODY_ERROR\&quot; required. &quot;,</li>
+</ul>
+<ul>
+<li>lexical error: invalid char in json text.\\\\x0a</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20200107</li>
+</ul>
+<ul>
+<li>Update: 目前200002可以进行deny了，github的官方提示已关闭。MOdssecurity日志依旧会提示强制规则不能禁用（可忽略该提示）--by wang.guoyuan</li>
+</ul>
+<ul>
+<li>ModSecurity是一个免费、开源的Apache模块，可以充当Web应用防火墙(WAF)。ModSecurity从3.0开始支持nginx，配合nginx的灵活和高效，可以打造成生产级的WAF，是保护和审核web安全的利器。</li>
+</ul>
+<ul>
+<li>ModSecurity/modsecurity.conf-recommended at v3/master · SpiderLabs/ModSecurity (github.com)</li>
+</ul>
+<ul>
+<li>Modsecurity是一个模块引擎</li>
+</ul>
+<ul>
+<li>OWASP CRS规则：</li>
+</ul>
+<ul>
+<li>Rule IDs :: Core Rule Set Documentation</li>
+</ul>
+<ul>
+<li>Embedding ModSecurity – Welcome to netnea</li>
+</ul>
+<ul>
+<li>OWASP ModSecurity Core Rule Set | OWASP Foundation</li>
+</ul>
+<ul>
+<li># The OWASP ModSecurity Core Rule Set (CRS) is a set of generic attack</li>
+</ul>
+<ul>
+<li># detection rules that provide a base level of protection for any web</li>
+</ul>
+<ul>
+<li># application. They are written for the open source, cross-platform</li>
+</ul>
+<ul>
+<li># ModSecurity Web Application Firewall.</li>
+</ul>
+<ul>
+<li>#</li>
+</ul>
+<ul>
+<li># See also:</li>
+</ul>
+<ul>
+<li>Git hub上的介绍：</li>
+</ul>
+<ul>
+<li>不同Rule ID对应的规则集名称：</li>
+</ul>
+<ul>
+<li># == ModSec Rule ID Namespace Definition</li>
+</ul>
+<ul>
+<li># Service-specific before Core Rule Set: 10000 -  49999</li>
+</ul>
+<ul>
+<li># Service-specific after Core Rule Set:  50000 -  79999</li>
+</ul>
+<ul>
+<li># Locally shared rules:                  80000 -  99999</li>
+</ul>
+<ul>
+<li>#  - Performance:                        90000 -  90199</li>
+</ul>
+<ul>
+<li># Recommended ModSec Rules (few):       200000 - 200010</li>
+</ul>
+<ul>
+<li># OWASP Core Rule Set:                  900000 - 999999</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;instanceId&quot;: &quot;appgw_0&quot;,</li>
+</ul>
+<ul>
+<li>&quot;clientIp&quot;: &quot;121.58.144.60&quot;,</li>
+</ul>
+<ul>
+<li>&quot;clientPort&quot;: &quot;&quot;,</li>
+</ul>
+<ul>
+<li>&quot;requestUri&quot;: &quot;/vehicle/openapi/v1/image/upload/vehicleDisplay&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ruleSetType&quot;: &quot;&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ruleSetVersion&quot;: &quot;&quot;,</li>
+</ul>
+<ul>
+<li>&quot;ruleId&quot;: &quot;200002&quot;,</li>
+</ul>
+<ul>
+<li>&quot;action&quot;: &quot;Blocked&quot;,</li>
+</ul>
+<ul>
+<li>&quot;site&quot;: &quot;Global&quot;,</li>
+</ul>
+<ul>
+<li>&quot;details&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;data&quot;: &quot;Multipart: Invalid boundary in C-T (characters).&quot;,</li>
+</ul>
+<ul>
+<li>&quot;file&quot;: &quot;\&quot;/etc/nginx/modsec/default/modsecurity.conf&quot;,</li>
+</ul>
+<ul>
+<li>&quot;line&quot;: &quot;72&quot;</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;hostname&quot;: &quot;openapit.uc.bmw.com.cn&quot;,</li>
+</ul>
+<ul>
+<li>&quot;transactionId&quot;: &quot;AcbcA5AcAcAcAcAcAcAcAcsc&quot;,</li>
+</ul>
+<ul>
+<li>&quot;policyId&quot;: &quot;default&quot;,</li>
+</ul>
+<ul>
+<li>&quot;policyScope&quot;: &quot;Global&quot;,</li>
+</ul>
+<ul>
+<li>&quot;policyScopeName&quot;: &quot;Global&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>====---by guoyuan</li>
+</ul>
+<ul>
+<li>关于200002中JSON 错误：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>ModSecurity的主要功能在于，提供可靠的保护，远离各种网上威胁。它不是将安全重心偏离应用程序，而是增添了全局级别的功能。想对它进行配置，只需为客户机与服务器之间通信的每一个部分用条件和操作来指定规则，这些部分包括请求头、请求主体、响应头和响应主体。因而，ModSecurity可以预防针对Web服务器、PHP、Perl和ASP等解释器以及Web应用程序发动的攻击。</li>
+</ul>
+<ul>
+<li>OWASP是一个安全社区，开发和维护着一套免费的应用程序保护规则，这就是所谓OWASP的ModSecurity的核心规则集(即CRS)。我们可以通过ModSecurity手工创建安全过滤器、定义攻击并实现主动的安全输入验证。</li>
+</ul>
+<ul>
+<li>Azure WAF触发这个规则的记录如下，这条规则是强制的，无法disable，需要客户修改代码：</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;Mandatory rule. Cannot be disabled. Failed to parse request body.&quot;,</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>自己在nginx上配置一遍，就全懂了：<a href="https://blog.csdn.net/xieshaohu/article/details/129560279" target="_blank" rel="noopener">https://blog.csdn.net/xieshaohu/article/details/129560279</a></li>
+</ul>
+<ul>
+<li><a href="https://www.dyxmq.cn/uncategorized/nginx-modsecurity.html" target="_blank" rel="noopener">https://www.dyxmq.cn/uncategorized/nginx-modsecurity.html</a></li>
+</ul>
+<ul>
+<li># <a href="https://coreruleset.org/" target="_blank" rel="noopener">https://coreruleset.org/</a></li>
+</ul>
+<ul>
+<li># <a href="https://github.com/SpiderLabs/owasp-modsecurity-crs" target="_blank" rel="noopener">https://github.com/SpiderLabs/owasp-modsecurity-crs</a></li>
+</ul>
+<ul>
+<li># <a href="https://www.owasp.org/index.php/Category:OWASP_ModSecurity_Core_Rule_Set_Project" target="_blank" rel="noopener">https://www.owasp.org/index.php/Category:OWASP_ModSecurity_Core_Rule_Set_Project</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/SpiderLabs/ModSecurity/blob/v2/master/modsecurity.conf-recommended" target="_blank" rel="noopener">https://github.com/SpiderLabs/ModSecurity/blob/v2/master/modsecurity.conf-recommended</a></li>
+</ul>
+<ul>
+<li><a href="http://www.netnea.com/cms/apache-tutorial-7_including-modsecurity-core-rules/" target="_blank" rel="noopener">http://www.netnea.com/cms/apache-tutorial-7_including-modsecurity-core-rules/</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="http://www.netnea.com/cms/apache-tutorial-7_including-modsecurity-core-rules/&gt;" target="_blank" rel="noopener">http://www.netnea.com/cms/apache-tutorial-7_including-modsecurity-core-rules/&gt;</a></li>
+</ul>
+<ul>
+<li><a href="https://feedback.azure.com/forums/217313-networking/suggestions/33867988-application-gateway-waf-unable-to-disable-ruleid" target="_blank" rel="noopener">https://feedback.azure.com/forums/217313-networking/suggestions/33867988-application-gateway-waf-unable-to-disable-ruleid</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/SpiderLabs/ModSecurity/issues/1967" target="_blank" rel="noopener">https://github.com/SpiderLabs/ModSecurity/issues/1967</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/SpiderLabs/ModSecurity/issues/1964" target="_blank" rel="noopener">https://github.com/SpiderLabs/ModSecurity/issues/1964</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20200107</p>
+<p>自己在nginx上配置一遍，就全懂了：<a href="https://blog.csdn.net/xieshaohu/article/details/129560279" target="_blank" rel="noopener">https://blog.csdn.net/xieshaohu/article/details/129560279</a></p>
+<p>Update: 目前200002可以进行deny了，github的官方提示已关闭。MOdssecurity日志依旧会提示强制规则不能禁用（可忽略该提示）--by wang.guoyuan</p>
+<p><a href="https://www.dyxmq.cn/uncategorized/nginx-modsecurity.html" target="_blank" rel="noopener">https://www.dyxmq.cn/uncategorized/nginx-modsecurity.html</a></p>
+<p>ModSecurity是一个免费、开源的Apache模块，可以充当Web应用防火墙(WAF)。ModSecurity从3.0开始支持nginx，配合nginx的灵活和高效，可以打造成生产级的WAF，是保护和审核web安全的利器。</p>
+<p>ModSecurity的主要功能在于，提供可靠的保护，远离各种网上威胁。它不是将安全重心偏离应用程序，而是增添了全局级别的功能。想对它进行配置，只需为客户机与服务器之间通信的每一个部分用条件和操作来指定规则，这些部分包括请求头、请求主体、响应头和响应主体。因而，ModSecurity可以预防针对Web服务器、PHP、Perl和ASP等解释器以及Web应用程序发动的攻击。</p>
+<p>OWASP是一个安全社区，开发和维护着一套免费的应用程序保护规则，这就是所谓OWASP的ModSecurity的核心规则集(即CRS)。我们可以通过ModSecurity手工创建安全过滤器、定义攻击并实现主动的安全输入验证。</p>
+<p>ModSecurity/modsecurity.conf-recommended at v3/master · SpiderLabs/ModSecurity (github.com)</p>
+<p>Modsecurity是一个模块引擎</p>
+<p>OWASP CRS规则：</p>
+<p>Rule IDs :: Core Rule Set Documentation</p>
+<p>Embedding ModSecurity – Welcome to netnea</p>
+<p>OWASP ModSecurity Core Rule Set | OWASP Foundation</p>
+<h1>The OWASP ModSecurity Core Rule Set (CRS) is a set of generic attack</h1>
+<h1>detection rules that provide a base level of protection for any web</h1>
+<h1>application. They are written for the open source, cross-platform</h1>
+<h1>ModSecurity Web Application Firewall.</h1>
+<p>#</p>
+<h1>See also:</h1>
+<h1><a href="https://coreruleset.org/" target="_blank" rel="noopener">https://coreruleset.org/</a></h1>
+<h1><a href="https://github.com/SpiderLabs/owasp-modsecurity-crs" target="_blank" rel="noopener">https://github.com/SpiderLabs/owasp-modsecurity-crs</a></h1>
+<h1><a href="https://www.owasp.org/index.php/Category:OWASP_ModSecurity_Core_Rule_Set_Project" target="_blank" rel="noopener">https://www.owasp.org/index.php/Category:OWASP_ModSecurity_Core_Rule_Set_Project</a></h1>
+<p>Git hub上的介绍：</p>
+<p><a href="https://github.com/SpiderLabs/ModSecurity/blob/v2/master/modsecurity.conf-recommended" target="_blank" rel="noopener">https://github.com/SpiderLabs/ModSecurity/blob/v2/master/modsecurity.conf-recommended</a></p>
+<p>不同Rule ID对应的规则集名称：</p>
+<p><a href="http://www.netnea.com/cms/apache-tutorial-7_including-modsecurity-core-rules/" target="_blank" rel="noopener">http://www.netnea.com/cms/apache-tutorial-7_including-modsecurity-core-rules/</a></p>
+<h1>== ModSec Rule ID Namespace Definition</h1>
+<h1>Service-specific before Core Rule Set: 10000 -  49999</h1>
+<h1>Service-specific after Core Rule Set:  50000 -  79999</h1>
+<h1>Locally shared rules:                  80000 -  99999</h1>
+<h1>- Performance:                        90000 -  90199</h1>
+<h1>Recommended ModSec Rules (few):       200000 - 200010</h1>
+<h1>OWASP Core Rule Set:                  900000 - 999999</h1>
+<p>From &lt;<a href="http://www.netnea.com/cms/apache-tutorial-7_including-modsecurity-core-rules/&gt;" target="_blank" rel="noopener">http://www.netnea.com/cms/apache-tutorial-7_including-modsecurity-core-rules/&gt;</a></p>
+<p>Azure WAF触发这个规则的记录如下，这条规则是强制的，无法disable，需要客户修改代码：</p>
+<p>{</p>
+<p>&quot;instanceId&quot;: &quot;appgw_0&quot;,</p>
+<p>&quot;clientIp&quot;: &quot;121.58.144.60&quot;,</p>
+<p>&quot;clientPort&quot;: &quot;&quot;,</p>
+<p>&quot;requestUri&quot;: &quot;/vehicle/openapi/v1/image/upload/vehicleDisplay&quot;,</p>
+<p>&quot;ruleSetType&quot;: &quot;&quot;,</p>
+<p>&quot;ruleSetVersion&quot;: &quot;&quot;,</p>
+<p>&quot;ruleId&quot;: &quot;200002&quot;,</p>
+<p>&quot;message&quot;: &quot;Mandatory rule. Cannot be disabled. Failed to parse request body.&quot;,</p>
+<p>&quot;action&quot;: &quot;Blocked&quot;,</p>
+<p>&quot;site&quot;: &quot;Global&quot;,</p>
+<p>&quot;details&quot;: {</p>
+<p>&quot;message&quot;: &quot;Access denied with code 400 (phase 2). Match of \&quot;eq 0\&quot; against \&quot;REQBODY_ERROR\&quot; required. &quot;,</p>
+<p>&quot;data&quot;: &quot;Multipart: Invalid boundary in C-T (characters).&quot;,</p>
+<p>&quot;file&quot;: &quot;\&quot;/etc/nginx/modsec/default/modsecurity.conf&quot;,</p>
+<p>&quot;line&quot;: &quot;72&quot;</p>
+<p>},</p>
+<p>&quot;hostname&quot;: &quot;openapit.uc.bmw.com.cn&quot;,</p>
+<p>&quot;transactionId&quot;: &quot;AcbcA5AcAcAcAcAcAcAcAcsc&quot;,</p>
+<p>&quot;policyId&quot;: &quot;default&quot;,</p>
+<p>&quot;policyScope&quot;: &quot;Global&quot;,</p>
+<p>&quot;policyScopeName&quot;: &quot;Global&quot;</p>
+<p>}</p>
+<p><a href="https://feedback.azure.com/forums/217313-networking/suggestions/33867988-application-gateway-waf-unable-to-disable-ruleid" target="_blank" rel="noopener">https://feedback.azure.com/forums/217313-networking/suggestions/33867988-application-gateway-waf-unable-to-disable-ruleid</a></p>
+<p>====---by guoyuan</p>
+<p>关于200002中JSON 错误：</p>
+<p>lexical error: invalid char in json text.\\\\x0a</p>
+<p><a href="https://github.com/SpiderLabs/ModSecurity/issues/1967" target="_blank" rel="noopener">https://github.com/SpiderLabs/ModSecurity/issues/1967</a></p>
+<p><a href="https://github.com/SpiderLabs/ModSecurity/issues/1964" target="_blank" rel="noopener">https://github.com/SpiderLabs/ModSecurity/issues/1964</a></p></article>

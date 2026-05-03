@@ -1,0 +1,75 @@
+<article class="kb-article" data-title="Blobfuse2挂载Azure blob存储后，无法创建文件夹"><h1>Blobfuse2挂载Azure blob存储后，无法创建文件夹</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-05-29 17:19:31</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户通过Blobfuse2挂载Azure Blob存储后，挂载没有报错，但是创建文件夹时，提示No such file or directory</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户通过Blobfuse2挂载Azure Blob存储后，挂载没有报错，但是创建文件夹时，提示No such file or directory</li>
+</ul>
+<ul>
+<li>$ mkdir: cannot create directory ‘123’: No such file or directory</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<ul>
+<li>##问题描述：</li>
+</ul>
+<ul>
+<li>$ cd /mnt_blob</li>
+</ul>
+<ul>
+<li>$ mkdir 123</li>
+</ul>
+<ul>
+<li>官方文档在blobfuse v1中提到了如果是ADLS account需要添加option --use-adls=true</li>
+</ul>
+<ul>
+<li>测试添加这个选项后，问题解决。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>##问题排查：</li>
+</ul>
+<ul>
+<li>排查发现，客户的存储账号启用了NFSv3，因此开启了分层存储。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>blobbfuse2 mount /mnt_blob --config-file=/etc/blobfuse2.yaml --use-adls=true</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/storage/blobs/storage-how-to-mount-container-linux?tabs=RHEL#mount" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/storage/blobs/storage-how-to-mount-container-linux?tabs=RHEL#mount</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Zhang Lihong</p>
+<p>##问题描述：</p>
+<p>客户通过Blobfuse2挂载Azure Blob存储后，挂载没有报错，但是创建文件夹时，提示No such file or directory</p>
+<p>$ cd /mnt_blob</p>
+<p>$ mkdir 123</p>
+<p>$ mkdir: cannot create directory ‘123’: No such file or directory</p>
+<p>##问题排查：</p>
+<p>排查发现，客户的存储账号启用了NFSv3，因此开启了分层存储。</p>
+<p>官方文档在blobfuse v1中提到了如果是ADLS account需要添加option --use-adls=true</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/storage/blobs/storage-how-to-mount-container-linux?tabs=RHEL#mount" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/storage/blobs/storage-how-to-mount-container-linux?tabs=RHEL#mount</a></p>
+<p>测试添加这个选项后，问题解决。</p>
+<p>blobbfuse2 mount /mnt_blob --config-file=/etc/blobfuse2.yaml --use-adls=true</p></article>

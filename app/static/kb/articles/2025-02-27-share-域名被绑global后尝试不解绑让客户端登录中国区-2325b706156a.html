@@ -1,0 +1,93 @@
+<article class="kb-article" data-title="[share]域名被绑global后尝试不解绑让客户端登录中国区"><h1>[share]域名被绑global后尝试不解绑让客户端登录中国区</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-02-27 10:34:32</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Case :20250226340512</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Case :20250226340512</li>
+</ul>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>登录报错如下：</li>
+</ul>
+<ul>
+<li>目前global申请tenant使用有些问题，不断提示要重新登录还提示自定义域名没权限，所以无法进行域名解绑。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>客户账户登录o365 online正常，但是登录office客户端不正常。但是尝试了其它终端上登录office客户端正常。</li>
+</ul>
+<ul>
+<li>解决方式：</li>
+</ul>
+<ul>
+<li>添加注册表以指向Azure中国区的正确主权云</li>
+</ul>
+<ul>
+<li>·         搜索“运行”，输入Regedit打开注册表</li>
+</ul>
+<ul>
+<li>·         注册表节点 = HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\MSIP</li>
+</ul>
+<ul>
+<li>·         名称 = CloudEnvType</li>
+</ul>
+<ul>
+<li>·         值 = 6（默认值 = 0）</li>
+</ul>
+<ul>
+<li>·      “类型”= REG_DWORD</li>
+</ul>
+<ul>
+<li>最终用户尝试后outlook客户端可以正常登录。以上方式仅是一个尝试渠道，最好还是进行域名解绑。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>进一步检查客户的自定义域名发现绑定了global。</li>
+</ul>
+<ul>
+<li>您可以检查以下部分的注册表配置，如果没有对应的值可以添加一个，然后重启您的电脑。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>WangZhaoqing</p>
+<p>Case :20250226340512</p>
+<p>问题现象：</p>
+<p>客户账户登录o365 online正常，但是登录office客户端不正常。但是尝试了其它终端上登录office客户端正常。</p>
+<p>登录报错如下：</p>
+<p>进一步检查客户的自定义域名发现绑定了global。</p>
+<p>目前global申请tenant使用有些问题，不断提示要重新登录还提示自定义域名没权限，所以无法进行域名解绑。</p>
+<p>解决方式：</p>
+<p>您可以检查以下部分的注册表配置，如果没有对应的值可以添加一个，然后重启您的电脑。</p>
+<p>添加注册表以指向Azure中国区的正确主权云</p>
+<p>·         搜索“运行”，输入Regedit打开注册表</p>
+<p>·         注册表节点 = HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\MSIP</p>
+<p>·         名称 = CloudEnvType</p>
+<p>·         值 = 6（默认值 = 0）</p>
+<p>·      “类型”= REG_DWORD</p>
+<p>最终用户尝试后outlook客户端可以正常登录。以上方式仅是一个尝试渠道，最好还是进行域名解绑。</p></article>

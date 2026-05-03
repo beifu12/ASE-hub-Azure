@@ -1,0 +1,103 @@
+<article class="kb-article" data-title="20230130 关于Ubuntu 6.2 内核 导致Azure虚拟机资源健康状态异常告警的事宜"><h1>20230130 关于Ubuntu 6.2 内核 导致Azure虚拟机资源健康状态异常告警的事宜</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-12-20 10:44:34</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>一直收到虚拟机的资源健康告警，告警多台虚拟机不可用，但是虚拟机的业务运行正常。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>一直收到虚拟机的资源健康告警，告警多台虚拟机不可用，但是虚拟机的业务运行正常。</li>
+</ul>
+<ul>
+<li>虽然虚拟机正常运行，系统内部运行健康状况良好，但是在Azure门户上显示的虚拟机状态为不可用。重新部署虚拟机无法解决此问题。</li>
+</ul>
+<ul>
+<li>We identified this issue is caused due to a recently discovered  bug in Canonical 6.2 kernel which impacts the Platform ID field passed to Hyper-V host during VM start up. This field is used by the host to determine VM health status.  The bug is only present in Canonical / Ubuntu&#39;s 6.2 kernel. Canonical Team is working on a fix and is expected to be available in the coming weeks.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>升级的第一个工单为：SR_20231103260877[MS-LED]/Smart Team Global Software Tech (Shanghai) Co., Ltd./Resource health is unavailable for a month, but the server is running well - TrackingID#2311080010001301</li>
+</ul>
+<ul>
+<li>CSS给出的PG回复为：</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>ubuntu官方说明文档：</li>
+</ul>
+<ul>
+<li>如果需要立即解决问题，可以降级到包含版本5.15内核的linux-azure-lts-22.04软件包，以解决此问题。</li>
+</ul>
+<ul>
+<li>同时，今日与CSS TA开会也讨论了这个问题，他们分享了PG的原文回复如下：</li>
+</ul>
+<ul>
+<li>及VM guest agent workflow：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>近期咱们接到Azure虚拟机资源健康状态异常报警的工单，目前收到客户反馈问题的操作系统都是Ubuntu虚拟机。如果后续有遇到类似问题，可以先查看一下操作系统是否为：Ubuntu 6.2内核的。</li>
+</ul>
+<ul>
+<li>Azure Compute teams have completed the investigation involving Virtual Machine &lt;VMNAME&gt;. The VM Status on the Azure portal shows as Unavailable even though the VM is healthy and running fine.  Redeploying the VM does not fix this issue.</li>
+</ul>
+<ul>
+<li>We apologize for the inconvenience this caused you.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>此问题是由于最近在Ubuntu 6.2内核中发现的一个错误引起的，该错误影响了虚拟机启动期间传递给Hyper-V主机的平台ID字段。该字段由主机用于确定虚拟机的健康状态。该错误仅存在于Canonical / Ubuntu的6.2内核中。Canonical团队正在努力修复，预计将在未来几周内提供修复程序。</li>
+</ul>
+<ul>
+<li>您可以通过uname -r查看的虚拟机使用的内核版本，或者在门户上查看serial console log，vm-java-prod-001使用的内核版本为6.2.0-1012。</li>
+</ul>
+<ul>
+<li>解决方法：</li>
+</ul>
+<ul>
+<li>不过由于暂时没有产生业务影响，建议等待Canonical团队的官方修复。</li>
+</ul>
+<ul>
+<li>Workaround:  If an immediate resolution is needed downgrading to the linux-azure-lts-22.04 package which contains version 5.15 kernel will resolve the issue.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://bugs.launchpad.net/ubuntu/+source/linux/+bug/2036600" target="_blank" rel="noopener">https://bugs.launchpad.net/ubuntu/+source/linux/+bug/2036600</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>近期咱们接到Azure虚拟机资源健康状态异常报警的工单，目前收到客户反馈问题的操作系统都是Ubuntu虚拟机。如果后续有遇到类似问题，可以先查看一下操作系统是否为：Ubuntu 6.2内核的。</p>
+<p>升级的第一个工单为：SR_20231103260877[MS-LED]/Smart Team Global Software Tech (Shanghai) Co., Ltd./Resource health is unavailable for a month, but the server is running well - TrackingID#2311080010001301</p>
+<p>CSS给出的PG回复为：</p>
+<p>问题描述：</p>
+<p>一直收到虚拟机的资源健康告警，告警多台虚拟机不可用，但是虚拟机的业务运行正常。</p>
+<p>虽然虚拟机正常运行，系统内部运行健康状况良好，但是在Azure门户上显示的虚拟机状态为不可用。重新部署虚拟机无法解决此问题。</p>
+<p>问题原因：</p>
+<p>此问题是由于最近在Ubuntu 6.2内核中发现的一个错误引起的，该错误影响了虚拟机启动期间传递给Hyper-V主机的平台ID字段。该字段由主机用于确定虚拟机的健康状态。该错误仅存在于Canonical / Ubuntu的6.2内核中。Canonical团队正在努力修复，预计将在未来几周内提供修复程序。</p>
+<p>ubuntu官方说明文档：</p>
+<p><a href="https://bugs.launchpad.net/ubuntu/+source/linux/+bug/2036600" target="_blank" rel="noopener">https://bugs.launchpad.net/ubuntu/+source/linux/+bug/2036600</a></p>
+<p>您可以通过uname -r查看的虚拟机使用的内核版本，或者在门户上查看serial console log，vm-java-prod-001使用的内核版本为6.2.0-1012。</p>
+<p>解决方法：</p>
+<p>如果需要立即解决问题，可以降级到包含版本5.15内核的linux-azure-lts-22.04软件包，以解决此问题。</p>
+<p>不过由于暂时没有产生业务影响，建议等待Canonical团队的官方修复。</p>
+<p>同时，今日与CSS TA开会也讨论了这个问题，他们分享了PG的原文回复如下：</p>
+<p>Azure Compute teams have completed the investigation involving Virtual Machine &lt;VMNAME&gt;. The VM Status on the Azure portal shows as Unavailable even though the VM is healthy and running fine.  Redeploying the VM does not fix this issue.</p>
+<p>We identified this issue is caused due to a recently discovered  bug in Canonical 6.2 kernel which impacts the Platform ID field passed to Hyper-V host during VM start up. This field is used by the host to determine VM health status.  The bug is only present in Canonical / Ubuntu&#39;s 6.2 kernel. Canonical Team is working on a fix and is expected to be available in the coming weeks.</p>
+<p>Workaround:  If an immediate resolution is needed downgrading to the linux-azure-lts-22.04 package which contains version 5.15 kernel will resolve the issue.</p>
+<p>We apologize for the inconvenience this caused you.</p>
+<p>及VM guest agent workflow：</p></article>

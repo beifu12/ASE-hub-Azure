@@ -1,0 +1,117 @@
+<article class="kb-article" data-title="NC系列GPU VM在任务管理器的性能标签中不显示GPU的问题"><h1>NC系列GPU VM在任务管理器的性能标签中不显示GPU的问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-27 15:48:35</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：SR_20230104206393_新创建的GPU 机型Standard NC6s v3 (6 vcpus, 112 GiB memory)无法识别GPU</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：SR_20230104206393_新创建的GPU 机型Standard NC6s v3 (6 vcpus, 112 GiB memory)无法识别GPU</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>NVIDIA Tesla GPU 在 Windows 环境下可以配置为 Tesla 计算集群（Tesla Compute Cluster，简称 TCC）模式或 Windows 显示驱动模型（Windows Display Driver Model，简称 WDDM）模式。</li>
+</ul>
+<ul>
+<li>两种模式有不同适用场景。</li>
+</ul>
+<ul>
+<li>TCC：该模式下，GPU 完全用于计算，不能作为本地显示输出。</li>
+</ul>
+<ul>
+<li>WDDM：该模式下，GPU 既用于计算又用于本地显示输出。</li>
+</ul>
+<ul>
+<li>在任务管理器的性能标签中显示GPU，需要切换到WDDM模式。</li>
+</ul>
+<ul>
+<li>官方文档中提供是Tesla原生驱动，只支持TCC模式。</li>
+</ul>
+<ul>
+<li>经查找资料，需要安装NVIDIA GRID vGPU驱动才能支持WDDM模式。</li>
+</ul>
+<ul>
+<li>您可以安装下以下文档中的grid系列的驱动。</li>
+</ul>
+<ul>
+<li>我这里测试下来是OK的。我测试的是Win10和Windows Server 2019。</li>
+</ul>
+<ul>
+<li>相关截图如下：</li>
+</ul>
+<ul>
+<li>驱动安装成功：</li>
+</ul>
+<ul>
+<li>切换到TCC，也是可以的，需要重启生效。</li>
+</ul>
+<ul>
+<li>在WDDM模式下，可以看到任务管理器的性能标签中是有GPU的。</li>
+</ul>
+<ul>
+<li>Win10的进程标签里面也是可以看到GPU和GPU engine的情况的。注:我在Windows Server 2019中的进程标签里面没有看到GPU和GPU engine，应该是兼容性的问题。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>切换至 WDDM 模式命令：nvidia-smi -dm 0</li>
+</ul>
+<ul>
+<li>切换至 TCC 模式命令：nvidia-smi -dm 1</li>
+</ul>
+<ul>
+<li>我们尝试运行命令nvidia-smi -dm 0切换到WDDM模式，可以看到是不支持的。</li>
+</ul>
+<ul>
+<li>安装成功后，使用nvidia-smi命令，可以看到已经是WDDM模式了。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>官方文档<a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/n-series-driver-setup" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/n-series-driver-setup</a></li>
+</ul>
+<ul>
+<li>驱动程序<a href="https://us.download.nvidia.com/tesla/451.82/451.82-tesla-desktop-winserver-2019-2016-international.exe" target="_blank" rel="noopener">https://us.download.nvidia.com/tesla/451.82/451.82-tesla-desktop-winserver-2019-2016-international.exe</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/Azure/azhpc-extensions/blob/master/NvidiaGPU/resources.json" target="_blank" rel="noopener">https://github.com/Azure/azhpc-extensions/blob/master/NvidiaGPU/resources.json</a></li>
+</ul>
+<ul>
+<li>比如<a href="https://download.microsoft.com/download/2/a/3/2a316e62-3be9-4ddb-ae8e-c04b6df6e22d/441.66_grid_win10_server2016_server2019_64bit_international.exe" target="_blank" rel="noopener">https://download.microsoft.com/download/2/a/3/2a316e62-3be9-4ddb-ae8e-c04b6df6e22d/441.66_grid_win10_server2016_server2019_64bit_international.exe</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023-01-12</p>
+<p>NVIDIA Tesla GPU 在 Windows 环境下可以配置为 Tesla 计算集群（Tesla Compute Cluster，简称 TCC）模式或 Windows 显示驱动模型（Windows Display Driver Model，简称 WDDM）模式。</p>
+<p>两种模式有不同适用场景。</p>
+<p>TCC：该模式下，GPU 完全用于计算，不能作为本地显示输出。</p>
+<p>WDDM：该模式下，GPU 既用于计算又用于本地显示输出。</p>
+<p>切换至 WDDM 模式命令：nvidia-smi -dm 0</p>
+<p>切换至 TCC 模式命令：nvidia-smi -dm 1</p>
+<p>在任务管理器的性能标签中显示GPU，需要切换到WDDM模式。</p>
+<p>官方文档中提供是Tesla原生驱动，只支持TCC模式。</p>
+<p>官方文档<a href="https://docs.azure.cn/zh-cn/virtual-machines/windows/n-series-driver-setup" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/windows/n-series-driver-setup</a></p>
+<p>驱动程序<a href="https://us.download.nvidia.com/tesla/451.82/451.82-tesla-desktop-winserver-2019-2016-international.exe" target="_blank" rel="noopener">https://us.download.nvidia.com/tesla/451.82/451.82-tesla-desktop-winserver-2019-2016-international.exe</a></p>
+<p>我们尝试运行命令nvidia-smi -dm 0切换到WDDM模式，可以看到是不支持的。</p>
+<p>经查找资料，需要安装NVIDIA GRID vGPU驱动才能支持WDDM模式。</p>
+<p>您可以安装下以下文档中的grid系列的驱动。</p>
+<p><a href="https://github.com/Azure/azhpc-extensions/blob/master/NvidiaGPU/resources.json" target="_blank" rel="noopener">https://github.com/Azure/azhpc-extensions/blob/master/NvidiaGPU/resources.json</a></p>
+<p>比如<a href="https://download.microsoft.com/download/2/a/3/2a316e62-3be9-4ddb-ae8e-c04b6df6e22d/441.66_grid_win10_server2016_server2019_64bit_international.exe" target="_blank" rel="noopener">https://download.microsoft.com/download/2/a/3/2a316e62-3be9-4ddb-ae8e-c04b6df6e22d/441.66_grid_win10_server2016_server2019_64bit_international.exe</a></p>
+<p>我这里测试下来是OK的。我测试的是Win10和Windows Server 2019。</p>
+<p>相关截图如下：</p>
+<p>驱动安装成功：</p>
+<p>安装成功后，使用nvidia-smi命令，可以看到已经是WDDM模式了。</p>
+<p>切换到TCC，也是可以的，需要重启生效。</p>
+<p>在WDDM模式下，可以看到任务管理器的性能标签中是有GPU的。</p>
+<p>Win10的进程标签里面也是可以看到GPU和GPU engine的情况的。注:我在Windows Server 2019中的进程标签里面没有看到GPU和GPU engine，应该是兼容性的问题。</p>
+<p>参考工单：SR_20230104206393_新创建的GPU 机型Standard NC6s v3 (6 vcpus, 112 GiB memory)无法识别GPU</p></article>

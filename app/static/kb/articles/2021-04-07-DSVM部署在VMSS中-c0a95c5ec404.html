@@ -1,0 +1,81 @@
+<article class="kb-article" data-title="DSVM部署在VMSS中"><h1>DSVM部署在VMSS中</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-04-07 17:56:21</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>创建数据科学虚拟机共享池</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>创建数据科学虚拟机共享池</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>创建数据科学虚拟机共享池</li>
+</ul>
+<ul>
+<li>2021年4月7日</li>
+</ul>
+<ul>
+<li>DSVM是科学技术对应的镜像，安装好后就可以提供类似于github的很多运行环境和模板：</li>
+</ul>
+<ul>
+<li>2、通过vmss创建使用dsvm的镜像默认也不能访问：</li>
+</ul>
+<ul>
+<li>实际如果您是通过模板创建的这个vmss，模板中已经定义了这个tcp探测：</li>
+</ul>
+<ul>
+<li>中国区文档，已经修改为对应的中国区配置：</li>
+</ul>
+<ul>
+<li>Nat 规则：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>无法通过load balancer进入jupyterhub界面问题 troubleshooting</li>
+</ul>
+<ul>
+<li>查看具体参数：</li>
+</ul>
+<ul>
+<li>所以如果您直接通过portal创建vmss选择dsvm镜像时，需要自行创建这个探测，和添加LB规则：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>1、 通过虚拟机安装这个镜像和您那里情况一样可以通过公网ip的8000端口访问到jupyterhub：</li>
+</ul>
+<ul>
+<li>修改之后就可以通过LB的公网ip，访问8000端口了：</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案是需要修改tcpprobe：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/machine-learning/data-science-virtual-machine/dsvm-pools" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/machine-learning/data-science-virtual-machine/dsvm-pools</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>创建数据科学虚拟机共享池</p>
+<p>无法通过load balancer进入jupyterhub界面问题 troubleshooting</p>
+<p>2021年4月7日</p>
+<p>DSVM是科学技术对应的镜像，安装好后就可以提供类似于github的很多运行环境和模板：</p>
+<p>1、 通过虚拟机安装这个镜像和您那里情况一样可以通过公网ip的8000端口访问到jupyterhub：</p>
+<p>2、通过vmss创建使用dsvm的镜像默认也不能访问：</p>
+<p>解决方案是需要修改tcpprobe：</p>
+<p>修改之后就可以通过LB的公网ip，访问8000端口了：</p>
+<p>实际如果您是通过模板创建的这个vmss，模板中已经定义了这个tcp探测：</p>
+<p>中国区文档，已经修改为对应的中国区配置：</p>
+<p><a href="https://docs.azure.cn/zh-cn/machine-learning/data-science-virtual-machine/dsvm-pools" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/machine-learning/data-science-virtual-machine/dsvm-pools</a></p>
+<p>查看具体参数：</p>
+<p>所以如果您直接通过portal创建vmss选择dsvm镜像时，需要自行创建这个探测，和添加LB规则：</p>
+<p>Nat 规则：</p></article>

@@ -1,0 +1,119 @@
+<article class="kb-article" data-title="APPGW策略问答"><h1>APPGW策略问答</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: 标准话术</li>
+<li>最近修改: 2024-01-24 01:06:17</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>根据SSL LABS 网站测试结果, TLS1.0,1.1 and 1.2 are supported。目前我认为该测试是在Azure层测试的，需要Azure中关闭TLS1.0,1.1的支持，此issue需要Azure同事支持。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>根据SSL LABS 网站测试结果, TLS1.0,1.1 and 1.2 are supported。目前我认为该测试是在Azure层测试的，需要Azure中关闭TLS1.0,1.1的支持，此issue需要Azure同事支持。</li>
+</ul>
+<ul>
+<li>TLS 64位分组密码生日攻击(CVE-2016-2183)，我认为此应在Azure层TLS中上修改才能完成，此issue需要Azure同事支持。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SSL/TLS Server supports TLSv1.0</li>
+</ul>
+<ul>
+<li>---Azure 应用程序网关支持自定义SSL策略，</li>
+</ul>
+<ul>
+<li>自定义 SSL 策略定义允许你选择以下三种协议之一作为网关的最低 SSL 协议版本：TLSv1_0、TLSv1_1、TLSv1_2。</li>
+</ul>
+<ul>
+<li>如果未定义任何 SSL 策略，这 3 个策略（TLSv1_0、TLSv1_1、TLSv1_2）会全部启用。</li>
+</ul>
+<ul>
+<li>Birthday attacks against TLS ciphers with 64bit block size vulnerability</li>
+</ul>
+<ul>
+<li>UDP Constant IP Identification Field Fingerprinting Vulnerability (does not apply to dev)</li>
+</ul>
+<ul>
+<li>&#39;The UDP implementation in Linux 2.4.x kernels keeps the IP Identification field at 0 for all non-fragmented packets, which could allow remote attackers to determine that a target system is running Linux.&#39;</li>
+</ul>
+<ul>
+<li>---- 如描述该漏洞是关于Linux Kernel 2.4.x 内核的，Application gateway 是部署在Windows Server 内核上的。</li>
+</ul>
+<ul>
+<li>Web Server Internal IP Address/Internal Network Name Disclosure Vulnerability</li>
+</ul>
+<ul>
+<li>我们在后端的Nginx ServerName已设置为具体的域名,并禁止使用 server_tokens(版本号).</li>
+</ul>
+<ul>
+<li>HTTP Security Header Not Detected</li>
+</ul>
+<ul>
+<li>我们在后端的Nginx设置了相应header.</li>
+</ul>
+<ul>
+<li>但是头部： Content-Security-Policy &quot;default-src &#39;self&#39;; script-src &#39;self&#39;;</li>
+</ul>
+<ul>
+<li>经测试不能使用，使用后第三方的script失效（如baidu map script）</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>我认为这个不是安全的bug漏洞。一般在Linux Kernel 2.4.x上出现（好像这个是十年前发布的），目前我们后端的SUSE内核已升级到4.4了。请Azure同事确认。</li>
+</ul>
+<ul>
+<li>请Azure同事确认是否前端也要相应设置。</li>
+</ul>
+<ul>
+<li>请Azure同事确认是否也要做相应设置。</li>
+</ul>
+<ul>
+<li>-------请测试设置相应header后直接访问后端Nginx服务器是否成功；如果可以正常使用，请通过application gateway进行测试，同时在访问端和Nginx 服务器进行抓包，请提供测试Application gateway 信息，分析平台访问和响应日志。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>TLS_RSA_WITH_3DES_EDE_CBC_SHA 存在于TLSv1_0中，可以通过关闭TLS1.0或者配置自定义SSL策略</li>
+</ul>
+<ul>
+<li>----根据查询相关资料，以上结果发生于Http response  301 Moved Permanently, Http 请求重定向。请问Http 请求重定向是通过 配置Application gateway 重定向流量功能实现的，还是通过后端Nginx服务器相关 配置实现的，如果是通过后端Nginx 相关配置实现的，Application gateway 将后端服务器http响应消息转发给请求端，如后端Nginx ServerName已设置为具体的域名，Application gateway转发响应消息中也为域名。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>---参考文档中描述，<a href="https://feedback.azure.com/forums/169385-web-apps/suggestions/11158626-disable-tls1-0，为了防止CVE-2016-2183," target="_blank" rel="noopener">https://feedback.azure.com/forums/169385-web-apps/suggestions/11158626-disable-tls1-0，为了防止CVE-2016-2183,</a> CVE-2016-6329需要移除TLS_RSA_WITH_3DES_EDE_CBC_SHA cipher</li>
+</ul>
+<ul>
+<li>具体请参考文档：<a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-configure-ssl-policy-powershell" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-configure-ssl-policy-powershell</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SSL/TLS Server supports TLSv1.0</p>
+<p>根据SSL LABS 网站测试结果, TLS1.0,1.1 and 1.2 are supported。目前我认为该测试是在Azure层测试的，需要Azure中关闭TLS1.0,1.1的支持，此issue需要Azure同事支持。</p>
+<p>---Azure 应用程序网关支持自定义SSL策略，</p>
+<p>自定义 SSL 策略定义允许你选择以下三种协议之一作为网关的最低 SSL 协议版本：TLSv1_0、TLSv1_1、TLSv1_2。</p>
+<p>如果未定义任何 SSL 策略，这 3 个策略（TLSv1_0、TLSv1_1、TLSv1_2）会全部启用。</p>
+<p>Birthday attacks against TLS ciphers with 64bit block size vulnerability</p>
+<p>TLS 64位分组密码生日攻击(CVE-2016-2183)，我认为此应在Azure层TLS中上修改才能完成，此issue需要Azure同事支持。</p>
+<p>---参考文档中描述，<a href="https://feedback.azure.com/forums/169385-web-apps/suggestions/11158626-disable-tls1-0，为了防止CVE-2016-2183," target="_blank" rel="noopener">https://feedback.azure.com/forums/169385-web-apps/suggestions/11158626-disable-tls1-0，为了防止CVE-2016-2183,</a> CVE-2016-6329需要移除TLS_RSA_WITH_3DES_EDE_CBC_SHA cipher</p>
+<p>TLS_RSA_WITH_3DES_EDE_CBC_SHA 存在于TLSv1_0中，可以通过关闭TLS1.0或者配置自定义SSL策略</p>
+<p>具体请参考文档：<a href="https://docs.azure.cn/zh-cn/application-gateway/application-gateway-configure-ssl-policy-powershell" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/application-gateway/application-gateway-configure-ssl-policy-powershell</a></p>
+<p>UDP Constant IP Identification Field Fingerprinting Vulnerability (does not apply to dev)</p>
+<p>&#39;The UDP implementation in Linux 2.4.x kernels keeps the IP Identification field at 0 for all non-fragmented packets, which could allow remote attackers to determine that a target system is running Linux.&#39;</p>
+<p>我认为这个不是安全的bug漏洞。一般在Linux Kernel 2.4.x上出现（好像这个是十年前发布的），目前我们后端的SUSE内核已升级到4.4了。请Azure同事确认。</p>
+<p>---- 如描述该漏洞是关于Linux Kernel 2.4.x 内核的，Application gateway 是部署在Windows Server 内核上的。</p>
+<p>Web Server Internal IP Address/Internal Network Name Disclosure Vulnerability</p>
+<p>我们在后端的Nginx ServerName已设置为具体的域名,并禁止使用 server_tokens(版本号).</p>
+<p>请Azure同事确认是否前端也要相应设置。</p>
+<p>----根据查询相关资料，以上结果发生于Http response  301 Moved Permanently, Http 请求重定向。请问Http 请求重定向是通过 配置Application gateway 重定向流量功能实现的，还是通过后端Nginx服务器相关 配置实现的，如果是通过后端Nginx 相关配置实现的，Application gateway 将后端服务器http响应消息转发给请求端，如后端Nginx ServerName已设置为具体的域名，Application gateway转发响应消息中也为域名。</p>
+<p>HTTP Security Header Not Detected</p>
+<p>我们在后端的Nginx设置了相应header.</p>
+<p>但是头部： Content-Security-Policy &quot;default-src &#39;self&#39;; script-src &#39;self&#39;;</p>
+<p>经测试不能使用，使用后第三方的script失效（如baidu map script）</p>
+<p>请Azure同事确认是否也要做相应设置。</p>
+<p>-------请测试设置相应header后直接访问后端Nginx服务器是否成功；如果可以正常使用，请通过application gateway进行测试，同时在访问端和Nginx 服务器进行抓包，请提供测试Application gateway 信息，分析平台访问和响应日志。</p></article>

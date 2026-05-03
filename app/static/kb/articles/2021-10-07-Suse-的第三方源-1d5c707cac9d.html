@@ -1,0 +1,137 @@
+<article class="kb-article" data-title="Suse 的第三方源"><h1>Suse 的第三方源</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-10-07 18:31:32</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2015年8月3日</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2015年8月3日</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2015年8月3日</li>
+</ul>
+<ul>
+<li>还可以使用open suse 的源</li>
+</ul>
+<ul>
+<li>我们的后线团队反馈如下：</li>
+</ul>
+<ul>
+<li>suse最新的信息,“azure-update”这个源已经不再被支持了。</li>
+</ul>
+<ul>
+<li>您可以创建一个最近版本的suse 虚拟机，他的源已经改为最新的了。这个方案我已经测试过了，没有问题。</li>
+</ul>
+<ul>
+<li>改变现有的源：</li>
+</ul>
+<ul>
+<li>您可以参考以下链接修改现有的源：</li>
+</ul>
+<ul>
+<li>原版虚拟机中hosts文件中没有新源的解析：    “23.101.3.47     smt-azure.susecloud.net smt-azure “就将这条加入到/etc/hosts中。</li>
+</ul>
+<ul>
+<li>我查了大量的文档也没发现您这种情况，我认为这可能和您使用了我给您的repo文件有关。</li>
+</ul>
+<ul>
+<li>在加了/etc/hosts条目后，明显您可以解析相关域名了。</li>
+</ul>
+<ul>
+<li>请您测试一下用我之前发给您的文档的方式在做一遍。</li>
+</ul>
+<ul>
+<li>您实际只需要把这三个源重新自己添加一遍就可以了。</li>
+</ul>
+<ul>
+<li>我也给您找了一些第三方文档，注意这些不是azure官方提供的文档，仅供您参考。</li>
+</ul>
+<ul>
+<li>文档如下：</li>
+</ul>
+<ul>
+<li>Suse11第三方源：</li>
+</ul>
+<ul>
+<li>手动添加第三方源：</li>
+</ul>
+<ul>
+<li>希望对您有帮助，谢谢！</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>可以查看case号  [MS-LED]zypper 安装 glibc报错(SR_2015073000099)</li>
+</ul>
+<ul>
+<li>由于我没有以前版本的虚拟机，第一种方案没法进行测试，发给您的文档，是suse官方发布的，步骤很详细，您可以先测试一下。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>zipper命令详解：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>两种解决方案：</li>
+</ul>
+<ul>
+<li>我有在我新创建的vm中查找了一下，真正生效的源有三个（enabled=1的），如截图：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>zypper ar <a href="http://ftp.twaren.net/Linux/OpenSuSE/distribution/11.4/repo/oss/" target="_blank" rel="noopener">http://ftp.twaren.net/Linux/OpenSuSE/distribution/11.4/repo/oss/</a> My_OSS_TW1      --这是一个台湾的源</li>
+</ul>
+<ul>
+<li><a href="https://forums.suse.com/showthread.php?5622-New-Update-Infrastructure" target="_blank" rel="noopener">https://forums.suse.com/showthread.php?5622-New-Update-Infrastructure</a></li>
+</ul>
+<ul>
+<li><a href="https://www.suse.com/communities/conversations/suse-update-infrastructure-changes-microsoft-azure/" target="_blank" rel="noopener">https://www.suse.com/communities/conversations/suse-update-infrastructure-changes-microsoft-azure/</a></li>
+</ul>
+<ul>
+<li><a href="http://troy226.blog.51cto.com/333781/577392" target="_blank" rel="noopener">http://troy226.blog.51cto.com/333781/577392</a></li>
+</ul>
+<ul>
+<li><a href="http://www.ha97.com/2718.html" target="_blank" rel="noopener">http://www.ha97.com/2718.html</a></li>
+</ul>
+<ul>
+<li><a href="http://blog.sina.com.cn/s/blog_6594d5d30100um72.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_6594d5d30100um72.html</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2015年8月3日</p>
+<p>zypper ar <a href="http://ftp.twaren.net/Linux/OpenSuSE/distribution/11.4/repo/oss/" target="_blank" rel="noopener">http://ftp.twaren.net/Linux/OpenSuSE/distribution/11.4/repo/oss/</a> My_OSS_TW1      --这是一个台湾的源</p>
+<p>还可以使用open suse 的源</p>
+<p>可以查看case号  [MS-LED]zypper 安装 glibc报错(SR_2015073000099)</p>
+<p>我们的后线团队反馈如下：</p>
+<p>suse最新的信息,“azure-update”这个源已经不再被支持了。</p>
+<p>两种解决方案：</p>
+<p>您可以创建一个最近版本的suse 虚拟机，他的源已经改为最新的了。这个方案我已经测试过了，没有问题。</p>
+<p>改变现有的源：</p>
+<p>您可以参考以下链接修改现有的源：</p>
+<p><a href="https://forums.suse.com/showthread.php?5622-New-Update-Infrastructure" target="_blank" rel="noopener">https://forums.suse.com/showthread.php?5622-New-Update-Infrastructure</a></p>
+<p><a href="https://www.suse.com/communities/conversations/suse-update-infrastructure-changes-microsoft-azure/" target="_blank" rel="noopener">https://www.suse.com/communities/conversations/suse-update-infrastructure-changes-microsoft-azure/</a></p>
+<p>由于我没有以前版本的虚拟机，第一种方案没法进行测试，发给您的文档，是suse官方发布的，步骤很详细，您可以先测试一下。</p>
+<p>原版虚拟机中hosts文件中没有新源的解析：    “23.101.3.47     smt-azure.susecloud.net smt-azure “就将这条加入到/etc/hosts中。</p>
+<p>我查了大量的文档也没发现您这种情况，我认为这可能和您使用了我给您的repo文件有关。</p>
+<p>在加了/etc/hosts条目后，明显您可以解析相关域名了。</p>
+<p>请您测试一下用我之前发给您的文档的方式在做一遍。</p>
+<p>我有在我新创建的vm中查找了一下，真正生效的源有三个（enabled=1的），如截图：</p>
+<p>您实际只需要把这三个源重新自己添加一遍就可以了。</p>
+<p>我也给您找了一些第三方文档，注意这些不是azure官方提供的文档，仅供您参考。</p>
+<p>文档如下：</p>
+<p>Suse11第三方源：</p>
+<p><a href="http://troy226.blog.51cto.com/333781/577392" target="_blank" rel="noopener">http://troy226.blog.51cto.com/333781/577392</a></p>
+<p>zipper命令详解：</p>
+<p><a href="http://www.ha97.com/2718.html" target="_blank" rel="noopener">http://www.ha97.com/2718.html</a></p>
+<p>手动添加第三方源：</p>
+<p><a href="http://blog.sina.com.cn/s/blog_6594d5d30100um72.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_6594d5d30100um72.html</a></p>
+<p>希望对您有帮助，谢谢！</p></article>

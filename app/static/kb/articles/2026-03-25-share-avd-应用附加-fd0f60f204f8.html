@@ -1,0 +1,198 @@
+<article class="kb-article" data-title="【share】avd 应用附加"><h1>【share】avd 应用附加</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: WVD(windows virtual desktop)</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-03-25 17:34:08</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>背景MSIX应用附加要弃用</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>背景MSIX应用附加要弃用</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>背景MSIX应用附加要弃用</li>
+</ul>
+<ul>
+<li>实际上应用附加也是先制作MSIX，而后将MSIX转换为CIM，并由应用附加 发布</li>
+</ul>
+<ul>
+<li>MSXI打包工具环境配置</li>
+</ul>
+<ul>
+<li>在干净的Windows10环境中工作，通过微软应用商店获取该获取 MSIX 打包工具</li>
+</ul>
+<ul>
+<li>打开该工具选择 创建 应用程序包</li>
+</ul>
+<ul>
+<li>打开MSIX打包工具后，选择应用打包，并创建新的包</li>
+</ul>
+<ul>
+<li>等待检测环境后点击下一步，选择需要打包的应用程序</li>
+</ul>
+<ul>
+<li>选择qq</li>
+</ul>
+<ul>
+<li>qq静默安装 /S</li>
+</ul>
+<ul>
+<li>$cert = New-SelfSignedCertificate -CertStoreLocation Cert:\LocalMachine\My -DnsName &#39;yourdomainname&#39; -Type CodeSigningCert -Verbose</li>
+</ul>
+<ul>
+<li>$secPassword = ConvertTo-SecureString -String &#39;yourpassword&#39; -Force -AsPlainText</li>
+</ul>
+<ul>
+<li>$certPath = &quot;Cert:\LocalMachine\My\$($Cert.Thumbprint)&quot;</li>
+</ul>
+<ul>
+<li>Export-PfxCertificate -Cert $certPath -FilePath &#39;C:\temp\CodeSigning.pfx&#39; -Password $secPassword</li>
+</ul>
+<ul>
+<li>输入打包程序的相关信息</li>
+</ul>
+<ul>
+<li>如果是msi安装包，版本，名称信息会自动识别</li>
+</ul>
+<ul>
+<li>下一步后打包程序会调用安装包自动进行安装</li>
+</ul>
+<ul>
+<li>安装完毕</li>
+</ul>
+<ul>
+<li>下一步</li>
+</ul>
+<ul>
+<li>下一步等待打包完成。</li>
+</ul>
+<ul>
+<li>会生成msix后缀的文件</li>
+</ul>
+<ul>
+<li>制作cim</li>
+</ul>
+<ul>
+<li>分配RBAC给avd app</li>
+</ul>
+<ul>
+<li>remove掉objectid不相符的条目</li>
+</ul>
+<ul>
+<li>对这个sp均作以上策略</li>
+</ul>
+<ul>
+<li>由于我测试签名是自签名</li>
+</ul>
+<ul>
+<li>需要在所有的会话主机上安装该签名</li>
+</ul>
+<ul>
+<li>将msix 拷贝到会话主机</li>
+</ul>
+<ul>
+<li>创建可与 Azure 虚拟桌面中的应用附加配合使用的 MSIX 映像 - Azure | Azure Docs</li>
+</ul>
+<ul>
+<li>将生成cim和其他文件上传至 azure file share</li>
+</ul>
+<ul>
+<li>随后可以创建 应用程序附加</li>
+</ul>
+<ul>
+<li>可以选择多个主机池</li>
+</ul>
+<ul>
+<li>后期将app附加到两个不同的avd主机池中</li>
+</ul>
+<ul>
+<li>随后两个不同主机池上的主机登陆后都自动安装了qq</li>
+</ul>
+<ul>
+<li>主机池 avd-aad 会话主机 aadavdvm-0</li>
+</ul>
+<ul>
+<li>主机池 avd-aadnew 会话主机 avd-aad-0</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>测试步骤如下：</li>
+</ul>
+<ul>
+<li>查看properties-digital sig</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>此处需要使用证书验证打包程序，建立证书可以通过如下命令测试自签发证书</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-overview?pivots=app-attach" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-overview?pivots=app-attach</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-setup?tabs=portal&amp;pivots=app-attach" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-setup?tabs=portal&amp;pivots=app-attach</a></li>
+</ul>
+<ul>
+<li><a href="https://apps.microsoft.com/detail/9n5lw3jbcxkf?hl=en-US&amp;gl=US" target="_blank" rel="noopener">https://apps.microsoft.com/detail/9n5lw3jbcxkf?hl=en-US&amp;gl=US</a></li>
+</ul>
+<ul>
+<li>参考 <a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-create-msix-image?tabs=cim" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-create-msix-image?tabs=cim</a></li>
+</ul>
+<ul>
+<li>参考： <a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-test-msix-packages?tabs=posh6%2Ccimfs#install-certificates" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-test-msix-packages?tabs=posh6%2Ccimfs#install-certificates</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>背景MSIX应用附加要弃用</p>
+<p>实际上应用附加也是先制作MSIX，而后将MSIX转换为CIM，并由应用附加 发布</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-overview?pivots=app-attach" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-overview?pivots=app-attach</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-setup?tabs=portal&amp;pivots=app-attach" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-setup?tabs=portal&amp;pivots=app-attach</a></p>
+<p>测试步骤如下：</p>
+<p>MSXI打包工具环境配置</p>
+<p>在干净的Windows10环境中工作，通过微软应用商店获取该获取 MSIX 打包工具</p>
+<p><a href="https://apps.microsoft.com/detail/9n5lw3jbcxkf?hl=en-US&amp;gl=US" target="_blank" rel="noopener">https://apps.microsoft.com/detail/9n5lw3jbcxkf?hl=en-US&amp;gl=US</a></p>
+<p>打开该工具选择 创建 应用程序包</p>
+<p>打开MSIX打包工具后，选择应用打包，并创建新的包</p>
+<p>等待检测环境后点击下一步，选择需要打包的应用程序</p>
+<p>选择qq</p>
+<p>qq静默安装 /S</p>
+<p>此处需要使用证书验证打包程序，建立证书可以通过如下命令测试自签发证书</p>
+<p>$cert = New-SelfSignedCertificate -CertStoreLocation Cert:\LocalMachine\My -DnsName &#39;yourdomainname&#39; -Type CodeSigningCert -Verbose</p>
+<p>$secPassword = ConvertTo-SecureString -String &#39;yourpassword&#39; -Force -AsPlainText</p>
+<p>$certPath = &quot;Cert:\LocalMachine\My\$($Cert.Thumbprint)&quot;</p>
+<p>Export-PfxCertificate -Cert $certPath -FilePath &#39;C:\temp\CodeSigning.pfx&#39; -Password $secPassword</p>
+<p>输入打包程序的相关信息</p>
+<p>如果是msi安装包，版本，名称信息会自动识别</p>
+<p>下一步后打包程序会调用安装包自动进行安装</p>
+<p>安装完毕</p>
+<p>下一步</p>
+<p>下一步等待打包完成。</p>
+<p>会生成msix后缀的文件</p>
+<p>参考 <a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-create-msix-image?tabs=cim" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-create-msix-image?tabs=cim</a></p>
+<p>制作cim</p>
+<p>分配RBAC给avd app</p>
+<p>remove掉objectid不相符的条目</p>
+<p>对这个sp均作以上策略</p>
+<p>由于我测试签名是自签名</p>
+<p>需要在所有的会话主机上安装该签名</p>
+<p>参考： <a href="https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-test-msix-packages?tabs=posh6%2Ccimfs#install-certificates" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-desktop/app-attach-test-msix-packages?tabs=posh6%2Ccimfs#install-certificates</a></p>
+<p>将msix 拷贝到会话主机</p>
+<p>查看properties-digital sig</p>
+<p>创建可与 Azure 虚拟桌面中的应用附加配合使用的 MSIX 映像 - Azure | Azure Docs</p>
+<p>将生成cim和其他文件上传至 azure file share</p>
+<p>随后可以创建 应用程序附加</p>
+<p>可以选择多个主机池</p>
+<p>后期将app附加到两个不同的avd主机池中</p>
+<p>随后两个不同主机池上的主机登陆后都自动安装了qq</p>
+<p>主机池 avd-aad 会话主机 aadavdvm-0</p>
+<p>主机池 avd-aadnew 会话主机 avd-aad-0</p></article>

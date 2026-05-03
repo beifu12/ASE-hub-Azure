@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="【Share】私钥key加密导致nginx启动后无法开启443端口"><h1>【Share】私钥key加密导致nginx启动后无法开启443端口</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-29 10:30:58</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Ticket: 20250411348257</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Ticket: 20250411348257</li>
+</ul>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>AKS nginx挂载了Azure Storage，并且证书是从Storage中加载的。最近更新了nginx的证书，但是服务无法访问了。</li>
+</ul>
+<ul>
+<li>更新证书之后，发现ILB的后端探测都已经失败：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Client – FW(没有管理权限) – WAF – AKS ILB – AKS内的nginx – AKS pod服务</li>
+</ul>
+<ul>
+<li>回滚nginx证书之后，就可以继续访问。</li>
+</ul>
+<ul>
+<li>使用telnet测试后端服务Pod，服务正常。</li>
+</ul>
+<ul>
+<li>登录使用旧证书的nginx pod，发现443在监听：</li>
+</ul>
+<ul>
+<li>登录使用新证书的nginx pod，发现443没有在监听：</li>
+</ul>
+<ul>
+<li>openssl rsa -in your_encrypted_key.key -out your_decrypted_key.key</li>
+</ul>
+<ul>
+<li>小结：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>查看证书私钥key文件发现，发现私钥key是加密的：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>由于Pod内限制较多，无法查看nginx的日志。在尝试使用nginx命令启动服务时，提示输入私钥key的密码。</li>
+</ul>
+<ul>
+<li>使用如下命令解密后，重新上传证书到nginx，重建pod，问题解决：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>使用telnet测试nginx Pod的443端口，不通。</li>
+</ul>
+<ul>
+<li>在碰到nginx服务的端口不监听的时候，确认一下是否是私钥key被加密了。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Ticket: 20250411348257</p>
+<p>问题现象：</p>
+<p>Client – FW(没有管理权限) – WAF – AKS ILB – AKS内的nginx – AKS pod服务</p>
+<p>AKS nginx挂载了Azure Storage，并且证书是从Storage中加载的。最近更新了nginx的证书，但是服务无法访问了。</p>
+<p>回滚nginx证书之后，就可以继续访问。</p>
+<p>排查过程：</p>
+<p>更新证书之后，发现ILB的后端探测都已经失败：</p>
+<p>使用telnet测试后端服务Pod，服务正常。</p>
+<p>使用telnet测试nginx Pod的443端口，不通。</p>
+<p>登录使用旧证书的nginx pod，发现443在监听：</p>
+<p>登录使用新证书的nginx pod，发现443没有在监听：</p>
+<p>由于Pod内限制较多，无法查看nginx的日志。在尝试使用nginx命令启动服务时，提示输入私钥key的密码。</p>
+<p>查看证书私钥key文件发现，发现私钥key是加密的：</p>
+<p>使用如下命令解密后，重新上传证书到nginx，重建pod，问题解决：</p>
+<p>openssl rsa -in your_encrypted_key.key -out your_decrypted_key.key</p>
+<p>小结：</p>
+<p>在碰到nginx服务的端口不监听的时候，确认一下是否是私钥key被加密了。</p></article>

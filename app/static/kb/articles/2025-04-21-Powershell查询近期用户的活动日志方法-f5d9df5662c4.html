@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="Powershell查询近期用户的活动日志方法"><h1>Powershell查询近期用户的活动日志方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-04-21 14:38:00</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>处理工单20250401346447中测试了两个关于Powershell获取活动日志的命令，供大家后续参考。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>处理工单20250401346447中测试了两个关于Powershell获取活动日志的命令，供大家后续参考。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>场景一、获取订阅下哪些用户进行了开关机操作</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>$startDate = (Get-Date).AddDays(-1)</li>
+</ul>
+<ul>
+<li>#Export to CSV File</li>
+</ul>
+<ul>
+<li>场景二、 获取某个用户过去1天在订阅下的活动日志记录并输出到csv文件中。</li>
+</ul>
+<ul>
+<li>$userName = &quot;zuoxiaojing@microsoftinternal.partner.onmschina.cn&quot;</li>
+</ul>
+<ul>
+<li>$startTime = (Get-Date).AddDays(-1)</li>
+</ul>
+<ul>
+<li>$endTime = Get-Date</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>$logs = Get-AzActivityLog -StartTime $startDate</li>
+</ul>
+<ul>
+<li>#Filter specific logs</li>
+</ul>
+<ul>
+<li>$filteredLogs = $logs | Where-Object { $_.Authorization.Action -eq &quot;Microsoft.Compute/virtualMachines/start/action&quot; -or $_.Authorization.Action -eq &quot;Microsoft.Compute/virtualMachines/deallocate/action&quot;}</li>
+</ul>
+<ul>
+<li>$filteredLogs |Select-Object @{Name=&quot;Action&quot;;Expression={$_.Authorization.Action}},ResourceGroupName,ResourceId,Caller,Status | Export-Csv -Path &quot;C:\tmp\AzureActivityLog.csv&quot; -NoTypeInformation -Encoding UTF8</li>
+</ul>
+<ul>
+<li>$activityLogs = Get-AzActivityLog -StartTime $startTime -EndTime $endTime | Where-Object { $_.Caller -eq $userName}</li>
+</ul>
+<ul>
+<li>$activityLogs |Select-Object @{Name=&quot;Action&quot;;Expression={$_.Authorization.Action}},ResourceGroupName,ResourceId,Caller,Status |Export-Csv -Path &quot;C:\tmp\AzureActivityLog.csv&quot; -NoTypeInformation -Encoding UTF8</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>处理工单20250401346447中测试了两个关于Powershell获取活动日志的命令，供大家后续参考。</li>
+</ul>
+<ul>
+<li>使用Get-AzActivityLog命令获取订阅下活动日志事件，如下命令可对开关机及虚拟机更改操作进行了筛选，并输出到csv文件中</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>处理工单20250401346447中测试了两个关于Powershell获取活动日志的命令，供大家后续参考。</p>
+<p>场景一、获取订阅下哪些用户进行了开关机操作</p>
+<p>使用Get-AzActivityLog命令获取订阅下活动日志事件，如下命令可对开关机及虚拟机更改操作进行了筛选，并输出到csv文件中</p>
+<p>Connect-AzAccount -Environment AzureChinaCloud</p>
+<p>$startDate = (Get-Date).AddDays(-1)</p>
+<p>$logs = Get-AzActivityLog -StartTime $startDate</p>
+<p>#Filter specific logs</p>
+<p>$filteredLogs = $logs | Where-Object { $_.Authorization.Action -eq &quot;Microsoft.Compute/virtualMachines/start/action&quot; -or $_.Authorization.Action -eq &quot;Microsoft.Compute/virtualMachines/deallocate/action&quot;}</p>
+<p>#Export to CSV File</p>
+<p>$filteredLogs |Select-Object @{Name=&quot;Action&quot;;Expression={$_.Authorization.Action}},ResourceGroupName,ResourceId,Caller,Status | Export-Csv -Path &quot;C:\tmp\AzureActivityLog.csv&quot; -NoTypeInformation -Encoding UTF8</p>
+<p>场景二、 获取某个用户过去1天在订阅下的活动日志记录并输出到csv文件中。</p>
+<p>$userName = &quot;zuoxiaojing@microsoftinternal.partner.onmschina.cn&quot;</p>
+<p>$startTime = (Get-Date).AddDays(-1)</p>
+<p>$endTime = Get-Date</p>
+<p>$activityLogs = Get-AzActivityLog -StartTime $startTime -EndTime $endTime | Where-Object { $_.Caller -eq $userName}</p>
+<p>$activityLogs |Select-Object @{Name=&quot;Action&quot;;Expression={$_.Authorization.Action}},ResourceGroupName,ResourceId,Caller,Status |Export-Csv -Path &quot;C:\tmp\AzureActivityLog.csv&quot; -NoTypeInformation -Encoding UTF8</p></article>

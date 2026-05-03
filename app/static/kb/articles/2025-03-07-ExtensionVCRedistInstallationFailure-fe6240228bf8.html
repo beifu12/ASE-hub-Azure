@@ -1,0 +1,287 @@
+<article class="kb-article" data-title="ExtensionVCRedistInstallationFailure"><h1>ExtensionVCRedistInstallationFailure</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-03-07 10:50:53</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Error Code: ExtensionVCRedistInstallationFailure</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Error Code: ExtensionVCRedistInstallationFailure</li>
+</ul>
+<ul>
+<li>Error Message: Snapshot operation failed due to failure in installation of Visual C++ Redistributable for Visual Studio 2012.</li>
+</ul>
+<ul>
+<li>If you encounter an issue during installation, perform the below steps:</li>
+</ul>
+<ul>
+<li>Here the VCRedist installation is returning exit-code 3010, which usually means (pending reboot) reboot is required to complete the installation, reboot the VM and retry backup operation.</li>
+</ul>
+<ul>
+<li>If issue still persist after installation then reboot the VM and retry backup operation.</li>
+</ul>
+<ul>
+<li>Error Message: Snapshot has failed. VCRedist installation had failed, so resetting statusCode to installVCRedistStatusCode</li>
+</ul>
+<ul>
+<li>The issue might be because of pending installations, so restarting the system will stop any programs that were being downloaded.</li>
+</ul>
+<ul>
+<li>Click the Uninstall button that appears. If it is grayed out, this is a system app you cannot remove.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>For extension versions having 1.0.92 or below versions follow these steps</li>
+</ul>
+<ul>
+<li>Recommended Steps for CSS:</li>
+</ul>
+<ul>
+<li>Step 1: Installing Visual C++ Redistributable for Visual Studio 2013</li>
+</ul>
+<ul>
+<li>To install Visual C++ Redistributable for Visual Studio 2013, navigate to C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\&lt;LatestVersion&gt; folder and run vcredist2013_x64 file.</li>
+</ul>
+<ul>
+<li>Ensure HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Msiserver registry key value is set to 3 and not 4 for allowing this service installation.</li>
+</ul>
+<ul>
+<li>Restart installation service from the elevated command prompt by running the below command:</li>
+</ul>
+<ul>
+<li>MSIEXEC /UNREGISTER</li>
+</ul>
+<ul>
+<li>MSIEXEC /REGISTER .</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt; ago(1d)</li>
+</ul>
+<ul>
+<li>| where TaskId == &quot;0f15d6f0-965c-49fd-90ad-4c649c1ec3e3&quot;</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp, Message</li>
+</ul>
+<ul>
+<li>| where Message contains &quot;Install VCRedist&quot;</li>
+</ul>
+<ul>
+<li>Sample output is given below:</li>
+</ul>
+<ul>
+<li>PreciseTimeStamp</li>
+</ul>
+<ul>
+<li>Message</li>
+</ul>
+<ul>
+<li>2018-11-29 20:10:58.3542005</li>
+</ul>
+<ul>
+<li>2018-11-29T20:06:14.6762673Z [Information]: Install VCRedist {isExited = True}{exitCode = 3010}</li>
+</ul>
+<ul>
+<li>Run the below command from the elevated command prompt to set the Reg-key and then trigger the backup operation.</li>
+</ul>
+<ul>
+<li>REG ADD &quot;HKLM\SOFTWARE\Microsoft\BcdrAgentPersistentKeys&quot; /v IsVCRedistInstalled /t REG_SZ /d True /f</li>
+</ul>
+<ul>
+<li>Customer Ready Content</li>
+</ul>
+<ul>
+<li>Step 1: To install Visual C++ Redistributable for Visual Studio 2013, perform the below</li>
+</ul>
+<ul>
+<li>Go to C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\&lt;LatestVersion&gt; folder and run vcredist2013_x64 file or download the installer from here</li>
+</ul>
+<ul>
+<li>MSIEXEC /REGISTER</li>
+</ul>
+<ul>
+<li>Step 2: Try performing the below:</li>
+</ul>
+<ul>
+<li>For extension versions having 1.0.93.0 and above</li>
+</ul>
+<ul>
+<li>Step 0: Restarting the VM</li>
+</ul>
+<ul>
+<li>Step 1: Manual Installation of Visual C++ Redistributable for Visual Studio 2015</li>
+</ul>
+<ul>
+<li>To install Visual C++ Redistributable for Visual Studio 2015, navigate to C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\&lt;LatestVersion&gt; folder and run vcredist2015_x64 file.</li>
+</ul>
+<ul>
+<li>| where TaskId == &lt;&lt;task_id&gt;&gt;</li>
+</ul>
+<ul>
+<li>Approach 2:</li>
+</ul>
+<ul>
+<li>This might be the case when version of the redistributable that we are trying to install is trying to remove the old version of the Visual C++ redistributable, and this is failing.</li>
+</ul>
+<ul>
+<li>Step 0:</li>
+</ul>
+<ul>
+<li>Step 1:</li>
+</ul>
+<ul>
+<li>Try a manual uninstall of the component.</li>
+</ul>
+<ul>
+<li>Open the Start menu.</li>
+</ul>
+<ul>
+<li>Click Settings.</li>
+</ul>
+<ul>
+<li>Click App on the Settings menu.</li>
+</ul>
+<ul>
+<li>Click the Uninstall pop-up button to confirm.</li>
+</ul>
+<ul>
+<li>Now run vcredist2015_x64 file, located at this C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot&lt;LatestVersion&gt; folder.</li>
+</ul>
+<ul>
+<li>Approach 3:</li>
+</ul>
+<ul>
+<li>Add or remove programs by using following steps:</li>
+</ul>
+<ul>
+<li>Open Add or remove programs.</li>
+</ul>
+<ul>
+<li>Find and select Microsoft Visual C++ 2015-2022 Redistributable (x64). Click the Modify button.</li>
+</ul>
+<ul>
+<li>Click the Repair button.</li>
+</ul>
+<ul>
+<li>Trigger the Backup.</li>
+</ul>
+<ul>
+<li>Step 1: To install Visual C++ Redistributable for Visual Studio 2015, perform the below</li>
+</ul>
+<ul>
+<li>Go to C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\&lt;LatestVersion&gt; folder and run vcredist2015_x64 file or download the installer from here</li>
+</ul>
+<ul>
+<li>Download Visual C++ Redistributable Packages for Visual Studio 2013 from Official Microsoft Download Center</li>
+</ul>
+<ul>
+<li>The Visual C++ Redistributable Packages install run-time components that are required to run C++ applications that are built by using Visual Studio 2013. For an updated version of these redistribut...</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Step 2: If issue still persist after installation then run the below Kusto query</li>
+</ul>
+<ul>
+<li>TraceLogMessage</li>
+</ul>
+<ul>
+<li>| order by PreciseTimeStamp asc</li>
+</ul>
+<ul>
+<li>Step 3: Check the VCRedist installation logs (*vcredist*.log files) from customer VM present in path: %appdata%\..\Local\Temp and try performing the below:</li>
+</ul>
+<ul>
+<li>Check if Antivirus is not blocking the installation of the redistributable</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Select Apps &amp; features from the left pane.</li>
+</ul>
+<ul>
+<li>Select an app you wish to uninstall.</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>The Backup operation failed due to failure in installation of Visual C++ Redistributable for Visual Studio 2012. To resolve this issue perform the below:</li>
+</ul>
+<ul>
+<li>The Backup operation failed due to failure in installation of Visual C++ Redistributable for Visual Studio 2015. To resolve this issue perform the below:</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>For extension versions having 1.0.92 or below versions follow these steps</p>
+<p>Error Code: ExtensionVCRedistInstallationFailure</p>
+<p>Error Message: Snapshot operation failed due to failure in installation of Visual C++ Redistributable for Visual Studio 2012.</p>
+<p>Recommended Steps for CSS:</p>
+<p>The Backup operation failed due to failure in installation of Visual C++ Redistributable for Visual Studio 2012. To resolve this issue perform the below:</p>
+<p>Step 1: Installing Visual C++ Redistributable for Visual Studio 2013</p>
+<p>To install Visual C++ Redistributable for Visual Studio 2013, navigate to C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\&lt;LatestVersion&gt; folder and run vcredist2013_x64 file.</p>
+<p>If you encounter an issue during installation, perform the below steps:</p>
+<p>Ensure HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Msiserver registry key value is set to 3 and not 4 for allowing this service installation.</p>
+<p>Restart installation service from the elevated command prompt by running the below command:</p>
+<p>MSIEXEC /UNREGISTER</p>
+<p>MSIEXEC /REGISTER .</p>
+<p>Step 2: If issue still persist after installation then run the below Kusto query</p>
+<p>TraceLogMessage</p>
+<p>| where TIMESTAMP &gt; ago(1d)</p>
+<p>| where TaskId == &quot;0f15d6f0-965c-49fd-90ad-4c649c1ec3e3&quot;</p>
+<p>| project PreciseTimeStamp, Message</p>
+<p>| where Message contains &quot;Install VCRedist&quot;</p>
+<p>| order by PreciseTimeStamp asc</p>
+<p>Sample output is given below:</p>
+<p>PreciseTimeStamp</p>
+<p>Message</p>
+<p>2018-11-29 20:10:58.3542005</p>
+<p>2018-11-29T20:06:14.6762673Z [Information]: Install VCRedist {isExited = True}{exitCode = 3010}</p>
+<p>Here the VCRedist installation is returning exit-code 3010, which usually means (pending reboot) reboot is required to complete the installation, reboot the VM and retry backup operation.</p>
+<p>Step 3: Check the VCRedist installation logs (*vcredist*.log files) from customer VM present in path: %appdata%\..\Local\Temp and try performing the below:</p>
+<p>Run the below command from the elevated command prompt to set the Reg-key and then trigger the backup operation.</p>
+<p>REG ADD &quot;HKLM\SOFTWARE\Microsoft\BcdrAgentPersistentKeys&quot; /v IsVCRedistInstalled /t REG_SZ /d True /f</p>
+<p>Customer Ready Content</p>
+<p>Step 1: To install Visual C++ Redistributable for Visual Studio 2013, perform the below</p>
+<p>Go to C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\&lt;LatestVersion&gt; folder and run vcredist2013_x64 file or download the installer from here</p>
+<p>MSIEXEC /REGISTER</p>
+<p>If issue still persist after installation then reboot the VM and retry backup operation.</p>
+<p>Step 2: Try performing the below:</p>
+<p>For extension versions having 1.0.93.0 and above</p>
+<p>Error Message: Snapshot has failed. VCRedist installation had failed, so resetting statusCode to installVCRedistStatusCode</p>
+<p>The Backup operation failed due to failure in installation of Visual C++ Redistributable for Visual Studio 2015. To resolve this issue perform the below:</p>
+<p>Step 0: Restarting the VM</p>
+<p>The issue might be because of pending installations, so restarting the system will stop any programs that were being downloaded.</p>
+<p>Step 1: Manual Installation of Visual C++ Redistributable for Visual Studio 2015</p>
+<p>To install Visual C++ Redistributable for Visual Studio 2015, navigate to C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\&lt;LatestVersion&gt; folder and run vcredist2015_x64 file.</p>
+<p>| where TaskId == &lt;&lt;task_id&gt;&gt;</p>
+<p>Approach 2:</p>
+<p>This might be the case when version of the redistributable that we are trying to install is trying to remove the old version of the Visual C++ redistributable, and this is failing.</p>
+<p>Step 0:</p>
+<p>Check if Antivirus is not blocking the installation of the redistributable</p>
+<p>Step 1:</p>
+<p>Try a manual uninstall of the component.</p>
+<p>Open the Start menu.</p>
+<p>Click Settings.</p>
+<p>Click App on the Settings menu.</p>
+<p>Select Apps &amp; features from the left pane.</p>
+<p>Select an app you wish to uninstall.</p>
+<p>Click the Uninstall button that appears. If it is grayed out, this is a system app you cannot remove.</p>
+<p>Click the Uninstall pop-up button to confirm.</p>
+<p>Now run vcredist2015_x64 file, located at this C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot&lt;LatestVersion&gt; folder.</p>
+<p>Approach 3:</p>
+<p>Add or remove programs by using following steps:</p>
+<p>Open Add or remove programs.</p>
+<p>Find and select Microsoft Visual C++ 2015-2022 Redistributable (x64). Click the Modify button.</p>
+<p>Click the Repair button.</p>
+<p>Trigger the Backup.</p>
+<p>Step 1: To install Visual C++ Redistributable for Visual Studio 2015, perform the below</p>
+<p>Go to C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\&lt;LatestVersion&gt; folder and run vcredist2015_x64 file or download the installer from here</p>
+<p>Download Visual C++ Redistributable Packages for Visual Studio 2013 from Official Microsoft Download Center</p>
+<p>The Visual C++ Redistributable Packages install run-time components that are required to run C++ applications that are built by using Visual Studio 2013. For an updated version of these redistribut...</p></article>

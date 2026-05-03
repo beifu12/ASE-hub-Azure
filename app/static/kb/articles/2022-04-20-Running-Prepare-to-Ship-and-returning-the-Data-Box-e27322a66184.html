@@ -1,0 +1,76 @@
+<article class="kb-article" data-title="Running Prepare to Ship and returning the Data Box"><h1>Running Prepare to Ship and returning the Data Box</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Databox.one</li>
+<li>Section: Azure Databox</li>
+<li>最近修改: 2022-04-20 07:18:00</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>This process is required to prevent potential data upload failures due to data that does not conform with Azure storage requirements and limits.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>This process is required to prevent potential data upload failures due to data that does not conform with Azure storage requirements and limits.</li>
+</ul>
+<ul>
+<li>After the Prepare to Ship process completes without errors, the customer can proceed with shipping the Data Box back to the Azure datacenter for data import. The steps for return shipping of a Data Box device vary by country. More information on return shipping can be found at this link: Ship Data Box back.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>To start Prepare to Ship, in the device web UI, go to Prepare to Ship and click on &quot;Start Preparation&quot;.</li>
+</ul>
+<ul>
+<li>During the Prepare to Ship process, the Data Box shares will be taken offline and will not be accessible. Please ensure that all data to be imported is copied onto the shares prior to running Prepare to Ship. If there is more data that needs to be copied to the device, you can stop Prepare to Ship, unlock the device, copy the additional data, and then run Prepare to Ship again.</li>
+</ul>
+<ul>
+<li>The length of time required for Prepare to Ship to run depends on the amount of data the customer has written to the Data Box and the number of individual files and blobs. Prepare to Ship may take anywhere from a few hours for smaller data sets to several days for data sets containing many millions of files and/or blobs.</li>
+</ul>
+<ul>
+<li>Microsoft Stream</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>When using Data Box to import data into Azure, before return shipping the device back to the Azure datacenter, the customer must run the Prepare to Ship process. This process validates the data by:</li>
+</ul>
+<ul>
+<li>Ensuring that checksums are generated for all files</li>
+</ul>
+<ul>
+<li>Checking that all data conforms to Azure naming conventions</li>
+</ul>
+<ul>
+<li>Checking that files and blobs are not too large for Azure storage file / blob size limits</li>
+</ul>
+<ul>
+<li>Checking that all container and share names conform to Azure naming conventions</li>
+</ul>
+<ul>
+<li>For more information on Prepare to Ship and the return shipping process, please see this link: Return Azure Data Box and verify data upload to Azure.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>If Prepare to Ship completes with the status &quot;Scan completed with errors&quot;, the customer should resolve these errors before returning the device. To see what errors have occurred, unlock the device and go to the Connect and Copy page to download the issues list. Information on how to correct issues identified by Prepare to Ship can be found in the Troubleshooting Prepare to Ship page of this OneNote. After correcting these issues, the customer will need to run Prepare to Ship again to validate that all errors have been resolved.</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>When using Data Box to import data into Azure, before return shipping the device back to the Azure datacenter, the customer must run the Prepare to Ship process. This process validates the data by:</p>
+<p>Ensuring that checksums are generated for all files</p>
+<p>Checking that all data conforms to Azure naming conventions</p>
+<p>Checking that files and blobs are not too large for Azure storage file / blob size limits</p>
+<p>Checking that all container and share names conform to Azure naming conventions</p>
+<p>This process is required to prevent potential data upload failures due to data that does not conform with Azure storage requirements and limits.</p>
+<p>To start Prepare to Ship, in the device web UI, go to Prepare to Ship and click on &quot;Start Preparation&quot;.</p>
+<p>During the Prepare to Ship process, the Data Box shares will be taken offline and will not be accessible. Please ensure that all data to be imported is copied onto the shares prior to running Prepare to Ship. If there is more data that needs to be copied to the device, you can stop Prepare to Ship, unlock the device, copy the additional data, and then run Prepare to Ship again.</p>
+<p>The length of time required for Prepare to Ship to run depends on the amount of data the customer has written to the Data Box and the number of individual files and blobs. Prepare to Ship may take anywhere from a few hours for smaller data sets to several days for data sets containing many millions of files and/or blobs.</p>
+<p>If Prepare to Ship completes with the status &quot;Scan completed with errors&quot;, the customer should resolve these errors before returning the device. To see what errors have occurred, unlock the device and go to the Connect and Copy page to download the issues list. Information on how to correct issues identified by Prepare to Ship can be found in the Troubleshooting Prepare to Ship page of this OneNote. After correcting these issues, the customer will need to run Prepare to Ship again to validate that all errors have been resolved.</p>
+<p>After the Prepare to Ship process completes without errors, the customer can proceed with shipping the Data Box back to the Azure datacenter for data import. The steps for return shipping of a Data Box device vary by country. More information on return shipping can be found at this link: Ship Data Box back.</p>
+<p>For more information on Prepare to Ship and the return shipping process, please see this link: Return Azure Data Box and verify data upload to Azure.</p>
+<p>Microsoft Stream</p></article>

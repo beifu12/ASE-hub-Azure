@@ -1,0 +1,71 @@
+<article class="kb-article" data-title="SLB ILB  Up/排查down"><h1>SLB ILB  Up/排查down</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LB</li>
+<li>Section: Tools</li>
+<li>最近修改: 2025-07-30 15:22:30</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p><a href="https://jarvis-west.dc.ad.msft.net/43D3F73A" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/43D3F73A</a></p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/43D3F73A" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/43D3F73A</a></li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>where (Id = 121005 or Id = 121006) let UpDown = 121006 - Id select PreciseTimeStamp, Endpoint, DipEndpoint, UpDown</li>
+</ul>
+<ul>
+<li>//where DipEndpoint ~= &quot;10.214.58.24&quot;</li>
+</ul>
+<ul>
+<li>//where DipEndpoint ~= &quot;10.211.12.208&quot;</li>
+</ul>
+<ul>
+<li>0表示down，1表示up</li>
+</ul>
+<ul>
+<li>完整的表格是这样：</li>
+</ul>
+<ul>
+<li>其中121005表示UP ，121006表示down</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查询条件：</li>
+</ul>
+<ul>
+<li>orderby PreciseTimeStamp asc</li>
+</ul>
+<ul>
+<li>同时下面的表格可以查询SLB后端探测的状态，时时的</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/43D3F73A" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/43D3F73A</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/43D3F73A" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/43D3F73A</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p><a href="https://jarvis-west.dc.ad.msft.net/43D3F73A" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/43D3F73A</a></p>
+<p><a href="https://portal.microsoftgeneva.com/43D3F73A" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/43D3F73A</a></p>
+<p>查询条件：</p>
+<p>where (Id = 121005 or Id = 121006) let UpDown = 121006 - Id select PreciseTimeStamp, Endpoint, DipEndpoint, UpDown</p>
+<p>//where DipEndpoint ~= &quot;10.214.58.24&quot;</p>
+<p>//where DipEndpoint ~= &quot;10.211.12.208&quot;</p>
+<p>orderby PreciseTimeStamp asc</p>
+<p>0表示down，1表示up</p>
+<p>完整的表格是这样：</p>
+<p>其中121005表示UP ，121006表示down</p>
+<p>同时下面的表格可以查询SLB后端探测的状态，时时的</p></article>

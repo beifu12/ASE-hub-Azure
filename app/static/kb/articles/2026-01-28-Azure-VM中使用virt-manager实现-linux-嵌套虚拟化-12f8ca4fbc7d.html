@@ -1,0 +1,199 @@
+<article class="kb-article" data-title="Azure VM中使用virt-manager实现 linux 嵌套虚拟化"><h1>Azure VM中使用virt-manager实现 linux 嵌套虚拟化</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-28 16:46:09</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Reviewer</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>zuoteng</li>
+</ul>
+<ul>
+<li>实验环境，使用Azure VM Ubuntu 24.04 LTS 镜像：</li>
+</ul>
+<ul>
+<li>第一部分： 安装图形界面，以方便后续安装virt-manager。</li>
+</ul>
+<ul>
+<li>一、确保apt源可用并更新源</li>
+</ul>
+<ul>
+<li>sudo apt-get update</li>
+</ul>
+<ul>
+<li>二、安装桌面图形化显示</li>
+</ul>
+<ul>
+<li>sudo apt-get install ubuntu-desktop</li>
+</ul>
+<ul>
+<li>三、设置默认开启方式为图形化界面显示</li>
+</ul>
+<ul>
+<li>sudo systemctl set-default graphical.target</li>
+</ul>
+<ul>
+<li>四、 安装并配置 XRDP</li>
+</ul>
+<ul>
+<li>XRDP 允许通过 RDP 协议进行远程连接，从而可以轻松访问服务器的桌面环境。</li>
+</ul>
+<ul>
+<li>安装 XRDP：</li>
+</ul>
+<ul>
+<li>sudo apt install xrdp -y</li>
+</ul>
+<ul>
+<li>将 XRDP 用户添加到 ssl-cert 组：这对于安全连接是必要的。</li>
+</ul>
+<ul>
+<li>sudo adduser xrdp ssl-cert</li>
+</ul>
+<ul>
+<li>五、重启</li>
+</ul>
+<ul>
+<li>reboot</li>
+</ul>
+<ul>
+<li>通过xrdp连接虚拟机成功：</li>
+</ul>
+<ul>
+<li>图形界面：</li>
+</ul>
+<ul>
+<li>第二部分：</li>
+</ul>
+<ul>
+<li>安装virt-manager</li>
+</ul>
+<ul>
+<li>virt-manager 简介：</li>
+</ul>
+<ul>
+<li>Virt-Manager 是 Virtual Machine Manager 的缩写，是一个用于管理虚拟机的图形用户界面工具。它通过 libvirt 提供虚拟机的管理功能，主要用于 KVM（Kernel-based Virtual Machine），但也支持 Xen 和 LXC 容器。</li>
+</ul>
+<ul>
+<li>Virt-Manager 的主要功能</li>
+</ul>
+<ul>
+<li>虚拟机管理：支持本地或远程管理 KVM、Xen 和 QEMU 虚拟机。</li>
+</ul>
+<ul>
+<li>虚拟硬件配置：支持添加、修改和删除虚拟硬件，如磁盘、网络接口、显示卡等。</li>
+</ul>
+<ul>
+<li>克隆虚拟机：快速复制现有虚拟机，生成新的独立实例。</li>
+</ul>
+<ul>
+<li>支持多种安装方式：支持本地 ISO 文件、网络安装（HTTP、FTP）或导入现有磁盘镜像。</li>
+</ul>
+<ul>
+<li>二、安装virt-manager和依赖包：</li>
+</ul>
+<ul>
+<li>sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager -y</li>
+</ul>
+<ul>
+<li>启动并启用 libvirtd 服务</li>
+</ul>
+<ul>
+<li>登录图形界面，就可以启动virt-manager管理器创建虚拟机了：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>具体步骤：</li>
+</ul>
+<ul>
+<li>Virt-Manager 提供了直观的界面，允许用户轻松地创建、编辑、启动、暂停、恢复和删除虚拟机。它还内置了 VNC 和 SPICE 客户端，用于查看虚拟机的全屏控制台。</li>
+</ul>
+<ul>
+<li>资源监控：实时查看虚拟机和主机的性能统计信息，包括 CPU、内存、磁盘和网络使用情况。</li>
+</ul>
+<ul>
+<li>具体安装步骤：</li>
+</ul>
+<ul>
+<li>一、检查当前虚拟机是否开启了CPU硬件虚拟化，关于Azure Vm就需要选择之前嵌套虚拟化的机型，例如Dv3  、Dv4、Dv5等系列的虚拟机，我当前环境使用的是Dv3系列。</li>
+</ul>
+<ul>
+<li>接下来，检查 libvirtd 服务状态</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用命令验证 egrep -c &#39;(vmx|svm)&#39; /proc/cpuinfo</li>
+</ul>
+<ul>
+<li>其中，“vmx”是Intel平台下虚拟化术语，而“svm”是AMD平台下的虚拟化术语，若命令运行后输出数字大于0则说明物理CPU支持且已开启虚拟化功能。</li>
+</ul>
+<ul>
+<li>使用以下 systemctl 命令启动并启用 libvirtd 服务。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>sudo systemctl enable --now libvirtd</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026/01/26</p>
+<p>Reviewer</p>
+<p>zuoteng</p>
+<p>实验环境，使用Azure VM Ubuntu 24.04 LTS 镜像：</p>
+<p>第一部分： 安装图形界面，以方便后续安装virt-manager。</p>
+<p>具体步骤：</p>
+<p>一、确保apt源可用并更新源</p>
+<p>sudo apt-get update</p>
+<p>二、安装桌面图形化显示</p>
+<p>sudo apt-get install ubuntu-desktop</p>
+<p>三、设置默认开启方式为图形化界面显示</p>
+<p>sudo systemctl set-default graphical.target</p>
+<p>四、 安装并配置 XRDP</p>
+<p>XRDP 允许通过 RDP 协议进行远程连接，从而可以轻松访问服务器的桌面环境。</p>
+<p>安装 XRDP：</p>
+<p>sudo apt install xrdp -y</p>
+<p>将 XRDP 用户添加到 ssl-cert 组：这对于安全连接是必要的。</p>
+<p>sudo adduser xrdp ssl-cert</p>
+<p>五、重启</p>
+<p>reboot</p>
+<p>通过xrdp连接虚拟机成功：</p>
+<p>图形界面：</p>
+<p>第二部分：</p>
+<p>安装virt-manager</p>
+<p>virt-manager 简介：</p>
+<p>Virt-Manager 是 Virtual Machine Manager 的缩写，是一个用于管理虚拟机的图形用户界面工具。它通过 libvirt 提供虚拟机的管理功能，主要用于 KVM（Kernel-based Virtual Machine），但也支持 Xen 和 LXC 容器。</p>
+<p>Virt-Manager 提供了直观的界面，允许用户轻松地创建、编辑、启动、暂停、恢复和删除虚拟机。它还内置了 VNC 和 SPICE 客户端，用于查看虚拟机的全屏控制台。</p>
+<p>Virt-Manager 的主要功能</p>
+<p>虚拟机管理：支持本地或远程管理 KVM、Xen 和 QEMU 虚拟机。</p>
+<p>资源监控：实时查看虚拟机和主机的性能统计信息，包括 CPU、内存、磁盘和网络使用情况。</p>
+<p>虚拟硬件配置：支持添加、修改和删除虚拟硬件，如磁盘、网络接口、显示卡等。</p>
+<p>克隆虚拟机：快速复制现有虚拟机，生成新的独立实例。</p>
+<p>支持多种安装方式：支持本地 ISO 文件、网络安装（HTTP、FTP）或导入现有磁盘镜像。</p>
+<p>具体安装步骤：</p>
+<p>一、检查当前虚拟机是否开启了CPU硬件虚拟化，关于Azure Vm就需要选择之前嵌套虚拟化的机型，例如Dv3  、Dv4、Dv5等系列的虚拟机，我当前环境使用的是Dv3系列。</p>
+<p>使用命令验证 egrep -c &#39;(vmx|svm)&#39; /proc/cpuinfo</p>
+<p>其中，“vmx”是Intel平台下虚拟化术语，而“svm”是AMD平台下的虚拟化术语，若命令运行后输出数字大于0则说明物理CPU支持且已开启虚拟化功能。</p>
+<p>二、安装virt-manager和依赖包：</p>
+<p>sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager -y</p>
+<p>启动并启用 libvirtd 服务</p>
+<p>使用以下 systemctl 命令启动并启用 libvirtd 服务。</p>
+<p>sudo systemctl enable --now libvirtd</p>
+<p>接下来，检查 libvirtd 服务状态</p>
+<p>登录图形界面，就可以启动virt-manager管理器创建虚拟机了：</p></article>

@@ -1,0 +1,95 @@
+<article class="kb-article" data-title="使用 Blobfuse 将 Blob 存储装载为文件系统"><h1>使用 Blobfuse 将 Blob 存储装载为文件系统</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-02-25 15:46:37</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>blobfuse ~/mycontainer --tmp-path=/mnt/resource/blobfusetmp --config-file=/root/fuse_connection.cfg -o attr_timeout=240 -o entry_timeout=240 -o negative_timeout=120</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>blobfuse ~/mycontainer --tmp-path=/mnt/resource/blobfusetmp  --config-file=/root/fuse_connection.cfg -o attr_timeout=240 -o entry_timeout=240 -o negative_timeout=120</li>
+</ul>
+<ul>
+<li>[Closed]SR_2019121268634_挂载到虚拟机上的blob，出现cannot access &#39;pre-data&#39;: Transport endpoint is not connected</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>工单参考：SR_2018080654243_[T100]Blob存储设置</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>经测试，跨数据中心挂载是没有问题的，可多台机器共享。</li>
+</ul>
+<ul>
+<li>yum install blobfuse</li>
+</ul>
+<ul>
+<li>mkdir mycontainer</li>
+</ul>
+<ul>
+<li>mkdir /mnt/resource/blobfusetmp</li>
+</ul>
+<ul>
+<li>vi fuse_connection.cfg</li>
+</ul>
+<ul>
+<li>chmod 700 fuse_connection.cfg</li>
+</ul>
+<ul>
+<li>文件系统显示：</li>
+</ul>
+<ul>
+<li>通信：</li>
+</ul>
+<ul>
+<li>测试文件创建：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>[REG: 120031625000115] VM/BEIJING VHALL TECHNOLOGY CO.LTD/SR_2020031612803_[MS-LED]2020.3.13，About 12:00，blobfuse mount not available</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>CentOS7   测试命令参考：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/storage/aog-storage-blob-howto-mount-as-file-system-via-blobfuse" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/storage/aog-storage-blob-howto-mount-as-file-system-via-blobfuse</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/windows-server/administration/Linux-Package-Repository-for-Microsoft-Software#configuring-the-repositories" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/windows-server/administration/Linux-Package-Repository-for-Microsoft-Software#configuring-the-repositories</a></li>
+</ul>
+<ul>
+<li>rpm -Uvh <a href="https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm" target="_blank" rel="noopener">https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>工单参考：SR_2018080654243_[T100]Blob存储设置</p>
+<p>参考文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/storage/aog-storage-blob-howto-mount-as-file-system-via-blobfuse" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/storage/aog-storage-blob-howto-mount-as-file-system-via-blobfuse</a></p>
+<p><a href="https://docs.microsoft.com/en-us/windows-server/administration/Linux-Package-Repository-for-Microsoft-Software#configuring-the-repositories" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/windows-server/administration/Linux-Package-Repository-for-Microsoft-Software#configuring-the-repositories</a></p>
+<p>经测试，跨数据中心挂载是没有问题的，可多台机器共享。</p>
+<p>CentOS7   测试命令参考：</p>
+<p>rpm -Uvh <a href="https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm" target="_blank" rel="noopener">https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm</a></p>
+<p>yum install blobfuse</p>
+<p>mkdir mycontainer</p>
+<p>mkdir /mnt/resource/blobfusetmp</p>
+<p>vi fuse_connection.cfg</p>
+<p>chmod 700 fuse_connection.cfg</p>
+<p>blobfuse ~/mycontainer --tmp-path=/mnt/resource/blobfusetmp  --config-file=/root/fuse_connection.cfg -o attr_timeout=240 -o entry_timeout=240 -o negative_timeout=120</p>
+<p>文件系统显示：</p>
+<p>通信：</p>
+<p>测试文件创建：</p>
+<p>[Closed]SR_2019121268634_挂载到虚拟机上的blob，出现cannot access &#39;pre-data&#39;: Transport endpoint is not connected</p>
+<p>[REG: 120031625000115] VM/BEIJING VHALL TECHNOLOGY CO.LTD/SR_2020031612803_[MS-LED]2020.3.13，About 12:00，blobfuse mount not available</p></article>

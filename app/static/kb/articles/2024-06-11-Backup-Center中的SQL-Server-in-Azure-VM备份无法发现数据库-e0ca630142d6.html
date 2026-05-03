@@ -1,0 +1,83 @@
+<article class="kb-article" data-title="Backup Center中的SQL Server in Azure VM备份无法发现数据库"><h1>Backup Center中的SQL Server in Azure VM备份无法发现数据库</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-11 16:56:22</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>关联工单：SR_20240418289277_Azure backup center中的SQL Server in Azure VM备份无法发现数据库</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>关联工单：SR_20240418289277_Azure backup center中的SQL Server in Azure VM备份无法发现数据库</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2024.6.8</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>用户在Azure Backup Center中发现SQL Serer in Azure VM，其中一个VM中的数据库不能被发现；只能显示一个数据库被Found；近期删除了的数据库在备份中显示的又还存在。</li>
+</ul>
+<ul>
+<li>问题原因： 不明。</li>
+</ul>
+<ul>
+<li>问题解决： 参考Azure文档，给NT AUTHORITY\SYSTEM添加了sysadmin role分配了sysadmin角色。</li>
+</ul>
+<ul>
+<li>用户同时反馈之前类似的问题，通过将该Vault的soft delete禁用，然后停用此SQL server的保护，然后再重启添加该SQL Server（重新注册）；将问题解决了；但这次用户希望能够查找一下原因。</li>
+</ul>
+<ul>
+<li>查阅Azure文档：</li>
+</ul>
+<ul>
+<li>的方法给NT AUTHORITY\SYSTEM添加了sysadmin role，再次执行发现DB，成功发现了SQL Server中的40个DB：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题排查：</li>
+</ul>
+<ul>
+<li>确认问题现象，该VM中只有一个DB Found：</li>
+</ul>
+<ul>
+<li>备份Items中查看已经被发现的数据库备份状态显示又是Healthy的， unhealthy的DB实际已在SQL Server中删除;</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>同时用户通过将SQL Server的自动防护设置为OFF，然后重新发现DB，但依旧显示只有一个DB被Found。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/azure/backup/backup-azure-sql-database#set-vm-permissions" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/backup-azure-sql-database#set-vm-permissions</a></li>
+</ul>
+<ul>
+<li><a href="https://techcommunity.microsoft.com/t5/azure/azure-backup-sql-does-not-discovers-all-databases/m-p/3649485" target="_blank" rel="noopener">https://techcommunity.microsoft.com/t5/azure/azure-backup-sql-does-not-discovers-all-databases/m-p/3649485</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024.6.8</p>
+<p>关联工单：SR_20240418289277_Azure backup center中的SQL Server in Azure VM备份无法发现数据库</p>
+<p>问题描述：</p>
+<p>用户在Azure Backup Center中发现SQL Serer in Azure VM，其中一个VM中的数据库不能被发现；只能显示一个数据库被Found；近期删除了的数据库在备份中显示的又还存在。</p>
+<p>问题原因： 不明。</p>
+<p>问题解决： 参考Azure文档，给NT AUTHORITY\SYSTEM添加了sysadmin role分配了sysadmin角色。</p>
+<p>问题排查：</p>
+<p>确认问题现象，该VM中只有一个DB Found：</p>
+<p>备份Items中查看已经被发现的数据库备份状态显示又是Healthy的， unhealthy的DB实际已在SQL Server中删除;</p>
+<p>用户同时反馈之前类似的问题，通过将该Vault的soft delete禁用，然后停用此SQL server的保护，然后再重启添加该SQL Server（重新注册）；将问题解决了；但这次用户希望能够查找一下原因。</p>
+<p>同时用户通过将SQL Server的自动防护设置为OFF，然后重新发现DB，但依旧显示只有一个DB被Found。</p>
+<p>查阅Azure文档：</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/backup/backup-azure-sql-database#set-vm-permissions" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/backup-azure-sql-database#set-vm-permissions</a></p>
+<p><a href="https://techcommunity.microsoft.com/t5/azure/azure-backup-sql-does-not-discovers-all-databases/m-p/3649485" target="_blank" rel="noopener">https://techcommunity.microsoft.com/t5/azure/azure-backup-sql-does-not-discovers-all-databases/m-p/3649485</a></p>
+<p>的方法给NT AUTHORITY\SYSTEM添加了sysadmin role，再次执行发现DB，成功发现了SQL Server中的40个DB：</p></article>

@@ -1,0 +1,186 @@
+<article class="kb-article" data-title="【Share】配置文件共享超过预配容量的阈值时发出警报"><h1>【Share】配置文件共享超过预配容量的阈值时发出警报</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Monitor</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-24 09:44:04</li>
+<li>JD 相关性: 监控/日志</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>另外，曦哥还提供了另外一种思路，把文件共享挂载到虚拟机中，然后监视虚拟机中对应的挂载点（或磁盘）的使用率来宾指标，更多请参考曦哥的工单“SR_20230710240108 _ Premium FileStorage 监控咨询”。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>另外，曦哥还提供了另外一种思路，把文件共享挂载到虚拟机中，然后监视虚拟机中对应的挂载点（或磁盘）的使用率来宾指标，更多请参考曦哥的工单“SR_20230710240108 _ Premium FileStorage 监控咨询”。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi All:</li>
+</ul>
+<ul>
+<li>最近有客户问当前文件共享超过预配容量的80%时发送通知，做了些测试，给大家同步一下。</li>
+</ul>
+<ul>
+<li>测试发现通过Get-AzMetric，对于标准存储账户，不能拆分各个File Share，只能取所有文件共享使用量的和。</li>
+</ul>
+<ul>
+<li>$accountName = &quot;hanasa&quot;</li>
+</ul>
+<ul>
+<li>$accountKey = &quot;7R4sMu7BsWhRXuzOamlJ1m4vd1goxxxxxxxq1OOKbu+bUtthfq50Puuk++AStECnu2Q==&quot;  #存储账户密钥#</li>
+</ul>
+<ul>
+<li>$shareName = &quot;hanatest&quot;  #需要监视的文件共享#</li>
+</ul>
+<ul>
+<li>$toAddress = &quot;liu.huan3@oe.21vianet.com&quot;  #收件人地址#</li>
+</ul>
+<ul>
+<li>$emailSubject = &quot;File Share $shareName usage exceeded the limit&quot;</li>
+</ul>
+<ul>
+<li>$emailBodyTemplate = &quot;The current usage of File Share {0} is {1} GB, which has exceeded the {2}% of the quota {3} GB .&quot;</li>
+</ul>
+<ul>
+<li>$ctx = New-AzStorageContext -StorageAccountName $accountName -StorageAccountKey $accountKey</li>
+</ul>
+<ul>
+<li>$share = Get-AzStorageShare -Name $shareName -Context $ctx</li>
+</ul>
+<ul>
+<li>$client = $share.ShareClient</li>
+</ul>
+<ul>
+<li># 获取文件共享的统计数据</li>
+</ul>
+<ul>
+<li>$stats = $client.GetStatistics()</li>
+</ul>
+<ul>
+<li>$shareUsageInBytes = $stats.Value.ShareUsageInBytes</li>
+</ul>
+<ul>
+<li>$shareUsageInGiB = $shareUsageInBytes/1024/1024/1024</li>
+</ul>
+<ul>
+<li>Write-Host &quot;The file share usage is $shareUsageInGiB GB.&quot;</li>
+</ul>
+<ul>
+<li># 获取配额</li>
+</ul>
+<ul>
+<li>$QuotaGiB = $share.Quota</li>
+</ul>
+<ul>
+<li>Write-Host &quot;The file share quota is $QuotaGiB GB.&quot;</li>
+</ul>
+<ul>
+<li># 计算使用量百分比</li>
+</ul>
+<ul>
+<li>$usagePercentage = $shareUsageInGiB / $QuotaGiB</li>
+</ul>
+<ul>
+<li>if ($usagePercentage -gt $limit) {</li>
+</ul>
+<ul>
+<li>$emailBody = [string]::Format($emailBodyTemplate, $shareName, $shareUsageInGiB, $limit*100 ,$QuotaGiB )</li>
+</ul>
+<ul>
+<li># 发送警报邮件</li>
+</ul>
+<ul>
+<li>$smtpCredential=new-object -typename System.Management.Automation.PSCredential -argumentlist &quot;xxxxx@126.com&quot;,(ConvertTo-SecureString &quot;VZPPxxxxTGBZGD&quot; -AsPlainText -Force) #定义smtp服务器的凭据，绿色高亮部分为126邮箱SMTP授权码 #</li>
+</ul>
+<ul>
+<li>Send-MailMessage -To $toAddress -From &quot;xxxxx@126.com&quot; -Subject $emailSubject -Body $emailBody -SmtpServer &quot;smtp.126.com&quot; -Credential $smtpCredential -Port &quot;25&quot; -UseSsl</li>
+</ul>
+<ul>
+<li>Write-Host &quot;email sent to the $toAddress already &quot;</li>
+</ul>
+<ul>
+<li>} else {</li>
+</ul>
+<ul>
+<li>Write-Host &quot; not reach the limit, current usgae is $shareUsageInGiB, the quota is $QuotaGiB&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>#本地测试收到的邮件情况#</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#查看存储账户下所有文件共享的使用量#</li>
+</ul>
+<ul>
+<li>#查看存储账户下单个文件共享的使用量#</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>示例命令：</li>
+</ul>
+<ul>
+<li>Get-AzMetric -ResourceId &quot;/subscriptions/1447ccf1-xxxx-xxxx-xxxx-2f370d142fa6/resourceGroups/hanasa/providers/Microsoft.Storage/storageAccounts/hanasa/fileServices/default&quot; -MetricName &quot;FileCapacity&quot; -AggregationType Total</li>
+</ul>
+<ul>
+<li>Get-AzMetric -ResourceId &quot;/subscriptions/1447ccf1-xxxx-xxxx-xxxx-2f370d142fa6/resourceGroups/hanasa/providers/Microsoft.Storage/storageAccounts/hanasa/fileServices/hanatest&quot; -MetricName &quot;FileCapacity&quot; -AggregationType Total</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>$limit = 0.1  #警报阈值#</li>
+</ul>
+<ul>
+<li># 检查使用量是否超过阈值%</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>在公网链接<a href="https://www.saoniuhuo.com/question/detail-2687528.html?sort=new&amp;page=1" target="_blank" rel="noopener">https://www.saoniuhuo.com/question/detail-2687528.html?sort=new&amp;page=1</a> 中有人提到了与1中类似的情况，并提出可以使用Azure 存储文件SDK的方式来查看文件共享的使用量，我本地测试测试了一下是可以，然后做了如下的脚本。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi All:</p>
+<p>最近有客户问当前文件共享超过预配容量的80%时发送通知，做了些测试，给大家同步一下。</p>
+<p>测试发现通过Get-AzMetric，对于标准存储账户，不能拆分各个File Share，只能取所有文件共享使用量的和。</p>
+<p>示例命令：</p>
+<p>#查看存储账户下所有文件共享的使用量#</p>
+<p>Get-AzMetric -ResourceId &quot;/subscriptions/1447ccf1-xxxx-xxxx-xxxx-2f370d142fa6/resourceGroups/hanasa/providers/Microsoft.Storage/storageAccounts/hanasa/fileServices/default&quot; -MetricName &quot;FileCapacity&quot; -AggregationType Total</p>
+<p>#查看存储账户下单个文件共享的使用量#</p>
+<p>Get-AzMetric -ResourceId &quot;/subscriptions/1447ccf1-xxxx-xxxx-xxxx-2f370d142fa6/resourceGroups/hanasa/providers/Microsoft.Storage/storageAccounts/hanasa/fileServices/hanatest&quot; -MetricName &quot;FileCapacity&quot; -AggregationType Total</p>
+<p>在公网链接<a href="https://www.saoniuhuo.com/question/detail-2687528.html?sort=new&amp;page=1" target="_blank" rel="noopener">https://www.saoniuhuo.com/question/detail-2687528.html?sort=new&amp;page=1</a> 中有人提到了与1中类似的情况，并提出可以使用Azure 存储文件SDK的方式来查看文件共享的使用量，我本地测试测试了一下是可以，然后做了如下的脚本。</p>
+<p>$accountName = &quot;hanasa&quot;</p>
+<p>$accountKey = &quot;7R4sMu7BsWhRXuzOamlJ1m4vd1goxxxxxxxq1OOKbu+bUtthfq50Puuk++AStECnu2Q==&quot;  #存储账户密钥#</p>
+<p>$shareName = &quot;hanatest&quot;  #需要监视的文件共享#</p>
+<p>$limit = 0.1  #警报阈值#</p>
+<p>$toAddress = &quot;liu.huan3@oe.21vianet.com&quot;  #收件人地址#</p>
+<p>$emailSubject = &quot;File Share $shareName usage exceeded the limit&quot;</p>
+<p>$emailBodyTemplate = &quot;The current usage of File Share {0} is {1} GB, which has exceeded the {2}% of the quota {3} GB .&quot;</p>
+<p>$ctx = New-AzStorageContext -StorageAccountName $accountName -StorageAccountKey $accountKey</p>
+<p>$share = Get-AzStorageShare -Name $shareName -Context $ctx</p>
+<p>$client = $share.ShareClient</p>
+<h1>获取文件共享的统计数据</h1>
+<p>$stats = $client.GetStatistics()</p>
+<p>$shareUsageInBytes = $stats.Value.ShareUsageInBytes</p>
+<p>$shareUsageInGiB = $shareUsageInBytes/1024/1024/1024</p>
+<p>Write-Host &quot;The file share usage is $shareUsageInGiB GB.&quot;</p>
+<h1>获取配额</h1>
+<p>$QuotaGiB = $share.Quota</p>
+<p>Write-Host &quot;The file share quota is $QuotaGiB GB.&quot;</p>
+<h1>计算使用量百分比</h1>
+<p>$usagePercentage = $shareUsageInGiB / $QuotaGiB</p>
+<h1>检查使用量是否超过阈值%</h1>
+<p>if ($usagePercentage -gt $limit) {</p>
+<p>$emailBody = [string]::Format($emailBodyTemplate, $shareName, $shareUsageInGiB, $limit*100 ,$QuotaGiB )</p>
+<h1>发送警报邮件</h1>
+<p>$smtpCredential=new-object -typename System.Management.Automation.PSCredential -argumentlist &quot;xxxxx@126.com&quot;,(ConvertTo-SecureString &quot;VZPPxxxxTGBZGD&quot; -AsPlainText -Force) #定义smtp服务器的凭据，绿色高亮部分为126邮箱SMTP授权码 #</p>
+<p>Send-MailMessage -To $toAddress -From &quot;xxxxx@126.com&quot; -Subject $emailSubject -Body $emailBody -SmtpServer &quot;smtp.126.com&quot; -Credential $smtpCredential -Port &quot;25&quot; -UseSsl</p>
+<p>Write-Host &quot;email sent to the $toAddress already &quot;</p>
+<p>} else {</p>
+<p>Write-Host &quot; not reach the limit, current usgae is $shareUsageInGiB, the quota is $QuotaGiB&quot;</p>
+<p>}</p>
+<p>#本地测试收到的邮件情况#</p>
+<p>另外，曦哥还提供了另外一种思路，把文件共享挂载到虚拟机中，然后监视虚拟机中对应的挂载点（或磁盘）的使用率来宾指标，更多请参考曦哥的工单“SR_20230710240108 _ Premium FileStorage 监控咨询”。</p></article>

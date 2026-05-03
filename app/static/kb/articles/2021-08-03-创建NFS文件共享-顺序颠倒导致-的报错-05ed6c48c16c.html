@@ -1,0 +1,56 @@
+<article class="kb-article" data-title="创建NFS文件共享 顺序颠倒导致 的报错"><h1>创建NFS文件共享 顺序颠倒导致 的报错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-08-03 17:43:02</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>有客户碰到创建 NFS文件共享时遇到的错误，在onenote上没有看到，所以记录一下。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>有客户碰到创建 NFS文件共享时遇到的错误，在onenote上没有看到，所以记录一下。</li>
+</ul>
+<ul>
+<li>已注册过AllowNfsFileShares 的账户即使Unregister-AzProviderFeature 后，创建存储账号再次注册AllowNfsFileShares 后也无法复现该问题。猜想是已经注册过会加载某些标识，下载某些组件。初始注册需要30分钟左右，注销掉再次注册瞬间就可完成。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi all，</li>
+</ul>
+<ul>
+<li>客户用cli 创建时报的错误相同</li>
+</ul>
+<ul>
+<li>(InvalidHeaderValue) The value for one of the HTTP headers is not in the correct format. RequestId:e3b1c942-c01a-0018-1519-88b044000000 Time:2021-08-03T03:44:53.6320544Z [root@ip-172-18-106-146 ec2-user]#</li>
+</ul>
+<ul>
+<li>用我们没有注册过NFS 4.1 协议 ProviderFeature 的账户可以复现这个问题。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>注册NFS 4.1 协议 ProviderFeature 后再次创建 文件共享 的 高级存储帐户，然后用命令或在portal上创建 nfs协议的文件共享 是没有问题的。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>原因是客户先 创建的 文件共享 的 高级存储帐户，后注册 NFS 4.1 协议 ProviderFeature。然后在之前创建的 文件共享  高级存储帐户中创建nfs协议的文件共享，顺序正好和官网文档颠倒。</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi all，</p>
+<p>有客户碰到创建 NFS文件共享时遇到的错误，在onenote上没有看到，所以记录一下。</p>
+<p>客户用cli 创建时报的错误相同</p>
+<p>(InvalidHeaderValue) The value for one of the HTTP headers is not in the correct format. RequestId:e3b1c942-c01a-0018-1519-88b044000000 Time:2021-08-03T03:44:53.6320544Z [root@ip-172-18-106-146 ec2-user]#</p>
+<p>原因是客户先 创建的 文件共享 的 高级存储帐户，后注册 NFS 4.1 协议 ProviderFeature。然后在之前创建的 文件共享  高级存储帐户中创建nfs协议的文件共享，顺序正好和官网文档颠倒。</p>
+<p>注册NFS 4.1 协议 ProviderFeature 后再次创建 文件共享 的 高级存储帐户，然后用命令或在portal上创建 nfs协议的文件共享 是没有问题的。</p>
+<p>用我们没有注册过NFS 4.1 协议 ProviderFeature 的账户可以复现这个问题。</p>
+<p>已注册过AllowNfsFileShares 的账户即使Unregister-AzProviderFeature 后，创建存储账号再次注册AllowNfsFileShares 后也无法复现该问题。猜想是已经注册过会加载某些标识，下载某些组件。初始注册需要30分钟左右，注销掉再次注册瞬间就可完成。</p></article>

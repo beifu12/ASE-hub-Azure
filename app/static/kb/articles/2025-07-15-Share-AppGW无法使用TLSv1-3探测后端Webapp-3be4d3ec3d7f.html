@@ -1,0 +1,214 @@
+<article class="kb-article" data-title="【Share】AppGW无法使用TLSv1.3探测后端Webapp"><h1>【Share】AppGW无法使用TLSv1.3探测后端Webapp</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2025-07-15 17:06:38</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>| project PreciseTimeStamp,Tenant,RoleInstance,EventIpAddress,ClientIPAddress,RemotePort,LocalPort,SniHost,ClientHelloLength,FailureReason</li>
+</ul>
+<ul>
+<li>AppGwSslPolicy20170401</li>
+</ul>
+<ul>
+<li>AppGwSslPolicy20170401S</li>
+</ul>
+<ul>
+<li>后端探测的报错信息是严重的干扰项，这个问题与路由/NSG/防火墙没有任何关系。后期工单处理中，在排除了路由、NSG、防火墙策略的问题之后，需要考虑是不是后端TLS版本的问题。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Xing Xiangjia</li>
+</ul>
+<ul>
+<li>2025.7.10</li>
+</ul>
+<ul>
+<li>ICM: 647112474</li>
+</ul>
+<ul>
+<li>/subscriptions/6033bb90-cfd9-4c53-b7e6-d1b00b3a7bcd/resourceGroups/CZ-CN65-R01-CN3-P-AppGateWay/providers/Microsoft.Network/applicationGateways/czcn65r01ag001</li>
+</ul>
+<ul>
+<li>网络拓扑：</li>
+</ul>
+<ul>
+<li>AppGW – vnet peering – private endpoint – webapp</li>
+</ul>
+<ul>
+<li>测试从其他虚拟网络访问webapp，没有问题，并且IP也是解析为private endpoint的IP：</li>
+</ul>
+<ul>
+<li>在Health probe中测试，后端池都是健康的：</li>
+</ul>
+<ul>
+<li>AntaresTlsHandshakes</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt;= datetime(2025-07-07 01:09:00) and PreciseTimeStamp &lt;= datetime(2025-07-07 01:10:00)</li>
+</ul>
+<ul>
+<li>| where SniHost contains &quot;webapp-odp-backend-api.chinacloudsites.cn&quot;</li>
+</ul>
+<ul>
+<li>| where ClientIPAddress == &quot;fd40:8e1f:59:2d01:6b59:200:a0e:107&quot;</li>
+</ul>
+<ul>
+<li>这四个webapp配置为仅允许TLSv1.3的连接，而当前有问题的网关并没有启用支持TLSv1.3的SSL策略。</li>
+</ul>
+<ul>
+<li>AppGW支持后端探测使用TLSv1.3的SSL策略包括：AppGwSslPolicy20220101、AppGwSslPolicy20220101S、CustomV2。</li>
+</ul>
+<ul>
+<li>经过测试表明，不同的AppGW SSL Policy对于后端TLSv1.3的支持情况如下：</li>
+</ul>
+<ul>
+<li>SSL Policy</li>
+</ul>
+<ul>
+<li>是否支持后端TLSv1.3？</li>
+</ul>
+<ul>
+<li>AppGwSslPolicy20150501</li>
+</ul>
+<ul>
+<li>No</li>
+</ul>
+<ul>
+<li>Custom</li>
+</ul>
+<ul>
+<li>AppGwSslPolicy20220101</li>
+</ul>
+<ul>
+<li>Yes</li>
+</ul>
+<ul>
+<li>AppGwSslPolicy20220101S</li>
+</ul>
+<ul>
+<li>CustomV2</li>
+</ul>
+<ul>
+<li>需要指出的是，如上表格中红色的SSL策略和绿色的SSL策略为新老不同的SSL策略，网关只能使用新的或者老的SSL策略，但是不能两者共存。参考：Azure 应用程序网关的 TLS 策略概述 | Azure Docs</li>
+</ul>
+<ul>
+<li>进行新老SSL Policy切换的时候，也会收到类似如下的提示信息：</li>
+</ul>
+<ul>
+<li>小结：</li>
+</ul>
+<ul>
+<li>在Health Probe中手动点击Test，使用的是跟网关周期性探测不一样的逻辑。有时候需要注意这一点。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>AppGW后端检查失败：</li>
+</ul>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>检查了AppGW的子网，没有NSG或UDR。</li>
+</ul>
+<ul>
+<li>在webapp的log a中，关闭了其他所有的日志，仅仅开启了客户端请求的日志。观察发现，当使用AppGW Health Probe的测试功能的时候，webapp log a会有日志产生。但是却没有收到AppGW Health Probe周期性发出的探测。</li>
+</ul>
+<ul>
+<li>在AppGW后端健康检查界面的Troubleshoot，有如下信息：</li>
+</ul>
+<ul>
+<li>产品组在AppGW上抓包发现，TCP握手正常，但是TLS握手失败。</li>
+</ul>
+<ul>
+<li>Kusto查询webapp请求的TLS记录，确认AppGW支持TLSv1.0-1.2，不支持1.3：</li>
+</ul>
+<ul>
+<li>后台查询了当前有问题的AppGW（资源ID：/subscriptions/6033bb90-cfd9-4c53-b7e6-d1b00b3a7bcd/resourceGroups/CZ-CN65-R01-CN3-P-AppGateWay/providers/Microsoft.Network/applicationGateways/czcn65r01ag001），确认其正在使用的是老的SSL策略：</li>
+</ul>
+<ul>
+<li>进一步查询了正常工作的AppGW，确认其使用的是新的SSL策略：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>问题的根本原因：</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<ul>
+<li>方法1：升级AppGW的SSL策略。此操作会影响到整个AppGW所有的Listener，建议谨慎。</li>
+</ul>
+<ul>
+<li>方法2：在webapp界面可以快速配置，建议把最低TLS设置为1.2即可。推荐使用此方法。</li>
+</ul>
+<ul>
+<li>已经向产品组建议优化后端探测的报错信息，但是能否采纳不得而知了。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>（Kusto endpoint:  <a href="https://cnwsbjs20.chinanorth2.kusto.chinacloudapi.cn" target="_blank" rel="noopener">https://cnwsbjs20.chinanorth2.kusto.chinacloudapi.cn</a>      cnwsprod）</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Xing Xiangjia</p>
+<p>2025.7.10</p>
+<p>ICM: 647112474</p>
+<p>问题现象：</p>
+<p>AppGW后端检查失败：</p>
+<p>/subscriptions/6033bb90-cfd9-4c53-b7e6-d1b00b3a7bcd/resourceGroups/CZ-CN65-R01-CN3-P-AppGateWay/providers/Microsoft.Network/applicationGateways/czcn65r01ag001</p>
+<p>网络拓扑：</p>
+<p>AppGW – vnet peering – private endpoint – webapp</p>
+<p>排查过程：</p>
+<p>测试从其他虚拟网络访问webapp，没有问题，并且IP也是解析为private endpoint的IP：</p>
+<p>检查了AppGW的子网，没有NSG或UDR。</p>
+<p>在Health probe中测试，后端池都是健康的：</p>
+<p>在webapp的log a中，关闭了其他所有的日志，仅仅开启了客户端请求的日志。观察发现，当使用AppGW Health Probe的测试功能的时候，webapp log a会有日志产生。但是却没有收到AppGW Health Probe周期性发出的探测。</p>
+<p>在AppGW后端健康检查界面的Troubleshoot，有如下信息：</p>
+<p>产品组在AppGW上抓包发现，TCP握手正常，但是TLS握手失败。</p>
+<p>Kusto查询webapp请求的TLS记录，确认AppGW支持TLSv1.0-1.2，不支持1.3：</p>
+<p>AntaresTlsHandshakes</p>
+<p>| where PreciseTimeStamp &gt;= datetime(2025-07-07 01:09:00) and PreciseTimeStamp &lt;= datetime(2025-07-07 01:10:00)</p>
+<p>| where SniHost contains &quot;webapp-odp-backend-api.chinacloudsites.cn&quot;</p>
+<p>| where ClientIPAddress == &quot;fd40:8e1f:59:2d01:6b59:200:a0e:107&quot;</p>
+<p>| project PreciseTimeStamp,Tenant,RoleInstance,EventIpAddress,ClientIPAddress,RemotePort,LocalPort,SniHost,ClientHelloLength,FailureReason</p>
+<p>（Kusto endpoint:  <a href="https://cnwsbjs20.chinanorth2.kusto.chinacloudapi.cn" target="_blank" rel="noopener">https://cnwsbjs20.chinanorth2.kusto.chinacloudapi.cn</a>      cnwsprod）</p>
+<p>问题的根本原因：</p>
+<p>这四个webapp配置为仅允许TLSv1.3的连接，而当前有问题的网关并没有启用支持TLSv1.3的SSL策略。</p>
+<p>AppGW支持后端探测使用TLSv1.3的SSL策略包括：AppGwSslPolicy20220101、AppGwSslPolicy20220101S、CustomV2。</p>
+<p>经过测试表明，不同的AppGW SSL Policy对于后端TLSv1.3的支持情况如下：</p>
+<p>SSL Policy</p>
+<p>是否支持后端TLSv1.3？</p>
+<p>AppGwSslPolicy20150501</p>
+<p>No</p>
+<p>AppGwSslPolicy20170401</p>
+<p>AppGwSslPolicy20170401S</p>
+<p>Custom</p>
+<p>AppGwSslPolicy20220101</p>
+<p>Yes</p>
+<p>AppGwSslPolicy20220101S</p>
+<p>CustomV2</p>
+<p>需要指出的是，如上表格中红色的SSL策略和绿色的SSL策略为新老不同的SSL策略，网关只能使用新的或者老的SSL策略，但是不能两者共存。参考：Azure 应用程序网关的 TLS 策略概述 | Azure Docs</p>
+<p>进行新老SSL Policy切换的时候，也会收到类似如下的提示信息：</p>
+<p>后台查询了当前有问题的AppGW（资源ID：/subscriptions/6033bb90-cfd9-4c53-b7e6-d1b00b3a7bcd/resourceGroups/CZ-CN65-R01-CN3-P-AppGateWay/providers/Microsoft.Network/applicationGateways/czcn65r01ag001），确认其正在使用的是老的SSL策略：</p>
+<p>进一步查询了正常工作的AppGW，确认其使用的是新的SSL策略：</p>
+<p>解决方案：</p>
+<p>方法1：升级AppGW的SSL策略。此操作会影响到整个AppGW所有的Listener，建议谨慎。</p>
+<p>方法2：在webapp界面可以快速配置，建议把最低TLS设置为1.2即可。推荐使用此方法。</p>
+<p>小结：</p>
+<p>在Health Probe中手动点击Test，使用的是跟网关周期性探测不一样的逻辑。有时候需要注意这一点。</p>
+<p>后端探测的报错信息是严重的干扰项，这个问题与路由/NSG/防火墙没有任何关系。后期工单处理中，在排除了路由、NSG、防火墙策略的问题之后，需要考虑是不是后端TLS版本的问题。</p>
+<p>已经向产品组建议优化后端探测的报错信息，但是能否采纳不得而知了。</p></article>

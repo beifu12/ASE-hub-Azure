@@ -1,0 +1,45 @@
+<article class="kb-article" data-title="APPGW不支持基于多域名的重定向"><h1>APPGW不支持基于多域名的重定向</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-01-25 10:35:58</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>最近遇到两个工单，可以配置了基于多域名的443侦听器，在配置80到该443的侦听器重定向时访问失败，使用F12可以看到重定向的response 头中Location 字段是将443侦听器内的多个域名拼接起来了，中间使用，号隔开。因此访问会失败。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>最近遇到两个工单，可以配置了基于多域名的443侦听器，在配置80到该443的侦听器重定向时访问失败，使用F12可以看到重定向的response 头中Location 字段是将443侦听器内的多个域名拼接起来了，中间使用，号隔开。因此访问会失败。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Wangguoyuan</li>
+</ul>
+<ul>
+<li>国内文档并没有对该问题的说明，global中对此有描述，提示该重定向不被支持。</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/application-gateway/multiple-site-overview#wildcard-host-names-in-listener" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/application-gateway/multiple-site-overview#wildcard-host-names-in-listener</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Wangguoyuan</p>
+<p>最近遇到两个工单，可以配置了基于多域名的443侦听器，在配置80到该443的侦听器重定向时访问失败，使用F12可以看到重定向的response 头中Location 字段是将443侦听器内的多个域名拼接起来了，中间使用，号隔开。因此访问会失败。</p>
+<p>国内文档并没有对该问题的说明，global中对此有描述，提示该重定向不被支持。</p>
+<p>参考文档：</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/application-gateway/multiple-site-overview#wildcard-host-names-in-listener" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/application-gateway/multiple-site-overview#wildcard-host-names-in-listener</a></p></article>

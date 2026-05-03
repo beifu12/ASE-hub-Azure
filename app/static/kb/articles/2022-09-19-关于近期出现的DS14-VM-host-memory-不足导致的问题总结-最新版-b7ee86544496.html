@@ -1,0 +1,104 @@
+<article class="kb-article" data-title="关于近期出现的DS14 VM host memory 不足导致的问题总结【最新版】"><h1>关于近期出现的DS14 VM host memory 不足导致的问题总结【最新版】</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2022-09-19 09:47:55</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>虚拟机及平台其他指标在问题发生时间段无异常</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>虚拟机及平台其他指标在问题发生时间段无异常</li>
+</ul>
+<ul>
+<li>针对用户反馈的故障事件，收集Host Analyzer报告会有以下发现：</li>
+</ul>
+<ul>
+<li>Events部分记录Event 2，Error Code为C0000017，表示STATUS_NO_MEMORY。在记录Event 2的相同时间，虚拟机系统日志开始记录I/O相关的报错（如以上症状部分的示例）</li>
+</ul>
+<ul>
+<li>备注：如果再Findings部分没有记录，但是在timeline看到event2,可以F12看error code c0000017</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>DS14问题总结最新进展整理如下，更新了定位问题的方法以及提供给客户的初步调查报告，请参考：</li>
+</ul>
+<ul>
+<li>症状 (Windows VM)</li>
+</ul>
+<ul>
+<li>DS14 虚拟机症状举例：</li>
+</ul>
+<ul>
+<li>虚拟机系统日志中记录有针对数据盘I/O retry的告警</li>
+</ul>
+<ul>
+<li>同时可能伴有NTFS文件系统的告警:</li>
+</ul>
+<ul>
+<li>数据盘显示为未初始化</li>
+</ul>
+<ul>
+<li>症状 (Linux VM)</li>
+</ul>
+<ul>
+<li>系统日志记录有针对数据盘的I/O读写错误</li>
+</ul>
+<ul>
+<li>虚拟机重启后症状消失</li>
+</ul>
+<ul>
+<li>定位问题</li>
+</ul>
+<ul>
+<li>Findings部分记录Host内存不足</li>
+</ul>
+<ul>
+<li>缓解措施</li>
+</ul>
+<ul>
+<li>初步调查报告</li>
+</ul>
+<ul>
+<li>对本次虚拟机服务中断给您业务带来的不利影响,我们深表歉意。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Portal发起对虚拟机的重新部署使虚拟机迁移至一个健康节点，可以暂时缓解此问题。在这个过程中如果其他节点由于内存不足导致DS14虚拟机长时间无法开启，在得到客户同意后请联系WASU对虚拟机触发Service Healing使虚拟机迁移至健康节点（请告知WASU这个操作是经过产品组确认的并且得到了Azure CXP的预授权）。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Microsoft Azure China技术支持团队关于您的订阅&lt;sub id&gt;下虚拟机&lt;vm name&gt;在&lt;date&gt;发生的故障完成了初步调查。这个意外事件是由于运行虚拟机的物理节点资源耗尽造成的。对于Azure资源管理器（ARM）虚拟机，我们建议将其大小调整为Standard_DS14_v2。Standard_DS14_v2 虚拟机将部署在一个新的硬件平台，会大大减少该问题发生的可能。对于Azure经典（Classic）虚拟机，调整大小会涉及更多步骤。详细的信息请参考<a href="https://azure.microsoft.com/en-us/blog/resize-virtual-machines/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/blog/resize-virtual-machines/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>DS14问题总结最新进展整理如下，更新了定位问题的方法以及提供给客户的初步调查报告，请参考：</p>
+<p>症状 (Windows VM)</p>
+<p>DS14 虚拟机症状举例：</p>
+<p>虚拟机系统日志中记录有针对数据盘I/O retry的告警</p>
+<p>同时可能伴有NTFS文件系统的告警:</p>
+<p>数据盘显示为未初始化</p>
+<p>症状 (Linux VM)</p>
+<p>系统日志记录有针对数据盘的I/O读写错误</p>
+<p>虚拟机重启后症状消失</p>
+<p>定位问题</p>
+<p>虚拟机及平台其他指标在问题发生时间段无异常</p>
+<p>针对用户反馈的故障事件，收集Host Analyzer报告会有以下发现：</p>
+<p>Findings部分记录Host内存不足</p>
+<p>Events部分记录Event 2，Error Code为C0000017，表示STATUS_NO_MEMORY。在记录Event 2的相同时间，虚拟机系统日志开始记录I/O相关的报错（如以上症状部分的示例）</p>
+<p>备注：如果再Findings部分没有记录，但是在timeline看到event2,可以F12看error code c0000017</p>
+<p>缓解措施</p>
+<p>Portal发起对虚拟机的重新部署使虚拟机迁移至一个健康节点，可以暂时缓解此问题。在这个过程中如果其他节点由于内存不足导致DS14虚拟机长时间无法开启，在得到客户同意后请联系WASU对虚拟机触发Service Healing使虚拟机迁移至健康节点（请告知WASU这个操作是经过产品组确认的并且得到了Azure CXP的预授权）。</p>
+<p>初步调查报告</p>
+<p>Microsoft Azure China技术支持团队关于您的订阅&lt;sub id&gt;下虚拟机&lt;vm name&gt;在&lt;date&gt;发生的故障完成了初步调查。这个意外事件是由于运行虚拟机的物理节点资源耗尽造成的。对于Azure资源管理器（ARM）虚拟机，我们建议将其大小调整为Standard_DS14_v2。Standard_DS14_v2 虚拟机将部署在一个新的硬件平台，会大大减少该问题发生的可能。对于Azure经典（Classic）虚拟机，调整大小会涉及更多步骤。详细的信息请参考<a href="https://azure.microsoft.com/en-us/blog/resize-virtual-machines/" target="_blank" rel="noopener">https://azure.microsoft.com/en-us/blog/resize-virtual-machines/</a></p>
+<p>对本次虚拟机服务中断给您业务带来的不利影响,我们深表歉意。</p></article>

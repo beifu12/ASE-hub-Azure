@@ -1,0 +1,253 @@
+<article class="kb-article" data-title="获取CDN回源IP的Rest API方法"><h1>获取CDN回源IP的Rest API方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-03-04 17:17:14</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20201202</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20201202</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20201202</li>
+</ul>
+<ul>
+<li>首先在CDN管理页面中找到密钥的ID和密钥，如下图所示：</li>
+</ul>
+<ul>
+<li>e11ede9d-d74a-4590-b362-4e5c0b16dfa1</li>
+</ul>
+<ul>
+<li>lease input yourKeyID:e061685d-2194-48d2-b74f-a88e5faa547a</li>
+</ul>
+<ul>
+<li>ZTQyYjI2NzMtYjZkZC00N2MxLTgzZDItMjY0ZWI3Njc2YjI4</li>
+</ul>
+<ul>
+<li>import urllib</li>
+</ul>
+<ul>
+<li>from urllib import parse</li>
+</ul>
+<ul>
+<li>from collections import OrderedDict</li>
+</ul>
+<ul>
+<li>import hmac</li>
+</ul>
+<ul>
+<li>import hashlib</li>
+</ul>
+<ul>
+<li>from datetime import datetime</li>
+</ul>
+<ul>
+<li>import requests</li>
+</ul>
+<ul>
+<li>import json</li>
+</ul>
+<ul>
+<li>def calculate_authorization_header(request_url, request_time, key_id, key_value, http_method):</li>
+</ul>
+<ul>
+<li>&quot;&quot;&quot; Calculate the authorization header.</li>
+</ul>
+<ul>
+<li>@request_url: Complete request URL with scheme, host, path and queries</li>
+</ul>
+<ul>
+<li>@request_time: UTC request time with format yyyy-MM-dd HH:mm:ss</li>
+</ul>
+<ul>
+<li>@key_id: API key ID</li>
+</ul>
+<ul>
+<li>@key_value: API key value</li>
+</ul>
+<ul>
+<li>@http_method: Http method in upper case</li>
+</ul>
+<ul>
+<li>&quot;&quot;&quot;</li>
+</ul>
+<ul>
+<li>return &quot;AzureCDN %s:%s&quot; % (key_id, digest)</li>
+</ul>
+<ul>
+<li>def get_endpoints(url,request_time,authorization):</li>
+</ul>
+<ul>
+<li>return response</li>
+</ul>
+<ul>
+<li>if __name__ == &#39;__main__&#39;:</li>
+</ul>
+<ul>
+<li># 计算Authorization需要的信息</li>
+</ul>
+<ul>
+<li># 计算Authorization头</li>
+</ul>
+<ul>
+<li>print(&quot;Time:%s\nAuthorization:%s&quot; % (cur_date,authorization))</li>
+</ul>
+<ul>
+<li># 发送HTTP请求</li>
+</ul>
+<ul>
+<li>for i in res_json :</li>
+</ul>
+<ul>
+<li>print(&quot;%s\t%s\t%s\t%s&quot; % (endpoint,customDomain,cname,icp))</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2022.7.4补充:应该在VSCODE中使用上方的链接重新进行请求，随后再用postman按相应格式进行查看</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>脚本依赖python3执行，执行结果如下，复制红框内的字符串。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>urlparts = urllib.parse.urlparse(request_url)</li>
+</ul>
+<ul>
+<li>queries = urllib.parse.parse_qs(urlparts.query)</li>
+</ul>
+<ul>
+<li>ordered_queries = OrderedDict(sorted(queries.items()))</li>
+</ul>
+<ul>
+<li>message = &quot;%s\r\n%s\r\n%s\r\n%s&quot; % (urlparts.path, &quot;, &quot;.join([&#39;%s:%s&#39; % (key, value[0]) for (key, value) in ordered_queries.items()]), request_time, http_method)</li>
+</ul>
+<ul>
+<li>digest = hmac.new(bytearray(key_value, &quot;utf-8&quot;), bytearray(message, &quot;utf-8&quot;), hashlib.sha256).hexdigest().upper()</li>
+</ul>
+<ul>
+<li>header = {&#39;x-azurecdn-request-date&#39;:request_time, &#39;Authorization&#39;:authorization}</li>
+</ul>
+<ul>
+<li>response = requests.get(url, headers=header)</li>
+</ul>
+<ul>
+<li>subscriptionId = &quot;eae551d8-92de-41a1-bef9-a74aebffad7f&quot;</li>
+</ul>
+<ul>
+<li>cur_date = datetime.utcnow().strftime(&#39;%Y-%m-%d %H:%M:%S&#39;)</li>
+</ul>
+<ul>
+<li>key_id = &quot;c53bdd6b-761a-4940-bee4-4256ae2ec5e5&quot;</li>
+</ul>
+<ul>
+<li>key_value = &quot;NmI0YzM2ZDUtMzBjYi00NmRlLTgzM2ItOTQxNWIzODBiZTc3&quot;</li>
+</ul>
+<ul>
+<li>http_method = &#39;GET&#39;</li>
+</ul>
+<ul>
+<li>authorization = calculate_authorization_header(request_url, cur_date, key_id, key_value, http_method)</li>
+</ul>
+<ul>
+<li>http_response = get_endpoints(request_url, cur_date, authorization)</li>
+</ul>
+<ul>
+<li>res_json = json.loads(http_response.text)</li>
+</ul>
+<ul>
+<li>endpoint = i.get(&#39;EndpointId&#39;)</li>
+</ul>
+<ul>
+<li>customDomain = i.get(&#39;Settings&#39;).get(&#39;CustomDomain&#39;)</li>
+</ul>
+<ul>
+<li>cname = i.get(&#39;Settings&#39;).get(&#39;CName&#39;)</li>
+</ul>
+<ul>
+<li>icp = i.get(&#39;Settings&#39;).get(&#39;ICP&#39;)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>根据文档<a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-signature" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-signature</a> 编写调用脚本。以下直接为您提供编写好的脚本，您替换其中信息即可。（脚本放在附件中了）</li>
+</ul>
+<ul>
+<li>使用postman中是在header中设置值，就可以通过api查看出endpointid，查询所有节点endpointid可参考文档：<a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-list-endpoints" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-list-endpoints</a></li>
+</ul>
+<ul>
+<li>使用postman再次调用api查询回源IP列表。<a href="https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/back-to-origin-ips?apiVersion=1.0" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/back-to-origin-ips?apiVersion=1.0</a></li>
+</ul>
+<ul>
+<li>2023.12.5更正：获取回源P列表的时候需要把脚本里的request_url的值替换为新的请求地址<a href="https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/back-to-origin-ips?apiVersion=1.0执行脚本重新获取新的date和Authorization后，再填入postman对应的参数中获取回源IP列表" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/back-to-origin-ips?apiVersion=1.0执行脚本重新获取新的date和Authorization后，再填入postman对应的参数中获取回源IP列表</a></li>
+</ul>
+<ul>
+<li>request_url = &#39;<a href="https://restapi.cdn.azure.cn/subscriptions/&#39;" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/&#39;</a> + subscriptionId + &#39;/endpoints?apiVersion=1.0&#39;</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20201202</p>
+<p>首先在CDN管理页面中找到密钥的ID和密钥，如下图所示：</p>
+<p>根据文档<a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-signature" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-signature</a> 编写调用脚本。以下直接为您提供编写好的脚本，您替换其中信息即可。（脚本放在附件中了）</p>
+<p>脚本依赖python3执行，执行结果如下，复制红框内的字符串。</p>
+<p>使用postman中是在header中设置值，就可以通过api查看出endpointid，查询所有节点endpointid可参考文档：<a href="https://docs.azure.cn/zh-cn/cdn/cdn-api-list-endpoints" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-api-list-endpoints</a></p>
+<p>使用postman再次调用api查询回源IP列表。<a href="https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/back-to-origin-ips?apiVersion=1.0" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/back-to-origin-ips?apiVersion=1.0</a></p>
+<p>2022.7.4补充:应该在VSCODE中使用上方的链接重新进行请求，随后再用postman按相应格式进行查看</p>
+<p>2023.12.5更正：获取回源P列表的时候需要把脚本里的request_url的值替换为新的请求地址<a href="https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/back-to-origin-ips?apiVersion=1.0执行脚本重新获取新的date和Authorization后，再填入postman对应的参数中获取回源IP列表" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/{subscriptionId}/endpoints/{endpointId}/back-to-origin-ips?apiVersion=1.0执行脚本重新获取新的date和Authorization后，再填入postman对应的参数中获取回源IP列表</a></p>
+<p>e11ede9d-d74a-4590-b362-4e5c0b16dfa1</p>
+<p>lease input yourKeyID:e061685d-2194-48d2-b74f-a88e5faa547a</p>
+<p>ZTQyYjI2NzMtYjZkZC00N2MxLTgzZDItMjY0ZWI3Njc2YjI4</p>
+<p>import urllib</p>
+<p>from urllib import parse</p>
+<p>from collections import OrderedDict</p>
+<p>import hmac</p>
+<p>import hashlib</p>
+<p>from datetime import datetime</p>
+<p>import requests</p>
+<p>import json</p>
+<p>def calculate_authorization_header(request_url, request_time, key_id, key_value, http_method):</p>
+<p>&quot;&quot;&quot; Calculate the authorization header.</p>
+<p>@request_url: Complete request URL with scheme, host, path and queries</p>
+<p>@request_time: UTC request time with format yyyy-MM-dd HH:mm:ss</p>
+<p>@key_id: API key ID</p>
+<p>@key_value: API key value</p>
+<p>@http_method: Http method in upper case</p>
+<p>&quot;&quot;&quot;</p>
+<p>urlparts = urllib.parse.urlparse(request_url)</p>
+<p>queries = urllib.parse.parse_qs(urlparts.query)</p>
+<p>ordered_queries = OrderedDict(sorted(queries.items()))</p>
+<p>message = &quot;%s\r\n%s\r\n%s\r\n%s&quot; % (urlparts.path, &quot;, &quot;.join([&#39;%s:%s&#39; % (key, value[0]) for (key, value) in ordered_queries.items()]), request_time, http_method)</p>
+<p>digest = hmac.new(bytearray(key_value, &quot;utf-8&quot;), bytearray(message, &quot;utf-8&quot;), hashlib.sha256).hexdigest().upper()</p>
+<p>return &quot;AzureCDN %s:%s&quot; % (key_id, digest)</p>
+<p>def get_endpoints(url,request_time,authorization):</p>
+<p>header = {&#39;x-azurecdn-request-date&#39;:request_time, &#39;Authorization&#39;:authorization}</p>
+<p>response = requests.get(url, headers=header)</p>
+<p>return response</p>
+<p>if __name__ == &#39;__main__&#39;:</p>
+<h1>计算Authorization需要的信息</h1>
+<p>subscriptionId = &quot;eae551d8-92de-41a1-bef9-a74aebffad7f&quot;</p>
+<p>request_url = &#39;<a href="https://restapi.cdn.azure.cn/subscriptions/&#39;" target="_blank" rel="noopener">https://restapi.cdn.azure.cn/subscriptions/&#39;</a> + subscriptionId + &#39;/endpoints?apiVersion=1.0&#39;</p>
+<p>cur_date = datetime.utcnow().strftime(&#39;%Y-%m-%d %H:%M:%S&#39;)</p>
+<p>key_id = &quot;c53bdd6b-761a-4940-bee4-4256ae2ec5e5&quot;</p>
+<p>key_value = &quot;NmI0YzM2ZDUtMzBjYi00NmRlLTgzM2ItOTQxNWIzODBiZTc3&quot;</p>
+<p>http_method = &#39;GET&#39;</p>
+<h1>计算Authorization头</h1>
+<p>authorization = calculate_authorization_header(request_url, cur_date, key_id, key_value, http_method)</p>
+<p>print(&quot;Time:%s\nAuthorization:%s&quot; % (cur_date,authorization))</p>
+<h1>发送HTTP请求</h1>
+<p>http_response = get_endpoints(request_url, cur_date, authorization)</p>
+<p>res_json = json.loads(http_response.text)</p>
+<p>for i in res_json :</p>
+<p>endpoint = i.get(&#39;EndpointId&#39;)</p>
+<p>customDomain = i.get(&#39;Settings&#39;).get(&#39;CustomDomain&#39;)</p>
+<p>cname = i.get(&#39;Settings&#39;).get(&#39;CName&#39;)</p>
+<p>icp = i.get(&#39;Settings&#39;).get(&#39;ICP&#39;)</p>
+<p>print(&quot;%s\t%s\t%s\t%s&quot; % (endpoint,customDomain,cname,icp))</p></article>

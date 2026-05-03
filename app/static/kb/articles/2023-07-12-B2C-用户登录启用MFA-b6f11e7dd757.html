@@ -1,0 +1,131 @@
+<article class="kb-article" data-title="B2C 用户登录启用MFA"><h1>B2C 用户登录启用MFA</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-07-12 13:41:24</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>ZhangWenxin</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>ZhangWenxin</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>ZhangWenxin</li>
+</ul>
+<ul>
+<li>首先按照如下官方文档准备体验框架</li>
+</ul>
+<ul>
+<li>1.替换所有文件中的 TenantId ：51b14e0c-505b-4ad8-b62c-62e3f8c27dcc 为自己的 ID</li>
+</ul>
+<ul>
+<li>2.替换所有文件中 TenantName：zhangtest.partner.onmschina.cn 为自己B2C目录的名称</li>
+</ul>
+<ul>
+<li>3.修改zhangtest.partner.onmschina.cn-B2C_1A_TRUSTFRAMEWORKEXTENSIONS.xml文件分别写入自己的应用程序信息：</li>
+</ul>
+<ul>
+<li>找到B2C目录中的应用程序 “b2c-extensions-app. Do not modify. Used by AADB2C for storing user data.”</li>
+</ul>
+<ul>
+<li>修改</li>
+</ul>
+<ul>
+<li>替换之前体验框架建立的应用程序ID：IdentityExperienceFramework和ProxyIdentityExperienceFramework</li>
+</ul>
+<ul>
+<li>4.建立Token：TokenSigningKeyContainer 和TokenEncryptionKeyContainer</li>
+</ul>
+<ul>
+<li>4.依次上传</li>
+</ul>
+<ul>
+<li>zhangtest.partner.onmschina.cn-B2C_1A_TRUSTFRAMEWORKBASE.xml</li>
+</ul>
+<ul>
+<li>zhangtest.partner.onmschina.cn-B2C_1A_TRUSTFRAMEWORKLOCALIZATION.xml</li>
+</ul>
+<ul>
+<li>zhangtest.partner.onmschina.cn-B2C_1A_TRUSTFRAMEWORKEXTENSIONS.xml</li>
+</ul>
+<ul>
+<li>zhangtest.partner.onmschina.cn-B2C_1A_SIGNUP_SIGNIN.xml</li>
+</ul>
+<ul>
+<li>zhangtest.partner.onmschina.cn-B2C_1A_PASSWORDRESET.xml</li>
+</ul>
+<ul>
+<li>zhangtest.partner.onmschina.cn-B2C_1A_PROFILEEDIT.xml</li>
+</ul>
+<ul>
+<li>SignUpOrSignin_PhoneOrEmailMFA.xml</li>
+</ul>
+<ul>
+<li>并填写相应信息（如果选择邮箱则为用户的账号名）</li>
+</ul>
+<ul>
+<li>或电话</li>
+</ul>
+<ul>
+<li>住目前没有找到如何更改MFA设置为邮件或电话的位置，删除电话号码后会要求重新输入，但邮件和phone选择仅会出现一次。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>然后按照如下步骤上传自定义策略</li>
+</ul>
+<ul>
+<li>验证登录时要求MFA的情况</li>
+</ul>
+<ul>
+<li>初次登录密码验证后会提示选择MFA方法</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>输入的手机号在用户的信息中出现，账户的MFA设置中该用户的设置依然为Disable</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy</a></li>
+</ul>
+<ul>
+<li>参考链接：<a href="https://github.com/azure-ad-b2c/samples/tree/master/policies/mfa-email-or-phone" target="_blank" rel="noopener">https://github.com/azure-ad-b2c/samples/tree/master/policies/mfa-email-or-phone</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>ZhangWenxin</p>
+<p>2022/6/21</p>
+<p>首先按照如下官方文档准备体验框架</p>
+<p><a href="https://docs.azure.cn/zh-cn/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/tutorial-create-user-flows?pivots=b2c-custom-policy</a></p>
+<p>然后按照如下步骤上传自定义策略</p>
+<p>1.替换所有文件中的 TenantId ：51b14e0c-505b-4ad8-b62c-62e3f8c27dcc 为自己的 ID</p>
+<p>2.替换所有文件中 TenantName：zhangtest.partner.onmschina.cn 为自己B2C目录的名称</p>
+<p>3.修改zhangtest.partner.onmschina.cn-B2C_1A_TRUSTFRAMEWORKEXTENSIONS.xml文件分别写入自己的应用程序信息：</p>
+<p>找到B2C目录中的应用程序 “b2c-extensions-app. Do not modify. Used by AADB2C for storing user data.”</p>
+<p>修改</p>
+<p>替换之前体验框架建立的应用程序ID：IdentityExperienceFramework和ProxyIdentityExperienceFramework</p>
+<p>4.建立Token：TokenSigningKeyContainer 和TokenEncryptionKeyContainer</p>
+<p>4.依次上传</p>
+<p>zhangtest.partner.onmschina.cn-B2C_1A_TRUSTFRAMEWORKBASE.xml</p>
+<p>zhangtest.partner.onmschina.cn-B2C_1A_TRUSTFRAMEWORKLOCALIZATION.xml</p>
+<p>zhangtest.partner.onmschina.cn-B2C_1A_TRUSTFRAMEWORKEXTENSIONS.xml</p>
+<p>zhangtest.partner.onmschina.cn-B2C_1A_SIGNUP_SIGNIN.xml</p>
+<p>zhangtest.partner.onmschina.cn-B2C_1A_PASSWORDRESET.xml</p>
+<p>zhangtest.partner.onmschina.cn-B2C_1A_PROFILEEDIT.xml</p>
+<p>SignUpOrSignin_PhoneOrEmailMFA.xml</p>
+<p>验证登录时要求MFA的情况</p>
+<p>初次登录密码验证后会提示选择MFA方法</p>
+<p>并填写相应信息（如果选择邮箱则为用户的账号名）</p>
+<p>或电话</p>
+<p>输入的手机号在用户的信息中出现，账户的MFA设置中该用户的设置依然为Disable</p>
+<p>参考链接：<a href="https://github.com/azure-ad-b2c/samples/tree/master/policies/mfa-email-or-phone" target="_blank" rel="noopener">https://github.com/azure-ad-b2c/samples/tree/master/policies/mfa-email-or-phone</a></p>
+<p>住目前没有找到如何更改MFA设置为邮件或电话的位置，删除电话号码后会要求重新输入，但邮件和phone选择仅会出现一次。</p></article>

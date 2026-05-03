@@ -1,0 +1,96 @@
+<article class="kb-article" data-title="ER FAQ(2018)"><h1>ER FAQ(2018)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: ER</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-01-12 15:01:23</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>在处理ER工单的过程中，如客户问到MSEE是否有异常，是否丢包时，请告诉客户：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>在处理ER工单的过程中，如客户问到MSEE是否有异常，是否丢包时，请告诉客户：</li>
+</ul>
+<ul>
+<li>自ER上线以来，MSEE设备一直运行稳定，还未有一例工单是由于MSEE出现问题导致的连接异常。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>[Last update:2018/8/31]</li>
+</ul>
+<ul>
+<li>在ER连接创建好后，且网络连接正常的情况下，虚拟机网卡的有效路由是ERGW时，下一跳会有如下地址，这个是正常的，该地址是MSEE的还回接口，用于和ERGW建立Tunnel.</li>
+</ul>
+<ul>
+<li>bjb-06gmr-cis-1     10.203.0.1/32</li>
+</ul>
+<ul>
+<li>bjb-06gmr-cis-2     10.203.0.2/32</li>
+</ul>
+<ul>
+<li>sha03-06gmr-cis-1   10.203.128.1/32</li>
+</ul>
+<ul>
+<li>sha03-06gmr-cis-2   10.203.128.2/32</li>
+</ul>
+<ul>
+<li>[Last update:2018/8/31]W</li>
+</ul>
+<ul>
+<li>关于CCS服务：</li>
+</ul>
+<ul>
+<li>CCS服务已经Public review，如果客户咨询如何开通ER，我们可以将CCS服务的开通链接发给客户，并且请客户同时联系MS的销售。关于CCS的相关链接如下：</li>
+</ul>
+<ul>
+<li>Summary (简介)：</li>
+</ul>
+<ul>
+<li>Quick Start(云连接服务快速入门)：</li>
+</ul>
+<ul>
+<li>FAQ(云连接服务常见问题)：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>请不要引导客户在MSEE上抓包来排除Azure的问题。如果客户要求在MSEE上抓包，请告诉客户因为在MSEE上抓包对整个平台可能会造成较大的影响，所以平台策略是不建议在MSEE上抓包。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://www.azure.cn/zh-cn/home/features/ccs/" target="_blank" rel="noopener">https://www.azure.cn/zh-cn/home/features/ccs/</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/articles/cloud-connection-service/cloud-connection-service-quick-start" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/cloud-connection-service/cloud-connection-service-quick-start</a></li>
+</ul>
+<ul>
+<li><a href="https://www.azure.cn/zh-cn/pricing/details/ccs/" target="_blank" rel="noopener">https://www.azure.cn/zh-cn/pricing/details/ccs/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>[Last update:2018/8/31]</p>
+<p>在ER连接创建好后，且网络连接正常的情况下，虚拟机网卡的有效路由是ERGW时，下一跳会有如下地址，这个是正常的，该地址是MSEE的还回接口，用于和ERGW建立Tunnel.</p>
+<p>bjb-06gmr-cis-1     10.203.0.1/32</p>
+<p>bjb-06gmr-cis-2     10.203.0.2/32</p>
+<p>sha03-06gmr-cis-1   10.203.128.1/32</p>
+<p>sha03-06gmr-cis-2   10.203.128.2/32</p>
+<p>在处理ER工单的过程中，如客户问到MSEE是否有异常，是否丢包时，请告诉客户：</p>
+<p>自ER上线以来，MSEE设备一直运行稳定，还未有一例工单是由于MSEE出现问题导致的连接异常。</p>
+<p>请不要引导客户在MSEE上抓包来排除Azure的问题。如果客户要求在MSEE上抓包，请告诉客户因为在MSEE上抓包对整个平台可能会造成较大的影响，所以平台策略是不建议在MSEE上抓包。</p>
+<p>[Last update:2018/8/31]W</p>
+<p>关于CCS服务：</p>
+<p>CCS服务已经Public review，如果客户咨询如何开通ER，我们可以将CCS服务的开通链接发给客户，并且请客户同时联系MS的销售。关于CCS的相关链接如下：</p>
+<p>Summary (简介)：</p>
+<p><a href="https://www.azure.cn/zh-cn/home/features/ccs/" target="_blank" rel="noopener">https://www.azure.cn/zh-cn/home/features/ccs/</a></p>
+<p>Quick Start(云连接服务快速入门)：</p>
+<p><a href="https://docs.azure.cn/zh-cn/articles/cloud-connection-service/cloud-connection-service-quick-start" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/cloud-connection-service/cloud-connection-service-quick-start</a></p>
+<p>FAQ(云连接服务常见问题)：</p>
+<p><a href="https://www.azure.cn/zh-cn/pricing/details/ccs/" target="_blank" rel="noopener">https://www.azure.cn/zh-cn/pricing/details/ccs/</a></p></article>

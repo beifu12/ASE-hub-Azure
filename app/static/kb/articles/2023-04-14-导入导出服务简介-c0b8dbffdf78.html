@@ -1,0 +1,370 @@
+<article class="kb-article" data-title="导入导出服务简介"><h1>导入导出服务简介</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Operation Guideline</li>
+<li>最近修改: 2023-04-14 11:29:00</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>DstBlobPathOrPrefix中的容器名一定要小写，不然会报错。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>DstBlobPathOrPrefix中的容器名一定要小写，不然会报错。</li>
+</ul>
+<ul>
+<li>Basepath中的文件夹项最后一定要加上反斜杠“\“，不然会报错。</li>
+</ul>
+<ul>
+<li>如果暂时不知道EMS的承运人账号，可以先填unknown部署作业，在寄送硬盘后使用作业内的管理装运信息更改承运人账号。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>DL-DC-BJB@oe.21vianet.com  导入导出服务的负责运维团队的组邮箱</li>
+</ul>
+<ul>
+<li>Azure中国导入导出服务简介</li>
+</ul>
+<ul>
+<li>先决条件</li>
+</ul>
+<ul>
+<li>客户需要根据自己的需求决定要上传多大的数据，分成多少个硬盘储存并寄送。注意服务最大支持10TB硬盘，每个作业最多可以寄送10个硬盘。</li>
+</ul>
+<ul>
+<li>注意要点：</li>
+</ul>
+<ul>
+<li>位置</li>
+</ul>
+<ul>
+<li>目前只有中国北部的Azure存储账户支持导入导出服务。</li>
+</ul>
+<ul>
+<li>存储账户</li>
+</ul>
+<ul>
+<li>导入导出作业不可跨多个存储账户，每个存储账户需要至少一个导入导出作业。</li>
+</ul>
+<ul>
+<li>作业</li>
+</ul>
+<ul>
+<li>对于导入作业，客户需要寄送包含数据的硬盘。</li>
+</ul>
+<ul>
+<li>对于导出作业，客户需要寄送空硬盘。</li>
+</ul>
+<ul>
+<li>每个作业最多可以寄送10个硬盘(意味着如果客户需要向同一个存储账户内导入200T以上的数据，需要通过多个作业进行操作)。</li>
+</ul>
+<ul>
+<li>客户端工具</li>
+</ul>
+<ul>
+<li>下载链接为此处。</li>
+</ul>
+<ul>
+<li>此工具仅支持64位Windows操作系统，具体操作系统版本请参考文档。</li>
+</ul>
+<ul>
+<li>硬盘部分</li>
+</ul>
+<ul>
+<li>只支持3.5寸SATA2或SATA3机械硬盘，硬盘容量最大支持10TB。</li>
+</ul>
+<ul>
+<li>只支持NTFS格式的数据卷。</li>
+</ul>
+<ul>
+<li>导入服务只会读取每块硬盘的第一个数据卷。</li>
+</ul>
+<ul>
+<li>此服务只支持使用SATA接口的硬盘，请不要寄送只有USB接口的硬盘，或是装在移动硬盘盒里的硬盘。</li>
+</ul>
+<ul>
+<li>加密</li>
+</ul>
+<ul>
+<li>对于导入作业，客户可以选择使用客户端工具对硬盘进行准备时加密，或对硬盘手动加密后在客户端工具的驱动器表格内提供密钥。</li>
+</ul>
+<ul>
+<li>对于导出作业，服务会将数据加密后保存在硬盘中寄回给客户。加密密钥会通过管理门户提供给客户。</li>
+</ul>
+<ul>
+<li>装运</li>
+</ul>
+<ul>
+<li>目前管理门户的快递商只支持EMS，且需要客户提供EMS服务账户号码，以便在寄回硬盘时使用。</li>
+</ul>
+<ul>
+<li>使用客户端工具准备硬盘</li>
+</ul>
+<ul>
+<li>下载并解压客户端工具至文件夹后，会发现里面有dataset.csv和driveset.csv文件，客户需要手动编辑这两个文件。Dataset设置指明哪些文件需要写入邮寄的硬盘，driveset设置指明在对磁盘进行准备时是否需要格式化/加密等操作。</li>
+</ul>
+<ul>
+<li>Dataset.csv文件内， Basepath可以是文件夹或是文件，使用的是Windows文件系统下的绝对路径。DstBlobPathOrPrefix是目标Azure存储账号的相对路径。</li>
+</ul>
+<ul>
+<li>注意：</li>
+</ul>
+<ul>
+<li>DstBlobPathOrPrefix中的文件夹项最后一定要加上正斜杠”/”。</li>
+</ul>
+<ul>
+<li>例子：</li>
+</ul>
+<ul>
+<li>第一行100M_1.vhd文件将被上传至containername/100M_1.vhd。</li>
+</ul>
+<ul>
+<li>第二行F:\50M_original文件夹以内的所有文件都会被上传至containername容器下。</li>
+</ul>
+<ul>
+<li>BasePath,DstBlobPathOrPrefix,BlobType,Disposition,MetadataFile,PropertiesFile</li>
+</ul>
+<ul>
+<li>&quot;F:\50M_original\100M_1.csv.txt&quot;,&quot;containername/100M_1.csv.txt&quot;,PageBlob,rename,&quot;None&quot;,None</li>
+</ul>
+<ul>
+<li>&quot;F:\50M_original\&quot;,&quot;containername/&quot;,BlockBlob,rename,&quot;None&quot;,None</li>
+</ul>
+<ul>
+<li>Driveset.csv文件内，使用FormatOption选项来决定在对磁盘进行准备时是否格式化，使用Encryption选项来表示硬盘是否已被加密。如果硬盘已被加密，则需要在ExistingBitLockerKey选项中填写Bitlocker的加密密钥。</li>
+</ul>
+<ul>
+<li>第一行G盘已格式化并加密，需要提供加密密钥</li>
+</ul>
+<ul>
+<li>第二行H盘需要进行格式化并加密。</li>
+</ul>
+<ul>
+<li>DriveLetter,FormatOption,SilentOrPromptOnFormat,Encryption,ExistingBitLockerKey</li>
+</ul>
+<ul>
+<li>G,AlreadyFormatted,SilentMode,AlreadyEncrypted,060456-014509-132033-080300-252615-584177-672089-411631 |</li>
+</ul>
+<ul>
+<li>H,Format,SilentMode,Encrypt,</li>
+</ul>
+<ul>
+<li>WAImportExport.exe PrepImport /j:&lt;JournalFile&gt; /id:&lt;SessionId&gt; /AdditionalDriveSet:&lt;driveset.csv&gt;</li>
+</ul>
+<ul>
+<li>JournalFile代表存放Journal文件的本地路径。Journal文件分两种，.jrn和.xml。.jrn文件在首次对硬盘进行准备时会被生成，用来标志每个session，在续传数据、给作业中增添数据源或硬盘等操作里起到定位的作用。.xml文件标识了每个硬盘的属性，在使用管理门户创建作业时需要上传至作业。</li>
+</ul>
+<ul>
+<li>SessionId是每次准备硬盘操作的会话号。客户可以自由命名SessionId。如需为作业添加数据源或硬盘时，需要提供与之前不同的会话号以及新的dataset和driveset文件以明确相应的设置。</li>
+</ul>
+<ul>
+<li>InitialDriveSet是指初始的Driveset文件，如果是为已有的作业添加新的硬盘，需要引用AdditionalDriveSet参数。</li>
+</ul>
+<ul>
+<li>DataSet是客户为上传的文件指定的文件结构。没有在DataSet.csv文件中被引用的文件/文件夹不会被上传至Azure存储账号。</li>
+</ul>
+<ul>
+<li>当硬盘准备完成后，不要手动对硬盘内的数据进行更改。任何更改应该通过客户端工具来完成。</li>
+</ul>
+<ul>
+<li>对硬盘进行首次准备工作，从driveset-1.csv读入driveset设置，从dataset-1.csv读入dataset设置</li>
+</ul>
+<ul>
+<li>为作业添加新的邮寄硬盘，使用同样的Journal文件，使用新的SessionId，并从driveset-2.csv读入driveset设置</li>
+</ul>
+<ul>
+<li>WAImportExport.exe PrepImport /j:JournalTest.jrn /id:session#3  /AdditionalDriveSet:driveset-2.csv</li>
+</ul>
+<ul>
+<li>为作业添加新的数据源，使用同样的Journal文件，使用新的SessionId，并从dataset-2.csv读入dataset设置</li>
+</ul>
+<ul>
+<li>WAImportExport.exe PrepImport /j:JournalTest.jrn /id:session#2  /DataSet:dataset-2.csv</li>
+</ul>
+<ul>
+<li>创建导入导出作业</li>
+</ul>
+<ul>
+<li>客户可以在新版预览门户的更多服务的其他项里找到导入导出作业，或使用新建项目显示全部后在存储类中找到Import Export Job。</li>
+</ul>
+<ul>
+<li>在配置基本设置页面，选择作业的类型以及资源组等。</li>
+</ul>
+<ul>
+<li>在配置数据和目标页面，选择上传.xml的journal文件。该文件被保存在客户端工具文件夹内，以驱动器ID为文件名。导入目标应选择中国北部的存储账户，注意存储账户与之前进行磁盘准备时使用的存储账户访问密钥应该一一对应。</li>
+</ul>
+<ul>
+<li>在配置退货运送详细信息页面，填写EMS的承运人账号及退货地址。</li>
+</ul>
+<ul>
+<li>后续</li>
+</ul>
+<ul>
+<li>FAQ：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>WAImportExport.exe PrepImport /j:&lt;JournalFile&gt; /id:&lt;SessionId&gt; [/logdir:&lt;LogDirectory&gt;] [/sk:&lt;StorageAccountKey&gt;] [/silentmode] [/InitialDriveSet:&lt;driveset.csv&gt;] DataSet:&lt;dataset.csv&gt;</li>
+</ul>
+<ul>
+<li>WAImportExport PrepImport /j:&lt;JournalFile&gt; /id:&lt;SessionId&gt; /j:&lt;JournalFile&gt; /id:&lt;SessionId&gt; [/logdir:&lt;LogDirectory&gt;] DataSet:&lt;dataset.csv&gt;</li>
+</ul>
+<ul>
+<li>Logdir参数是保存客户端工具日志的本地文件夹，其中.xml日志包含了传输的数据块及其hash，.log文件包含了cmd窗口输出的内容。</li>
+</ul>
+<ul>
+<li>WAImportExport.exe PrepImport /j:JournalTest.jrn /id:session#1  /sk:************* /InitialDriveSet:driveset-1.csv /DataSet:dataset-1.csv /logdir:F:\logs</li>
+</ul>
+<ul>
+<li>在客户端工具完成硬盘准备后，会给出详细的用时情况，示例中150GB的数据用了25分钟。详细的日志会记录在/logdir参数的文件夹内。</li>
+</ul>
+<ul>
+<li>在最后一步中确认相关信息正确无误，点击确定，部署该作业。</li>
+</ul>
+<ul>
+<li>Azure的工作人员在收到硬盘后会确认数据有效并将数据导入/导出相关存储账号，硬盘将在完成后使用同样的EMS承运人账号返还给客户。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在决定好数据源和硬盘数量，并准备好dataset.csv和driveset.csv文件后，客户就可以使用客户端工具对硬盘进行准备，并将数据拷入硬盘中。使用命令如下：</li>
+</ul>
+<ul>
+<li>建议在带有Administrator权限的cmd命令行中运行此命令，不要使用PowerShell转cmd。</li>
+</ul>
+<ul>
+<li>Sk是目标Azure存储账号的访问密钥，可以从管理门户或PowerShell命令Get-AzureStorageKey取得。需要注意的是，导入导出服务从客户端工具中拿到存储账号的访问密钥，从管理门户中的导入导出作业中拿到存储账号名，由此达到对存储账号的访问权限。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在决定好数据源和硬盘数量，并准备好dataset.csv和driveset.csv文件后，客户就可以使用客户端工具对硬盘进行准备，并将数据拷入硬盘中。客户端工具会根据客户提供的dataset和driveset设置，对数据源进行读取，并平均地写入硬盘中。客户无需关心数据在硬盘中的摆放结构，服务在上传数据至Azure存储时，会将数据根据dataset设置中安排的结构上传。</li>
+</ul>
+<ul>
+<li>使用合适的文本编辑工具来编辑.csv文件，如notepad++。不建议使用excel或notepad，以避免不必要的转码。</li>
+</ul>
+<ul>
+<li>建议将Basepath，DstBlobPathOrPrefix和MetadataFile项的值加上引号“。</li>
+</ul>
+<ul>
+<li>在硬盘中，数据会以session为单位分开存放，每个session会将dataset设置内不同的文件和文件夹保存在不同的文件夹内。同时磁盘根目录会有一个名为DriveManifest.xml的文件，保存了数据块的信息。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>请参考中文文档<a href="https://www.azure.cn/documentation/articles/storage-import-export-service/的先决条件部分。服务的收费信息请参考https://www.azure.cn/pricing/details/storage-import-export/，如果有疑议请联系世纪互联商务团队。" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/storage-import-export-service/的先决条件部分。服务的收费信息请参考https://www.azure.cn/pricing/details/storage-import-export/，如果有疑议请联系世纪互联商务团队。</a></li>
+</ul>
+<ul>
+<li>请参考英文文档<a href="https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-service#how-to-create-an-import-job。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-service#how-to-create-an-import-job。</a></li>
+</ul>
+<ul>
+<li>详细参数可以参考英文文档<a href="https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-preparing-hard-drives-import#prepare-the-dataset-csv-file。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-preparing-hard-drives-import#prepare-the-dataset-csv-file。</a></li>
+</ul>
+<ul>
+<li>.vhd格式的文件应该以PageBlob的形式上传。如需将.vhd直接制作成Azure VM镜像，需要事先将.vhd文件转换为固定大小的vhd文件，否则会无法生成镜像。具体步骤请参考<a href="https://blogs.msdn.microsoft.com/virtual_pc_guy/2011/12/28/converting-to-a-fixed-virtual-hard-diskthe-easy-way/。" target="_blank" rel="noopener">https://blogs.msdn.microsoft.com/virtual_pc_guy/2011/12/28/converting-to-a-fixed-virtual-hard-diskthe-easy-way/。</a></li>
+</ul>
+<ul>
+<li>详细参数可以参考英文文档<a href="https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-preparing-hard-drives-import#prepare-initialdriveset-or-additionaldriveset-csv-file。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-preparing-hard-drives-import#prepare-initialdriveset-or-additionaldriveset-csv-file。</a></li>
+</ul>
+<ul>
+<li>详细内容可以参考英文文档<a href="https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-preparing-hard-drives-import。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-preparing-hard-drives-import。</a></li>
+</ul>
+<ul>
+<li>详细例子可以参考英文文档<a href="https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-sample-preparing-hard-drives-import-job-workflow。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-sample-preparing-hard-drives-import-job-workflow。</a></li>
+</ul>
+<ul>
+<li>相关进度可以通过管理门户的作业状态查看，进度同时会标识每个磁盘的数据传输进度。详细信息请参考英文文档<a href="https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-service#viewing-your-job-status。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-service#viewing-your-job-status。</a></li>
+</ul>
+<ul>
+<li>请参考中文文档<a href="https://www.azure.cn/documentation/articles/storage-import-export-service的常见问题部分。" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/storage-import-export-service的常见问题部分。</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>DL-DC-BJB@oe.21vianet.com  导入导出服务的负责运维团队的组邮箱</p>
+<p>Azure中国导入导出服务简介</p>
+<p>先决条件</p>
+<p>请参考中文文档<a href="https://www.azure.cn/documentation/articles/storage-import-export-service/的先决条件部分。服务的收费信息请参考https://www.azure.cn/pricing/details/storage-import-export/，如果有疑议请联系世纪互联商务团队。" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/storage-import-export-service/的先决条件部分。服务的收费信息请参考https://www.azure.cn/pricing/details/storage-import-export/，如果有疑议请联系世纪互联商务团队。</a></p>
+<p>客户需要根据自己的需求决定要上传多大的数据，分成多少个硬盘储存并寄送。注意服务最大支持10TB硬盘，每个作业最多可以寄送10个硬盘。</p>
+<p>注意要点：</p>
+<p>位置</p>
+<p>目前只有中国北部的Azure存储账户支持导入导出服务。</p>
+<p>存储账户</p>
+<p>导入导出作业不可跨多个存储账户，每个存储账户需要至少一个导入导出作业。</p>
+<p>作业</p>
+<p>对于导入作业，客户需要寄送包含数据的硬盘。</p>
+<p>对于导出作业，客户需要寄送空硬盘。</p>
+<p>每个作业最多可以寄送10个硬盘(意味着如果客户需要向同一个存储账户内导入200T以上的数据，需要通过多个作业进行操作)。</p>
+<p>客户端工具</p>
+<p>下载链接为此处。</p>
+<p>此工具仅支持64位Windows操作系统，具体操作系统版本请参考文档。</p>
+<p>硬盘部分</p>
+<p>只支持3.5寸SATA2或SATA3机械硬盘，硬盘容量最大支持10TB。</p>
+<p>只支持NTFS格式的数据卷。</p>
+<p>导入服务只会读取每块硬盘的第一个数据卷。</p>
+<p>此服务只支持使用SATA接口的硬盘，请不要寄送只有USB接口的硬盘，或是装在移动硬盘盒里的硬盘。</p>
+<p>加密</p>
+<p>对于导入作业，客户可以选择使用客户端工具对硬盘进行准备时加密，或对硬盘手动加密后在客户端工具的驱动器表格内提供密钥。</p>
+<p>对于导出作业，服务会将数据加密后保存在硬盘中寄回给客户。加密密钥会通过管理门户提供给客户。</p>
+<p>装运</p>
+<p>目前管理门户的快递商只支持EMS，且需要客户提供EMS服务账户号码，以便在寄回硬盘时使用。</p>
+<p>使用客户端工具准备硬盘</p>
+<p>请参考英文文档<a href="https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-service#how-to-create-an-import-job。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-service#how-to-create-an-import-job。</a></p>
+<p>下载并解压客户端工具至文件夹后，会发现里面有dataset.csv和driveset.csv文件，客户需要手动编辑这两个文件。Dataset设置指明哪些文件需要写入邮寄的硬盘，driveset设置指明在对磁盘进行准备时是否需要格式化/加密等操作。</p>
+<p>在决定好数据源和硬盘数量，并准备好dataset.csv和driveset.csv文件后，客户就可以使用客户端工具对硬盘进行准备，并将数据拷入硬盘中。客户端工具会根据客户提供的dataset和driveset设置，对数据源进行读取，并平均地写入硬盘中。客户无需关心数据在硬盘中的摆放结构，服务在上传数据至Azure存储时，会将数据根据dataset设置中安排的结构上传。</p>
+<p>使用合适的文本编辑工具来编辑.csv文件，如notepad++。不建议使用excel或notepad，以避免不必要的转码。</p>
+<p>Dataset.csv文件内， Basepath可以是文件夹或是文件，使用的是Windows文件系统下的绝对路径。DstBlobPathOrPrefix是目标Azure存储账号的相对路径。</p>
+<p>详细参数可以参考英文文档<a href="https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-preparing-hard-drives-import#prepare-the-dataset-csv-file。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-preparing-hard-drives-import#prepare-the-dataset-csv-file。</a></p>
+<p>注意：</p>
+<p>建议将Basepath，DstBlobPathOrPrefix和MetadataFile项的值加上引号“。</p>
+<p>DstBlobPathOrPrefix中的容器名一定要小写，不然会报错。</p>
+<p>Basepath中的文件夹项最后一定要加上反斜杠“\“，不然会报错。</p>
+<p>DstBlobPathOrPrefix中的文件夹项最后一定要加上正斜杠”/”。</p>
+<p>.vhd格式的文件应该以PageBlob的形式上传。如需将.vhd直接制作成Azure VM镜像，需要事先将.vhd文件转换为固定大小的vhd文件，否则会无法生成镜像。具体步骤请参考<a href="https://blogs.msdn.microsoft.com/virtual_pc_guy/2011/12/28/converting-to-a-fixed-virtual-hard-diskthe-easy-way/。" target="_blank" rel="noopener">https://blogs.msdn.microsoft.com/virtual_pc_guy/2011/12/28/converting-to-a-fixed-virtual-hard-diskthe-easy-way/。</a></p>
+<p>例子：</p>
+<p>第一行100M_1.vhd文件将被上传至containername/100M_1.vhd。</p>
+<p>第二行F:\50M_original文件夹以内的所有文件都会被上传至containername容器下。</p>
+<p>BasePath,DstBlobPathOrPrefix,BlobType,Disposition,MetadataFile,PropertiesFile</p>
+<p>&quot;F:\50M_original\100M_1.csv.txt&quot;,&quot;containername/100M_1.csv.txt&quot;,PageBlob,rename,&quot;None&quot;,None</p>
+<p>&quot;F:\50M_original\&quot;,&quot;containername/&quot;,BlockBlob,rename,&quot;None&quot;,None</p>
+<p>Driveset.csv文件内，使用FormatOption选项来决定在对磁盘进行准备时是否格式化，使用Encryption选项来表示硬盘是否已被加密。如果硬盘已被加密，则需要在ExistingBitLockerKey选项中填写Bitlocker的加密密钥。</p>
+<p>详细参数可以参考英文文档<a href="https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-preparing-hard-drives-import#prepare-initialdriveset-or-additionaldriveset-csv-file。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-preparing-hard-drives-import#prepare-initialdriveset-or-additionaldriveset-csv-file。</a></p>
+<p>第一行G盘已格式化并加密，需要提供加密密钥</p>
+<p>第二行H盘需要进行格式化并加密。</p>
+<p>DriveLetter,FormatOption,SilentOrPromptOnFormat,Encryption,ExistingBitLockerKey</p>
+<p>G,AlreadyFormatted,SilentMode,AlreadyEncrypted,060456-014509-132033-080300-252615-584177-672089-411631 |</p>
+<p>H,Format,SilentMode,Encrypt,</p>
+<p>在决定好数据源和硬盘数量，并准备好dataset.csv和driveset.csv文件后，客户就可以使用客户端工具对硬盘进行准备，并将数据拷入硬盘中。使用命令如下：</p>
+<p>WAImportExport.exe PrepImport /j:&lt;JournalFile&gt; /id:&lt;SessionId&gt; [/logdir:&lt;LogDirectory&gt;] [/sk:&lt;StorageAccountKey&gt;] [/silentmode] [/InitialDriveSet:&lt;driveset.csv&gt;] DataSet:&lt;dataset.csv&gt;</p>
+<p>WAImportExport.exe PrepImport /j:&lt;JournalFile&gt; /id:&lt;SessionId&gt; /AdditionalDriveSet:&lt;driveset.csv&gt;</p>
+<p>WAImportExport PrepImport /j:&lt;JournalFile&gt; /id:&lt;SessionId&gt; /j:&lt;JournalFile&gt; /id:&lt;SessionId&gt; [/logdir:&lt;LogDirectory&gt;] DataSet:&lt;dataset.csv&gt;</p>
+<p>建议在带有Administrator权限的cmd命令行中运行此命令，不要使用PowerShell转cmd。</p>
+<p>JournalFile代表存放Journal文件的本地路径。Journal文件分两种，.jrn和.xml。.jrn文件在首次对硬盘进行准备时会被生成，用来标志每个session，在续传数据、给作业中增添数据源或硬盘等操作里起到定位的作用。.xml文件标识了每个硬盘的属性，在使用管理门户创建作业时需要上传至作业。</p>
+<p>SessionId是每次准备硬盘操作的会话号。客户可以自由命名SessionId。如需为作业添加数据源或硬盘时，需要提供与之前不同的会话号以及新的dataset和driveset文件以明确相应的设置。</p>
+<p>Sk是目标Azure存储账号的访问密钥，可以从管理门户或PowerShell命令Get-AzureStorageKey取得。需要注意的是，导入导出服务从客户端工具中拿到存储账号的访问密钥，从管理门户中的导入导出作业中拿到存储账号名，由此达到对存储账号的访问权限。</p>
+<p>InitialDriveSet是指初始的Driveset文件，如果是为已有的作业添加新的硬盘，需要引用AdditionalDriveSet参数。</p>
+<p>DataSet是客户为上传的文件指定的文件结构。没有在DataSet.csv文件中被引用的文件/文件夹不会被上传至Azure存储账号。</p>
+<p>Logdir参数是保存客户端工具日志的本地文件夹，其中.xml日志包含了传输的数据块及其hash，.log文件包含了cmd窗口输出的内容。</p>
+<p>当硬盘准备完成后，不要手动对硬盘内的数据进行更改。任何更改应该通过客户端工具来完成。</p>
+<p>详细内容可以参考英文文档<a href="https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-preparing-hard-drives-import。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-preparing-hard-drives-import。</a></p>
+<p>对硬盘进行首次准备工作，从driveset-1.csv读入driveset设置，从dataset-1.csv读入dataset设置</p>
+<p>WAImportExport.exe PrepImport /j:JournalTest.jrn /id:session#1  /sk:************* /InitialDriveSet:driveset-1.csv /DataSet:dataset-1.csv /logdir:F:\logs</p>
+<p>为作业添加新的邮寄硬盘，使用同样的Journal文件，使用新的SessionId，并从driveset-2.csv读入driveset设置</p>
+<p>WAImportExport.exe PrepImport /j:JournalTest.jrn /id:session#3  /AdditionalDriveSet:driveset-2.csv</p>
+<p>为作业添加新的数据源，使用同样的Journal文件，使用新的SessionId，并从dataset-2.csv读入dataset设置</p>
+<p>WAImportExport.exe PrepImport /j:JournalTest.jrn /id:session#2  /DataSet:dataset-2.csv</p>
+<p>详细例子可以参考英文文档<a href="https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-sample-preparing-hard-drives-import-job-workflow。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-tool-sample-preparing-hard-drives-import-job-workflow。</a></p>
+<p>在客户端工具完成硬盘准备后，会给出详细的用时情况，示例中150GB的数据用了25分钟。详细的日志会记录在/logdir参数的文件夹内。</p>
+<p>在硬盘中，数据会以session为单位分开存放，每个session会将dataset设置内不同的文件和文件夹保存在不同的文件夹内。同时磁盘根目录会有一个名为DriveManifest.xml的文件，保存了数据块的信息。</p>
+<p>创建导入导出作业</p>
+<p>客户可以在新版预览门户的更多服务的其他项里找到导入导出作业，或使用新建项目显示全部后在存储类中找到Import Export Job。</p>
+<p>在配置基本设置页面，选择作业的类型以及资源组等。</p>
+<p>在配置数据和目标页面，选择上传.xml的journal文件。该文件被保存在客户端工具文件夹内，以驱动器ID为文件名。导入目标应选择中国北部的存储账户，注意存储账户与之前进行磁盘准备时使用的存储账户访问密钥应该一一对应。</p>
+<p>在配置退货运送详细信息页面，填写EMS的承运人账号及退货地址。</p>
+<p>在最后一步中确认相关信息正确无误，点击确定，部署该作业。</p>
+<p>如果暂时不知道EMS的承运人账号，可以先填unknown部署作业，在寄送硬盘后使用作业内的管理装运信息更改承运人账号。</p>
+<p>后续</p>
+<p>Azure的工作人员在收到硬盘后会确认数据有效并将数据导入/导出相关存储账号，硬盘将在完成后使用同样的EMS承运人账号返还给客户。</p>
+<p>相关进度可以通过管理门户的作业状态查看，进度同时会标识每个磁盘的数据传输进度。详细信息请参考英文文档<a href="https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-service#viewing-your-job-status。" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/storage/storage-import-export-service#viewing-your-job-status。</a></p>
+<p>FAQ：</p>
+<p>请参考中文文档<a href="https://www.azure.cn/documentation/articles/storage-import-export-service的常见问题部分。" target="_blank" rel="noopener">https://www.azure.cn/documentation/articles/storage-import-export-service的常见问题部分。</a></p></article>

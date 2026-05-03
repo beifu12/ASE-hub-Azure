@@ -1,0 +1,73 @@
+<article class="kb-article" data-title="虚拟机诊断设置中收集自定义日志"><h1>虚拟机诊断设置中收集自定义日志</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-12-08 17:51:18</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>需求背景：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>需求背景：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>需求背景：</li>
+</ul>
+<ul>
+<li>Application!*[System[(Level=1 or Level=2 or Level=3)]]</li>
+</ul>
+<ul>
+<li>黄底部分为事件日志中的Channel，绿底部分为收集的级别。</li>
+</ul>
+<ul>
+<li>Microsoft-WindowsAzure-Diagnostics/Heartbeat!*[System[(Level=1 or Level=2 or Level=3 or Level=4 or Level=5)]]</li>
+</ul>
+<ul>
+<li>Microsoft-WindowsAzure-Status/GuestAgent!*[System[(Level=1 or Level=2 or Level=3 or Level=4 or Level=5)]]</li>
+</ul>
+<ul>
+<li>发现在存储账户的表中是可以收集相关事件日志的。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>客户对比了Log A和诊断设置中收集的日志，发现Log A中有些日志在诊断的表中是没有的。</li>
+</ul>
+<ul>
+<li>排查发现诊断设置默认只收集Application, System和Securtiy</li>
+</ul>
+<ul>
+<li>研究了下诊断设置默认事件日志的设置格式</li>
+</ul>
+<ul>
+<li>在OS中查看Channel的位置截图：</li>
+</ul>
+<ul>
+<li>在诊断设置中加入两条自定义事件日志并保存。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-12-8</p>
+<p>需求背景：</p>
+<p>客户对比了Log A和诊断设置中收集的日志，发现Log A中有些日志在诊断的表中是没有的。</p>
+<p>排查发现诊断设置默认只收集Application, System和Securtiy</p>
+<p>研究了下诊断设置默认事件日志的设置格式</p>
+<p>Application!*[System[(Level=1 or Level=2 or Level=3)]]</p>
+<p>黄底部分为事件日志中的Channel，绿底部分为收集的级别。</p>
+<p>在OS中查看Channel的位置截图：</p>
+<p>在诊断设置中加入两条自定义事件日志并保存。</p>
+<p>Microsoft-WindowsAzure-Diagnostics/Heartbeat!*[System[(Level=1 or Level=2 or Level=3 or Level=4 or Level=5)]]</p>
+<p>Microsoft-WindowsAzure-Status/GuestAgent!*[System[(Level=1 or Level=2 or Level=3 or Level=4 or Level=5)]]</p>
+<p>发现在存储账户的表中是可以收集相关事件日志的。</p></article>

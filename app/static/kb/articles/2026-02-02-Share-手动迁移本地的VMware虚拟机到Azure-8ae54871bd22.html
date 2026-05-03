@@ -1,0 +1,126 @@
+<article class="kb-article" data-title="[Share] 手动迁移本地的VMware虚拟机到Azure"><h1>[Share] 手动迁移本地的VMware虚拟机到Azure</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-02-02 14:54:29</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>思路是将VMDK转换为可用的VHD。但是在Windows中转换成VHD有精度问题，导致经常上传后创建失败。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>思路是将VMDK转换为可用的VHD。但是在Windows中转换成VHD有精度问题，导致经常上传后创建失败。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考如下的要求。</li>
+</ul>
+<ul>
+<li>首先将本地的VMware虚拟机导出。以下导出形式仅作为参考。只要可以导出vmdk单文件即可。</li>
+</ul>
+<ul>
+<li>使用vdiskmanager将多个vmdk文件整合为一个vmdk。</li>
+</ul>
+<ul>
+<li>vmware-vdiskmanager.exe -r &quot;C:\Users\shane\Downloads\New folder\Windows Server 2022-cl1.vmdk&quot; -t 0 &quot;C:\Users\shane\Downloads\ws2022.vmdk&quot;</li>
+</ul>
+<ul>
+<li>下载qemu转换工具。使用该工具更改vmdk磁盘为vhdx磁盘。</li>
+</ul>
+<ul>
+<li>如果有，解除该标识vhdx。</li>
+</ul>
+<ul>
+<li>fsutil sparse setflag &quot;C:\Users\shane\Downloads\ws2022.vhdx&quot; 0</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Environment AzureChinaCloud -UseDeviceAuthentication</li>
+</ul>
+<ul>
+<li>使用Add-AzVhd将该vhd上传并创建managed disk。</li>
+</ul>
+<ul>
+<li>上传的时候，会转换成vhd，请注意磁盘空间大小。</li>
+</ul>
+<ul>
+<li>请注意，有的时候可能磁盘为ActiveUpload的状态。此时仍然在上传中。</li>
+</ul>
+<ul>
+<li>创建虚拟机。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>需要查看属性中没有Sparsefile。</li>
+</ul>
+<ul>
+<li>检查是否完成复制。</li>
+</ul>
+<ul>
+<li>上传后，可以在对应的资源组中查看磁盘。</li>
+</ul>
+<ul>
+<li>创建后查看是否可以运行。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>使用下方命令转换为 vhdx</li>
+</ul>
+<ul>
+<li>使用下方命令检查。</li>
+</ul>
+<ul>
+<li>Get-Item -Path &quot;C:\Users\shane\Downloads\ws2022.vhdx &quot; | Select-Object Name, Attributes</li>
+</ul>
+<ul>
+<li>登录Azure PowerShell</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Add-AzVhd -ResourceGroupName &quot;test&quot; -Location &quot;chinanorth3&quot; -DiskName &quot;vhd2022osdisk&quot; -LocalFilePath &quot;C:\Users\shane\Downloads\ ws2022_fixed.vhdx &quot; -DiskSku &quot;Standard_LRS&quot; -DiskHyperVGeneration &quot;V2&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>最稳妥的操作过程为，将vmdk转换为fixed vhdx。这样会尽可能减少转换精度问题。并且可以使用vhdx在本地的hyper-v测试调试。然后再将vhdx去除Sparsefile标记。使其动态的部分的数据完全展开。 然后使用Add-AzVhd完成格式的上传。Add-AzVhd的转换最为稳妥，并且可以直接建立managed disk。</li>
+</ul>
+<ul>
+<li>qemu-img convert -f vmdk -O vhdx -o subformat=fixed &quot;C:\Users\shane\Downloads\ws2022.vmdk&quot; &quot;C:\Users\shane\Downloads\ws2022.vhdx&quot;</li>
+</ul>
+<ul>
+<li>（可选）此时建议在本地的Hyper-V中测试该系统是否可用。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://qemu.weilnetz.de/w64/" target="_blank" rel="noopener">https://qemu.weilnetz.de/w64/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/02/02</p>
+<p>思路是将VMDK转换为可用的VHD。但是在Windows中转换成VHD有精度问题，导致经常上传后创建失败。</p>
+<p>参考如下的要求。</p>
+<p>最稳妥的操作过程为，将vmdk转换为fixed vhdx。这样会尽可能减少转换精度问题。并且可以使用vhdx在本地的hyper-v测试调试。然后再将vhdx去除Sparsefile标记。使其动态的部分的数据完全展开。 然后使用Add-AzVhd完成格式的上传。Add-AzVhd的转换最为稳妥，并且可以直接建立managed disk。</p>
+<p>首先将本地的VMware虚拟机导出。以下导出形式仅作为参考。只要可以导出vmdk单文件即可。</p>
+<p>使用vdiskmanager将多个vmdk文件整合为一个vmdk。</p>
+<p>vmware-vdiskmanager.exe -r &quot;C:\Users\shane\Downloads\New folder\Windows Server 2022-cl1.vmdk&quot; -t 0 &quot;C:\Users\shane\Downloads\ws2022.vmdk&quot;</p>
+<p>下载qemu转换工具。使用该工具更改vmdk磁盘为vhdx磁盘。</p>
+<p><a href="https://qemu.weilnetz.de/w64/" target="_blank" rel="noopener">https://qemu.weilnetz.de/w64/</a></p>
+<p>使用下方命令转换为 vhdx</p>
+<p>qemu-img convert -f vmdk -O vhdx -o subformat=fixed &quot;C:\Users\shane\Downloads\ws2022.vmdk&quot; &quot;C:\Users\shane\Downloads\ws2022.vhdx&quot;</p>
+<p>使用下方命令检查。</p>
+<p>Get-Item -Path &quot;C:\Users\shane\Downloads\ws2022.vhdx &quot; | Select-Object Name, Attributes</p>
+<p>需要查看属性中没有Sparsefile。</p>
+<p>如果有，解除该标识vhdx。</p>
+<p>fsutil sparse setflag &quot;C:\Users\shane\Downloads\ws2022.vhdx&quot; 0</p>
+<p>检查是否完成复制。</p>
+<p>（可选）此时建议在本地的Hyper-V中测试该系统是否可用。</p>
+<p>登录Azure PowerShell</p>
+<p>Connect-AzAccount -Environment AzureChinaCloud -UseDeviceAuthentication</p>
+<p>使用Add-AzVhd将该vhd上传并创建managed disk。</p>
+<p>Add-AzVhd -ResourceGroupName &quot;test&quot; -Location &quot;chinanorth3&quot; -DiskName &quot;vhd2022osdisk&quot; -LocalFilePath &quot;C:\Users\shane\Downloads\ ws2022_fixed.vhdx &quot; -DiskSku &quot;Standard_LRS&quot; -DiskHyperVGeneration &quot;V2&quot;</p>
+<p>上传的时候，会转换成vhd，请注意磁盘空间大小。</p>
+<p>上传后，可以在对应的资源组中查看磁盘。</p>
+<p>请注意，有的时候可能磁盘为ActiveUpload的状态。此时仍然在上传中。</p>
+<p>创建虚拟机。</p>
+<p>创建后查看是否可以运行。</p></article>

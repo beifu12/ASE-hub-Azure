@@ -1,0 +1,331 @@
+<article class="kb-article" data-title="工单排查 容易忽略点 快速参考 （checklist）"><h1>工单排查 容易忽略点 快速参考 （checklist）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: error-prone points.one</li>
+<li>Section: error-prone points</li>
+<li>最近修改: 2024-11-03 16:49:50</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>error-prone points</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>error-prone points</li>
+</ul>
+<ul>
+<li>公网IP的空闲超时配置：（默认4分钟）</li>
+</ul>
+<ul>
+<li>无法拉取映像</li>
+</ul>
+<ul>
+<li>There are some common networking restriction from China environment, usually there would end with timeout / bad network quality / when access the global resource like docker.io and gcr.io etc.</li>
+</ul>
+<ul>
+<li>[PODVM]SR_20220314154031/MCAPS - Regions/发现不同的机... - TrackingID#2203250040000290</li>
+</ul>
+<ul>
+<li>Error: MountVolume.MountDevice failed for volume &quot;pvc-5b21b3f7-ecfd-400f-9c3c-744aed71352a&quot; (UniqueName: &quot;kubernetes.io/csi/file.csi.azure.com^AZURE-CORE-OC-APP-1-STABLE-CNN3-RESOURCES#ocapp1stablecnn3premium#pvc-5b21b3f7-ecfd-400f-9c3c-744aed71352a###asr-prod&quot;) pod &quot;b-lma-pool-3-lma-gen-84f65c986c-cqgts&quot; (UID: &quot;efb4c58b-c013-449d-ba1c-09ed38886f16&quot;) : kubernetes.io/csi: attacher.MountDevice failed to create newCsiDriverClient: driver name file.csi.azure.com not found in the list of registered CSI drivers</li>
+</ul>
+<ul>
+<li>the Pod probe is the choice of dealing this issue.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>pod分类</li>
+</ul>
+<ul>
+<li>描述</li>
+</ul>
+<ul>
+<li>VM</li>
+</ul>
+<ul>
+<li>虚拟机里连接 每次连接5分钟后自动断开连接</li>
+</ul>
+<ul>
+<li>Azure SLB Outbound Idle Time限制，导致不能在除了Chrome之外浏览器访问网站</li>
+</ul>
+<ul>
+<li>SR_20240906314226_虚拟机里安装的Oracle21c，每次连接5分钟后自动断开连接</li>
+</ul>
+<ul>
+<li>Storage account</li>
+</ul>
+<ul>
+<li>挂载Azure File 报权限错误</li>
+</ul>
+<ul>
+<li>如果在存储帐户上启用了“ 需要安全传输 ”设置，则也会阻止同一数据中心内的未加密连接。</li>
+</ul>
+<ul>
+<li>因此您关闭一下安全传输，再尝试挂载</li>
+</ul>
+<ul>
+<li>显式指明需要使用SMB3.0 也可尝试将vers=2.1 尝试</li>
+</ul>
+<ul>
+<li>AKS</li>
+</ul>
+<ul>
+<li>Documentation in Github:</li>
+</ul>
+<ul>
+<li>container-service-for-azure-china/aks at master · Azure/container-service-for-azure-china · GitHub</li>
+</ul>
+<ul>
+<li>创建AKS时，发现选择不同的底层VMSS机型创建出的磁盘类型不一样。</li>
+</ul>
+<ul>
+<li>如果用户请求 OS 磁盘大小为 60GB 的同一 Standard_DS2_v2，则此配置将默认为临时 OS：请求的 60GB 大小小于最大缓存大小 86GB。</li>
+</ul>
+<ul>
+<li>将 Standard_D8s_v3 与 100GB OS 磁盘配合使用时，此 VM 大小支持临时 OS，有 200GB 的缓存空间。 如果用户未指定 OS 磁盘类型，则默认情况下，节点池会收到临时 OS。</li>
+</ul>
+<ul>
+<li>不仅和大小还和磁盘大小有关</li>
+</ul>
+<ul>
+<li>通过工单描述，我了解</li>
+</ul>
+<ul>
+<li>您的问题是创建AKS时，发现选择不同的底层VMSS机型创建出的磁盘类型不一样。</li>
+</ul>
+<ul>
+<li>21v做过的lab如下：</li>
+</ul>
+<ul>
+<li>D*s系列型号的V3、V4、V5版本，结果如下：</li>
+</ul>
+<ul>
+<li>使用节点大小为：Standard_D2s_v3、 Standard_D4s_v3型号创建AKS节点池，结果磁盘类型，显示为高级 SSD LRS。</li>
+</ul>
+<ul>
+<li>使用节点大小为：Standard_D8s_v3、Standard_D16s_v3型号创建AKS节点池，结果磁盘类型，显示为标准 HDD LRS。</li>
+</ul>
+<ul>
+<li>使用节点大小为：Standard_D2s_v4、 Standard_D4s_v4、 Standard_D8s_v4、 Standard_D16s_v4型号创建AKS节点池，结果磁盘类型，显示为高级 SSD LRS。</li>
+</ul>
+<ul>
+<li>1．AKS默认会优先使用Ephemerl OS disk作为AKS的底层配置。</li>
+</ul>
+<ul>
+<li>显示指定请参考以下azcli：</li>
+</ul>
+<ul>
+<li>2．关于Ephemeral OS disk</li>
+</ul>
+<ul>
+<li>3．关于如何查找VM机型：</li>
+</ul>
+<ul>
+<li>总结梳理一下：</li>
+</ul>
+<ul>
+<li>AKS默认情况下从考虑IO性能角度，会使用Ephemeral OS disk作为底层VM的系统磁盘，除非user显示的指明disk是managed。</li>
+</ul>
+<ul>
+<li>（Ephemeral Disk显示为HDD）</li>
+</ul>
+<ul>
+<li>不是所有机型都支持Ephemeral OS disk，具体支持列表请参考上述share的文档</li>
+</ul>
+<ul>
+<li>（以上所有文档都是.cn的文档，不存在不适用于China Azure的情况）</li>
+</ul>
+<ul>
+<li>Ephemeral Disk是VM上的概念，AKS是使用了这种feature以让节点池节点有更好的性能。</li>
+</ul>
+<ul>
+<li>Internal Only#</li>
+</ul>
+<ul>
+<li>开启群集自动扩展，当node 扩展时，新node ready 后 立即开始部署pod，如果pod 需要调用CSI 驱动，此时CSI驱动pod 没有启动，会报找不到驱动的错误</li>
+</ul>
+<ul>
+<li>------------------------------------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>-----------------------------------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>Here is another way that you need to upgrade the AKS to 1.30 and take a taint for the nodepool.</li>
+</ul>
+<ul>
+<li>Use node taints in an Azure Kubernetes Service (AKS) cluster - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>--resource-group $RESOURCE_GROUP_NAME</li>
+</ul>
+<ul>
+<li>--cluster-name $CLUSTER_NAME</li>
+</ul>
+<ul>
+<li>--name $NODE_POOL_NAME</li>
+</ul>
+<ul>
+<li>--node-count 1</li>
+</ul>
+<ul>
+<li>--node-taints &quot;disk.csi.azure.com/agent-not-ready:NoExecute&quot;</li>
+</ul>
+<ul>
+<li>--no-wait</li>
+</ul>
+<ul>
+<li>User startup taint removal feature :when CSI driver is started up from aks 1.30, it will remove the taint disk.csi.azure.com/agent-not-ready:NoExecute</li>
+</ul>
+<ul>
+<li>SR_20240920316445_Pods not mounting a PVC</li>
+</ul>
+<ul>
+<li>Azure AD license</li>
+</ul>
+<ul>
+<li>O365门户</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>SR_20240926317393_T-SHCA2-DCL-01  挂载存储账户的共享文件目录报错，请协助排查原因</li>
+</ul>
+<ul>
+<li>请参考以下排查结论</li>
+</ul>
+<ul>
+<li>排查结论#：</li>
+</ul>
+<ul>
+<li>之前有分享过AKS troubleshoot的几篇TSG给到21v同事，里边有涉及到ephemeral disk。有时间可以看一看哦。</li>
+</ul>
+<ul>
+<li>如果遇到Azure AD CA突然失效或者intune无法加入，请首先检查相应服务的许可是否过期，不仅限于condition access及intune</li>
+</ul>
+<ul>
+<li>Azure AD查看许可信息：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Let kubelet to kills the container and restarts it if the pod doesn’t go live in a certain time.</li>
+</ul>
+<ul>
+<li>az aks nodepool add</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档：<a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/azure-storage/files/connectivity/files-troubleshoot-smb-connectivity?toc=%2Fazure%2Fstorage%2Ffiles%2Ftoc.json&amp;tabs=linux#mounterror13" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/azure-storage/files/connectivity/files-troubleshoot-smb-connectivity?toc=%2Fazure%2Fstorage%2Ffiles%2Ftoc.json&amp;tabs=linux#mounterror13</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/Azure/AKS/issues/2481" target="_blank" rel="noopener">https://github.com/Azure/AKS/issues/2481</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/aks/cluster-configuration#ephemeral-os" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/cluster-configuration#ephemeral-os</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/virtual-machines/dv2-dsv2-series" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-machines/dv2-dsv2-series</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/virtual-machines/ephemeral-os-disks" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-machines/ephemeral-os-disks</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/en-us/aks/cluster-configuration#ephemeral-os" target="_blank" rel="noopener">https://docs.azure.cn/en-us/aks/cluster-configuration#ephemeral-os</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-create" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-create</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/en-us/virtual-machines/ephemeral-os-disks" target="_blank" rel="noopener">https://docs.azure.cn/en-us/virtual-machines/ephemeral-os-disks</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/en-us/virtual-machines/dv3-dsv3-series#dsv3-series" target="_blank" rel="noopener">https://docs.azure.cn/en-us/virtual-machines/dv3-dsv3-series#dsv3-series</a></li>
+</ul>
+<ul>
+<li><a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/" target="_blank" rel="noopener">https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/</a></li>
+</ul>
+<ul>
+<li>Please see more: <a href="https://github.com/kubernetes-sigs/azuredisk-csi-driver/pull/2309" target="_blank" rel="noopener">https://github.com/kubernetes-sigs/azuredisk-csi-driver/pull/2309</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>pod分类</p>
+<p>描述</p>
+<p>error-prone points</p>
+<p>VM</p>
+<p>虚拟机里连接 每次连接5分钟后自动断开连接</p>
+<p>Azure SLB Outbound Idle Time限制，导致不能在除了Chrome之外浏览器访问网站</p>
+<p>SR_20240906314226_虚拟机里安装的Oracle21c，每次连接5分钟后自动断开连接</p>
+<p>公网IP的空闲超时配置：（默认4分钟）</p>
+<p>Storage account</p>
+<p>挂载Azure File 报权限错误</p>
+<p>SR_20240926317393_T-SHCA2-DCL-01  挂载存储账户的共享文件目录报错，请协助排查原因</p>
+<p>如果在存储帐户上启用了“ 需要安全传输 ”设置，则也会阻止同一数据中心内的未加密连接。</p>
+<p>参考文档：<a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/azure-storage/files/connectivity/files-troubleshoot-smb-connectivity?toc=%2Fazure%2Fstorage%2Ffiles%2Ftoc.json&amp;tabs=linux#mounterror13" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/azure-storage/files/connectivity/files-troubleshoot-smb-connectivity?toc=%2Fazure%2Fstorage%2Ffiles%2Ftoc.json&amp;tabs=linux#mounterror13</a></p>
+<p>因此您关闭一下安全传输，再尝试挂载</p>
+<p>显式指明需要使用SMB3.0 也可尝试将vers=2.1 尝试</p>
+<p>AKS</p>
+<p>无法拉取映像</p>
+<p>Documentation in Github:</p>
+<p>container-service-for-azure-china/aks at master · Azure/container-service-for-azure-china · GitHub</p>
+<p>There are some common networking restriction from China environment, usually there would end with timeout / bad network quality / when access the global resource like docker.io and gcr.io etc.</p>
+<p>创建AKS时，发现选择不同的底层VMSS机型创建出的磁盘类型不一样。</p>
+<p>[PODVM]SR_20220314154031/MCAPS - Regions/发现不同的机... - TrackingID#2203250040000290</p>
+<p><a href="https://github.com/Azure/AKS/issues/2481" target="_blank" rel="noopener">https://github.com/Azure/AKS/issues/2481</a></p>
+<p>如果用户请求 OS 磁盘大小为 60GB 的同一 Standard_DS2_v2，则此配置将默认为临时 OS：请求的 60GB 大小小于最大缓存大小 86GB。</p>
+<p>将 Standard_D8s_v3 与 100GB OS 磁盘配合使用时，此 VM 大小支持临时 OS，有 200GB 的缓存空间。 如果用户未指定 OS 磁盘类型，则默认情况下，节点池会收到临时 OS。</p>
+<p>不仅和大小还和磁盘大小有关</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/aks/cluster-configuration#ephemeral-os" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/aks/cluster-configuration#ephemeral-os</a></p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/virtual-machines/dv2-dsv2-series" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-machines/dv2-dsv2-series</a></p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/virtual-machines/ephemeral-os-disks" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/virtual-machines/ephemeral-os-disks</a></p>
+<p>通过工单描述，我了解</p>
+<p>您的问题是创建AKS时，发现选择不同的底层VMSS机型创建出的磁盘类型不一样。</p>
+<p>21v做过的lab如下：</p>
+<p>D*s系列型号的V3、V4、V5版本，结果如下：</p>
+<p>使用节点大小为：Standard_D2s_v3、 Standard_D4s_v3型号创建AKS节点池，结果磁盘类型，显示为高级 SSD LRS。</p>
+<p>使用节点大小为：Standard_D8s_v3、Standard_D16s_v3型号创建AKS节点池，结果磁盘类型，显示为标准 HDD LRS。</p>
+<p>使用节点大小为：Standard_D2s_v4、 Standard_D4s_v4、 Standard_D8s_v4、 Standard_D16s_v4型号创建AKS节点池，结果磁盘类型，显示为高级 SSD LRS。</p>
+<p>请参考以下排查结论</p>
+<p>排查结论#：</p>
+<p>1．AKS默认会优先使用Ephemerl OS disk作为AKS的底层配置。</p>
+<p><a href="https://docs.azure.cn/en-us/aks/cluster-configuration#ephemeral-os" target="_blank" rel="noopener">https://docs.azure.cn/en-us/aks/cluster-configuration#ephemeral-os</a></p>
+<p>显示指定请参考以下azcli：</p>
+<p><a href="https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-create" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-create</a></p>
+<p>2．关于Ephemeral OS disk</p>
+<p><a href="https://docs.azure.cn/en-us/virtual-machines/ephemeral-os-disks" target="_blank" rel="noopener">https://docs.azure.cn/en-us/virtual-machines/ephemeral-os-disks</a></p>
+<p>3．关于如何查找VM机型：</p>
+<p><a href="https://docs.azure.cn/en-us/virtual-machines/dv3-dsv3-series#dsv3-series" target="_blank" rel="noopener">https://docs.azure.cn/en-us/virtual-machines/dv3-dsv3-series#dsv3-series</a></p>
+<p>总结梳理一下：</p>
+<p>AKS默认情况下从考虑IO性能角度，会使用Ephemeral OS disk作为底层VM的系统磁盘，除非user显示的指明disk是managed。</p>
+<p>（Ephemeral Disk显示为HDD）</p>
+<p>不是所有机型都支持Ephemeral OS disk，具体支持列表请参考上述share的文档</p>
+<p>（以上所有文档都是.cn的文档，不存在不适用于China Azure的情况）</p>
+<p>Ephemeral Disk是VM上的概念，AKS是使用了这种feature以让节点池节点有更好的性能。</p>
+<p>Internal Only#</p>
+<p>之前有分享过AKS troubleshoot的几篇TSG给到21v同事，里边有涉及到ephemeral disk。有时间可以看一看哦。</p>
+<p>开启群集自动扩展，当node 扩展时，新node ready 后 立即开始部署pod，如果pod 需要调用CSI 驱动，此时CSI驱动pod 没有启动，会报找不到驱动的错误</p>
+<p>------------------------------------------------------------------------------------------</p>
+<p>Error: MountVolume.MountDevice failed for volume &quot;pvc-5b21b3f7-ecfd-400f-9c3c-744aed71352a&quot; (UniqueName: &quot;kubernetes.io/csi/file.csi.azure.com^AZURE-CORE-OC-APP-1-STABLE-CNN3-RESOURCES#ocapp1stablecnn3premium#pvc-5b21b3f7-ecfd-400f-9c3c-744aed71352a###asr-prod&quot;) pod &quot;b-lma-pool-3-lma-gen-84f65c986c-cqgts&quot; (UID: &quot;efb4c58b-c013-449d-ba1c-09ed38886f16&quot;) : kubernetes.io/csi: attacher.MountDevice failed to create newCsiDriverClient: driver name file.csi.azure.com not found in the list of registered CSI drivers</p>
+<p>-----------------------------------------------------------------------------------------</p>
+<p>the Pod probe is the choice of dealing this issue.</p>
+<p><a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/" target="_blank" rel="noopener">https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/</a></p>
+<p>Let kubelet to kills the container and restarts it if the pod doesn’t go live in a certain time.</p>
+<p>Here is another way that you need to upgrade the AKS to 1.30 and take a taint for the nodepool.</p>
+<p>Use node taints in an Azure Kubernetes Service (AKS) cluster - Azure Kubernetes Service | Azure Docs</p>
+<p>az aks nodepool add</p>
+<p>--resource-group $RESOURCE_GROUP_NAME</p>
+<p>--cluster-name $CLUSTER_NAME</p>
+<p>--name $NODE_POOL_NAME</p>
+<p>--node-count 1</p>
+<p>--node-taints &quot;disk.csi.azure.com/agent-not-ready:NoExecute&quot;</p>
+<p>--no-wait</p>
+<p>User startup taint removal feature :when CSI driver is started up from aks 1.30, it will remove the taint disk.csi.azure.com/agent-not-ready:NoExecute</p>
+<p>Please see more: <a href="https://github.com/kubernetes-sigs/azuredisk-csi-driver/pull/2309" target="_blank" rel="noopener">https://github.com/kubernetes-sigs/azuredisk-csi-driver/pull/2309</a></p>
+<p>SR_20240920316445_Pods not mounting a PVC</p>
+<p>Azure AD license</p>
+<p>如果遇到Azure AD CA突然失效或者intune无法加入，请首先检查相应服务的许可是否过期，不仅限于condition access及intune</p>
+<p>Azure AD查看许可信息：</p>
+<p>O365门户</p></article>

@@ -1,0 +1,120 @@
+<article class="kb-article" data-title="批量关闭Microsoft Defender for Cloud(安全中心)的增强型安全功能"><h1>批量关闭Microsoft Defender for Cloud(安全中心)的增强型安全功能</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Microsoft Defender for Cloud(安全中心).one</li>
+<li>Section: Microsoft Defender for Cloud(安全中心)</li>
+<li>最近修改: 2021-12-24 10:21:04</li>
+<li>JD 相关性: Defender/Sentinel/安全; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>批量关闭需要使用PowerShell脚本。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>批量关闭需要使用PowerShell脚本。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>首先，需要您安装Az.Security模块。具体请您参考文档：</li>
+</ul>
+<ul>
+<li>我测试通过Get-AzSecurityPricing查找定价层，发现是按资源类型来显示的。</li>
+</ul>
+<ul>
+<li>对应门户的位置</li>
+</ul>
+<ul>
+<li>#订阅文件</li>
+</ul>
+<ul>
+<li>$subscriptionFile = Get-Content -Path &quot;E:\sub.txt&quot;</li>
+</ul>
+<ul>
+<li>foreach($subNameFromFile in $subscriptionFile){</li>
+</ul>
+<ul>
+<li>Select-AzSubscription $subNameFromFile | Out-Null</li>
+</ul>
+<ul>
+<li>#设置VirtualMachines的定价层为free</li>
+</ul>
+<ul>
+<li>Write-Output (&quot;SubscriptionName: &quot; + $subNameFromFile + &quot; - VirtualMachines: &quot; + &quot;free&quot;)</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</li>
+</ul>
+<ul>
+<li>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</li>
+</ul>
+<ul>
+<li>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</li>
+</ul>
+<ul>
+<li>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</li>
+</ul>
+<ul>
+<li>参考工单：SR_20211217138688_About Microsoft Defender</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>批量关闭需要使用PowerShell脚本。</li>
+</ul>
+<ul>
+<li>您可以将订阅名称或ID导出到一个文件中，然后使用类似以下的脚本循环来批量针对某类资源关闭enhanced plan，多种资源可以重新调整脚本再运行。</li>
+</ul>
+<ul>
+<li>请将脚本针对于您的环境进行调整修改，充分测试后再用于生产环境。</li>
+</ul>
+<ul>
+<li>Set-AzSecurityPricing -Name “VirtualMachines&quot; -PricingTier &quot;free&quot;</li>
+</ul>
+<ul>
+<li>脚本免责声明：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/defender-for-cloud/powershell-onboarding" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/defender-for-cloud/powershell-onboarding</a></li>
+</ul>
+<ul>
+<li>参考文档：<a href="https://docs.microsoft.com/zh-cn/powershell/module/az.security/set-azsecuritypricing?view=azps-7.0.0" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/powershell/module/az.security/set-azsecuritypricing?view=azps-7.0.0</a></li>
+</ul>
+<ul>
+<li>参考文档：<a href="https://github.com/Microsoft/Azure-Security-Center/blob/master/quickstarts/ASC-Samples.ps1" target="_blank" rel="noopener">https://github.com/Microsoft/Azure-Security-Center/blob/master/quickstarts/ASC-Samples.ps1</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-12-24</p>
+<p>批量关闭需要使用PowerShell脚本。</p>
+<p>首先，需要您安装Az.Security模块。具体请您参考文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/defender-for-cloud/powershell-onboarding" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/defender-for-cloud/powershell-onboarding</a></p>
+<p>我测试通过Get-AzSecurityPricing查找定价层，发现是按资源类型来显示的。</p>
+<p>参考文档：<a href="https://docs.microsoft.com/zh-cn/powershell/module/az.security/set-azsecuritypricing?view=azps-7.0.0" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/powershell/module/az.security/set-azsecuritypricing?view=azps-7.0.0</a></p>
+<p>对应门户的位置</p>
+<p>您可以将订阅名称或ID导出到一个文件中，然后使用类似以下的脚本循环来批量针对某类资源关闭enhanced plan，多种资源可以重新调整脚本再运行。</p>
+<p>请将脚本针对于您的环境进行调整修改，充分测试后再用于生产环境。</p>
+<p>#订阅文件</p>
+<p>$subscriptionFile = Get-Content -Path &quot;E:\sub.txt&quot;</p>
+<p>foreach($subNameFromFile in $subscriptionFile){</p>
+<p>Select-AzSubscription $subNameFromFile | Out-Null</p>
+<p>#设置VirtualMachines的定价层为free</p>
+<p>Set-AzSecurityPricing -Name “VirtualMachines&quot; -PricingTier &quot;free&quot;</p>
+<p>Write-Output (&quot;SubscriptionName: &quot; + $subNameFromFile + &quot; - VirtualMachines: &quot; + &quot;free&quot;)</p>
+<p>}</p>
+<p>脚本免责声明：</p>
+<p>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</p>
+<p>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</p>
+<p>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</p>
+<p>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</p>
+<p>参考文档：<a href="https://github.com/Microsoft/Azure-Security-Center/blob/master/quickstarts/ASC-Samples.ps1" target="_blank" rel="noopener">https://github.com/Microsoft/Azure-Security-Center/blob/master/quickstarts/ASC-Samples.ps1</a></p>
+<p>参考工单：SR_20211217138688_About Microsoft Defender</p></article>

@@ -1,0 +1,68 @@
+<article class="kb-article" data-title="Using REST APIs with Data Box POD"><h1>Using REST APIs with Data Box POD</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Data Box POD</li>
+<li>最近修改: 2022-04-15 06:24:42</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Customers can use the REST APIs to connect to a Data Box device over HTTP or HTTPS and copy blob data for import to Azure blob storage using Azure Storage Explorer, AzCopy, or a similar copy tool. The basic steps for connecting to the Data Box via REST using A...</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Customers can use the REST APIs to connect to a Data Box device over HTTP or HTTPS and copy blob data for import to Azure blob storage using Azure Storage Explorer, AzCopy, or a similar copy tool. The basic steps for connecting to the Data Box via REST using Azure Storage Explorer from a Windows PC are:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Customers can use the REST APIs to connect to a Data Box device over HTTP or HTTPS and copy blob data for import to Azure blob storage using Azure Storage Explorer, AzCopy, or a similar copy tool. The basic steps for connecting to the Data Box via REST using Azure Storage Explorer from a Windows PC are:</li>
+</ul>
+<ul>
+<li>In the Data Box local web UI under &quot;Connect and copy&quot;, click on the REST button.</li>
+</ul>
+<ul>
+<li>Copy the information under Storage Account Name, Storage Account Key, and Blob Service Endpoint.</li>
+</ul>
+<ul>
+<li>On the Windows PC, open the file C:\Windows\System32\drivers\etc\hosts in Notepad.</li>
+</ul>
+<ul>
+<li>In the hosts file, add a line containing the Data Box device IP address and the blob service endpoint obtained from the Data Box web UI, then save the hosts file. See reference image below.</li>
+</ul>
+<ul>
+<li>After performing these steps, in Storage Explorer you can expand the Data Box storage account and create new containers under Blob Containers, then copy data into these containers in order to import it into Azure blob storage.</li>
+</ul>
+<ul>
+<li>For more information on using the REST APIs with Data Box devices, including information on using AzCopy with Data Box and on connecting via REST from a Linux client, please see the link below.</li>
+</ul>
+<ul>
+<li>Use REST APIs to copy data to Azure Data Box blob storage</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>If using HTTPS to connect to the Data Box, you will need to download a certificate from the Data Box job in the Azure portal and import it on the Windows client. To do this, go to the Data Box order information in the Azure portal, navigate to General - Device Details, and under Device Credentials click on the API Access tab. Then click the Download button to download the certificate. Once it is downloaded, you can right-click on the certificate and select &quot;Install certificate&quot;. In the Certificate Import Wizard, choose Local Machine as the Store Location and place the certificate in the store named &quot;Trusted Root Certification Authorities&quot;. Click Next and then Finish to install the certificate.</li>
+</ul>
+<ul>
+<li>In Azure Storage Explorer, go to the Edit menu and click on Target Azure Stack. After changing this setting, clost and reopen Storage Explorer. Then open the Connect to Azure Storage dialog and choose the option for &quot;Use a storage account name and key&quot;. On the next page, enter the storage account name, storage account key, and for the storage domain enter &quot;mydataboxno.microsoftdatabox.com&quot;. If using HTTP, check the box for &quot;Use HTTP&quot;, or to use HTTPS leave this box unchecked. Click Next and then Connect to finish connecting to blob storage on the Data Box.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Customers can use the REST APIs to connect to a Data Box device over HTTP or HTTPS and copy blob data for import to Azure blob storage using Azure Storage Explorer, AzCopy, or a similar copy tool. The basic steps for connecting to the Data Box via REST using Azure Storage Explorer from a Windows PC are:</p>
+<p>In the Data Box local web UI under &quot;Connect and copy&quot;, click on the REST button.</p>
+<p>Copy the information under Storage Account Name, Storage Account Key, and Blob Service Endpoint.</p>
+<p>On the Windows PC, open the file C:\Windows\System32\drivers\etc\hosts in Notepad.</p>
+<p>In the hosts file, add a line containing the Data Box device IP address and the blob service endpoint obtained from the Data Box web UI, then save the hosts file. See reference image below.</p>
+<p>If using HTTPS to connect to the Data Box, you will need to download a certificate from the Data Box job in the Azure portal and import it on the Windows client. To do this, go to the Data Box order information in the Azure portal, navigate to General - Device Details, and under Device Credentials click on the API Access tab. Then click the Download button to download the certificate. Once it is downloaded, you can right-click on the certificate and select &quot;Install certificate&quot;. In the Certificate Import Wizard, choose Local Machine as the Store Location and place the certificate in the store named &quot;Trusted Root Certification Authorities&quot;. Click Next and then Finish to install the certificate.</p>
+<p>In Azure Storage Explorer, go to the Edit menu and click on Target Azure Stack. After changing this setting, clost and reopen Storage Explorer. Then open the Connect to Azure Storage dialog and choose the option for &quot;Use a storage account name and key&quot;. On the next page, enter the storage account name, storage account key, and for the storage domain enter &quot;mydataboxno.microsoftdatabox.com&quot;. If using HTTP, check the box for &quot;Use HTTP&quot;, or to use HTTPS leave this box unchecked. Click Next and then Connect to finish connecting to blob storage on the Data Box.</p>
+<p>After performing these steps, in Storage Explorer you can expand the Data Box storage account and create new containers under Blob Containers, then copy data into these containers in order to import it into Azure blob storage.</p>
+<p>For more information on using the REST APIs with Data Box devices, including information on using AzCopy with Data Box and on connecting via REST from a Linux client, please see the link below.</p>
+<p>Use REST APIs to copy data to Azure Data Box blob storage</p></article>

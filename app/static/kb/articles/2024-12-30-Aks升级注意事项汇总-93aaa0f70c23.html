@@ -1,0 +1,126 @@
+<article class="kb-article" data-title="Aks升级注意事项汇总"><h1>Aks升级注意事项汇总</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-12-30 15:34:17</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>1.18升级失败：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>1.18升级失败：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>lvfengnan</li>
+</ul>
+<ul>
+<li>1.aks 状态是否正常，aks –-概述--状态----已成功（正在运行）</li>
+</ul>
+<ul>
+<li>6检测label</li>
+</ul>
+<ul>
+<li>在 Azure Kubernetes 服务 (AKS) 群集中使用标签 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>升级准备：</li>
+</ul>
+<ul>
+<li>Ubuntu 16.04bug</li>
+</ul>
+<ul>
+<li>RESOURCE_GROUP_NAME=</li>
+</ul>
+<ul>
+<li>CLUSTER_NAME=</li>
+</ul>
+<ul>
+<li>以下是详细解释：</li>
+</ul>
+<ul>
+<li>AKS的设计原则：AKS的设计偏向于简化和抽象化底层基础设施的管理。Azure 平台管理节点的底层配置，包括kubelet的设置。这意味着用户不能直接访问或修改节点上的kubelet配置文件，因为这些配置是由Azure自动管理的。</li>
+</ul>
+<ul>
+<li>不可变基础设施：AKS基于不可变基础设施的概念。一旦节点池创建，节点的基本配置（包括最大Pod数量）是固定的。这种方法减少了管理复杂性，提高了稳定性和一致性。</li>
+</ul>
+<ul>
+<li>因此，在当前的AKS设计中，不增加节点池而直接修改现有节点的最大Pod数量是不可能的。如果你需要这种调整，唯一的方式是创建新的节点池，并在创建时指定你想要的最大Pod数量，然后将工作负载迁移到新的节点池上。</li>
+</ul>
+<ul>
+<li>Azure 致力于不断更新和改进AKS的功能，未来可能会有更多的灵活性，但截至当前，节点池配置在创建时确定是AKS的一项设计原则。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>4.检查该订阅是都有足够的虚拟机配额（订阅---使用量及配额检查，如不满足，在升级前可以手动缩，释放一个节点配额），升级过程会额外创建一台虚拟机作为临时缓存，以保证业务不宕机</li>
+</ul>
+<ul>
+<li>5 检查pdb策略,确认ingress 等第三方插件在目标版本受支持，业务pod在新版本aks正常运行，接口调用正常</li>
+</ul>
+<ul>
+<li>由于1.18---1.19 版本有重大变更，请新建测试aks，验证业务pod是否运行正常，测试正常后方可升级；</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az extension remove --name aks-preview</li>
+</ul>
+<ul>
+<li>az aks reconcile-control-plane-certs -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>节点池的用途：如果需要不同配置的节点，包括不同的最大Pod数量，AKS的建议是创建新的节点池。这种方法允许你保留对不同类型工作负载的精细控制，同时避免对现有节点池的直接修改。</li>
+</ul>
+<ul>
+<li>Azure的管理和升级：由于AKS节点的生命周期由Azure管理，可以自动进行节点的更新、修复、和扩展操作。如果用户能直接修改底层配置，可能干扰这些自动化过程。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>2. 检查证书是否到期：<a href="https://docs.azure.cn/zh-cn/aks/certificate-rotation" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/certificate-rotation</a></li>
+</ul>
+<ul>
+<li>3.检查凭据是否到期：<a href="https://docs.azure.cn/zh-cn/aks/update-credentials" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/update-credentials</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/upgrade-cluster" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/upgrade-cluster</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/cluster-configuration#containerd-limitationsdifferences" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/cluster-configuration#containerd-limitationsdifferences</a></li>
+</ul>
+<ul>
+<li>az extension add --source <a href="https://raw.githubusercontent.com/andyzhangx/demo/master/aks/rotate-tokens/aks_preview-0.5.0-py2.py3-none-any.whl" target="_blank" rel="noopener">https://raw.githubusercontent.com/andyzhangx/demo/master/aks/rotate-tokens/aks_preview-0.5.0-py2.py3-none-any.whl</a> -y</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>lvfengnan</p>
+<p>1.aks 状态是否正常，aks –-概述--状态----已成功（正在运行）</p>
+<p>2. 检查证书是否到期：<a href="https://docs.azure.cn/zh-cn/aks/certificate-rotation" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/certificate-rotation</a></p>
+<p>3.检查凭据是否到期：<a href="https://docs.azure.cn/zh-cn/aks/update-credentials" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/update-credentials</a></p>
+<p>4.检查该订阅是都有足够的虚拟机配额（订阅---使用量及配额检查，如不满足，在升级前可以手动缩，释放一个节点配额），升级过程会额外创建一台虚拟机作为临时缓存，以保证业务不宕机</p>
+<p>5 检查pdb策略,确认ingress 等第三方插件在目标版本受支持，业务pod在新版本aks正常运行，接口调用正常</p>
+<p>6检测label</p>
+<p>在 Azure Kubernetes 服务 (AKS) 群集中使用标签 - Azure Kubernetes Service | Azure Docs</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/upgrade-cluster" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/upgrade-cluster</a></p>
+<p>升级准备：</p>
+<p>由于1.18---1.19 版本有重大变更，请新建测试aks，验证业务pod是否运行正常，测试正常后方可升级；</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/cluster-configuration#containerd-limitationsdifferences" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/cluster-configuration#containerd-limitationsdifferences</a></p>
+<p>1.18升级失败：</p>
+<p>Ubuntu 16.04bug</p>
+<p>az extension remove --name aks-preview</p>
+<p>az extension add --source <a href="https://raw.githubusercontent.com/andyzhangx/demo/master/aks/rotate-tokens/aks_preview-0.5.0-py2.py3-none-any.whl" target="_blank" rel="noopener">https://raw.githubusercontent.com/andyzhangx/demo/master/aks/rotate-tokens/aks_preview-0.5.0-py2.py3-none-any.whl</a> -y</p>
+<p>RESOURCE_GROUP_NAME=</p>
+<p>CLUSTER_NAME=</p>
+<p>az aks reconcile-control-plane-certs -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME</p>
+<p>以下是详细解释：</p>
+<p>AKS的设计原则：AKS的设计偏向于简化和抽象化底层基础设施的管理。Azure 平台管理节点的底层配置，包括kubelet的设置。这意味着用户不能直接访问或修改节点上的kubelet配置文件，因为这些配置是由Azure自动管理的。</p>
+<p>不可变基础设施：AKS基于不可变基础设施的概念。一旦节点池创建，节点的基本配置（包括最大Pod数量）是固定的。这种方法减少了管理复杂性，提高了稳定性和一致性。</p>
+<p>节点池的用途：如果需要不同配置的节点，包括不同的最大Pod数量，AKS的建议是创建新的节点池。这种方法允许你保留对不同类型工作负载的精细控制，同时避免对现有节点池的直接修改。</p>
+<p>Azure的管理和升级：由于AKS节点的生命周期由Azure管理，可以自动进行节点的更新、修复、和扩展操作。如果用户能直接修改底层配置，可能干扰这些自动化过程。</p>
+<p>因此，在当前的AKS设计中，不增加节点池而直接修改现有节点的最大Pod数量是不可能的。如果你需要这种调整，唯一的方式是创建新的节点池，并在创建时指定你想要的最大Pod数量，然后将工作负载迁移到新的节点池上。</p>
+<p>Azure 致力于不断更新和改进AKS的功能，未来可能会有更多的灵活性，但截至当前，节点池配置在创建时确定是AKS的一项设计原则。</p></article>

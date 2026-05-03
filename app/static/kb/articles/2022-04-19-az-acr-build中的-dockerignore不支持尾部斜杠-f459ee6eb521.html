@@ -1,0 +1,111 @@
+<article class="kb-article" data-title="az acr build中的.dockerignore不支持尾部斜杠 /"><h1>az acr build中的.dockerignore不支持尾部斜杠 /</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-04-19 16:39:09</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>使用docker build创建镜像，没有问题。但是az acr build镜像，会出现以下类似以下报错</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>使用docker build创建镜像，没有问题。但是az acr build镜像，会出现以下类似以下报错</li>
+</ul>
+<ul>
+<li>和这个issue有点关联和类似： .dockerignore ignores trailing slash on directories · Issue #581 · docker/docker-py (github.com)</li>
+</ul>
+<ul>
+<li>参考工单：SR_20211115131940_&quot;az acr build&quot; failed, but &quot;docker build&quot; successful with the same source</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Zhang Lihong</li>
+</ul>
+<ul>
+<li>Step 11/16 : RUN dotnet publish --no-restore -c Release -o /app</li>
+</ul>
+<ul>
+<li>---&gt; Running in 3cb577ebad19</li>
+</ul>
+<ul>
+<li>Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET</li>
+</ul>
+<ul>
+<li>Copyright (C) Microsoft Corporation. All rights reserved.</li>
+</ul>
+<ul>
+<li>如果把dockerfile：“RUN dotnet publish --no-restore -c Release -o /app” 修改成 “RUN dotnet publish -c Release -o /app”， 就可以运行“az acr build”成功。</li>
+</ul>
+<ul>
+<li>在这个问题中，是由于az acr build不支持尾部斜杠 / ， 这个完全是az acr build自身的限制。</li>
+</ul>
+<ul>
+<li>**/bin/</li>
+</ul>
+<ul>
+<li>**/obj/</li>
+</ul>
+<ul>
+<li>更改成</li>
+</ul>
+<ul>
+<li>**/bin</li>
+</ul>
+<ul>
+<li>**/obj</li>
+</ul>
+<ul>
+<li>（去掉最后的反斜杠）</li>
+</ul>
+<ul>
+<li>之后，可以build成功</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>经与产品组确认，</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az acr build中的.dockerignore不支持尾部斜杠 /</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>/usr/share/dotnet/sdk/5.0.403/Sdks/Microsoft.NET.Sdk/targets/Microsoft.PackageDependencyResolution.targets(241,5): error MSB4018: The &quot;ResolvePackageAssets&quot; task failed unexpectedly. [/src/Api/Api.csproj]</li>
+</ul>
+<ul>
+<li>/usr/share/dotnet/sdk/5.0.403/Sdks/Microsoft.NET.Sdk/targets/Microsoft.PackageDependencyResolution.targets(241,5): error MSB4018: NuGet.Packaging.Core.PackagingException: Unable to find fallback package folder &#39;C:\Program Files\dotnet\sdk\NuGetFallbackFolder&#39;. [/src/Api/Api.csproj]</li>
+</ul>
+<ul>
+<li>建议客户把项目src/.dockerignore 中的</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>az acr build中的.dockerignore不支持尾部斜杠 /</p>
+<p>Zhang Lihong</p>
+<p>使用docker build创建镜像，没有问题。但是az acr build镜像，会出现以下类似以下报错</p>
+<p>Step 11/16 : RUN dotnet publish --no-restore -c Release -o /app</p>
+<p>---&gt; Running in 3cb577ebad19</p>
+<p>Microsoft (R) Build Engine version 16.11.2+f32259642 for .NET</p>
+<p>Copyright (C) Microsoft Corporation. All rights reserved.</p>
+<p>/usr/share/dotnet/sdk/5.0.403/Sdks/Microsoft.NET.Sdk/targets/Microsoft.PackageDependencyResolution.targets(241,5): error MSB4018: The &quot;ResolvePackageAssets&quot; task failed unexpectedly. [/src/Api/Api.csproj]</p>
+<p>/usr/share/dotnet/sdk/5.0.403/Sdks/Microsoft.NET.Sdk/targets/Microsoft.PackageDependencyResolution.targets(241,5): error MSB4018: NuGet.Packaging.Core.PackagingException: Unable to find fallback package folder &#39;C:\Program Files\dotnet\sdk\NuGetFallbackFolder&#39;. [/src/Api/Api.csproj]</p>
+<p>如果把dockerfile：“RUN dotnet publish --no-restore -c Release -o /app” 修改成 “RUN dotnet publish -c Release -o /app”， 就可以运行“az acr build”成功。</p>
+<p>经与产品组确认，</p>
+<p>在这个问题中，是由于az acr build不支持尾部斜杠 / ， 这个完全是az acr build自身的限制。</p>
+<p>和这个issue有点关联和类似： .dockerignore ignores trailing slash on directories · Issue #581 · docker/docker-py (github.com)</p>
+<p>建议客户把项目src/.dockerignore 中的</p>
+<p>**/bin/</p>
+<p>**/obj/</p>
+<p>更改成</p>
+<p>**/bin</p>
+<p>**/obj</p>
+<p>（去掉最后的反斜杠）</p>
+<p>之后，可以build成功</p>
+<p>参考工单：SR_20211115131940_&quot;az acr build&quot; failed, but &quot;docker build&quot; successful with the same source</p></article>

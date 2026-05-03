@@ -1,0 +1,77 @@
+<article class="kb-article" data-title="使用Postman 永久删除 Log Analytics"><h1>使用Postman 永久删除 Log Analytics</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-06-01 11:54:01</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>准备好后，点击Send 蓝按钮填写信息正确没有报错即可删除。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>准备好后，点击Send 蓝按钮填写信息正确没有报错即可删除。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>下载Postman 工具并安装，下载地址：</li>
+</ul>
+<ul>
+<li>操作之前需要建立Collection</li>
+</ul>
+<ul>
+<li>再建立Request，并选择存放在之前建立的Collection 下</li>
+</ul>
+<ul>
+<li>通过Chrome 浏览器获取认证信息Bearer Token：</li>
+</ul>
+<ul>
+<li>然后在Postman Request 中，首选选择Delete，然后在URL 中根据自己的信息替换（高亮部分）并填入：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>使用Postman 永久删除 Log Analytics</li>
+</ul>
+<ul>
+<li>当您删除 Log Analytics 工作区时，系统会执行软删除操作，目的是让你能够在 14 天内恢复工作区（包括其数据和连接的代理）。</li>
+</ul>
+<ul>
+<li>目前如果需要永久删除工作区，需要使用REST API的方式进行删除，具体步骤如下：</li>
+</ul>
+<ul>
+<li>然后在验证项目中选择Bearer Token 并填入从Chrome 或取的信息。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://www.postman.com/downloads/" target="_blank" rel="noopener">https://www.postman.com/downloads/</a></li>
+</ul>
+<ul>
+<li><a href="https://management.chinacloudapi.cn/subscriptions/&lt;subscription-id&gt;/resourcegroups/&lt;resource-group-name&gt;/providers/Microsoft.OperationalInsights/workspaces/&lt;workspace-name&gt;?api-version=2015-11-01-preview&amp;force=true" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/&lt;subscription-id&gt;/resourcegroups/&lt;resource-group-name&gt;/providers/Microsoft.OperationalInsights/workspaces/&lt;workspace-name&gt;?api-version=2015-11-01-preview&amp;force=true</a></li>
+</ul>
+<ul>
+<li>详见：<a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/delete-workspace#permanent-workspace-delete" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/delete-workspace#permanent-workspace-delete</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>使用Postman 永久删除 Log Analytics</p>
+<p>2020-03-11</p>
+<p>当您删除 Log Analytics 工作区时，系统会执行软删除操作，目的是让你能够在 14 天内恢复工作区（包括其数据和连接的代理）。</p>
+<p>目前如果需要永久删除工作区，需要使用REST API的方式进行删除，具体步骤如下：</p>
+<p>下载Postman 工具并安装，下载地址：</p>
+<p><a href="https://www.postman.com/downloads/" target="_blank" rel="noopener">https://www.postman.com/downloads/</a></p>
+<p>操作之前需要建立Collection</p>
+<p>再建立Request，并选择存放在之前建立的Collection 下</p>
+<p>通过Chrome 浏览器获取认证信息Bearer Token：</p>
+<p>然后在Postman Request 中，首选选择Delete，然后在URL 中根据自己的信息替换（高亮部分）并填入：</p>
+<p><a href="https://management.chinacloudapi.cn/subscriptions/&lt;subscription-id&gt;/resourcegroups/&lt;resource-group-name&gt;/providers/Microsoft.OperationalInsights/workspaces/&lt;workspace-name&gt;?api-version=2015-11-01-preview&amp;force=true" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/&lt;subscription-id&gt;/resourcegroups/&lt;resource-group-name&gt;/providers/Microsoft.OperationalInsights/workspaces/&lt;workspace-name&gt;?api-version=2015-11-01-preview&amp;force=true</a></p>
+<p>然后在验证项目中选择Bearer Token 并填入从Chrome 或取的信息。</p>
+<p>准备好后，点击Send 蓝按钮填写信息正确没有报错即可删除。</p>
+<p>详见：<a href="https://docs.azure.cn/zh-cn/azure-monitor/platform/delete-workspace#permanent-workspace-delete" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/platform/delete-workspace#permanent-workspace-delete</a></p></article>

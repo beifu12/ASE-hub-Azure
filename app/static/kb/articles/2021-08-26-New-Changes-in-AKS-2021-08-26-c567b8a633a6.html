@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="New Changes in AKS 2021/08/26"><h1>New Changes in AKS 2021/08/26</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: AKS Operation guideline</li>
+<li>最近修改: 2021-08-26 10:04:15</li>
+<li>JD 相关性: 交付流程/客户支持; AKS/容器; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Hi All,</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Hi All,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi All,</li>
+</ul>
+<ul>
+<li>I have summarized and verified some new changes/features in AKS, please help to share with team accordingly.</li>
+</ul>
+<ul>
+<li>Delete all nodes in all nodes pool; scale new node but all the service deployed previously deleted.</li>
+</ul>
+<ul>
+<li>Customer’s service should come back after start.</li>
+</ul>
+<ul>
+<li>2.Ephemeral OS disk#</li>
+</ul>
+<ul>
+<li>Ephemeral OS disk in AKS#</li>
+</ul>
+<ul>
+<li>Point in AKS#</li>
+</ul>
+<ul>
+<li>If VM can support ephemeral OS disk, then AKS will create VM with OS disk type=ephemeral as default</li>
+</ul>
+<ul>
+<li>From cli, if you want to use managed disk, you can set OS disk type=Managed</li>
+</ul>
+<ul>
+<li>Data will loss just as the temp disk.</li>
+</ul>
+<ul>
+<li>To rapidly scale application workloads in an AKS cluster, you can use virtual nodes. With virtual nodes, you have quick provisioning of pods, and only pay per second for their execution time. You don&#39;t need to wait for Kubernetes cluster autoscaler to deploy VM compute nodes to run the additional pods. Virtual nodes are only supported with Linux pods and nodes.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>In Portal, user cannot select OS disk type</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>1.Az aks stop and start: <a href="https://docs.azure.cn/zh-cn/aks/start-stop-cluster" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/start-stop-cluster</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/aks/cluster-configuration#ephemeral-os" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/cluster-configuration#ephemeral-os</a></li>
+</ul>
+<ul>
+<li>3.Virtual kubelet: <a href="https://docs.azure.cn/zh-cn/aks/virtual-nodes" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/virtual-nodes</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi All,</p>
+<p>I have summarized and verified some new changes/features in AKS, please help to share with team accordingly.</p>
+<p>1.Az aks stop and start: <a href="https://docs.azure.cn/zh-cn/aks/start-stop-cluster" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/start-stop-cluster</a></p>
+<p>Delete all nodes in all nodes pool; scale new node but all the service deployed previously deleted.</p>
+<p>Customer’s service should come back after start.</p>
+<p>2.Ephemeral OS disk#</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks</a></p>
+<p>Ephemeral OS disk in AKS#</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/aks/cluster-configuration#ephemeral-os" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/cluster-configuration#ephemeral-os</a></p>
+<p>Point in AKS#</p>
+<p>If VM can support ephemeral OS disk, then AKS will create VM with OS disk type=ephemeral as default</p>
+<p>In Portal, user cannot select OS disk type</p>
+<p>From cli, if you want to use managed disk, you can set OS disk type=Managed</p>
+<p>Data will loss just as the temp disk.</p>
+<p>3.Virtual kubelet: <a href="https://docs.azure.cn/zh-cn/aks/virtual-nodes" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/virtual-nodes</a></p>
+<p>To rapidly scale application workloads in an AKS cluster, you can use virtual nodes. With virtual nodes, you have quick provisioning of pods, and only pay per second for their execution time. You don&#39;t need to wait for Kubernetes cluster autoscaler to deploy VM compute nodes to run the additional pods. Virtual nodes are only supported with Linux pods and nodes.</p></article>

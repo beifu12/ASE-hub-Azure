@@ -1,0 +1,78 @@
+<article class="kb-article" data-title="[Share]Microsoft Graph Powershell获取用户隐藏属性"><h1>[Share]Microsoft Graph Powershell获取用户隐藏属性</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-05-23 16:34:20</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2025- 05-23</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2025- 05-23</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025- 05-23</li>
+</ul>
+<ul>
+<li>Case ：20250523354791</li>
+</ul>
+<ul>
+<li>问题背景：</li>
+</ul>
+<ul>
+<li>导出结果如下：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>直接查询效果如下，所以在直接查结果再导出时创建时间字段是空的。</li>
+</ul>
+<ul>
+<li>实际研究后发现这些字段并不是空的，在portal上都能直接看到，所以判断这些字段是隐藏属性。</li>
+</ul>
+<ul>
+<li>可使用-Property属性将相关字段输出，然后再赋予对象，确认能看到结果了再导出到CSV中。</li>
+</ul>
+<ul>
+<li>分享此方式不仅只针对创建时间这一个属性，其它隐藏属性均可使用此方式进行查询和导出。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>客户一定要使用powershell的方式导出全部用户的创建时间。</li>
+</ul>
+<ul>
+<li>但是powershell获取用户的属性时这个创建时间字段CreatedDateTime是一个空字段</li>
+</ul>
+<ul>
+<li>最后导出命令如下：</li>
+</ul>
+<ul>
+<li>Get-MgUser -All -Property &quot;id,DisplayName,UserPrincipalName,createdDateTime&quot; | Select-Object DisplayName,UserPrincipalName, CreatedDateTime | Export-Csv -Path &quot;D:\UserCreationTimes.csv&quot; -NoTypeInformation</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025- 05-23</p>
+<p>Case ：20250523354791</p>
+<p>问题背景：</p>
+<p>客户一定要使用powershell的方式导出全部用户的创建时间。</p>
+<p>但是powershell获取用户的属性时这个创建时间字段CreatedDateTime是一个空字段</p>
+<p>直接查询效果如下，所以在直接查结果再导出时创建时间字段是空的。</p>
+<p>解决方法：</p>
+<p>实际研究后发现这些字段并不是空的，在portal上都能直接看到，所以判断这些字段是隐藏属性。</p>
+<p>可使用-Property属性将相关字段输出，然后再赋予对象，确认能看到结果了再导出到CSV中。</p>
+<p>最后导出命令如下：</p>
+<p>Get-MgUser -All -Property &quot;id,DisplayName,UserPrincipalName,createdDateTime&quot; | Select-Object DisplayName,UserPrincipalName, CreatedDateTime | Export-Csv -Path &quot;D:\UserCreationTimes.csv&quot; -NoTypeInformation</p>
+<p>导出结果如下：</p>
+<p>分享此方式不仅只针对创建时间这一个属性，其它隐藏属性均可使用此方式进行查询和导出。</p></article>

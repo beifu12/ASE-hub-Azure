@@ -1,0 +1,81 @@
+<article class="kb-article" data-title="【share】AKS添加网络授权IP白名单后，集群状态异常-缓解方法"><h1>【share】AKS添加网络授权IP白名单后，集群状态异常-缓解方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-05 17:57:58</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>后台调查集群出现不健康状态是在5月29号左右，节点无法向控制平台汇报心跳。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>后台调查集群出现不健康状态是在5月29号左右，节点无法向控制平台汇报心跳。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Liu Wanting</li>
+</ul>
+<ul>
+<li>工单号：20240530296339</li>
+</ul>
+<ul>
+<li>【工单背景】</li>
+</ul>
+<ul>
+<li>资源ID：/subscriptions/eb17a49e-7691-497d-82c2-375c201e68d3/resourceGroups/RG-8003-AKS-DMZ/providers/Microsoft.ContainerService/managedClusters/RG-8003-AKS-DMZ</li>
+</ul>
+<ul>
+<li>【缓解方法】</li>
+</ul>
+<ul>
+<li>Azure Kubernetes 服务 (AKS) 中的 API 服务器已授权 IP 范围 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>中止 Azure Kubernetes 服务 (AKS) 长时间运行的操作 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>AKS集群状态异常，Node not ready，portal界面按钮灰色，无法操作</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>我们尝试使用命令更新集群：az aks update --name myAKSCluster --resource-group myResourceGroup，等待几十分钟，集群状态还是异常</li>
+</ul>
+<ul>
+<li>由于集群一直处于失败的状态中，所以其在Azure Portal上取消白名单功能的设置按钮为灰色。在这种情况下，建议用户使用命令行方式进行设置。禁用授权IP</li>
+</ul>
+<ul>
+<li>az aks update --resource-group myResourceGroup --name myAKSCluster --api-server-authorized-ip-ranges &quot; &quot;（双引号中添加一个空格）</li>
+</ul>
+<ul>
+<li>经过与产品组的确认，该问题是由于一个临时性的后台问题所导致。在此情况下，请暂时使用以下命令进行设置。（双引号中添加一个空格）</li>
+</ul>
+<ul>
+<li>如果在执行上述命令时，遇到错误提示仍有后台任务运行，可考虑使用中止命令取消任务。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-06-05</p>
+<p>Liu Wanting</p>
+<p>工单号：20240530296339</p>
+<p>【工单背景】</p>
+<p>AKS集群状态异常，Node not ready，portal界面按钮灰色，无法操作</p>
+<p>资源ID：/subscriptions/eb17a49e-7691-497d-82c2-375c201e68d3/resourceGroups/RG-8003-AKS-DMZ/providers/Microsoft.ContainerService/managedClusters/RG-8003-AKS-DMZ</p>
+<p>后台调查集群出现不健康状态是在5月29号左右，节点无法向控制平台汇报心跳。</p>
+<p>我们尝试使用命令更新集群：az aks update --name myAKSCluster --resource-group myResourceGroup，等待几十分钟，集群状态还是异常</p>
+<p>【缓解方法】</p>
+<p>由于集群一直处于失败的状态中，所以其在Azure Portal上取消白名单功能的设置按钮为灰色。在这种情况下，建议用户使用命令行方式进行设置。禁用授权IP</p>
+<p>Azure Kubernetes 服务 (AKS) 中的 API 服务器已授权 IP 范围 - Azure Kubernetes Service | Azure Docs</p>
+<p>az aks update --resource-group myResourceGroup --name myAKSCluster --api-server-authorized-ip-ranges &quot; &quot;（双引号中添加一个空格）</p>
+<p>经过与产品组的确认，该问题是由于一个临时性的后台问题所导致。在此情况下，请暂时使用以下命令进行设置。（双引号中添加一个空格）</p>
+<p>如果在执行上述命令时，遇到错误提示仍有后台任务运行，可考虑使用中止命令取消任务。</p>
+<p>中止 Azure Kubernetes 服务 (AKS) 长时间运行的操作 - Azure Kubernetes Service | Azure Docs</p></article>

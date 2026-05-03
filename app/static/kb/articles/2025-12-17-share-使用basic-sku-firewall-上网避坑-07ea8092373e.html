@@ -1,0 +1,108 @@
+<article class="kb-article" data-title="【share】使用basic sku firewall 上网避坑"><h1>【share】使用basic sku firewall 上网避坑</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AzureResourceMover</li>
+<li>Section: Azure Resource Mover</li>
+<li>最近修改: 2025-12-17 14:20:00</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2，检测了firewall 的policy，配置没有问题，引导用户临时配置全部放通，依然无法上网。---&gt;firewall policy ok。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2，检测了firewall 的policy，配置没有问题，引导用户临时配置全部放通，依然无法上网。---&gt;firewall policy ok。</li>
+</ul>
+<ul>
+<li>在有dnat rule的情况下，无法直接关联新建的ip，需删除dnat rule ，再进行关联。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>【问题分析】</li>
+</ul>
+<ul>
+<li>1，可以使用firewall 进行远程，说明firewall 资源是ok的。---&gt;firewall 资源层ok。</li>
+</ul>
+<ul>
+<li>参考文档：</li>
+</ul>
+<ul>
+<li>Basic fw：</li>
+</ul>
+<ul>
+<li>Standard fw:</li>
+</ul>
+<ul>
+<li>Premium fw:</li>
+</ul>
+<ul>
+<li>【进一步】</li>
+</ul>
+<ul>
+<li>删除了dnat rule，为fw 关联了新建的public ip，使用fw 的新的ip 配置了fw dnat后，走fw 上网问题解决了。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>3，查看vm 的NSG出站，去往internet 的规则是放通的，NSG 配置没有问题。---&gt;vm NSG ok的。</li>
+</ul>
+<ul>
+<li>5，检查了vm 系统内部的防火墙是关闭的，不会影响vm 上网。---&gt;vm 系统fw ok。</li>
+</ul>
+<ul>
+<li>6，查看vm的有效路由也是有的，去往0.0.0.0/0，下一跳走fw 。---&gt;vm 门户下发的路由ok。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>【问题描述】vm 没有公网ip，配置了使用firewall 上网的路由，却无法上网，使用3389端口远程是可以的。</li>
+</ul>
+<ul>
+<li>【问题背景】有这样一个背景，用户之前使用高级的firewall，后改用的basic sku firewall，具体策略按照之前的配置，可以使用3389端口远程，但无法上网。 ‘</li>
+</ul>
+<ul>
+<li>该检查的都检查了，还漏了哪里呢？Basic sku firewall 对比Standard和Premium的firewall ，会多一个管理口的流量。与用户询问，这个firewall 有几个公网ip，用户说一个，这里不对。了解到用户创建Basic sku firewall 时management public ipaddress 是必填的，而public ip address 却不是必填选项，所以用户没有配置public ip address。门户也对比了Standard或Premium firewall 的创建配置，public ip address 是必填的。---&gt;原来这里有个迷糊的地方，必须配置public ip addressc才可以上网。</li>
+</ul>
+<ul>
+<li>7，门户查看，用户的basic sku fw 确实没有公网ip, 用户3389 使用的是管理口的公网ip。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>4，查看了vm 系统内部的dns，使用vnet 默认的dns，如访问www.baidu.com 可以正常解析，但无法上网。---&gt;vm dns ok。</li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/firewall/deploy-firewall-basic-portal-policy" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/firewall/deploy-firewall-basic-portal-policy</a></li>
+</ul>
+<ul>
+<li>这里也实际测试了vm 系统内tracert www.baidu.com ，发现下一跳是10.1.5.5，非有效路由里fw 内网ip10.1.2.4，发现它是fw 管理口的ip段。</li>
+</ul>
+<ul>
+<li>此时测试tracert www.baidu.com ，下一跳依然走的是management 口的ip 10.1.5.5。</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/09</p>
+<p>【问题描述】vm 没有公网ip，配置了使用firewall 上网的路由，却无法上网，使用3389端口远程是可以的。</p>
+<p>【问题背景】有这样一个背景，用户之前使用高级的firewall，后改用的basic sku firewall，具体策略按照之前的配置，可以使用3389端口远程，但无法上网。 ‘</p>
+<p>【问题分析】</p>
+<p>1，可以使用firewall 进行远程，说明firewall 资源是ok的。---&gt;firewall 资源层ok。</p>
+<p>2，检测了firewall 的policy，配置没有问题，引导用户临时配置全部放通，依然无法上网。---&gt;firewall policy ok。</p>
+<p>3，查看vm 的NSG出站，去往internet 的规则是放通的，NSG 配置没有问题。---&gt;vm NSG ok的。</p>
+<p>4，查看了vm 系统内部的dns，使用vnet 默认的dns，如访问www.baidu.com 可以正常解析，但无法上网。---&gt;vm dns ok。</p>
+<p>5，检查了vm 系统内部的防火墙是关闭的，不会影响vm 上网。---&gt;vm 系统fw ok。</p>
+<p>6，查看vm的有效路由也是有的，去往0.0.0.0/0，下一跳走fw 。---&gt;vm 门户下发的路由ok。</p>
+<p>该检查的都检查了，还漏了哪里呢？Basic sku firewall 对比Standard和Premium的firewall ，会多一个管理口的流量。与用户询问，这个firewall 有几个公网ip，用户说一个，这里不对。了解到用户创建Basic sku firewall 时management public ipaddress 是必填的，而public ip address 却不是必填选项，所以用户没有配置public ip address。门户也对比了Standard或Premium firewall 的创建配置，public ip address 是必填的。---&gt;原来这里有个迷糊的地方，必须配置public ip addressc才可以上网。</p>
+<p>参考文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/firewall/deploy-firewall-basic-portal-policy" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/firewall/deploy-firewall-basic-portal-policy</a></p>
+<p>Basic fw：</p>
+<p>Standard fw:</p>
+<p>Premium fw:</p>
+<p>【进一步】</p>
+<p>7，门户查看，用户的basic sku fw 确实没有公网ip, 用户3389 使用的是管理口的公网ip。</p>
+<p>这里也实际测试了vm 系统内tracert www.baidu.com ，发现下一跳是10.1.5.5，非有效路由里fw 内网ip10.1.2.4，发现它是fw 管理口的ip段。</p>
+<p>在有dnat rule的情况下，无法直接关联新建的ip，需删除dnat rule ，再进行关联。</p>
+<p>删除了dnat rule，为fw 关联了新建的public ip，使用fw 的新的ip 配置了fw dnat后，走fw 上网问题解决了。</p>
+<p>此时测试tracert www.baidu.com ，下一跳依然走的是management 口的ip 10.1.5.5。</p></article>

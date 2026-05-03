@@ -1,0 +1,214 @@
+<article class="kb-article" data-title="如何获取标准 的PA地址"><h1>如何获取标准 的PA地址</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LB</li>
+<li>Section: Tools</li>
+<li>最近修改: 2022-01-12 10:48:25</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20190412</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20190412</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20190412</li>
+</ul>
+<ul>
+<li>[MCVKB][NET]How to get the PA address of Standard ILB via FcShell</li>
+</ul>
+<ul>
+<li>Hi Team,</li>
+</ul>
+<ul>
+<li>I’d like to share this approach for how to get the PA address of Standard ILB via FcShell.</li>
+</ul>
+<ul>
+<li>Find an instance in the backend pool and record the cluster/container-id</li>
+</ul>
+<ul>
+<li>Run such command via fcshell: (11.1.1.7 is ILB’s CA address)</li>
+</ul>
+<ul>
+<li>PS C:\FcShell\ &gt; $f = get-fabric bjs20prdapp08</li>
+</ul>
+<ul>
+<li>PS C:\FcShell\FcShell.Release.132.879.648\lib\net45&gt; $c = get-container 88620074-701c-4e03-b3c4-0be7cca98c19 -fabric $f</li>
+</ul>
+<ul>
+<li>PS C:\FcShell\FcShell.Release.132.879.648\lib\net45&gt; $mappingResult</li>
+</ul>
+<ul>
+<li>CustomerIPAddress  : 11.1.1.7</li>
+</ul>
+<ul>
+<li>PhysicalIPAddress  : 40.73.40.136</li>
+</ul>
+<ul>
+<li>MacAddress         : 4D4143414444</li>
+</ul>
+<ul>
+<li>AvailabilityZoneId : 0</li>
+</ul>
+<ul>
+<li>IsConnected        : False</li>
+</ul>
+<ul>
+<li>IsSecondary        : False</li>
+</ul>
+<ul>
+<li>Assign Standard ILB an public ipv4 address as PA is by design, to unblocking global vnet peering scenario without encap ipv6 gre, instead, encap ipv4 gre:</li>
+</ul>
+<ul>
+<li>e.g.</li>
+</ul>
+<ul>
+<li>11.1.1.5 is Dst CA address of VM in remote VNET cross global peering, then from Src VM node capture, you will see it should be encapped with ipv6 gre:</li>
+</ul>
+<ul>
+<li>11.1.1.7 is Dst CA address of ILB in remote VNET cross global peering, then from Src VM node capture, you will see it should be encapped with ipv4 gre:</li>
+</ul>
+<ul>
+<li>The Src ipv4 and ipv6 address are sourcing from the VFP rule:</li>
+</ul>
+<ul>
+<li>RULE : RouteTargetVnetGlobalPeering_VNETGP_{C5E1C584-36AA-46A1-A1D5-972B0520E6F7}_0</li>
+</ul>
+<ul>
+<li>Friendly name : RouteTargetVnetGlobalPeering_VNETGP_{C5E1C584-36AA-46A1-A1D5-972B0520E6F7}_0</li>
+</ul>
+<ul>
+<li>Priority : 516</li>
+</ul>
+<ul>
+<li>Flags : 1 terminating</li>
+</ul>
+<ul>
+<li>Type : mapencap</li>
+</ul>
+<ul>
+<li>Conditions:</li>
+</ul>
+<ul>
+<li>Destination IP : 11.1.0.0/16</li>
+</ul>
+<ul>
+<li>Source IP : 172.16.0.5/32</li>
+</ul>
+<ul>
+<li>Flow TTL: 0</li>
+</ul>
+<ul>
+<li>MSS delta: 42,0</li>
+</ul>
+<ul>
+<li>Rule Data:</li>
+</ul>
+<ul>
+<li>Map space : VNETGP_{C5E1C584-36AA-46A1-A1D5-972B0520E6F7}</li>
+</ul>
+<ul>
+<li>GRE key : 7001714</li>
+</ul>
+<ul>
+<li>Encap Type: NVGRE</li>
+</ul>
+<ul>
+<li>Encap Source IP : 2406:e500:a101:80ae::a6e:98d7</li>
+</ul>
+<ul>
+<li>Encap Secondary Source IP : 10.12.100.55</li>
+</ul>
+<ul>
+<li>FlagsEx : 0</li>
+</ul>
+<ul>
+<li>Best Regards,</li>
+</ul>
+<ul>
+<li>Vincent Lyu</li>
+</ul>
+<ul>
+<li>Support Escalation Engineer</li>
+</ul>
+<ul>
+<li>Mooncake (China Azure) Support Team,</li>
+</ul>
+<ul>
+<li>Customer Service &amp; Support (CSS), GCR region</li>
+</ul>
+<ul>
+<li>Office:  +86-21-61885476</li>
+</ul>
+<ul>
+<li>welv@microsoft.com</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Generally the old way for check the basic ILB’s PA is not working to standard ILB anymore, so here are the new way to get it via FcShell:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>PS C:\FcShell\FcShell.Release.132.879.648\lib\net45&gt; $mappingResult = $f | Invoke-FclApi NetworkManagementService GetVnetAddressMappingForCAFromNmAgent($c.Node.Id, $c.Id, &quot;11.1.1.7&quot;)</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>CA routing with CA source MAC enabled, ttl not decremented</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20190412</p>
+<p>[MCVKB][NET]How to get the PA address of Standard ILB via FcShell</p>
+<p>Hi Team,</p>
+<p>I’d like to share this approach for how to get the PA address of Standard ILB via FcShell.</p>
+<p>Generally the old way for check the basic ILB’s PA is not working to standard ILB anymore, so here are the new way to get it via FcShell:</p>
+<p>Find an instance in the backend pool and record the cluster/container-id</p>
+<p>Run such command via fcshell: (11.1.1.7 is ILB’s CA address)</p>
+<p>PS C:\FcShell\ &gt; $f = get-fabric bjs20prdapp08</p>
+<p>PS C:\FcShell\FcShell.Release.132.879.648\lib\net45&gt; $c = get-container 88620074-701c-4e03-b3c4-0be7cca98c19 -fabric $f</p>
+<p>PS C:\FcShell\FcShell.Release.132.879.648\lib\net45&gt; $mappingResult = $f | Invoke-FclApi NetworkManagementService GetVnetAddressMappingForCAFromNmAgent($c.Node.Id, $c.Id, &quot;11.1.1.7&quot;)</p>
+<p>PS C:\FcShell\FcShell.Release.132.879.648\lib\net45&gt; $mappingResult</p>
+<p>CustomerIPAddress  : 11.1.1.7</p>
+<p>PhysicalIPAddress  : 40.73.40.136</p>
+<p>MacAddress         : 4D4143414444</p>
+<p>AvailabilityZoneId : 0</p>
+<p>IsConnected        : False</p>
+<p>IsSecondary        : False</p>
+<p>Assign Standard ILB an public ipv4 address as PA is by design, to unblocking global vnet peering scenario without encap ipv6 gre, instead, encap ipv4 gre:</p>
+<p>e.g.</p>
+<p>11.1.1.5 is Dst CA address of VM in remote VNET cross global peering, then from Src VM node capture, you will see it should be encapped with ipv6 gre:</p>
+<p>11.1.1.7 is Dst CA address of ILB in remote VNET cross global peering, then from Src VM node capture, you will see it should be encapped with ipv4 gre:</p>
+<p>The Src ipv4 and ipv6 address are sourcing from the VFP rule:</p>
+<p>RULE : RouteTargetVnetGlobalPeering_VNETGP_{C5E1C584-36AA-46A1-A1D5-972B0520E6F7}_0</p>
+<p>Friendly name : RouteTargetVnetGlobalPeering_VNETGP_{C5E1C584-36AA-46A1-A1D5-972B0520E6F7}_0</p>
+<p>Priority : 516</p>
+<p>Flags : 1 terminating</p>
+<p>Type : mapencap</p>
+<p>Conditions:</p>
+<p>Destination IP : 11.1.0.0/16</p>
+<p>Source IP : 172.16.0.5/32</p>
+<p>Flow TTL: 0</p>
+<p>MSS delta: 42,0</p>
+<p>Rule Data:</p>
+<p>Map space : VNETGP_{C5E1C584-36AA-46A1-A1D5-972B0520E6F7}</p>
+<p>GRE key : 7001714</p>
+<p>Encap Type: NVGRE</p>
+<p>CA routing with CA source MAC enabled, ttl not decremented</p>
+<p>Encap Source IP : 2406:e500:a101:80ae::a6e:98d7</p>
+<p>Encap Secondary Source IP : 10.12.100.55</p>
+<p>FlagsEx : 0</p>
+<p>Best Regards,</p>
+<p>Vincent Lyu</p>
+<p>Support Escalation Engineer</p>
+<p>Mooncake (China Azure) Support Team,</p>
+<p>Customer Service &amp; Support (CSS), GCR region</p>
+<p>Office:  +86-21-61885476</p>
+<p>welv@microsoft.com</p></article>

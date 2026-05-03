@@ -1,0 +1,223 @@
+<article class="kb-article" data-title="ASA配置IKE"><h1>ASA配置IKE</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-06-22 15:03:31</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>IKEv1</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>IKEv1</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>IKEv1</li>
+</ul>
+<ul>
+<li>! 感兴趣流</li>
+</ul>
+<ul>
+<li>access-list vpn extended permit ip 10.2.0.0 255.255.0.0 10.1.0.0 255.255.0.0</li>
+</ul>
+<ul>
+<li>! 第一阶段</li>
+</ul>
+<ul>
+<li>crypto ikev1 policy 1</li>
+</ul>
+<ul>
+<li>authentication pre-share</li>
+</ul>
+<ul>
+<li>encryption aes-256</li>
+</ul>
+<ul>
+<li>hash sha</li>
+</ul>
+<ul>
+<li>group 14</li>
+</ul>
+<ul>
+<li>lifetime 28800</li>
+</ul>
+<ul>
+<li>! 将第一阶段应用到接口</li>
+</ul>
+<ul>
+<li>! 第二阶段</li>
+</ul>
+<ul>
+<li>crypto ipsec ikev1 transform-set IKEv1 esp-aes-256 esp-sha-hmac</li>
+</ul>
+<ul>
+<li>crypto map ikev1map 1 set security-association lifetime seconds 27000</li>
+</ul>
+<ul>
+<li>crypto map ikev1map 1 set security-association lifetime kilobytes 102400000</li>
+</ul>
+<ul>
+<li>! 在VPN中将感兴趣流、对端IP地址、第二阶段</li>
+</ul>
+<ul>
+<li>crypto ipsec security-association pmtu-aging infinite</li>
+</ul>
+<ul>
+<li>crypto map ikev1map 1 match address vpn</li>
+</ul>
+<ul>
+<li>crypto map ikev1map 1 set peer 40.73.86.183</li>
+</ul>
+<ul>
+<li>crypto map ikev1map 1 set ikev1 transform-set IKEv1</li>
+</ul>
+<ul>
+<li>! 将第二阶段应用到接口</li>
+</ul>
+<ul>
+<li>crypto map ikev1map interface management</li>
+</ul>
+<ul>
+<li>! 配置pre-share-key</li>
+</ul>
+<ul>
+<li>tunnel-group 40.73.86.183 type ipsec-l2l</li>
+</ul>
+<ul>
+<li>tunnel-group 40.73.86.183 ipsec-attributes</li>
+</ul>
+<ul>
+<li>ikev1 pre-shared-key 123</li>
+</ul>
+<ul>
+<li>IKEv2</li>
+</ul>
+<ul>
+<li>access-list vpn extended permit ip 10.2.0.0 255.255.0.0 192.168.254.0 255.255.255.0</li>
+</ul>
+<ul>
+<li>crypto ikev2 policy 10</li>
+</ul>
+<ul>
+<li>integrity sha</li>
+</ul>
+<ul>
+<li>prf sha</li>
+</ul>
+<ul>
+<li>lifetime seconds 28800</li>
+</ul>
+<ul>
+<li>crypto ipsec ikev2 ipsec-proposal phrase2</li>
+</ul>
+<ul>
+<li>crypto map testmap 10 set security-association lifetime seconds 27000</li>
+</ul>
+<ul>
+<li>crypto map testmap 10 set security-association lifetime kilobytes 102400000</li>
+</ul>
+<ul>
+<li>crypto map testmap 10 match address vpn</li>
+</ul>
+<ul>
+<li>crypto map testmap 10 set peer 40.73.23.126</li>
+</ul>
+<ul>
+<li>crypto map testmap 10 set ikev2 ipsec-proposal phrase2</li>
+</ul>
+<ul>
+<li>crypto map testmap interface management</li>
+</ul>
+<ul>
+<li>tunnel-group 40.73.23.126 type ipsec-l2l</li>
+</ul>
+<ul>
+<li>tunnel-group 40.73.23.126 ipsec-attributes</li>
+</ul>
+<ul>
+<li>ikev2 remote-authentication pre-shared-key 123</li>
+</ul>
+<ul>
+<li>ikev2 local-authentication pre-shared-key 123</li>
+</ul>
+<ul>
+<li>Cisco官网文档：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>protocol esp encryption aes-256</li>
+</ul>
+<ul>
+<li>protocol esp integrity sha-1</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>crypto ikev1 enable management</li>
+</ul>
+<ul>
+<li>crypto ikev2 enable management</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://www.cisco.com/c/zh_cn/support/docs/security/asa-5500-x-series-next-generation-firewalls/119007-config-asa9x-ike-ipsec-00.html" target="_blank" rel="noopener">https://www.cisco.com/c/zh_cn/support/docs/security/asa-5500-x-series-next-generation-firewalls/119007-config-asa9x-ike-ipsec-00.html</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-04-22</p>
+<p>IKEv1</p>
+<p>! 感兴趣流</p>
+<p>access-list vpn extended permit ip 10.2.0.0 255.255.0.0 10.1.0.0 255.255.0.0</p>
+<p>! 第一阶段</p>
+<p>crypto ikev1 policy 1</p>
+<p>authentication pre-share</p>
+<p>encryption aes-256</p>
+<p>hash sha</p>
+<p>group 14</p>
+<p>lifetime 28800</p>
+<p>! 将第一阶段应用到接口</p>
+<p>crypto ikev1 enable management</p>
+<p>! 第二阶段</p>
+<p>crypto ipsec ikev1 transform-set IKEv1 esp-aes-256 esp-sha-hmac</p>
+<p>crypto map ikev1map 1 set security-association lifetime seconds 27000</p>
+<p>crypto map ikev1map 1 set security-association lifetime kilobytes 102400000</p>
+<p>! 在VPN中将感兴趣流、对端IP地址、第二阶段</p>
+<p>crypto ipsec security-association pmtu-aging infinite</p>
+<p>crypto map ikev1map 1 match address vpn</p>
+<p>crypto map ikev1map 1 set peer 40.73.86.183</p>
+<p>crypto map ikev1map 1 set ikev1 transform-set IKEv1</p>
+<p>! 将第二阶段应用到接口</p>
+<p>crypto map ikev1map interface management</p>
+<p>! 配置pre-share-key</p>
+<p>tunnel-group 40.73.86.183 type ipsec-l2l</p>
+<p>tunnel-group 40.73.86.183 ipsec-attributes</p>
+<p>ikev1 pre-shared-key 123</p>
+<p>IKEv2</p>
+<p>access-list vpn extended permit ip 10.2.0.0 255.255.0.0 192.168.254.0 255.255.255.0</p>
+<p>crypto ikev2 policy 10</p>
+<p>integrity sha</p>
+<p>prf sha</p>
+<p>lifetime seconds 28800</p>
+<p>crypto ikev2 enable management</p>
+<p>crypto ipsec ikev2 ipsec-proposal phrase2</p>
+<p>protocol esp encryption aes-256</p>
+<p>protocol esp integrity sha-1</p>
+<p>crypto map testmap 10 set security-association lifetime seconds 27000</p>
+<p>crypto map testmap 10 set security-association lifetime kilobytes 102400000</p>
+<p>crypto map testmap 10 match address vpn</p>
+<p>crypto map testmap 10 set peer 40.73.23.126</p>
+<p>crypto map testmap 10 set ikev2 ipsec-proposal phrase2</p>
+<p>crypto map testmap interface management</p>
+<p>tunnel-group 40.73.23.126 type ipsec-l2l</p>
+<p>tunnel-group 40.73.23.126 ipsec-attributes</p>
+<p>ikev2 remote-authentication pre-shared-key 123</p>
+<p>ikev2 local-authentication pre-shared-key 123</p>
+<p>Cisco官网文档：</p>
+<p><a href="https://www.cisco.com/c/zh_cn/support/docs/security/asa-5500-x-series-next-generation-firewalls/119007-config-asa9x-ike-ipsec-00.html" target="_blank" rel="noopener">https://www.cisco.com/c/zh_cn/support/docs/security/asa-5500-x-series-next-generation-firewalls/119007-config-asa9x-ike-ipsec-00.html</a></p></article>

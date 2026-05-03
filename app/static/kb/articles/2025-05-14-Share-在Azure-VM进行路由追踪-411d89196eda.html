@@ -1,0 +1,71 @@
+<article class="kb-article" data-title="[Share]在Azure VM进行路由追踪"><h1>[Share]在Azure VM进行路由追踪</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2025-05-14 17:18:53</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>在Azure VM中，无论是Windows还是Linux系统，默认对Internet地址进行路由追踪时会全部显示为星号（超时）。如果确实需要从Azure VM内获取一下路由追踪的结果，可以尝试如下方法：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>在Azure VM中，无论是Windows还是Linux系统，默认对Internet地址进行路由追踪时会全部显示为星号（超时）。如果确实需要从Azure VM内获取一下路由追踪的结果，可以尝试如下方法：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025.5.14</li>
+</ul>
+<ul>
+<li>前提条件：Azure VM NIC有实例级的公网IP。</li>
+</ul>
+<ul>
+<li>在NSG中，针对该VM放行全部（或Internet)ICMPv4入站流量。</li>
+</ul>
+<ul>
+<li>进行路由追踪，Windows tracert指令只支持ICMP协议，Linux，如Unbuntu中默认以UDP进行路由追踪，traceroute -I\T x.x.x.x 可以指定使用ICMP\TCP探测，同样可以获取ICMP Time-to-live exceeded消息，从而拿到回复这一消息的节点IP。</li>
+</ul>
+<ul>
+<li>如果目标IP TCP port允许连接且未做限制，它会回应TCP SYN ACK和ICMP Time-to-live exceeded给源：</li>
+</ul>
+<ul>
+<li>目标IP是允许ICMP ping的，所以它回复了ICMP reply：</li>
+</ul>
+<ul>
+<li>使用Public LB出站的场景不支持上述方法获取路由跃点信息。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>路由追踪执行完成以后，将抓包文件使用Wireshark打开，其中ICMP Time-to-live-exceeded消息的源IP即所经过的路由节点，没拿到这一消息的也是没有回复这一消息的节点：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>在VM中进行抓包，Windows使用wireshark或PowerShell的netsh trace指令；Linux使用tcpdump即可。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>下图是Azure VM (Ubuntu)中traceroute -T -p 443  www.sina.com.cn 的抓包结果：</li>
+</ul>
+<ul>
+<li>下图是Azure VM(Ubuntu)中traceroute -I www.sina.com.cn 的指令输出和抓包结果：</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025.5.14</p>
+<p>前提条件：Azure VM NIC有实例级的公网IP。</p>
+<p>在Azure VM中，无论是Windows还是Linux系统，默认对Internet地址进行路由追踪时会全部显示为星号（超时）。如果确实需要从Azure VM内获取一下路由追踪的结果，可以尝试如下方法：</p>
+<p>在NSG中，针对该VM放行全部（或Internet)ICMPv4入站流量。</p>
+<p>在VM中进行抓包，Windows使用wireshark或PowerShell的netsh trace指令；Linux使用tcpdump即可。</p>
+<p>进行路由追踪，Windows tracert指令只支持ICMP协议，Linux，如Unbuntu中默认以UDP进行路由追踪，traceroute -I\T x.x.x.x 可以指定使用ICMP\TCP探测，同样可以获取ICMP Time-to-live exceeded消息，从而拿到回复这一消息的节点IP。</p>
+<p>路由追踪执行完成以后，将抓包文件使用Wireshark打开，其中ICMP Time-to-live-exceeded消息的源IP即所经过的路由节点，没拿到这一消息的也是没有回复这一消息的节点：</p>
+<p>下图是Azure VM (Ubuntu)中traceroute -T -p 443  www.sina.com.cn 的抓包结果：</p>
+<p>如果目标IP TCP port允许连接且未做限制，它会回应TCP SYN ACK和ICMP Time-to-live exceeded给源：</p>
+<p>下图是Azure VM(Ubuntu)中traceroute -I www.sina.com.cn 的指令输出和抓包结果：</p>
+<p>目标IP是允许ICMP ping的，所以它回复了ICMP reply：</p>
+<p>使用Public LB出站的场景不支持上述方法获取路由跃点信息。</p></article>

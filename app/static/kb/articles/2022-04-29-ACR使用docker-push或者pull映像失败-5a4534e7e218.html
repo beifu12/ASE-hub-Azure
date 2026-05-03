@@ -1,0 +1,71 @@
+<article class="kb-article" data-title="ACR使用docker push或者pull映像失败"><h1>ACR使用docker push或者pull映像失败</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: ACR</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-04-29 23:14:35</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>119102221000234_VM/P&amp;G/SR_2019102257786_[TEC]Container registries pushed the image success, but pull image failed immediately</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>119102221000234_VM/P&amp;G/SR_2019102257786_[TEC]Container registries pushed the image success, but pull image failed immediately</li>
+</ul>
+<ul>
+<li>SR_2019062134146_[MS-LED]无法从镜像仓库中拉取镜像</li>
+</ul>
+<ul>
+<li>报错：Unauthorized authentication required</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>119092321000064_[PODVM][DELL (CHINA) COMPANY LIMITED][SR_2019092352723 _ [TEC]The  container registry outage or lack of performance]</li>
+</ul>
+<ul>
+<li>y</li>
+</ul>
+<ul>
+<li>========================</li>
+</ul>
+<ul>
+<li>case回顾：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>After login, you may use command “az acr check-health --name &lt;acrRegistry&gt;--ignore-errors” to check both environment and target registry.</li>
+</ul>
+<ul>
+<li>通过抓包，可以看到是由于您本地发起了reset导致连接断掉。这可以说明是您本地网络的限制导致不能从镜像库pull镜像，相关限制可以联系您的本地网管进行调整。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Please make sure Docker and Azure CLI (version &gt; 2.0.67) are installed in your environment, then use command “az login” and “az acr login -name &lt;acrRegistry&gt;” to login your container registry.</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>客户使用azure虚拟机pull成功，可以通过抓包确认是否是客户侧网络问题。</li>
+</ul>
+<ul>
+<li>您可在本地开启两个窗口，一个用来执行抓包另一个用来执行docker pull，方式为先执行tcpdump –nn –I eth0 icmp,  对0口网卡经过的流量进行抓包（具体请参考您的本地实际情况进行修改），在另一窗口执行docker pull待报错后返回抓包窗口停止抓包。后续您可将包下载到本地，用wireshark工具进行查看与分析。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>119102221000234_VM/P&amp;G/SR_2019102257786_[TEC]Container registries pushed the image success, but pull image failed immediately</p>
+<p>119092321000064_[PODVM][DELL (CHINA) COMPANY LIMITED][SR_2019092352723 _ [TEC]The  container registry outage or lack of performance]</p>
+<p>Please make sure Docker and Azure CLI (version &gt; 2.0.67) are installed in your environment, then use command “az login” and “az acr login -name &lt;acrRegistry&gt;” to login your container registry.</p>
+<p>After login, you may use command “az acr check-health --name &lt;acrRegistry&gt;--ignore-errors” to check both environment and target registry.</p>
+<p>y</p>
+<p>========================</p>
+<p>SR_2019062134146_[MS-LED]无法从镜像仓库中拉取镜像</p>
+<p>报错：Unauthorized authentication required</p>
+<p>客户使用azure虚拟机pull成功，可以通过抓包确认是否是客户侧网络问题。</p>
+<p>您可在本地开启两个窗口，一个用来执行抓包另一个用来执行docker pull，方式为先执行tcpdump –nn –I eth0 icmp,  对0口网卡经过的流量进行抓包（具体请参考您的本地实际情况进行修改），在另一窗口执行docker pull待报错后返回抓包窗口停止抓包。后续您可将包下载到本地，用wireshark工具进行查看与分析。</p>
+<p>case回顾：</p>
+<p>通过抓包，可以看到是由于您本地发起了reset导致连接断掉。这可以说明是您本地网络的限制导致不能从镜像库pull镜像，相关限制可以联系您的本地网管进行调整。</p></article>

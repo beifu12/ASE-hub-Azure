@@ -1,0 +1,179 @@
+<article class="kb-article" data-title="【Share】如何通过Azure Resource Graph Explorer查询服务器已安装补丁及未安装补丁信息"><h1>【Share】如何通过Azure Resource Graph Explorer查询服务器已安装补丁及未安装补丁信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-10-24 11:00:10</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>//Count will indicate the number of machines with said update pending across selected subscription(s)</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>//Count will indicate the number of machines with said update pending across selected subscription(s)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>patchinstallationresources</li>
+</ul>
+<ul>
+<li>| where properties.installationState == &quot;Installed&quot;</li>
+</ul>
+<ul>
+<li>| project id,properties.lastModifiedDateTime,properties.installationState,properties.patchName,properties.kbId</li>
+</ul>
+<ul>
+<li>###获取到服务器缺的安全补丁和关键补丁</li>
+</ul>
+<ul>
+<li>resources</li>
+</ul>
+<ul>
+<li>| extend joinId = tolower(id)</li>
+</ul>
+<ul>
+<li>| extend azureOs = tostring(properties.storageProfile.osDisk.osType)</li>
+</ul>
+<ul>
+<li>| extend arcOs = coalesce(tostring(properties.osName), tostring(properties.osType))</li>
+</ul>
+<ul>
+<li>| extend os = coalesce(azureOs, arcOs)</li>
+</ul>
+<ul>
+<li>| extend osType = iff(os =~ &quot;Windows&quot;, &quot;Windows&quot;, &quot;Linux&quot;)</li>
+</ul>
+<ul>
+<li>| join kind=leftouter( resources</li>
+</ul>
+<ul>
+<li>| where type in~ (&quot;Microsoft.SqlVirtualMachine/sqlVirtualMachines&quot;, &quot;microsoft.azurearcdata/sqlserverinstances&quot;)</li>
+</ul>
+<ul>
+<li>| project resourceId = iff(type =~ &quot;Microsoft.SqlVirtualMachine/sqlVirtualMachines&quot;, tolower(properties.virtualMachineResourceId), tolower(properties.containerResourceId)), sqlType = type</li>
+</ul>
+<ul>
+<li>| summarize by resourceId, sqlType</li>
+</ul>
+<ul>
+<li>) on $left.joinId == $right.resourceId</li>
+</ul>
+<ul>
+<li>| extend type = iff(isnotempty(sqlType), sqlType, type)</li>
+</ul>
+<ul>
+<li>| project-away sqlType, resourceId</li>
+</ul>
+<ul>
+<li>| join kind = leftouter</li>
+</ul>
+<ul>
+<li>(</li>
+</ul>
+<ul>
+<li>patchassessmentresources</li>
+</ul>
+<ul>
+<li>| where type in~ (&quot;microsoft.compute/virtualmachines/patchassessmentresults/softwarePatches&quot;, &quot;microsoft.hybridcompute/machines/patchassessmentresults/softwarePatches&quot;)</li>
+</ul>
+<ul>
+<li>| parse id with resourceId &quot;/patchAssessmentResults&quot; *</li>
+</ul>
+<ul>
+<li>| extend joinId = tolower(resourceId)</li>
+</ul>
+<ul>
+<li>| extend publishedDateTime = iff(isnotnull(properties.publishedDateTime), properties.publishedDateTime, &quot;N/A&quot;)</li>
+</ul>
+<ul>
+<li>| extend rebootRequired = iff(isnotnull(properties.rebootBehavior), properties.rebootBehavior, &quot;N/A&quot;)</li>
+</ul>
+<ul>
+<li>| extend classification = iff(properties.classifications[0] =~ &quot;UpdateRollUp&quot;, &quot;UpdateRollup&quot;, iff(isempty(properties.classifications[0]), &quot;Unsupported&quot;, properties.classifications[0]))</li>
+</ul>
+<ul>
+<li>| extend msrcSeverity = iff(isnotnull(properties.msrcSeverity), properties.msrcSeverity, &quot;NotAvailable&quot;)</li>
+</ul>
+<ul>
+<li>| extend classificationPriority = iff(classification contains &quot;Security&quot;, 0, (iff(classification == &quot;Critical&quot; , 1, 2)))</li>
+</ul>
+<ul>
+<li>| project joinId, assessProperties = properties, publishedDateTime, rebootRequired, classification, msrcSeverity, classificationPriority) on $left.joinId == $right.joinId</li>
+</ul>
+<ul>
+<li>| where isnotnull(assessProperties)</li>
+</ul>
+<ul>
+<li>| summarize count() by name,publishedDateTime, tostring(assessProperties.patchName), tostring(assessProperties.kbId), rebootRequired, osType, tostring(classification), msrcSeverity, classificationPriority</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>【Share】如何通过Azure Resource Graph Explorer查询服务器已安装补丁及未安装补丁信息</li>
+</ul>
+<ul>
+<li>###查看虚拟机已安装补丁的信息</li>
+</ul>
+<ul>
+<li>虚拟机的名称可以查看ID这列中/providers/Microsoft.Compute/virtualMachines/ 后面的字段信息</li>
+</ul>
+<ul>
+<li>查询结果</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>示例命令</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>| extend uniquePatchNameWithVersion = iff(isnull(properties.kbId), strcat(tostring(properties.patchName), &#39;_&#39;, tostring(properties.version)), properties.patchName)</li>
+</ul>
+<ul>
+<li>| extend osUpdateClassification = iff(osType =~ &quot;Linux&quot;, strcat(&quot;linux&quot;, tolower(classification)), tolower(classification))</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>【Share】如何通过Azure Resource Graph Explorer查询服务器已安装补丁及未安装补丁信息</p>
+<p>###查看虚拟机已安装补丁的信息</p>
+<p>示例命令</p>
+<p>patchinstallationresources</p>
+<p>| where properties.installationState == &quot;Installed&quot;</p>
+<p>| project id,properties.lastModifiedDateTime,properties.installationState,properties.patchName,properties.kbId</p>
+<p>虚拟机的名称可以查看ID这列中/providers/Microsoft.Compute/virtualMachines/ 后面的字段信息</p>
+<p>###获取到服务器缺的安全补丁和关键补丁</p>
+<p>resources</p>
+<p>| extend joinId = tolower(id)</p>
+<p>| extend azureOs = tostring(properties.storageProfile.osDisk.osType)</p>
+<p>| extend arcOs = coalesce(tostring(properties.osName), tostring(properties.osType))</p>
+<p>| extend os = coalesce(azureOs, arcOs)</p>
+<p>| extend osType = iff(os =~ &quot;Windows&quot;, &quot;Windows&quot;, &quot;Linux&quot;)</p>
+<p>| join kind=leftouter( resources</p>
+<p>| where type in~ (&quot;Microsoft.SqlVirtualMachine/sqlVirtualMachines&quot;, &quot;microsoft.azurearcdata/sqlserverinstances&quot;)</p>
+<p>| project resourceId = iff(type =~ &quot;Microsoft.SqlVirtualMachine/sqlVirtualMachines&quot;, tolower(properties.virtualMachineResourceId), tolower(properties.containerResourceId)), sqlType = type</p>
+<p>| summarize by resourceId, sqlType</p>
+<p>) on $left.joinId == $right.resourceId</p>
+<p>| extend type = iff(isnotempty(sqlType), sqlType, type)</p>
+<p>| project-away sqlType, resourceId</p>
+<p>| join kind = leftouter</p>
+<p>(</p>
+<p>patchassessmentresources</p>
+<p>| where type in~ (&quot;microsoft.compute/virtualmachines/patchassessmentresults/softwarePatches&quot;, &quot;microsoft.hybridcompute/machines/patchassessmentresults/softwarePatches&quot;)</p>
+<p>| parse id with resourceId &quot;/patchAssessmentResults&quot; *</p>
+<p>| extend joinId = tolower(resourceId)</p>
+<p>| extend uniquePatchNameWithVersion = iff(isnull(properties.kbId), strcat(tostring(properties.patchName), &#39;_&#39;, tostring(properties.version)), properties.patchName)</p>
+<p>| extend publishedDateTime = iff(isnotnull(properties.publishedDateTime), properties.publishedDateTime, &quot;N/A&quot;)</p>
+<p>| extend rebootRequired = iff(isnotnull(properties.rebootBehavior), properties.rebootBehavior, &quot;N/A&quot;)</p>
+<p>| extend classification = iff(properties.classifications[0] =~ &quot;UpdateRollUp&quot;, &quot;UpdateRollup&quot;, iff(isempty(properties.classifications[0]), &quot;Unsupported&quot;, properties.classifications[0]))</p>
+<p>| extend msrcSeverity = iff(isnotnull(properties.msrcSeverity), properties.msrcSeverity, &quot;NotAvailable&quot;)</p>
+<p>| extend classificationPriority = iff(classification contains &quot;Security&quot;, 0, (iff(classification == &quot;Critical&quot; , 1, 2)))</p>
+<p>| project joinId, assessProperties = properties, publishedDateTime, rebootRequired, classification, msrcSeverity, classificationPriority) on $left.joinId == $right.joinId</p>
+<p>| where isnotnull(assessProperties)</p>
+<p>| extend osUpdateClassification = iff(osType =~ &quot;Linux&quot;, strcat(&quot;linux&quot;, tolower(classification)), tolower(classification))</p>
+<p>//Count will indicate the number of machines with said update pending across selected subscription(s)</p>
+<p>| summarize count() by name,publishedDateTime, tostring(assessProperties.patchName), tostring(assessProperties.kbId), rebootRequired, osType, tostring(classification), msrcSeverity, classificationPriority</p>
+<p>查询结果</p></article>

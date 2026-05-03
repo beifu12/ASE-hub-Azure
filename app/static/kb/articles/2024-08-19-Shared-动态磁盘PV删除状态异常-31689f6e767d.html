@@ -1,0 +1,56 @@
+<article class="kb-article" data-title="[Shared]动态磁盘PV删除状态异常"><h1>[Shared]动态磁盘PV删除状态异常</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: TroubleShooting</li>
+<li>最近修改: 2024-08-19 11:35:02</li>
+<li>JD 相关性: 售后排障; AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>删除PVC后，PV无法自动释放，尝试手动删除也无法释放PV，最后状态显示Terminating</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>删除PVC后，PV无法自动释放，尝试手动删除也无法释放PV，最后状态显示Terminating</li>
+</ul>
+<ul>
+<li>在Azure界面相关资源的delete按钮灰色无法点击</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Create</li>
+</ul>
+<ul>
+<li>通过上述方式将pv从群集层面释放，然后手动将磁盘从VMSS实例解除挂载并删除</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>对于删除pvc之后pv处于terminate状态，查询github发现如下：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>kubectl get pv -&gt; &lt;pvname&gt;</li>
+</ul>
+<ul>
+<li>kubectl patch pv &lt;pvname&gt; -p &quot;{\&quot;metadata\&quot;:{\&quot;finalizers\&quot;:null}}</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/kubernetes/kubernetes/issues/69697" target="_blank" rel="noopener">https://github.com/kubernetes/kubernetes/issues/69697</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Create</p>
+<p>2024-08-19</p>
+<p>删除PVC后，PV无法自动释放，尝试手动删除也无法释放PV，最后状态显示Terminating</p>
+<p>在Azure界面相关资源的delete按钮灰色无法点击</p>
+<p>对于删除pvc之后pv处于terminate状态，查询github发现如下：</p>
+<p><a href="https://github.com/kubernetes/kubernetes/issues/69697" target="_blank" rel="noopener">https://github.com/kubernetes/kubernetes/issues/69697</a></p>
+<p>kubectl get pv -&gt; &lt;pvname&gt;</p>
+<p>kubectl patch pv &lt;pvname&gt; -p &quot;{\&quot;metadata\&quot;:{\&quot;finalizers\&quot;:null}}</p>
+<p>通过上述方式将pv从群集层面释放，然后手动将磁盘从VMSS实例解除挂载并删除</p></article>

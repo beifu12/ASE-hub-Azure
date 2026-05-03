@@ -1,0 +1,95 @@
+<article class="kb-article" data-title="调整本地docker镜像源"><h1>调整本地docker镜像源</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: ACR</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-19 16:34:32</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>WangZhaoqing</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>1.改配置文件 /etc/docker/daemon.json：</li>
+</ul>
+<ul>
+<li>docker</li>
+</ul>
+<ul>
+<li>2.增加或修改以下配置内容：</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;registry-mirrors&quot;: [</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>3.重启docker，让配置生效</li>
+</ul>
+<ul>
+<li>systemctl restart docker</li>
+</ul>
+<ul>
+<li>docker info</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>4.检查配置是否生效</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>&quot;<a href="https://dockerproxy.com&quot;," target="_blank" rel="noopener">https://dockerproxy.com&quot;,</a></li>
+</ul>
+<ul>
+<li>&quot;<a href="https://hub-mirror.c.163.com&quot;," target="_blank" rel="noopener">https://hub-mirror.c.163.com&quot;,</a></li>
+</ul>
+<ul>
+<li>&quot;<a href="https://mirror.baidubce.com&quot;," target="_blank" rel="noopener">https://mirror.baidubce.com&quot;,</a></li>
+</ul>
+<ul>
+<li>&quot;<a href="https://ccr.ccs.tencentyun.com&quot;," target="_blank" rel="noopener">https://ccr.ccs.tencentyun.com&quot;,</a></li>
+</ul>
+<ul>
+<li>&quot;<a href="https://alzgoonw.mirror.aliyuncs.com&quot;" target="_blank" rel="noopener">https://alzgoonw.mirror.aliyuncs.com&quot;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>WangZhaoqing</p>
+<p>1.改配置文件 /etc/docker/daemon.json：</p>
+<p>docker</p>
+<p>2.增加或修改以下配置内容：</p>
+<p>{</p>
+<p>&quot;registry-mirrors&quot;: [</p>
+<p>&quot;<a href="https://dockerproxy.com&quot;," target="_blank" rel="noopener">https://dockerproxy.com&quot;,</a></p>
+<p>&quot;<a href="https://hub-mirror.c.163.com&quot;," target="_blank" rel="noopener">https://hub-mirror.c.163.com&quot;,</a></p>
+<p>&quot;<a href="https://mirror.baidubce.com&quot;," target="_blank" rel="noopener">https://mirror.baidubce.com&quot;,</a></p>
+<p>&quot;<a href="https://ccr.ccs.tencentyun.com&quot;," target="_blank" rel="noopener">https://ccr.ccs.tencentyun.com&quot;,</a></p>
+<p>&quot;<a href="https://alzgoonw.mirror.aliyuncs.com&quot;" target="_blank" rel="noopener">https://alzgoonw.mirror.aliyuncs.com&quot;</a></p>
+<p>]</p>
+<p>}</p>
+<p>3.重启docker，让配置生效</p>
+<p>systemctl restart docker</p>
+<p>4.检查配置是否生效</p>
+<p>docker info</p></article>

@@ -1,0 +1,189 @@
+<article class="kb-article" data-title="【share】排查Azure 虚拟机备份失败报错ExtensionfailedRetryableErroraccessdenied"><h1>【share】排查Azure 虚拟机备份失败报错ExtensionfailedRetryableErroraccessdenied</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: Troubleshooting</li>
+<li>最近修改: 2024-09-27 09:27:59</li>
+<li>JD 相关性: 售后排障; 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>用户的Windows 2012 datacenter 虚拟机之前一直备份正常，在8月21日之后出现了备份失败的情况，报错提示如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>用户的Windows 2012 datacenter 虚拟机之前一直备份正常，在8月21日之后出现了备份失败的情况，报错提示如下：</li>
+</ul>
+<ul>
+<li>ExtensionfailedRetryableErroraccessdenied</li>
+</ul>
+<ul>
+<li>Snapshot operation failed as the windows guest agent encountered the access denied error</li>
+</ul>
+<ul>
+<li>Removal of an assemble from the global assembly cache failed: C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\1.0.92.0\iaasvmazurestorage.dlliaasvmazurestorage,version=3.0.0.0</li>
+</ul>
+<ul>
+<li>//|project PreciseTimeStamp ,ContainerName ,  BackupPolicyId , StartTime  ,TaskId, RecoveryPointId ,JobStatus , ErrorCode , SizeOfVm , CloudServiceName</li>
+</ul>
+<ul>
+<li>|project PreciseTimeStamp ,ContainerName ,JobStatus , ErrorCode , SizeOfVm , CloudServiceName</li>
+</ul>
+<ul>
+<li>参考工单：SR_20240926317387_WIN虚拟机备份失败，查找原因</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>Please ensure that windows guest agent is running under &quot;local system&quot; service account and the account is part of Administrator group on the Virtual Machine</li>
+</ul>
+<ul>
+<li>===========</li>
+</ul>
+<ul>
+<li>登录到你的Windows虚拟机。</li>
+</ul>
+<ul>
+<li>在服务列表中，查找“Windows Azure Guest Agent”</li>
+</ul>
+<ul>
+<li>右键点击“Windows Azure Guest Agent”服务，选择“属性”。</li>
+</ul>
+<ul>
+<li>如果不是，请更改为“本地系统账户”，并确保“允许服务与桌面交互”的选项未被勾选（这通常不推荐用于服务）。</li>
+</ul>
+<ul>
+<li>在“本地用户和组”下，点击“组”。</li>
+</ul>
+<ul>
+<li>找到“Administrators”组，双击打开它。</li>
+</ul>
+<ul>
+<li>确保没有防火墙或安全软件阻止Windows Guest Agent或相关服务进行网络通信。</li>
+</ul>
+<ul>
+<li>重启虚拟机：</li>
+</ul>
+<ul>
+<li>在进行上述更改后，重启虚拟机以确保所有设置生效。</li>
+</ul>
+<ul>
+<li>再次执行备份可以正常完成备份作业：</li>
+</ul>
+<ul>
+<li>BCMBackupStats</li>
+</ul>
+<ul>
+<li>| where SubscriptionId == &quot;c635f031-e433-43ce-b9ac-f695348db769&quot;</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt; datetime(2024-09-25 00:00:00.000)</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &lt; datetime(2024-09-27 10:00:00.000)</li>
+</ul>
+<ul>
+<li>|where ContainerName contains &quot;CAFLESWeb01&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>确认Windows Guest Agent运行状态：</li>
+</ul>
+<ul>
+<li>确认该服务正在运行，并且设置为“自动”启动。</li>
+</ul>
+<ul>
+<li>检查服务账户：</li>
+</ul>
+<ul>
+<li>在“登录”标签页中，确认服务是否设置为以“本地系统账户”运行。</li>
+</ul>
+<ul>
+<li>确认账户权限：</li>
+</ul>
+<ul>
+<li>确认“本地系统”账户（通常显示为NT AUTHORITY\SYSTEM）是否在该组中。虽然“本地系统”账户默认拥有管理员权限，但在某些特殊配置或策略下可能会被移除。</li>
+</ul>
+<ul>
+<li>检查防火墙和安全软件设置：</li>
+</ul>
+<ul>
+<li>检查是否有任何策略或规则限制了“本地系统”账户访问网络资源或执行某些操作。</li>
+</ul>
+<ul>
+<li>2， 用户查询了以上信息后发现该虚拟机的Windows Guest Agent服务运行及账户权限等都是正确配置的。</li>
+</ul>
+<ul>
+<li>3， 进一步查询event viewer 中的application log，并对比正常备份的同OS 的虚拟机，发现在21号之后问题虚拟机上一直出现COM+相关的报错提醒：</li>
+</ul>
+<ul>
+<li>根据排查 Azure VM 备份错误 - Azure Backup | Azure Docs 提供的排查COM+报错的方法，让用户重启了com+system application的服务</li>
+</ul>
+<ul>
+<li>结合Kusto 语句查询备份情况：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>1， 首先根据报错提醒可以看出是因为Windows Guest Agent（也称为VM Agent）没有足够的权限来执行必要的操作导致的报错。 于是建议用户排查服务及权限问题：</li>
+</ul>
+<ul>
+<li>打开“服务”（可以通过搜索“services.msc”来找到）。</li>
+</ul>
+<ul>
+<li>打开“计算机管理”（可以通过搜索“computer management”来找到）。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/9/27</p>
+<p>问题描述：</p>
+<p>用户的Windows 2012 datacenter 虚拟机之前一直备份正常，在8月21日之后出现了备份失败的情况，报错提示如下：</p>
+<p>ExtensionfailedRetryableErroraccessdenied</p>
+<p>Snapshot operation failed as the windows guest agent encountered the access denied error</p>
+<p>Please ensure that windows guest agent is running under &quot;local system&quot; service account and the account is part of Administrator group on the Virtual Machine</p>
+<p>排查过程：</p>
+<p>===========</p>
+<p>1， 首先根据报错提醒可以看出是因为Windows Guest Agent（也称为VM Agent）没有足够的权限来执行必要的操作导致的报错。 于是建议用户排查服务及权限问题：</p>
+<p>确认Windows Guest Agent运行状态：</p>
+<p>登录到你的Windows虚拟机。</p>
+<p>打开“服务”（可以通过搜索“services.msc”来找到）。</p>
+<p>在服务列表中，查找“Windows Azure Guest Agent”</p>
+<p>确认该服务正在运行，并且设置为“自动”启动。</p>
+<p>检查服务账户：</p>
+<p>右键点击“Windows Azure Guest Agent”服务，选择“属性”。</p>
+<p>在“登录”标签页中，确认服务是否设置为以“本地系统账户”运行。</p>
+<p>如果不是，请更改为“本地系统账户”，并确保“允许服务与桌面交互”的选项未被勾选（这通常不推荐用于服务）。</p>
+<p>确认账户权限：</p>
+<p>打开“计算机管理”（可以通过搜索“computer management”来找到）。</p>
+<p>在“本地用户和组”下，点击“组”。</p>
+<p>找到“Administrators”组，双击打开它。</p>
+<p>确认“本地系统”账户（通常显示为NT AUTHORITY\SYSTEM）是否在该组中。虽然“本地系统”账户默认拥有管理员权限，但在某些特殊配置或策略下可能会被移除。</p>
+<p>检查防火墙和安全软件设置：</p>
+<p>确保没有防火墙或安全软件阻止Windows Guest Agent或相关服务进行网络通信。</p>
+<p>检查是否有任何策略或规则限制了“本地系统”账户访问网络资源或执行某些操作。</p>
+<p>重启虚拟机：</p>
+<p>在进行上述更改后，重启虚拟机以确保所有设置生效。</p>
+<p>2， 用户查询了以上信息后发现该虚拟机的Windows Guest Agent服务运行及账户权限等都是正确配置的。</p>
+<p>3， 进一步查询event viewer 中的application log，并对比正常备份的同OS 的虚拟机，发现在21号之后问题虚拟机上一直出现COM+相关的报错提醒：</p>
+<p>Removal of an assemble from the global assembly cache failed: C:\Packages\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot\1.0.92.0\iaasvmazurestorage.dlliaasvmazurestorage,version=3.0.0.0</p>
+<p>根据排查 Azure VM 备份错误 - Azure Backup | Azure Docs 提供的排查COM+报错的方法，让用户重启了com+system application的服务</p>
+<p>再次执行备份可以正常完成备份作业：</p>
+<p>结合Kusto 语句查询备份情况：</p>
+<p>BCMBackupStats</p>
+<p>| where SubscriptionId == &quot;c635f031-e433-43ce-b9ac-f695348db769&quot;</p>
+<p>| where PreciseTimeStamp &gt; datetime(2024-09-25 00:00:00.000)</p>
+<p>| where PreciseTimeStamp &lt; datetime(2024-09-27 10:00:00.000)</p>
+<p>//|project PreciseTimeStamp ,ContainerName ,  BackupPolicyId , StartTime  ,TaskId, RecoveryPointId ,JobStatus , ErrorCode , SizeOfVm , CloudServiceName</p>
+<p>|project PreciseTimeStamp ,ContainerName ,JobStatus , ErrorCode , SizeOfVm , CloudServiceName</p>
+<p>|where ContainerName contains &quot;CAFLESWeb01&quot;</p>
+<p>参考工单：SR_20240926317387_WIN虚拟机备份失败，查找原因</p></article>

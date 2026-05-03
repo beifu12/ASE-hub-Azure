@@ -1,0 +1,101 @@
+<article class="kb-article" data-title="升级WAPHYNET"><h1>升级WAPHYNET</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: 标准话术和流程</li>
+<li>最近修改: 2022-06-01 18:35:21</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>升级/联系场景：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>升级/联系场景：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>升级/联系场景：</li>
+</ul>
+<ul>
+<li>一般TOR重启或者网络断连，会影响客户vm的问题，21V-waphynet会联系邮件发送通知 。如： INITIAL – Sev2  [IcM 310518219] – Network – APPcluster Tor device SHA20-0101-0705-04T0 all BGP down</li>
+</ul>
+<ul>
+<li>升级/联系方式：</li>
+</ul>
+<ul>
+<li>主要是通过邮件</li>
+</ul>
+<ul>
+<li>1.  了解哪些客户受到了影响</li>
+</ul>
+<ul>
+<li>3. 及时回复waphynet询问收到cri的数量的邮件</li>
+</ul>
+<ul>
+<li>哪些客户受到了影响</li>
+</ul>
+<ul>
+<li>受影响的列表由Azure RT团队提供，有得时候会附加在ICM工单中，有时候会在Bridge中提供，有时候会在waphynet通知邮件中附加，留意下即可。 一般包含如下几项</li>
+</ul>
+<ul>
+<li>注：</li>
+</ul>
+<ul>
+<li>现在comms发布notification的工具和ICM做了集成，comms填写正确的LSI number并发布notification后，会在ICM工单中看到comms发给客户的通知。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2. 收集客户信息，确认是否受此事件影响，如是，请及时在azul中填写LSI number；如不确定，可先内部沟通，如有必要，联系waphynet、comms，让其帮忙与PG确认。</li>
+</ul>
+<ul>
+<li>1.每位工程师查询的受影响时间范围可能不一样，导致结果中可能漏掉受影响的用户或者多包含了未受影响的用户。如不确认，可发送客户信息至waphynet/comms确认下，他们会联系pg确认。</li>
+</ul>
+<ul>
+<li>2.理论上受影响的客户会在门户上看到comms发送的通知，也不排除中间问题，漏掉了客户的sub，导致客户看不到通知，此情况，可联系comms确认是否给客户sub发送了相关通知</li>
+</ul>
+<ul>
+<li>以ToR reload 举例说明如下，Mitigated – Sev2 - [IcM 298344411] – Network – The device sha20-0101-0504-11t0 reloaded unexpectedly。ICM链接中搜索Phynet团队发出的LSI number，打开对应的工单，在Activity Log（Hisotry)--&gt;Communication查看。（如长时间没有看到，skype上ping下comms同事确认下情况，是LSI填写错了，还是他们还未发送notification）</li>
+</ul>
+<ul>
+<li>位置查看截图：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>4.如何了解当前comms给客户发送了哪些通知/RCA（适用于所有LSI）</li>
+</ul>
+<ul>
+<li>如何了解当前comms给客户发送了哪些通知/RCA（适用于所有LSI）</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>在问题修复期间，有几个问题比较重要：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal.microsofticm.com/imp/v3/incidents/details/298344411/activitylog/communications" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/298344411/activitylog/communications</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>升级/联系场景：</p>
+<p>一般TOR重启或者网络断连，会影响客户vm的问题，21V-waphynet会联系邮件发送通知 。如： INITIAL – Sev2  [IcM 310518219] – Network – APPcluster Tor device SHA20-0101-0705-04T0 all BGP down</p>
+<p>升级/联系方式：</p>
+<p>主要是通过邮件</p>
+<p>在问题修复期间，有几个问题比较重要：</p>
+<p>1.  了解哪些客户受到了影响</p>
+<p>2. 收集客户信息，确认是否受此事件影响，如是，请及时在azul中填写LSI number；如不确定，可先内部沟通，如有必要，联系waphynet、comms，让其帮忙与PG确认。</p>
+<p>3. 及时回复waphynet询问收到cri的数量的邮件</p>
+<p>4.如何了解当前comms给客户发送了哪些通知/RCA（适用于所有LSI）</p>
+<p>哪些客户受到了影响</p>
+<p>受影响的列表由Azure RT团队提供，有得时候会附加在ICM工单中，有时候会在Bridge中提供，有时候会在waphynet通知邮件中附加，留意下即可。 一般包含如下几项</p>
+<p>注：</p>
+<p>1.每位工程师查询的受影响时间范围可能不一样，导致结果中可能漏掉受影响的用户或者多包含了未受影响的用户。如不确认，可发送客户信息至waphynet/comms确认下，他们会联系pg确认。</p>
+<p>2.理论上受影响的客户会在门户上看到comms发送的通知，也不排除中间问题，漏掉了客户的sub，导致客户看不到通知，此情况，可联系comms确认是否给客户sub发送了相关通知</p>
+<p>如何了解当前comms给客户发送了哪些通知/RCA（适用于所有LSI）</p>
+<p>现在comms发布notification的工具和ICM做了集成，comms填写正确的LSI number并发布notification后，会在ICM工单中看到comms发给客户的通知。</p>
+<p>以ToR reload 举例说明如下，Mitigated – Sev2 - [IcM 298344411] – Network – The device sha20-0101-0504-11t0 reloaded unexpectedly。ICM链接中搜索Phynet团队发出的LSI number，打开对应的工单，在Activity Log（Hisotry)--&gt;Communication查看。（如长时间没有看到，skype上ping下comms同事确认下情况，是LSI填写错了，还是他们还未发送notification）</p>
+<p>位置查看截图：</p>
+<p><a href="https://portal.microsofticm.com/imp/v3/incidents/details/298344411/activitylog/communications" target="_blank" rel="noopener">https://portal.microsofticm.com/imp/v3/incidents/details/298344411/activitylog/communications</a></p></article>

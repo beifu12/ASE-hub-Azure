@@ -1,0 +1,649 @@
+<article class="kb-article" data-title="Azure SAP HANA Backup Performance"><h1>Azure SAP HANA Backup Performance</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-04 18:52:23</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Debugging Performance Issues for (Full + Delta) Backups</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Debugging Performance Issues for (Full + Delta) Backups</li>
+</ul>
+<ul>
+<li>Network Related Issues</li>
+</ul>
+<ul>
+<li>Storage Vault Issues</li>
+</ul>
+<ul>
+<li>Read Issues</li>
+</ul>
+<ul>
+<li>Write Issues</li>
+</ul>
+<ul>
+<li>To begin debugging performance issues:</li>
+</ul>
+<ul>
+<li>Determine the impact level of the performance issue:</li>
+</ul>
+<ul>
+<li>| where ErrorCode contains &quot;success&quot;</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP, DeploymentName, ExpectedMaxBackupSpeed, ReadThroughputInMBps, WriteThroughputInMBps, BackupSpeedAchievedIncludingExtensionDelaysInMbps, DatasourceSizeInGB, DurationInMS, ContainerName, DatasourceName, BackupType, ErrorCode, PitId, TaskId, DataTransferred, DatasourceId, SubscriptionId, Level, Properties</li>
+</ul>
+<ul>
+<li>If all the machines from that region are affected, please create an IcM with all these details. Based on the number of VMs within the subscription that are affected the most probable cause for performance issue may vary. Generally, if multiple VMs are affected it could be a network issue. However, to zero-in on the right cause, follow these steps:</li>
+</ul>
+<ul>
+<li>If issues persist, consult a Network Subject Matter Expert (SME).</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP, ContainerName, DatasourceId, DatasourceName, DatasourceSize, PluginProperties, Properties, BackupType, ErrorCode, DatasourceType, DurationInMS, TaskId</li>
+</ul>
+<ul>
+<li>Server latency less than 100 ms is acceptable and is expected. Server latency below 100 ms shows that there is no issue on the storage account side.</li>
+</ul>
+<ul>
+<li>it looks like a storage issue, but you are unable to identify the same – reach out to a Storage SME</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP,DeploymentName,ExpectedMaxBackupSpeed, ReadThroughputInMBps, WriteThroughputInMBps, BackupSpeedAchievedIncludingExtensionDelaysInMbps, DatasourceSizeInGB, DurationInMS, ContainerName, DatasourceName, BackupType,ErrorCode, PitId, TaskId, DataTransferred, DatasourceId, SubscriptionId, Level, Properties</li>
+</ul>
+<ul>
+<li>Get the storage account as per the earlier queries in this tsg in the section storage vault issues.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Debugging Performance Full+delta Backups</li>
+</ul>
+<ul>
+<li>Follow</li>
+</ul>
+<ul>
+<li>1</li>
+</ul>
+<ul>
+<li>Edit</li>
+</ul>
+<ul>
+<li>Carlos Prazeres</li>
+</ul>
+<ul>
+<li>Jan 4, 2025</li>
+</ul>
+<ul>
+<li>Disclaimer: Screenshots and Data in Images</li>
+</ul>
+<ul>
+<li>The screenshots included within this article serve illustrative purposes only. They do not contain any personally identifiable information (PII) of real individuals. Any data or information depicted in these images is lab-generated and fictitious.</li>
+</ul>
+<ul>
+<li>Contents</li>
+</ul>
+<ul>
+<li>Overview</li>
+</ul>
+<ul>
+<li>Azure Backup Performance for SAP HANA</li>
+</ul>
+<ul>
+<li>Understanding Backup and Restore Throughput Performance</li>
+</ul>
+<ul>
+<li>Additional Notes</li>
+</ul>
+<ul>
+<li>To understand the current backup and throughput performance that Azure Backup provides for SAP HANA workloads, refer to the following articles:</li>
+</ul>
+<ul>
+<li>Limiting Backup Throughput Performance</li>
+</ul>
+<ul>
+<li>Is it limited to the Azure region where the HANA VM is hosted?</li>
+</ul>
+<ul>
+<li>Does it affect all HANA VMs in the subscription or just one?</li>
+</ul>
+<ul>
+<li>The Azure region in which the customer has their HANA VM</li>
+</ul>
+<ul>
+<li>The Subscription of which the HANA VM is a part – is it impacting all the HANA VMs in the subscription or is it just a single VM?</li>
+</ul>
+<ul>
+<li>| where SubscriptionId !in (GetInternalSubscriptions())</li>
+</ul>
+<ul>
+<li>| where DeploymentName contains &quot;we&quot;</li>
+</ul>
+<ul>
+<li>| where DatasourceType contains &quot;hana&quot;</li>
+</ul>
+<ul>
+<li>| where BackupType contains &quot;full&quot;</li>
+</ul>
+<ul>
+<li>| extend DatasourceSizeInGB = todouble(DataTransferred) /(1024 * 1024 * 1024)</li>
+</ul>
+<ul>
+<li>| extend ReadThroughputInMBps = parse_json(Properties).OverallReadThroughputInMBps</li>
+</ul>
+<ul>
+<li>| extend WriteThroughputInMBps = parse_json(Properties).OverallWriteThroughputInMBps</li>
+</ul>
+<ul>
+<li>| extend BackupSpeedAchievedIncludingExtensionDelaysInMbps = (todouble(DataTransferred)/(todouble(DurationInMS)/1000)/(1024 * 1024))</li>
+</ul>
+<ul>
+<li>| where DatasourceSizeInGB &gt; 50</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt; ago(5d)</li>
+</ul>
+<ul>
+<li>| extend countBruUnits = tolong(parse_json(Properties).CountOfBRUUnits),</li>
+</ul>
+<ul>
+<li>| extend ExpectedMaxBackupSpeedWithoutCap = countBRUReplicas*(countBruUnits/2)</li>
+</ul>
+<ul>
+<li>| extend ExpectedMaxBackupSpeed = iff(ExpectedMaxBackupSpeedWithoutCap &gt; 450, 450, ExpectedMaxBackupSpeedWithoutCap)</li>
+</ul>
+<ul>
+<li>Creating an Incident</li>
+</ul>
+<ul>
+<li>If all machines in a region are affected, create an Incident Management (IcM) ticket with the collected details.</li>
+</ul>
+<ul>
+<li>Understand the network layout for the HANA setup (e.g., proxies, firewalls, private endpoints).</li>
+</ul>
+<ul>
+<li>Use AzCopy to test data writing to a storage blob from the VM.</li>
+</ul>
+<ul>
+<li>Approach 1 (Recommended)</li>
+</ul>
+<ul>
+<li>Use the WBEBackupStats table to get storage account details:</li>
+</ul>
+<ul>
+<li>WBEBackupStats</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt; ago(2d)</li>
+</ul>
+<ul>
+<li>| where BackupType == &quot;Full&quot;</li>
+</ul>
+<ul>
+<li>| where DatasourceId == &quot;193514432489076&quot;</li>
+</ul>
+<ul>
+<li>Sample Output</li>
+</ul>
+<ul>
+<li>Approach 2</li>
+</ul>
+<ul>
+<li>Plugin calls the protection service API to get the SAS URI for the storage accounts. The call to the protection service is made every 24-36 hours, i.e. once a call to protection service is made it is cached in the plugin service for a day.</li>
+</ul>
+<ul>
+<li>//Please select Mabprod1 to run this query... Retrieve storage data</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt;=ago (10d)</li>
+</ul>
+<ul>
+<li>| where DatasourceId == &quot;&lt;DsId&gt;&quot;</li>
+</ul>
+<ul>
+<li>| where BackupType == &quot;&lt;BackupType&gt;&quot;</li>
+</ul>
+<ul>
+<li>| summarize by TaskId, BackupType;</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt; ago(10d)</li>
+</ul>
+<ul>
+<li>| where DeploymentName == &quot;&lt;geo&gt;-pod01&quot;</li>
+</ul>
+<ul>
+<li>| where ServiceName == &quot;tel&quot;</li>
+</ul>
+<ul>
+<li>| where TaskId in (taskids)</li>
+</ul>
+<ul>
+<li>| where Message == &quot;[HANAPlugin Bkp]: Stamping PIT metadata.&quot;</li>
+</ul>
+<ul>
+<li>| parse Properties with * &quot;{storageContainerInfo = [&quot; StoragecontainerInfo:string &quot;]}&quot;</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP,DeploymentName, BkpType, Message, TaskId, StoragecontainerInfo</li>
+</ul>
+<ul>
+<li>Enter the storage account name. Leave the tenant empty.</li>
+</ul>
+<ul>
+<li>Click on Account SLA Shoebox Metrics</li>
+</ul>
+<ul>
+<li>You can filter according to the time period to get the required stats, i.e. if the backups for a given time period is slow, you can apply the date time filter accordingly.</li>
+</ul>
+<ul>
+<li>E2E Latency</li>
+</ul>
+<ul>
+<li>Server Latency</li>
+</ul>
+<ul>
+<li>Find out what type of disks are being used? If they are premium? What is the maximum throughput available on those disks?.</li>
+</ul>
+<ul>
+<li>| extend DatasourceSizeInGB = todouble(DataTransferred) /(1024 * 1024 * 1024)// in GB</li>
+</ul>
+<ul>
+<li>//| extend Level = iif(((ReadThroughputInMBps &lt; 150) or (WriteThroughputInMBps &lt; 150)), 3, 2)</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt; ago(5d) // Change number of days</li>
+</ul>
+<ul>
+<li>| extend countBruUnits =tolong(parse_json(Properties).CountOfBRUUnits) , countBRUReplicas = tolong(parse_json(Properties).CountOfBRUReplicas)</li>
+</ul>
+<ul>
+<li>How to read the output from this query?</li>
+</ul>
+<ul>
+<li>ReadThroughputInMbps – What is the max read throughput for the backup operation</li>
+</ul>
+<ul>
+<li>WriteThroughputInMbps – What is the max write throughput for the backup operation</li>
+</ul>
+<ul>
+<li>BackupSpeedAchievedIncludingExtensionDelaysInMbps – What is the overall backup speeds achieved, this includes the data transfer times and the extension processing times and delays</li>
+</ul>
+<ul>
+<li>Tracing - one can figure out what is the time it took for put operation and time for idle (this is the throttling that Azure Backup does to meet the backup speeds promised) operation. Use the following query.</li>
+</ul>
+<ul>
+<li>How to read the output from this query –</li>
+</ul>
+<ul>
+<li>Create a file ExtensionSettingsOverrides.json (if not already exists) in the path /opt/msawb/bin/ for Linux or C:\Program Files\Azure Workload Backup\bin for Windows with the following content:</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;TraceStorageCallStats&quot; : true</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>| where TaskId == &quot;&lt;TaskId&gt;&quot;</li>
+</ul>
+<ul>
+<li>| where Level == 2</li>
+</ul>
+<ul>
+<li>| where Message == &quot;GetBackupOverrideSettings: Received backupOverrideSettings from ExtensionOverrideSettings.&quot;</li>
+</ul>
+<ul>
+<li>| project TimeStamp, Message, Properties, Exception, Level, ContainerName</li>
+</ul>
+<ul>
+<li>| where Message contains &quot;CloudBlobWriteProxy: Total time spent in PutBlock and Throttling operations in milliseconds:&quot;</li>
+</ul>
+<ul>
+<li>| parse Properties with &quot;{ThrottlingOperationTimeElapsedMilliseconds = &quot; ThrottlingOperationTimeElapsedMilliseconds :long &quot;}{PutBlockOperationTimeElapsedMilliseconds = &quot; PutBlockOperationTimeElapsedMilliseconds  :long &quot;}&quot; *</li>
+</ul>
+<ul>
+<li>| project TimeStamp, Message, Properties, Exception, Level, ContainerName, PutBlockOperationTimeElapsedMilliseconds, ThrottlingOperationTimeElapsedMilliseconds</li>
+</ul>
+<ul>
+<li>| summarize timeSpendInThrottlingInMins =  round(sum(ThrottlingOperationTimeElapsedMilliseconds)/(1000*60.0), 2),</li>
+</ul>
+<ul>
+<li>For example, consider the above screenshot which shows that the total idle time or time taken to throttle the request was 34.62 minutes, while the total time that the write operation was performed for is 196.77 minutes. As it can be inferred, there is relatively less time spent in throttling compared to the write operations = High latency coming due to external factors (outside the VM – network or Storage account)</li>
+</ul>
+<ul>
+<li>For eg. storage account URI is rrteuspod01prot1h33.blob.core.windows.net</li>
+</ul>
+<ul>
+<li>Supplemental Information</li>
+</ul>
+<ul>
+<li>Wiki Author: Product Group</li>
+</ul>
+<ul>
+<li>Wiki Updates: Yasmin Mora Vega</li>
+</ul>
+<ul>
+<li>Wiki Reviewer: Carlos Prazeres</li>
+</ul>
+<ul>
+<li>Sample case / ICM :</li>
+</ul>
+<ul>
+<li>9 visits in last 30 days</li>
+</ul>
+<ul>
+<li>Comments</li>
+</ul>
+<ul>
+<li>Michael Schattecommented Jun 4, 2025</li>
+</ul>
+<ul>
+<li>It&#39;s failing because the function GetInternalSubscriptions is trying to connect to the following.</li>
+</ul>
+<ul>
+<li>cluster(&quot;Mabprod1&quot;).database(&quot;AzureBackup&quot;).DimSubscriptionEx</li>
+</ul>
+<ul>
+<li>I don&#39;t believe we in CSS have access to this.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Check External Factors Causing Performance Degradation</li>
+</ul>
+<ul>
+<li>Check Internal Factors Causing Performance Degradation</li>
+</ul>
+<ul>
+<li>This document provides an overview of the current backup and throughput performance for SAP HANA workloads using Azure Backup. It includes debugging steps for performance issues and methodologies for diagnosing and resolving them.</li>
+</ul>
+<ul>
+<li>Query to Check Impact Level</li>
+</ul>
+<ul>
+<li>Firstly, Check the level of impact of the performance issue, is it restricted to:</li>
+</ul>
+<ul>
+<li>To find the above use the following Kusto query:</li>
+</ul>
+<ul>
+<li>union cluster(&#39;mabprod1&#39;).database(&#39;MABKustoProd1&#39;).WBEBackupStats,</li>
+</ul>
+<ul>
+<li>cluster(&#39;mabprodwus&#39;).database(&#39;MABKustoProd&#39;).WBEBackupStats,</li>
+</ul>
+<ul>
+<li>cluster(&#39;mabprodweu&#39;).database(&#39;MABKustoProd&#39;).WBEBackupStats</li>
+</ul>
+<ul>
+<li>Check for DNS issues, particularly with private endpoint setups.</li>
+</ul>
+<ul>
+<li>Check end-to-end latency in Jarvis for full backup duration.</li>
+</ul>
+<ul>
+<li>Parse storage account details from service logs using the specified query.</li>
+</ul>
+<ul>
+<li>Full/Differential/Incremental backups for the database uses the same storage account while log may use a different storage account based on storage account availability.</li>
+</ul>
+<ul>
+<li>In order to get the storage account used for a particular database backup type (Full/Diff/Incr or log), get all the jobs that are triggered in the last 48 hours and use the below Kusto query:</li>
+</ul>
+<ul>
+<li>WBETraceLogAll</li>
+</ul>
+<ul>
+<li>| extend BkpType = iif(Properties contains &quot;FULL_SCHD&quot;,&quot;Full&quot;,&quot;Log&quot;)</li>
+</ul>
+<ul>
+<li>| order by TIMESTAMP asc</li>
+</ul>
+<ul>
+<li>Once you get the storage account name, you can go to XStore Self Service Portal to get the storage account stats.</li>
+</ul>
+<ul>
+<li>Checkout the E2E latency and Server latency for PutBlock operation. This will give you an idea on the storage account call duration.</li>
+</ul>
+<ul>
+<li>See for spikes in E2E latency in case the backup speeds dropped for the database. A low server latency but high E2E latency shows that there might be some issue on the client machine / network configuration</li>
+</ul>
+<ul>
+<li>Check if internal factors (within the VM) are causing the performance degradation</li>
+</ul>
+<ul>
+<li>Check if HANA is causing the issue.</li>
+</ul>
+<ul>
+<li>Check if extension is causing the issue.</li>
+</ul>
+<ul>
+<li>To check the cause you use the below Kusto query.</li>
+</ul>
+<ul>
+<li>| where BackupType contains &quot;full&quot; // We shouldn&#39;t run this query on log backup&#39;s as datasizes are too small to get real throughput</li>
+</ul>
+<ul>
+<li>A write operation flows through the following layers (after HANA has started the transfer of backup data) – PitManagerClient, Network (customer network + Azure network), Storage. For Network and Storage refer to the above subsection &quot;Check if external factors (outside the VM) are causing the performance degradation&quot;.</li>
+</ul>
+<ul>
+<li>To check if it is an issue with the PitManagerClient (this client resides in the extension and makes a call to the Azure Backup services for the backup data to be moved to the vault), follow the below steps.</li>
+</ul>
+<ul>
+<li>To get more detailed values of idle time (time taken for throttling) and write operations time, do the following - please note that if an ICM is being raised for Write Speed issues, the below step should done already, so we can get extra logging for the storage requests:</li>
+</ul>
+<ul>
+<li>If the file already exists with some key values, just add the &quot;TraceStorageCallStats&quot; : true, at the beginning of the file. After the file is placed, trigger a backup and use the below kusto query to get an estimate of the time spent in the PUT block storage call/write operations.</li>
+</ul>
+<ul>
+<li>Check the key value is set properly in the extension using this kusto query:</li>
+</ul>
+<ul>
+<li>WBETraceLog</li>
+</ul>
+<ul>
+<li>Check the time spent in put block/ write operation using the below kusto query:</li>
+</ul>
+<ul>
+<li>DNS issue: Replacing storage uri with IP, to check if DNS is performing better – This item is in the backlog of the engg team and will be tested for feasibility when the team has some bandwidth. Appropriate updates will be shared.</li>
+</ul>
+<ul>
+<li>When the VM is in region X, and the vault is also in the same region X, the storage calls are routed within the internal network (faster response) to the storage account. Hence, when we check the perf logs on the storage account, there is a clientip column, which indicates the IP address of the client (in this case, the SAP VM). If the client IP is of IPV4 (For e.g. ClientIP=63.97.36.15:24637), then it means that its not hitting it directly internally within the network, but routing it outside the datacenter, on to the public internet, and then coming back into the data center. This increases the latency, since it adds hops on the path, and some path can be slower. If the client ip is IPV6 (for e.g ClientIP=fd00::556d:7020:d00:ae8:449d]:49798), then its within the datacenter network, and should be fast and the performance should be better.</li>
+</ul>
+<ul>
+<li>Hows to gather the storage perf logs.</li>
+</ul>
+<ul>
+<li>Engage a EEE storage to get a perf log from the storage stamp at that time for PutBlock operation. This needs a SAW machine and hence need a EEE. The perf log will have ClientIP which will be used to determine if the request was routing via public internet.</li>
+</ul>
+<ul>
+<li>The queries above cannot be used for log backup performance analysis. For details, refer to the Log Backup Performance Issues Documentation.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>let taskids = WBEBackupStatsAll</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>countBRUReplicas = tolong(parse_json(Properties).CountOfBRUReplicas)</li>
+</ul>
+<ul>
+<li>timeSpendInPutBlockOp = round(sum(PutBlockOperationTimeElapsedMilliseconds)/(1000*60.0),2)</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>If IPV4, check with Cx as to why does it route via public and not internally via the data center network. Sometimes Cx have a proxy configured on the VM or their VNet has a ExpressRoute/VPN tunnel to on-prem with forced tunneling enabled.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Note: The above queries cannot be used to analyze the log backup performance. Therefore, use the following section to debug log performance issues:  <a href="https://supportability.visualstudio.com/AzureBackup/_wiki/wikis/AzureBackup/277553/SAP-HANA-Backup?anchor=log-backups-taking-too-long-to-complete" target="_blank" rel="noopener">https://supportability.visualstudio.com/AzureBackup/_wiki/wikis/AzureBackup/277553/SAP-HANA-Backup?anchor=log-backups-taking-too-long-to-complete</a></li>
+</ul>
+<ul>
+<li>The query under &quot;Query to Check Impact Level&quot; keeps giving &quot;Errors occurred while resolving remote entities. Cluster=&#39;<a href="https://mabprod1.kusto.windows.net/&#39;," target="_blank" rel="noopener">https://mabprod1.kusto.windows.net/&#39;,</a> Database=&#39;azurebackup&#39;: Access denied&quot;</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Debugging Performance Full+delta Backups</p>
+<p>Follow</p>
+<p>1</p>
+<p>Edit</p>
+<p>Carlos Prazeres</p>
+<p>Jan 4, 2025</p>
+<p>Disclaimer: Screenshots and Data in Images</p>
+<p>The screenshots included within this article serve illustrative purposes only. They do not contain any personally identifiable information (PII) of real individuals. Any data or information depicted in these images is lab-generated and fictitious.</p>
+<p>Contents</p>
+<p>Overview</p>
+<p>Azure Backup Performance for SAP HANA</p>
+<p>Understanding Backup and Restore Throughput Performance</p>
+<p>Debugging Performance Issues for (Full + Delta) Backups</p>
+<p>Check External Factors Causing Performance Degradation</p>
+<p>Network Related Issues</p>
+<p>Storage Vault Issues</p>
+<p>Check Internal Factors Causing Performance Degradation</p>
+<p>Read Issues</p>
+<p>Write Issues</p>
+<p>Additional Notes</p>
+<p>This document provides an overview of the current backup and throughput performance for SAP HANA workloads using Azure Backup. It includes debugging steps for performance issues and methodologies for diagnosing and resolving them.</p>
+<p>To understand the current backup and throughput performance that Azure Backup provides for SAP HANA workloads, refer to the following articles:</p>
+<p>Limiting Backup Throughput Performance</p>
+<p>To begin debugging performance issues:</p>
+<p>Determine the impact level of the performance issue:</p>
+<p>Is it limited to the Azure region where the HANA VM is hosted?</p>
+<p>Does it affect all HANA VMs in the subscription or just one?</p>
+<p>Query to Check Impact Level</p>
+<p>Firstly, Check the level of impact of the performance issue, is it restricted to:</p>
+<p>The Azure region in which the customer has their HANA VM</p>
+<p>The Subscription of which the HANA VM is a part – is it impacting all the HANA VMs in the subscription or is it just a single VM?</p>
+<p>To find the above use the following Kusto query:</p>
+<p>union cluster(&#39;mabprod1&#39;).database(&#39;MABKustoProd1&#39;).WBEBackupStats,</p>
+<p>cluster(&#39;mabprodwus&#39;).database(&#39;MABKustoProd&#39;).WBEBackupStats,</p>
+<p>cluster(&#39;mabprodweu&#39;).database(&#39;MABKustoProd&#39;).WBEBackupStats</p>
+<p>| where SubscriptionId !in (GetInternalSubscriptions())</p>
+<p>| where DeploymentName contains &quot;we&quot;</p>
+<p>| where DatasourceType contains &quot;hana&quot;</p>
+<p>| where BackupType contains &quot;full&quot;</p>
+<p>| extend DatasourceSizeInGB = todouble(DataTransferred) /(1024 * 1024 * 1024)</p>
+<p>| extend ReadThroughputInMBps = parse_json(Properties).OverallReadThroughputInMBps</p>
+<p>| extend WriteThroughputInMBps = parse_json(Properties).OverallWriteThroughputInMBps</p>
+<p>| extend BackupSpeedAchievedIncludingExtensionDelaysInMbps = (todouble(DataTransferred)/(todouble(DurationInMS)/1000)/(1024 * 1024))</p>
+<p>| where DatasourceSizeInGB &gt; 50</p>
+<p>| where TIMESTAMP &gt; ago(5d)</p>
+<p>| where ErrorCode contains &quot;success&quot;</p>
+<p>| extend countBruUnits = tolong(parse_json(Properties).CountOfBRUUnits),</p>
+<p>countBRUReplicas = tolong(parse_json(Properties).CountOfBRUReplicas)</p>
+<p>| extend ExpectedMaxBackupSpeedWithoutCap = countBRUReplicas*(countBruUnits/2)</p>
+<p>| extend ExpectedMaxBackupSpeed = iff(ExpectedMaxBackupSpeedWithoutCap &gt; 450, 450, ExpectedMaxBackupSpeedWithoutCap)</p>
+<p>| project TIMESTAMP, DeploymentName, ExpectedMaxBackupSpeed, ReadThroughputInMBps, WriteThroughputInMBps, BackupSpeedAchievedIncludingExtensionDelaysInMbps, DatasourceSizeInGB, DurationInMS, ContainerName, DatasourceName, BackupType, ErrorCode, PitId, TaskId, DataTransferred, DatasourceId, SubscriptionId, Level, Properties</p>
+<p>If all the machines from that region are affected, please create an IcM with all these details. Based on the number of VMs within the subscription that are affected the most probable cause for performance issue may vary. Generally, if multiple VMs are affected it could be a network issue. However, to zero-in on the right cause, follow these steps:</p>
+<p>Creating an Incident</p>
+<p>If all machines in a region are affected, create an Incident Management (IcM) ticket with the collected details.</p>
+<p>Understand the network layout for the HANA setup (e.g., proxies, firewalls, private endpoints).</p>
+<p>Use AzCopy to test data writing to a storage blob from the VM.</p>
+<p>Check for DNS issues, particularly with private endpoint setups.</p>
+<p>If issues persist, consult a Network Subject Matter Expert (SME).</p>
+<p>Check end-to-end latency in Jarvis for full backup duration.</p>
+<p>Approach 1 (Recommended)</p>
+<p>Use the WBEBackupStats table to get storage account details:</p>
+<p>WBEBackupStats</p>
+<p>| where TIMESTAMP &gt; ago(2d)</p>
+<p>| where BackupType == &quot;Full&quot;</p>
+<p>| where DatasourceId == &quot;193514432489076&quot;</p>
+<p>| project TIMESTAMP, ContainerName, DatasourceId, DatasourceName, DatasourceSize, PluginProperties, Properties, BackupType, ErrorCode, DatasourceType, DurationInMS, TaskId</p>
+<p>Sample Output</p>
+<p>Approach 2</p>
+<p>Parse storage account details from service logs using the specified query.</p>
+<p>Full/Differential/Incremental backups for the database uses the same storage account while log may use a different storage account based on storage account availability.</p>
+<p>Plugin calls the protection service API to get the SAS URI for the storage accounts. The call to the protection service is made every 24-36 hours, i.e. once a call to protection service is made it is cached in the plugin service for a day.</p>
+<p>In order to get the storage account used for a particular database backup type (Full/Diff/Incr or log), get all the jobs that are triggered in the last 48 hours and use the below Kusto query:</p>
+<p>//Please select Mabprod1 to run this query... Retrieve storage data</p>
+<p>let taskids = WBEBackupStatsAll</p>
+<p>| where PreciseTimeStamp &gt;=ago (10d)</p>
+<p>| where DatasourceId == &quot;&lt;DsId&gt;&quot;</p>
+<p>| where BackupType == &quot;&lt;BackupType&gt;&quot;</p>
+<p>| summarize by TaskId, BackupType;</p>
+<p>WBETraceLogAll</p>
+<p>| where TIMESTAMP &gt; ago(10d)</p>
+<p>| where DeploymentName == &quot;&lt;geo&gt;-pod01&quot;</p>
+<p>| where ServiceName == &quot;tel&quot;</p>
+<p>| where TaskId in (taskids)</p>
+<p>| where Message == &quot;[HANAPlugin Bkp]: Stamping PIT metadata.&quot;</p>
+<p>| parse Properties with * &quot;{storageContainerInfo = [&quot; StoragecontainerInfo:string &quot;]}&quot;</p>
+<p>| extend BkpType = iif(Properties contains &quot;FULL_SCHD&quot;,&quot;Full&quot;,&quot;Log&quot;)</p>
+<p>| project TIMESTAMP,DeploymentName, BkpType, Message, TaskId, StoragecontainerInfo</p>
+<p>| order by TIMESTAMP asc</p>
+<p>Once you get the storage account name, you can go to XStore Self Service Portal to get the storage account stats.</p>
+<p>Enter the storage account name. Leave the tenant empty.</p>
+<p>Click on Account SLA Shoebox Metrics</p>
+<p>You can filter according to the time period to get the required stats, i.e. if the backups for a given time period is slow, you can apply the date time filter accordingly.</p>
+<p>Checkout the E2E latency and Server latency for PutBlock operation. This will give you an idea on the storage account call duration.</p>
+<p>E2E Latency</p>
+<p>Server Latency</p>
+<p>Server latency less than 100 ms is acceptable and is expected. Server latency below 100 ms shows that there is no issue on the storage account side.</p>
+<p>See for spikes in E2E latency in case the backup speeds dropped for the database. A low server latency but high E2E latency shows that there might be some issue on the client machine / network configuration</p>
+<p>it looks like a storage issue, but you are unable to identify the same – reach out to a Storage SME</p>
+<p>Check if internal factors (within the VM) are causing the performance degradation</p>
+<p>Find out what type of disks are being used? If they are premium? What is the maximum throughput available on those disks?.</p>
+<p>Check if HANA is causing the issue.</p>
+<p>Check if extension is causing the issue.</p>
+<p>To check the cause you use the below Kusto query.</p>
+<p>| where BackupType contains &quot;full&quot; // We shouldn&#39;t run this query on log backup&#39;s as datasizes are too small to get real throughput</p>
+<p>| extend DatasourceSizeInGB = todouble(DataTransferred) /(1024 * 1024 * 1024)// in GB</p>
+<p>//| extend Level = iif(((ReadThroughputInMBps &lt; 150) or (WriteThroughputInMBps &lt; 150)), 3, 2)</p>
+<p>| where TIMESTAMP &gt; ago(5d) // Change number of days</p>
+<p>| extend countBruUnits =tolong(parse_json(Properties).CountOfBRUUnits) , countBRUReplicas = tolong(parse_json(Properties).CountOfBRUReplicas)</p>
+<p>| project TIMESTAMP,DeploymentName,ExpectedMaxBackupSpeed, ReadThroughputInMBps, WriteThroughputInMBps, BackupSpeedAchievedIncludingExtensionDelaysInMbps, DatasourceSizeInGB, DurationInMS, ContainerName, DatasourceName, BackupType,ErrorCode, PitId, TaskId, DataTransferred, DatasourceId, SubscriptionId, Level, Properties</p>
+<p>How to read the output from this query?</p>
+<p>ReadThroughputInMbps – What is the max read throughput for the backup operation</p>
+<p>WriteThroughputInMbps – What is the max write throughput for the backup operation</p>
+<p>BackupSpeedAchievedIncludingExtensionDelaysInMbps – What is the overall backup speeds achieved, this includes the data transfer times and the extension processing times and delays</p>
+<p>A write operation flows through the following layers (after HANA has started the transfer of backup data) – PitManagerClient, Network (customer network + Azure network), Storage. For Network and Storage refer to the above subsection &quot;Check if external factors (outside the VM) are causing the performance degradation&quot;.</p>
+<p>To check if it is an issue with the PitManagerClient (this client resides in the extension and makes a call to the Azure Backup services for the backup data to be moved to the vault), follow the below steps.</p>
+<p>Tracing - one can figure out what is the time it took for put operation and time for idle (this is the throttling that Azure Backup does to meet the backup speeds promised) operation. Use the following query.</p>
+<p>How to read the output from this query –</p>
+<p>To get more detailed values of idle time (time taken for throttling) and write operations time, do the following - please note that if an ICM is being raised for Write Speed issues, the below step should done already, so we can get extra logging for the storage requests:</p>
+<p>Create a file ExtensionSettingsOverrides.json (if not already exists) in the path /opt/msawb/bin/ for Linux or C:\Program Files\Azure Workload Backup\bin for Windows with the following content:</p>
+<p>{</p>
+<p>&quot;TraceStorageCallStats&quot; : true</p>
+<p>}</p>
+<p>If the file already exists with some key values, just add the &quot;TraceStorageCallStats&quot; : true, at the beginning of the file. After the file is placed, trigger a backup and use the below kusto query to get an estimate of the time spent in the PUT block storage call/write operations.</p>
+<p>Check the key value is set properly in the extension using this kusto query:</p>
+<p>WBETraceLog</p>
+<p>| where TaskId == &quot;&lt;TaskId&gt;&quot;</p>
+<p>| where Level == 2</p>
+<p>| where Message == &quot;GetBackupOverrideSettings: Received backupOverrideSettings from ExtensionOverrideSettings.&quot;</p>
+<p>| project TimeStamp, Message, Properties, Exception, Level, ContainerName</p>
+<p>Check the time spent in put block/ write operation using the below kusto query:</p>
+<p>| where Message contains &quot;CloudBlobWriteProxy: Total time spent in PutBlock and Throttling operations in milliseconds:&quot;</p>
+<p>| parse Properties with &quot;{ThrottlingOperationTimeElapsedMilliseconds = &quot; ThrottlingOperationTimeElapsedMilliseconds :long &quot;}{PutBlockOperationTimeElapsedMilliseconds = &quot; PutBlockOperationTimeElapsedMilliseconds  :long &quot;}&quot; *</p>
+<p>| project TimeStamp, Message, Properties, Exception, Level, ContainerName, PutBlockOperationTimeElapsedMilliseconds, ThrottlingOperationTimeElapsedMilliseconds</p>
+<p>| summarize timeSpendInThrottlingInMins =  round(sum(ThrottlingOperationTimeElapsedMilliseconds)/(1000*60.0), 2),</p>
+<p>timeSpendInPutBlockOp = round(sum(PutBlockOperationTimeElapsedMilliseconds)/(1000*60.0),2)</p>
+<p>For example, consider the above screenshot which shows that the total idle time or time taken to throttle the request was 34.62 minutes, while the total time that the write operation was performed for is 196.77 minutes. As it can be inferred, there is relatively less time spent in throttling compared to the write operations = High latency coming due to external factors (outside the VM – network or Storage account)</p>
+<p>DNS issue: Replacing storage uri with IP, to check if DNS is performing better – This item is in the backlog of the engg team and will be tested for feasibility when the team has some bandwidth. Appropriate updates will be shared.</p>
+<p>Note: The above queries cannot be used to analyze the log backup performance. Therefore, use the following section to debug log performance issues:  <a href="https://supportability.visualstudio.com/AzureBackup/_wiki/wikis/AzureBackup/277553/SAP-HANA-Backup?anchor=log-backups-taking-too-long-to-complete" target="_blank" rel="noopener">https://supportability.visualstudio.com/AzureBackup/_wiki/wikis/AzureBackup/277553/SAP-HANA-Backup?anchor=log-backups-taking-too-long-to-complete</a></p>
+<p>When the VM is in region X, and the vault is also in the same region X, the storage calls are routed within the internal network (faster response) to the storage account. Hence, when we check the perf logs on the storage account, there is a clientip column, which indicates the IP address of the client (in this case, the SAP VM). If the client IP is of IPV4 (For e.g. ClientIP=63.97.36.15:24637), then it means that its not hitting it directly internally within the network, but routing it outside the datacenter, on to the public internet, and then coming back into the data center. This increases the latency, since it adds hops on the path, and some path can be slower. If the client ip is IPV6 (for e.g ClientIP=fd00::556d:7020:d00:ae8:449d]:49798), then its within the datacenter network, and should be fast and the performance should be better.</p>
+<p>Hows to gather the storage perf logs.</p>
+<p>Get the storage account as per the earlier queries in this tsg in the section storage vault issues.</p>
+<p>For eg. storage account URI is rrteuspod01prot1h33.blob.core.windows.net</p>
+<p>Engage a EEE storage to get a perf log from the storage stamp at that time for PutBlock operation. This needs a SAW machine and hence need a EEE. The perf log will have ClientIP which will be used to determine if the request was routing via public internet.</p>
+<p>If IPV4, check with Cx as to why does it route via public and not internally via the data center network. Sometimes Cx have a proxy configured on the VM or their VNet has a ExpressRoute/VPN tunnel to on-prem with forced tunneling enabled.</p>
+<p>The queries above cannot be used for log backup performance analysis. For details, refer to the Log Backup Performance Issues Documentation.</p>
+<p>Supplemental Information</p>
+<p>Wiki Author: Product Group</p>
+<p>Wiki Updates: Yasmin Mora Vega</p>
+<p>Wiki Reviewer: Carlos Prazeres</p>
+<p>Sample case / ICM :</p>
+<p>9 visits in last 30 days</p>
+<p>Comments</p>
+<p>Michael Schattecommented Jun 4, 2025</p>
+<p>The query under &quot;Query to Check Impact Level&quot; keeps giving &quot;Errors occurred while resolving remote entities. Cluster=&#39;<a href="https://mabprod1.kusto.windows.net/&#39;," target="_blank" rel="noopener">https://mabprod1.kusto.windows.net/&#39;,</a> Database=&#39;azurebackup&#39;: Access denied&quot;</p>
+<p>It&#39;s failing because the function GetInternalSubscriptions is trying to connect to the following.</p>
+<p>cluster(&quot;Mabprod1&quot;).database(&quot;AzureBackup&quot;).DimSubscriptionEx</p>
+<p>I don&#39;t believe we in CSS have access to this.</p></article>

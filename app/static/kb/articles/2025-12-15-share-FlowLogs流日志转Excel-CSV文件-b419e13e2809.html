@@ -1,0 +1,74 @@
+<article class="kb-article" data-title="【share】FlowLogs流日志转Excel/CSV文件"><h1>【share】FlowLogs流日志转Excel/CSV文件</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: UDR、NSG、ASG、Networkwatcher</li>
+<li>Section: Tools</li>
+<li>最近修改: 2025-12-15 16:41:06</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2025.12.09</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2025.12.09</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025.12.09</li>
+</ul>
+<ul>
+<li>经常碰到客户需要分析流日志，然后发过来一个PT1H.json文件，里面是一段超长字符串。。。。</li>
+</ul>
+<ul>
+<li>Usage:</li>
+</ul>
+<ul>
+<li>依赖:</li>
+</ul>
+<ul>
+<li>pip install pandas openpyxl tqdm</li>
+</ul>
+<ul>
+<li>参考（字段格式）:</li>
+</ul>
+<ul>
+<li>随附一个客户的流日志文件，参考工单：20251202385276</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>按 Azure Virtual Network Flow Logs 的官方 tuple 格式解析并输出 Excel/CSV.</li>
+</ul>
+<ul>
+<li>python convert_azure_flowlogs.py -i path/to/PT1H.json -o out.xlsx</li>
+</ul>
+<ul>
+<li>python convert_azure_flowlogs.py -i path/to/folder -o out.csv --csv</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>编了一个小python脚本，作用是处理一下这个json文件的字段，生成一个更易读易处理的Excel/CSV格式文件：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/.../vnet-flow-logs-overview?tabs=Americas#log-format" target="_blank" rel="noopener">https://learn.microsoft.com/.../vnet-flow-logs-overview?tabs=Americas#log-format</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025.12.09</p>
+<p>经常碰到客户需要分析流日志，然后发过来一个PT1H.json文件，里面是一段超长字符串。。。。</p>
+<p>编了一个小python脚本，作用是处理一下这个json文件的字段，生成一个更易读易处理的Excel/CSV格式文件：</p>
+<p>按 Azure Virtual Network Flow Logs 的官方 tuple 格式解析并输出 Excel/CSV.</p>
+<p>Usage:</p>
+<p>python convert_azure_flowlogs.py -i path/to/PT1H.json -o out.xlsx</p>
+<p>python convert_azure_flowlogs.py -i path/to/folder -o out.csv --csv</p>
+<p>依赖:</p>
+<p>pip install pandas openpyxl tqdm</p>
+<p>参考（字段格式）:</p>
+<p><a href="https://learn.microsoft.com/.../vnet-flow-logs-overview?tabs=Americas#log-format" target="_blank" rel="noopener">https://learn.microsoft.com/.../vnet-flow-logs-overview?tabs=Americas#log-format</a></p>
+<p>随附一个客户的流日志文件，参考工单：20251202385276</p></article>

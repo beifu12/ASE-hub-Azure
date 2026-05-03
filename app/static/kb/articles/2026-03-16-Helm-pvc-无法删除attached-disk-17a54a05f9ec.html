@@ -1,0 +1,289 @@
+<article class="kb-article" data-title="Helm pvc 无法删除attached disk"><h1>Helm pvc 无法删除attached disk</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: K8S</li>
+<li>最近修改: 2026-03-16 15:29:43</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>pvc-036ba400-373c-11ea-a16f-b2f47e2714fc 8Gi RWO Delete Failed default/data-billowing-chimp-mariadb-0 default 30m</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>pvc-036ba400-373c-11ea-a16f-b2f47e2714fc   8Gi        RWO            Delete           Failed   default/data-billowing-chimp-mariadb-0   default                 30m</li>
+</ul>
+<ul>
+<li>Status:          Failed</li>
+</ul>
+<ul>
+<li>Message:         compute.DisksClient#Delete: Failure sending request: StatusCode=0 -- Original Error: autorest/azure: Service returned an error. Status=&lt;nil&gt; Code=&quot;OperationNotAllowed&quot; Message=&quot;Disk kubernetes-dynamic-pvc-036ba400-373c-11ea-a16f-b2f47e2714fc is attached to VM /subscriptions/25887dcf-75e8-4309-86a3-106995de684b/resourceGroups/MC_demo-aks_testcase_chinaeast2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-nodepool1-91555714-vmss/virtualMachines/aks-nodepool1-91555714-vmss_0.&quot;</li>
+</ul>
+<ul>
+<li>Warning  VolumeFailedDelete  5m10s  persistentvolume-controller  compute.DisksClient#Delete: Failure sending request: StatusCode=0 -- Original Error: autorest/azure: Service returned an error. Status=&lt;nil&gt; Code=&quot;OperationNotAllowed&quot; Message=&quot;Disk kubernetes-dynamic-pvc-036ba400-373c-11ea-a16f-b2f47e2714fc is attached to VM /subscriptions/25887dcf-75e8-4309-86a3-106995de684b/resourceGroups/MC_demo-aks_testcase_chinaeast2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-nodepool1-91555714-vmss/virtualMachines/aks-nodepool1-91555714-vmss_0.&quot;</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>针对之前工单的两个问题：</li>
+</ul>
+<ul>
+<li>#1 使用helm delete删除动态磁盘时，磁盘状态应是分离还是已删除状态？</li>
+</ul>
+<ul>
+<li>#2 磁盘未正常分离时，是否能有方法能自助进行分离？</li>
+</ul>
+<ul>
+<li>感谢耐心等待。以下是我的测试过程及发现：</li>
+</ul>
+<ul>
+<li>1. 安装wordpress：</li>
+</ul>
+<ul>
+<li>helm install azure-marketplace/wordpress</li>
+</ul>
+<ul>
+<li>[root@centos7 ~]# kubectl get pvc</li>
+</ul>
+<ul>
+<li>NAME                             STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE</li>
+</ul>
+<ul>
+<li>billowing-chimp-wordpress        Bound    pvc-033ccf10-373c-11ea-a16f-b2f47e2714fc   10Gi       RWO            default        2m18s</li>
+</ul>
+<ul>
+<li>data-billowing-chimp-mariadb-0   Bound    pvc-036ba400-373c-11ea-a16f-b2f47e2714fc   8Gi        RWO            default        2m18s</li>
+</ul>
+<ul>
+<li>3. 删除release：</li>
+</ul>
+<ul>
+<li>[root@centos7 ~]# helm ls</li>
+</ul>
+<ul>
+<li>NAME            REVISION        UPDATED                         STATUS          CHART           APP VERSION     NAMESPACE</li>
+</ul>
+<ul>
+<li>billowing-chimp 1               Wed Jan 15 02:09:06 2020        DEPLOYED        wordpress-8.1.0 5.3.2           default</li>
+</ul>
+<ul>
+<li>[root@centos7 ~]# helm delete billowing-chimp</li>
+</ul>
+<ul>
+<li>release &quot;billowing-chimp&quot; deleted</li>
+</ul>
+<ul>
+<li>data-billowing-chimp-mariadb-0   Bound    pvc-036ba400-373c-11ea-a16f-b2f47e2714fc   8Gi        RWO            default        15m</li>
+</ul>
+<ul>
+<li>[root@centos7 ~]# kubectl get pv</li>
+</ul>
+<ul>
+<li>NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                    STORAGECLASS   REASON   AGE</li>
+</ul>
+<ul>
+<li>pvc-036ba400-373c-11ea-a16f-b2f47e2714fc   8Gi        RWO            Delete           Bound    default/data-billowing-chimp-mariadb-0   default                 17m</li>
+</ul>
+<ul>
+<li>[root@centos7 ~]# kubectl delete pvc data-billowing-chimp-mariadb-0</li>
+</ul>
+<ul>
+<li>persistentvolumeclaim &quot;data-billowing-chimp-mariadb-0&quot; deleted</li>
+</ul>
+<ul>
+<li>NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                    STORAGECLASS   REASON   AGE</li>
+</ul>
+<ul>
+<li>[root@centos7 ~]# kubectl describe pv</li>
+</ul>
+<ul>
+<li>Name:            pvc-036ba400-373c-11ea-a16f-b2f47e2714fc</li>
+</ul>
+<ul>
+<li>Labels:          &lt;none&gt;</li>
+</ul>
+<ul>
+<li>Annotations:     pv.kubernetes.io/bound-by-controller: yes</li>
+</ul>
+<ul>
+<li>pv.kubernetes.io/provisioned-by: kubernetes.io/azure-disk</li>
+</ul>
+<ul>
+<li>volumehelper.VolumeDynamicallyCreatedByKey: azure-disk-dynamic-provisioner</li>
+</ul>
+<ul>
+<li>Finalizers:      [kubernetes.io/pv-protection]</li>
+</ul>
+<ul>
+<li>StorageClass:    default</li>
+</ul>
+<ul>
+<li>Claim:           default/data-billowing-chimp-mariadb-0</li>
+</ul>
+<ul>
+<li>Reclaim Policy:  Delete</li>
+</ul>
+<ul>
+<li>Access Modes:    RWO</li>
+</ul>
+<ul>
+<li>VolumeMode:      Filesystem</li>
+</ul>
+<ul>
+<li>Capacity:        8Gi</li>
+</ul>
+<ul>
+<li>Node Affinity:   &lt;none&gt;</li>
+</ul>
+<ul>
+<li>Source:</li>
+</ul>
+<ul>
+<li>Type:         AzureDisk (an Azure Data Disk mount on the host and bind mount to the pod)</li>
+</ul>
+<ul>
+<li>DiskName:     kubernetes-dynamic-pvc-036ba400-373c-11ea-a16f-b2f47e2714fc</li>
+</ul>
+<ul>
+<li>Kind:         Managed</li>
+</ul>
+<ul>
+<li>FSType:</li>
+</ul>
+<ul>
+<li>CachingMode:  ReadOnly</li>
+</ul>
+<ul>
+<li>ReadOnly:     false</li>
+</ul>
+<ul>
+<li>Events:</li>
+</ul>
+<ul>
+<li>Type     Reason              Age    From                         Message</li>
+</ul>
+<ul>
+<li>----     ------              ----   ----                         -------</li>
+</ul>
+<ul>
+<li>下一步计划：</li>
+</ul>
+<ul>
+<li>a.       查找disk对应LUN：</li>
+</ul>
+<ul>
+<li>b.      detach disk:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>2. 确认生成两个pvc：</li>
+</ul>
+<ul>
+<li>5. 被删除的pvc对应pv也随后被自动删除，同时经portal确认其对应的Azure Disk也被删除：</li>
+</ul>
+<ul>
+<li>1）我们会进一步排查kubectl delete删除helm创建的pvc后Azure disk未能删除的原因；</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>4. 发现一个pvc被删除，但data-billowing-chimp-mariadb-0 这个pvc不会随着helm delete命令自动删除，这可能与helm的行为相关：</li>
+</ul>
+<ul>
+<li>2）对于未能正常detach并删除的Azure disk，可以尝试以下命令手动detach：</li>
+</ul>
+<ul>
+<li>az vmss show -g &lt;RESOURCE_GROUP_NAME&gt; --name &lt;VMSS_NAME&gt; --instance-id &lt;ID(number)&gt; | grep -i lun</li>
+</ul>
+<ul>
+<li>az vmss disk detach --instance-id 0 --lun {lun} --resource-group MyResourceGroup  --vmss-name  &lt;VMSS_NAME&gt;</li>
+</ul>
+<ul>
+<li>3）上述helm delete命令保留data相关pvc的行为需要与helm开源社区进行确认。例如我们找到一些相关讨论说明Helm对于一些特性的pvc确实有类似行为：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>DiskURI:      /subscriptions/25887dcf-75e8-4309-86a3-106995de684b/resourceGroups/mc_demo-aks_testcase_chinaeast2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-036ba400-373c-11ea-a16f-b2f47e2714fc</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>6. 手动删除pvc data-billowing-chimp-mariadb-0，观察到pv仍旧未自动删除，原因是disk还被attach着。</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>helm repo add azure-marketplace <a href="https://marketplace.azurecr.io/helm/v1/repo" target="_blank" rel="noopener">https://marketplace.azurecr.io/helm/v1/repo</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/helm/helm/issues/3313" target="_blank" rel="noopener">https://github.com/helm/helm/issues/3313</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/helm/helm/issues/5156" target="_blank" rel="noopener">https://github.com/helm/helm/issues/5156</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>针对之前工单的两个问题：</p>
+<p>#1 使用helm delete删除动态磁盘时，磁盘状态应是分离还是已删除状态？</p>
+<p>#2 磁盘未正常分离时，是否能有方法能自助进行分离？</p>
+<p>感谢耐心等待。以下是我的测试过程及发现：</p>
+<p>1. 安装wordpress：</p>
+<p>helm repo add azure-marketplace <a href="https://marketplace.azurecr.io/helm/v1/repo" target="_blank" rel="noopener">https://marketplace.azurecr.io/helm/v1/repo</a></p>
+<p>helm install azure-marketplace/wordpress</p>
+<p>2. 确认生成两个pvc：</p>
+<p>[root@centos7 ~]# kubectl get pvc</p>
+<p>NAME                             STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE</p>
+<p>billowing-chimp-wordpress        Bound    pvc-033ccf10-373c-11ea-a16f-b2f47e2714fc   10Gi       RWO            default        2m18s</p>
+<p>data-billowing-chimp-mariadb-0   Bound    pvc-036ba400-373c-11ea-a16f-b2f47e2714fc   8Gi        RWO            default        2m18s</p>
+<p>3. 删除release：</p>
+<p>[root@centos7 ~]# helm ls</p>
+<p>NAME            REVISION        UPDATED                         STATUS          CHART           APP VERSION     NAMESPACE</p>
+<p>billowing-chimp 1               Wed Jan 15 02:09:06 2020        DEPLOYED        wordpress-8.1.0 5.3.2           default</p>
+<p>[root@centos7 ~]# helm delete billowing-chimp</p>
+<p>release &quot;billowing-chimp&quot; deleted</p>
+<p>4. 发现一个pvc被删除，但data-billowing-chimp-mariadb-0 这个pvc不会随着helm delete命令自动删除，这可能与helm的行为相关：</p>
+<p>data-billowing-chimp-mariadb-0   Bound    pvc-036ba400-373c-11ea-a16f-b2f47e2714fc   8Gi        RWO            default        15m</p>
+<p>5. 被删除的pvc对应pv也随后被自动删除，同时经portal确认其对应的Azure Disk也被删除：</p>
+<p>[root@centos7 ~]# kubectl get pv</p>
+<p>NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                    STORAGECLASS   REASON   AGE</p>
+<p>pvc-036ba400-373c-11ea-a16f-b2f47e2714fc   8Gi        RWO            Delete           Bound    default/data-billowing-chimp-mariadb-0   default                 17m</p>
+<p>6. 手动删除pvc data-billowing-chimp-mariadb-0，观察到pv仍旧未自动删除，原因是disk还被attach着。</p>
+<p>[root@centos7 ~]# kubectl delete pvc data-billowing-chimp-mariadb-0</p>
+<p>persistentvolumeclaim &quot;data-billowing-chimp-mariadb-0&quot; deleted</p>
+<p>NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                    STORAGECLASS   REASON   AGE</p>
+<p>pvc-036ba400-373c-11ea-a16f-b2f47e2714fc   8Gi        RWO            Delete           Failed   default/data-billowing-chimp-mariadb-0   default                 30m</p>
+<p>[root@centos7 ~]# kubectl describe pv</p>
+<p>Name:            pvc-036ba400-373c-11ea-a16f-b2f47e2714fc</p>
+<p>Labels:          &lt;none&gt;</p>
+<p>Annotations:     pv.kubernetes.io/bound-by-controller: yes</p>
+<p>pv.kubernetes.io/provisioned-by: kubernetes.io/azure-disk</p>
+<p>volumehelper.VolumeDynamicallyCreatedByKey: azure-disk-dynamic-provisioner</p>
+<p>Finalizers:      [kubernetes.io/pv-protection]</p>
+<p>StorageClass:    default</p>
+<p>Status:          Failed</p>
+<p>Claim:           default/data-billowing-chimp-mariadb-0</p>
+<p>Reclaim Policy:  Delete</p>
+<p>Access Modes:    RWO</p>
+<p>VolumeMode:      Filesystem</p>
+<p>Capacity:        8Gi</p>
+<p>Node Affinity:   &lt;none&gt;</p>
+<p>Message:         compute.DisksClient#Delete: Failure sending request: StatusCode=0 -- Original Error: autorest/azure: Service returned an error. Status=&lt;nil&gt; Code=&quot;OperationNotAllowed&quot; Message=&quot;Disk kubernetes-dynamic-pvc-036ba400-373c-11ea-a16f-b2f47e2714fc is attached to VM /subscriptions/25887dcf-75e8-4309-86a3-106995de684b/resourceGroups/MC_demo-aks_testcase_chinaeast2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-nodepool1-91555714-vmss/virtualMachines/aks-nodepool1-91555714-vmss_0.&quot;</p>
+<p>Source:</p>
+<p>Type:         AzureDisk (an Azure Data Disk mount on the host and bind mount to the pod)</p>
+<p>DiskName:     kubernetes-dynamic-pvc-036ba400-373c-11ea-a16f-b2f47e2714fc</p>
+<p>DiskURI:      /subscriptions/25887dcf-75e8-4309-86a3-106995de684b/resourceGroups/mc_demo-aks_testcase_chinaeast2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-036ba400-373c-11ea-a16f-b2f47e2714fc</p>
+<p>Kind:         Managed</p>
+<p>FSType:</p>
+<p>CachingMode:  ReadOnly</p>
+<p>ReadOnly:     false</p>
+<p>Events:</p>
+<p>Type     Reason              Age    From                         Message</p>
+<p>----     ------              ----   ----                         -------</p>
+<p>Warning  VolumeFailedDelete  5m10s  persistentvolume-controller  compute.DisksClient#Delete: Failure sending request: StatusCode=0 -- Original Error: autorest/azure: Service returned an error. Status=&lt;nil&gt; Code=&quot;OperationNotAllowed&quot; Message=&quot;Disk kubernetes-dynamic-pvc-036ba400-373c-11ea-a16f-b2f47e2714fc is attached to VM /subscriptions/25887dcf-75e8-4309-86a3-106995de684b/resourceGroups/MC_demo-aks_testcase_chinaeast2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-nodepool1-91555714-vmss/virtualMachines/aks-nodepool1-91555714-vmss_0.&quot;</p>
+<p>下一步计划：</p>
+<p>1）我们会进一步排查kubectl delete删除helm创建的pvc后Azure disk未能删除的原因；</p>
+<p>2）对于未能正常detach并删除的Azure disk，可以尝试以下命令手动detach：</p>
+<p>a.       查找disk对应LUN：</p>
+<p>az vmss show -g &lt;RESOURCE_GROUP_NAME&gt; --name &lt;VMSS_NAME&gt; --instance-id &lt;ID(number)&gt; | grep -i lun</p>
+<p>b.      detach disk:</p>
+<p>az vmss disk detach --instance-id 0 --lun {lun} --resource-group MyResourceGroup  --vmss-name  &lt;VMSS_NAME&gt;</p>
+<p>3）上述helm delete命令保留data相关pvc的行为需要与helm开源社区进行确认。例如我们找到一些相关讨论说明Helm对于一些特性的pvc确实有类似行为：</p>
+<p><a href="https://github.com/helm/helm/issues/3313" target="_blank" rel="noopener">https://github.com/helm/helm/issues/3313</a></p>
+<p><a href="https://github.com/helm/helm/issues/5156" target="_blank" rel="noopener">https://github.com/helm/helm/issues/5156</a></p></article>

@@ -1,0 +1,92 @@
+<article class="kb-article" data-title="备份成功（文件和文件夹备份），最新还原点生成，可以还原，但是备份作业中没有记录。"><h1>备份成功（文件和文件夹备份），最新还原点生成，可以还原，但是备份作业中没有记录。</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Backup Agent</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-04-20 14:10:39</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>现象：</li>
+</ul>
+<ul>
+<li>一台服务器hcp-sh-file3.hcpackaging.com， 在一次备份失败后，就没有作业显示了。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>从服务器里面看到备份都是成功的，但是门户上没有作业记录。</li>
+</ul>
+<ul>
+<li>门户上生成了最新的还原点，并且还原都是成功的。</li>
+</ul>
+<ul>
+<li>由于备份作业一直不显示，给客户造成了困扰。</li>
+</ul>
+<ul>
+<li>确保对于hcp-sh-file3.hcpackaging.com没有backup或者restore任务；</li>
+</ul>
+<ul>
+<li>在hcp-sh-file3.hcpackaging.com启动服务（services.msc）停止以下服务：</li>
+</ul>
+<ul>
+<li>Microsoft Azure Recovery Services Agent</li>
+</ul>
+<ul>
+<li>Microsoft Azure Recovery Services Management Agent</li>
+</ul>
+<ul>
+<li>启动第2步的两个服务；</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Azure Backup portal中显示的备份状态不正确。</li>
+</ul>
+<ul>
+<li>产品组提供了以下操作步骤，客户按照以下步骤操作后，问题解决。</li>
+</ul>
+<ul>
+<li>在以下路径（&lt;Program Files&gt;\Microsoft Azure Recovery Services Agent\）下删除checkpointFolder文件夹</li>
+</ul>
+<ul>
+<li>等待三十分钟，关闭Azure Portal再次打开，检查状态；</li>
+</ul>
+<ul>
+<li>如果问题仍存在，请确认第4步中checkpointFolder文件夹确实重建了，请手动触发备份任务，待任务完成后检查问题是否仍存在；</li>
+</ul>
+<ul>
+<li>若问题仍存在，请等待一天查看状态更新；</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>该次备份失败是由于网络问题导致的，后面客户修复了网络问题。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>现象：</p>
+<p>Azure Backup portal中显示的备份状态不正确。</p>
+<p>一台服务器hcp-sh-file3.hcpackaging.com， 在一次备份失败后，就没有作业显示了。</p>
+<p>该次备份失败是由于网络问题导致的，后面客户修复了网络问题。</p>
+<p>从服务器里面看到备份都是成功的，但是门户上没有作业记录。</p>
+<p>门户上生成了最新的还原点，并且还原都是成功的。</p>
+<p>由于备份作业一直不显示，给客户造成了困扰。</p>
+<p>产品组提供了以下操作步骤，客户按照以下步骤操作后，问题解决。</p>
+<p>确保对于hcp-sh-file3.hcpackaging.com没有backup或者restore任务；</p>
+<p>在hcp-sh-file3.hcpackaging.com启动服务（services.msc）停止以下服务：</p>
+<p>Microsoft Azure Recovery Services Agent</p>
+<p>Microsoft Azure Recovery Services Management Agent</p>
+<p>在以下路径（&lt;Program Files&gt;\Microsoft Azure Recovery Services Agent\）下删除checkpointFolder文件夹</p>
+<p>启动第2步的两个服务；</p>
+<p>等待三十分钟，关闭Azure Portal再次打开，检查状态；</p>
+<p>如果问题仍存在，请确认第4步中checkpointFolder文件夹确实重建了，请手动触发备份任务，待任务完成后检查问题是否仍存在；</p>
+<p>若问题仍存在，请等待一天查看状态更新；</p></article>

@@ -1,0 +1,53 @@
+<article class="kb-article" data-title="DNS继承VNET pre suffix问题 后缀"><h1>DNS继承VNET pre suffix问题 后缀</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: DNS</li>
+<li>Section: DNS</li>
+<li>最近修改: 2024-09-02 09:42:49</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2020012103919_[S500]akse创建的集群dns无法解析</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2020012103919_[S500]akse创建的集群dns无法解析</li>
+</ul>
+<ul>
+<li>但如果用户使用了自定义DNS，即便手动指定了168.63.129.16为DNS服务器，也仅仅是将nameserver指定为168.63.129.16，但是无法添加这个search域，因此也就无法解析Azure VNET内的主机名</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Heshaobo/zhanglihe/caozheng</li>
+</ul>
+<ul>
+<li>20200122</li>
+</ul>
+<ul>
+<li>关联工单：</li>
+</ul>
+<ul>
+<li>当选择Azure默认的DNS时，VM的dns设置中会被平台添加search域，如下图</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>search 的作用是指明域名查询顺序。当要查询没有域名的主机，主机将在由search 声明的域中分别查找。也就是说当我们去解析主机名称时，会自动添加这个域。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Heshaobo/zhanglihe/caozheng</p>
+<p>20200122</p>
+<p>关联工单：</p>
+<p>SR_2020012103919_[S500]akse创建的集群dns无法解析</p>
+<p>当选择Azure默认的DNS时，VM的dns设置中会被平台添加search域，如下图</p>
+<p>search 的作用是指明域名查询顺序。当要查询没有域名的主机，主机将在由search 声明的域中分别查找。也就是说当我们去解析主机名称时，会自动添加这个域。</p>
+<p>但如果用户使用了自定义DNS，即便手动指定了168.63.129.16为DNS服务器，也仅仅是将nameserver指定为168.63.129.16，但是无法添加这个search域，因此也就无法解析Azure VNET内的主机名</p></article>

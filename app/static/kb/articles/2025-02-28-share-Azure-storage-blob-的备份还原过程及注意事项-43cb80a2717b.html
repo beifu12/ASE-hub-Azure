@@ -1,0 +1,100 @@
+<article class="kb-article" data-title="【share】Azure storage blob 的备份还原过程及注意事项"><h1>【share】Azure storage blob 的备份还原过程及注意事项</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-02-28 11:23:08</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20250228</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20250228</li>
+</ul>
+<ul>
+<li>报错提醒该功能不支持：</li>
+</ul>
+<ul>
+<li>参考工单：SR_20250219339069_如何备份azure storage account blob</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>1， 首先根据官网说明Azure Blob 目前在中国区Azure 仅支持操作备份，不支持保管库备份</li>
+</ul>
+<ul>
+<li>Azure Blob 备份的支持矩阵 - Azure Backup | Azure Docs</li>
+</ul>
+<ul>
+<li>2，这里需要选择operational backup 来创建policy：</li>
+</ul>
+<ul>
+<li>4，配置了Azure storage backup 的storage 账户会被配置如下两个lock， 防止存储账户或存储账户里的container 被意外删除。</li>
+</ul>
+<ul>
+<li>5，这里测试删除了test container 中的block blob：</li>
+</ul>
+<ul>
+<li>6， 到backup vault里找到这个时间点前的备份进行还原：</li>
+</ul>
+<ul>
+<li>6， 还原过程可以选项有针对地还原对象：</li>
+</ul>
+<ul>
+<li>7，等待还原操作完成，这个block blob 文件恢复回来了。</li>
+</ul>
+<ul>
+<li>更多相关：</li>
+</ul>
+<ul>
+<li>1，以上方案仅适用于standard general-purpose v2 storage account 中的block blob 的备份和还原。</li>
+</ul>
+<ul>
+<li>Only block blobs in a standard general-purpose v2 storage account can be restored as part of a restore operation. Append blobs, page blobs, and premium block blobs aren&#39;t restored.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>但在portal创建backup的时候，policy里的vaulted backup 会默认被勾选。如果不去除的情况下，policy会创建失败。</li>
+</ul>
+<ul>
+<li>3，创建完成后在相应的backup vault 中查看Azure storage blob 的backup 情况：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>参考：<a href="https://learn.microsoft.com/en-us/azure/backup/blob-restore?tabs=operational-backup#before-you-start" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/blob-restore?tabs=operational-backup#before-you-start</a></li>
+</ul>
+<ul>
+<li>2， operational backup 与vaulted backup 的区别：<a href="https://learn.microsoft.com/en-us/azure/backup/blob-restore?tabs=operational-backup#before-you-start" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/blob-restore?tabs=operational-backup#before-you-start</a></li>
+</ul>
+<ul>
+<li>3， 还原storage 里的block blob： <a href="https://learn.microsoft.com/en-us/azure/backup/blob-restore?tabs=operational-backup#before-you-start" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/blob-restore?tabs=operational-backup#before-you-start</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20250228</p>
+<p>1， 首先根据官网说明Azure Blob 目前在中国区Azure 仅支持操作备份，不支持保管库备份</p>
+<p>Azure Blob 备份的支持矩阵 - Azure Backup | Azure Docs</p>
+<p>但在portal创建backup的时候，policy里的vaulted backup 会默认被勾选。如果不去除的情况下，policy会创建失败。</p>
+<p>报错提醒该功能不支持：</p>
+<p>2，这里需要选择operational backup 来创建policy：</p>
+<p>3，创建完成后在相应的backup vault 中查看Azure storage blob 的backup 情况：</p>
+<p>4，配置了Azure storage backup 的storage 账户会被配置如下两个lock， 防止存储账户或存储账户里的container 被意外删除。</p>
+<p>5，这里测试删除了test container 中的block blob：</p>
+<p>6， 到backup vault里找到这个时间点前的备份进行还原：</p>
+<p>6， 还原过程可以选项有针对地还原对象：</p>
+<p>7，等待还原操作完成，这个block blob 文件恢复回来了。</p>
+<p>参考工单：SR_20250219339069_如何备份azure storage account blob</p>
+<p>更多相关：</p>
+<p>1，以上方案仅适用于standard general-purpose v2 storage account 中的block blob 的备份和还原。</p>
+<p>Only block blobs in a standard general-purpose v2 storage account can be restored as part of a restore operation. Append blobs, page blobs, and premium block blobs aren&#39;t restored.</p>
+<p>参考：<a href="https://learn.microsoft.com/en-us/azure/backup/blob-restore?tabs=operational-backup#before-you-start" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/blob-restore?tabs=operational-backup#before-you-start</a></p>
+<p>2， operational backup 与vaulted backup 的区别：<a href="https://learn.microsoft.com/en-us/azure/backup/blob-restore?tabs=operational-backup#before-you-start" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/blob-restore?tabs=operational-backup#before-you-start</a></p>
+<p>3， 还原storage 里的block blob： <a href="https://learn.microsoft.com/en-us/azure/backup/blob-restore?tabs=operational-backup#before-you-start" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/azure/backup/blob-restore?tabs=operational-backup#before-you-start</a></p></article>

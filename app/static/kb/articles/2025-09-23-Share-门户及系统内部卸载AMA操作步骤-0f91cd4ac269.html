@@ -1,0 +1,117 @@
+<article class="kb-article" data-title="【Share】门户及系统内部卸载AMA操作步骤"><h1>【Share】门户及系统内部卸载AMA操作步骤</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-23 10:28:05</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>systemctl reset-failed</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>systemctl reset-failed</li>
+</ul>
+<ul>
+<li>/etc/opt/microsoft/azuremonitoragent/config-cache/configchunks中17668356474015903505.json文件显示当前虚拟机信息</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>处理工单中测试了Ubuntu 22.04 门户及系统内部下载AMA代理的过程，供参考。</li>
+</ul>
+<ul>
+<li>--------------------------------------</li>
+</ul>
+<ul>
+<li>先将虚拟机从DCR中“取消关联”</li>
+</ul>
+<ul>
+<li>在虚拟机-扩展处卸载扩展</li>
+</ul>
+<ul>
+<li>登录虚拟机，运行dpkg -l | grep azuremonitoragent，返回如下信息</li>
+</ul>
+<ul>
+<li>apt remove --purge azuremonitoragent -y  # 卸载并清除配置</li>
+</ul>
+<ul>
+<li>再次运行dpkg -l | grep azuremonitoragent，无信息返回</li>
+</ul>
+<ul>
+<li># 删除程序文件和配置</li>
+</ul>
+<ul>
+<li>rm -rf /opt/microsoft/azuremonitoragent/</li>
+</ul>
+<ul>
+<li>rm -rf /etc/opt/microsoft/azuremonitoragent/</li>
+</ul>
+<ul>
+<li>rm -rf /var/opt/microsoft/azuremonitoragent/</li>
+</ul>
+<ul>
+<li># 删除日志文件</li>
+</ul>
+<ul>
+<li>运行systemctl status azuremonitoragent</li>
+</ul>
+<ul>
+<li>systemctl daemon-reload</li>
+</ul>
+<ul>
+<li>systemctl status azuremonitoragent，无服务返回</li>
+</ul>
+<ul>
+<li>将虚拟机重新添加到DCR中，门户代理显示正常</li>
+</ul>
+<ul>
+<li>系统内部代理正常运行</li>
+</ul>
+<ul>
+<li>LA中已可看到虚拟机心跳信息</li>
+</ul>
+<ul>
+<li>操作过程中，机器连通性正常。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>rm -rf /var/log/azure/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent</li>
+</ul>
+<ul>
+<li>进入/var/opt/microsoft/azuremonitoragent/log查看tail -n 20 mdsd.info，已有心跳信息</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>处理工单中测试了Ubuntu 22.04 门户及系统内部下载AMA代理的过程，供参考。</p>
+<p>--------------------------------------</p>
+<p>先将虚拟机从DCR中“取消关联”</p>
+<p>在虚拟机-扩展处卸载扩展</p>
+<p>登录虚拟机，运行dpkg -l | grep azuremonitoragent，返回如下信息</p>
+<p>apt remove --purge azuremonitoragent -y  # 卸载并清除配置</p>
+<p>再次运行dpkg -l | grep azuremonitoragent，无信息返回</p>
+<h1>删除程序文件和配置</h1>
+<p>rm -rf /opt/microsoft/azuremonitoragent/</p>
+<p>rm -rf /etc/opt/microsoft/azuremonitoragent/</p>
+<p>rm -rf /var/opt/microsoft/azuremonitoragent/</p>
+<h1>删除日志文件</h1>
+<p>rm -rf /var/log/azure/Microsoft.Azure.Monitor.AzureMonitorLinuxAgent</p>
+<p>运行systemctl status azuremonitoragent</p>
+<p>systemctl daemon-reload</p>
+<p>systemctl reset-failed</p>
+<p>systemctl status azuremonitoragent，无服务返回</p>
+<p>将虚拟机重新添加到DCR中，门户代理显示正常</p>
+<p>系统内部代理正常运行</p>
+<p>/etc/opt/microsoft/azuremonitoragent/config-cache/configchunks中17668356474015903505.json文件显示当前虚拟机信息</p>
+<p>进入/var/opt/microsoft/azuremonitoragent/log查看tail -n 20 mdsd.info，已有心跳信息</p>
+<p>LA中已可看到虚拟机心跳信息</p>
+<p>操作过程中，机器连通性正常。</p></article>

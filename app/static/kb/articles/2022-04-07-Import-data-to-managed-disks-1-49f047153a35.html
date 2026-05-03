@@ -1,0 +1,56 @@
+<article class="kb-article" data-title="Import data to managed disks"><h1>Import data to managed disks</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: Data Box Disk</li>
+<li>最近修改: 2022-04-07 06:25:08</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>If you specified managed disks as one of the storage destinations during order creation, you need to take into consideration the following:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>If you specified managed disks as one of the storage destinations during order creation, you need to take into consideration the following:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>If you specified managed disks as one of the storage destinations during order creation, you need to take into consideration the following:</li>
+</ul>
+<ul>
+<li>You can only have one managed disk with a given name in a resource group across all the precreated folders and across all the Data Box Disk.</li>
+</ul>
+<ul>
+<li>Always copy the VHDs to one of the precreated folders.</li>
+</ul>
+<ul>
+<li>Split Copy tool is not supported with managed disks.</li>
+</ul>
+<ul>
+<li>For detailed and updated information of this product, refer to: Copy Data to disks</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Only the fixed VHDs can be uploaded to create managed disks. Dynamic VHDs, differencing VHDs or VHDX files are not supported.</li>
+</ul>
+<ul>
+<li>If you don&#39;t have long paths enabled on the client, and any path and file name in your data copy exceeds 256 characters, the Data Box Split Copy Tool (DataBoxDiskSplitCopy.exe) or the Data Box Disk Validation tool (DataBoxDiskValidation.cmd) will report failures.</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>If you specified managed disks as one of the storage destinations during order creation, you need to take into consideration the following:</p>
+<p>You can only have one managed disk with a given name in a resource group across all the precreated folders and across all the Data Box Disk.</p>
+<p>Always copy the VHDs to one of the precreated folders.</p>
+<p>Only the fixed VHDs can be uploaded to create managed disks. Dynamic VHDs, differencing VHDs or VHDX files are not supported.</p>
+<p>If you don&#39;t have long paths enabled on the client, and any path and file name in your data copy exceeds 256 characters, the Data Box Split Copy Tool (DataBoxDiskSplitCopy.exe) or the Data Box Disk Validation tool (DataBoxDiskValidation.cmd) will report failures.</p>
+<p>Split Copy tool is not supported with managed disks.</p>
+<p>For detailed and updated information of this product, refer to: Copy Data to disks</p></article>

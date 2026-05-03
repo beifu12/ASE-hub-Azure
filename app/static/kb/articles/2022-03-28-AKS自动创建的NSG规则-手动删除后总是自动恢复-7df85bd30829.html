@@ -1,0 +1,382 @@
+<article class="kb-article" data-title="AKS自动创建的NSG规则，手动删除后总是自动恢复"><h1>AKS自动创建的NSG规则，手动删除后总是自动恢复</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: UDR、NSG、ASG、Networkwatcher</li>
+<li>Section: Tools</li>
+<li>最近修改: 2022-03-28 12:29:48</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>&quot;errorUrl&quot;: null,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20201109</li>
+</ul>
+<ul>
+<li>HttpIncomingRequests</li>
+</ul>
+<ul>
+<li>|  where PreciseTimeStamp &gt;= datetime(2020-10-18 00:00:00.0000000) and PreciseTimeStamp &lt;= datetime(2020-10-18 23:00:00.0000000)</li>
+</ul>
+<ul>
+<li>| where correlationId contains &quot;25170fd8-1a91-4973-936a-8c8604881d6f&quot;</li>
+</ul>
+<ul>
+<li>| where httpMethod contains &quot;PUT&quot;</li>
+</ul>
+<ul>
+<li>| where httpStatusCode != &quot;-1&quot;</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;objectId&quot;: &quot;402857cf-1534-4344-a860-cd2ed2118c28&quot;,</li>
+</ul>
+<ul>
+<li>&quot;graphDetailType&quot;: &quot;ServicePrincipal&quot;,</li>
+</ul>
+<ul>
+<li>&quot;graphResponse&quot;: {</li>
+</ul>
+<ul>
+<li>&quot;odata.type&quot;: &quot;Microsoft.WindowsAzure.ActiveDirectory.ServicePrincipal&quot;,</li>
+</ul>
+<ul>
+<li>&quot;objectType&quot;: &quot;ServicePrincipal&quot;,</li>
+</ul>
+<ul>
+<li>&quot;softDeletionTimestamp&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;appId&quot;: &quot;08ba5686-5d57-4bb3-b828-e0dacc1409d4&quot;,</li>
+</ul>
+<ul>
+<li>&quot;appMetadata&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;appOwnerTenantId&quot;: &quot;6b92eb7c-ee31-4597-a715-580c0c6dddd8&quot;,</li>
+</ul>
+<ul>
+<li>&quot;appPermissions&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;claimValue&quot;: &quot;user_impersonation&quot;,</li>
+</ul>
+<ul>
+<li>&quot;directAccessGrantTypes&quot;: [],</li>
+</ul>
+<ul>
+<li>&quot;impersonationAccessGrantTypes&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;impersonated&quot;: &quot;User&quot;,</li>
+</ul>
+<ul>
+<li>&quot;impersonator&quot;: &quot;Application&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>],</li>
+</ul>
+<ul>
+<li>&quot;origin&quot;: &quot;Application&quot;,</li>
+</ul>
+<ul>
+<li>&quot;permissionId&quot;: &quot;7d1a5c90-7907-4121-9c32-a66456e357c2&quot;,</li>
+</ul>
+<ul>
+<li>&quot;resourceScopeType&quot;: &quot;Personal&quot;,</li>
+</ul>
+<ul>
+<li>&quot;lang&quot;: null</li>
+</ul>
+<ul>
+<li>&quot;authenticationPolicy&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;explicitAccessGrantRequired&quot;: false,</li>
+</ul>
+<ul>
+<li>&quot;keyCredentials&quot;: [],</li>
+</ul>
+<ul>
+<li>&quot;microsoftFirstParty&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;passwordCredentials&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;customKeyIdentifier&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;endDate&quot;: &quot;2021-05-28T12:37:10.802Z&quot;,</li>
+</ul>
+<ul>
+<li>&quot;keyId&quot;: &quot;eb3d2ec3-ca96-4d9f-acb8-ab126809c72e&quot;,</li>
+</ul>
+<ul>
+<li>&quot;startDate&quot;: &quot;2020-05-28T12:37:10.802Z&quot;,</li>
+</ul>
+<ul>
+<li>&quot;value&quot;: null</li>
+</ul>
+<ul>
+<li>&quot;publisherName&quot;: &quot;Coca-Cola New DC&quot;,</li>
+</ul>
+<ul>
+<li>&quot;replyUrls&quot;: [],</li>
+</ul>
+<ul>
+<li>&quot;resourceApplicationSet&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;samlMetadataUrl&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;servicePrincipalNames&quot;: [</li>
+</ul>
+<ul>
+<li>&quot;08ba5686-5d57-4bb3-b828-e0dacc1409d4&quot;</li>
+</ul>
+<ul>
+<li>&quot;tags&quot;: [],</li>
+</ul>
+<ul>
+<li>&quot;webApi&quot;: null,</li>
+</ul>
+<ul>
+<li>&quot;webApp&quot;: null</li>
+</ul>
+<ul>
+<li>3.接着提取AKS本身的日志：</li>
+</ul>
+<ul>
+<li>ControlPlaneEventsNonShoebox</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt;= datetime(2020-10-18 19:54:00) and PreciseTimeStamp &lt;= datetime(2020-10-18 19:56:00)</li>
+</ul>
+<ul>
+<li>//| where category == &quot;kube-controller-manager&quot;</li>
+</ul>
+<ul>
+<li>| where properties contains &quot;aks-agentpool-26972693-nsg&quot;</li>
+</ul>
+<ul>
+<li>//| project PreciseTimeStamp, category,properties</li>
+</ul>
+<ul>
+<li>可以看到如下记录：</li>
+</ul>
+<ul>
+<li>&quot;stream&quot;: &quot;stderr&quot;,</li>
+</ul>
+<ul>
+<li>&quot;pod&quot;: &quot;kube-controller-manager-6bb795f86c-n644f&quot;,</li>
+</ul>
+<ul>
+<li>&quot;containerID&quot;: &quot;45e529c4dde460e8dd7c632b47d4669fc69fedf0ec2464956a225c9f193b3998&quot;</li>
+</ul>
+<ul>
+<li>FrontEndQoSEvents</li>
+</ul>
+<ul>
+<li>| where PreciseTimeStamp &gt;= datetime(2020-10-18 00:00:00.0000000) and PreciseTimeStamp &lt;= datetime(2020-10-18 23:00:00.0000000)</li>
+</ul>
+<ul>
+<li>| where operationName == &quot;PutManagedClusterHandler.PUT&quot;</li>
+</ul>
+<ul>
+<li>平台对NSG设置的检测和更新机制为：</li>
+</ul>
+<ul>
+<li>当用户在创建服务或者对服务进行修改的时候，会创建或者更新相应的NSG规则；</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>1.通过活动日志中的Correlation ID，在ARM侧查询到了如下IncomingHTTP请求</li>
+</ul>
+<ul>
+<li>&quot;displayName&quot;: &quot;CEP-log-aksSP-20200528203709&quot;,</li>
+</ul>
+<ul>
+<li>&quot;appDisplayName&quot;: &quot;CEP-log-aksSP-20200528203709&quot;,</li>
+</ul>
+<ul>
+<li>&quot;description&quot;: &quot;Allow the application to access CEP-log-aksSP-20200528203709 on behalf of the signed-in user.&quot;,</li>
+</ul>
+<ul>
+<li>&quot;displayName&quot;: &quot;Access CEP-log-aksSP-20200528203709&quot;,</li>
+</ul>
+<ul>
+<li>&quot;userConsentDescription&quot;: &quot;Allow the application to access CEP-log-aksSP-20200528203709 on your behalf.&quot;,</li>
+</ul>
+<ul>
+<li>&quot;userConsentDisplayName&quot;: &quot;Access CEP-log-aksSP-20200528203709&quot;,</li>
+</ul>
+<ul>
+<li>&quot;logoutUrl&quot;: null,</li>
+</ul>
+<ul>
+<li>根据incominghttp请求中携带的PrincialID和TenantID定位出执行该操作的是一个application，名字为&quot;CEP-log-aksSP-20200528203709&quot;。经过确认，这个名字就是在创建AKS时自动创建的一个application，其中CEP-log-aks为AKS的名字，SP-20200528203709为系统添加的后缀。该application作为执行者，负责发送Http请求给ARM以完成AKS对其他相应资源的操作。</li>
+</ul>
+<ul>
+<li>//| where resourceId contains &quot;/subscriptions/431cd430-a4eb-465e-a378-2fa6080063ff/resourceGroups/CEP-uat/providers/Microsoft.ContainerService/managedClusters/CEP-log-aks&quot;</li>
+</ul>
+<ul>
+<li>&quot;log&quot;: &quot;time=\&quot;2020-10-18T19:54:13Z\&quot; level=info msg=\&quot;Proxy GET /subscriptions/431cd430-a4eb-465e-a378-2fa6080063ff/resourceGroups/mc_cep-uat_cep-log-aks_chinaeast2/providers/Microsoft.Network/networkSecurityGroups/aks-agentpool-26972693-nsg?api-version=2018-07-01\&quot;\n&quot;,</li>
+</ul>
+<ul>
+<li>&quot;log&quot;: &quot;time=\&quot;2020-10-18T19:54:24Z\&quot; level=info msg=\&quot;Proxy PUT /subscriptions/431cd430-a4eb-465e-a378-2fa6080063ff/resourceGroups/mc_cep-uat_cep-log-aks_chinaeast2/providers/Microsoft.Network/networkSecurityGroups/aks-agentpool-26972693-nsg?api-version=2018-07-01\&quot;\n&quot;,</li>
+</ul>
+<ul>
+<li>4.查看对应时间段内，最终用户是否有通过kubectl对集群做任何操作：</li>
+</ul>
+<ul>
+<li>| where resourceName == &quot;CEP-log-aks&quot;</li>
+</ul>
+<ul>
+<li>上述日志查询没有任何输出，表明客户没有通过kubectl对集群做任何操作，至此基本确定NSG规则是自动添加的，并非客户操作。</li>
+</ul>
+<ul>
+<li>当master 节点上的kube-controller-manager这个POD重启之后，也会检查并添加相应的NSG规则。kube-controller-manager这个POD重启的时间和原因都是不确定的，因此我们观察到的这个规则添加的时间也不确定；</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>客户AKS部署了9200端口服务、使用的SLB，因而自动创建了面向internt放行的9200端口的入站规则，由于客户不想对internt放行（又不想重新部署使用ilb），因而客户portal手动删除了对应的9200端口的NSG规则，但是发现删除一段时间后，此规则总是自动恢复，因此客户想确认此规则是否为平台自动恢复的。关于NSG的活动日志如下：</li>
+</ul>
+<ul>
+<li>关联工单：SR_2020102258419_[S500]k8s自动暴露端口到公网</li>
+</ul>
+<ul>
+<li>5.经与研发团队确认这个是原生k8s的行为。Master节点中的kube-controller-manager这个服务会主动检测相应的业务端口是否可以被访问。AKS基于该行为，建立了相应的NSG检测和更新机制，以确保通过公共负载均衡器暴露在公网的业务端口不会被平台的网络组件阻挡。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>&quot;accountEnabled&quot;: true,</li>
+</ul>
+<ul>
+<li>&quot;isDisabled&quot;: false,</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>2.根据上述查询结果中的PrincipalID和TenantID，查询到执行该操作的是一个Application (<a href="https://jarvis-east.dc.ad.msft.net/67EAFD51?genevatraceguid=28cff77e-261f-4c09-91bc-9a8363958288):" target="_blank" rel="noopener">https://jarvis-east.dc.ad.msft.net/67EAFD51?genevatraceguid=28cff77e-261f-4c09-91bc-9a8363958288):</a></li>
+</ul>
+<ul>
+<li>&quot;odata.metadata&quot;: &quot;<a href="https://graph.chinacloudapi.cn/6b92eb7c-ee31-4597-a715-580c0c6dddd8/$metadata#directoryObjects/@Element&quot;," target="_blank" rel="noopener">https://graph.chinacloudapi.cn/6b92eb7c-ee31-4597-a715-580c0c6dddd8/$metadata#directoryObjects/@Element&quot;,</a></li>
+</ul>
+<ul>
+<li>&quot;homepage&quot;: &quot;<a href="http://CEP-log-aksSP-20200528203709&quot;," target="_blank" rel="noopener">http://CEP-log-aksSP-20200528203709&quot;,</a></li>
+</ul>
+<ul>
+<li>&quot;<a href="http://CEP-log-aksSP-20200528203709&quot;," target="_blank" rel="noopener">http://CEP-log-aksSP-20200528203709&quot;,</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20201109</p>
+<p>问题现象：</p>
+<p>客户AKS部署了9200端口服务、使用的SLB，因而自动创建了面向internt放行的9200端口的入站规则，由于客户不想对internt放行（又不想重新部署使用ilb），因而客户portal手动删除了对应的9200端口的NSG规则，但是发现删除一段时间后，此规则总是自动恢复，因此客户想确认此规则是否为平台自动恢复的。关于NSG的活动日志如下：</p>
+<p>关联工单：SR_2020102258419_[S500]k8s自动暴露端口到公网</p>
+<p>排查过程：</p>
+<p>1.通过活动日志中的Correlation ID，在ARM侧查询到了如下IncomingHTTP请求</p>
+<p>HttpIncomingRequests</p>
+<p>|  where PreciseTimeStamp &gt;= datetime(2020-10-18 00:00:00.0000000) and PreciseTimeStamp &lt;= datetime(2020-10-18 23:00:00.0000000)</p>
+<p>| where correlationId contains &quot;25170fd8-1a91-4973-936a-8c8604881d6f&quot;</p>
+<p>| where httpMethod contains &quot;PUT&quot;</p>
+<p>| where httpStatusCode != &quot;-1&quot;</p>
+<p>2.根据上述查询结果中的PrincipalID和TenantID，查询到执行该操作的是一个Application (<a href="https://jarvis-east.dc.ad.msft.net/67EAFD51?genevatraceguid=28cff77e-261f-4c09-91bc-9a8363958288):" target="_blank" rel="noopener">https://jarvis-east.dc.ad.msft.net/67EAFD51?genevatraceguid=28cff77e-261f-4c09-91bc-9a8363958288):</a></p>
+<p>{</p>
+<p>&quot;objectId&quot;: &quot;402857cf-1534-4344-a860-cd2ed2118c28&quot;,</p>
+<p>&quot;displayName&quot;: &quot;CEP-log-aksSP-20200528203709&quot;,</p>
+<p>&quot;graphDetailType&quot;: &quot;ServicePrincipal&quot;,</p>
+<p>&quot;graphResponse&quot;: {</p>
+<p>&quot;odata.metadata&quot;: &quot;<a href="https://graph.chinacloudapi.cn/6b92eb7c-ee31-4597-a715-580c0c6dddd8/$metadata#directoryObjects/@Element&quot;," target="_blank" rel="noopener">https://graph.chinacloudapi.cn/6b92eb7c-ee31-4597-a715-580c0c6dddd8/$metadata#directoryObjects/@Element&quot;,</a></p>
+<p>&quot;odata.type&quot;: &quot;Microsoft.WindowsAzure.ActiveDirectory.ServicePrincipal&quot;,</p>
+<p>&quot;objectType&quot;: &quot;ServicePrincipal&quot;,</p>
+<p>&quot;softDeletionTimestamp&quot;: null,</p>
+<p>&quot;accountEnabled&quot;: true,</p>
+<p>&quot;appDisplayName&quot;: &quot;CEP-log-aksSP-20200528203709&quot;,</p>
+<p>&quot;appId&quot;: &quot;08ba5686-5d57-4bb3-b828-e0dacc1409d4&quot;,</p>
+<p>&quot;appMetadata&quot;: null,</p>
+<p>&quot;appOwnerTenantId&quot;: &quot;6b92eb7c-ee31-4597-a715-580c0c6dddd8&quot;,</p>
+<p>&quot;appPermissions&quot;: [</p>
+<p>&quot;claimValue&quot;: &quot;user_impersonation&quot;,</p>
+<p>&quot;description&quot;: &quot;Allow the application to access CEP-log-aksSP-20200528203709 on behalf of the signed-in user.&quot;,</p>
+<p>&quot;directAccessGrantTypes&quot;: [],</p>
+<p>&quot;displayName&quot;: &quot;Access CEP-log-aksSP-20200528203709&quot;,</p>
+<p>&quot;impersonationAccessGrantTypes&quot;: [</p>
+<p>&quot;impersonated&quot;: &quot;User&quot;,</p>
+<p>&quot;impersonator&quot;: &quot;Application&quot;</p>
+<p>}</p>
+<p>],</p>
+<p>&quot;isDisabled&quot;: false,</p>
+<p>&quot;origin&quot;: &quot;Application&quot;,</p>
+<p>&quot;permissionId&quot;: &quot;7d1a5c90-7907-4121-9c32-a66456e357c2&quot;,</p>
+<p>&quot;resourceScopeType&quot;: &quot;Personal&quot;,</p>
+<p>&quot;userConsentDescription&quot;: &quot;Allow the application to access CEP-log-aksSP-20200528203709 on your behalf.&quot;,</p>
+<p>&quot;userConsentDisplayName&quot;: &quot;Access CEP-log-aksSP-20200528203709&quot;,</p>
+<p>&quot;lang&quot;: null</p>
+<p>&quot;authenticationPolicy&quot;: null,</p>
+<p>&quot;errorUrl&quot;: null,</p>
+<p>&quot;explicitAccessGrantRequired&quot;: false,</p>
+<p>&quot;homepage&quot;: &quot;<a href="http://CEP-log-aksSP-20200528203709&quot;," target="_blank" rel="noopener">http://CEP-log-aksSP-20200528203709&quot;,</a></p>
+<p>&quot;keyCredentials&quot;: [],</p>
+<p>&quot;logoutUrl&quot;: null,</p>
+<p>&quot;microsoftFirstParty&quot;: null,</p>
+<p>&quot;passwordCredentials&quot;: [</p>
+<p>&quot;customKeyIdentifier&quot;: null,</p>
+<p>&quot;endDate&quot;: &quot;2021-05-28T12:37:10.802Z&quot;,</p>
+<p>&quot;keyId&quot;: &quot;eb3d2ec3-ca96-4d9f-acb8-ab126809c72e&quot;,</p>
+<p>&quot;startDate&quot;: &quot;2020-05-28T12:37:10.802Z&quot;,</p>
+<p>&quot;value&quot;: null</p>
+<p>&quot;publisherName&quot;: &quot;Coca-Cola New DC&quot;,</p>
+<p>&quot;replyUrls&quot;: [],</p>
+<p>&quot;resourceApplicationSet&quot;: null,</p>
+<p>&quot;samlMetadataUrl&quot;: null,</p>
+<p>&quot;servicePrincipalNames&quot;: [</p>
+<p>&quot;<a href="http://CEP-log-aksSP-20200528203709&quot;," target="_blank" rel="noopener">http://CEP-log-aksSP-20200528203709&quot;,</a></p>
+<p>&quot;08ba5686-5d57-4bb3-b828-e0dacc1409d4&quot;</p>
+<p>&quot;tags&quot;: [],</p>
+<p>&quot;webApi&quot;: null,</p>
+<p>&quot;webApp&quot;: null</p>
+<p>根据incominghttp请求中携带的PrincialID和TenantID定位出执行该操作的是一个application，名字为&quot;CEP-log-aksSP-20200528203709&quot;。经过确认，这个名字就是在创建AKS时自动创建的一个application，其中CEP-log-aks为AKS的名字，SP-20200528203709为系统添加的后缀。该application作为执行者，负责发送Http请求给ARM以完成AKS对其他相应资源的操作。</p>
+<p>3.接着提取AKS本身的日志：</p>
+<p>ControlPlaneEventsNonShoebox</p>
+<p>| where PreciseTimeStamp &gt;= datetime(2020-10-18 19:54:00) and PreciseTimeStamp &lt;= datetime(2020-10-18 19:56:00)</p>
+<p>//| where resourceId contains &quot;/subscriptions/431cd430-a4eb-465e-a378-2fa6080063ff/resourceGroups/CEP-uat/providers/Microsoft.ContainerService/managedClusters/CEP-log-aks&quot;</p>
+<p>//| where category == &quot;kube-controller-manager&quot;</p>
+<p>| where properties contains &quot;aks-agentpool-26972693-nsg&quot;</p>
+<p>//| project PreciseTimeStamp, category,properties</p>
+<p>可以看到如下记录：</p>
+<p>&quot;log&quot;: &quot;time=\&quot;2020-10-18T19:54:13Z\&quot; level=info msg=\&quot;Proxy GET /subscriptions/431cd430-a4eb-465e-a378-2fa6080063ff/resourceGroups/mc_cep-uat_cep-log-aks_chinaeast2/providers/Microsoft.Network/networkSecurityGroups/aks-agentpool-26972693-nsg?api-version=2018-07-01\&quot;\n&quot;,</p>
+<p>&quot;stream&quot;: &quot;stderr&quot;,</p>
+<p>&quot;pod&quot;: &quot;kube-controller-manager-6bb795f86c-n644f&quot;,</p>
+<p>&quot;containerID&quot;: &quot;45e529c4dde460e8dd7c632b47d4669fc69fedf0ec2464956a225c9f193b3998&quot;</p>
+<p>&quot;log&quot;: &quot;time=\&quot;2020-10-18T19:54:24Z\&quot; level=info msg=\&quot;Proxy PUT /subscriptions/431cd430-a4eb-465e-a378-2fa6080063ff/resourceGroups/mc_cep-uat_cep-log-aks_chinaeast2/providers/Microsoft.Network/networkSecurityGroups/aks-agentpool-26972693-nsg?api-version=2018-07-01\&quot;\n&quot;,</p>
+<p>4.查看对应时间段内，最终用户是否有通过kubectl对集群做任何操作：</p>
+<p>FrontEndQoSEvents</p>
+<p>| where PreciseTimeStamp &gt;= datetime(2020-10-18 00:00:00.0000000) and PreciseTimeStamp &lt;= datetime(2020-10-18 23:00:00.0000000)</p>
+<p>| where resourceName == &quot;CEP-log-aks&quot;</p>
+<p>| where operationName == &quot;PutManagedClusterHandler.PUT&quot;</p>
+<p>上述日志查询没有任何输出，表明客户没有通过kubectl对集群做任何操作，至此基本确定NSG规则是自动添加的，并非客户操作。</p>
+<p>5.经与研发团队确认这个是原生k8s的行为。Master节点中的kube-controller-manager这个服务会主动检测相应的业务端口是否可以被访问。AKS基于该行为，建立了相应的NSG检测和更新机制，以确保通过公共负载均衡器暴露在公网的业务端口不会被平台的网络组件阻挡。</p>
+<p>平台对NSG设置的检测和更新机制为：</p>
+<p>当用户在创建服务或者对服务进行修改的时候，会创建或者更新相应的NSG规则；</p>
+<p>当master 节点上的kube-controller-manager这个POD重启之后，也会检查并添加相应的NSG规则。kube-controller-manager这个POD重启的时间和原因都是不确定的，因此我们观察到的这个规则添加的时间也不确定；</p></article>

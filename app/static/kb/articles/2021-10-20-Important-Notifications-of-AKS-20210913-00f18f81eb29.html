@@ -1,0 +1,113 @@
+<article class="kb-article" data-title="Important Notifications of AKS(20210913)"><h1>Important Notifications of AKS(20210913)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: New Section 1</li>
+<li>最近修改: 2021-10-20 16:14:06</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Hi Team,</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Hi Team,</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi Team,</li>
+</ul>
+<ul>
+<li>Please note the following two important notifications. I have verified and confirmed with PG, if you have any concerns,  feel free to ping me.</li>
+</ul>
+<ul>
+<li>No.1 SSH to VMSS instance(two methods)</li>
+</ul>
+<ul>
+<li>1. using kube-enter:</li>
+</ul>
+<ul>
+<li>2. or using these official steps provided by Azure.</li>
+</ul>
+<ul>
+<li>Please help customer to use the following steps:</li>
+</ul>
+<ul>
+<li>chroot /host       //we will add this specific step in doc.</li>
+</ul>
+<ul>
+<li>No.2 AKS CA and other certificates</li>
+</ul>
+<ul>
+<li>For CA:</li>
+</ul>
+<ul>
+<li>AKS clusters created prior to May 2019 have certificates that expire after two years. Any cluster created after May 2019 or any cluster that has its certificates rotated have Cluster CA certificates that expire after 30 years.</li>
+</ul>
+<ul>
+<li>For other certificates:</li>
+</ul>
+<ul>
+<li>Customers need to rotate themselves via running:  az aks rotate-certs -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME</li>
+</ul>
+<ul>
+<li>Azure Kubernetes Service (AKS) will now rotate your intermediate certificates during a version upgrade operation.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>All other AKS certificates, which use the Cluster CA to for signing, will expire after two years and are automatically rotated during AKS version upgrade. To verify when your cluster was created, use kubectl get nodes to see the Age of your node pools.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>kubectl get node   //get the node id</li>
+</ul>
+<ul>
+<li>kubectl debug node/node-id -it --image=mcr.azk8s.cn/aks/fundamental/base-ubuntu:v0.0.11</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>关于为什么remediator花了很长时间才修复node？</li>
+</ul>
+<ul>
+<li>AKS remediator的触发机制为：当node连续十分钟报告not ready的状态，或者AKS master在十分钟内，没有收到node的状态报告就会触发上述remediation，当每一个remediation event完成后，如果node依然没有恢复ready状态，则按照上述序列顺序进行，直至redeploy。而在本案例中，故障节点在通过remediation进行恢复时，都能及时恢复到ready状态，并在持续运行一段时间之后，再次变为not ready，因此redeploy的修复动作一直等到了北京时间 09/12 03:15 AM的时候才被触发，并最终修复了该node。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/kvaps/kubectl-node-shell" target="_blank" rel="noopener">https://github.com/kvaps/kubectl-node-shell</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/ssh" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/ssh</a>                //@Icy Lin will work with PG to correct the steps and update the document.</li>
+</ul>
+<ul>
+<li>Doc: <a href="https://docs.azure.cn/en-us/aks/certificate-rotation" target="_blank" rel="noopener">https://docs.azure.cn/en-us/aks/certificate-rotation</a></li>
+</ul>
+<ul>
+<li>Now we have distributed a new feature#  <a href="https://github.com/Azure/AKS/releases/tag/2021-07-15" target="_blank" rel="noopener">https://github.com/Azure/AKS/releases/tag/2021-07-15</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi Team,</p>
+<p>Please note the following two important notifications. I have verified and confirmed with PG, if you have any concerns,  feel free to ping me.</p>
+<p>No.1 SSH to VMSS instance(two methods)</p>
+<p>1. using kube-enter:</p>
+<p><a href="https://github.com/kvaps/kubectl-node-shell" target="_blank" rel="noopener">https://github.com/kvaps/kubectl-node-shell</a></p>
+<p>2. or using these official steps provided by Azure.</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/ssh" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/ssh</a>                //@Icy Lin will work with PG to correct the steps and update the document.</p>
+<p>Please help customer to use the following steps:</p>
+<p>kubectl get node   //get the node id</p>
+<p>kubectl debug node/node-id -it --image=mcr.azk8s.cn/aks/fundamental/base-ubuntu:v0.0.11</p>
+<p>chroot /host       //we will add this specific step in doc.</p>
+<p>No.2 AKS CA and other certificates</p>
+<p>Doc: <a href="https://docs.azure.cn/en-us/aks/certificate-rotation" target="_blank" rel="noopener">https://docs.azure.cn/en-us/aks/certificate-rotation</a></p>
+<p>For CA:</p>
+<p>AKS clusters created prior to May 2019 have certificates that expire after two years. Any cluster created after May 2019 or any cluster that has its certificates rotated have Cluster CA certificates that expire after 30 years.</p>
+<p>All other AKS certificates, which use the Cluster CA to for signing, will expire after two years and are automatically rotated during AKS version upgrade. To verify when your cluster was created, use kubectl get nodes to see the Age of your node pools.</p>
+<p>For other certificates:</p>
+<p>Customers need to rotate themselves via running:  az aks rotate-certs -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME</p>
+<p>Now we have distributed a new feature#  <a href="https://github.com/Azure/AKS/releases/tag/2021-07-15" target="_blank" rel="noopener">https://github.com/Azure/AKS/releases/tag/2021-07-15</a></p>
+<p>Azure Kubernetes Service (AKS) will now rotate your intermediate certificates during a version upgrade operation.</p>
+<p>关于为什么remediator花了很长时间才修复node？</p>
+<p>AKS remediator的触发机制为：当node连续十分钟报告not ready的状态，或者AKS master在十分钟内，没有收到node的状态报告就会触发上述remediation，当每一个remediation event完成后，如果node依然没有恢复ready状态，则按照上述序列顺序进行，直至redeploy。而在本案例中，故障节点在通过remediation进行恢复时，都能及时恢复到ready状态，并在持续运行一段时间之后，再次变为not ready，因此redeploy的修复动作一直等到了北京时间 09/12 03:15 AM的时候才被触发，并最终修复了该node。</p></article>

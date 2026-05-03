@@ -1,0 +1,159 @@
+<article class="kb-article" data-title="【Share】Teams 登录提示 “租户管理员已限制可以访问的组织，请联系IT部门以请求访问undefined 组织。”（报错代码500212，NotAllowedByOutboundPolicyTenant）"><h1>【Share】Teams 登录提示 “租户管理员已限制可以访问的组织，请联系IT部门以请求访问undefined 组织。”（报错代码500212，NotAllowedByOutboundPolicyTenant）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-04 09:28:49</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>分享一个工单SR_20240627301436_teams在双因素认证显示未被组织允许， 客户描述的表现为，客户通过手机登录Teams 时会提示 “租户管理员已限制可以访问的组织，请联系IT部门以请求访问undefined 组织。”（报错代码500212，NotAllowedByOutboundPolicyTenant）。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>分享一个工单SR_20240627301436_teams在双因素认证显示未被组织允许， 客户描述的表现为，客户通过手机登录Teams 时会提示 “租户管理员已限制可以访问的组织，请联系IT部门以请求访问undefined 组织。”（报错代码500212，NotAllowedByOutboundPolicyTenant）。</li>
+</ul>
+<ul>
+<li>//| where Result contains &quot;UserError&quot;</li>
+</ul>
+<ul>
+<li>| where CorrelationId == &#39;24d2e23d-9e49-44f2-b305-bb7091738f9a&#39;//CorrelationId即报错截图中的CorrelationId#//</li>
+</ul>
+<ul>
+<li>#相关报错的结果显示客户虽然在中国区A租户，但有访问Global B租户的记录。#</li>
+</ul>
+<ul>
+<li>与客户沟通了解到，客户遇到报错是在加入别人发起的Teams 会议时遇到的问题，这个就符合1中提到的，需要访问另外一个Global Azure 租户的场景了。对此我本地也进行了测试，测试发现，使用中国区Teams 登录国际版Teams 会议，只能使用不登录的方式加入，如果选择登录入会就会复现客户的报错。</li>
+</ul>
+<ul>
+<li>#点击sign in 加入，并输入用户名和密码尝试登录可以复现客户的报错（代码500212）。#</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Liu Huan</li>
+</ul>
+<ul>
+<li>======================</li>
+</ul>
+<ul>
+<li>用户为从本地AD 同步到Azure AD 的用户，且对应的自定义域名仅在中国区有记录。</li>
+</ul>
+<ul>
+<li>#仅有中国区的记录#</li>
+</ul>
+<ul>
+<li>#Global 没有记录#</li>
+</ul>
+<ul>
+<li>PerRequestTableIfx</li>
+</ul>
+<ul>
+<li>| where env_time &gt;=datetime(2024-06-26 00:00) and env_time &lt;datetime(2024-07-03 00:00)</li>
+</ul>
+<ul>
+<li>//| where DomainName contains &quot;fangdalaw.com&quot;</li>
+</ul>
+<ul>
+<li>//| where TenantId ==&quot;fdadf686-453e-460d-8202-21e14d35c061&quot;</li>
+</ul>
+<ul>
+<li>#China#</li>
+</ul>
+<ul>
+<li>#如果两个租户ID相同，用户是可以登录成功的。#</li>
+</ul>
+<ul>
+<li>注2：Windows 客户端、浏览器还是手机客户端均是如此。</li>
+</ul>
+<ul>
+<li>以Windows 网页版加入为例来进行说明</li>
+</ul>
+<ul>
+<li>#以不登录（或来宾用户）的方式可以成功加入会议#</li>
+</ul>
+<ul>
+<li>结论：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查步骤：</li>
+</ul>
+<ul>
+<li>//cluster(&quot;estscnn2.chinanorth2.kusto.chinacloudapi.cn&quot;).database(&quot;ESTS&quot;).PerRequestTableIfx//kusto 集群名称和数据库名称</li>
+</ul>
+<ul>
+<li>//| where UserPrincipalObjectID == &quot;603068fa-7727-44a3-bba9-1a3ac5114a0d&quot;//如果能确认用户的UserPrincipalObjectID ，也可以加上//</li>
+</ul>
+<ul>
+<li>| where ErrorNo == &quot;500212&quot;//如果能确认报错代码，也可以加上</li>
+</ul>
+<ul>
+<li>注1：如何验证红色部分的租户ID 是中国区Azure 的还是Global Azure 的，高亮部分可以使用自定义域名或租户ID 替换。</li>
+</ul>
+<ul>
+<li>#Global#（以下链接也可以用来验证域名是否被注册到了Global）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>从ASC和客户Azure AD 的登录日志中中看不到对应的用户的登录日志，可以通过Kusto 查询。相关报错的结果显示客户虽然在中国区A租户，但有访问Global B租户的记录。如果两个租户ID相同，用户是可以登录成功的。</li>
+</ul>
+<ul>
+<li>//| where RequestId contains &quot;34ce39d9-b305-4a0b-8973-c91dd42c3900&quot;//我测试过程中发现可以通过CorrelationId搜索到结果，但换成RequestId则找不到记录//</li>
+</ul>
+<ul>
+<li>建议客户暂时暂时以不需要登录的方式加入Global teams 会议中。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>比较快速的方法是使用Tenant Lookup的链接（<a href="https://gettenantpartitionweb.azurewebsites.net/）确认。" target="_blank" rel="noopener">https://gettenantpartitionweb.azurewebsites.net/）确认。</a></li>
+</ul>
+<ul>
+<li><a href="https://login.microsoftonline.com/2b5a89e7-01bf-42ed-9da1-669d82eec17a/.well-known/openid-configuration" target="_blank" rel="noopener">https://login.microsoftonline.com/2b5a89e7-01bf-42ed-9da1-669d82eec17a/.well-known/openid-configuration</a></li>
+</ul>
+<ul>
+<li><a href="https://login.partner.microsoftonline.cn/fangdalaw.com/.well-known/openid-configuration" target="_blank" rel="noopener">https://login.partner.microsoftonline.cn/fangdalaw.com/.well-known/openid-configuration</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Liu Huan</p>
+<p>分享一个工单SR_20240627301436_teams在双因素认证显示未被组织允许， 客户描述的表现为，客户通过手机登录Teams 时会提示 “租户管理员已限制可以访问的组织，请联系IT部门以请求访问undefined 组织。”（报错代码500212，NotAllowedByOutboundPolicyTenant）。</p>
+<p>排查步骤：</p>
+<p>======================</p>
+<p>用户为从本地AD 同步到Azure AD 的用户，且对应的自定义域名仅在中国区有记录。</p>
+<p>比较快速的方法是使用Tenant Lookup的链接（<a href="https://gettenantpartitionweb.azurewebsites.net/）确认。" target="_blank" rel="noopener">https://gettenantpartitionweb.azurewebsites.net/）确认。</a></p>
+<p>#仅有中国区的记录#</p>
+<p>#Global 没有记录#</p>
+<p>从ASC和客户Azure AD 的登录日志中中看不到对应的用户的登录日志，可以通过Kusto 查询。相关报错的结果显示客户虽然在中国区A租户，但有访问Global B租户的记录。如果两个租户ID相同，用户是可以登录成功的。</p>
+<p>//cluster(&quot;estscnn2.chinanorth2.kusto.chinacloudapi.cn&quot;).database(&quot;ESTS&quot;).PerRequestTableIfx//kusto 集群名称和数据库名称</p>
+<p>PerRequestTableIfx</p>
+<p>| where env_time &gt;=datetime(2024-06-26 00:00) and env_time &lt;datetime(2024-07-03 00:00)</p>
+<p>//| where UserPrincipalObjectID == &quot;603068fa-7727-44a3-bba9-1a3ac5114a0d&quot;//如果能确认用户的UserPrincipalObjectID ，也可以加上//</p>
+<p>//| where Result contains &quot;UserError&quot;</p>
+<p>| where ErrorNo == &quot;500212&quot;//如果能确认报错代码，也可以加上</p>
+<p>//| where DomainName contains &quot;fangdalaw.com&quot;</p>
+<p>| where CorrelationId == &#39;24d2e23d-9e49-44f2-b305-bb7091738f9a&#39;//CorrelationId即报错截图中的CorrelationId#//</p>
+<p>//| where TenantId ==&quot;fdadf686-453e-460d-8202-21e14d35c061&quot;</p>
+<p>//| where RequestId contains &quot;34ce39d9-b305-4a0b-8973-c91dd42c3900&quot;//我测试过程中发现可以通过CorrelationId搜索到结果，但换成RequestId则找不到记录//</p>
+<p>#相关报错的结果显示客户虽然在中国区A租户，但有访问Global B租户的记录。#</p>
+<p>注1：如何验证红色部分的租户ID 是中国区Azure 的还是Global Azure 的，高亮部分可以使用自定义域名或租户ID 替换。</p>
+<p>#Global#（以下链接也可以用来验证域名是否被注册到了Global）</p>
+<p><a href="https://login.microsoftonline.com/2b5a89e7-01bf-42ed-9da1-669d82eec17a/.well-known/openid-configuration" target="_blank" rel="noopener">https://login.microsoftonline.com/2b5a89e7-01bf-42ed-9da1-669d82eec17a/.well-known/openid-configuration</a></p>
+<p>#China#</p>
+<p><a href="https://login.partner.microsoftonline.cn/fangdalaw.com/.well-known/openid-configuration" target="_blank" rel="noopener">https://login.partner.microsoftonline.cn/fangdalaw.com/.well-known/openid-configuration</a></p>
+<p>#如果两个租户ID相同，用户是可以登录成功的。#</p>
+<p>与客户沟通了解到，客户遇到报错是在加入别人发起的Teams 会议时遇到的问题，这个就符合1中提到的，需要访问另外一个Global Azure 租户的场景了。对此我本地也进行了测试，测试发现，使用中国区Teams 登录国际版Teams 会议，只能使用不登录的方式加入，如果选择登录入会就会复现客户的报错。</p>
+<p>注2：Windows 客户端、浏览器还是手机客户端均是如此。</p>
+<p>以Windows 网页版加入为例来进行说明</p>
+<p>#以不登录（或来宾用户）的方式可以成功加入会议#</p>
+<p>#点击sign in 加入，并输入用户名和密码尝试登录可以复现客户的报错（代码500212）。#</p>
+<p>结论：</p>
+<p>建议客户暂时暂时以不需要登录的方式加入Global teams 会议中。</p></article>

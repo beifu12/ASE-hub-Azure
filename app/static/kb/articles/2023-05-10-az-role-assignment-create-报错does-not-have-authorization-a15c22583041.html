@@ -1,0 +1,51 @@
+<article class="kb-article" data-title="az role assignment create 报错does not have authorization"><h1>az role assignment create 报错does not have authorization</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: ACR</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-05-10 15:21:01</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>az role assignment create 报错does not have authorization</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>az role assignment create 报错does not have authorization</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>出现下边的错:</li>
+</ul>
+<ul>
+<li>The client &#39;alex.song@boschcn.partner.onmschina.cn&#39; with object id &#39;772b4efc-e7fd-400b-8012-8022ab7e5d6b&#39; does not have authorization to perform action &#39;Microsoft.Authorization/roleAssignments/write&#39; over scope &#39;/subscriptions/026f5fda-f9ba-482c…..</li>
+</ul>
+<ul>
+<li>进行assignment的账号需要有所有者权限，参与者不行，参与者没有管理权限。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>SR_2019073041998_[S400]配置 ACR 身份验证 权限错误</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az role assignment create 报错does not have authorization</li>
+</ul>
+<ul>
+<li>az role assignment create --assignee 4423162a-c9e0-464f-9102-a0936148e8ff --scope /subscriptions/026f5fda-f9ba-482c-abc3-38a457da7b5a/resourceGroups/bosch-dev/providers/Microsoft.ContainerRegistry/registries/boschDevImage --role acrpull</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>az role assignment create 报错does not have authorization</p>
+<p>SR_2019073041998_[S400]配置 ACR 身份验证 权限错误</p>
+<p>az role assignment create --assignee 4423162a-c9e0-464f-9102-a0936148e8ff --scope /subscriptions/026f5fda-f9ba-482c-abc3-38a457da7b5a/resourceGroups/bosch-dev/providers/Microsoft.ContainerRegistry/registries/boschDevImage --role acrpull</p>
+<p>出现下边的错:</p>
+<p>The client &#39;alex.song@boschcn.partner.onmschina.cn&#39; with object id &#39;772b4efc-e7fd-400b-8012-8022ab7e5d6b&#39; does not have authorization to perform action &#39;Microsoft.Authorization/roleAssignments/write&#39; over scope &#39;/subscriptions/026f5fda-f9ba-482c…..</p>
+<p>进行assignment的账号需要有所有者权限，参与者不行，参与者没有管理权限。</p></article>

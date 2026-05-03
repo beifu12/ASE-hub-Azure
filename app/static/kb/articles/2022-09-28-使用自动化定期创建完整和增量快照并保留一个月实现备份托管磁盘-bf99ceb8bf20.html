@@ -1,0 +1,283 @@
+<article class="kb-article" data-title="使用自动化定期创建完整和增量快照并保留一个月实现备份托管磁盘"><h1>使用自动化定期创建完整和增量快照并保留一个月实现备份托管磁盘</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Automation</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-09-28 09:39:08</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>创建automation账户</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>创建automation账户</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>创建automation账户</li>
+</ul>
+<ul>
+<li>请确保以下模块已经成功更新。</li>
+</ul>
+<ul>
+<li>更新方法请您参考以下文档：</li>
+</ul>
+<ul>
+<li>获取本地模块版本的方法</li>
+</ul>
+<ul>
+<li>添加凭据</li>
+</ul>
+<ul>
+<li>用户名和密码：登录azure的用户名和密码</li>
+</ul>
+<ul>
+<li>#操作的订阅ID,请根据实际修改</li>
+</ul>
+<ul>
+<li>$SubscriptionID = &quot;xxx&quot;;</li>
+</ul>
+<ul>
+<li>#自动化中的凭据名称,请根据实际修改</li>
+</ul>
+<ul>
+<li>$CredName = &quot;xxx&quot;</li>
+</ul>
+<ul>
+<li>$cred = Get-Automationpscredential -Name $CredName;</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -Credential $cred -EnvironmentName AzureChinaCloud;</li>
+</ul>
+<ul>
+<li>Select-AzSubscription -SubscriptionID $SubscriptionID;</li>
+</ul>
+<ul>
+<li>#以下参数请按实际情况修改</li>
+</ul>
+<ul>
+<li>#托管磁盘所在的资源组</li>
+</ul>
+<ul>
+<li>$resourceGroupName = &quot;xxx&quot;;</li>
+</ul>
+<ul>
+<li>#托管磁盘的名称</li>
+</ul>
+<ul>
+<li>$managedDiskName = &quot;xxx&quot;;</li>
+</ul>
+<ul>
+<li>#定义每周几创建完整快照，如Sunday</li>
+</ul>
+<ul>
+<li>$fullSnapshotDay = &quot;xxx&quot;</li>
+</ul>
+<ul>
+<li>#定义保留天数，如30</li>
+</ul>
+<ul>
+<li>$Days = &quot;x&quot;;</li>
+</ul>
+<ul>
+<li>$snapshotName = &quot;{0}_Snapshot_{1}&quot; -f $managedDiskName, (Get-Date).ToString(&quot;yyyyMMddHHmmss&quot;);</li>
+</ul>
+<ul>
+<li>$disk = Get-AzDisk -ResourceGroupName $resourceGroupName -DiskName $managedDiskName;</li>
+</ul>
+<ul>
+<li>if ($disk -eq $null)</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Disk not found&quot;;</li>
+</ul>
+<ul>
+<li>return;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>if((Get-Date).DayOfWeek.ToString() -eq $fullSnapshotDay)</li>
+</ul>
+<ul>
+<li>Write-Host (&quot;Creating full Snapshot for {0}, snapshot name: {1}&quot; -f $managedDiskName, $snapshotName) -ForegroundColor Yellow;</li>
+</ul>
+<ul>
+<li>$snapshotConfig = New-AzSnapshotConfig -Location $disk.Location -SourceUri $disk.Id -CreateOption Copy;</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Full Snapshot Finished&quot; -ForegroundColor Green;</li>
+</ul>
+<ul>
+<li>else</li>
+</ul>
+<ul>
+<li>Write-Host (&quot;Creating Incremental Snapshot for {0}, snapshot name: {1}&quot; -f $managedDiskName, $snapshotName) -ForegroundColor Yellow;</li>
+</ul>
+<ul>
+<li>$snapshotConfig = New-AzSnapshotConfig -Location $disk.Location -SourceUri $disk.Id -CreateOption Copy -Incremental;</li>
+</ul>
+<ul>
+<li>Write-Host &quot;Incremental Snapshot Finished&quot; -ForegroundColor Green;</li>
+</ul>
+<ul>
+<li>$snapshots = Get-AzSnapshot -ResourceGroupName $resourceGroupName;</li>
+</ul>
+<ul>
+<li>$filteredSnapshots = @($snapshots | where {$_.CreationData.SourceResourceId -eq $disk.Id});</li>
+</ul>
+<ul>
+<li>Write-Host (&quot;Snapshot found for disk {0}:&quot; -f $ManagedDiskName);</li>
+</ul>
+<ul>
+<li>$filteredSnapshots | select @{Name=&quot;TimeCreated&quot;; Expression={$_.TimeCreated.ToLocalTime()}},Name,Location;</li>
+</ul>
+<ul>
+<li>$timespan = New-TimeSpan -Days $Days</li>
+</ul>
+<ul>
+<li>#Get current date</li>
+</ul>
+<ul>
+<li>$current = get-date</li>
+</ul>
+<ul>
+<li>#Declare retention time</li>
+</ul>
+<ul>
+<li>$retention = $current-$timespan</li>
+</ul>
+<ul>
+<li>#Delete snapshot before retention time</li>
+</ul>
+<ul>
+<li>foreach ($filteredSnapshot in $filteredSnapshots)</li>
+</ul>
+<ul>
+<li>if ($filteredSnapshot.TimeCreated -le $retention)</li>
+</ul>
+<ul>
+<li>Write-Host (&quot;Removesnapshot {0}:&quot; -f $filteredSnapshot.Name)</li>
+</ul>
+<ul>
+<li>点击“测试窗格”</li>
+</ul>
+<ul>
+<li>点击“开始”</li>
+</ul>
+<ul>
+<li>输出结果如下：</li>
+</ul>
+<ul>
+<li>点击“计划”，设置计划任务</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>注：如模块比较旧，则可能出现有些命令找不到的问题：</li>
+</ul>
+<ul>
+<li>本地PowerShell模块所在路径：</li>
+</ul>
+<ul>
+<li>C:\Program Files\WindowsPowerShell\Modules</li>
+</ul>
+<ul>
+<li>添加一个runbook脚本</li>
+</ul>
+<ul>
+<li>将如下命令中的参数更改为您环境中的信息后，粘贴到新弹出的窗口</li>
+</ul>
+<ul>
+<li>#本脚本每周有一天创建完整快照，其他时间创建增量快照，保留30天</li>
+</ul>
+<ul>
+<li>New-AzSnapshot -ResourceGroupName $resourceGroupName -SnapshotName $snapshotName -Snapshot $snapshotConfig</li>
+</ul>
+<ul>
+<li>Remove-AzSnapshot -ResourceGroupName $resourceGroupName -SnapshotName $filteredSnapshot.Name -Force;</li>
+</ul>
+<ul>
+<li>上述操作说明Runbook脚本测试没有问题，点击“发布”</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/automation/aog-automation-powershell-module-update" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/automation/aog-automation-powershell-module-update</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>创建automation账户</p>
+<p>请确保以下模块已经成功更新。</p>
+<p>注：如模块比较旧，则可能出现有些命令找不到的问题：</p>
+<p>更新方法请您参考以下文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/articles/azure-operations-guide/automation/aog-automation-powershell-module-update" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/articles/azure-operations-guide/automation/aog-automation-powershell-module-update</a></p>
+<p>本地PowerShell模块所在路径：</p>
+<p>C:\Program Files\WindowsPowerShell\Modules</p>
+<p>获取本地模块版本的方法</p>
+<p>添加凭据</p>
+<p>用户名和密码：登录azure的用户名和密码</p>
+<p>添加一个runbook脚本</p>
+<p>将如下命令中的参数更改为您环境中的信息后，粘贴到新弹出的窗口</p>
+<p>#本脚本每周有一天创建完整快照，其他时间创建增量快照，保留30天</p>
+<p>#操作的订阅ID,请根据实际修改</p>
+<p>$SubscriptionID = &quot;xxx&quot;;</p>
+<p>#自动化中的凭据名称,请根据实际修改</p>
+<p>$CredName = &quot;xxx&quot;</p>
+<p>$cred = Get-Automationpscredential -Name $CredName;</p>
+<p>Connect-AzAccount -Credential $cred -EnvironmentName AzureChinaCloud;</p>
+<p>Select-AzSubscription -SubscriptionID $SubscriptionID;</p>
+<p>#以下参数请按实际情况修改</p>
+<p>#托管磁盘所在的资源组</p>
+<p>$resourceGroupName = &quot;xxx&quot;;</p>
+<p>#托管磁盘的名称</p>
+<p>$managedDiskName = &quot;xxx&quot;;</p>
+<p>#定义每周几创建完整快照，如Sunday</p>
+<p>$fullSnapshotDay = &quot;xxx&quot;</p>
+<p>#定义保留天数，如30</p>
+<p>$Days = &quot;x&quot;;</p>
+<p>$snapshotName = &quot;{0}_Snapshot_{1}&quot; -f $managedDiskName, (Get-Date).ToString(&quot;yyyyMMddHHmmss&quot;);</p>
+<p>$disk = Get-AzDisk -ResourceGroupName $resourceGroupName -DiskName $managedDiskName;</p>
+<p>if ($disk -eq $null)</p>
+<p>{</p>
+<p>Write-Host &quot;Disk not found&quot;;</p>
+<p>return;</p>
+<p>}</p>
+<p>if((Get-Date).DayOfWeek.ToString() -eq $fullSnapshotDay)</p>
+<p>Write-Host (&quot;Creating full Snapshot for {0}, snapshot name: {1}&quot; -f $managedDiskName, $snapshotName) -ForegroundColor Yellow;</p>
+<p>$snapshotConfig = New-AzSnapshotConfig -Location $disk.Location -SourceUri $disk.Id -CreateOption Copy;</p>
+<p>New-AzSnapshot -ResourceGroupName $resourceGroupName -SnapshotName $snapshotName -Snapshot $snapshotConfig</p>
+<p>Write-Host &quot;Full Snapshot Finished&quot; -ForegroundColor Green;</p>
+<p>else</p>
+<p>Write-Host (&quot;Creating Incremental Snapshot for {0}, snapshot name: {1}&quot; -f $managedDiskName, $snapshotName) -ForegroundColor Yellow;</p>
+<p>$snapshotConfig = New-AzSnapshotConfig -Location $disk.Location -SourceUri $disk.Id -CreateOption Copy -Incremental;</p>
+<p>Write-Host &quot;Incremental Snapshot Finished&quot; -ForegroundColor Green;</p>
+<p>$snapshots = Get-AzSnapshot -ResourceGroupName $resourceGroupName;</p>
+<p>$filteredSnapshots = @($snapshots | where {$_.CreationData.SourceResourceId -eq $disk.Id});</p>
+<p>Write-Host (&quot;Snapshot found for disk {0}:&quot; -f $ManagedDiskName);</p>
+<p>$filteredSnapshots | select @{Name=&quot;TimeCreated&quot;; Expression={$_.TimeCreated.ToLocalTime()}},Name,Location;</p>
+<p>$timespan = New-TimeSpan -Days $Days</p>
+<p>#Get current date</p>
+<p>$current = get-date</p>
+<p>#Declare retention time</p>
+<p>$retention = $current-$timespan</p>
+<p>#Delete snapshot before retention time</p>
+<p>foreach ($filteredSnapshot in $filteredSnapshots)</p>
+<p>if ($filteredSnapshot.TimeCreated -le $retention)</p>
+<p>Remove-AzSnapshot -ResourceGroupName $resourceGroupName -SnapshotName $filteredSnapshot.Name -Force;</p>
+<p>Write-Host (&quot;Removesnapshot {0}:&quot; -f $filteredSnapshot.Name)</p>
+<p>点击“测试窗格”</p>
+<p>点击“开始”</p>
+<p>输出结果如下：</p>
+<p>上述操作说明Runbook脚本测试没有问题，点击“发布”</p>
+<p>点击“计划”，设置计划任务</p></article>

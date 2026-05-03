@@ -1,0 +1,63 @@
+<article class="kb-article" data-title="Azure VM备份 虚拟机内部日志收集路径--扩展日志"><h1>Azure VM备份 虚拟机内部日志收集路径--扩展日志</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-09-27 11:39:23</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>虚拟机内部日志收集路径：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>虚拟机内部日志收集路径：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>虚拟机内部日志收集路径：</li>
+</ul>
+<ul>
+<li>Windows：</li>
+</ul>
+<ul>
+<li>C:\Windows\System32\winevt\*</li>
+</ul>
+<ul>
+<li>Linux:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>C:\WindowsAzure\Logs\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot</li>
+</ul>
+<ul>
+<li>C:\WindowsAzure\Logs\WaAppAgent*.log</li>
+</ul>
+<ul>
+<li>/var/log/azure/Microsoft.Azure.RecoveryServices.VMSnapshotLinux/</li>
+</ul>
+<ul>
+<li>/var/log/waagent*</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/Azure/WALinuxAgent/issues/1059" target="_blank" rel="noopener">https://github.com/Azure/WALinuxAgent/issues/1059</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>虚拟机内部日志收集路径：</p>
+<p>Windows：</p>
+<p>C:\Windows\System32\winevt\*</p>
+<p>C:\WindowsAzure\Logs\Plugins\Microsoft.Azure.RecoveryServices.VMSnapshot</p>
+<p>C:\WindowsAzure\Logs\WaAppAgent*.log</p>
+<p>Linux:</p>
+<p>/var/log/azure/Microsoft.Azure.RecoveryServices.VMSnapshotLinux/</p>
+<p>/var/log/waagent*</p>
+<p><a href="https://github.com/Azure/WALinuxAgent/issues/1059" target="_blank" rel="noopener">https://github.com/Azure/WALinuxAgent/issues/1059</a></p></article>

@@ -1,0 +1,281 @@
+<article class="kb-article" data-title="[Shared] AKS中部署的mysql pod使用azure数据库迁移服务迁移至Azure flexible server"><h1>[Shared] AKS中部署的mysql pod使用azure数据库迁移服务迁移至Azure flexible server</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-10-30 17:26:23</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Create</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Create</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Create</li>
+</ul>
+<ul>
+<li>SR：20241014319561</li>
+</ul>
+<ul>
+<li>Mysql pod的配置yaml，参考的阿里云文档：</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: Secret</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: mysql-secret</li>
+</ul>
+<ul>
+<li>namespace: default</li>
+</ul>
+<ul>
+<li>type: Opaque</li>
+</ul>
+<ul>
+<li>data:</li>
+</ul>
+<ul>
+<li>username: cm9vdA==  #base64加密后的信息root</li>
+</ul>
+<ul>
+<li>password: Y29ubmVjdHBhc3M= #base64加密后的信息connectpass</li>
+</ul>
+<ul>
+<li>---</li>
+</ul>
+<ul>
+<li>kind: Service</li>
+</ul>
+<ul>
+<li>name: mysql</li>
+</ul>
+<ul>
+<li>labels:</li>
+</ul>
+<ul>
+<li>app: mysql</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>ports:</li>
+</ul>
+<ul>
+<li>- port: 3306</li>
+</ul>
+<ul>
+<li>selector:</li>
+</ul>
+<ul>
+<li>clusterIP: None</li>
+</ul>
+<ul>
+<li>apiVersion: apps/v1</li>
+</ul>
+<ul>
+<li>kind: Deployment</li>
+</ul>
+<ul>
+<li>matchLabels:</li>
+</ul>
+<ul>
+<li>strategy:</li>
+</ul>
+<ul>
+<li>type: Recreate</li>
+</ul>
+<ul>
+<li>template:</li>
+</ul>
+<ul>
+<li>containers:</li>
+</ul>
+<ul>
+<li>- name: mysql</li>
+</ul>
+<ul>
+<li>image: registry.cn-hangzhou.aliyuncs.com/kubeway/hub:mysql-server_8.0.28</li>
+</ul>
+<ul>
+<li>env:</li>
+</ul>
+<ul>
+<li>- name: MYSQL_ROOT_PASSWORD</li>
+</ul>
+<ul>
+<li>valueFrom:</li>
+</ul>
+<ul>
+<li>secretKeyRef:</li>
+</ul>
+<ul>
+<li>key: password</li>
+</ul>
+<ul>
+<li>- name: MYSQL_DATABASE</li>
+</ul>
+<ul>
+<li>value: test</li>
+</ul>
+<ul>
+<li>- containerPort: 3306</li>
+</ul>
+<ul>
+<li>登录mysql服务中，参考文档添加远程登录账户：</li>
+</ul>
+<ul>
+<li>mysql -uroot -p</li>
+</ul>
+<ul>
+<li>CREATE USER &#39;remote_user&#39;@&#39;%&#39; IDENTIFIED BY &#39;password123&#39;;</li>
+</ul>
+<ul>
+<li>GRANT ALL PRIVILEGES ON *.* TO &#39;remote_user&#39;@&#39;%&#39; WITH GRANT OPTION;</li>
+</ul>
+<ul>
+<li>FLUSH PRIVILEGES;</li>
+</ul>
+<ul>
+<li>后续可以在同网段的VM中使用账户&#39;remote_user密码&#39;password123&#39;连接到此mysql服务</li>
+</ul>
+<ul>
+<li>mysql -uremote_user -p</li>
+</ul>
+<ul>
+<li>同理在同一网络中的数据库迁移服务同样可以连接到pod中的数据库服务进行迁移</li>
+</ul>
+<ul>
+<li>在测试过程中没有添加真实数据，但是新建的database被成功迁移至Azure flexible server中</li>
+</ul>
+<ul>
+<li>创建目标数据库服务：</li>
+</ul>
+<ul>
+<li>创建迁移服务：</li>
+</ul>
+<ul>
+<li>创建完成后，创建迁移项目，并在项目中添加pod的IP地址和之前在mysql中添加的远程用户和密码：</li>
+</ul>
+<ul>
+<li>测试数据的输入：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>接到DB的子工单询问此问题，经过协助测试，确认此方案可行，大家可以参考如下信息:</li>
+</ul>
+<ul>
+<li>具体步骤参考：</li>
+</ul>
+<ul>
+<li>验证通过后，添加目标数据库的相关信息：</li>
+</ul>
+<ul>
+<li>配置完成后，等待迁移操作完成后查看测试数据库和表数据是否成功迁移：</li>
+</ul>
+<ul>
+<li>验证：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>创建完成后使用如下命令进入pod做进一步配置：</li>
+</ul>
+<ul>
+<li>kubectl exec -it mysql-87b5d7b5c-2l5wk -- /bin/sh</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://help.aliyun.com/zh/ack/serverless-kubernetes/user-guide/deploy-a-stateful-highly-available-mysql-cluster-on-ack-serverless?spm=a2c4g.11186623.0.0.134e4ed3qCLQHN" target="_blank" rel="noopener">https://help.aliyun.com/zh/ack/serverless-kubernetes/user-guide/deploy-a-stateful-highly-available-mysql-cluster-on-ack-serverless?spm=a2c4g.11186623.0.0.134e4ed3qCLQHN</a></li>
+</ul>
+<ul>
+<li><a href="https://blog.csdn.net/lgbingyu00/article/details/139865757" target="_blank" rel="noopener">https://blog.csdn.net/lgbingyu00/article/details/139865757</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Create</p>
+<p>2024-10-30</p>
+<p>接到DB的子工单询问此问题，经过协助测试，确认此方案可行，大家可以参考如下信息:</p>
+<p>SR：20241014319561</p>
+<p>Mysql pod的配置yaml，参考的阿里云文档：</p>
+<p><a href="https://help.aliyun.com/zh/ack/serverless-kubernetes/user-guide/deploy-a-stateful-highly-available-mysql-cluster-on-ack-serverless?spm=a2c4g.11186623.0.0.134e4ed3qCLQHN" target="_blank" rel="noopener">https://help.aliyun.com/zh/ack/serverless-kubernetes/user-guide/deploy-a-stateful-highly-available-mysql-cluster-on-ack-serverless?spm=a2c4g.11186623.0.0.134e4ed3qCLQHN</a></p>
+<p>apiVersion: v1</p>
+<p>kind: Secret</p>
+<p>metadata:</p>
+<p>name: mysql-secret</p>
+<p>namespace: default</p>
+<p>type: Opaque</p>
+<p>data:</p>
+<p>username: cm9vdA==  #base64加密后的信息root</p>
+<p>password: Y29ubmVjdHBhc3M= #base64加密后的信息connectpass</p>
+<p>---</p>
+<p>kind: Service</p>
+<p>name: mysql</p>
+<p>labels:</p>
+<p>app: mysql</p>
+<p>spec:</p>
+<p>ports:</p>
+<ul>
+<li>port: 3306</li>
+</ul>
+<p>selector:</p>
+<p>clusterIP: None</p>
+<p>apiVersion: apps/v1</p>
+<p>kind: Deployment</p>
+<p>matchLabels:</p>
+<p>strategy:</p>
+<p>type: Recreate</p>
+<p>template:</p>
+<p>containers:</p>
+<ul>
+<li>name: mysql</li>
+</ul>
+<p>image: registry.cn-hangzhou.aliyuncs.com/kubeway/hub:mysql-server_8.0.28</p>
+<p>env:</p>
+<ul>
+<li>name: MYSQL_ROOT_PASSWORD</li>
+</ul>
+<p>valueFrom:</p>
+<p>secretKeyRef:</p>
+<p>key: password</p>
+<ul>
+<li>name: MYSQL_DATABASE</li>
+</ul>
+<p>value: test</p>
+<ul>
+<li>containerPort: 3306</li>
+</ul>
+<p>创建完成后使用如下命令进入pod做进一步配置：</p>
+<p>kubectl exec -it mysql-87b5d7b5c-2l5wk -- /bin/sh</p>
+<p>登录mysql服务中，参考文档添加远程登录账户：</p>
+<p><a href="https://blog.csdn.net/lgbingyu00/article/details/139865757" target="_blank" rel="noopener">https://blog.csdn.net/lgbingyu00/article/details/139865757</a></p>
+<p>mysql -uroot -p</p>
+<p>CREATE USER &#39;remote_user&#39;@&#39;%&#39; IDENTIFIED BY &#39;password123&#39;;</p>
+<p>GRANT ALL PRIVILEGES ON *.* TO &#39;remote_user&#39;@&#39;%&#39; WITH GRANT OPTION;</p>
+<p>FLUSH PRIVILEGES;</p>
+<p>后续可以在同网段的VM中使用账户&#39;remote_user密码&#39;password123&#39;连接到此mysql服务</p>
+<p>mysql -uremote_user -p</p>
+<p>同理在同一网络中的数据库迁移服务同样可以连接到pod中的数据库服务进行迁移</p>
+<p>在测试过程中没有添加真实数据，但是新建的database被成功迁移至Azure flexible server中</p>
+<p>具体步骤参考：</p>
+<p>创建目标数据库服务：</p>
+<p>创建迁移服务：</p>
+<p>创建完成后，创建迁移项目，并在项目中添加pod的IP地址和之前在mysql中添加的远程用户和密码：</p>
+<p>验证通过后，添加目标数据库的相关信息：</p>
+<p>配置完成后，等待迁移操作完成后查看测试数据库和表数据是否成功迁移：</p>
+<p>测试数据的输入：</p>
+<p>验证：</p></article>

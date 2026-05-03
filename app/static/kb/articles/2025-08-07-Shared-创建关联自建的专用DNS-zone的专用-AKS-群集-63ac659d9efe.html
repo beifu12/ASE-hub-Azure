@@ -1,0 +1,98 @@
+<article class="kb-article" data-title="[Shared]创建关联自建的专用DNS zone的专用 AKS 群集"><h1>[Shared]创建关联自建的专用DNS zone的专用 AKS 群集</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-08-07 17:18:33</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2025 04 15</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2025 04 15</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2025 04 15</li>
+</ul>
+<ul>
+<li>参考文档:</li>
+</ul>
+<ul>
+<li>具体格式参考如下:</li>
+</ul>
+<ul>
+<li>&#39;private.chinanorth3.cx.prod.service.azk8s.cn,</li>
+</ul>
+<ul>
+<li>privatelink.chinanorth3.cx.prod.service.azk8s.cn,</li>
+</ul>
+<ul>
+<li>[a-zA-Z0-9-]{1,32}.private.chinanorth3.cx.prod.service.azk8s.cn,</li>
+</ul>
+<ul>
+<li>[a-zA-Z0-9-]{1,32}.privatelink.chinanorth3.cx.prod.service.azk8s.cn&#39;</li>
+</ul>
+<ul>
+<li>2. 创建用户分配的托管标识(标黄部分自定义):</li>
+</ul>
+<ul>
+<li>3. 创建完成后,在专用DNS zone中,对上述创建的托管标识分配专用 DNS 区域参与者权限</li>
+</ul>
+<ul>
+<li>结果:</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>目前在Azure portal上创建专用AKS群集时,无法选择专用DNS zone,以下是我咋测试环境中测试的步骤:</li>
+</ul>
+<ul>
+<li>以上仅为关联专用DNS zone的群集的创建步骤,其他的可以自行添加.</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>1.  使用如下命令创建专用DNS zone:</li>
+</ul>
+<ul>
+<li>az network private-dns zone create -g private -n private.chinanorth3.cx.prod.service.azk8s.cn</li>
+</ul>
+<ul>
+<li>az identity create --name UserAssignedIdentity-aksprivate --resource-group private --location chinanorth3</li>
+</ul>
+<ul>
+<li>4. 后续创建群集命令如下:</li>
+</ul>
+<ul>
+<li>az aks create -n aksprivate -g private --enable-private-cluster --private-dns-zone “第一步创建的专用DNS zone资源ID”  --auto-upgrade-channel stable --ssh-access disabled --location chinanorth3 --assign-identity “第二步创建的托管标识资源ID”</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/aks/private-clusters?tabs=default-basic-networking%2Cazure-portal#configure-a-private-dns-zone" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/private-clusters?tabs=default-basic-networking%2Cazure-portal#configure-a-private-dns-zone</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025 04 15</p>
+<p>目前在Azure portal上创建专用AKS群集时,无法选择专用DNS zone,以下是我咋测试环境中测试的步骤:</p>
+<p>参考文档:</p>
+<p><a href="https://docs.azure.cn/zh-cn/aks/private-clusters?tabs=default-basic-networking%2Cazure-portal#configure-a-private-dns-zone" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/aks/private-clusters?tabs=default-basic-networking%2Cazure-portal#configure-a-private-dns-zone</a></p>
+<p>1.  使用如下命令创建专用DNS zone:</p>
+<p>az network private-dns zone create -g private -n private.chinanorth3.cx.prod.service.azk8s.cn</p>
+<p>具体格式参考如下:</p>
+<p>&#39;private.chinanorth3.cx.prod.service.azk8s.cn,</p>
+<p>privatelink.chinanorth3.cx.prod.service.azk8s.cn,</p>
+<p>[a-zA-Z0-9-]{1,32}.private.chinanorth3.cx.prod.service.azk8s.cn,</p>
+<p>[a-zA-Z0-9-]{1,32}.privatelink.chinanorth3.cx.prod.service.azk8s.cn&#39;</p>
+<p>2. 创建用户分配的托管标识(标黄部分自定义):</p>
+<p>az identity create --name UserAssignedIdentity-aksprivate --resource-group private --location chinanorth3</p>
+<p>3. 创建完成后,在专用DNS zone中,对上述创建的托管标识分配专用 DNS 区域参与者权限</p>
+<p>4. 后续创建群集命令如下:</p>
+<p>az aks create -n aksprivate -g private --enable-private-cluster --private-dns-zone “第一步创建的专用DNS zone资源ID”  --auto-upgrade-channel stable --ssh-access disabled --location chinanorth3 --assign-identity “第二步创建的托管标识资源ID”</p>
+<p>结果:</p>
+<p>以上仅为关联专用DNS zone的群集的创建步骤,其他的可以自行添加.</p></article>

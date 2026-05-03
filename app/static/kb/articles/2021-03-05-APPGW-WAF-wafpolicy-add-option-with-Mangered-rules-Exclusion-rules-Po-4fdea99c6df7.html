@@ -1,0 +1,196 @@
+<article class="kb-article" data-title="APPGW WAF|wafpolicy_add_option_with_Mangered_rules_Exclusion_rules_PolicySettings."><h1>APPGW WAF|wafpolicy_add_option_with_Mangered_rules_Exclusion_rules_PolicySettings.</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-03-05 11:45:44</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>最近终于研究透了，为大家补全了WAF Policy 关联APPGW的所有状况，可以用来解决关连WAF Policy 时大部分报错的场景，如有问题可以和我联系进一步更深入的讨论：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>最近终于研究透了，为大家补全了WAF Policy 关联APPGW的所有状况，可以用来解决关连WAF Policy 时大部分报错的场景，如有问题可以和我联系进一步更深入的讨论：</li>
+</ul>
+<ul>
+<li>当用户已有的WAF具备连接排除，自定义的WAF rule，以及自定义的PolicySetting 时，原有的WAF Policy关联不上的，提示前后内容不一致，无法关联的。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>一个新的WAF 可以参阅之前的Share分享，核心就是创建一个waf policy，然后关联即可。</li>
+</ul>
+<ul>
+<li>因此，提供如下的方案，后续大家可以依靠客户已有的配置来选择执行如下的代码：</li>
+</ul>
+<ul>
+<li>也就是WAF 已经有了包括如下的自定义配置：</li>
+</ul>
+<ul>
+<li>PS C:\Users\mkbian&gt; $appgw.WebApplicationFirewallConfiguration</li>
+</ul>
+<ul>
+<li>FirewallMode           : Prevention</li>
+</ul>
+<ul>
+<li>RuleSetType            : OWASP</li>
+</ul>
+<ul>
+<li>RuleSetVersion         : 3.0</li>
+</ul>
+<ul>
+<li>MaxRequestBodySizeInKb : 128</li>
+</ul>
+<ul>
+<li>FileUploadLimitInMb    : 100</li>
+</ul>
+<ul>
+<li>Exclusions             : {Microsoft.Azure.Commands.Network.Models.PSApplicationGatewayFirewallExclusion,</li>
+</ul>
+<ul>
+<li>Microsoft.Azure.Commands.Network.Models.PSApplicationGatewayFirewallExclusion,</li>
+</ul>
+<ul>
+<li>Microsoft.Azure.Commands.Network.Models.PSApplicationGatewayFirewallExclusion}</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;Rules&quot;: [</li>
+</ul>
+<ul>
+<li>920300</li>
+</ul>
+<ul>
+<li>]</li>
+</ul>
+<ul>
+<li>},</li>
+</ul>
+<ul>
+<li>&quot;RuleGroupName&quot;: &quot;REQUEST-942-APPLICATION-ATTACK-SQLI&quot;,</li>
+</ul>
+<ul>
+<li>942200,</li>
+</ul>
+<ul>
+<li>942260,</li>
+</ul>
+<ul>
+<li>942340,</li>
+</ul>
+<ul>
+<li>942370</li>
+</ul>
+<ul>
+<li>&quot;RuleGroupName&quot;: &quot;REQUEST-941-APPLICATION-ATTACK-XSS&quot;,</li>
+</ul>
+<ul>
+<li>941120</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>ExclusionsText         : [</li>
+</ul>
+<ul>
+<li>&quot;MatchVariable&quot;: &quot;RequestArgNames&quot;,</li>
+</ul>
+<ul>
+<li>&quot;SelectorMatchOperator&quot;: &quot;Equals&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Selector&quot;: &quot;auth_code&quot;</li>
+</ul>
+<ul>
+<li>&quot;Selector&quot;: &quot;code&quot;</li>
+</ul>
+<ul>
+<li>&quot;MatchVariable&quot;: &quot;RequestCookieNames&quot;,</li>
+</ul>
+<ul>
+<li>&quot;SelectorMatchOperator&quot;: &quot;Contains&quot;,</li>
+</ul>
+<ul>
+<li>&quot;Selector&quot;: &quot;_session&quot;</li>
+</ul>
+<ul>
+<li>&quot;Selector&quot;: &quot;XSRF-TOKEN&quot;</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>RequestBodyCheck       : False</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>DisabledRuleGroups     : {REQUEST-920-PROTOCOL-ENFORCEMENT, REQUEST-942-APPLICATION-ATTACK-SQLI, REQUEST-941-APPLICATION-ATTACK-XSS}</li>
+</ul>
+<ul>
+<li>&quot;RuleGroupName&quot;: &quot;REQUEST-920-PROTOCOL-ENFORCEMENT&quot;,</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Enabled                : True</li>
+</ul>
+<ul>
+<li>DisabledRuleGroupsText : [</li>
+</ul>
+<ul>
+<li>解决方案如下：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020/08/03</p>
+<p>最近终于研究透了，为大家补全了WAF Policy 关联APPGW的所有状况，可以用来解决关连WAF Policy 时大部分报错的场景，如有问题可以和我联系进一步更深入的讨论：</p>
+<p>一个新的WAF 可以参阅之前的Share分享，核心就是创建一个waf policy，然后关联即可。</p>
+<p>当用户已有的WAF具备连接排除，自定义的WAF rule，以及自定义的PolicySetting 时，原有的WAF Policy关联不上的，提示前后内容不一致，无法关联的。</p>
+<p>因此，提供如下的方案，后续大家可以依靠客户已有的配置来选择执行如下的代码：</p>
+<p>也就是WAF 已经有了包括如下的自定义配置：</p>
+<p>PS C:\Users\mkbian&gt; $appgw.WebApplicationFirewallConfiguration</p>
+<p>Enabled                : True</p>
+<p>FirewallMode           : Prevention</p>
+<p>RuleSetType            : OWASP</p>
+<p>RuleSetVersion         : 3.0</p>
+<p>DisabledRuleGroups     : {REQUEST-920-PROTOCOL-ENFORCEMENT, REQUEST-942-APPLICATION-ATTACK-SQLI, REQUEST-941-APPLICATION-ATTACK-XSS}</p>
+<p>RequestBodyCheck       : False</p>
+<p>MaxRequestBodySizeInKb : 128</p>
+<p>FileUploadLimitInMb    : 100</p>
+<p>Exclusions             : {Microsoft.Azure.Commands.Network.Models.PSApplicationGatewayFirewallExclusion,</p>
+<p>Microsoft.Azure.Commands.Network.Models.PSApplicationGatewayFirewallExclusion,</p>
+<p>Microsoft.Azure.Commands.Network.Models.PSApplicationGatewayFirewallExclusion}</p>
+<p>DisabledRuleGroupsText : [</p>
+<p>{</p>
+<p>&quot;RuleGroupName&quot;: &quot;REQUEST-920-PROTOCOL-ENFORCEMENT&quot;,</p>
+<p>&quot;Rules&quot;: [</p>
+<p>920300</p>
+<p>]</p>
+<p>},</p>
+<p>&quot;RuleGroupName&quot;: &quot;REQUEST-942-APPLICATION-ATTACK-SQLI&quot;,</p>
+<p>942200,</p>
+<p>942260,</p>
+<p>942340,</p>
+<p>942370</p>
+<p>&quot;RuleGroupName&quot;: &quot;REQUEST-941-APPLICATION-ATTACK-XSS&quot;,</p>
+<p>941120</p>
+<p>}</p>
+<p>ExclusionsText         : [</p>
+<p>&quot;MatchVariable&quot;: &quot;RequestArgNames&quot;,</p>
+<p>&quot;SelectorMatchOperator&quot;: &quot;Equals&quot;,</p>
+<p>&quot;Selector&quot;: &quot;auth_code&quot;</p>
+<p>&quot;Selector&quot;: &quot;code&quot;</p>
+<p>&quot;MatchVariable&quot;: &quot;RequestCookieNames&quot;,</p>
+<p>&quot;SelectorMatchOperator&quot;: &quot;Contains&quot;,</p>
+<p>&quot;Selector&quot;: &quot;_session&quot;</p>
+<p>&quot;Selector&quot;: &quot;XSRF-TOKEN&quot;</p>
+<p>解决方案如下：</p>
+<p>==============</p></article>

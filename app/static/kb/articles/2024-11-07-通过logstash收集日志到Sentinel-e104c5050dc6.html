@@ -1,0 +1,243 @@
+<article class="kb-article" data-title="通过logstash收集日志到Sentinel"><h1>通过logstash收集日志到Sentinel</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure Microsoft Sentinel</li>
+<li>Section: Azure Microsoft Sentinel</li>
+<li>最近修改: 2024-11-07 16:31:42</li>
+<li>JD 相关性: Defender/Sentinel/安全</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>71.141.244.242 - kurt [18/May/2011:01:48:10 -0700] &quot;GET /admin HTTP/1.1&quot; 301 566 &quot;-&quot; &quot;Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3&quot;</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>71.141.244.242 - kurt [18/May/2011:01:48:10 -0700] &quot;GET /admin HTTP/1.1&quot; 301 566 &quot;-&quot; &quot;Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3&quot;</li>
+</ul>
+<ul>
+<li>如果不写endpoint报错：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>相关参考文档：</li>
+</ul>
+<ul>
+<li>2，默认安装最新版本8.8。根据官网描述，需要禁用ECS。</li>
+</ul>
+<ul>
+<li>5，需要预先安装对应插件。</li>
+</ul>
+<ul>
+<li>6， 编辑一个文件内容方便测试</li>
+</ul>
+<ul>
+<li>134.39.72.245 - - [18/May/2011:12:40:18 -0700] &quot;GET /favicon.ico HTTP/1.1&quot; 200 1189 &quot;-&quot; &quot;Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; InfoPath.2; .NET4.0C; .NET4.0E)&quot;</li>
+</ul>
+<ul>
+<li>1.1.1.1    ----[111111111] &quot;get 111111&quot;</li>
+</ul>
+<ul>
+<li>2.2.2.2    ----[222222222] &quot;get 222222&quot;</li>
+</ul>
+<ul>
+<li>4.4.4.4    ----[444444444] &quot;get 444444&quot;</li>
+</ul>
+<ul>
+<li>input {</li>
+</ul>
+<ul>
+<li>file {</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>filter {</li>
+</ul>
+<ul>
+<li>output {</li>
+</ul>
+<ul>
+<li>8，执行pipeline 配置文件：</li>
+</ul>
+<ul>
+<li>首次生成表大概需要小半天的时间，后面新的日志几乎会实时传递到表中。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>遇到客户使用Logstash在sentinel未收集到日志的单子，因为文档相关配置内容提及比较少，正好测试了一下供大家以后参考。</li>
+</ul>
+<ul>
+<li>添加如下内容到/etc/yum.repos.d/目录里的repo中，新建一个文件logstash.repo</li>
+</ul>
+<ul>
+<li>[logstash-8.x]</li>
+</ul>
+<ul>
+<li>sudo yum install logstash</li>
+</ul>
+<ul>
+<li>[root@centos8 logstash]# vim /etc/logstash/logstash.yml</li>
+</ul>
+<ul>
+<li>3，启动logstash服务：sudo systemctl start logstash.service</li>
+</ul>
+<ul>
+<li>4，可以看到logstash主要涉及以下两个目录：</li>
+</ul>
+<ul>
+<li>[root@centos8 bin]# /usr/share/logstash/bin/logstash-plugin list ##查看支持的所有插件</li>
+</ul>
+<ul>
+<li>[root@centos8 bin]#/usr/share/logstash/bin/logstash-plugin install logstash-input-file   ##安装input-file插件，当然可以根据需求安装其他input插件</li>
+</ul>
+<ul>
+<li>[root@centos8 bin]#/usr/share/logstash/bin/logstash-plugin install microsoft-logstash-output-azure-loganalytics ##安装output插件</li>
+</ul>
+<ul>
+<li>[root@centos8 logstash]# vim  /tmp/access_log</li>
+</ul>
+<ul>
+<li>7，编写pipeline 配置文件：vim /etc/logstash/conf.d/logstashfile.conf</li>
+</ul>
+<ul>
+<li>microsoft-logstash-output-azure-loganalytics {</li>
+</ul>
+<ul>
+<li>[root@centos8 logstash]# /usr/share/logstash/bin/logstash -f /etc/logstash/conf.d/logstashfile.conf</li>
+</ul>
+<ul>
+<li>可以到/var/log/logstash查看日志文件。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>安装命令：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>name=Elastic repository for 8.x packages</li>
+</ul>
+<ul>
+<li>gpgcheck=1</li>
+</ul>
+<ul>
+<li>enabled=1</li>
+</ul>
+<ul>
+<li>autorefresh=1</li>
+</ul>
+<ul>
+<li>type=rpm-md</li>
+</ul>
+<ul>
+<li>path =&gt; &quot;/tmp/access_log&quot;  ##将此路径文件内容发送到sentinel</li>
+</ul>
+<ul>
+<li>start_position =&gt; &quot;beginning&quot;</li>
+</ul>
+<ul>
+<li>workspace_id =&gt; &quot;4f95cfe5-d8c0-4571-b358-d6ae3b1795f4&quot; # &lt;your workspace id&gt;</li>
+</ul>
+<ul>
+<li>workspace_key =&gt; &quot;JaUKzp41A22QcxxJWrxN5n5zxMqaQ32SKik/yGmj9OqlP9iybKsxSpN6fXyPVu+2qA4xkk4IRojRHhHSK70USDXA==&quot; # &lt;your workspace key&gt;</li>
+</ul>
+<ul>
+<li>custom_log_table_name =&gt; &quot;apachefile&quot;  ##sentinel中自定义表名称</li>
+</ul>
+<ul>
+<li>endpoint =&gt; &quot;ods.opinsights.azure.cn&quot;  ##中国区终结点，如果不写默认是到global进行认证</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>“使用 Logstash 通过 HTTP 数据收集 API（旧版）流式传输日志”：  <a href="https://learn.microsoft.com/zh-cn/azure/sentinel/connect-logstash" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/sentinel/connect-logstash</a></li>
+</ul>
+<ul>
+<li><a href="https://learn.microsoft.com/zh-cn/azure/sentinel/connect-logstash" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/sentinel/connect-logstash</a></li>
+</ul>
+<ul>
+<li><a href="https://github.com/Azure/Azure-Sentinel/tree/master/DataConnectors/microsoft-logstash-output-azure-loganalytics" target="_blank" rel="noopener">https://github.com/Azure/Azure-Sentinel/tree/master/DataConnectors/microsoft-logstash-output-azure-loganalytics</a></li>
+</ul>
+<ul>
+<li><a href="https://www.elastic.co/guide/en/logstash/current/installing-logstash.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/logstash/current/installing-logstash.html</a></li>
+</ul>
+<ul>
+<li><a href="https://segmentfault.com/a/1190000015242897" target="_blank" rel="noopener">https://segmentfault.com/a/1190000015242897</a></li>
+</ul>
+<ul>
+<li><a href="https://www.elastic.co/guide/en/logstash/current/config-examples.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/logstash/current/config-examples.html</a></li>
+</ul>
+<ul>
+<li>1，安装logstash： <a href="https://www.elastic.co/guide/en/logstash/current/installing-logstash.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/logstash/current/installing-logstash.html</a></li>
+</ul>
+<ul>
+<li>sudo rpm --import <a href="https://artifacts.elastic.co/GPG-KEY-elasticsearch" target="_blank" rel="noopener">https://artifacts.elastic.co/GPG-KEY-elasticsearch</a></li>
+</ul>
+<ul>
+<li>baseurl=<a href="https://artifacts.elastic.co/packages/8.x/yum" target="_blank" rel="noopener">https://artifacts.elastic.co/packages/8.x/yum</a></li>
+</ul>
+<ul>
+<li>gpgkey=<a href="https://artifacts.elastic.co/GPG-KEY-elasticsearch" target="_blank" rel="noopener">https://artifacts.elastic.co/GPG-KEY-elasticsearch</a></li>
+</ul>
+<ul>
+<li>98.83.179.51 - - [18/May/2011:19:35:08 -0700] &quot;GET /css/main.css HTTP/1.1&quot; 200 1837 &quot;<a href="http://www.safesand.com/information.htm&quot;" target="_blank" rel="noopener">http://www.safesand.com/information.htm&quot;</a> &quot;Mozilla/5.0 (Windows NT 6.0; WOW64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1&quot;</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2023-6-26</p>
+<p>遇到客户使用Logstash在sentinel未收集到日志的单子，因为文档相关配置内容提及比较少，正好测试了一下供大家以后参考。</p>
+<p>“使用 Logstash 通过 HTTP 数据收集 API（旧版）流式传输日志”：  <a href="https://learn.microsoft.com/zh-cn/azure/sentinel/connect-logstash" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/sentinel/connect-logstash</a></p>
+<p>相关参考文档：</p>
+<p><a href="https://learn.microsoft.com/zh-cn/azure/sentinel/connect-logstash" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/azure/sentinel/connect-logstash</a></p>
+<p><a href="https://github.com/Azure/Azure-Sentinel/tree/master/DataConnectors/microsoft-logstash-output-azure-loganalytics" target="_blank" rel="noopener">https://github.com/Azure/Azure-Sentinel/tree/master/DataConnectors/microsoft-logstash-output-azure-loganalytics</a></p>
+<p><a href="https://www.elastic.co/guide/en/logstash/current/installing-logstash.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/logstash/current/installing-logstash.html</a></p>
+<p><a href="https://segmentfault.com/a/1190000015242897" target="_blank" rel="noopener">https://segmentfault.com/a/1190000015242897</a></p>
+<p><a href="https://www.elastic.co/guide/en/logstash/current/config-examples.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/logstash/current/config-examples.html</a></p>
+<p>1，安装logstash： <a href="https://www.elastic.co/guide/en/logstash/current/installing-logstash.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/logstash/current/installing-logstash.html</a></p>
+<p>sudo rpm --import <a href="https://artifacts.elastic.co/GPG-KEY-elasticsearch" target="_blank" rel="noopener">https://artifacts.elastic.co/GPG-KEY-elasticsearch</a></p>
+<p>添加如下内容到/etc/yum.repos.d/目录里的repo中，新建一个文件logstash.repo</p>
+<p>[logstash-8.x]</p>
+<p>name=Elastic repository for 8.x packages</p>
+<p>baseurl=<a href="https://artifacts.elastic.co/packages/8.x/yum" target="_blank" rel="noopener">https://artifacts.elastic.co/packages/8.x/yum</a></p>
+<p>gpgcheck=1</p>
+<p>gpgkey=<a href="https://artifacts.elastic.co/GPG-KEY-elasticsearch" target="_blank" rel="noopener">https://artifacts.elastic.co/GPG-KEY-elasticsearch</a></p>
+<p>enabled=1</p>
+<p>autorefresh=1</p>
+<p>type=rpm-md</p>
+<p>安装命令：</p>
+<p>sudo yum install logstash</p>
+<p>2，默认安装最新版本8.8。根据官网描述，需要禁用ECS。</p>
+<p>[root@centos8 logstash]# vim /etc/logstash/logstash.yml</p>
+<p>3，启动logstash服务：sudo systemctl start logstash.service</p>
+<p>4，可以看到logstash主要涉及以下两个目录：</p>
+<p>5，需要预先安装对应插件。</p>
+<p>[root@centos8 bin]# /usr/share/logstash/bin/logstash-plugin list ##查看支持的所有插件</p>
+<p>[root@centos8 bin]#/usr/share/logstash/bin/logstash-plugin install logstash-input-file   ##安装input-file插件，当然可以根据需求安装其他input插件</p>
+<p>[root@centos8 bin]#/usr/share/logstash/bin/logstash-plugin install microsoft-logstash-output-azure-loganalytics ##安装output插件</p>
+<p>6， 编辑一个文件内容方便测试</p>
+<p>[root@centos8 logstash]# vim  /tmp/access_log</p>
+<p>71.141.244.242 - kurt [18/May/2011:01:48:10 -0700] &quot;GET /admin HTTP/1.1&quot; 301 566 &quot;-&quot; &quot;Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3&quot;</p>
+<p>134.39.72.245 - - [18/May/2011:12:40:18 -0700] &quot;GET /favicon.ico HTTP/1.1&quot; 200 1189 &quot;-&quot; &quot;Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; InfoPath.2; .NET4.0C; .NET4.0E)&quot;</p>
+<p>98.83.179.51 - - [18/May/2011:19:35:08 -0700] &quot;GET /css/main.css HTTP/1.1&quot; 200 1837 &quot;<a href="http://www.safesand.com/information.htm&quot;" target="_blank" rel="noopener">http://www.safesand.com/information.htm&quot;</a> &quot;Mozilla/5.0 (Windows NT 6.0; WOW64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1&quot;</p>
+<p>1.1.1.1    ----[111111111] &quot;get 111111&quot;</p>
+<p>2.2.2.2    ----[222222222] &quot;get 222222&quot;</p>
+<p>4.4.4.4    ----[444444444] &quot;get 444444&quot;</p>
+<p>7，编写pipeline 配置文件：vim /etc/logstash/conf.d/logstashfile.conf</p>
+<p>input {</p>
+<p>file {</p>
+<p>path =&gt; &quot;/tmp/access_log&quot;  ##将此路径文件内容发送到sentinel</p>
+<p>start_position =&gt; &quot;beginning&quot;</p>
+<p>}</p>
+<p>filter {</p>
+<p>output {</p>
+<p>microsoft-logstash-output-azure-loganalytics {</p>
+<p>workspace_id =&gt; &quot;4f95cfe5-d8c0-4571-b358-d6ae3b1795f4&quot; # &lt;your workspace id&gt;</p>
+<p>workspace_key =&gt; &quot;JaUKzp41A22QcxxJWrxN5n5zxMqaQ32SKik/yGmj9OqlP9iybKsxSpN6fXyPVu+2qA4xkk4IRojRHhHSK70USDXA==&quot; # &lt;your workspace key&gt;</p>
+<p>custom_log_table_name =&gt; &quot;apachefile&quot;  ##sentinel中自定义表名称</p>
+<p>endpoint =&gt; &quot;ods.opinsights.azure.cn&quot;  ##中国区终结点，如果不写默认是到global进行认证</p>
+<p>8，执行pipeline 配置文件：</p>
+<p>[root@centos8 logstash]# /usr/share/logstash/bin/logstash -f /etc/logstash/conf.d/logstashfile.conf</p>
+<p>首次生成表大概需要小半天的时间，后面新的日志几乎会实时传递到表中。</p>
+<p>可以到/var/log/logstash查看日志文件。</p>
+<p>如果不写endpoint报错：</p></article>

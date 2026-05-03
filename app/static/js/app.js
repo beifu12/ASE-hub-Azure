@@ -448,3 +448,34 @@ document.addEventListener('keydown', e => {
         doTranslate();
     }
 });
+
+/* ═══════════ GLOBAL SEARCH ═══════════ */
+
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('global-search');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const q = searchInput.value.trim();
+            if (!q) return;
+            // Navigate to KB search with the query
+            navigateTo('kb');
+            setTimeout(() => {
+                const kbInput = document.getElementById('kb-query');
+                if (kbInput) {
+                    kbInput.value = q;
+                    searchKB();
+                }
+            }, 300);
+        }
+    });
+
+    // Cmd+K focus search
+    document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            e.preventDefault();
+            searchInput.focus();
+        }
+    });
+});

@@ -1,0 +1,204 @@
+<article class="kb-article" data-title="通过官方托管 Image 来创建托管 VM"><h1>通过官方托管 Image 来创建托管 VM</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-08-16 16:06:48</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>脚本实现的需求：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>脚本实现的需求：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>a.使用平台镜像（Windows Server 2016 zh-cn）部署高性能托管磁盘虚拟机</li>
+</ul>
+<ul>
+<li>c.添加三块已经创建好的数据磁盘</li>
+</ul>
+<ul>
+<li>d.添加已创建好的网络接口（该网络接口已经绑定了NSG，固定公网IP，固定内网IP）</li>
+</ul>
+<ul>
+<li>b.需要将虚拟机部署在制定的可用性集</li>
+</ul>
+<ul>
+<li>$resourcegroup = &quot;hlmrgt1&quot;</li>
+</ul>
+<ul>
+<li>$location = &quot;Chinanorth2&quot;</li>
+</ul>
+<ul>
+<li>$vmsize=&quot;Standard_DS2_v2&quot;</li>
+</ul>
+<ul>
+<li>$cred=Get-Credential</li>
+</ul>
+<ul>
+<li>$osdiskcache=&#39;ReadWrite&#39;</li>
+</ul>
+<ul>
+<li>#/subscriptions/0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9/resourceGroups/hlmrgt1/providers/Microsoft.Network/networkInterfaces/hlmnict1</li>
+</ul>
+<ul>
+<li>$vmname=&#39;hlmvmt1&#39;</li>
+</ul>
+<ul>
+<li>#$vnetname=&#39;hlmvnett1&#39;</li>
+</ul>
+<ul>
+<li>#$publicip=&#39;hlmpublict1&#39;</li>
+</ul>
+<ul>
+<li>$nicname=&#39;hlmnict1&#39;</li>
+</ul>
+<ul>
+<li>$availabilitysetname=&#39;hlmast1&#39;</li>
+</ul>
+<ul>
+<li>#$storageType=&#39;Standard_LRS&#39;</li>
+</ul>
+<ul>
+<li>$storageType=&#39;Premium_LRS&#39;</li>
+</ul>
+<ul>
+<li>#/subscriptions/0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9/resourceGroups/hlmrgt1/providers/Microsoft.Compute/disks/hlmmadisk1</li>
+</ul>
+<ul>
+<li>$dataDiskName1=&#39;hlmmadisk1&#39;</li>
+</ul>
+<ul>
+<li>$dataDiskName2=&#39;hlmmadisk2&#39;</li>
+</ul>
+<ul>
+<li>$dataDiskName3=&#39;hlmmadisk3&#39;</li>
+</ul>
+<ul>
+<li>$OSDiskName=&#39;hlmmaosdisk&#39;</li>
+</ul>
+<ul>
+<li>$dataDisk1=Get-AzureRmDisk -DiskName $dataDiskName1 -ResourceGroupName $resourcegroup</li>
+</ul>
+<ul>
+<li>$dataDisk2=Get-AzureRmDisk -DiskName $dataDiskName2 -ResourceGroupName $resourcegroup</li>
+</ul>
+<ul>
+<li>$dataDisk3=Get-AzureRmDisk -DiskName $dataDiskName3 -ResourceGroupName $resourcegroup</li>
+</ul>
+<ul>
+<li>#$vnet=Get-AzureRmVirtualNetwork -Name $vnetname -ResourceGroupName $resourcegroup</li>
+</ul>
+<ul>
+<li>#$pubip=Get-AzureRmPublicIpAddress -ResourceGroupName $resourcegroup -Name $publicip</li>
+</ul>
+<ul>
+<li>$nic=Get-AzureRmNetworkInterface -ResourceGroupName $resourcegroup -Name $nicname</li>
+</ul>
+<ul>
+<li>$availabilityset=Get-AzureRmAvailabilitySet -ResourceGroupName $resourcegroup -Name $availabilitysetname</li>
+</ul>
+<ul>
+<li>$vm=New-AzureRmVMConfig -VMName $vmname -VMSize $vmsize -AvailabilitySetID $availabilityset.Id</li>
+</ul>
+<ul>
+<li>$vm=Set-AzureRmVMOSDisk -VM $vm -Name $OSDiskName -StorageAccountType $storageType -DiskSizeInGB 128 -CreateOption FromImage -Caching $osdiskcache</li>
+</ul>
+<ul>
+<li>$vm=Add-AzureRmVMNetworkInterface -VM $vm -Id $nic.Id</li>
+</ul>
+<ul>
+<li>$vm=Add-AzureRmVMDataDisk -VM $vm -Name $dataDiskName1 -CreateOption Attach -ManagedDiskId $dataDisk1.Id -Lun 0</li>
+</ul>
+<ul>
+<li>$vm=Add-AzureRmVMDataDisk -VM $vm -Name $dataDiskName2 -CreateOption Attach -ManagedDiskId $dataDisk2.Id -Lun 1</li>
+</ul>
+<ul>
+<li>$vm=Add-AzureRmVMDataDisk -VM $vm -Name $dataDiskName3 -CreateOption Attach -ManagedDiskId $dataDisk3.Id -Lun 2</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>b.虚拟机默认不开启Boot诊断</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>脚本实现的需求：</li>
+</ul>
+<ul>
+<li>经测试，下述脚本在Azure PS6.4/PS6.5/PS6.8上执行都没问题，但在PS6.7上执行时，会提示报错信息“Object reference not set to an instance of an object”，经排查在Azure Powershell 6.7的版本中，使用Powershell命令“Add-AzureRmVMDataDisk”添加数据磁盘时，需要指定“-StorageAccountType Premium_LRS”参数才可以成功执行。</li>
+</ul>
+<ul>
+<li>New-AzureRmVM -VM $vm -ResourceGroupName $resourcegroup -Location $location</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>$vm=Set-AzureRmVMSourceImage -VM $vm -PublisherName &quot;MicrosoftWindowsServer&quot; -Offer &quot;WindowsServer&quot; -Skus &quot;2016-Datacenter-zhcn&quot; -Version &quot;latest&quot;</li>
+</ul>
+<ul>
+<li>#-VhdUri $OSDiskUri</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>#$vm=Set-AzureRmVMOperatingSystem -VM $vm -Windows -ComputerName $vmname -Credential $cred -ProvisionVMAgent $false -EnableAutoUpdate $false</li>
+</ul>
+<ul>
+<li>$vm=Set-AzureRmVMOperatingSystem -VM $vm -Windows -ComputerName $vmname -Credential $cred -ProvisionVMAgent -EnableAutoUpdate</li>
+</ul>
+<ul>
+<li>$vm=Set-AzureRmVMBootDiagnostics -VM $vm -Disable</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>#$OSDiskUri=&#39;<a href="https://Mydisk.blob.core.windows.net/disks/MyOSDisk.vhd&#39;" target="_blank" rel="noopener">https://Mydisk.blob.core.windows.net/disks/MyOSDisk.vhd&#39;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>脚本实现的需求：</p>
+<p>a.使用平台镜像（Windows Server 2016 zh-cn）部署高性能托管磁盘虚拟机</p>
+<p>b.虚拟机默认不开启Boot诊断</p>
+<p>c.添加三块已经创建好的数据磁盘</p>
+<p>d.添加已创建好的网络接口（该网络接口已经绑定了NSG，固定公网IP，固定内网IP）</p>
+<p>b.需要将虚拟机部署在制定的可用性集</p>
+<p>经测试，下述脚本在Azure PS6.4/PS6.5/PS6.8上执行都没问题，但在PS6.7上执行时，会提示报错信息“Object reference not set to an instance of an object”，经排查在Azure Powershell 6.7的版本中，使用Powershell命令“Add-AzureRmVMDataDisk”添加数据磁盘时，需要指定“-StorageAccountType Premium_LRS”参数才可以成功执行。</p>
+<p>$resourcegroup = &quot;hlmrgt1&quot;</p>
+<p>$location = &quot;Chinanorth2&quot;</p>
+<p>$vmsize=&quot;Standard_DS2_v2&quot;</p>
+<p>$cred=Get-Credential</p>
+<p>$osdiskcache=&#39;ReadWrite&#39;</p>
+<p>#/subscriptions/0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9/resourceGroups/hlmrgt1/providers/Microsoft.Network/networkInterfaces/hlmnict1</p>
+<p>$vmname=&#39;hlmvmt1&#39;</p>
+<p>#$vnetname=&#39;hlmvnett1&#39;</p>
+<p>#$publicip=&#39;hlmpublict1&#39;</p>
+<p>$nicname=&#39;hlmnict1&#39;</p>
+<p>$availabilitysetname=&#39;hlmast1&#39;</p>
+<p>#$storageType=&#39;Standard_LRS&#39;</p>
+<p>$storageType=&#39;Premium_LRS&#39;</p>
+<p>#/subscriptions/0b4b20c5-29b3-4dd9-bfdc-40b75f1dc4c9/resourceGroups/hlmrgt1/providers/Microsoft.Compute/disks/hlmmadisk1</p>
+<p>$dataDiskName1=&#39;hlmmadisk1&#39;</p>
+<p>$dataDiskName2=&#39;hlmmadisk2&#39;</p>
+<p>$dataDiskName3=&#39;hlmmadisk3&#39;</p>
+<p>$OSDiskName=&#39;hlmmaosdisk&#39;</p>
+<p>#$OSDiskUri=&#39;<a href="https://Mydisk.blob.core.windows.net/disks/MyOSDisk.vhd&#39;" target="_blank" rel="noopener">https://Mydisk.blob.core.windows.net/disks/MyOSDisk.vhd&#39;</a></p>
+<p>$dataDisk1=Get-AzureRmDisk -DiskName $dataDiskName1 -ResourceGroupName $resourcegroup</p>
+<p>$dataDisk2=Get-AzureRmDisk -DiskName $dataDiskName2 -ResourceGroupName $resourcegroup</p>
+<p>$dataDisk3=Get-AzureRmDisk -DiskName $dataDiskName3 -ResourceGroupName $resourcegroup</p>
+<p>#$vnet=Get-AzureRmVirtualNetwork -Name $vnetname -ResourceGroupName $resourcegroup</p>
+<p>#$pubip=Get-AzureRmPublicIpAddress -ResourceGroupName $resourcegroup -Name $publicip</p>
+<p>$nic=Get-AzureRmNetworkInterface -ResourceGroupName $resourcegroup -Name $nicname</p>
+<p>$availabilityset=Get-AzureRmAvailabilitySet -ResourceGroupName $resourcegroup -Name $availabilitysetname</p>
+<p>$vm=New-AzureRmVMConfig -VMName $vmname -VMSize $vmsize -AvailabilitySetID $availabilityset.Id</p>
+<p>$vm=Set-AzureRmVMSourceImage -VM $vm -PublisherName &quot;MicrosoftWindowsServer&quot; -Offer &quot;WindowsServer&quot; -Skus &quot;2016-Datacenter-zhcn&quot; -Version &quot;latest&quot;</p>
+<p>$vm=Set-AzureRmVMOSDisk -VM $vm -Name $OSDiskName -StorageAccountType $storageType -DiskSizeInGB 128 -CreateOption FromImage -Caching $osdiskcache</p>
+<p>#-VhdUri $OSDiskUri</p>
+<p>#$vm=Set-AzureRmVMOperatingSystem -VM $vm -Windows -ComputerName $vmname -Credential $cred -ProvisionVMAgent $false -EnableAutoUpdate $false</p>
+<p>$vm=Set-AzureRmVMOperatingSystem -VM $vm -Windows -ComputerName $vmname -Credential $cred -ProvisionVMAgent -EnableAutoUpdate</p>
+<p>$vm=Set-AzureRmVMBootDiagnostics -VM $vm -Disable</p>
+<p>$vm=Add-AzureRmVMNetworkInterface -VM $vm -Id $nic.Id</p>
+<p>$vm=Add-AzureRmVMDataDisk -VM $vm -Name $dataDiskName1 -CreateOption Attach -ManagedDiskId $dataDisk1.Id -Lun 0</p>
+<p>$vm=Add-AzureRmVMDataDisk -VM $vm -Name $dataDiskName2 -CreateOption Attach -ManagedDiskId $dataDisk2.Id -Lun 1</p>
+<p>$vm=Add-AzureRmVMDataDisk -VM $vm -Name $dataDiskName3 -CreateOption Attach -ManagedDiskId $dataDisk3.Id -Lun 2</p>
+<p>New-AzureRmVM -VM $vm -ResourceGroupName $resourcegroup -Location $location</p></article>

@@ -1,0 +1,46 @@
+<article class="kb-article" data-title="【Share】Sentinel 创建Automation Rules选择Run Playbook报错的问题原因分享"><h1>【Share】Sentinel 创建Automation Rules选择Run Playbook报错的问题原因分享</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: logic app</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-31 18:18:46</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错细节：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错细节：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Caller丢失，Caller一般为用户为托管标识等，本次由用户发起的创建，一般是用户权限问题。</li>
+</ul>
+<ul>
+<li>问题原因：最终定位到该问题为旧的、退役的经典服务管理员导致权限有问题，和用户沟通，之前创建其他资源未遇到，后续大家遇到Caller Missing问题请留意客户订阅权限。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题详情：Sentinel 创建Automation Rules选择Run Playbook报错，报错无详细信息，需要到订阅的活动日志查询</li>
+</ul>
+<ul>
+<li>Caller is missing required playbook triggering permissions on playbook resource &#39;/subscriptions/b2a569f0-d364-41ee-b4d3-b786a7f90aa0/resourceGroups/Logicalis_China/providers/Microsoft.Logic/workflows/Sentinel_ITHUB&#39;, or Microsoft Sentinel is missing required permissions to verify the caller has permissions</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025-7-31</p>
+<p>问题详情：Sentinel 创建Automation Rules选择Run Playbook报错，报错无详细信息，需要到订阅的活动日志查询</p>
+<p>报错细节：</p>
+<p>Caller丢失，Caller一般为用户为托管标识等，本次由用户发起的创建，一般是用户权限问题。</p>
+<p>Caller is missing required playbook triggering permissions on playbook resource &#39;/subscriptions/b2a569f0-d364-41ee-b4d3-b786a7f90aa0/resourceGroups/Logicalis_China/providers/Microsoft.Logic/workflows/Sentinel_ITHUB&#39;, or Microsoft Sentinel is missing required permissions to verify the caller has permissions</p>
+<p>问题原因：最终定位到该问题为旧的、退役的经典服务管理员导致权限有问题，和用户沟通，之前创建其他资源未遇到，后续大家遇到Caller Missing问题请留意客户订阅权限。</p></article>

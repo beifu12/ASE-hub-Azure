@@ -1,0 +1,125 @@
+<article class="kb-article" data-title="【Share】Ubuntu通过串行控制台进入救援模式需要root密码"><h1>【Share】Ubuntu通过串行控制台进入救援模式需要root密码</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-02-24 16:27:52</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户Linux VM用备份数据还原之后无法启动，进入emergency mode，有些机器需要输入root账号的密码才能在serial console里进系统，但是有些就不需要输入密码，可以直接serial console里进系统。想知道如何修改这个设置。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户Linux VM用备份数据还原之后无法启动，进入emergency mode，有些机器需要输入root账号的密码才能在serial console里进系统，但是有些就不需要输入密码，可以直接serial console里进系统。想知道如何修改这个设置。</li>
+</ul>
+<ul>
+<li>1．默认创建的VM，是没有root密码的，相当于root账户是无法登录的。</li>
+</ul>
+<ul>
+<li>对于由于需要root密码，无法进入维护模式的VM。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zhanglihong</li>
+</ul>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>Zhangwenxin</li>
+</ul>
+<ul>
+<li>##问题描述：</li>
+</ul>
+<ul>
+<li>了解到客户使用的是Ubuntu系统。</li>
+</ul>
+<ul>
+<li>去挂载一个不存在的disk，是其进入emergency mode，这时不需要输入root密码。</li>
+</ul>
+<ul>
+<li>参考截图：</li>
+</ul>
+<ul>
+<li>2．当设置了root密码后，再次是其进入emergency mode，此时，就需要输入root密码了。</li>
+</ul>
+<ul>
+<li>3. 您可以使用</li>
+</ul>
+<ul>
+<li>如果显示root P，说明是有密码的。</li>
+</ul>
+<ul>
+<li>如果显示root L, 说明没有密码。密码被锁定 （Locked)</li>
+</ul>
+<ul>
+<li>1．将该OS磁盘创建快照，并创建新的磁盘。</li>
+</ul>
+<ul>
+<li>3．备份/etc/shadow文件，以便后续可以恢复该文件的原有配置。</li>
+</ul>
+<ul>
+<li>4．修改该磁盘下的/etc/shadow的root账户条目，将密码哈希的部分改为*，并保存。</li>
+</ul>
+<ul>
+<li>5．从帮助恢复的VM上卸载磁盘。</li>
+</ul>
+<ul>
+<li>6．将该磁盘和原有VM交换OS磁盘。</li>
+</ul>
+<ul>
+<li>7．启动VM，看下是否可以进入不输入root密码进入维护模式。</li>
+</ul>
+<ul>
+<li>温馨提示：完成操作后，如没有需要的话，请注意清理此过程中创建的不需要的资源。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>查看账户的密码状态信息。</li>
+</ul>
+<ul>
+<li>可以尝试下以下步骤：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>##解决方案：</li>
+</ul>
+<ul>
+<li>2．将新的磁盘附加到其他帮助修复的VM上，然后mount下磁盘。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026/2/24</p>
+<p>zhanglihong</p>
+<p>Reviewer</p>
+<p>Zhangwenxin</p>
+<p>##问题描述：</p>
+<p>客户Linux VM用备份数据还原之后无法启动，进入emergency mode，有些机器需要输入root账号的密码才能在serial console里进系统，但是有些就不需要输入密码，可以直接serial console里进系统。想知道如何修改这个设置。</p>
+<p>##解决方案：</p>
+<p>了解到客户使用的是Ubuntu系统。</p>
+<p>1．默认创建的VM，是没有root密码的，相当于root账户是无法登录的。</p>
+<p>去挂载一个不存在的disk，是其进入emergency mode，这时不需要输入root密码。</p>
+<p>参考截图：</p>
+<p>2．当设置了root密码后，再次是其进入emergency mode，此时，就需要输入root密码了。</p>
+<p>3. 您可以使用</p>
+<p>查看账户的密码状态信息。</p>
+<p>如果显示root P，说明是有密码的。</p>
+<p>如果显示root L, 说明没有密码。密码被锁定 （Locked)</p>
+<p>对于由于需要root密码，无法进入维护模式的VM。</p>
+<p>可以尝试下以下步骤：</p>
+<p>1．将该OS磁盘创建快照，并创建新的磁盘。</p>
+<p>2．将新的磁盘附加到其他帮助修复的VM上，然后mount下磁盘。</p>
+<p>3．备份/etc/shadow文件，以便后续可以恢复该文件的原有配置。</p>
+<p>4．修改该磁盘下的/etc/shadow的root账户条目，将密码哈希的部分改为*，并保存。</p>
+<p>5．从帮助恢复的VM上卸载磁盘。</p>
+<p>6．将该磁盘和原有VM交换OS磁盘。</p>
+<p>7．启动VM，看下是否可以进入不输入root密码进入维护模式。</p>
+<p>温馨提示：完成操作后，如没有需要的话，请注意清理此过程中创建的不需要的资源。</p></article>

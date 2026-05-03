@@ -1,0 +1,87 @@
+<article class="kb-article" data-title="[Share]Azure VM使用用户托管标识访问blob存储"><h1>[Share]Azure VM使用用户托管标识访问blob存储</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-06-26 18:13:27</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>case：20250620359236</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>case：20250620359236</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>case：20250620359236</li>
+</ul>
+<ul>
+<li>问题：客户使用用户托管标识让虚拟机可以在不登陆时与blob交互</li>
+</ul>
+<ul>
+<li>解决方式：</li>
+</ul>
+<ul>
+<li>测试过程如下：</li>
+</ul>
+<ul>
+<li>创建用户分配托管标识</li>
+</ul>
+<ul>
+<li>为虚拟机分配该托管标识</li>
+</ul>
+<ul>
+<li>在存储账户的访问控制中为托管标识分配“存储Blob数据参与者”角色</li>
+</ul>
+<ul>
+<li>登录虚拟机后进行AzCopy测试。</li>
+</ul>
+<ul>
+<li>#设置AzCopy环境变量，设置分配的用户分配托管标识的客户端ID</li>
+</ul>
+<ul>
+<li>#使用AzCopy来列出存储账户的容器数据。</li>
+</ul>
+<ul>
+<li>执行结果如下：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>使用AzCopy实现，在不进行AzCopy login的情况下访问容器中内容。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>export AZCOPY_AUTO_LOGIN_TYPE=MSI</li>
+</ul>
+<ul>
+<li>export AZCOPY_MSI_CLIENT_ID=&quot;19aa7512-456f-4ca5-8383-948f378149bb&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>./azcopy list <a href="https://cdndiag.blob.core.chinacloudapi.cn/vhd" target="_blank" rel="noopener">https://cdndiag.blob.core.chinacloudapi.cn/vhd</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/06/26</p>
+<p>case：20250620359236</p>
+<p>问题：客户使用用户托管标识让虚拟机可以在不登陆时与blob交互</p>
+<p>解决方式：</p>
+<p>使用AzCopy实现，在不进行AzCopy login的情况下访问容器中内容。</p>
+<p>测试过程如下：</p>
+<p>创建用户分配托管标识</p>
+<p>为虚拟机分配该托管标识</p>
+<p>在存储账户的访问控制中为托管标识分配“存储Blob数据参与者”角色</p>
+<p>登录虚拟机后进行AzCopy测试。</p>
+<p>#设置AzCopy环境变量，设置分配的用户分配托管标识的客户端ID</p>
+<p>export AZCOPY_AUTO_LOGIN_TYPE=MSI</p>
+<p>export AZCOPY_MSI_CLIENT_ID=&quot;19aa7512-456f-4ca5-8383-948f378149bb&quot;</p>
+<p>#使用AzCopy来列出存储账户的容器数据。</p>
+<p>./azcopy list <a href="https://cdndiag.blob.core.chinacloudapi.cn/vhd" target="_blank" rel="noopener">https://cdndiag.blob.core.chinacloudapi.cn/vhd</a></p>
+<p>执行结果如下：</p></article>

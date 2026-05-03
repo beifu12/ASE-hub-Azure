@@ -1,0 +1,64 @@
+<article class="kb-article" data-title="配置htts的泛域名证书"><h1>配置htts的泛域名证书</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-10-16 13:41:02</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>感谢您配合我们远程。远程时看到该证书已经绑定3个域名并且3个域名使用正常，并且证书在明年8月份才过期，因此证书看起来没有问题。目前，无论在域名管理界面启用HTTPS还是在证书管理界面绑定域名都出现未知错误，前端无法完成操作。我已经给CDN后线提交请求，尽快协助您完成配置。如果有任何进展，我将及时向您反馈。谢谢。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>感谢您配合我们远程。远程时看到该证书已经绑定3个域名并且3个域名使用正常，并且证书在明年8月份才过期，因此证书看起来没有问题。目前，无论在域名管理界面启用HTTPS还是在证书管理界面绑定域名都出现未知错误，前端无法完成操作。我已经给CDN后线提交请求，尽快协助您完成配置。如果有任何进展，我将及时向您反馈。谢谢。</li>
+</ul>
+<ul>
+<li>若您申请的CDN证书匹配的网站地址属于泛域名，如类似*.abc.com的证书，只能支持通配符当前级别的域名，如a.abc.com、b.abc.com或abc.com的域名，目前还无法支持三级域名（如x.a.abc.com），这个限制是证书颁发机构与浏览器之间的限制。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>SR_2019092754074_[S500]终结点加HTTPS出现未知错误</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>解决办法：若您需要使用三级域名，那么就需要使用对应的二级域名的泛域名，如*.cdn.abc.com，就可以支持形如x.cdn.abc.com、y.cdn.abc.com。</li>
+</ul>
+<ul>
+<li>以上规则应用到以下三个域名</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>经过与CDN团队确认，启用HTTPS失败是由于证书不匹配导致。CDN默认的证书匹配规则如下：</li>
+</ul>
+<ul>
+<li>dev.lite-crm.digitalvolvo.com和sit.lite-crm.digitalvolvo.com这两个域名应该使用颁发给*.lite-crm.digitalvolvo.com的证书，dev.portal.digitalvolvo.com应该使用颁发给*.portal.digitalvolvo.com的证书。而不能统一使用颁发给 *.digitalvolvo.com 的证书。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2019092754074_[S500]终结点加HTTPS出现未知错误</p>
+<p>问题描述：</p>
+<p>==========</p>
+<p>感谢您配合我们远程。远程时看到该证书已经绑定3个域名并且3个域名使用正常，并且证书在明年8月份才过期，因此证书看起来没有问题。目前，无论在域名管理界面启用HTTPS还是在证书管理界面绑定域名都出现未知错误，前端无法完成操作。我已经给CDN后线提交请求，尽快协助您完成配置。如果有任何进展，我将及时向您反馈。谢谢。</p>
+<p>解决方案：</p>
+<p>经过与CDN团队确认，启用HTTPS失败是由于证书不匹配导致。CDN默认的证书匹配规则如下：</p>
+<p>若您申请的CDN证书匹配的网站地址属于泛域名，如类似*.abc.com的证书，只能支持通配符当前级别的域名，如a.abc.com、b.abc.com或abc.com的域名，目前还无法支持三级域名（如x.a.abc.com），这个限制是证书颁发机构与浏览器之间的限制。</p>
+<p>解决办法：若您需要使用三级域名，那么就需要使用对应的二级域名的泛域名，如*.cdn.abc.com，就可以支持形如x.cdn.abc.com、y.cdn.abc.com。</p>
+<p>以上规则应用到以下三个域名</p>
+<p>dev.lite-crm.digitalvolvo.com和sit.lite-crm.digitalvolvo.com这两个域名应该使用颁发给*.lite-crm.digitalvolvo.com的证书，dev.portal.digitalvolvo.com应该使用颁发给*.portal.digitalvolvo.com的证书。而不能统一使用颁发给 *.digitalvolvo.com 的证书。</p></article>

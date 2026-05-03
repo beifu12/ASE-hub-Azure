@@ -1,0 +1,100 @@
+<article class="kb-article" data-title="[Share]WAF Policy Custom Rule requestUri为中文"><h1>[Share]WAF Policy Custom Rule requestUri为中文</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-03-10 15:14:35</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题描述：用户站点中特定URL会遭遇403错误。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题描述：用户站点中特定URL会遭遇403错误。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2026.3.10</li>
+</ul>
+<ul>
+<li>Tian Tian</li>
+</ul>
+<ul>
+<li>关联工单： 20260305397830</li>
+</ul>
+<ul>
+<li>可以配置custom ruel放行特定request cookie。</li>
+</ul>
+<ul>
+<li>可以配置custom rule放行这一requestUri。</li>
+</ul>
+<ul>
+<li>用户倾向于选择放行requestUri：</li>
+</ul>
+<ul>
+<li>用户所涉及的requestUri为中文路径：“/服务范围/咨询/投资交易咨询服务”</li>
+</ul>
+<ul>
+<li>这一requestUri Encode后的结果是：/%E6%9C%8D%E5%8A%A1%E8%8C%83%E5%9B%B4/%E5%92%A8%E8%AF%A2/%E6%8A%95%E8%B5%84%E4%BA%A4%E6%98%93%E5%92%A8%E8%AF%A2%E6%9C%8D%E5%8A%A1</li>
+</ul>
+<ul>
+<li>经过测试在Azure WAF Policy中按如下方法进行配置才能匹配上：</li>
+</ul>
+<ul>
+<li>如果只匹配“服务范围”则配置一个condition：</li>
+</ul>
+<ul>
+<li>如果要准确配置完整的“/服务范围/咨询/投资交易咨询服务”，则需要再添加2个condition分别匹配“咨询”和“投资交易”：</li>
+</ul>
+<ul>
+<li>注意：</li>
+</ul>
+<ul>
+<li>此时不要在Match values中包含&quot;/&quot;，无论是开头的，还是中间的，不然规则不会被匹配；因为中间也不能有&quot;/&quot;，所以此时“/服务范围/咨询/投资交易咨询服务”只能分开为多个condition。</li>
+</ul>
+<ul>
+<li>Transformations要选择“UrlEncode&quot;。</li>
+</ul>
+<ul>
+<li>如果将上述3段都放在一个condition中，它们之间是或的关系。</li>
+</ul>
+<ul>
+<li>Match values中不能填入中文。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>问题排查：根据访问URL和时间戳查询App GW Firewall log，确认系请求中的request cookie中特定字符匹配了WAF rule所致。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2026.3.10</p>
+<p>Tian Tian</p>
+<p>关联工单： 20260305397830</p>
+<p>问题描述：用户站点中特定URL会遭遇403错误。</p>
+<p>问题排查：根据访问URL和时间戳查询App GW Firewall log，确认系请求中的request cookie中特定字符匹配了WAF rule所致。</p>
+<p>解决方法：</p>
+<p>可以配置custom ruel放行特定request cookie。</p>
+<p>可以配置custom rule放行这一requestUri。</p>
+<p>用户倾向于选择放行requestUri：</p>
+<p>用户所涉及的requestUri为中文路径：“/服务范围/咨询/投资交易咨询服务”</p>
+<p>这一requestUri Encode后的结果是：/%E6%9C%8D%E5%8A%A1%E8%8C%83%E5%9B%B4/%E5%92%A8%E8%AF%A2/%E6%8A%95%E8%B5%84%E4%BA%A4%E6%98%93%E5%92%A8%E8%AF%A2%E6%9C%8D%E5%8A%A1</p>
+<p>经过测试在Azure WAF Policy中按如下方法进行配置才能匹配上：</p>
+<p>如果只匹配“服务范围”则配置一个condition：</p>
+<p>如果要准确配置完整的“/服务范围/咨询/投资交易咨询服务”，则需要再添加2个condition分别匹配“咨询”和“投资交易”：</p>
+<p>注意：</p>
+<p>此时不要在Match values中包含&quot;/&quot;，无论是开头的，还是中间的，不然规则不会被匹配；因为中间也不能有&quot;/&quot;，所以此时“/服务范围/咨询/投资交易咨询服务”只能分开为多个condition。</p>
+<p>Transformations要选择“UrlEncode&quot;。</p>
+<p>如果将上述3段都放在一个condition中，它们之间是或的关系。</p>
+<p>Match values中不能填入中文。</p></article>

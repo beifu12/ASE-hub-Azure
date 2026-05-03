@@ -1,0 +1,182 @@
+<article class="kb-article" data-title="ILB后端池虚拟机访问ILB VIP解决方案"><h1>ILB后端池虚拟机访问ILB VIP解决方案</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LB</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-05 09:22:51</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>ILB后端池的机器，如果访问ILB VIP，肯定会遇到时通时不通的问题。引起这个问题的原因就是当后端池的机器访问ILB时，如果ILB将访问的流量映射到该服务器本身，那么由于该流的源目IP都是该服务器本身，因此这是一个环回口的数据包，该服务器将不会向外回复该数据包，造成访问失败。因此后端池中的虚拟机访问ILB VIP肯定会遇到时通时不通的现象。所以要避免后端池中的虚拟机访问ILB VIP。但是在有的应用场景中，后端池中的虚拟机需要访问ILB VIP。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>ILB后端池的机器，如果访问ILB VIP，肯定会遇到时通时不通的问题。引起这个问题的原因就是当后端池的机器访问ILB时，如果ILB将访问的流量映射到该服务器本身，那么由于该流的源目IP都是该服务器本身，因此这是一个环回口的数据包，该服务器将不会向外回复该数据包，造成访问失败。因此后端池中的虚拟机访问ILB VIP肯定会遇到时通时不通的现象。所以要避免后端池中的虚拟机访问ILB VIP。但是在有的应用场景中，后端池中的虚拟机需要访问ILB VIP。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>fuzhangliang</li>
+</ul>
+<ul>
+<li>实验环境：</li>
+</ul>
+<ul>
+<li>ILB VIP</li>
+</ul>
+<ul>
+<li>后端池虚拟机IP</li>
+</ul>
+<ul>
+<li>192.168.2.100:80</li>
+</ul>
+<ul>
+<li>Server1：192.168.2.5:80      linux</li>
+</ul>
+<ul>
+<li>Server2：192.168.2.6:80      linux</li>
+</ul>
+<ul>
+<li>Server3：192.168.2.7:80     Windows</li>
+</ul>
+<ul>
+<li>1、配置ILB负载均衡规则，启用DSR</li>
+</ul>
+<ul>
+<li>（1）Linux虚拟机配置方法</li>
+</ul>
+<ul>
+<li>加到物理网卡：ip addr add 192.168.2.100/32 dev eth0 label eth0:0</li>
+</ul>
+<ul>
+<li>或者加到环回口：ip addr add 192.168.2.100/32 dev lo label lo:0</li>
+</ul>
+<ul>
+<li>Server1：</li>
+</ul>
+<ul>
+<li>Server2：</li>
+</ul>
+<ul>
+<li>（2）Windows虚拟机配置方法</li>
+</ul>
+<ul>
+<li>i)配置物理网卡</li>
+</ul>
+<ul>
+<li>2、 打开以太网属性，选择“使用下面的IP地址”，填入第一步看到的虚拟机的IP</li>
+</ul>
+<ul>
+<li>3、 点击高级，添加IP地址。我的环境中添加的IP地址为192.168.2.100，掩码设置为32位。</li>
+</ul>
+<ul>
+<li>此时虚拟机可能会失去远程连接，如果重试仍然连接不上，请重启后再次尝试连接。</li>
+</ul>
+<ul>
+<li>或者</li>
+</ul>
+<ul>
+<li>ii)配置环回口</li>
+</ul>
+<ul>
+<li>如果不方便在物理网卡做修改，可以将VIP添加到环回口. 说明如下：</li>
+</ul>
+<ul>
+<li>添加ILB VIP：</li>
+</ul>
+<ul>
+<li>netsh int ip add address &quot;Ifindex&quot;  VIP  MASK</li>
+</ul>
+<ul>
+<li>netsh int ip add address 1  192.168.2.100 255.255.255.255 16</li>
+</ul>
+<ul>
+<li>3、测试访问</li>
+</ul>
+<ul>
+<li>由于VIP本身就在三台机器的网卡上，所以机器本身访问该VIP肯定是可以成功的。比如Server3访问VIP：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>1、 打开命令行，输入ipconfig /all查看虚拟机的IP地址和子网掩码和DNS</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>从外部测试，可以得到三台虚拟机的80端口页面</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>一个替代的解决方案是启用ILB DSR，下面介绍如下：</li>
+</ul>
+<ul>
+<li>2、将负载均衡器的VIP配置到虚拟机的物理网卡或者环回口。</li>
+</ul>
+<ul>
+<li>此时建议将掩码设置成32位</li>
+</ul>
+<ul>
+<li>然后将物理网卡和环回口全部设置成weakhost模式</li>
+</ul>
+<ul>
+<li>netsh interface ipv4 set interface ‘IFindex’ weakhostreceive=enabled</li>
+</ul>
+<ul>
+<li>netsh interface ipv4 set interface 1 weakhostreceive=enabled</li>
+</ul>
+<ul>
+<li>netsh interface ipv4 set interface 1 weakhostsend=enabled</li>
+</ul>
+<ul>
+<li>netsh interface ipv4 set interface 12 weakhostreceive=enabled</li>
+</ul>
+<ul>
+<li>netsh interface ipv4 set interface 12 weakhostsend=enabled</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档： <a href="https://docs.azure.cn/zh-cn/load-balancer/load-balancer-troubleshoot-backend-traffic#cause-4-access-of-the-internal-load-balancer-frontend-from-the-participating-load-balancer-backend-pool-vm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/load-balancer/load-balancer-troubleshoot-backend-traffic#cause-4-access-of-the-internal-load-balancer-frontend-from-the-participating-load-balancer-backend-pool-vm</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>fuzhangliang</p>
+<p>ILB后端池的机器，如果访问ILB VIP，肯定会遇到时通时不通的问题。引起这个问题的原因就是当后端池的机器访问ILB时，如果ILB将访问的流量映射到该服务器本身，那么由于该流的源目IP都是该服务器本身，因此这是一个环回口的数据包，该服务器将不会向外回复该数据包，造成访问失败。因此后端池中的虚拟机访问ILB VIP肯定会遇到时通时不通的现象。所以要避免后端池中的虚拟机访问ILB VIP。但是在有的应用场景中，后端池中的虚拟机需要访问ILB VIP。</p>
+<p>一个替代的解决方案是启用ILB DSR，下面介绍如下：</p>
+<p>实验环境：</p>
+<p>ILB VIP</p>
+<p>后端池虚拟机IP</p>
+<p>192.168.2.100:80</p>
+<p>Server1：192.168.2.5:80      linux</p>
+<p>Server2：192.168.2.6:80      linux</p>
+<p>Server3：192.168.2.7:80     Windows</p>
+<p>1、配置ILB负载均衡规则，启用DSR</p>
+<p>2、将负载均衡器的VIP配置到虚拟机的物理网卡或者环回口。</p>
+<p>此时建议将掩码设置成32位</p>
+<p>（1）Linux虚拟机配置方法</p>
+<p>加到物理网卡：ip addr add 192.168.2.100/32 dev eth0 label eth0:0</p>
+<p>或者加到环回口：ip addr add 192.168.2.100/32 dev lo label lo:0</p>
+<p>Server1：</p>
+<p>Server2：</p>
+<p>（2）Windows虚拟机配置方法</p>
+<p>i)配置物理网卡</p>
+<p>1、 打开命令行，输入ipconfig /all查看虚拟机的IP地址和子网掩码和DNS</p>
+<p>2、 打开以太网属性，选择“使用下面的IP地址”，填入第一步看到的虚拟机的IP</p>
+<p>3、 点击高级，添加IP地址。我的环境中添加的IP地址为192.168.2.100，掩码设置为32位。</p>
+<p>此时虚拟机可能会失去远程连接，如果重试仍然连接不上，请重启后再次尝试连接。</p>
+<p>或者</p>
+<p>ii)配置环回口</p>
+<p>如果不方便在物理网卡做修改，可以将VIP添加到环回口. 说明如下：</p>
+<p>添加ILB VIP：</p>
+<p>netsh int ip add address &quot;Ifindex&quot;  VIP  MASK</p>
+<p>netsh int ip add address 1  192.168.2.100 255.255.255.255 16</p>
+<p>然后将物理网卡和环回口全部设置成weakhost模式</p>
+<p>netsh interface ipv4 set interface ‘IFindex’ weakhostreceive=enabled</p>
+<p>netsh interface ipv4 set interface 1 weakhostreceive=enabled</p>
+<p>netsh interface ipv4 set interface 1 weakhostsend=enabled</p>
+<p>netsh interface ipv4 set interface 12 weakhostreceive=enabled</p>
+<p>netsh interface ipv4 set interface 12 weakhostsend=enabled</p>
+<p>3、测试访问</p>
+<p>从外部测试，可以得到三台虚拟机的80端口页面</p>
+<p>由于VIP本身就在三台机器的网卡上，所以机器本身访问该VIP肯定是可以成功的。比如Server3访问VIP：</p>
+<p>参考文档： <a href="https://docs.azure.cn/zh-cn/load-balancer/load-balancer-troubleshoot-backend-traffic#cause-4-access-of-the-internal-load-balancer-frontend-from-the-participating-load-balancer-backend-pool-vm" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/load-balancer/load-balancer-troubleshoot-backend-traffic#cause-4-access-of-the-internal-load-balancer-frontend-from-the-participating-load-balancer-backend-pool-vm</a></p></article>

@@ -1,0 +1,119 @@
+<article class="kb-article" data-title="[Share][Linux]Centos7 开机grub修复方法"><h1>[Share][Linux]Centos7 开机grub修复方法</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-03 14:07:04</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>一般情况下，Centos7虚拟机在重启后进入/grub模式，如下方截图，从我的理解，有两种情况：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>一般情况下，Centos7虚拟机在重启后进入/grub模式，如下方截图，从我的理解，有两种情况：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>一般情况下，Centos7虚拟机在重启后进入/grub模式，如下方截图，从我的理解，有两种情况：</li>
+</ul>
+<ul>
+<li>A, 系统中的grub配置文件/boot/grub2/grub.cfg损坏、配置有误；</li>
+</ul>
+<ul>
+<li>B，/boot下的内核文件等损坏了；</li>
+</ul>
+<ul>
+<li>ls (hd0,X)/boot/grub2</li>
+</ul>
+<ul>
+<li>ls （hd0,X)/grub2</li>
+</ul>
+<ul>
+<li>3，手动引导进入系统：</li>
+</ul>
+<ul>
+<li>init</li>
+</ul>
+<ul>
+<li>这里root=xxx 为前面找到的/boot目录分区</li>
+</ul>
+<ul>
+<li>这里需要注意.img文件和上面的内核版本要匹配</li>
+</ul>
+<ul>
+<li>4，boot执行完成之后，虚拟机就可以正常启动登录了：</li>
+</ul>
+<ul>
+<li>5，登录系统，去重建/boot/grub2/grub.cfg配置文件：</li>
+</ul>
+<ul>
+<li>sudo grub2-mkconfig -o /boot/grub2/grub.cfg</li>
+</ul>
+<ul>
+<li>========================================================================</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>检查下/boot/grub2/grub.cfg的配置，看是否配置有误，如下方截图，我这边的该配置文件为0字节，即该配置文件被清空了</li>
+</ul>
+<ul>
+<li>这里root=xxx为linux系统的/目录分区，使用的是其UUID，查询其UUID的方法，请参考后面的补充部分。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>###需要注意Centos6 和Centos7的修复命令稍有区别</li>
+</ul>
+<ul>
+<li>1, 在 grub&gt;下输入ls命令，会罗列所有的磁盘分区信息，如下方截图：</li>
+</ul>
+<ul>
+<li>2，然后依次调用如下命令： X表示各个分区号码</li>
+</ul>
+<ul>
+<li>如果/boot没有单独分区，用以下命令：</li>
+</ul>
+<ul>
+<li>如果/boot单独分区，则用下列命令：</li>
+</ul>
+<ul>
+<li>###可以通过命令查看各个分区目录文件，确认/目录分区</li>
+</ul>
+<ul>
+<li>###通过命令，可以查询到其UUID：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在Azure VM中，对于第一种情况，即/boot/grub2/grub.cfg损坏的情况，我们是可以尝试通过后台Console进行修复的，具体可参考如下步骤：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2021-11-04</p>
+<p>一般情况下，Centos7虚拟机在重启后进入/grub模式，如下方截图，从我的理解，有两种情况：</p>
+<p>###需要注意Centos6 和Centos7的修复命令稍有区别</p>
+<p>A, 系统中的grub配置文件/boot/grub2/grub.cfg损坏、配置有误；</p>
+<p>B，/boot下的内核文件等损坏了；</p>
+<p>在Azure VM中，对于第一种情况，即/boot/grub2/grub.cfg损坏的情况，我们是可以尝试通过后台Console进行修复的，具体可参考如下步骤：</p>
+<p>1, 在 grub&gt;下输入ls命令，会罗列所有的磁盘分区信息，如下方截图：</p>
+<p>2，然后依次调用如下命令： X表示各个分区号码</p>
+<p>如果/boot没有单独分区，用以下命令：</p>
+<p>ls (hd0,X)/boot/grub2</p>
+<p>如果/boot单独分区，则用下列命令：</p>
+<p>ls （hd0,X)/grub2</p>
+<p>检查下/boot/grub2/grub.cfg的配置，看是否配置有误，如下方截图，我这边的该配置文件为0字节，即该配置文件被清空了</p>
+<p>3，手动引导进入系统：</p>
+<p>init</p>
+<p>这里root=xxx 为前面找到的/boot目录分区</p>
+<p>这里root=xxx为linux系统的/目录分区，使用的是其UUID，查询其UUID的方法，请参考后面的补充部分。</p>
+<p>这里需要注意.img文件和上面的内核版本要匹配</p>
+<p>4，boot执行完成之后，虚拟机就可以正常启动登录了：</p>
+<p>5，登录系统，去重建/boot/grub2/grub.cfg配置文件：</p>
+<p>sudo grub2-mkconfig -o /boot/grub2/grub.cfg</p>
+<p>========================================================================</p>
+<p>###可以通过命令查看各个分区目录文件，确认/目录分区</p>
+<p>###通过命令，可以查询到其UUID：</p></article>

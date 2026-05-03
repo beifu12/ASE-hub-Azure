@@ -1,0 +1,139 @@
+<article class="kb-article" data-title="[Share]AKS pod 固定mac地址"><h1>[Share]AKS pod 固定mac地址</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-12-26 16:16:39</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>关联工单：20240530296288</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>关联工单：20240530296288</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>关联工单：20240530296288</li>
+</ul>
+<ul>
+<li>由于用户有需要在pod中将mac地址与相关软件licence绑定，所以需要固定pod mac</li>
+</ul>
+<ul>
+<li>在三方插件calico官网中中查找相关说明可以配置mac地址：</li>
+</ul>
+<ul>
+<li>Use a specific MAC address for a pod | Calico Documentation (tigera.io)</li>
+</ul>
+<ul>
+<li>在azure中部署的话，前提是部署AKS的时候就要选择使用calico网络策略：</li>
+</ul>
+<ul>
+<li>我在测试环境中配置该方案，测试yaml如下：</li>
+</ul>
+<ul>
+<li>apiVersion: apps/v1</li>
+</ul>
+<ul>
+<li>kind: Deployment</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: myapp-pod</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>replicas: 1</li>
+</ul>
+<ul>
+<li>selector:</li>
+</ul>
+<ul>
+<li>matchLabels:</li>
+</ul>
+<ul>
+<li>app: myapp</li>
+</ul>
+<ul>
+<li>template:</li>
+</ul>
+<ul>
+<li>labels:</li>
+</ul>
+<ul>
+<li>annotations:</li>
+</ul>
+<ul>
+<li>cni.projectcalico.org/hwAddr: &quot;7e:72:f2:7a:ed:4c&quot;</li>
+</ul>
+<ul>
+<li>containers:</li>
+</ul>
+<ul>
+<li>- name: myapp-container</li>
+</ul>
+<ul>
+<li>image: busybox:latest</li>
+</ul>
+<ul>
+<li>imagePullPolicy: IfNotPresent</li>
+</ul>
+<ul>
+<li>command: [&#39;sh&#39;, &#39;-c&#39;, &#39;echo The app is running! &amp;&amp; sleep 3600&#39;]</li>
+</ul>
+<ul>
+<li>删除pod 让pod重建，mac仍没改变</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>目前采用CNI 模型的AKS中不支持配置pod绑定mac，在k8s官方文档中查询也未发现相关资料，</li>
+</ul>
+<ul>
+<li>部署pod后查看地址成功生效：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/06/04</p>
+<p>关联工单：20240530296288</p>
+<p>由于用户有需要在pod中将mac地址与相关软件licence绑定，所以需要固定pod mac</p>
+<p>目前采用CNI 模型的AKS中不支持配置pod绑定mac，在k8s官方文档中查询也未发现相关资料，</p>
+<p>在三方插件calico官网中中查找相关说明可以配置mac地址：</p>
+<p>Use a specific MAC address for a pod | Calico Documentation (tigera.io)</p>
+<p>在azure中部署的话，前提是部署AKS的时候就要选择使用calico网络策略：</p>
+<p>我在测试环境中配置该方案，测试yaml如下：</p>
+<p>apiVersion: apps/v1</p>
+<p>kind: Deployment</p>
+<p>metadata:</p>
+<p>name: myapp-pod</p>
+<p>spec:</p>
+<p>replicas: 1</p>
+<p>selector:</p>
+<p>matchLabels:</p>
+<p>app: myapp</p>
+<p>template:</p>
+<p>labels:</p>
+<p>annotations:</p>
+<p>cni.projectcalico.org/hwAddr: &quot;7e:72:f2:7a:ed:4c&quot;</p>
+<p>containers:</p>
+<ul>
+<li>name: myapp-container</li>
+</ul>
+<p>image: busybox:latest</p>
+<p>imagePullPolicy: IfNotPresent</p>
+<p>command: [&#39;sh&#39;, &#39;-c&#39;, &#39;echo The app is running! &amp;&amp; sleep 3600&#39;]</p>
+<p>部署pod后查看地址成功生效：</p>
+<p>删除pod 让pod重建，mac仍没改变</p></article>

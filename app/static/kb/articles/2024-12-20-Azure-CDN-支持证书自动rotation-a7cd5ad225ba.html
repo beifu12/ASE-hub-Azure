@@ -1,0 +1,59 @@
+<article class="kb-article" data-title="Azure CDN 支持证书自动rotation"><h1>Azure CDN 支持证书自动rotation</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2024-12-20 19:07:17</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>根据CDN PG 的反馈，Activate the certificate auto rotation function 这个功能已经支持，但是客户需要在自己的AD中使用命令行工具完成 Microsoft.AzureFrontDoor-Cdn(621bd413-f6cc-4be5-b3fe-a82c12af6629)这个服务主体的注册：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>根据CDN PG 的反馈，Activate the certificate auto rotation function 这个功能已经支持，但是客户需要在自己的AD中使用命令行工具完成 Microsoft.AzureFrontDoor-Cdn(621bd413-f6cc-4be5-b3fe-a82c12af6629)这个服务主体的注册：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>在您所在tenant的Azure Active Directory (Azure AD)中注册应用ID 621bd413-f6cc-4be5-b3fe-a82c12af6629</li>
+</ul>
+<ul>
+<li>授权完成后，可以在CDN management protal启用这个功能：</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>根据CDN PG 的反馈，Activate the certificate auto rotation function 这个功能已经支持，但是客户需要在自己的AD中使用命令行工具完成 Microsoft.AzureFrontDoor-Cdn(621bd413-f6cc-4be5-b3fe-a82c12af6629)这个服务主体的注册：</li>
+</ul>
+<ul>
+<li>Powershell：</li>
+</ul>
+<ul>
+<li>New-AzADServicePrincipal -ApplicationId  621bd413-f6cc-4be5-b3fe-a82c12af6629</li>
+</ul>
+<ul>
+<li>Azure CLI:</li>
+</ul>
+<ul>
+<li>az ad sp create –id  621bd413-f6cc-4be5-b3fe-a82c12af6629</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>相关的文档：<a href="https://docs.azure.cn/zh-cn/cdn/cdn-https-customer-supplied-cert#%E8%AF%81%E4%B9%A6%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%9B%BF" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-https-customer-supplied-cert#%E8%AF%81%E4%B9%A6%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%9B%BF</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>根据CDN PG 的反馈，Activate the certificate auto rotation function 这个功能已经支持，但是客户需要在自己的AD中使用命令行工具完成 Microsoft.AzureFrontDoor-Cdn(621bd413-f6cc-4be5-b3fe-a82c12af6629)这个服务主体的注册：</p>
+<p>在您所在tenant的Azure Active Directory (Azure AD)中注册应用ID 621bd413-f6cc-4be5-b3fe-a82c12af6629</p>
+<p>Powershell：</p>
+<p>New-AzADServicePrincipal -ApplicationId  621bd413-f6cc-4be5-b3fe-a82c12af6629</p>
+<p>Azure CLI:</p>
+<p>az ad sp create –id  621bd413-f6cc-4be5-b3fe-a82c12af6629</p>
+<p>授权完成后，可以在CDN management protal启用这个功能：</p>
+<p>相关的文档：<a href="https://docs.azure.cn/zh-cn/cdn/cdn-https-customer-supplied-cert#%E8%AF%81%E4%B9%A6%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%9B%BF" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/cdn/cdn-https-customer-supplied-cert#%E8%AF%81%E4%B9%A6%E8%87%AA%E5%8A%A8%E6%9B%B4%E6%9B%BF</a></p></article>

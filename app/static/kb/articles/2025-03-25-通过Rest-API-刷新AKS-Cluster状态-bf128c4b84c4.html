@@ -1,0 +1,132 @@
+<article class="kb-article" data-title="通过Rest API 刷新AKS Cluster状态"><h1>通过Rest API 刷新AKS Cluster状态</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: OperationGuid</li>
+<li>最近修改: 2025-03-25 15:24:41</li>
+<li>JD 相关性: AKS/容器; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>119111921000533_PODVM/Guangzhou Beststudy Educational Co., Ltd./MS-LED/2019111563150/AKS集群显示失败</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>119111921000533_PODVM/Guangzhou Beststudy Educational Co., Ltd./MS-LED/2019111563150/AKS集群显示失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>kaka</li>
+</ul>
+<ul>
+<li>[root@docker01 ~]# az aks upgrade  -g   MyResourceGroupnew   -n        MyManagedCluster -k 1.16.1</li>
+</ul>
+<ul>
+<li>[root@docker01 ~]# az aks update -g     MyResourceGroupnew    -n     MyManagedCluster</li>
+</ul>
+<ul>
+<li>升级CSS,由他们申请JIT权限完成  （我们的操作正在沟通中）</li>
+</ul>
+<ul>
+<li>推荐让客户自己通过Rest API完成，</li>
+</ul>
+<ul>
+<li>相关工单：</li>
+</ul>
+<ul>
+<li>119112025000051] POD VM/Shanghai xuhui district people&#39;s government office /SR_2019112063935_[Field]Please help remove the resource</li>
+</ul>
+<ul>
+<li>119112121000217/NET/永旺（中国）投资有限公司/2019111963648[MS-LED]AKS node fail to scale up</li>
+</ul>
+<ul>
+<li>下载Postman 工具并安装，下载地址：</li>
+</ul>
+<ul>
+<li>操作之前需要建立Collection</li>
+</ul>
+<ul>
+<li>再建立Request，并选择存放在之前建立的Collection 下</li>
+</ul>
+<ul>
+<li>er Token：</li>
+</ul>
+<ul>
+<li>第一种方法：</li>
+</ul>
+<ul>
+<li>将以下字段，填入到postman中， 登录postman ，获取Token，如下截图：</li>
+</ul>
+<ul>
+<li>第二种方法：</li>
+</ul>
+<ul>
+<li>然后在Postman Request 中，输入URL 中根据自己的信息替换（高亮部分）并填入：</li>
+</ul>
+<ul>
+<li>GET</li>
+</ul>
+<ul>
+<li>Get aks cluster 的json文件，在Authorization中选择Bearer Token，将之前获取的token输入</li>
+</ul>
+<ul>
+<li>新建一个窗口，按如下截图设置，将上一步get信息复制过来，更改</li>
+</ul>
+<ul>
+<li>更改状态为：Succeeded ，同理如果需要scale up/down，更改count数量即可。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过Chrome 浏览器登录Portal后，获取认证信息</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>最近三个AKS的工单，客户的AKS门户状态有问题，可以通过三种方法完成sync:</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://www.postman.com/downloads/" target="_blank" rel="noopener">https://www.postman.com/downloads/</a></li>
+</ul>
+<ul>
+<li><a href="https://login.chinacloudapi.cn/b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/oauth2/token?api-version=1.0" target="_blank" rel="noopener">https://login.chinacloudapi.cn/b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/oauth2/token?api-version=1.0</a></li>
+</ul>
+<ul>
+<li><a href="https://management.chinacloudapi.cn/subscriptions/1447ccf1-xxxx-xxxx-xxxxx-2f370d142fa6/resourceGroups/hanaaksrg/providers/Microsoft.ContainerService/managedClusters/hanaakscluster?api-version=2020-09-01" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/1447ccf1-xxxx-xxxx-xxxxx-2f370d142fa6/resourceGroups/hanaaksrg/providers/Microsoft.ContainerService/managedClusters/hanaakscluster?api-version=2020-09-01</a></li>
+</ul>
+<ul>
+<li>参考链接：<a href="https://docs.microsoft.com/en-us/rest/api/aks/managedclusters/get" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/rest/api/aks/managedclusters/get</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>kaka</p>
+<p>2020/02/19</p>
+<p>最近三个AKS的工单，客户的AKS门户状态有问题，可以通过三种方法完成sync:</p>
+<p>[root@docker01 ~]# az aks upgrade  -g   MyResourceGroupnew   -n        MyManagedCluster -k 1.16.1</p>
+<p>[root@docker01 ~]# az aks update -g     MyResourceGroupnew    -n     MyManagedCluster</p>
+<p>升级CSS,由他们申请JIT权限完成  （我们的操作正在沟通中）</p>
+<p>推荐让客户自己通过Rest API完成，</p>
+<p>相关工单：</p>
+<p>119111921000533_PODVM/Guangzhou Beststudy Educational Co., Ltd./MS-LED/2019111563150/AKS集群显示失败</p>
+<p>119112025000051] POD VM/Shanghai xuhui district people&#39;s government office /SR_2019112063935_[Field]Please help remove the resource</p>
+<p>119112121000217/NET/永旺（中国）投资有限公司/2019111963648[MS-LED]AKS node fail to scale up</p>
+<p>下载Postman 工具并安装，下载地址：</p>
+<p><a href="https://www.postman.com/downloads/" target="_blank" rel="noopener">https://www.postman.com/downloads/</a></p>
+<p>操作之前需要建立Collection</p>
+<p>再建立Request，并选择存放在之前建立的Collection 下</p>
+<p>通过Chrome 浏览器登录Portal后，获取认证信息</p>
+<p>er Token：</p>
+<p>第一种方法：</p>
+<p>将以下字段，填入到postman中， 登录postman ，获取Token，如下截图：</p>
+<p><a href="https://login.chinacloudapi.cn/b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/oauth2/token?api-version=1.0" target="_blank" rel="noopener">https://login.chinacloudapi.cn/b388b808-0ec9-4a09-a414-a7cbbd8b7e9b/oauth2/token?api-version=1.0</a></p>
+<p>第二种方法：</p>
+<p>然后在Postman Request 中，输入URL 中根据自己的信息替换（高亮部分）并填入：</p>
+<p>GET</p>
+<p><a href="https://management.chinacloudapi.cn/subscriptions/1447ccf1-xxxx-xxxx-xxxxx-2f370d142fa6/resourceGroups/hanaaksrg/providers/Microsoft.ContainerService/managedClusters/hanaakscluster?api-version=2020-09-01" target="_blank" rel="noopener">https://management.chinacloudapi.cn/subscriptions/1447ccf1-xxxx-xxxx-xxxxx-2f370d142fa6/resourceGroups/hanaaksrg/providers/Microsoft.ContainerService/managedClusters/hanaakscluster?api-version=2020-09-01</a></p>
+<p>Get aks cluster 的json文件，在Authorization中选择Bearer Token，将之前获取的token输入</p>
+<p>新建一个窗口，按如下截图设置，将上一步get信息复制过来，更改</p>
+<p>更改状态为：Succeeded ，同理如果需要scale up/down，更改count数量即可。</p>
+<p>参考链接：<a href="https://docs.microsoft.com/en-us/rest/api/aks/managedclusters/get" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/rest/api/aks/managedclusters/get</a></p></article>

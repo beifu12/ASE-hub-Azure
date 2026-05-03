@@ -1,0 +1,89 @@
+<article class="kb-article" data-title="【share】Runbook 删除azure fileshare中的文件"><h1>【share】Runbook 删除azure fileshare中的文件</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-16 16:23:20</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>测试代码示例：通过runbook删除azure文件共享的一个文件，参考如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>测试代码示例：通过runbook删除azure文件共享的一个文件，参考如下：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>测试代码示例：通过runbook删除azure文件共享的一个文件，参考如下：</li>
+</ul>
+<ul>
+<li>文档参考：Get-AzStorageFile (Az.Storage) | Microsoft Learn</li>
+</ul>
+<ul>
+<li>Connect-AzAccount -EnvironmentName azurechinacloud -Identity</li>
+</ul>
+<ul>
+<li># 设置存储账户参数</li>
+</ul>
+<ul>
+<li>$resourceGroupName = &quot;storage-account&quot;</li>
+</ul>
+<ul>
+<li>$storageAccountName = &quot;account0415&quot;</li>
+</ul>
+<ul>
+<li>$fileShareName = &quot;file11&quot;</li>
+</ul>
+<ul>
+<li>$fileName = &quot;222.txt&quot;   # 文件路径（支持子目录）</li>
+</ul>
+<ul>
+<li># 获取存储账户密钥</li>
+</ul>
+<ul>
+<li>$storageKey = (Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -Name $storageAccountName).Value[0]</li>
+</ul>
+<ul>
+<li># 创建存储上下文</li>
+</ul>
+<ul>
+<li>$context = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageKey</li>
+</ul>
+<ul>
+<li># 删除文件</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-AzContext -SubscriptionId &quot;c5d49f7b-3261-4e5b-8048-808e2443ee67&quot;</li>
+</ul>
+<ul>
+<li>Remove-AzStorageFile -Context $context -ShareName $fileShareName -Path $fileName</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/10/16</p>
+<p>测试代码示例：通过runbook删除azure文件共享的一个文件，参考如下：</p>
+<p>文档参考：Get-AzStorageFile (Az.Storage) | Microsoft Learn</p>
+<p>Connect-AzAccount -EnvironmentName azurechinacloud -Identity</p>
+<p>Set-AzContext -SubscriptionId &quot;c5d49f7b-3261-4e5b-8048-808e2443ee67&quot;</p>
+<h1>设置存储账户参数</h1>
+<p>$resourceGroupName = &quot;storage-account&quot;</p>
+<p>$storageAccountName = &quot;account0415&quot;</p>
+<p>$fileShareName = &quot;file11&quot;</p>
+<p>$fileName = &quot;222.txt&quot;   # 文件路径（支持子目录）</p>
+<h1>获取存储账户密钥</h1>
+<p>$storageKey = (Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -Name $storageAccountName).Value[0]</p>
+<h1>创建存储上下文</h1>
+<p>$context = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageKey</p>
+<h1>删除文件</h1>
+<p>Remove-AzStorageFile -Context $context -ShareName $fileShareName -Path $fileName</p></article>

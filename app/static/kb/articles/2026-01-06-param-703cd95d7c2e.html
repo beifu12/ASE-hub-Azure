@@ -1,0 +1,170 @@
+<article class="kb-article" data-title="param("><h1>param(</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: New Section 1</li>
+<li>最近修改: 2026-01-06 16:17:52</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Import-Module Microsoft.Graph.Identity.DirectoryManagement -ErrorAction Stop</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Import-Module Microsoft.Graph.Identity.DirectoryManagement -ErrorAction Stop</li>
+</ul>
+<ul>
+<li>} -ErrorAction Stop</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>[Parameter(Mandatory=$false)]</li>
+</ul>
+<ul>
+<li>&quot;extensionAttribute1&quot;,&quot;extensionAttribute2&quot;,&quot;extensionAttribute3&quot;,&quot;extensionAttribute4&quot;,&quot;extensionAttribute5&quot;,</li>
+</ul>
+<ul>
+<li>&quot;extensionAttribute6&quot;,&quot;extensionAttribute7&quot;,&quot;extensionAttribute8&quot;,&quot;extensionAttribute9&quot;,&quot;extensionAttribute10&quot;,</li>
+</ul>
+<ul>
+<li>&quot;extensionAttribute11&quot;,&quot;extensionAttribute12&quot;,&quot;extensionAttribute13&quot;,&quot;extensionAttribute14&quot;,&quot;extensionAttribute15&quot;</li>
+</ul>
+<ul>
+<li>)]</li>
+</ul>
+<ul>
+<li>[string]$ExtensionAttributeName,</li>
+</ul>
+<ul>
+<li>[string]$NewValue</li>
+</ul>
+<ul>
+<li>)</li>
+</ul>
+<ul>
+<li># ===== 固定应用注册（你提供的值）=====</li>
+</ul>
+<ul>
+<li>$clientId     = &quot;应用注册客户端ID</li>
+</ul>
+<ul>
+<li>$clientSecret = &quot;应用注册的Key&quot;</li>
+</ul>
+<ul>
+<li>$tenantId     = &quot;租户ID&quot;</li>
+</ul>
+<ul>
+<li># ===== 以 App-only 方式连接到中国云（21V）=====</li>
+</ul>
+<ul>
+<li># App-only 模式下不传 -Scopes；权限来自应用注册的“应用权限”并已管理员同意。</li>
+</ul>
+<ul>
+<li>$securePassword = ConvertTo-SecureString $clientSecret -AsPlainText -Force</li>
+</ul>
+<ul>
+<li>$credential     = New-Object System.Management.Automation.PSCredential($clientId, $securePassword)</li>
+</ul>
+<ul>
+<li>Connect-MgGraph -ClientSecretCredential $credential `</li>
+</ul>
+<ul>
+<li>-TenantId $tenantId `</li>
+</ul>
+<ul>
+<li>-Environment China `</li>
+</ul>
+<ul>
+<li># === 设备的目录对象 id===</li>
+</ul>
+<ul>
+<li>$DirectoryObjectId = &quot;01500666-3f92-4c4dxxxxxx&quot;</li>
+</ul>
+<ul>
+<li>(Get-MgDevice -DeviceId $DirectoryObjectId).extensionAttributes | Format-List</li>
+</ul>
+<ul>
+<li># === 更新扩展属性（示例：把 extensionAttribute15 设为 BYOD） ===</li>
+</ul>
+<ul>
+<li>$ExtensionAttributeName  = &quot;extensionAttribute15&quot;</li>
+</ul>
+<ul>
+<li>$ExtensionAttributeValue = &quot;BYOD&quot;</li>
+</ul>
+<ul>
+<li>Update-MgDevice -DeviceId $DirectoryObjectId -AdditionalProperties @{</li>
+</ul>
+<ul>
+<li>需提前配置好应用注册权限和安装相关模块，请参考：</li>
+</ul>
+<ul>
+<li>二、创建应用注册，自定义名称: Register an application - Microsoft Azure 由世纪互联运营</li>
+</ul>
+<ul>
+<li>三、创建密钥，保存值到记事本，值只显示一次</li>
+</ul>
+<ul>
+<li>四、添加需要的权限流程如下，并授予管理员同意：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>[ValidateSet(</li>
+</ul>
+<ul>
+<li># === 查询当前扩展属性 ===</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>一、请先安装和登录MG-Graph模块 ，后续用ISE 运行登录和脚本，安装：Install-Module -Name Microsoft.Graph  -Force -Scope CurrentUser</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>extensionAttributes = @{ $ExtensionAttributeName = $ExtensionAttributeValue }</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>-NoWelcome -Verbose -ErrorAction Stop  # [2]( <a href="https://techcommunity.microsoft.com/blog/coreinfrastructureandsecurityblog/update-entra-id-device-extension-attributes-via-powershell--create-dynamic-secur/4449989)" target="_blank" rel="noopener">https://techcommunity.microsoft.com/blog/coreinfrastructureandsecurityblog/update-entra-id-device-extension-attributes-via-powershell--create-dynamic-secur/4449989)</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>[Parameter(Mandatory=$false)]</p>
+<p>[ValidateSet(</p>
+<p>&quot;extensionAttribute1&quot;,&quot;extensionAttribute2&quot;,&quot;extensionAttribute3&quot;,&quot;extensionAttribute4&quot;,&quot;extensionAttribute5&quot;,</p>
+<p>&quot;extensionAttribute6&quot;,&quot;extensionAttribute7&quot;,&quot;extensionAttribute8&quot;,&quot;extensionAttribute9&quot;,&quot;extensionAttribute10&quot;,</p>
+<p>&quot;extensionAttribute11&quot;,&quot;extensionAttribute12&quot;,&quot;extensionAttribute13&quot;,&quot;extensionAttribute14&quot;,&quot;extensionAttribute15&quot;</p>
+<p>)]</p>
+<p>[string]$ExtensionAttributeName,</p>
+<p>[string]$NewValue</p>
+<p>)</p>
+<h1>===== 固定应用注册（你提供的值）=====</h1>
+<p>$clientId     = &quot;应用注册客户端ID</p>
+<p>$clientSecret = &quot;应用注册的Key&quot;</p>
+<p>$tenantId     = &quot;租户ID&quot;</p>
+<h1>===== 以 App-only 方式连接到中国云（21V）=====</h1>
+<h1>App-only 模式下不传 -Scopes；权限来自应用注册的“应用权限”并已管理员同意。</h1>
+<p>$securePassword = ConvertTo-SecureString $clientSecret -AsPlainText -Force</p>
+<p>$credential     = New-Object System.Management.Automation.PSCredential($clientId, $securePassword)</p>
+<p>Connect-MgGraph -ClientSecretCredential $credential `</p>
+<p>-TenantId $tenantId `</p>
+<p>-Environment China `</p>
+<p>-NoWelcome -Verbose -ErrorAction Stop  # [2]( <a href="https://techcommunity.microsoft.com/blog/coreinfrastructureandsecurityblog/update-entra-id-device-extension-attributes-via-powershell--create-dynamic-secur/4449989)" target="_blank" rel="noopener">https://techcommunity.microsoft.com/blog/coreinfrastructureandsecurityblog/update-entra-id-device-extension-attributes-via-powershell--create-dynamic-secur/4449989)</a></p>
+<p>Import-Module Microsoft.Graph.Identity.DirectoryManagement -ErrorAction Stop</p>
+<h1>=== 设备的目录对象 id===</h1>
+<p>$DirectoryObjectId = &quot;01500666-3f92-4c4dxxxxxx&quot;</p>
+<h1>=== 查询当前扩展属性 ===</h1>
+<p>(Get-MgDevice -DeviceId $DirectoryObjectId).extensionAttributes | Format-List</p>
+<h1>=== 更新扩展属性（示例：把 extensionAttribute15 设为 BYOD） ===</h1>
+<p>$ExtensionAttributeName  = &quot;extensionAttribute15&quot;</p>
+<p>$ExtensionAttributeValue = &quot;BYOD&quot;</p>
+<p>Update-MgDevice -DeviceId $DirectoryObjectId -AdditionalProperties @{</p>
+<p>extensionAttributes = @{ $ExtensionAttributeName = $ExtensionAttributeValue }</p>
+<p>} -ErrorAction Stop</p>
+<p>需提前配置好应用注册权限和安装相关模块，请参考：</p>
+<p>一、请先安装和登录MG-Graph模块 ，后续用ISE 运行登录和脚本，安装：Install-Module -Name Microsoft.Graph  -Force -Scope CurrentUser</p>
+<p>二、创建应用注册，自定义名称: Register an application - Microsoft Azure 由世纪互联运营</p>
+<p>三、创建密钥，保存值到记事本，值只显示一次</p>
+<p>四、添加需要的权限流程如下，并授予管理员同意：</p></article>

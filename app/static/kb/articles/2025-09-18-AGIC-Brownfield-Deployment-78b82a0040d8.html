@@ -1,0 +1,536 @@
+<article class="kb-article" data-title="AGIC Brownfield Deployment"><h1>AGIC Brownfield Deployment</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-09-18 17:37:26</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2022.8.8</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2022.8.8</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2022.8.8</li>
+</ul>
+<ul>
+<li>Tian tian</li>
+</ul>
+<ul>
+<li>环境说明：</li>
+</ul>
+<ul>
+<li>AKS Cluster版本1.22.11 (VMSS)</li>
+</ul>
+<ul>
+<li>AKS与App GW属于不同的资源组，不同的VNet。</li>
+</ul>
+<ul>
+<li>AGIC managed identity位于AKS node Resource Group中。</li>
+</ul>
+<ul>
+<li>AAD POD Identity版本1.8.10</li>
+</ul>
+<ul>
+<li>AGIC版本1.5.2</li>
+</ul>
+<ul>
+<li>AAD POD IDENTITY</li>
+</ul>
+<ul>
+<li>Role Assignment</li>
+</ul>
+<ul>
+<li>Obtaining the ID of the managed identity / service principal</li>
+</ul>
+<ul>
+<li>Cluster configuration</li>
+</ul>
+<ul>
+<li>Command</li>
+</ul>
+<ul>
+<li>AKS cluster with service principal</li>
+</ul>
+<ul>
+<li>AKS cluster with managed identity</li>
+</ul>
+<ul>
+<li>AKSResourceGroup为AKS Cluster所属的Resource Group。</li>
+</ul>
+<ul>
+<li>Performing role assignments</li>
+</ul>
+<ul>
+<li>对于启用或者未启用RBAC的AKS Cluster都需要执行上述两条指令；两条指令中的ID即为上一步中输出的ID；NodeResourceGroup即为当创建AKS时平台自动创建的以“MC_”开头与AKS Cluster同名同Region的Resource Group。</li>
+</ul>
+<ul>
+<li>如果部署AKS Cluster时指定的User-assigned identities没有在AKS node resource group中，则还需要授予这个AKS agent pool managed identity在AKS Cluster User-assigned identity资源组内的Managed Identity Operator角色。</li>
+</ul>
+<ul>
+<li>此部分实际操作日志：</li>
+</ul>
+<ul>
+<li>Install AAD Pod Identity on AKS Cluster</li>
+</ul>
+<ul>
+<li>有两种安装方式，选择其一即可:</li>
+</ul>
+<ul>
+<li>基于githubusercontent上提供的YAML文件直接apply。</li>
+</ul>
+<ul>
+<li>使用helm的方式进行安装。</li>
+</ul>
+<ul>
+<li>使用YAML文件直接部署：</li>
+</ul>
+<ul>
+<li>启用了RBAC的AKS Cluster:</li>
+</ul>
+<ul>
+<li>没有启用RBAC的AKS Cluster：</li>
+</ul>
+<ul>
+<li>为了允许MIC和AKS add-on访问IMDS不被NMI截获：</li>
+</ul>
+<ul>
+<li>使用Helm安装AAD Pod Identity</li>
+</ul>
+<ul>
+<li>看不到版本信息，helm install默认安装helm repo中最新的AAD pod identity版本。</li>
+</ul>
+<ul>
+<li>helm install aad-pod-identity aad-pod-identity/aad-pod-identity</li>
+</ul>
+<ul>
+<li>上述两种安装方式的区别：</li>
+</ul>
+<ul>
+<li>操作完成的提示不同：</li>
+</ul>
+<ul>
+<li>使用YAML文件部署（启用了RBAC Cluster）：</li>
+</ul>
+<ul>
+<li>serviceaccount/aad-pod-id-nmi-service-account created</li>
+</ul>
+<ul>
+<li>customresourcedefinition.apiextensions.k8s.io/azureassignedidentities.aadpodidentity.k8s.io created</li>
+</ul>
+<ul>
+<li>customresourcedefinition.apiextensions.k8s.io/azureidentitybindings.aadpodidentity.k8s.io created</li>
+</ul>
+<ul>
+<li>customresourcedefinition.apiextensions.k8s.io/azureidentities.aadpodidentity.k8s.io created</li>
+</ul>
+<ul>
+<li>customresourcedefinition.apiextensions.k8s.io/azurepodidentityexceptions.aadpodidentity.k8s.io created</li>
+</ul>
+<ul>
+<li>clusterrole.rbac.authorization.k8s.io/aad-pod-id-nmi-role created</li>
+</ul>
+<ul>
+<li>clusterrolebinding.rbac.authorization.k8s.io/aad-pod-id-nmi-binding created</li>
+</ul>
+<ul>
+<li>daemonset.apps/nmi created</li>
+</ul>
+<ul>
+<li>serviceaccount/aad-pod-id-mic-service-account created</li>
+</ul>
+<ul>
+<li>clusterrole.rbac.authorization.k8s.io/aad-pod-id-mic-role created</li>
+</ul>
+<ul>
+<li>clusterrolebinding.rbac.authorization.k8s.io/aad-pod-id-mic-binding created</li>
+</ul>
+<ul>
+<li>deployment.apps/mic created</li>
+</ul>
+<ul>
+<li>使用Helm安装，需要等待若干分钟：</li>
+</ul>
+<ul>
+<li>安装完成后AAD Pod的名称不一样：</li>
+</ul>
+<ul>
+<li>两种方式都会生成至少两个mic相关的POD和一个nmi相关的POD。使用helm安装的POD名称前有aad-pod-identity字样，YAML文件方式部署的POD名称则直接以mic和nmi开头。</li>
+</ul>
+<ul>
+<li>Install AGIC</li>
+</ul>
+<ul>
+<li>Create an Azure identity and give it permissions to ARM</li>
+</ul>
+<ul>
+<li>这一identity会被AGIC用来执行Application Gateway的配置更新。它可以创建在任意资源组中，但如果它不被创建在AKS Cluster Resource Group中，后续角色分配中需要多执行一步。</li>
+</ul>
+<ul>
+<li>创建这一Azure Identity:</li>
+</ul>
+<ul>
+<li>并记录这一指令的输出，后面需要用到这一Identity的Client ID（identityClientId）和Resource ID（identityId）。</li>
+</ul>
+<ul>
+<li>实际操作截图：</li>
+</ul>
+<ul>
+<li>授予这一Identity对App GW的Contributor权限：</li>
+</ul>
+<ul>
+<li>--role &quot;Contributor&quot;\</li>
+</ul>
+<ul>
+<li>--assignee $identityClientId\</li>
+</ul>
+<ul>
+<li>--scope &lt;App-Gateway-ID&gt;</li>
+</ul>
+<ul>
+<li>App-Gateway-ID为App GW的资源ID。</li>
+</ul>
+<ul>
+<li>授权这一Identity对App GW所在资源组的Reader权限：</li>
+</ul>
+<ul>
+<li>--role &quot;Reader&quot;\</li>
+</ul>
+<ul>
+<li>--scope &lt;App-Gateway-Resource-Group-ID&gt;</li>
+</ul>
+<ul>
+<li>如果自建的Identity与AKS Cluster不在同一资源组中，则需要执行如下指令</li>
+</ul>
+<ul>
+<li>--role &quot;Managed Identity Operator&quot;\</li>
+</ul>
+<ul>
+<li>--assignee $clusterClientId\</li>
+</ul>
+<ul>
+<li>--scope $identityId</li>
+</ul>
+<ul>
+<li>clusterClientId为AKS with managed identity下的agent pool managed identity的Client ID。</li>
+</ul>
+<ul>
+<li>identityId为自建Identity的资源ID。</li>
+</ul>
+<ul>
+<li>Install Ingress Controlleras a Helm Chart</li>
+</ul>
+<ul>
+<li>添加AGIC的repo并更新：</li>
+</ul>
+<ul>
+<li>helm repo update</li>
+</ul>
+<ul>
+<li>下载Helm的config文件</li>
+</ul>
+<ul>
+<li>编辑helm-config.yaml文件</li>
+</ul>
+<ul>
+<li># This file contains the essential configs for the ingress controller helm chart</li>
+</ul>
+<ul>
+<li># Verbosity level of the App Gateway Ingress Controller</li>
+</ul>
+<ul>
+<li>verbosityLevel: 3</li>
+</ul>
+<ul>
+<li>################################################################################</li>
+</ul>
+<ul>
+<li># Specify which application gateway the ingress controller will manage</li>
+</ul>
+<ul>
+<li>#</li>
+</ul>
+<ul>
+<li>appgw:</li>
+</ul>
+<ul>
+<li>subscriptionId: fbf2ac60-19f8-4f3a-9036-abcegieutdc</li>
+</ul>
+<ul>
+<li>resourceGroup: agic-test-rg04     #直接写资源组名称</li>
+</ul>
+<ul>
+<li>name: agic-appgw04</li>
+</ul>
+<ul>
+<li>usePrivateIP: false</li>
+</ul>
+<ul>
+<li># Setting appgw.shared to &quot;true&quot; will create an AzureIngressProhibitedTarget CRD.</li>
+</ul>
+<ul>
+<li># This prohibits AGIC from applying config for any host/path.</li>
+</ul>
+<ul>
+<li># Use &quot;kubectl get AzureIngressProhibitedTargets&quot; to view and change this.</li>
+</ul>
+<ul>
+<li>shared: false</li>
+</ul>
+<ul>
+<li># Specify which kubernetes namespace the ingress controller will watch</li>
+</ul>
+<ul>
+<li># Default value is &quot;default&quot;</li>
+</ul>
+<ul>
+<li># Leaving this variable out or setting it to blank or empty string would</li>
+</ul>
+<ul>
+<li># result in Ingress Controller observing all acessible namespaces.</li>
+</ul>
+<ul>
+<li>kubernetes:</li>
+</ul>
+<ul>
+<li>watchNamespace: default</li>
+</ul>
+<ul>
+<li># Specify the authentication with Azure Resource Manager</li>
+</ul>
+<ul>
+<li># Two authentication methods are available:</li>
+</ul>
+<ul>
+<li>armAuth:</li>
+</ul>
+<ul>
+<li>type: aadPodIdentity</li>
+</ul>
+<ul>
+<li>identityResourceID: /subscriptions/fbf2ac60-19f8-4f3a-9036-abcegieutdc/resourcegroups/MC_agic-test-rg03_agic-aks03_chinanorth2/providers/Microsoft.ManagedIdentity/userAssignedIdentities/agic-aks03-used    #自建AGIC identity的资源ID</li>
+</ul>
+<ul>
+<li>identityClientID: a8695f56-de85-4759-bdbd-b050885dbc63</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>如果不确定AKS cluster是使用哪种方式部署的，当查询Service Principal Client ID时输出为“msi”，证明此AKS Cluster采用的是managed identity方式部署的。</li>
+</ul>
+<ul>
+<li>当AKS使用managed ideityty方式部署时，这一步骤中输出的ID实际为AKS Cluster创建过程中平台自动创建的用于代表AKS agent pool的User assigned managed identity，它的Client ID。</li>
+</ul>
+<ul>
+<li>此部分角色分配完成后，可以在Portal中查看：</li>
+</ul>
+<ul>
+<li>AAD  Pod identity版本在更新中，新的版本更新后，YAML部署方式中的URL会直接跟版本号相关联；要安装新版AAD Pod identity需要查看最新的链接。前几天还是v1.8.10今天8月7号已是v1.8.11。</li>
+</ul>
+<ul>
+<li>一般mic和nmi  POD状态为Ready说明AAD安装应该是没有问题了，如果不为reday，可以进一步查看下POD的日志，kubectl get logs &lt;mic-pod-name&gt;|&lt;nmi-pod-name&gt; 检查是否有各种权限的报错信息。</li>
+</ul>
+<ul>
+<li>在Portal中可以看到自建Identity的权限为：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az aks show -g &lt;AKSResourceGroup&gt; -n &lt;AKSClusterName&gt; --query servicePrincipalProfile.clientId -o tsv</li>
+</ul>
+<ul>
+<li>az aks show -g &lt;AKSResourceGroup&gt; -n &lt;AKSClusterName&gt; --query identityProfile.kubeletidentity.clientId -o tsv</li>
+</ul>
+<ul>
+<li>az role assignment create --role &quot;Managed Identity Operator&quot; --assignee &lt;ID&gt; --scope /subscriptions/&lt;SubscriptionID&gt;/resourcegroups/&lt;NodeResourceGroup&gt;</li>
+</ul>
+<ul>
+<li>az role assignment create --role &quot;Virtual Machine Contributor&quot; --assignee &lt;ID&gt; --scope /subscriptions/&lt;SubscriptionID&gt;/resourcegroups/&lt;NodeResourceGroup&gt;</li>
+</ul>
+<ul>
+<li>az role assignment create --role &quot;Managed Identity Operator&quot; --assignee &lt;ID&gt; --scope /subscriptions/&lt;SubscriptionID&gt;/resourcegroups/&lt;IdentityResourceGroup&gt;</li>
+</ul>
+<ul>
+<li>az identity create -g $resourceGroup-n $identityName</li>
+</ul>
+<ul>
+<li>az role assignment create \</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>identityName=&quot;&lt;identity-name&gt;&quot;</li>
+</ul>
+<ul>
+<li>resourceGroup=&quot;&lt;resource-group&gt;&quot;</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>棕地安装是在已有的App GW上将其与AKS集成，但实际App GW原有的一系列配置会被删除，AGIC会创建默认的defaultbackendpool，及相关配置。关于这点可以参考：What Does It Mean for the Application Gateway Ingress Controller (AGIC) to Assume “Full Ownership”?</li>
+</ul>
+<ul>
+<li>environment: AzureChinaCloud          #建议明确指明为中国区Azure</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://techcommunity.microsoft.com/t5/fasttrack-for-azure/what-does-it-mean-for-the-application-gateway-ingress-controller/ba-p/2839051" target="_blank" rel="noopener">https://techcommunity.microsoft.com/t5/fasttrack-for-azure/what-does-it-mean-for-the-application-gateway-ingress-controller/ba-p/2839051</a></li>
+</ul>
+<ul>
+<li>参考文档： <a href="https://azure.github.io/aad-pod-identity/docs/getting-started/role-assignment/" target="_blank" rel="noopener">https://azure.github.io/aad-pod-identity/docs/getting-started/role-assignment/</a></li>
+</ul>
+<ul>
+<li>参考文档： <a href="https://azure.github.io/aad-pod-identity/docs/getting-started/installation/" target="_blank" rel="noopener">https://azure.github.io/aad-pod-identity/docs/getting-started/installation/</a></li>
+</ul>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.11/deploy/infra/deployment-rbac.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.11/deploy/infra/deployment-rbac.yaml</a></li>
+</ul>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.11/deploy/infra/deployment.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.11/deploy/infra/deployment.yaml</a></li>
+</ul>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.11/deploy/infra/mic-exception.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.11/deploy/infra/mic-exception.yaml</a></li>
+</ul>
+<ul>
+<li>helm repo add aad-pod-identity <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/master/charts" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/master/charts</a></li>
+</ul>
+<ul>
+<li>helm repo add application-gateway-kubernetes-ingress <a href="https://appgwingress.blob.core.windows.net/ingress-azure-helm-package/" target="_blank" rel="noopener">https://appgwingress.blob.core.windows.net/ingress-azure-helm-package/</a></li>
+</ul>
+<ul>
+<li>wget <a href="https://raw.githubusercontent.com/Azure/application-gateway-kubernetes-ingress/master/docs/examples/sample-helm-config.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/application-gateway-kubernetes-ingress/master/docs/examples/sample-helm-config.yaml</a> -O helm-config.yaml</li>
+</ul>
+<ul>
+<li># - Option 1: AAD-Pod-Identity (<a href="https://github.com/Azure/aad-pod-identity)" target="_blank" rel="noopener">https://github.com/Azure/aad-pod-identity)</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022.8.8</p>
+<p>Tian tian</p>
+<p>棕地安装是在已有的App GW上将其与AKS集成，但实际App GW原有的一系列配置会被删除，AGIC会创建默认的defaultbackendpool，及相关配置。关于这点可以参考：What Does It Mean for the Application Gateway Ingress Controller (AGIC) to Assume “Full Ownership”?</p>
+<p><a href="https://techcommunity.microsoft.com/t5/fasttrack-for-azure/what-does-it-mean-for-the-application-gateway-ingress-controller/ba-p/2839051" target="_blank" rel="noopener">https://techcommunity.microsoft.com/t5/fasttrack-for-azure/what-does-it-mean-for-the-application-gateway-ingress-controller/ba-p/2839051</a></p>
+<p>环境说明：</p>
+<p>AKS Cluster版本1.22.11 (VMSS)</p>
+<p>AKS与App GW属于不同的资源组，不同的VNet。</p>
+<p>AGIC managed identity位于AKS node Resource Group中。</p>
+<p>AAD POD Identity版本1.8.10</p>
+<p>AGIC版本1.5.2</p>
+<p>AAD POD IDENTITY</p>
+<p>Role Assignment</p>
+<p>参考文档： <a href="https://azure.github.io/aad-pod-identity/docs/getting-started/role-assignment/" target="_blank" rel="noopener">https://azure.github.io/aad-pod-identity/docs/getting-started/role-assignment/</a></p>
+<p>Obtaining the ID of the managed identity / service principal</p>
+<p>Cluster configuration</p>
+<p>Command</p>
+<p>AKS cluster with service principal</p>
+<p>az aks show -g &lt;AKSResourceGroup&gt; -n &lt;AKSClusterName&gt; --query servicePrincipalProfile.clientId -o tsv</p>
+<p>AKS cluster with managed identity</p>
+<p>az aks show -g &lt;AKSResourceGroup&gt; -n &lt;AKSClusterName&gt; --query identityProfile.kubeletidentity.clientId -o tsv</p>
+<p>AKSResourceGroup为AKS Cluster所属的Resource Group。</p>
+<p>如果不确定AKS cluster是使用哪种方式部署的，当查询Service Principal Client ID时输出为“msi”，证明此AKS Cluster采用的是managed identity方式部署的。</p>
+<p>当AKS使用managed ideityty方式部署时，这一步骤中输出的ID实际为AKS Cluster创建过程中平台自动创建的用于代表AKS agent pool的User assigned managed identity，它的Client ID。</p>
+<p>Performing role assignments</p>
+<p>az role assignment create --role &quot;Managed Identity Operator&quot; --assignee &lt;ID&gt; --scope /subscriptions/&lt;SubscriptionID&gt;/resourcegroups/&lt;NodeResourceGroup&gt;</p>
+<p>az role assignment create --role &quot;Virtual Machine Contributor&quot; --assignee &lt;ID&gt; --scope /subscriptions/&lt;SubscriptionID&gt;/resourcegroups/&lt;NodeResourceGroup&gt;</p>
+<p>对于启用或者未启用RBAC的AKS Cluster都需要执行上述两条指令；两条指令中的ID即为上一步中输出的ID；NodeResourceGroup即为当创建AKS时平台自动创建的以“MC_”开头与AKS Cluster同名同Region的Resource Group。</p>
+<p>如果部署AKS Cluster时指定的User-assigned identities没有在AKS node resource group中，则还需要授予这个AKS agent pool managed identity在AKS Cluster User-assigned identity资源组内的Managed Identity Operator角色。</p>
+<p>az role assignment create --role &quot;Managed Identity Operator&quot; --assignee &lt;ID&gt; --scope /subscriptions/&lt;SubscriptionID&gt;/resourcegroups/&lt;IdentityResourceGroup&gt;</p>
+<p>此部分实际操作日志：</p>
+<p>此部分角色分配完成后，可以在Portal中查看：</p>
+<p>Install AAD Pod Identity on AKS Cluster</p>
+<p>参考文档： <a href="https://azure.github.io/aad-pod-identity/docs/getting-started/installation/" target="_blank" rel="noopener">https://azure.github.io/aad-pod-identity/docs/getting-started/installation/</a></p>
+<p>AAD  Pod identity版本在更新中，新的版本更新后，YAML部署方式中的URL会直接跟版本号相关联；要安装新版AAD Pod identity需要查看最新的链接。前几天还是v1.8.10今天8月7号已是v1.8.11。</p>
+<p>有两种安装方式，选择其一即可:</p>
+<p>基于githubusercontent上提供的YAML文件直接apply。</p>
+<p>使用helm的方式进行安装。</p>
+<p>使用YAML文件直接部署：</p>
+<p>启用了RBAC的AKS Cluster:</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.11/deploy/infra/deployment-rbac.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.11/deploy/infra/deployment-rbac.yaml</a></p>
+<p>没有启用RBAC的AKS Cluster：</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.11/deploy/infra/deployment.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.11/deploy/infra/deployment.yaml</a></p>
+<p>为了允许MIC和AKS add-on访问IMDS不被NMI截获：</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.11/deploy/infra/mic-exception.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/v1.8.11/deploy/infra/mic-exception.yaml</a></p>
+<p>使用Helm安装AAD Pod Identity</p>
+<p>看不到版本信息，helm install默认安装helm repo中最新的AAD pod identity版本。</p>
+<p>helm repo add aad-pod-identity <a href="https://raw.githubusercontent.com/Azure/aad-pod-identity/master/charts" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/aad-pod-identity/master/charts</a></p>
+<p>helm install aad-pod-identity aad-pod-identity/aad-pod-identity</p>
+<p>上述两种安装方式的区别：</p>
+<p>操作完成的提示不同：</p>
+<p>使用YAML文件部署（启用了RBAC Cluster）：</p>
+<p>serviceaccount/aad-pod-id-nmi-service-account created</p>
+<p>customresourcedefinition.apiextensions.k8s.io/azureassignedidentities.aadpodidentity.k8s.io created</p>
+<p>customresourcedefinition.apiextensions.k8s.io/azureidentitybindings.aadpodidentity.k8s.io created</p>
+<p>customresourcedefinition.apiextensions.k8s.io/azureidentities.aadpodidentity.k8s.io created</p>
+<p>customresourcedefinition.apiextensions.k8s.io/azurepodidentityexceptions.aadpodidentity.k8s.io created</p>
+<p>clusterrole.rbac.authorization.k8s.io/aad-pod-id-nmi-role created</p>
+<p>clusterrolebinding.rbac.authorization.k8s.io/aad-pod-id-nmi-binding created</p>
+<p>daemonset.apps/nmi created</p>
+<p>serviceaccount/aad-pod-id-mic-service-account created</p>
+<p>clusterrole.rbac.authorization.k8s.io/aad-pod-id-mic-role created</p>
+<p>clusterrolebinding.rbac.authorization.k8s.io/aad-pod-id-mic-binding created</p>
+<p>deployment.apps/mic created</p>
+<p>使用Helm安装，需要等待若干分钟：</p>
+<p>安装完成后AAD Pod的名称不一样：</p>
+<p>两种方式都会生成至少两个mic相关的POD和一个nmi相关的POD。使用helm安装的POD名称前有aad-pod-identity字样，YAML文件方式部署的POD名称则直接以mic和nmi开头。</p>
+<p>一般mic和nmi  POD状态为Ready说明AAD安装应该是没有问题了，如果不为reday，可以进一步查看下POD的日志，kubectl get logs &lt;mic-pod-name&gt;|&lt;nmi-pod-name&gt; 检查是否有各种权限的报错信息。</p>
+<p>Install AGIC</p>
+<p>Create an Azure identity and give it permissions to ARM</p>
+<p>这一identity会被AGIC用来执行Application Gateway的配置更新。它可以创建在任意资源组中，但如果它不被创建在AKS Cluster Resource Group中，后续角色分配中需要多执行一步。</p>
+<p>创建这一Azure Identity:</p>
+<p>identityName=&quot;&lt;identity-name&gt;&quot;</p>
+<p>resourceGroup=&quot;&lt;resource-group&gt;&quot;</p>
+<p>az identity create -g $resourceGroup-n $identityName</p>
+<p>并记录这一指令的输出，后面需要用到这一Identity的Client ID（identityClientId）和Resource ID（identityId）。</p>
+<p>实际操作截图：</p>
+<p>授予这一Identity对App GW的Contributor权限：</p>
+<p>az role assignment create \</p>
+<p>--role &quot;Contributor&quot;\</p>
+<p>--assignee $identityClientId\</p>
+<p>--scope &lt;App-Gateway-ID&gt;</p>
+<p>App-Gateway-ID为App GW的资源ID。</p>
+<p>授权这一Identity对App GW所在资源组的Reader权限：</p>
+<p>--role &quot;Reader&quot;\</p>
+<p>--scope &lt;App-Gateway-Resource-Group-ID&gt;</p>
+<p>在Portal中可以看到自建Identity的权限为：</p>
+<p>如果自建的Identity与AKS Cluster不在同一资源组中，则需要执行如下指令</p>
+<p>--role &quot;Managed Identity Operator&quot;\</p>
+<p>--assignee $clusterClientId\</p>
+<p>--scope $identityId</p>
+<p>clusterClientId为AKS with managed identity下的agent pool managed identity的Client ID。</p>
+<p>identityId为自建Identity的资源ID。</p>
+<p>Install Ingress Controlleras a Helm Chart</p>
+<p>添加AGIC的repo并更新：</p>
+<p>helm repo add application-gateway-kubernetes-ingress <a href="https://appgwingress.blob.core.windows.net/ingress-azure-helm-package/" target="_blank" rel="noopener">https://appgwingress.blob.core.windows.net/ingress-azure-helm-package/</a></p>
+<p>helm repo update</p>
+<p>下载Helm的config文件</p>
+<p>wget <a href="https://raw.githubusercontent.com/Azure/application-gateway-kubernetes-ingress/master/docs/examples/sample-helm-config.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/Azure/application-gateway-kubernetes-ingress/master/docs/examples/sample-helm-config.yaml</a> -O helm-config.yaml</p>
+<p>编辑helm-config.yaml文件</p>
+<h1>This file contains the essential configs for the ingress controller helm chart</h1>
+<h1>Verbosity level of the App Gateway Ingress Controller</h1>
+<p>verbosityLevel: 3</p>
+<p>################################################################################</p>
+<h1>Specify which application gateway the ingress controller will manage</h1>
+<p>#</p>
+<p>appgw:</p>
+<p>subscriptionId: fbf2ac60-19f8-4f3a-9036-abcegieutdc</p>
+<p>resourceGroup: agic-test-rg04     #直接写资源组名称</p>
+<p>name: agic-appgw04</p>
+<p>usePrivateIP: false</p>
+<p>environment: AzureChinaCloud          #建议明确指明为中国区Azure</p>
+<h1>Setting appgw.shared to &quot;true&quot; will create an AzureIngressProhibitedTarget CRD.</h1>
+<h1>This prohibits AGIC from applying config for any host/path.</h1>
+<h1>Use &quot;kubectl get AzureIngressProhibitedTargets&quot; to view and change this.</h1>
+<p>shared: false</p>
+<h1>Specify which kubernetes namespace the ingress controller will watch</h1>
+<h1>Default value is &quot;default&quot;</h1>
+<h1>Leaving this variable out or setting it to blank or empty string would</h1>
+<h1>result in Ingress Controller observing all acessible namespaces.</h1>
+<p>kubernetes:</p>
+<p>watchNamespace: default</p>
+<h1>Specify the authentication with Azure Resource Manager</h1>
+<h1>Two authentication methods are available:</h1>
+<h1>- Option 1: AAD-Pod-Identity (<a href="https://github.com/Azure/aad-pod-identity)" target="_blank" rel="noopener">https://github.com/Azure/aad-pod-identity)</a></h1>
+<p>armAuth:</p>
+<p>type: aadPodIdentity</p>
+<p>identityResourceID: /subscriptions/fbf2ac60-19f8-4f3a-9036-abcegieutdc/resourcegroups/MC_agic-test-rg03_agic-aks03_chinanorth2/providers/Microsoft.ManagedIdentity/userAssignedIdentities/agic-aks03-used    #自建AGIC identity的资源ID</p>
+<p>identityClientID: a8695f56-de85-4759-bdbd-b050885dbc63</p></article>

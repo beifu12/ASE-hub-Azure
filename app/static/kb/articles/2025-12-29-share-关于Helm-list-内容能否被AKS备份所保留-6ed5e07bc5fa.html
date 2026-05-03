@@ -1,0 +1,105 @@
+<article class="kb-article" data-title="【share】关于Helm list 内容能否被AKS备份所保留"><h1>【share】关于Helm list 内容能否被AKS备份所保留</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-29 16:51:22</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：SR_20251125384221_azure aks 备份和还原报错</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：SR_20251125384221_azure aks 备份和还原报错</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>经过初步的测试，发现helm list是能够被还原出来的，测试情况如下：</li>
+</ul>
+<ul>
+<li>备份前进行部署情况：</li>
+</ul>
+<ul>
+<li>执行删除：</li>
+</ul>
+<ul>
+<li>还原后的整体情况：</li>
+</ul>
+<ul>
+<li>也可以采用 kubectl get secrets -l owner=helm --all-namespaces</li>
+</ul>
+<ul>
+<li>经过测试发现，在初次配置备份规则中源内容中，默认没有包含密钥(secret)，关于配置源内容的相关说明(教程：为 Azure Kubernetes 服务群集配置项级备份 - Azure Backup | Microsoft Learn)</li>
+</ul>
+<ul>
+<li>测试没有包含密钥的备份情况，如下：</li>
+</ul>
+<ul>
+<li>备份前的helm list内容：</li>
+</ul>
+<ul>
+<li>以及密钥中的内容：</li>
+</ul>
+<ul>
+<li>立即备份后，进行test项的删除，</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>客户的AKS部署均由helm进行部署，由于客户发现在执行还原后helm list并没有恢复到原本的内容，所以希望确认在备份还原后，helm list的信息是否一样能够支持被还原出来，以及helm list是存储在AKS哪个部分。</li>
+</ul>
+<ul>
+<li>则需要进一步排查与客户的配置差距问题，其中最主要的是确认helm list中的内容，所存储的位置进行确认，针对于helm list 的内容存储源，结合helm的第三方的文档说明，Helm 3 把 release 存在Kubernetes API 中的 Secret 也就是说，每一个 Helm release 都对应一个 Kubernetes Secret。</li>
+</ul>
+<ul>
+<li>基于以上的内容，进行下一步的配置测试确认：</li>
+</ul>
+<ul>
+<li>确认到helm list的内容参考的是secret中的信息，因此需要确认备份时，是包含了secret的。</li>
+</ul>
+<ul>
+<li>关于配置了AKS备份之后如何查看实例的备份配置情况，可以根据备份实例页面下的“备份实例配置”进行查看。</li>
+</ul>
+<ul>
+<li>可以查看到当时所选择的其他资源内容情况：</li>
+</ul>
+<ul>
+<li>然后测试还原操作，可以确认密钥没有被还原，因此helm list也同样丢失了，但是pods以及服务正常创建出来了。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>因此采用命令的方式可以进行release的输出：kubectl get secret -A | grep helm</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/23</p>
+<p>参考工单：SR_20251125384221_azure aks 备份和还原报错</p>
+<p>问题描述：</p>
+<p>客户的AKS部署均由helm进行部署，由于客户发现在执行还原后helm list并没有恢复到原本的内容，所以希望确认在备份还原后，helm list的信息是否一样能够支持被还原出来，以及helm list是存储在AKS哪个部分。</p>
+<p>经过初步的测试，发现helm list是能够被还原出来的，测试情况如下：</p>
+<p>备份前进行部署情况：</p>
+<p>执行删除：</p>
+<p>还原后的整体情况：</p>
+<p>则需要进一步排查与客户的配置差距问题，其中最主要的是确认helm list中的内容，所存储的位置进行确认，针对于helm list 的内容存储源，结合helm的第三方的文档说明，Helm 3 把 release 存在Kubernetes API 中的 Secret 也就是说，每一个 Helm release 都对应一个 Kubernetes Secret。</p>
+<p>因此采用命令的方式可以进行release的输出：kubectl get secret -A | grep helm</p>
+<p>也可以采用 kubectl get secrets -l owner=helm --all-namespaces</p>
+<p>基于以上的内容，进行下一步的配置测试确认：</p>
+<p>确认到helm list的内容参考的是secret中的信息，因此需要确认备份时，是包含了secret的。</p>
+<p>经过测试发现，在初次配置备份规则中源内容中，默认没有包含密钥(secret)，关于配置源内容的相关说明(教程：为 Azure Kubernetes 服务群集配置项级备份 - Azure Backup | Microsoft Learn)</p>
+<p>关于配置了AKS备份之后如何查看实例的备份配置情况，可以根据备份实例页面下的“备份实例配置”进行查看。</p>
+<p>可以查看到当时所选择的其他资源内容情况：</p>
+<p>测试没有包含密钥的备份情况，如下：</p>
+<p>备份前的helm list内容：</p>
+<p>以及密钥中的内容：</p>
+<p>立即备份后，进行test项的删除，</p>
+<p>然后测试还原操作，可以确认密钥没有被还原，因此helm list也同样丢失了，但是pods以及服务正常创建出来了。</p></article>

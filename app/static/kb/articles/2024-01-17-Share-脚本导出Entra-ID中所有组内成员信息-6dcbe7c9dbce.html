@@ -1,0 +1,117 @@
+<article class="kb-article" data-title="[Share]脚本导出Entra ID中所有组内成员信息"><h1>[Share]脚本导出Entra ID中所有组内成员信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-01-17 16:18:57</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>验证下面的脚本可以成功导出Entra ID中所以组的成员信息供参考：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>验证下面的脚本可以成功导出Entra ID中所以组的成员信息供参考：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Connect-AzureAD -AzureEnvironment AzureChinaCloud</li>
+</ul>
+<ul>
+<li>$allgroups = Get-AzureADGroup -All $true | select ObjectId,DisplayName</li>
+</ul>
+<ul>
+<li>$result = foreach ( $group in $allgroups ) {</li>
+</ul>
+<ul>
+<li>$hash = @{GroupName=$group.DisplayName;Member=&#39;&#39;}</li>
+</ul>
+<ul>
+<li>$groupid = $group.ObjectId</li>
+</ul>
+<ul>
+<li>if ( $members = Get-AzureADGroupMember -ObjectId $groupid ) {</li>
+</ul>
+<ul>
+<li>foreach ( $member in $members ) {</li>
+</ul>
+<ul>
+<li>$hash.Member = $member.DisplayName</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>else</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>$displayname = &quot;No Members&quot;</li>
+</ul>
+<ul>
+<li>$hash.Member = $displayname</li>
+</ul>
+<ul>
+<li>$result | Export-Csv -Path C:\temp\AzureADGroups.csv -NoTypeInformation</li>
+</ul>
+<ul>
+<li>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</li>
+</ul>
+<ul>
+<li>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</li>
+</ul>
+<ul>
+<li>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</li>
+</ul>
+<ul>
+<li>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>验证下面的脚本可以成功导出Entra ID中所以组的成员信息供参考：</li>
+</ul>
+<ul>
+<li>New-Object psObject -Property $hash</li>
+</ul>
+<ul>
+<li>脚本免责声明：</li>
+</ul>
+<ul>
+<li>进一步测试验证该脚本可以成功运行导出所有组成员信息：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/01/17</p>
+<p>验证下面的脚本可以成功导出Entra ID中所以组的成员信息供参考：</p>
+<p>Connect-AzureAD -AzureEnvironment AzureChinaCloud</p>
+<p>$allgroups = Get-AzureADGroup -All $true | select ObjectId,DisplayName</p>
+<p>$result = foreach ( $group in $allgroups ) {</p>
+<p>$hash = @{GroupName=$group.DisplayName;Member=&#39;&#39;}</p>
+<p>$groupid = $group.ObjectId</p>
+<p>if ( $members = Get-AzureADGroupMember -ObjectId $groupid ) {</p>
+<p>foreach ( $member in $members ) {</p>
+<p>$hash.Member = $member.DisplayName</p>
+<p>New-Object psObject -Property $hash</p>
+<p>}</p>
+<p>else</p>
+<p>{</p>
+<p>$displayname = &quot;No Members&quot;</p>
+<p>$hash.Member = $displayname</p>
+<p>$result | Export-Csv -Path C:\temp\AzureADGroups.csv -NoTypeInformation</p>
+<p>脚本免责声明：</p>
+<p>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</p>
+<p>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</p>
+<p>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</p>
+<p>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</p>
+<p>进一步测试验证该脚本可以成功运行导出所有组成员信息：</p></article>

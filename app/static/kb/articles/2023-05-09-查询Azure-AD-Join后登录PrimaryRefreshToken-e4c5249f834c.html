@@ -1,0 +1,53 @@
+<article class="kb-article" data-title="查询Azure AD Join后登录PrimaryRefreshToken"><h1>查询Azure AD Join后登录PrimaryRefreshToken</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: Kusto Jarvis常用命令</li>
+<li>最近修改: 2023-05-09 13:13:34</li>
+<li>JD 相关性: 自动化/命令工具; Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>| project env_time,RequestId, Result,ErrorCode,ErrorNo,PUID,ClientIp, AccountType, AlpStatus, ApplicationId, AuthType, AuthenticationType,AuthenticatedClient, Client,DomainName,TenantId,ClientInfo,ApplicationDisplayName,ResourceDisplayName,OTData</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>| project env_time,RequestId, Result,ErrorCode,ErrorNo,PUID,ClientIp, AccountType, AlpStatus, ApplicationId, AuthType, AuthenticationType,AuthenticatedClient, Client,DomainName,TenantId,ClientInfo,ApplicationDisplayName,ResourceDisplayName,OTData</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>zuoteng</li>
+</ul>
+<ul>
+<li>PerRequestTableIfx</li>
+</ul>
+<ul>
+<li>| where env_time &gt;=datetime(2023-04-24 00:13) and env_time &lt;datetime(2024-04-24 10:14)</li>
+</ul>
+<ul>
+<li>| where TenantId ==&quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot; and OTData contains &quot;PrimaryRefreshToken&quot;</li>
+</ul>
+<ul>
+<li>//| where RequestId in (&quot;875675a9-7c5a-46e5-99ff-1ca62cc82600&quot;,&quot;9d606fe9-1b8e-49b4-81fc-eb647b4f2600&quot;)</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>| where * contains &quot;aa5ba4fd-3542-4226-bcb2-95b446a8abee&quot;   //这个是相应用户的PUID  可以在ASC中查到</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>zuoteng</p>
+<p>PerRequestTableIfx</p>
+<p>| where env_time &gt;=datetime(2023-04-24 00:13) and env_time &lt;datetime(2024-04-24 10:14)</p>
+<p>| where * contains &quot;aa5ba4fd-3542-4226-bcb2-95b446a8abee&quot;   //这个是相应用户的PUID  可以在ASC中查到</p>
+<p>| where TenantId ==&quot;b388b808-0ec9-4a09-a414-a7cbbd8b7e9b&quot; and OTData contains &quot;PrimaryRefreshToken&quot;</p>
+<p>//| where RequestId in (&quot;875675a9-7c5a-46e5-99ff-1ca62cc82600&quot;,&quot;9d606fe9-1b8e-49b4-81fc-eb647b4f2600&quot;)</p>
+<p>| project env_time,RequestId, Result,ErrorCode,ErrorNo,PUID,ClientIp, AccountType, AlpStatus, ApplicationId, AuthType, AuthenticationType,AuthenticatedClient, Client,DomainName,TenantId,ClientInfo,ApplicationDisplayName,ResourceDisplayName,OTData</p></article>

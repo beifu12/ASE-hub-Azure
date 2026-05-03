@@ -1,0 +1,110 @@
+<article class="kb-article" data-title="CDN product updates of Jun. 2023/06"><h1>CDN product updates of Jun. 2023/06</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: CDN Operation Guideline</li>
+<li>最近修改: 2023-11-06 09:49:47</li>
+<li>JD 相关性: 交付流程/客户支持; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Since providers have already provided IP blocks, we cannot merge them further.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Since providers have already provided IP blocks, we cannot merge them further.</li>
+</ul>
+<ul>
+<li>This SP is under PG&#39;s tenant thus the cx cannot see it in their AAD tenants, thus PS/CLI registration is necessary. PG will update the doc to make it more explicit.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Below are the updated information about CDN service of June.</li>
+</ul>
+<ul>
+<li>Jun. 2023</li>
+</ul>
+<ul>
+<li>Type</li>
+</ul>
+<ul>
+<li>Description</li>
+</ul>
+<ul>
+<li>Discussion</li>
+</ul>
+<ul>
+<li>Related case</li>
+</ul>
+<ul>
+<li>Question</li>
+</ul>
+<ul>
+<li>使用REST API获取到的回源IP列表有近千条，是否可以合并以减少这个条目。</li>
+</ul>
+<ul>
+<li>We return all the back-to-origin IP lists from all providers, including backups.</li>
+</ul>
+<ul>
+<li>A rough summary of the number of back-to-origin IP lists per provider is as follows:</li>
+</ul>
+<ul>
+<li>Baidu: 120+</li>
+</ul>
+<ul>
+<li>BaiShan: 100+</li>
+</ul>
+<ul>
+<li>KingSoft: 300+</li>
+</ul>
+<ul>
+<li>Tecent: 500+</li>
+</ul>
+<ul>
+<li>If customer is concerned about the length, we suggest engaging PG team. We can switch the customer’s provider to Baidu or BaiShan and exclude all backups for them.</li>
+</ul>
+<ul>
+<li>Though the IP list contains backups, we suggested customers to periodically refresh the list since there stands a chance that providers change their back-to-origin list.</li>
+</ul>
+<ul>
+<li>Tips</li>
+</ul>
+<ul>
+<li>Microsoft.AzureFrontDoor-Cdn(621bd413-f6cc-4be5-b3fe-a82c12af6629) needs to be registered through PS or CLI for cert auto rotate</li>
+</ul>
+<ul>
+<li>20230529232464</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Below are the updated information about CDN service of June.</p>
+<p>Jun. 2023</p>
+<p>Type</p>
+<p>Description</p>
+<p>Discussion</p>
+<p>Related case</p>
+<p>Question</p>
+<p>使用REST API获取到的回源IP列表有近千条，是否可以合并以减少这个条目。</p>
+<p>We return all the back-to-origin IP lists from all providers, including backups.</p>
+<p>A rough summary of the number of back-to-origin IP lists per provider is as follows:</p>
+<p>Baidu: 120+</p>
+<p>BaiShan: 100+</p>
+<p>KingSoft: 300+</p>
+<p>Tecent: 500+</p>
+<p>Since providers have already provided IP blocks, we cannot merge them further.</p>
+<p>If customer is concerned about the length, we suggest engaging PG team. We can switch the customer’s provider to Baidu or BaiShan and exclude all backups for them.</p>
+<p>Though the IP list contains backups, we suggested customers to periodically refresh the list since there stands a chance that providers change their back-to-origin list.</p>
+<p>Tips</p>
+<p>Microsoft.AzureFrontDoor-Cdn(621bd413-f6cc-4be5-b3fe-a82c12af6629) needs to be registered through PS or CLI for cert auto rotate</p>
+<p>This SP is under PG&#39;s tenant thus the cx cannot see it in their AAD tenants, thus PS/CLI registration is necessary. PG will update the doc to make it more explicit.</p>
+<p>20230529232464</p></article>

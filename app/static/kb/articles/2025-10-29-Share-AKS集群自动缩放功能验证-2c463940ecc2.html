@@ -1,0 +1,125 @@
+<article class="kb-article" data-title="【Share】AKS集群自动缩放功能验证"><h1>【Share】AKS集群自动缩放功能验证</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-29 16:07:16</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>官网描述自动缩放程序在监视到由于“资源约束“而无法调度的pod时，会扩展节点池中节点。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>官网描述自动缩放程序在监视到由于“资源约束“而无法调度的pod时，会扩展节点池中节点。</li>
+</ul>
+<ul>
+<li>当部署第7个pod时，pod出现”Pending”状态：</li>
+</ul>
+<ul>
+<li>在pod事件日志中可以看到由于资源限制调度失败，触发了自动缩放程序并扩展节点：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Wang Yu</li>
+</ul>
+<ul>
+<li>Azure Kubernetes 服务中的群集自动缩放概述 - Azure Kubernetes Service | Azure Docs</li>
+</ul>
+<ul>
+<li>在自动缩放最佳实践中有说明，不会根据节点上的CPU/内存压力纵向扩展节点：</li>
+</ul>
+<ul>
+<li>============</li>
+</ul>
+<ul>
+<li>AKS集群和节点池版本：1.28.9</li>
+</ul>
+<ul>
+<li>节点池自动缩放功能启用，节点范围1-5</li>
+</ul>
+<ul>
+<li>测试初始，节点池中节点数量为1。首先部署一个用于内存压力测试的pod，该pod资源限制内存request:64M  limits: 4096M.</li>
+</ul>
+<ul>
+<li>pod启动后看到内存request为64M，limit为4G：</li>
+</ul>
+<ul>
+<li>node中内存request负载50%：</li>
+</ul>
+<ul>
+<li>在pod中使用stress工具将pod内存负载提高到4G。</li>
+</ul>
+<ul>
+<li>pod内存使用达到4G：</li>
+</ul>
+<ul>
+<li>node内存负载达到118%：</li>
+</ul>
+<ul>
+<li>此时node中内存request仍为50%：</li>
+</ul>
+<ul>
+<li>等待一段时间，node在内存持续超过100%的情况下，并未触发节点池的纵向扩展。</li>
+</ul>
+<ul>
+<li>继续上面的实验环境，此时node内存 request 50%，实际内存负载118%。</li>
+</ul>
+<ul>
+<li>向node上持续部署pod：</li>
+</ul>
+<ul>
+<li>部署完6个pod后，node 内存request达到99%。pod是可以正常部署的，没有遇到资源限制情况。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>测试验证过程：</li>
+</ul>
+<ul>
+<li>验证：自动缩放程序不会根据节点上的内存压力触发纵向扩展：</li>
+</ul>
+<ul>
+<li>验证结果：</li>
+</ul>
+<ul>
+<li>验证：自动缩放程序在检测到由于资源约束而无法调度pod时，会纵向扩展节点。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Wang Yu</p>
+<p>官网描述自动缩放程序在监视到由于“资源约束“而无法调度的pod时，会扩展节点池中节点。</p>
+<p>Azure Kubernetes 服务中的群集自动缩放概述 - Azure Kubernetes Service | Azure Docs</p>
+<p>在自动缩放最佳实践中有说明，不会根据节点上的CPU/内存压力纵向扩展节点：</p>
+<p>测试验证过程：</p>
+<p>============</p>
+<p>AKS集群和节点池版本：1.28.9</p>
+<p>节点池自动缩放功能启用，节点范围1-5</p>
+<p>验证：自动缩放程序不会根据节点上的内存压力触发纵向扩展：</p>
+<p>测试初始，节点池中节点数量为1。首先部署一个用于内存压力测试的pod，该pod资源限制内存request:64M  limits: 4096M.</p>
+<p>pod启动后看到内存request为64M，limit为4G：</p>
+<p>node中内存request负载50%：</p>
+<p>在pod中使用stress工具将pod内存负载提高到4G。</p>
+<p>pod内存使用达到4G：</p>
+<p>node内存负载达到118%：</p>
+<p>此时node中内存request仍为50%：</p>
+<p>验证结果：</p>
+<p>等待一段时间，node在内存持续超过100%的情况下，并未触发节点池的纵向扩展。</p>
+<p>验证：自动缩放程序在检测到由于资源约束而无法调度pod时，会纵向扩展节点。</p>
+<p>继续上面的实验环境，此时node内存 request 50%，实际内存负载118%。</p>
+<p>向node上持续部署pod：</p>
+<p>部署完6个pod后，node 内存request达到99%。pod是可以正常部署的，没有遇到资源限制情况。</p>
+<p>当部署第7个pod时，pod出现”Pending”状态：</p>
+<p>在pod事件日志中可以看到由于资源限制调度失败，触发了自动缩放程序并扩展节点：</p></article>

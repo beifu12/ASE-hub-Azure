@@ -1,0 +1,74 @@
+<article class="kb-article" data-title="July 8, 2025—KB5062553 (OS Build 26100.4652)导致windows无法启动"><h1>July 8, 2025—KB5062553 (OS Build 26100.4652)导致windows无法启动</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Storage</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-08-15 10:28:10</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>这个KB有一个已知issue：二代虚拟机，如果不是受信任启动，会造成windows无法启动故障</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>这个KB有一个已知issue：二代虚拟机，如果不是受信任启动，会造成windows无法启动故障</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>【问题背景】</li>
+</ul>
+<ul>
+<li>【问题分析】</li>
+</ul>
+<ul>
+<li>关于这个KB的说明：July 8, 2025—KB5062553 (OS Build 26100.4652) - Microsoft Support</li>
+</ul>
+<ul>
+<li>我测试，可以复现这个问题，和镜像没有关系，和从磁盘创建虚拟机有关系。</li>
+</ul>
+<ul>
+<li>关于客户关心的成本问题，文档中明确写了：受信任启动无需额外成本。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>客户陆续接到很多同事的报告，大量Azure VM无法启动，经过两个多小时的排查，最终确认，无法启动的VM安装了【2025 年 7 月 8 日 - KB5062553（OS 内部版本 26100.4652）】</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>对于这个情况，通过命令行（azure cli）可以完成这个变更，估计是portal的api接口有问题</li>
+</ul>
+<ul>
+<li>命令示例：az vm update --resource-group xxxx --name xxxx --security-type TrustedLaunch</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>【解决方案】</li>
+</ul>
+<ul>
+<li>将虚拟机安全类型配置为“受信任启动”，对于安装了KB5062553，windows可以正常启动。</li>
+</ul>
+<ul>
+<li>客户有一些机器是自定义镜像，通过磁盘创建的，磁盘的安全类型是标准，将虚拟机安全类型配置为“受信任启动”这个选项是灰色的，提示：“Security type cannot be updated with the current image.”</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/trusted-launch-existing-vm-gen-1?tabs=windows%2Cpowershell" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/trusted-launch-existing-vm-gen-1?tabs=windows%2Cpowershell</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>【问题背景】</p>
+<p>客户陆续接到很多同事的报告，大量Azure VM无法启动，经过两个多小时的排查，最终确认，无法启动的VM安装了【2025 年 7 月 8 日 - KB5062553（OS 内部版本 26100.4652）】</p>
+<p>【问题分析】</p>
+<p>关于这个KB的说明：July 8, 2025—KB5062553 (OS Build 26100.4652) - Microsoft Support</p>
+<p>这个KB有一个已知issue：二代虚拟机，如果不是受信任启动，会造成windows无法启动故障</p>
+<p>【解决方案】</p>
+<p>将虚拟机安全类型配置为“受信任启动”，对于安装了KB5062553，windows可以正常启动。</p>
+<p>客户有一些机器是自定义镜像，通过磁盘创建的，磁盘的安全类型是标准，将虚拟机安全类型配置为“受信任启动”这个选项是灰色的，提示：“Security type cannot be updated with the current image.”</p>
+<p>我测试，可以复现这个问题，和镜像没有关系，和从磁盘创建虚拟机有关系。</p>
+<p>对于这个情况，通过命令行（azure cli）可以完成这个变更，估计是portal的api接口有问题</p>
+<p>命令示例：az vm update --resource-group xxxx --name xxxx --security-type TrustedLaunch</p>
+<p>关于客户关心的成本问题，文档中明确写了：受信任启动无需额外成本。</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/trusted-launch-existing-vm-gen-1?tabs=windows%2Cpowershell" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/trusted-launch-existing-vm-gen-1?tabs=windows%2Cpowershell</a></p></article>

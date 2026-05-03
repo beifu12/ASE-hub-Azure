@@ -1,0 +1,119 @@
+<article class="kb-article" data-title="设置反向DNS解析"><h1>设置反向DNS解析</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Cloud Service</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-26 10:17:09</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>否则报错如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>否则报错如下：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>【一】设置Azure的域名做rDNS</li>
+</ul>
+<ul>
+<li>#设置rdns</li>
+</ul>
+<ul>
+<li>$servicename=&quot;winmailserver&quot;</li>
+</ul>
+<ul>
+<li>$rDNSFQDN=&quot;winmailserver.chinacloudapp.cn.&quot;</li>
+</ul>
+<ul>
+<li>#校验获取</li>
+</ul>
+<ul>
+<li>#删除rDNS</li>
+</ul>
+<ul>
+<li>【二】设置非Azure的域名做rDNS</li>
+</ul>
+<ul>
+<li>【三】注意事项</li>
+</ul>
+<ul>
+<li>（1）域名后面要跟一个英文的句号 $rDNSFQDN=&quot;winmailserver.chinacloudapp.cn.&quot;</li>
+</ul>
+<ul>
+<li>（2）Azure订阅内的DNS名称做rDNS时，没有任何限制：Azure VIP 42.159.x.x/139.x.x.x ----&gt; 订阅下的任何云服务的DNS名称 xxxx.chinacloudapp.cn</li>
+</ul>
+<ul>
+<li>但是，当你想做自定义域名的rDNS时，例如 AzureVIP 139.219.13.239 ----&gt; 自定义域名 mail.heyutan.club ，有先决条件，如下条件满足一条即可：</li>
+</ul>
+<ul>
+<li>mail.heyutan.club 必须能解析到（也就是CName到）同订阅下的任何一个云服务的DNS名称 xxxx.chinacloudapp.cn</li>
+</ul>
+<ul>
+<li>mail.heyutan.club 必须能解析到（也就是A记录）同订阅下的任何一个Reserved IP 或者任何部署（云服务）的VIP</li>
+</ul>
+<ul>
+<li>（3）测试是否生效利用CMD</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>（4）官方参考文档：Announcing Reverse DNS for Azure Cloud Services  Microsoft Azure Blog</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-AzureService -ServiceName $servicename -ReverseDnsFqdn $rDNSFQDN</li>
+</ul>
+<ul>
+<li>Get-AzureService -ServiceName $servicename | Select ReverseDnsFqdn</li>
+</ul>
+<ul>
+<li>Set-AzureService -ServiceName $servicename -ReverseDnsFqdn &quot;&quot;</li>
+</ul>
+<ul>
+<li>nslookup -q=ptr 139.219.13.239</li>
+</ul>
+<ul>
+<li>nslookup -q=ptr 139.219.13.239 203.196.0.6</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>先决条件是：www.heyutan.club 必须做一个CName或者A记录到你所在订阅账号中的资源。</li>
+</ul>
+<ul>
+<li>$rDNSFQDN=&quot;www.heyutan.club.&quot;</li>
+</ul>
+<ul>
+<li><a href="http://azure.microsoft.com/blog/2014/07/21/announcing-reverse-dns-for-azure-cloud-services/" target="_blank" rel="noopener">http://azure.microsoft.com/blog/2014/07/21/announcing-reverse-dns-for-azure-cloud-services/</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>【一】设置Azure的域名做rDNS</p>
+<p>#设置rdns</p>
+<p>$servicename=&quot;winmailserver&quot;</p>
+<p>$rDNSFQDN=&quot;winmailserver.chinacloudapp.cn.&quot;</p>
+<p>Set-AzureService -ServiceName $servicename -ReverseDnsFqdn $rDNSFQDN</p>
+<p>#校验获取</p>
+<p>Get-AzureService -ServiceName $servicename | Select ReverseDnsFqdn</p>
+<p>#删除rDNS</p>
+<p>Set-AzureService -ServiceName $servicename -ReverseDnsFqdn &quot;&quot;</p>
+<p>【二】设置非Azure的域名做rDNS</p>
+<p>先决条件是：www.heyutan.club 必须做一个CName或者A记录到你所在订阅账号中的资源。</p>
+<p>$rDNSFQDN=&quot;www.heyutan.club.&quot;</p>
+<p>【三】注意事项</p>
+<p>（1）域名后面要跟一个英文的句号 $rDNSFQDN=&quot;winmailserver.chinacloudapp.cn.&quot;</p>
+<p>否则报错如下：</p>
+<p>（2）Azure订阅内的DNS名称做rDNS时，没有任何限制：Azure VIP 42.159.x.x/139.x.x.x ----&gt; 订阅下的任何云服务的DNS名称 xxxx.chinacloudapp.cn</p>
+<p>但是，当你想做自定义域名的rDNS时，例如 AzureVIP 139.219.13.239 ----&gt; 自定义域名 mail.heyutan.club ，有先决条件，如下条件满足一条即可：</p>
+<p>mail.heyutan.club 必须能解析到（也就是CName到）同订阅下的任何一个云服务的DNS名称 xxxx.chinacloudapp.cn</p>
+<p>mail.heyutan.club 必须能解析到（也就是A记录）同订阅下的任何一个Reserved IP 或者任何部署（云服务）的VIP</p>
+<p>（3）测试是否生效利用CMD</p>
+<p>nslookup -q=ptr 139.219.13.239</p>
+<p>nslookup -q=ptr 139.219.13.239 203.196.0.6</p>
+<p>（4）官方参考文档：Announcing Reverse DNS for Azure Cloud Services  Microsoft Azure Blog</p>
+<p><a href="http://azure.microsoft.com/blog/2014/07/21/announcing-reverse-dns-for-azure-cloud-services/" target="_blank" rel="noopener">http://azure.microsoft.com/blog/2014/07/21/announcing-reverse-dns-for-azure-cloud-services/</a></p></article>

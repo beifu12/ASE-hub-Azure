@@ -1,0 +1,132 @@
+<article class="kb-article" data-title="SAML SSO Test Guidance"><h1>SAML SSO Test Guidance</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-05-29 11:02:56</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Here’s the KB of testing SAML SSO with non-gallery application (reference: Configure SAML-based single sign-on using Microsoft Graph - Microsoft Graph | Microsoft Learn). (No UI for now) The configuration steps are as below for your reference:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Here’s the KB of testing SAML SSO with non-gallery application (reference: Configure SAML-based single sign-on using Microsoft Graph - Microsoft Graph | Microsoft Learn). (No UI for now) The configuration steps are as below for your reference:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Here’s the KB of testing SAML SSO with non-gallery application (reference: Configure SAML-based single sign-on using Microsoft Graph - Microsoft Graph | Microsoft Learn). (No UI for now) The configuration steps are as below for your reference:</li>
+</ul>
+<ul>
+<li>Create AAD SaaS Application and Service Principal with ClaimsX-Ray identifier and ReplyUrl set</li>
+</ul>
+<ul>
+<li>Connect-AzureAD -AzureEnvironmentName AzureChinaCloud</li>
+</ul>
+<ul>
+<li>$appName = &quot;xuhuanSAMLAppTest&quot;</li>
+</ul>
+<ul>
+<li>$samlApp = New-AzureADApplication -DisplayName $appName `</li>
+</ul>
+<ul>
+<li>-IdentifierUris &quot;urn:microsoft:adfs:claimsxray&quot; `</li>
+</ul>
+<ul>
+<li>-AppId $samlApp.AppId `</li>
+</ul>
+<ul>
+<li>-AppRoleAssignmentRequired $true `</li>
+</ul>
+<ul>
+<li>-DisplayName $appName `</li>
+</ul>
+<ul>
+<li>-Tags {WindowsAzureActiveDirectoryIntegratedApp},{WindowsAzureActiveDirectoryCustomSingleSignOnApplication}</li>
+</ul>
+<ul>
+<li>Set SAML as the single sign-on mode in the service principal</li>
+</ul>
+<ul>
+<li>Content-type: application/json</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;preferredSingleSignOnMode&quot;: &quot;saml&quot;</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>Configure a self-signed certificate that Azure AD can use to sign a SAML response.</li>
+</ul>
+<ul>
+<li>&quot;displayName&quot;:&quot;CN=xuhuansamlxraytest&quot;,</li>
+</ul>
+<ul>
+<li>&quot;endDateTime&quot;:&quot;2025-01-25T00:00:00Z&quot;</li>
+</ul>
+<ul>
+<li>Assign users to the service principal</li>
+</ul>
+<ul>
+<li>Test SAML SSO through the following link and you would get saml token as below if succeeds.</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>New-AzureADServicePrincipal -AccountEnabled $true `</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>-ReplyUrls <a href="https://adfshelp.microsoft.com/ClaimsXray/TokenResponse" target="_blank" rel="noopener">https://adfshelp.microsoft.com/ClaimsXray/TokenResponse</a></li>
+</ul>
+<ul>
+<li>-SamlMetadataURL <a href="http://mynewapp.example5.com/metadata.xml" target="_blank" rel="noopener">http://mynewapp.example5.com/metadata.xml</a> `</li>
+</ul>
+<ul>
+<li>PATCH <a href="https://microsoftgraph.chinacloudapi.cn/v1.0/servicePrincipals/64f8add3-be9e-4d7c-813c-a63fae19227c" target="_blank" rel="noopener">https://microsoftgraph.chinacloudapi.cn/v1.0/servicePrincipals/64f8add3-be9e-4d7c-813c-a63fae19227c</a></li>
+</ul>
+<ul>
+<li>POST <a href="https://microsoftgraph.chinacloudapi.cn/v1.0/servicePrincipals/64f8add3-be9e-4d7c-813c-a63fae19227c/addTokenSigningCertificate" target="_blank" rel="noopener">https://microsoftgraph.chinacloudapi.cn/v1.0/servicePrincipals/64f8add3-be9e-4d7c-813c-a63fae19227c/addTokenSigningCertificate</a></li>
+</ul>
+<ul>
+<li><a href="https://account.activedirectory.windowsazure.cn/applications/testfedaratedapplication.aspx?servicePrincipalId=&lt;spObjectId&gt;&amp;tenantId=&lt;tenantId&gt;" target="_blank" rel="noopener">https://account.activedirectory.windowsazure.cn/applications/testfedaratedapplication.aspx?servicePrincipalId=&lt;spObjectId&gt;&amp;tenantId=&lt;tenantId&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/05/07</p>
+<p>Here’s the KB of testing SAML SSO with non-gallery application (reference: Configure SAML-based single sign-on using Microsoft Graph - Microsoft Graph | Microsoft Learn). (No UI for now) The configuration steps are as below for your reference:</p>
+<p>Create AAD SaaS Application and Service Principal with ClaimsX-Ray identifier and ReplyUrl set</p>
+<p>Connect-AzureAD -AzureEnvironmentName AzureChinaCloud</p>
+<p>$appName = &quot;xuhuanSAMLAppTest&quot;</p>
+<p>$samlApp = New-AzureADApplication -DisplayName $appName `</p>
+<p>-IdentifierUris &quot;urn:microsoft:adfs:claimsxray&quot; `</p>
+<p>-ReplyUrls <a href="https://adfshelp.microsoft.com/ClaimsXray/TokenResponse" target="_blank" rel="noopener">https://adfshelp.microsoft.com/ClaimsXray/TokenResponse</a></p>
+<p>-SamlMetadataURL <a href="http://mynewapp.example5.com/metadata.xml" target="_blank" rel="noopener">http://mynewapp.example5.com/metadata.xml</a> `</p>
+<p>New-AzureADServicePrincipal -AccountEnabled $true `</p>
+<p>-AppId $samlApp.AppId `</p>
+<p>-AppRoleAssignmentRequired $true `</p>
+<p>-DisplayName $appName `</p>
+<p>-Tags {WindowsAzureActiveDirectoryIntegratedApp},{WindowsAzureActiveDirectoryCustomSingleSignOnApplication}</p>
+<p>Set SAML as the single sign-on mode in the service principal</p>
+<p>PATCH <a href="https://microsoftgraph.chinacloudapi.cn/v1.0/servicePrincipals/64f8add3-be9e-4d7c-813c-a63fae19227c" target="_blank" rel="noopener">https://microsoftgraph.chinacloudapi.cn/v1.0/servicePrincipals/64f8add3-be9e-4d7c-813c-a63fae19227c</a></p>
+<p>Content-type: application/json</p>
+<p>{</p>
+<p>&quot;preferredSingleSignOnMode&quot;: &quot;saml&quot;</p>
+<p>}</p>
+<p>Configure a self-signed certificate that Azure AD can use to sign a SAML response.</p>
+<p>POST <a href="https://microsoftgraph.chinacloudapi.cn/v1.0/servicePrincipals/64f8add3-be9e-4d7c-813c-a63fae19227c/addTokenSigningCertificate" target="_blank" rel="noopener">https://microsoftgraph.chinacloudapi.cn/v1.0/servicePrincipals/64f8add3-be9e-4d7c-813c-a63fae19227c/addTokenSigningCertificate</a></p>
+<p>&quot;displayName&quot;:&quot;CN=xuhuansamlxraytest&quot;,</p>
+<p>&quot;endDateTime&quot;:&quot;2025-01-25T00:00:00Z&quot;</p>
+<p>Assign users to the service principal</p>
+<p>Test SAML SSO through the following link and you would get saml token as below if succeeds.</p>
+<p><a href="https://account.activedirectory.windowsazure.cn/applications/testfedaratedapplication.aspx?servicePrincipalId=&lt;spObjectId&gt;&amp;tenantId=&lt;tenantId&gt;" target="_blank" rel="noopener">https://account.activedirectory.windowsazure.cn/applications/testfedaratedapplication.aspx?servicePrincipalId=&lt;spObjectId&gt;&amp;tenantId=&lt;tenantId&gt;</a></p></article>

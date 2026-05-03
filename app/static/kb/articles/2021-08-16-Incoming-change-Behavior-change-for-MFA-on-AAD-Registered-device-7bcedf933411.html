@@ -1,0 +1,123 @@
+<article class="kb-article" data-title="[Incoming change] Behavior change for MFA on AAD Registered device"><h1>[Incoming change] Behavior change for MFA on AAD Registered device</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-08-16 13:27:50</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>We have an incoming feature behavior change for AAD device registration with MFA.</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>We have an incoming feature behavior change for AAD device registration with MFA.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>We have an incoming feature behavior change for AAD device registration with MFA.</li>
+</ul>
+<ul>
+<li>How users are impacted:</li>
+</ul>
+<ul>
+<li>To mitigate a recent found risk, users will be required to complete MFA once more before accessing an MFA protected resource in Azure AD, even if they have already performed MFA during device registration.</li>
+</ul>
+<ul>
+<li>Impacted Scenario:</li>
+</ul>
+<ul>
+<li>Users using AAD registered device, who were required to complete MFA during the device registration.</li>
+</ul>
+<ul>
+<li>NOT impacted scenarios:</li>
+</ul>
+<ul>
+<li>Users using non-registered devices</li>
+</ul>
+<ul>
+<li>Users who sign into devices registered by someone else</li>
+</ul>
+<ul>
+<li>Users who registered devices without MFA</li>
+</ul>
+<ul>
+<li>Users who signed into system-registered devices (e.g. Hybrid Azure AD Joined)</li>
+</ul>
+<ul>
+<li>Find deviceOwnership attribute, and \”mfa\” in deviceSystemMetadata -&gt; RegistrationAuthMethods key.</li>
+</ul>
+<ul>
+<li>Note that this sample is an AAD joined device, not exactly match with our scenario.</li>
+</ul>
+<ul>
+<li>Customer ready content in Chinese:</li>
+</ul>
+<ul>
+<li>以下情形不受此更改的影响：</li>
+</ul>
+<ul>
+<li>• 用户使用未注册设备</li>
+</ul>
+<ul>
+<li>• 用户登录他人注册的设备</li>
+</ul>
+<ul>
+<li>• 用户在注册设备过程时未被要求完成 MFA</li>
+</ul>
+<ul>
+<li>• 用户登陆到系统注册设备（例如混合加入 Azure AD 的设备）</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Troubleshooting steps:</li>
+</ul>
+<ul>
+<li>In evoSTS (Jarvis AadEvoSTSCHINA -&gt; PerRequestTableIfx), search the correlationId of the unexpected MFA prompt, get deviceId of the authN request.</li>
+</ul>
+<ul>
+<li>Check ASC tenant explorer and find the device with deviceId.</li>
+</ul>
+<ul>
+<li>If the UserPrincipalObjectID in evoSTS equals deviceOwnership in ASC, and \”mfa\” exists in deviceSystemMetadata -&gt; RegistrationAuthMethods key, the user is most likely to be impacted by this change.</li>
+</ul>
+<ul>
+<li>感谢您为了设备注册后意外的 MFA 提示联系我们。为了提高 Azure AD 的基线安全性，我们正在更改在设备注册过程中进行多因素身份验证 （MFA） 的 Azure AD 行为。通过这一更改，我们不再接受在设备注册过程中完成的 MFA，而是要求用户在访问 Azure AD 中的 被MFA 保护的资源时再一次完成 MFA。此更改不会影响现有的 Azure AD 注册设备，直到其会话过期或失效；在会话过期后，当尝试从此设备访问被 Azure AD 保护的资源时，如果存在要求完成 MFA 的安全策略，用户将被要求完成 MFA。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>Sample: <a href="https://portal.microsoftgeneva.com/s/37D7C25E" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/37D7C25E</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>We have an incoming feature behavior change for AAD device registration with MFA.</p>
+<p>How users are impacted:</p>
+<p>To mitigate a recent found risk, users will be required to complete MFA once more before accessing an MFA protected resource in Azure AD, even if they have already performed MFA during device registration.</p>
+<p>Impacted Scenario:</p>
+<p>Users using AAD registered device, who were required to complete MFA during the device registration.</p>
+<p>NOT impacted scenarios:</p>
+<p>Users using non-registered devices</p>
+<p>Users who sign into devices registered by someone else</p>
+<p>Users who registered devices without MFA</p>
+<p>Users who signed into system-registered devices (e.g. Hybrid Azure AD Joined)</p>
+<p>Troubleshooting steps:</p>
+<p>In evoSTS (Jarvis AadEvoSTSCHINA -&gt; PerRequestTableIfx), search the correlationId of the unexpected MFA prompt, get deviceId of the authN request.</p>
+<p>Check ASC tenant explorer and find the device with deviceId.</p>
+<p>Find deviceOwnership attribute, and \”mfa\” in deviceSystemMetadata -&gt; RegistrationAuthMethods key.</p>
+<p>If the UserPrincipalObjectID in evoSTS equals deviceOwnership in ASC, and \”mfa\” exists in deviceSystemMetadata -&gt; RegistrationAuthMethods key, the user is most likely to be impacted by this change.</p>
+<p>Sample: <a href="https://portal.microsoftgeneva.com/s/37D7C25E" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/37D7C25E</a></p>
+<p>Note that this sample is an AAD joined device, not exactly match with our scenario.</p>
+<p>Customer ready content in Chinese:</p>
+<p>感谢您为了设备注册后意外的 MFA 提示联系我们。为了提高 Azure AD 的基线安全性，我们正在更改在设备注册过程中进行多因素身份验证 （MFA） 的 Azure AD 行为。通过这一更改，我们不再接受在设备注册过程中完成的 MFA，而是要求用户在访问 Azure AD 中的 被MFA 保护的资源时再一次完成 MFA。此更改不会影响现有的 Azure AD 注册设备，直到其会话过期或失效；在会话过期后，当尝试从此设备访问被 Azure AD 保护的资源时，如果存在要求完成 MFA 的安全策略，用户将被要求完成 MFA。</p>
+<p>以下情形不受此更改的影响：</p>
+<p>• 用户使用未注册设备</p>
+<p>• 用户登录他人注册的设备</p>
+<p>• 用户在注册设备过程时未被要求完成 MFA</p>
+<p>• 用户登陆到系统注册设备（例如混合加入 Azure AD 的设备）</p></article>

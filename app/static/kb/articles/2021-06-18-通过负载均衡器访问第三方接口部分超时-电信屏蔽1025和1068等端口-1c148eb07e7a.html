@@ -1,0 +1,276 @@
+<article class="kb-article" data-title="通过负载均衡器访问第三方接口部分超时（电信屏蔽1025和1068等端口）"><h1>通过负载均衡器访问第三方接口部分超时（电信屏蔽1025和1068等端口）</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LB</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-06-18 18:41:38</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考工单：SR_2019071639282 _ [MS-LED]北二网络访问第三方接口超时</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考工单：SR_2019071639282 _ [MS-LED]北二网络访问第三方接口超时</li>
+</ul>
+<ul>
+<li>问题现象：访问第三方接口的时候，从日志看到，总有一些访问超时的情况发生，超时情况大概1·2%。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Fuzhangliang</li>
+</ul>
+<ul>
+<li>环境架构：负载均衡器后端有两台虚拟机，两台虚拟机均没有独立公网IP地址，通过负载均衡器进行出站访问第三方接口（因为第三方接口有白名单设置）</li>
+</ul>
+<ul>
+<li>将标黄的部分替换为虚拟机 CA,  虚拟机PA, VIP of the SLB ， destination Public IP</li>
+</ul>
+<ul>
+<li>nc  -vz -p 1027  -w 3 depo.xwbank.com 443</li>
+</ul>
+<ul>
+<li>$lb=Get-AzureRmLoadBalancer -ResourceGroupName &lt;资源组名称&gt; -Name &lt;LB名称&gt;</li>
+</ul>
+<ul>
+<li>lb.BackendAddressPools[0].Id -ProbeId $lb.Probes[0].Id</li>
+</ul>
+<ul>
+<li>20191128</li>
+</ul>
+<ul>
+<li>Zhanglihe</li>
+</ul>
+<ul>
+<li>1025 1068 1434 3127 3128 3129 3130 4444 5554 9996。</li>
+</ul>
+<ul>
+<li>20200514</li>
+</ul>
+<ul>
+<li>1068 2745 3127 3128 3333 4444 5554 5800 5900 6129 6176 6667 8998 9996</li>
+</ul>
+<ul>
+<li>对于AKS:</li>
+</ul>
+<ul>
+<li>我的集群分配的出站IP是：40.73.8.90， 我这里创建了一个空的未被使用的IP：139.217.64.23：</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: Service</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>annotations:</li>
+</ul>
+<ul>
+<li>service.beta.kubernetes.io/azure-load-balancer-resource-group: mc_north2rg_vmss_chinanorth2</li>
+</ul>
+<ul>
+<li>name: my-nginx</li>
+</ul>
+<ul>
+<li>labels:</li>
+</ul>
+<ul>
+<li>run: my-nginx</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>type: LoadBalancer</li>
+</ul>
+<ul>
+<li>ports:</li>
+</ul>
+<ul>
+<li>- port: 1068</li>
+</ul>
+<ul>
+<li>targetPort: 80</li>
+</ul>
+<ul>
+<li>name: port1068</li>
+</ul>
+<ul>
+<li>- port: 2745</li>
+</ul>
+<ul>
+<li>name: por2745</li>
+</ul>
+<ul>
+<li>- port: 3127</li>
+</ul>
+<ul>
+<li>name: port3127</li>
+</ul>
+<ul>
+<li>selector:</li>
+</ul>
+<ul>
+<li>loadBalancerIP: 139.217.64.233</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查步骤：</li>
+</ul>
+<ul>
+<li>119111821000057/Please Support to Check if 1434 Port Is Blocked by ISP CTT: 1911270138117100</li>
+</ul>
+<ul>
+<li>在portal上更改load balancer rule中对应的前端IP， 把服务IP修改为出站的IP 40.73.8.90， 然后把服务IP 139.217.64.233 删除掉， 与loadbalancer解除关联。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>2、模拟客户的环境搭建负载均衡器，自己测试访问第三方接口，与客户得到的结果是一致的，一直有一些超时情况。通过在虚拟机所在的Node节点抓包，发现当负载均衡器转换的端口是1025和1068 的时候，访问就会失败。由于Node数据包较大，所以请使用如下的命令抓包过滤</li>
+</ul>
+<ul>
+<li>linux可以使用nc命令指定源端口访问</li>
+</ul>
+<ul>
+<li>另外，了解到您之前已经修改了了LB的出站端口为51200，如果修改出站端口后，门户上就不能配置负载均衡规则了（此时会报错出站DisableOutboundSNAT默认为false），此时需要用Powershell配置。使用Powershell配置的方法如下，如果您配置上有问题，欢迎联系我们。</li>
+</ul>
+<ul>
+<li>Set-AzureRmLoadBalancer -LoadBalancer $lb</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>1、由于是经过负载均衡器出站，首先想到的是不是SNAT端口耗尽导致的问题，客户将SNAT端口调整到25600，超时情况仍然存在，同时从jarvis排查SNAT的使用情况，发现虚拟机的SNAT端口并未超出限制。所以不是SNAT耗尽造成的问题。</li>
+</ul>
+<ul>
+<li>netsh trace start capture=yes report=disable maxsize=250 correlation=disable traceFile=NetTrace-Node.etl filemode=circular IPv4.Address=(10.100.200.69,10.107.176.95,40.73.42.65,182.150.13.6,119.4.94.196)</li>
+</ul>
+<ul>
+<li>3、但是客户在对端第三方接口抓包，发现SLB源端口是1025和1068的数据包他已经收到了，并且已经回复。但是我们可以肯定，这个回包没有达到SLB</li>
+</ul>
+<ul>
+<li>4、在Azure搭建1025和1068端口监听的服务，发现客户端无法访问Azure VM 的1025/1068端口服务, 使用tcptrace等发现，在电信骨干网出现跟踪超时，因此升级电信排查，电信确认由于安全原因，上海电信骨干网已经block了1025和1068端口的访问。</li>
+</ul>
+<ul>
+<li>总结：由于负载均衡器SNAT的端口从1024开始分配，所以有很大概率分配到1025和1068端口，但是运行商由于一些安全原因，会封锁1025和1068端口的访问。这里并不一定所有的运营商封锁了1025和1068端口，上海电信是封锁了，但是北京电信似乎没有封锁，因为从我们公司访问虚拟机的1025和1068端口是可以的。</li>
+</ul>
+<ul>
+<li>在没有1025和1068端口的负载均衡，我们测试通过LB出站的源端口确实包含了1025和1068。其中40.73.42.65是我SLB的IP地址</li>
+</ul>
+<ul>
+<li>在创建了1025端口和1068端口的负载均衡规则后</li>
+</ul>
+<ul>
+<li>再次测试LB后端虚拟机的出站端口就不会包含1025和1068了。</li>
+</ul>
+<ul>
+<li>因此我们建议您可以按照这种方法来作为一个work around , 如果在这两个端口上并没有服务监听， 配置负载均衡规则并不会影响入向的服务转发等。</li>
+</ul>
+<ul>
+<li>比如配置1068端口的出站规则</li>
+</ul>
+<ul>
+<li>Add-AzureRmLoadBalancerRuleConfig -LoadBalancer $lb -Name rule2 -Protocol tcp -LoadDistribution default -FrontendPort 1068</li>
+</ul>
+<ul>
+<li>如果没有修改过出站规则，门户上可以直接配置负载均衡规则，默认的出站端口数是每台虚拟机有1024个，如果您的应用没有一些大量需要维持的长连接，只是一些短连接，那么1024个并发连接基本是够用的，是否需要调整出站端口数，结合您的应用确定。</li>
+</ul>
+<ul>
+<li>目前经过CT（电信）确认，在CT骨干到上海城域网方向，CT共封堵了以下TCP端口：</li>
+</ul>
+<ul>
+<li>经过测试以及与北京联通侧确认， 由于由安全策略的相关规定， 在去往阿里服务器的路径上， 对以下端口进行了封堵：</li>
+</ul>
+<ul>
+<li>SLB 出站SNAT 端口是从1024开始分配的， 由于ISP网络对这些端口进行了封堵，由于目前无法为VMSS node指定 实例级别公网IP， 作为work around 只能在这些端口上创建负载均衡规则并且关联到出站IP上。 但是根据与AKS产品组讨论确认， kubernete load balancer是不支持在出站IP上配置负载均衡规则的， 这是平台by design的。但我这边测试可以通过下面的方案将负载均衡规则关联到出站IP上， 只是具有一定的风险性，例如集群升级，或者service和node的change，或者AKS这边的其他组件升级都有可能将前端的SLB配置覆盖， 恢复到最开始的状态。或者也不排除在重新更新前端配置时， 使集群陷入异常状态。</li>
+</ul>
+<ul>
+<li>在集群上使用.yaml文件添加基于这几个端口的入站规则：</li>
+</ul>
+<ul>
+<li>protocol: TCP</li>
+</ul>
+<ul>
+<li>这样虽然可以将绕开这些端口， 但是如之前提到的，由于这个SLB是由AKS集群控制的，集群或者AKS其他组件升级或者service和node的change, 都有可能将前端的SLB配置覆盖掉， 或者也不排除在重新更新前端配置时， 使集群陷入异常状态。</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>Solution:</li>
+</ul>
+<ul>
+<li>-BackendPort 1068 -IdleTimeoutInMinutes 4 -DisableOutboundSNAT   -FrontendIpConfigurationId $lb.FrontendIpConfigurations[0].Id -BackendAddressPoolId $</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Fuzhangliang</p>
+<p>参考工单：SR_2019071639282 _ [MS-LED]北二网络访问第三方接口超时</p>
+<p>环境架构：负载均衡器后端有两台虚拟机，两台虚拟机均没有独立公网IP地址，通过负载均衡器进行出站访问第三方接口（因为第三方接口有白名单设置）</p>
+<p>问题现象：访问第三方接口的时候，从日志看到，总有一些访问超时的情况发生，超时情况大概1·2%。</p>
+<p>排查步骤：</p>
+<p>1、由于是经过负载均衡器出站，首先想到的是不是SNAT端口耗尽导致的问题，客户将SNAT端口调整到25600，超时情况仍然存在，同时从jarvis排查SNAT的使用情况，发现虚拟机的SNAT端口并未超出限制。所以不是SNAT耗尽造成的问题。</p>
+<p>2、模拟客户的环境搭建负载均衡器，自己测试访问第三方接口，与客户得到的结果是一致的，一直有一些超时情况。通过在虚拟机所在的Node节点抓包，发现当负载均衡器转换的端口是1025和1068 的时候，访问就会失败。由于Node数据包较大，所以请使用如下的命令抓包过滤</p>
+<p>netsh trace start capture=yes report=disable maxsize=250 correlation=disable traceFile=NetTrace-Node.etl filemode=circular IPv4.Address=(10.100.200.69,10.107.176.95,40.73.42.65,182.150.13.6,119.4.94.196)</p>
+<p>将标黄的部分替换为虚拟机 CA,  虚拟机PA, VIP of the SLB ， destination Public IP</p>
+<p>linux可以使用nc命令指定源端口访问</p>
+<p>nc  -vz -p 1027  -w 3 depo.xwbank.com 443</p>
+<p>3、但是客户在对端第三方接口抓包，发现SLB源端口是1025和1068的数据包他已经收到了，并且已经回复。但是我们可以肯定，这个回包没有达到SLB</p>
+<p>4、在Azure搭建1025和1068端口监听的服务，发现客户端无法访问Azure VM 的1025/1068端口服务, 使用tcptrace等发现，在电信骨干网出现跟踪超时，因此升级电信排查，电信确认由于安全原因，上海电信骨干网已经block了1025和1068端口的访问。</p>
+<p>总结：由于负载均衡器SNAT的端口从1024开始分配，所以有很大概率分配到1025和1068端口，但是运行商由于一些安全原因，会封锁1025和1068端口的访问。这里并不一定所有的运营商封锁了1025和1068端口，上海电信是封锁了，但是北京电信似乎没有封锁，因为从我们公司访问虚拟机的1025和1068端口是可以的。</p>
+<p>Solution:</p>
+<p>在没有1025和1068端口的负载均衡，我们测试通过LB出站的源端口确实包含了1025和1068。其中40.73.42.65是我SLB的IP地址</p>
+<p>在创建了1025端口和1068端口的负载均衡规则后</p>
+<p>再次测试LB后端虚拟机的出站端口就不会包含1025和1068了。</p>
+<p>因此我们建议您可以按照这种方法来作为一个work around , 如果在这两个端口上并没有服务监听， 配置负载均衡规则并不会影响入向的服务转发等。</p>
+<p>另外，了解到您之前已经修改了了LB的出站端口为51200，如果修改出站端口后，门户上就不能配置负载均衡规则了（此时会报错出站DisableOutboundSNAT默认为false），此时需要用Powershell配置。使用Powershell配置的方法如下，如果您配置上有问题，欢迎联系我们。</p>
+<p>比如配置1068端口的出站规则</p>
+<p>$lb=Get-AzureRmLoadBalancer -ResourceGroupName &lt;资源组名称&gt; -Name &lt;LB名称&gt;</p>
+<p>Add-AzureRmLoadBalancerRuleConfig -LoadBalancer $lb -Name rule2 -Protocol tcp -LoadDistribution default -FrontendPort 1068</p>
+<p>-BackendPort 1068 -IdleTimeoutInMinutes 4 -DisableOutboundSNAT   -FrontendIpConfigurationId $lb.FrontendIpConfigurations[0].Id -BackendAddressPoolId $</p>
+<p>lb.BackendAddressPools[0].Id -ProbeId $lb.Probes[0].Id</p>
+<p>Set-AzureRmLoadBalancer -LoadBalancer $lb</p>
+<p>如果没有修改过出站规则，门户上可以直接配置负载均衡规则，默认的出站端口数是每台虚拟机有1024个，如果您的应用没有一些大量需要维持的长连接，只是一些短连接，那么1024个并发连接基本是够用的，是否需要调整出站端口数，结合您的应用确定。</p>
+<p>20191128</p>
+<p>Zhanglihe</p>
+<p>119111821000057/Please Support to Check if 1434 Port Is Blocked by ISP CTT: 1911270138117100</p>
+<p>目前经过CT（电信）确认，在CT骨干到上海城域网方向，CT共封堵了以下TCP端口：</p>
+<p>1025 1068 1434 3127 3128 3129 3130 4444 5554 9996。</p>
+<p>20200514</p>
+<p>经过测试以及与北京联通侧确认， 由于由安全策略的相关规定， 在去往阿里服务器的路径上， 对以下端口进行了封堵：</p>
+<p>1068 2745 3127 3128 3333 4444 5554 5800 5900 6129 6176 6667 8998 9996</p>
+<p>对于AKS:</p>
+<p>SLB 出站SNAT 端口是从1024开始分配的， 由于ISP网络对这些端口进行了封堵，由于目前无法为VMSS node指定 实例级别公网IP， 作为work around 只能在这些端口上创建负载均衡规则并且关联到出站IP上。 但是根据与AKS产品组讨论确认， kubernete load balancer是不支持在出站IP上配置负载均衡规则的， 这是平台by design的。但我这边测试可以通过下面的方案将负载均衡规则关联到出站IP上， 只是具有一定的风险性，例如集群升级，或者service和node的change，或者AKS这边的其他组件升级都有可能将前端的SLB配置覆盖， 恢复到最开始的状态。或者也不排除在重新更新前端配置时， 使集群陷入异常状态。</p>
+<p>我的集群分配的出站IP是：40.73.8.90， 我这里创建了一个空的未被使用的IP：139.217.64.23：</p>
+<p>在集群上使用.yaml文件添加基于这几个端口的入站规则：</p>
+<p>apiVersion: v1</p>
+<p>kind: Service</p>
+<p>metadata:</p>
+<p>annotations:</p>
+<p>service.beta.kubernetes.io/azure-load-balancer-resource-group: mc_north2rg_vmss_chinanorth2</p>
+<p>name: my-nginx</p>
+<p>labels:</p>
+<p>run: my-nginx</p>
+<p>spec:</p>
+<p>type: LoadBalancer</p>
+<p>ports:</p>
+<ul>
+<li>port: 1068</li>
+</ul>
+<p>targetPort: 80</p>
+<p>protocol: TCP</p>
+<p>name: port1068</p>
+<ul>
+<li>port: 2745</li>
+</ul>
+<p>name: por2745</p>
+<ul>
+<li>port: 3127</li>
+</ul>
+<p>name: port3127</p>
+<p>selector:</p>
+<p>loadBalancerIP: 139.217.64.233</p>
+<p>在portal上更改load balancer rule中对应的前端IP， 把服务IP修改为出站的IP 40.73.8.90， 然后把服务IP 139.217.64.233 删除掉， 与loadbalancer解除关联。</p>
+<p>这样虽然可以将绕开这些端口， 但是如之前提到的，由于这个SLB是由AKS集群控制的，集群或者AKS其他组件升级或者service和node的change, 都有可能将前端的SLB配置覆盖掉， 或者也不排除在重新更新前端配置时， 使集群陷入异常状态。</p></article>

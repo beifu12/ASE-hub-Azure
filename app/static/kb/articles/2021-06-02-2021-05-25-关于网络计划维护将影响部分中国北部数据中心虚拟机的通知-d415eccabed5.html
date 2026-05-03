@@ -1,0 +1,448 @@
+<article class="kb-article" data-title="2021/05/25 关于网络计划维护将影响部分中国北部数据中心虚拟机的通知"><h1>2021/05/25 关于网络计划维护将影响部分中国北部数据中心虚拟机的通知</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: [Internal]</li>
+<li>Section: 虚拟机常见问题整理汇总</li>
+<li>最近修改: 2021-06-02 13:05:38</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>即将到来的维护更新将于北京时间2021年06月27日11:00至2021年07月02日11:00进行，在此期间会影响您位于中国北部 区域的虚拟机。计划维护期间IaaS虚拟机将迁移至新的网络硬件设备。维护开始后，每台虚拟机将至多出现15分钟不可用。系统磁盘及数据磁盘将保留，但临时磁盘将被重置。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>即将到来的维护更新将于北京时间2021年06月27日11:00至2021年07月02日11:00进行，在此期间会影响您位于中国北部 区域的虚拟机。计划维护期间IaaS虚拟机将迁移至新的网络硬件设备。维护开始后，每台虚拟机将至多出现15分钟不可用。系统磁盘及数据磁盘将保留，但临时磁盘将被重置。</li>
+</ul>
+<ul>
+<li>Issue description</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>如果大家接到类似工单，请帮忙记录信息在如下表格中</li>
+</ul>
+<ul>
+<li>Case ID</li>
+</ul>
+<ul>
+<li>Customer Name</li>
+</ul>
+<ul>
+<li>CSS ID</li>
+</ul>
+<ul>
+<li>Case owner</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt;= ago(1d)</li>
+</ul>
+<ul>
+<li>| where Tenant == &#39;BJBPrdApp02&#39; and faultDomain == 39</li>
+</ul>
+<ul>
+<li>| distinct nodeId</li>
+</ul>
+<ul>
+<li>;</li>
+</ul>
+<ul>
+<li>| where TIMESTAMP &gt;= ago(2h)</li>
+</ul>
+<ul>
+<li>| where Tenant == &#39;BJBPrdApp02&#39; and nodeId in (FD39)</li>
+</ul>
+<ul>
+<li>| where roleType != &#39;Regular&#39;</li>
+</ul>
+<ul>
+<li>| summarize arg_max(TIMESTAMP, *) by containerId</li>
+</ul>
+<ul>
+<li>| project TIMESTAMP, subscriptionId, Region, Tenant, tenantName, roleInstanceName, nodeId, availabilitySetName</li>
+</ul>
+<ul>
+<li>截止2021/05/25 还有如下受影响的机器</li>
+</ul>
+<ul>
+<li>备注：下表中 migrated 信息为：1表示已经迁了，0表示还没迁，-1是这机器一直都没开机</li>
+</ul>
+<ul>
+<li>PreciseTimeStamp</li>
+</ul>
+<ul>
+<li>subscriptionId</li>
+</ul>
+<ul>
+<li>roleInstanceName</li>
+</ul>
+<ul>
+<li>NodeId</li>
+</ul>
+<ul>
+<li>Migrated</li>
+</ul>
+<ul>
+<li>5/20/2021 3:17</li>
+</ul>
+<ul>
+<li>6b3fe200-d158-4f43-a320-ccb6bb97af0f</li>
+</ul>
+<ul>
+<li>_gl-ZBXtest2</li>
+</ul>
+<ul>
+<li>9b0fb554-96fb-468e-ae84-7acebda7c9d0</li>
+</ul>
+<ul>
+<li>-1</li>
+</ul>
+<ul>
+<li>5/20/2021 9:59</li>
+</ul>
+<ul>
+<li>4106c408-a497-48c4-a958-95bf0b2ebe53</li>
+</ul>
+<ul>
+<li>5/20/2021 11:56</li>
+</ul>
+<ul>
+<li>6b505b30-eebe-4006-b9ca-0fdd886d0d82</li>
+</ul>
+<ul>
+<li>_mcrepairtestvmss_49</li>
+</ul>
+<ul>
+<li>5/21/2021 0:34</li>
+</ul>
+<ul>
+<li>39bb52e4-b3c2-410a-99a5-8b4d027b2b88</li>
+</ul>
+<ul>
+<li>_gsa-bb37c3e3-537b_3</li>
+</ul>
+<ul>
+<li>28b0d77d-1cbd-4bc6-b660-25af74c8e15a</li>
+</ul>
+<ul>
+<li>5/21/2021 0:46</li>
+</ul>
+<ul>
+<li>5ed8343c-b46e-4d91-8e07-cb716776fcb7</li>
+</ul>
+<ul>
+<li>_workernode-0-vm-1</li>
+</ul>
+<ul>
+<li>5/23/2021 0:00</li>
+</ul>
+<ul>
+<li>a56132d5-a7fb-475a-998b-11e5c49844d8</li>
+</ul>
+<ul>
+<li>_vmss-powerpointonlinedocumentservicelb1-ujrzfnahcu-201912050109_51</li>
+</ul>
+<ul>
+<li>7f45ee49-f3cb-453a-a7bc-ba63987841fc</li>
+</ul>
+<ul>
+<li>0</li>
+</ul>
+<ul>
+<li>9a0d5187-d949-43b2-808a-86151bcb43ee</li>
+</ul>
+<ul>
+<li>clubmc03</li>
+</ul>
+<ul>
+<li>a5360062-08d5-4a18-9ae2-395ef0c9c739</li>
+</ul>
+<ul>
+<li>e2b4e5ee-840d-4f0a-9d9d-80b891ac1d19</li>
+</ul>
+<ul>
+<li>_fe1_1</li>
+</ul>
+<ul>
+<li>854bd256-10bd-4495-8bca-1e578ac8146e</li>
+</ul>
+<ul>
+<li>_Web_6</li>
+</ul>
+<ul>
+<li>0f9c0217-82d2-43c1-99be-1e462ad9ccf5</li>
+</ul>
+<ul>
+<li>ac1dbc33-c559-4a2b-8602-aa60841c3005</li>
+</ul>
+<ul>
+<li>_beij-13168-498250039_0</li>
+</ul>
+<ul>
+<li>1dc0280c-ff08-4be6-b09e-2c8294a0d9f5</li>
+</ul>
+<ul>
+<li>7a8aad6f-4dfb-4cea-811c-7cdfc43e898d</li>
+</ul>
+<ul>
+<li>_OD-RTDP-ItineraryBuilder-North-0</li>
+</ul>
+<ul>
+<li>dbe26500-ab43-4bda-8866-b27aa48713c0</li>
+</ul>
+<ul>
+<li>0e32c180-445d-4de5-85c6-4d90d212ca45</li>
+</ul>
+<ul>
+<li>openowa</li>
+</ul>
+<ul>
+<li>5e473f8c-5a2a-4907-afce-20a323965621</li>
+</ul>
+<ul>
+<li>_beij-16545-957097997_0</li>
+</ul>
+<ul>
+<li>1</li>
+</ul>
+<ul>
+<li>3a2be038-3e86-4f1f-8a3e-8ea98d7e4c13</li>
+</ul>
+<ul>
+<li>LinuxD2V2-1</li>
+</ul>
+<ul>
+<li>1fd52741-6bb9-4e3d-a2db-46ad23cf0f67</li>
+</ul>
+<ul>
+<li>c74b306c-fffa-46dc-bf31-b27f08170d9c</li>
+</ul>
+<ul>
+<li>_worker0_9</li>
+</ul>
+<ul>
+<li>ad65d7ee-3e7b-4dc3-b5de-2ec54841c7a2</li>
+</ul>
+<ul>
+<li>adafb169-2990-45c5-a424-3aada310af7f</li>
+</ul>
+<ul>
+<li>_ADFSPROXY01</li>
+</ul>
+<ul>
+<li>51e0bc3c-e8af-4624-8e8e-0e9023469aec</li>
+</ul>
+<ul>
+<li>04c83d75-8036-4397-b36b-806b935e2f28</li>
+</ul>
+<ul>
+<li>_bjhqems4mobfree56</li>
+</ul>
+<ul>
+<li>9c4d93fa-784c-48da-b87d-5baad12e0284</li>
+</ul>
+<ul>
+<li>9f01c179-49cd-464b-bc26-f128ce061e65</li>
+</ul>
+<ul>
+<li>_mc-prod-sql-vm</li>
+</ul>
+<ul>
+<li>9c41c447-d3d7-491d-ab6d-48d1807a95ab</li>
+</ul>
+<ul>
+<li>2b1a97c1-501e-40e9-be65-ffff1c7636ac</li>
+</ul>
+<ul>
+<li>_beij-14146-1739248086_1</li>
+</ul>
+<ul>
+<li>7ebdd89d-30af-431d-be74-87233db42811</li>
+</ul>
+<ul>
+<li>_IMServer</li>
+</ul>
+<ul>
+<li>fb639abf-3830-481b-a85c-5a2b8616f2b6</li>
+</ul>
+<ul>
+<li>_kmrec2</li>
+</ul>
+<ul>
+<li>4445efb3-5a6e-4c85-9f65-7c10ad73baca</li>
+</ul>
+<ul>
+<li>_EECAEColdData</li>
+</ul>
+<ul>
+<li>a0a431ee-fcd8-4622-9b5a-bba8318e2d5e</li>
+</ul>
+<ul>
+<li>_mjf-mobi-news10</li>
+</ul>
+<ul>
+<li>37b484f9-f0d1-4b46-b92d-bd63cfa932e5</li>
+</ul>
+<ul>
+<li>_hynmysql1</li>
+</ul>
+<ul>
+<li>7fe71a64-eaf2-4afe-930e-195e1669b9cd</li>
+</ul>
+<ul>
+<li>f8f6a512-323b-49e2-8858-6bd9b1c8b22e</li>
+</ul>
+<ul>
+<li>_CN-MO-PD-WB-04</li>
+</ul>
+<ul>
+<li>c384a31c-f57c-4d33-bd45-2c589ec899c2</li>
+</ul>
+<ul>
+<li>_beij-11693-1828759795_1</li>
+</ul>
+<ul>
+<li>a6cc5f0c-54bf-455a-9336-3f05d171839c</li>
+</ul>
+<ul>
+<li>5/23/2021 0:05</li>
+</ul>
+<ul>
+<li>d5809e80-4f14-4adf-a2c1-af71e09e5114</li>
+</ul>
+<ul>
+<li>_beij-12705-2071463684_0</li>
+</ul>
+<ul>
+<li>25ab1959-b598-4102-a110-bd8b6333718b</li>
+</ul>
+<ul>
+<li>25c56c8b-db48-4c86-986c-cee2f43e0d5d</li>
+</ul>
+<ul>
+<li>_xinhuasheweituo</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>kusto语句查询受影响的机器</li>
+</ul>
+<ul>
+<li>LogContainerSnapshot</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>let FD39 = LogNodeSnapshot</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>即将到来的维护更新将于北京时间2021年06月27日11:00至2021年07月02日11:00进行，在此期间会影响您位于中国北部 区域的虚拟机。计划维护期间IaaS虚拟机将迁移至新的网络硬件设备。维护开始后，每台虚拟机将至多出现15分钟不可用。系统磁盘及数据磁盘将保留，但临时磁盘将被重置。</p>
+<p>如果大家接到类似工单，请帮忙记录信息在如下表格中</p>
+<p>Case ID</p>
+<p>Issue description</p>
+<p>Customer Name</p>
+<p>CSS ID</p>
+<p>Case owner</p>
+<p>kusto语句查询受影响的机器</p>
+<p>let FD39 = LogNodeSnapshot</p>
+<p>| where TIMESTAMP &gt;= ago(1d)</p>
+<p>| where Tenant == &#39;BJBPrdApp02&#39; and faultDomain == 39</p>
+<p>| distinct nodeId</p>
+<p>;</p>
+<p>LogContainerSnapshot</p>
+<p>| where TIMESTAMP &gt;= ago(2h)</p>
+<p>| where Tenant == &#39;BJBPrdApp02&#39; and nodeId in (FD39)</p>
+<p>| where roleType != &#39;Regular&#39;</p>
+<p>| summarize arg_max(TIMESTAMP, *) by containerId</p>
+<p>| project TIMESTAMP, subscriptionId, Region, Tenant, tenantName, roleInstanceName, nodeId, availabilitySetName</p>
+<p>截止2021/05/25 还有如下受影响的机器</p>
+<p>备注：下表中 migrated 信息为：1表示已经迁了，0表示还没迁，-1是这机器一直都没开机</p>
+<p>PreciseTimeStamp</p>
+<p>subscriptionId</p>
+<p>roleInstanceName</p>
+<p>NodeId</p>
+<p>Migrated</p>
+<p>5/20/2021 3:17</p>
+<p>6b3fe200-d158-4f43-a320-ccb6bb97af0f</p>
+<p>_gl-ZBXtest2</p>
+<p>9b0fb554-96fb-468e-ae84-7acebda7c9d0</p>
+<p>-1</p>
+<p>5/20/2021 9:59</p>
+<p>4106c408-a497-48c4-a958-95bf0b2ebe53</p>
+<p>5/20/2021 11:56</p>
+<p>6b505b30-eebe-4006-b9ca-0fdd886d0d82</p>
+<p>_mcrepairtestvmss_49</p>
+<p>5/21/2021 0:34</p>
+<p>39bb52e4-b3c2-410a-99a5-8b4d027b2b88</p>
+<p>_gsa-bb37c3e3-537b_3</p>
+<p>28b0d77d-1cbd-4bc6-b660-25af74c8e15a</p>
+<p>5/21/2021 0:46</p>
+<p>5ed8343c-b46e-4d91-8e07-cb716776fcb7</p>
+<p>_workernode-0-vm-1</p>
+<p>5/23/2021 0:00</p>
+<p>a56132d5-a7fb-475a-998b-11e5c49844d8</p>
+<p>_vmss-powerpointonlinedocumentservicelb1-ujrzfnahcu-201912050109_51</p>
+<p>7f45ee49-f3cb-453a-a7bc-ba63987841fc</p>
+<p>0</p>
+<p>9a0d5187-d949-43b2-808a-86151bcb43ee</p>
+<p>clubmc03</p>
+<p>a5360062-08d5-4a18-9ae2-395ef0c9c739</p>
+<p>e2b4e5ee-840d-4f0a-9d9d-80b891ac1d19</p>
+<p>_fe1_1</p>
+<p>854bd256-10bd-4495-8bca-1e578ac8146e</p>
+<p>_Web_6</p>
+<p>0f9c0217-82d2-43c1-99be-1e462ad9ccf5</p>
+<p>ac1dbc33-c559-4a2b-8602-aa60841c3005</p>
+<p>_beij-13168-498250039_0</p>
+<p>1dc0280c-ff08-4be6-b09e-2c8294a0d9f5</p>
+<p>7a8aad6f-4dfb-4cea-811c-7cdfc43e898d</p>
+<p>_OD-RTDP-ItineraryBuilder-North-0</p>
+<p>dbe26500-ab43-4bda-8866-b27aa48713c0</p>
+<p>0e32c180-445d-4de5-85c6-4d90d212ca45</p>
+<p>openowa</p>
+<p>5e473f8c-5a2a-4907-afce-20a323965621</p>
+<p>_beij-16545-957097997_0</p>
+<p>1</p>
+<p>3a2be038-3e86-4f1f-8a3e-8ea98d7e4c13</p>
+<p>LinuxD2V2-1</p>
+<p>1fd52741-6bb9-4e3d-a2db-46ad23cf0f67</p>
+<p>c74b306c-fffa-46dc-bf31-b27f08170d9c</p>
+<p>_worker0_9</p>
+<p>ad65d7ee-3e7b-4dc3-b5de-2ec54841c7a2</p>
+<p>adafb169-2990-45c5-a424-3aada310af7f</p>
+<p>_ADFSPROXY01</p>
+<p>51e0bc3c-e8af-4624-8e8e-0e9023469aec</p>
+<p>04c83d75-8036-4397-b36b-806b935e2f28</p>
+<p>_bjhqems4mobfree56</p>
+<p>9c4d93fa-784c-48da-b87d-5baad12e0284</p>
+<p>9f01c179-49cd-464b-bc26-f128ce061e65</p>
+<p>_mc-prod-sql-vm</p>
+<p>9c41c447-d3d7-491d-ab6d-48d1807a95ab</p>
+<p>2b1a97c1-501e-40e9-be65-ffff1c7636ac</p>
+<p>_beij-14146-1739248086_1</p>
+<p>7ebdd89d-30af-431d-be74-87233db42811</p>
+<p>_IMServer</p>
+<p>fb639abf-3830-481b-a85c-5a2b8616f2b6</p>
+<p>_kmrec2</p>
+<p>4445efb3-5a6e-4c85-9f65-7c10ad73baca</p>
+<p>_EECAEColdData</p>
+<p>a0a431ee-fcd8-4622-9b5a-bba8318e2d5e</p>
+<p>_mjf-mobi-news10</p>
+<p>37b484f9-f0d1-4b46-b92d-bd63cfa932e5</p>
+<p>_hynmysql1</p>
+<p>7fe71a64-eaf2-4afe-930e-195e1669b9cd</p>
+<p>f8f6a512-323b-49e2-8858-6bd9b1c8b22e</p>
+<p>_CN-MO-PD-WB-04</p>
+<p>c384a31c-f57c-4d33-bd45-2c589ec899c2</p>
+<p>_beij-11693-1828759795_1</p>
+<p>a6cc5f0c-54bf-455a-9336-3f05d171839c</p>
+<p>5/23/2021 0:05</p>
+<p>d5809e80-4f14-4adf-a2c1-af71e09e5114</p>
+<p>_beij-12705-2071463684_0</p>
+<p>25ab1959-b598-4102-a110-bd8b6333718b</p>
+<p>25c56c8b-db48-4c86-986c-cee2f43e0d5d</p>
+<p>_xinhuasheweituo</p></article>

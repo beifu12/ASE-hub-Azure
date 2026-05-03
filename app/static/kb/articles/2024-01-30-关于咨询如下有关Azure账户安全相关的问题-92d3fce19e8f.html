@@ -1,0 +1,172 @@
+<article class="kb-article" data-title="关于咨询如下有关Azure账户安全相关的问题"><h1>关于咨询如下有关Azure账户安全相关的问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-01-30 11:46:11</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>设置目录级别的非活动超时</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>设置目录级别的非活动超时</li>
+</ul>
+<ul>
+<li>1. 登录失败处理功能</li>
+</ul>
+<ul>
+<li>3. 限制非法登录次数和当登录连接超时自动退出等相关措施。</li>
+</ul>
+<ul>
+<li>登录失败处理功能</li>
+</ul>
+<ul>
+<li>这个策略与“限制非法登录次数和当登录连接超时自动退出等相关措施”是部分重叠的，目前Azure提供的针对Azure AD账户的策略包括以下，且部分功能Azure China尚不可用：</li>
+</ul>
+<ul>
+<li>限制非法登录次数和当登录连接超时自动退出等相关措施。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>2022.1.27</li>
+</ul>
+<ul>
+<li>Johnny</li>
+</ul>
+<ul>
+<li>2024.1.30</li>
+</ul>
+<ul>
+<li>Update:  2024.1.30</li>
+</ul>
+<ul>
+<li>虚拟机的Serial Console功能</li>
+</ul>
+<ul>
+<li>目前中国区都已可用</li>
+</ul>
+<ul>
+<li>============================</li>
+</ul>
+<ul>
+<li>问题描述</li>
+</ul>
+<ul>
+<li>咨询如下有关Azure账户安全相关的问题：</li>
+</ul>
+<ul>
+<li>2. 配置结束会话（</li>
+</ul>
+<ul>
+<li>）</li>
+</ul>
+<ul>
+<li>4.账户密码过期策略</li>
+</ul>
+<ul>
+<li>5.密码复杂度设置</li>
+</ul>
+<ul>
+<li>6. 控制台未限制终端接入范围</li>
+</ul>
+<ul>
+<li>7. 管理员未定期对该控制台进行漏洞扫描</li>
+</ul>
+<ul>
+<li>配置结束会话</li>
+</ul>
+<ul>
+<li>账户密码过期策略</li>
+</ul>
+<ul>
+<li>密码复杂度设置</li>
+</ul>
+<ul>
+<li>控制台未限制终端接入范围。</li>
+</ul>
+<ul>
+<li>此虚策略并不适用。</li>
+</ul>
+<ul>
+<li>管理员未定期对该控制台进行漏洞扫描。</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>“建议应用系统提供登录失败处理功能，以正确的用户名、错误的口令连续多次登录系统，超过预定错误次数（如5次）时，系统锁定（如3分钟）该用户，由管理员解锁或过一段时间（如10分钟）后自动解锁；用户登录过程中，系统进行身份鉴别时，设置了合理的连接超时自动断开的等待时间（如1小时）；用户登录后，长时间（如1小时）无操作，系统设置了符合业务需求的结束会话时间。”</li>
+</ul>
+<ul>
+<li>解决方案</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>Azure Active Directory 智能锁定 <a href="https://docs.azure.cn/zh-cn/entra/identity/authentication/howto-password-smart-lockout" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/authentication/howto-password-smart-lockout</a></li>
+</ul>
+<ul>
+<li>Azure Active Directory 门户中的“登录活动”报告             <a href="https://docs.azure.cn/zh-cn/active-directory/reports-monitoring/concept-sign-ins" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/reports-monitoring/concept-sign-ins</a></li>
+</ul>
+<ul>
+<li>Azure Active Directory 智能锁定（中国Azure尚不可用）         <a href="https://docs.microsoft.com/en-us/azure/active-directory/authentication/howto-password-smart-lockout" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/active-directory/authentication/howto-password-smart-lockout</a></li>
+</ul>
+<ul>
+<li>设置目录级别的非活动超时（中国Azure尚不可用）                <a href="https://docs.azure.cn/zh-cn/azure-portal/admin-timeout" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-portal/admin-timeout</a></li>
+</ul>
+<ul>
+<li>通过常规门户设置更改非活动注销      <a href="https://docs.azure.cn/zh-cn/azure-portal/set-preferences#change-the-idle-duration-for-inactive-sign-out" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-portal/set-preferences#change-the-idle-duration-for-inactive-sign-out</a></li>
+</ul>
+<ul>
+<li>使用PowerShell设置密码过期策略    <a href="https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy#set-password-expiration-policies-in-azure-ad" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy#set-password-expiration-policies-in-azure-ad</a></li>
+</ul>
+<ul>
+<li>适用于云用户帐户的默认密码策略      <a href="https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy#password-policies-that-only-apply-to-cloud-user-accounts" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy#password-policies-that-only-apply-to-cloud-user-accounts</a></li>
+</ul>
+<ul>
+<li>Azure China目前未提供给针对虚拟机的Serial Console功能 - <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/troubleshooting/serial-console-overview" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/troubleshooting/serial-console-overview</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2022.1.27</p>
+<p>Johnny</p>
+<p>2024.1.30</p>
+<p>Update:  2024.1.30</p>
+<p>Azure Active Directory 智能锁定 <a href="https://docs.azure.cn/zh-cn/entra/identity/authentication/howto-password-smart-lockout" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/entra/identity/authentication/howto-password-smart-lockout</a></p>
+<p>设置目录级别的非活动超时</p>
+<p>虚拟机的Serial Console功能</p>
+<p>目前中国区都已可用</p>
+<p>============================</p>
+<p>问题描述</p>
+<p>咨询如下有关Azure账户安全相关的问题：</p>
+<p>1. 登录失败处理功能</p>
+<p>2. 配置结束会话（</p>
+<p>“建议应用系统提供登录失败处理功能，以正确的用户名、错误的口令连续多次登录系统，超过预定错误次数（如5次）时，系统锁定（如3分钟）该用户，由管理员解锁或过一段时间（如10分钟）后自动解锁；用户登录过程中，系统进行身份鉴别时，设置了合理的连接超时自动断开的等待时间（如1小时）；用户登录后，长时间（如1小时）无操作，系统设置了符合业务需求的结束会话时间。”</p>
+<p>）</p>
+<p>3. 限制非法登录次数和当登录连接超时自动退出等相关措施。</p>
+<p>4.账户密码过期策略</p>
+<p>5.密码复杂度设置</p>
+<p>6. 控制台未限制终端接入范围</p>
+<p>7. 管理员未定期对该控制台进行漏洞扫描</p>
+<p>解决方案</p>
+<p>登录失败处理功能</p>
+<p>Azure Active Directory 门户中的“登录活动”报告             <a href="https://docs.azure.cn/zh-cn/active-directory/reports-monitoring/concept-sign-ins" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/reports-monitoring/concept-sign-ins</a></p>
+<p>配置结束会话</p>
+<p>这个策略与“限制非法登录次数和当登录连接超时自动退出等相关措施”是部分重叠的，目前Azure提供的针对Azure AD账户的策略包括以下，且部分功能Azure China尚不可用：</p>
+<p>Azure Active Directory 智能锁定（中国Azure尚不可用）         <a href="https://docs.microsoft.com/en-us/azure/active-directory/authentication/howto-password-smart-lockout" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/active-directory/authentication/howto-password-smart-lockout</a></p>
+<p>设置目录级别的非活动超时（中国Azure尚不可用）                <a href="https://docs.azure.cn/zh-cn/azure-portal/admin-timeout" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-portal/admin-timeout</a></p>
+<p>通过常规门户设置更改非活动注销      <a href="https://docs.azure.cn/zh-cn/azure-portal/set-preferences#change-the-idle-duration-for-inactive-sign-out" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-portal/set-preferences#change-the-idle-duration-for-inactive-sign-out</a></p>
+<p>限制非法登录次数和当登录连接超时自动退出等相关措施。</p>
+<p>账户密码过期策略</p>
+<p>使用PowerShell设置密码过期策略    <a href="https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy#set-password-expiration-policies-in-azure-ad" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy#set-password-expiration-policies-in-azure-ad</a></p>
+<p>密码复杂度设置</p>
+<p>适用于云用户帐户的默认密码策略      <a href="https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy#password-policies-that-only-apply-to-cloud-user-accounts" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy#password-policies-that-only-apply-to-cloud-user-accounts</a></p>
+<p>控制台未限制终端接入范围。</p>
+<p>Azure China目前未提供给针对虚拟机的Serial Console功能 - <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/troubleshooting/serial-console-overview" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/troubleshooting/serial-console-overview</a></p>
+<p>此虚策略并不适用。</p>
+<p>管理员未定期对该控制台进行漏洞扫描。</p></article>

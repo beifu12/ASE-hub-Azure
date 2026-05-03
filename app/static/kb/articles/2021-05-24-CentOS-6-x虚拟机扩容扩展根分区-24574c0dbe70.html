@@ -1,0 +1,505 @@
+<article class="kb-article" data-title="CentOS 6.x虚拟机扩容扩展根分区"><h1>CentOS 6.x虚拟机扩容扩展根分区</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-05-24 10:19:34</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>扩容磁盘时，虚拟机需要为关机状态，否则会出现如下报错</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>扩容磁盘时，虚拟机需要为关机状态，否则会出现如下报错</li>
+</ul>
+<ul>
+<li>WARNING: Re-reading the partition table failed with error 16: Device or resource busy.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>============================================</li>
+</ul>
+<ul>
+<li>CentOS6.x虚拟机扩展根分区</li>
+</ul>
+<ul>
+<li>操作之前，一定要先备份虚拟机的OS磁盘</li>
+</ul>
+<ul>
+<li>[root@hlmvmn655 ~]# fdisk /dev/sda</li>
+</ul>
+<ul>
+<li>WARNING: DOS-compatible mode is deprecated. It&#39;s strongly recommended to</li>
+</ul>
+<ul>
+<li>switch off the mode (command &#39;c&#39;) and change display units to</li>
+</ul>
+<ul>
+<li>sectors (command &#39;u&#39;).</li>
+</ul>
+<ul>
+<li>Command action</li>
+</ul>
+<ul>
+<li>a   toggle a bootable flag</li>
+</ul>
+<ul>
+<li>b   edit bsd disklabel</li>
+</ul>
+<ul>
+<li>c   toggle the dos compatibility flag</li>
+</ul>
+<ul>
+<li>d   delete a partition</li>
+</ul>
+<ul>
+<li>l   list known partition types</li>
+</ul>
+<ul>
+<li>m   print this menu</li>
+</ul>
+<ul>
+<li>n   add a new partition</li>
+</ul>
+<ul>
+<li>o   create a new empty DOS partition table</li>
+</ul>
+<ul>
+<li>p   print the partition table</li>
+</ul>
+<ul>
+<li>q   quit without saving changes</li>
+</ul>
+<ul>
+<li>s   create a new empty Sun disklabel</li>
+</ul>
+<ul>
+<li>t   change a partition&#39;s system id</li>
+</ul>
+<ul>
+<li>u   change display/entry units</li>
+</ul>
+<ul>
+<li>w   write table to disk and exit</li>
+</ul>
+<ul>
+<li>x   extra functionality (experts only)</li>
+</ul>
+<ul>
+<li>Disk /dev/sda: 536.9 GB, 536870912000 bytes</li>
+</ul>
+<ul>
+<li>255 heads, 63 sectors/track, 65270 cylinders</li>
+</ul>
+<ul>
+<li>I/O size (minimum/optimal): 512 bytes / 512 bytes</li>
+</ul>
+<ul>
+<li>Disk identifier: 0x0004db46</li>
+</ul>
+<ul>
+<li>Device Boot      Start         End      Blocks   Id  System</li>
+</ul>
+<ul>
+<li>/dev/sda1   *           1        3917    31456256   83</li>
+</ul>
+<ul>
+<li>Command (m for help): u</li>
+</ul>
+<ul>
+<li>##默认以柱面的形式显示，运行该参数后会以扇区的形式显示</li>
+</ul>
+<ul>
+<li>Changing display/entry units to sectors</li>
+</ul>
+<ul>
+<li>Command (m for help): p</li>
+</ul>
+<ul>
+<li>255 heads, 63 sectors/track, 65270 cylinders, total 1048576000 sectors</li>
+</ul>
+<ul>
+<li>Disk identifier: 0x0004db46q</li>
+</ul>
+<ul>
+<li>/dev/sda1   *        2048    62914559    31456256   83  Linux              ##记录该标黄的start值</li>
+</ul>
+<ul>
+<li>Command (m for help): d          ##将原来的/dev/sda1分区删除</li>
+</ul>
+<ul>
+<li>Selected partition 1</li>
+</ul>
+<ul>
+<li>Command (m for help): n     ##重新创建分区</li>
+</ul>
+<ul>
+<li>e   extended</li>
+</ul>
+<ul>
+<li>p   primary partition (1-4)</li>
+</ul>
+<ul>
+<li>p</li>
+</ul>
+<ul>
+<li>Partition number (1-4): 1</li>
+</ul>
+<ul>
+<li>First sector (63-1048575999, default 63): 2048   ##该值需要与上述标黄的start值相同</li>
+</ul>
+<ul>
+<li>Last sector, +sectors or +size{K,M,G} (2048-1048575999, default 1048575999): （直接回车使用默认值）</li>
+</ul>
+<ul>
+<li>Using default value 1048575999</li>
+</ul>
+<ul>
+<li>/dev/sda1            2048  1048575999   524286976   83  Linux</li>
+</ul>
+<ul>
+<li>Command (m for help): a         ##激活分区</li>
+</ul>
+<ul>
+<li>/dev/sda1   *        2048  1048575999   524286976   83  Linux地方</li>
+</ul>
+<ul>
+<li>The partition table has been altered!</li>
+</ul>
+<ul>
+<li>Calling ioctl() to re-read partition table.</li>
+</ul>
+<ul>
+<li>The kernel still uses the old table. The new table will be used at</li>
+</ul>
+<ul>
+<li>the next reboot or after you run partprobe(8) or kpartx(8)</li>
+</ul>
+<ul>
+<li>Syncing disks.</li>
+</ul>
+<ul>
+<li>CentOS 7.3</li>
+</ul>
+<ul>
+<li>I tried to resize the file system to the new size.</li>
+</ul>
+<ul>
+<li>[root@jcdesk Desktop]# resize2fs /dev/mapper/centos-root</li>
+</ul>
+<ul>
+<li>resize2fs 1.42.9 (28-Dec-2013)</li>
+</ul>
+<ul>
+<li>resize2fs: Bad magic number in super-block while trying to open</li>
+</ul>
+<ul>
+<li>/dev/mapper/centos-root</li>
+</ul>
+<ul>
+<li>Couldn&#39;t find valid filesystem superblock.</li>
+</ul>
+<ul>
+<li>Oops !!!!! 8-o</li>
+</ul>
+<ul>
+<li>I took me a while to find out that LVM is using xfs as their file system.</li>
+</ul>
+<ul>
+<li>[root@jcdesk ~]# mount | grep centos-root</li>
+</ul>
+<ul>
+<li>/dev/mapper/centos-root on / type xfs (rw,relatime,...</li>
+</ul>
+<ul>
+<li>Xfs comes with its own command set.</li>
+</ul>
+<ul>
+<li>[root@jcdesk ~]# xfs [tab][tab]</li>
+</ul>
+<ul>
+<li>xfs_admin      xfs_copy       xfsdump        xfs_freeze</li>
+</ul>
+<ul>
+<li>xfs_db         xfs_estimate   xfs_fsr      xfs_info</li>
+</ul>
+<ul>
+<li>xfs_io         xfs_mdrestore  xfs_mkfile     xfs_quota</li>
+</ul>
+<ul>
+<li>xfsres</li>
+</ul>
+<ul>
+<li>So instead of using the</li>
+</ul>
+<ul>
+<li>[root@jcdesk ~]# xfs_growfs /dev/mapper/centos-root</li>
+</ul>
+<ul>
+<li>6881024 blks</li>
+</ul>
+<ul>
+<li>=              sectsz=512   attr=2, projid32bit=1</li>
+</ul>
+<ul>
+<li>=              crc=0        finobt=0</li>
+</ul>
+<ul>
+<li>=              sunit=0      swidth=0 blks</li>
+</ul>
+<ul>
+<li>=              sectsz=512   sunit=0 blks, lazy-count=1</li>
+</ul>
+<ul>
+<li>data blocks changed from 27524096 to 30146560</li>
+</ul>
+<ul>
+<li>[root@jcdesk ~]# df -h</li>
+</ul>
+<ul>
+<li>Filesystem               Size  Used Avail Use% Mounted on</li>
+</ul>
+<ul>
+<li>/dev/mapper/centos-root  115G  7.0G  108G   7% /</li>
+</ul>
+<ul>
+<li>….. done.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>操作之前需要重点查看：</li>
+</ul>
+<ul>
+<li>准备环境：CentOS6.5（6.9经测试步骤也适用）</li>
+</ul>
+<ul>
+<li>扩展根分区操作前，查看虚拟机的磁盘信息</li>
+</ul>
+<ul>
+<li>创建测试文件hlmtest01.txt，以便验证扩展根分区后文件是否损坏</li>
+</ul>
+<ul>
+<li>在Azure Portal界面，关闭虚拟机，扩容磁盘</li>
+</ul>
+<ul>
+<li>在Azure Portal界面，重新启动虚拟机，并登录虚拟机，查看虚拟机的磁盘信息，发现OS磁盘已经更改为500G，但/dev/sda1分区仍然为30G</li>
+</ul>
+<ul>
+<li>查看之前创建的测试文件hlmtest01.txt依然存在，并创建第二个测试文件hlmtest02.txt，以便验证扩展根分区后文件是否损坏</li>
+</ul>
+<ul>
+<li>v   verify the partition table</li>
+</ul>
+<ul>
+<li>Command (m for help): p      ##查看目前的分区信息</li>
+</ul>
+<ul>
+<li>Sector size (logical/physical): 512 bytes / 512 bytes</li>
+</ul>
+<ul>
+<li>Command (m for help): p   ##再次查看分区，确认已激活，激活后Boot对应的值为*</li>
+</ul>
+<ul>
+<li>Command (m for help): w     ##如果确认信息无误，运行该参数，保存退出</li>
+</ul>
+<ul>
+<li>在Azure Portal界面，重新启动虚拟机，并登录虚拟机，查看虚拟机的磁盘信息，发现/dev/sda1分区仍然为30G</li>
+</ul>
+<ul>
+<li>再次查看虚拟机的磁盘信息，发现/dev/sda1分区已经改变为500G</li>
+</ul>
+<ul>
+<li>查看之前创建的验证文件，都正常存在</li>
+</ul>
+<ul>
+<li>虚拟机中Reboot，重新登陆虚拟机，查看到一切正常</li>
+</ul>
+<ul>
+<li>xfs_growfs     xfsinvutil     xfs_logprint   xfs_metadump</li>
+</ul>
+<ul>
+<li>xfs_ncheck     xfs_repair     xfs_rtcp     xfs_bmap</li>
+</ul>
+<ul>
+<li>A final check:</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>安装Windows Azure Powershell，使用命令：Get-AzureVM -ServiceName hlmcloudn -Name hlmvmn655 | Get-AzureOSDisk，获取该虚拟机磁盘的DiskName （标黄的部分需要根据自己的环境进行改变）</li>
+</ul>
+<ul>
+<li>使用命令：Update-AzureDisk &quot;hlmcoren1-hlmvmn655-0-201701100140100186&quot; -Label &quot;hlmvmn655exdisk&quot; -ResizedSizeInGB 500，将/dev/sda磁盘大小扩充为500G （标黄的部分需要根据自己的环境进行改变）</li>
+</ul>
+<ul>
+<li>使用命令：fdisk /dev/sda，查看磁盘的已有分区，删除已有分区，重新创建新的分区 （##后面的为注释）</li>
+</ul>
+<ul>
+<li>Command (m for help): m        ##查看fdisk命令的参数信息</li>
+</ul>
+<ul>
+<li>使用命令：resize2fs /dev/sda1，拉伸根分区的文件系统</li>
+</ul>
+<ul>
+<li>CentOS 7.2虚拟机扩展根分区，在执行命令fdisk /dev/sda时，无需加入u这个参数，7.2的机器默认就以扇区的形式显示。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Units = cylinders of 16065 * 512 = 8225280 bytes</li>
+</ul>
+<ul>
+<li>Units = sectors of 1 * 512 = 512 bytes</li>
+</ul>
+<ul>
+<li>meta-data=/dev/mapper/centos-root isize=256 agcount=4, agsize=</li>
+</ul>
+<ul>
+<li>data     =              bsize=4096   blocks=27524096, imaxpct=25</li>
+</ul>
+<ul>
+<li>naming   =version 2     bsize=4096   ascii-ci=0 ftype=0</li>
+</ul>
+<ul>
+<li>log      =internal      bsize=4096   blocks=13439, version=2</li>
+</ul>
+<ul>
+<li>realtime =none          extsz=4096   blocks=0, rtextents=0</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>由于扩容磁盘的操作非同小可，一旦哪一步出现问题，就会导致分区损坏，虚拟机无法启动，数据丢失等一系列严重的问题，因此建议：在进行虚拟机根分区扩容之前，一定要备份虚拟机的OS磁盘，并且先在测试机上验证以下步骤，再应用于您的生产机器。如果虚拟机的磁盘不够用了建议附件新磁盘进行使用，不到万不得已一般不要扩容虚拟机的根分区。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>针对CentOS 6.*系列虚拟机的根分区扩容，请参考：<a href="http://www.cnblogs.com/stonehe/p/8615336.html" target="_blank" rel="noopener">http://www.cnblogs.com/stonehe/p/8615336.html</a></li>
+</ul>
+<ul>
+<li>针对CentOS 7.*系列虚拟机的根分区扩容，请参考：<a href="http://www.cnblogs.com/stonehe/p/8271376.html" target="_blank" rel="noopener">http://www.cnblogs.com/stonehe/p/8271376.html</a></li>
+</ul>
+<ul>
+<li>From &lt;<a href="http://www.systemadmin.me.uk/?p=434&gt;" target="_blank" rel="noopener">http://www.systemadmin.me.uk/?p=434&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>针对CentOS 6.*系列虚拟机的根分区扩容，请参考：<a href="http://www.cnblogs.com/stonehe/p/8615336.html" target="_blank" rel="noopener">http://www.cnblogs.com/stonehe/p/8615336.html</a></p>
+<p>针对CentOS 7.*系列虚拟机的根分区扩容，请参考：<a href="http://www.cnblogs.com/stonehe/p/8271376.html" target="_blank" rel="noopener">http://www.cnblogs.com/stonehe/p/8271376.html</a></p>
+<p>============================================</p>
+<p>CentOS6.x虚拟机扩展根分区</p>
+<p>操作之前需要重点查看：</p>
+<p>由于扩容磁盘的操作非同小可，一旦哪一步出现问题，就会导致分区损坏，虚拟机无法启动，数据丢失等一系列严重的问题，因此建议：在进行虚拟机根分区扩容之前，一定要备份虚拟机的OS磁盘，并且先在测试机上验证以下步骤，再应用于您的生产机器。如果虚拟机的磁盘不够用了建议附件新磁盘进行使用，不到万不得已一般不要扩容虚拟机的根分区。</p>
+<p>操作之前，一定要先备份虚拟机的OS磁盘</p>
+<p>准备环境：CentOS6.5（6.9经测试步骤也适用）</p>
+<p>扩展根分区操作前，查看虚拟机的磁盘信息</p>
+<p>创建测试文件hlmtest01.txt，以便验证扩展根分区后文件是否损坏</p>
+<p>安装Windows Azure Powershell，使用命令：Get-AzureVM -ServiceName hlmcloudn -Name hlmvmn655 | Get-AzureOSDisk，获取该虚拟机磁盘的DiskName （标黄的部分需要根据自己的环境进行改变）</p>
+<p>使用命令：Update-AzureDisk &quot;hlmcoren1-hlmvmn655-0-201701100140100186&quot; -Label &quot;hlmvmn655exdisk&quot; -ResizedSizeInGB 500，将/dev/sda磁盘大小扩充为500G （标黄的部分需要根据自己的环境进行改变）</p>
+<p>扩容磁盘时，虚拟机需要为关机状态，否则会出现如下报错</p>
+<p>在Azure Portal界面，关闭虚拟机，扩容磁盘</p>
+<p>在Azure Portal界面，重新启动虚拟机，并登录虚拟机，查看虚拟机的磁盘信息，发现OS磁盘已经更改为500G，但/dev/sda1分区仍然为30G</p>
+<p>查看之前创建的测试文件hlmtest01.txt依然存在，并创建第二个测试文件hlmtest02.txt，以便验证扩展根分区后文件是否损坏</p>
+<p>使用命令：fdisk /dev/sda，查看磁盘的已有分区，删除已有分区，重新创建新的分区 （##后面的为注释）</p>
+<p>[root@hlmvmn655 ~]# fdisk /dev/sda</p>
+<p>WARNING: DOS-compatible mode is deprecated. It&#39;s strongly recommended to</p>
+<p>switch off the mode (command &#39;c&#39;) and change display units to</p>
+<p>sectors (command &#39;u&#39;).</p>
+<p>Command (m for help): m        ##查看fdisk命令的参数信息</p>
+<p>Command action</p>
+<p>a   toggle a bootable flag</p>
+<p>b   edit bsd disklabel</p>
+<p>c   toggle the dos compatibility flag</p>
+<p>d   delete a partition</p>
+<p>l   list known partition types</p>
+<p>m   print this menu</p>
+<p>n   add a new partition</p>
+<p>o   create a new empty DOS partition table</p>
+<p>p   print the partition table</p>
+<p>q   quit without saving changes</p>
+<p>s   create a new empty Sun disklabel</p>
+<p>t   change a partition&#39;s system id</p>
+<p>u   change display/entry units</p>
+<p>v   verify the partition table</p>
+<p>w   write table to disk and exit</p>
+<p>x   extra functionality (experts only)</p>
+<p>Command (m for help): p      ##查看目前的分区信息</p>
+<p>Disk /dev/sda: 536.9 GB, 536870912000 bytes</p>
+<p>255 heads, 63 sectors/track, 65270 cylinders</p>
+<p>Units = cylinders of 16065 * 512 = 8225280 bytes</p>
+<p>Sector size (logical/physical): 512 bytes / 512 bytes</p>
+<p>I/O size (minimum/optimal): 512 bytes / 512 bytes</p>
+<p>Disk identifier: 0x0004db46</p>
+<p>Device Boot      Start         End      Blocks   Id  System</p>
+<p>/dev/sda1   *           1        3917    31456256   83</p>
+<p>Command (m for help): u</p>
+<p>##默认以柱面的形式显示，运行该参数后会以扇区的形式显示</p>
+<p>Changing display/entry units to sectors</p>
+<p>Command (m for help): p</p>
+<p>255 heads, 63 sectors/track, 65270 cylinders, total 1048576000 sectors</p>
+<p>Units = sectors of 1 * 512 = 512 bytes</p>
+<p>Disk identifier: 0x0004db46q</p>
+<p>/dev/sda1   *        2048    62914559    31456256   83  Linux              ##记录该标黄的start值</p>
+<p>Command (m for help): d          ##将原来的/dev/sda1分区删除</p>
+<p>Selected partition 1</p>
+<p>Command (m for help): n     ##重新创建分区</p>
+<p>e   extended</p>
+<p>p   primary partition (1-4)</p>
+<p>p</p>
+<p>Partition number (1-4): 1</p>
+<p>First sector (63-1048575999, default 63): 2048   ##该值需要与上述标黄的start值相同</p>
+<p>Last sector, +sectors or +size{K,M,G} (2048-1048575999, default 1048575999): （直接回车使用默认值）</p>
+<p>Using default value 1048575999</p>
+<p>/dev/sda1            2048  1048575999   524286976   83  Linux</p>
+<p>Command (m for help): a         ##激活分区</p>
+<p>Command (m for help): p   ##再次查看分区，确认已激活，激活后Boot对应的值为*</p>
+<p>/dev/sda1   *        2048  1048575999   524286976   83  Linux地方</p>
+<p>Command (m for help): w     ##如果确认信息无误，运行该参数，保存退出</p>
+<p>The partition table has been altered!</p>
+<p>Calling ioctl() to re-read partition table.</p>
+<p>WARNING: Re-reading the partition table failed with error 16: Device or resource busy.</p>
+<p>The kernel still uses the old table. The new table will be used at</p>
+<p>the next reboot or after you run partprobe(8) or kpartx(8)</p>
+<p>Syncing disks.</p>
+<p>在Azure Portal界面，重新启动虚拟机，并登录虚拟机，查看虚拟机的磁盘信息，发现/dev/sda1分区仍然为30G</p>
+<p>使用命令：resize2fs /dev/sda1，拉伸根分区的文件系统</p>
+<p>再次查看虚拟机的磁盘信息，发现/dev/sda1分区已经改变为500G</p>
+<p>查看之前创建的验证文件，都正常存在</p>
+<p>虚拟机中Reboot，重新登陆虚拟机，查看到一切正常</p>
+<p>CentOS 7.2虚拟机扩展根分区，在执行命令fdisk /dev/sda时，无需加入u这个参数，7.2的机器默认就以扇区的形式显示。</p>
+<p>CentOS 7.3</p>
+<p>I tried to resize the file system to the new size.</p>
+<p>[root@jcdesk Desktop]# resize2fs /dev/mapper/centos-root</p>
+<p>resize2fs 1.42.9 (28-Dec-2013)</p>
+<p>resize2fs: Bad magic number in super-block while trying to open</p>
+<p>/dev/mapper/centos-root</p>
+<p>Couldn&#39;t find valid filesystem superblock.</p>
+<p>Oops !!!!! 8-o</p>
+<p>I took me a while to find out that LVM is using xfs as their file system.</p>
+<p>[root@jcdesk ~]# mount | grep centos-root</p>
+<p>/dev/mapper/centos-root on / type xfs (rw,relatime,...</p>
+<p>Xfs comes with its own command set.</p>
+<p>[root@jcdesk ~]# xfs [tab][tab]</p>
+<p>xfs_admin      xfs_copy       xfsdump        xfs_freeze</p>
+<p>xfs_growfs     xfsinvutil     xfs_logprint   xfs_metadump</p>
+<p>xfs_ncheck     xfs_repair     xfs_rtcp     xfs_bmap</p>
+<p>xfs_db         xfs_estimate   xfs_fsr      xfs_info</p>
+<p>xfs_io         xfs_mdrestore  xfs_mkfile     xfs_quota</p>
+<p>xfsres</p>
+<p>So instead of using the</p>
+<p>[root@jcdesk ~]# xfs_growfs /dev/mapper/centos-root</p>
+<p>meta-data=/dev/mapper/centos-root isize=256 agcount=4, agsize=</p>
+<p>6881024 blks</p>
+<p>=              sectsz=512   attr=2, projid32bit=1</p>
+<p>=              crc=0        finobt=0</p>
+<p>data     =              bsize=4096   blocks=27524096, imaxpct=25</p>
+<p>=              sunit=0      swidth=0 blks</p>
+<p>naming   =version 2     bsize=4096   ascii-ci=0 ftype=0</p>
+<p>log      =internal      bsize=4096   blocks=13439, version=2</p>
+<p>=              sectsz=512   sunit=0 blks, lazy-count=1</p>
+<p>realtime =none          extsz=4096   blocks=0, rtextents=0</p>
+<p>data blocks changed from 27524096 to 30146560</p>
+<p>A final check:</p>
+<p>[root@jcdesk ~]# df -h</p>
+<p>Filesystem               Size  Used Avail Use% Mounted on</p>
+<p>/dev/mapper/centos-root  115G  7.0G  108G   7% /</p>
+<p>….. done.</p>
+<p>From &lt;<a href="http://www.systemadmin.me.uk/?p=434&gt;" target="_blank" rel="noopener">http://www.systemadmin.me.uk/?p=434&gt;</a></p></article>

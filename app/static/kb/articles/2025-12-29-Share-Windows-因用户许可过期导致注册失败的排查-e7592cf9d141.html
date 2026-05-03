@@ -1,0 +1,212 @@
+<article class="kb-article" data-title="【Share】Windows 因用户许可过期导致注册失败的排查"><h1>【Share】Windows 因用户许可过期导致注册失败的排查</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-29 17:07:44</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>分享一个工单20251212386936，客户在通过连接工作或学校账号将Windows 设备注册到Intune 时报错invalid_client + failed to authenticate user。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>分享一个工单20251212386936，客户在通过连接工作或学校账号将Windows 设备注册到Intune 时报错invalid_client + failed to authenticate user。</li>
+</ul>
+<ul>
+<li>客户使用Intune设备注册管理员（Device Enrollment Manger 简称DEM）账户通过工作或学校账号连接报错invalid_client + failed to authenticate user，但使用另外一个普通用户是可以正常将设备注册到Intune 的。</li>
+</ul>
+<ul>
+<li>#报错#</li>
+</ul>
+<ul>
+<li>DEM 注册的设备无法使用公司门户进行擦除。必须通过Intune 管理中心进行擦除。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>Lv Lei</li>
+</ul>
+<ul>
+<li>#背景#</li>
+</ul>
+<ul>
+<li>注1：Intune 许可宽限期为30天（43200分钟）。</li>
+</ul>
+<ul>
+<li>注2：本地测试发现，这个表最多只能查过去30天的数据。</li>
+</ul>
+<ul>
+<li>IntuneEvent</li>
+</ul>
+<ul>
+<li>| where env_time &gt;= ago (30d)</li>
+</ul>
+<ul>
+<li>| where env_cloud_name == &quot;CNPASU01&quot;</li>
+</ul>
+<ul>
+<li>| where ComponentName == &quot;UserProvider&quot;</li>
+</ul>
+<ul>
+<li>//通过用户对象ID筛查</li>
+</ul>
+<ul>
+<li>| where UserId == &quot;ad6f4ad8-0c30-400d-a350-c0c2c7a29f52&quot;</li>
+</ul>
+<ul>
+<li>//| where ActivityId == &quot;88d0214b-229b-4201-88bd-1ac672241c12&quot;</li>
+</ul>
+<ul>
+<li>| project env_time, EventUniqueName, ColMetadata, Col1, Col2, Col3</li>
+</ul>
+<ul>
+<li>#用户许可在11/11过期，在11/29时仍处于宽限期内#</li>
+</ul>
+<ul>
+<li>#用户的许可在12/23时已经超过宽限期#</li>
+</ul>
+<ul>
+<li>更多信息：</li>
+</ul>
+<ul>
+<li>=================</li>
+</ul>
+<ul>
+<li>登录到 DEM 帐户人员最多可以注册和管理 1,000 台设备，但使用DEM 账户也会有一些限制，具体请参考官方文档：使用设备注册管理员帐户注册设备 - Microsoft Intune | Microsoft Learn 。</li>
+</ul>
+<ul>
+<li>DEM</li>
+</ul>
+<ul>
+<li>BYOD</li>
+</ul>
+<ul>
+<li>设备数量</li>
+</ul>
+<ul>
+<li>每个DEM 帐户人员最多可以注册和管理 1,000 台设备</li>
+</ul>
+<ul>
+<li>每个标准非管理员帐户最多能注册 15 个设备。</li>
+</ul>
+<ul>
+<li>设备模式</li>
+</ul>
+<ul>
+<li>DEM 在共享设备模式下注册 Windows 设备。</li>
+</ul>
+<ul>
+<li>设备配置或策略</li>
+</ul>
+<ul>
+<li>基于设备的配置或策略可以正常生效，但基于用户的配置或策略可能会不生效</li>
+</ul>
+<ul>
+<li>应用分配</li>
+</ul>
+<ul>
+<li>通过Intune 下发应用时，不能使用 “可用”分配模式。因为没有与 DEM 注册的设备关联的用户。</li>
+</ul>
+<ul>
+<li>公司门户</li>
+</ul>
+<ul>
+<li>注册账户</li>
+</ul>
+<ul>
+<li>DEM账户（非设备的实际使用者）</li>
+</ul>
+<ul>
+<li>用户自己的 Entra ID 账户（设备实际使用者）</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#排查步骤#</li>
+</ul>
+<ul>
+<li>通过kusto检查发现DEM用户的许可已经过期（超过宽限期）</li>
+</ul>
+<ul>
+<li>//check user License status</li>
+</ul>
+<ul>
+<li>cluster(&#39;intunecn.chinanorth2.kusto.chinacloudapi.cn&#39;).database(&#39;intune&#39;).</li>
+</ul>
+<ul>
+<li>| where EventUniqueName in (&quot;LogUnlicensedUserOutOfGracePeriod&quot;, &quot;LogNotFoundGetUserResult&quot;,&quot;LogUnlicensedUserWithInGracePeriod&quot;)</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>根据微软论坛和公网链接，此报错通常与租户MDM配置或许可有关。本次问题中同一租户的另外一个用户可以正常将设备注册到Intune，基本可以排除是租户MDM配置的问题，怀疑是许可问题导致的。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/answers/questions/2242592/invalid-client-whenever-joining-a-laptop-to-entrai" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/answers/questions/2242592/invalid-client-whenever-joining-a-laptop-to-entrai</a></li>
+</ul>
+<ul>
+<li><a href="https://techuisitive.com/invalid_client-error-when-joining-windows-10-device-to-azure-ad-tenant/" target="_blank" rel="noopener">https://techuisitive.com/invalid_client-error-when-joining-windows-10-device-to-azure-ad-tenant/</a></li>
+</ul>
+<ul>
+<li>就如何查看和添加DEM 帐户，请参考官方文档直达链接： <a href="https://learn.microsoft.com/zh-cn/intune/intune-service/enrollment/device-enrollment-manager-enroll#add-a-device-enrollment-manager" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/intune/intune-service/enrollment/device-enrollment-manager-enroll#add-a-device-enrollment-manager</a> 。</li>
+</ul>
+<ul>
+<li>Intune 管理门户(<a href="https://intune.microsoftonline.cn/)à" target="_blank" rel="noopener">https://intune.microsoftonline.cn/)à</a> Devices à Device OnboardingàEnrollment àDevice Enrollment Managers</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/29</p>
+<p>Reviewer</p>
+<p>Lv Lei</p>
+<p>分享一个工单20251212386936，客户在通过连接工作或学校账号将Windows 设备注册到Intune 时报错invalid_client + failed to authenticate user。</p>
+<p>#背景#</p>
+<p>客户使用Intune设备注册管理员（Device Enrollment Manger 简称DEM）账户通过工作或学校账号连接报错invalid_client + failed to authenticate user，但使用另外一个普通用户是可以正常将设备注册到Intune 的。</p>
+<p>#报错#</p>
+<p>#排查步骤#</p>
+<p>根据微软论坛和公网链接，此报错通常与租户MDM配置或许可有关。本次问题中同一租户的另外一个用户可以正常将设备注册到Intune，基本可以排除是租户MDM配置的问题，怀疑是许可问题导致的。</p>
+<p><a href="https://learn.microsoft.com/en-us/answers/questions/2242592/invalid-client-whenever-joining-a-laptop-to-entrai" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/answers/questions/2242592/invalid-client-whenever-joining-a-laptop-to-entrai</a></p>
+<p><a href="https://techuisitive.com/invalid_client-error-when-joining-windows-10-device-to-azure-ad-tenant/" target="_blank" rel="noopener">https://techuisitive.com/invalid_client-error-when-joining-windows-10-device-to-azure-ad-tenant/</a></p>
+<p>通过kusto检查发现DEM用户的许可已经过期（超过宽限期）</p>
+<p>注1：Intune 许可宽限期为30天（43200分钟）。</p>
+<p>注2：本地测试发现，这个表最多只能查过去30天的数据。</p>
+<p>//check user License status</p>
+<p>cluster(&#39;intunecn.chinanorth2.kusto.chinacloudapi.cn&#39;).database(&#39;intune&#39;).</p>
+<p>IntuneEvent</p>
+<p>| where env_time &gt;= ago (30d)</p>
+<p>| where env_cloud_name == &quot;CNPASU01&quot;</p>
+<p>| where ComponentName == &quot;UserProvider&quot;</p>
+<p>| where EventUniqueName in (&quot;LogUnlicensedUserOutOfGracePeriod&quot;, &quot;LogNotFoundGetUserResult&quot;,&quot;LogUnlicensedUserWithInGracePeriod&quot;)</p>
+<p>//通过用户对象ID筛查</p>
+<p>| where UserId == &quot;ad6f4ad8-0c30-400d-a350-c0c2c7a29f52&quot;</p>
+<p>//| where ActivityId == &quot;88d0214b-229b-4201-88bd-1ac672241c12&quot;</p>
+<p>| project env_time, EventUniqueName, ColMetadata, Col1, Col2, Col3</p>
+<p>#用户许可在11/11过期，在11/29时仍处于宽限期内#</p>
+<p>#用户的许可在12/23时已经超过宽限期#</p>
+<p>更多信息：</p>
+<p>=================</p>
+<p>登录到 DEM 帐户人员最多可以注册和管理 1,000 台设备，但使用DEM 账户也会有一些限制，具体请参考官方文档：使用设备注册管理员帐户注册设备 - Microsoft Intune | Microsoft Learn 。</p>
+<p>DEM</p>
+<p>BYOD</p>
+<p>设备数量</p>
+<p>每个DEM 帐户人员最多可以注册和管理 1,000 台设备</p>
+<p>每个标准非管理员帐户最多能注册 15 个设备。</p>
+<p>设备模式</p>
+<p>DEM 在共享设备模式下注册 Windows 设备。</p>
+<p>设备配置或策略</p>
+<p>基于设备的配置或策略可以正常生效，但基于用户的配置或策略可能会不生效</p>
+<p>应用分配</p>
+<p>通过Intune 下发应用时，不能使用 “可用”分配模式。因为没有与 DEM 注册的设备关联的用户。</p>
+<p>公司门户</p>
+<p>DEM 注册的设备无法使用公司门户进行擦除。必须通过Intune 管理中心进行擦除。</p>
+<p>注册账户</p>
+<p>DEM账户（非设备的实际使用者）</p>
+<p>用户自己的 Entra ID 账户（设备实际使用者）</p>
+<p>就如何查看和添加DEM 帐户，请参考官方文档直达链接： <a href="https://learn.microsoft.com/zh-cn/intune/intune-service/enrollment/device-enrollment-manager-enroll#add-a-device-enrollment-manager" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/intune/intune-service/enrollment/device-enrollment-manager-enroll#add-a-device-enrollment-manager</a> 。</p>
+<p>Intune 管理门户(<a href="https://intune.microsoftonline.cn/)à" target="_blank" rel="noopener">https://intune.microsoftonline.cn/)à</a> Devices à Device OnboardingàEnrollment àDevice Enrollment Managers</p></article>

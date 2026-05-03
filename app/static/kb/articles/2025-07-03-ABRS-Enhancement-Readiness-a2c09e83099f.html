@@ -1,0 +1,361 @@
+<article class="kb-article" data-title="ABRS Enhancement Readiness"><h1>ABRS Enhancement Readiness</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Roadmap.one</li>
+<li>Section: Roadmap</li>
+<li>最近修改: 2025-07-03 13:10:35</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Azure VM Linux Restore Failures - Overview (visualstudio.com)</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Azure VM Linux Restore Failures - Overview (visualstudio.com)</li>
+</ul>
+<ul>
+<li>Azure VM Linux Backup Failures - Overview (visualstudio.com)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>to help Networking engineer to enhance our readiness.</li>
+</ul>
+<ul>
+<li>Collected topics:</li>
+</ul>
+<ul>
+<li>Topics</li>
+</ul>
+<ul>
+<li>Reference</li>
+</ul>
+<ul>
+<li>Disk</li>
+</ul>
+<ul>
+<li>Azure 磁盘存储概述 - Azure Virtual Machines | Microsoft Learn</li>
+</ul>
+<ul>
+<li>Azure 托管磁盘的服务器端加密 - Azure Virtual Machines | Microsoft Learn</li>
+</ul>
+<ul>
+<li>磁盘挂载： 将数据磁盘附加到 Linux VM - Azure Virtual Machines | Azure Docs</li>
+</ul>
+<ul>
+<li>Storage</li>
+</ul>
+<ul>
+<li>Storage account Overview:</li>
+</ul>
+<ul>
+<li>Azure File:</li>
+</ul>
+<ul>
+<li>Azure managed Disk:</li>
+</ul>
+<ul>
+<li>WAagent, Extention</li>
+</ul>
+<ul>
+<li>Linux:</li>
+</ul>
+<ul>
+<li>Azure Linux VM Agent overview - Azure Virtual Machines | Microsoft Learn</li>
+</ul>
+<ul>
+<li>LinuxGuestAgentStatusUnavailable - Overview (visualstudio.com)</li>
+</ul>
+<ul>
+<li>Azure Linux VM extensions stop running - Azure | Microsoft Learn</li>
+</ul>
+<ul>
+<li>Source -linux:</li>
+</ul>
+<ul>
+<li>/var/lib/waagent/*.xml</li>
+</ul>
+<ul>
+<li>如果是waagent问题：</li>
+</ul>
+<ul>
+<li>Source VM high churn的情况下收集日志：</li>
+</ul>
+<ul>
+<li>Please run this script in the source VM and it will create a package such as“support-materials-JDVPVI01-Oct_30_04_21_31.tar.gz”</li>
+</ul>
+<ul>
+<li>*Optional Material for reference: 第十八章、认识与分析登录文件 | 鸟哥的 Linux 私房菜：基础学习篇 第四版 (gitbooks.io)</li>
+</ul>
+<ul>
+<li>Source-Windows:</li>
+</ul>
+<ul>
+<li>High churn support</li>
+</ul>
+<ul>
+<li>Azure Virtual Machines disaster recovery - High Churn support - Azure Site Recovery | Microsoft Learn</li>
+</ul>
+<ul>
+<li>H2A</li>
+</ul>
+<ul>
+<li>(don’t need to read the whole doc, a reference for TS)</li>
+</ul>
+<ul>
+<li>1. <strong>Disk Management:</strong></li>
+</ul>
+<ul>
+<li>- What are managed disks in Azure, and how do they differ from unmanaged disks?</li>
+</ul>
+<ul>
+<li>2. <strong>Storage:</strong></li>
+</ul>
+<ul>
+<li>- Describe the different types of storage redundancy offered by Azure. How does each type ensure data availability?</li>
+</ul>
+<ul>
+<li>- What is an Azure Storage Account, and what are its key components?</li>
+</ul>
+<ul>
+<li>3. <strong>WAAgent and Extensions:</strong></li>
+</ul>
+<ul>
+<li>5. <strong>Azure Site Recovery (ASR):</strong></li>
+</ul>
+<ul>
+<li>7. <strong>High Churn Support:</strong></li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>As we handled ABRS cases for a period. We provided this enhance readiness material includes the topics that engineers feedback, the self-check questions and the sample cases</li>
+</ul>
+<ul>
+<li>Troubleshoot the Azure Linux Agent - Azure | Microsoft Learn</li>
+</ul>
+<ul>
+<li>Troubleshooting Linux VM extension</li>
+</ul>
+<ul>
+<li>Troubleshoot Agent and extension issues - Azure Backup | Microsoft Learn</li>
+</ul>
+<ul>
+<li>Log gathering</li>
+</ul>
+<ul>
+<li>Navigate to the below location and gather the Guest Agent and Extension log files.</li>
+</ul>
+<ul>
+<li>/var/log/waagent.log</li>
+</ul>
+<ul>
+<li>/var/log/azure/*</li>
+</ul>
+<ul>
+<li>/var/log/azure/Microsoft.Azure.RecoveryServices.VMSnapshotLinux/&lt;LatestVersion&gt;/*</li>
+</ul>
+<ul>
+<li>将 Logs.Verbose 值从 n 更改为 y。</li>
+</ul>
+<ul>
+<li>保存更改，然后遵循本部分前面所述的步骤重启 waagent。</li>
+</ul>
+<ul>
+<li>There is an in-build script to collect Linux Server logs for ASR: /usr/local/ASR/Vx/bin/collect_support_materials.sh</li>
+</ul>
+<ul>
+<li>或者直接拷贝下面的log：</li>
+</ul>
+<ul>
+<li>/var/log/AzureRcmCli*.log</li>
+</ul>
+<ul>
+<li>/var/log/svagents*.log</li>
+</ul>
+<ul>
+<li>/var/log/srcTelemetry*.log</li>
+</ul>
+<ul>
+<li>/var/log/s2*.log</li>
+</ul>
+<ul>
+<li>Kusto Queries</li>
+</ul>
+<ul>
+<li>&lt;&lt;Kusto fot ASR.docx&gt;&gt; in attachment</li>
+</ul>
+<ul>
+<li>Here are 11 questions that you can use to check the learning outcomes based on the provided content:</li>
+</ul>
+<ul>
+<li>- What is the purpose of the WAAgent on a Linux VM, and how can you troubleshoot if it becomes unavailable?</li>
+</ul>
+<ul>
+<li>4. <strong>Log Gathering:</strong></li>
+</ul>
+<ul>
+<li>- Where can you find the guest agent and extension log files on a Linux VM, and what steps would you take to collect them?</li>
+</ul>
+<ul>
+<li>- What is the process for collecting logs in a high churn scenario on a Linux VM using the built-in script?</li>
+</ul>
+<ul>
+<li>- What is the ASRDiagnosticTool, and how can it be used to collect logs from Windows source agents?</li>
+</ul>
+<ul>
+<li>6. <strong>Kusto Queries:</strong></li>
+</ul>
+<ul>
+<li>- If you want to check for all errors reported during RPO processing on a targeted data source, what query should we use?</li>
+</ul>
+<ul>
+<li>- What steps should be taken to address high churn in Azure VMs, and how can logs be used to support troubleshooting efforts?</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>在 /etc/waagent.conf 文件中，找到以下行：Enable verbose logging (y|n)</li>
+</ul>
+<ul>
+<li>- How can you enable disk encryption for Azure Virtual Machines?</li>
+</ul>
+<ul>
+<li>- Describe the steps to enable verbose logging for the WAAgent on a Linux VM.</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/common/storage-account-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/common/storage-account-overview</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/common/storage-redundancy?toc=%2Fstorage%2Fblobs%2Ftoc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/common/storage-redundancy?toc=%2Fstorage%2Fblobs%2Ftoc.json</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/common/storage-account-upgrade?tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/common/storage-account-upgrade?tabs=azure-portal</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-introduction" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-introduction</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-planning" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-planning</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/managed-disks-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/managed-disks-overview</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/disks-types" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/disks-types</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/log-analytics/log-analytics-azure-vmext-troubleshoot#troubleshooting-linux-vm-extension" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/log-analytics/log-analytics-azure-vmext-troubleshoot#troubleshooting-linux-vm-extension</a></li>
+</ul>
+<ul>
+<li>Use ASRDiagnosticTool: <a href="https://aka.ms/ASRDiagnosticTool" target="_blank" rel="noopener">https://aka.ms/ASRDiagnosticTool</a> to collect the logs from the Appliance and Windows Source Agents. This tool is available from 9.57 release</li>
+</ul>
+<ul>
+<li><a href="https://supportability.visualstudio.com/AzureSiteRecovery/_wiki/wikis/AzureSiteRecovery/1291759/Log-Collection-Tool" target="_blank" rel="noopener">https://supportability.visualstudio.com/AzureSiteRecovery/_wiki/wikis/AzureSiteRecovery/1291759/Log-Collection-Tool</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>As we handled ABRS cases for a period. We provided this enhance readiness material includes the topics that engineers feedback, the self-check questions and the sample cases</p>
+<p>to help Networking engineer to enhance our readiness.</p>
+<p>Collected topics:</p>
+<p>Topics</p>
+<p>Reference</p>
+<p>Disk</p>
+<p>Azure 磁盘存储概述 - Azure Virtual Machines | Microsoft Learn</p>
+<p>Azure 托管磁盘的服务器端加密 - Azure Virtual Machines | Microsoft Learn</p>
+<p>磁盘挂载： 将数据磁盘附加到 Linux VM - Azure Virtual Machines | Azure Docs</p>
+<p>Storage</p>
+<p>Storage account Overview:</p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/common/storage-account-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/common/storage-account-overview</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/common/storage-redundancy?toc=%2Fstorage%2Fblobs%2Ftoc.json" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/common/storage-redundancy?toc=%2Fstorage%2Fblobs%2Ftoc.json</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/common/storage-account-upgrade?tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/common/storage-account-upgrade?tabs=azure-portal</a></p>
+<p>Azure File:</p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-introduction" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-introduction</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/storage/files/storage-files-planning" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/storage/files/storage-files-planning</a></p>
+<p>Azure managed Disk:</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/managed-disks-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/managed-disks-overview</a></p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/disks-types" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/disks-types</a></p>
+<p>WAagent, Extention</p>
+<p>Linux:</p>
+<p>Azure Linux VM Agent overview - Azure Virtual Machines | Microsoft Learn</p>
+<p>Troubleshoot the Azure Linux Agent - Azure | Microsoft Learn</p>
+<p>LinuxGuestAgentStatusUnavailable - Overview (visualstudio.com)</p>
+<p>Azure VM Linux Restore Failures - Overview (visualstudio.com)</p>
+<p>Azure VM Linux Backup Failures - Overview (visualstudio.com)</p>
+<p>Troubleshooting Linux VM extension</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/log-analytics/log-analytics-azure-vmext-troubleshoot#troubleshooting-linux-vm-extension" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/log-analytics/log-analytics-azure-vmext-troubleshoot#troubleshooting-linux-vm-extension</a></p>
+<p>Troubleshoot Agent and extension issues - Azure Backup | Microsoft Learn</p>
+<p>Azure Linux VM extensions stop running - Azure | Microsoft Learn</p>
+<p>Log gathering</p>
+<p>Source -linux:</p>
+<p>Navigate to the below location and gather the Guest Agent and Extension log files.</p>
+<p>/var/lib/waagent/*.xml</p>
+<p>/var/log/waagent.log</p>
+<p>/var/log/azure/*</p>
+<p>/var/log/azure/Microsoft.Azure.RecoveryServices.VMSnapshotLinux/&lt;LatestVersion&gt;/*</p>
+<p>如果是waagent问题：</p>
+<p>在 /etc/waagent.conf 文件中，找到以下行：Enable verbose logging (y|n)</p>
+<p>将 Logs.Verbose 值从 n 更改为 y。</p>
+<p>保存更改，然后遵循本部分前面所述的步骤重启 waagent。</p>
+<p>Source VM high churn的情况下收集日志：</p>
+<p>There is an in-build script to collect Linux Server logs for ASR: /usr/local/ASR/Vx/bin/collect_support_materials.sh</p>
+<p>Please run this script in the source VM and it will create a package such as“support-materials-JDVPVI01-Oct_30_04_21_31.tar.gz”</p>
+<p>或者直接拷贝下面的log：</p>
+<p>/var/log/AzureRcmCli*.log</p>
+<p>/var/log/svagents*.log</p>
+<p>/var/log/srcTelemetry*.log</p>
+<p>/var/log/s2*.log</p>
+<p>*Optional Material for reference: 第十八章、认识与分析登录文件 | 鸟哥的 Linux 私房菜：基础学习篇 第四版 (gitbooks.io)</p>
+<p>Source-Windows:</p>
+<p>Use ASRDiagnosticTool: <a href="https://aka.ms/ASRDiagnosticTool" target="_blank" rel="noopener">https://aka.ms/ASRDiagnosticTool</a> to collect the logs from the Appliance and Windows Source Agents. This tool is available from 9.57 release</p>
+<p><a href="https://supportability.visualstudio.com/AzureSiteRecovery/_wiki/wikis/AzureSiteRecovery/1291759/Log-Collection-Tool" target="_blank" rel="noopener">https://supportability.visualstudio.com/AzureSiteRecovery/_wiki/wikis/AzureSiteRecovery/1291759/Log-Collection-Tool</a></p>
+<p>Kusto Queries</p>
+<p>&lt;&lt;Kusto fot ASR.docx&gt;&gt; in attachment</p>
+<p>High churn support</p>
+<p>Azure Virtual Machines disaster recovery - High Churn support - Azure Site Recovery | Microsoft Learn</p>
+<p>H2A</p>
+<p>(don’t need to read the whole doc, a reference for TS)</p>
+<p>Here are 11 questions that you can use to check the learning outcomes based on the provided content:</p>
+<p>1. <strong>Disk Management:</strong></p>
+<ul>
+<li>What are managed disks in Azure, and how do they differ from unmanaged disks?</li>
+</ul>
+<ul>
+<li>How can you enable disk encryption for Azure Virtual Machines?</li>
+</ul>
+<p>2. <strong>Storage:</strong></p>
+<ul>
+<li>Describe the different types of storage redundancy offered by Azure. How does each type ensure data availability?</li>
+</ul>
+<ul>
+<li>What is an Azure Storage Account, and what are its key components?</li>
+</ul>
+<p>3. <strong>WAAgent and Extensions:</strong></p>
+<ul>
+<li>What is the purpose of the WAAgent on a Linux VM, and how can you troubleshoot if it becomes unavailable?</li>
+</ul>
+<ul>
+<li>Describe the steps to enable verbose logging for the WAAgent on a Linux VM.</li>
+</ul>
+<p>4. <strong>Log Gathering:</strong></p>
+<ul>
+<li>Where can you find the guest agent and extension log files on a Linux VM, and what steps would you take to collect them?</li>
+</ul>
+<ul>
+<li>What is the process for collecting logs in a high churn scenario on a Linux VM using the built-in script?</li>
+</ul>
+<p>5. <strong>Azure Site Recovery (ASR):</strong></p>
+<ul>
+<li>What is the ASRDiagnosticTool, and how can it be used to collect logs from Windows source agents?</li>
+</ul>
+<p>6. <strong>Kusto Queries:</strong></p>
+<ul>
+<li>If you want to check for all errors reported during RPO processing on a targeted data source, what query should we use?</li>
+</ul>
+<p>7. <strong>High Churn Support:</strong></p>
+<ul>
+<li>What steps should be taken to address high churn in Azure VMs, and how can logs be used to support troubleshooting efforts?</li>
+</ul></article>

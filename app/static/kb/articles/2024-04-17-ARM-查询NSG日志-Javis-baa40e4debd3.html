@@ -1,0 +1,86 @@
+<article class="kb-article" data-title="[ARM]查询NSG日志[Javis]"><h1>[ARM]查询NSG日志[Javis]</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: UDR、NSG、ASG、Networkwatcher</li>
+<li>Section: Tools</li>
+<li>最近修改: 2024-04-17 14:30:19</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>NSG的log我找到了。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>NSG的log我找到了。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>另外，下面这个表可以看到对应时间段用户配置的NSG。是另一张表，过滤条件一样，我就不截图了。</li>
+</ul>
+<ul>
+<li>Best Regards,</li>
+</ul>
+<ul>
+<li>Kyle Fu (傅力)</li>
+</ul>
+<ul>
+<li>Support Escalation Engineer</li>
+</ul>
+<ul>
+<li>Hi Kyle,</li>
+</ul>
+<ul>
+<li>Xin Yuefeng | WATS</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>NSG的log我找到了。</li>
+</ul>
+<ul>
+<li>NSG Log，matchedConnections应该是5分钟的累计值。</li>
+</ul>
+<ul>
+<li>不过面向用户的诊断日志的NSG Log我们验证下来，还是没办法在存储账号中生成。我们已通知文档Team做相应修改。</li>
+</ul>
+<ul>
+<li>如Lync所沟通，今天接到客户工单咨询关于NSG日志分析，但是根据如下官网中的介绍，测试并不能启用NSG的诊断日志。请协助帮忙确认，是否NSG诊断日志已经开放，谢谢！</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>其中过滤条件是InternalResourceID，就是NSG规则的内部资源ID。这个ID可以通过get-sub获得：</li>
+</ul>
+<ul>
+<li>也可以通过Jarvis Actions获得：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/976E018C" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/976E018C</a></li>
+</ul>
+<ul>
+<li><a href="https://jarvis-west.dc.ad.msft.net/81DB62AC" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/81DB62AC</a></li>
+</ul>
+<ul>
+<li>官网链接：<a href="https://docs.azure.cn/zh-cn/virtual-network/virtual-network-nsg-manage-log" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-network/virtual-network-nsg-manage-log</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>NSG的log我找到了。</p>
+<p>其中过滤条件是InternalResourceID，就是NSG规则的内部资源ID。这个ID可以通过get-sub获得：</p>
+<p>也可以通过Jarvis Actions获得：</p>
+<p>NSG Log，matchedConnections应该是5分钟的累计值。</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/976E018C" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/976E018C</a></p>
+<p>另外，下面这个表可以看到对应时间段用户配置的NSG。是另一张表，过滤条件一样，我就不截图了。</p>
+<p><a href="https://jarvis-west.dc.ad.msft.net/81DB62AC" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/81DB62AC</a></p>
+<p>不过面向用户的诊断日志的NSG Log我们验证下来，还是没办法在存储账号中生成。我们已通知文档Team做相应修改。</p>
+<p>Best Regards,</p>
+<p>Kyle Fu (傅力)</p>
+<p>Support Escalation Engineer</p>
+<p>Hi Kyle,</p>
+<p>如Lync所沟通，今天接到客户工单咨询关于NSG日志分析，但是根据如下官网中的介绍，测试并不能启用NSG的诊断日志。请协助帮忙确认，是否NSG诊断日志已经开放，谢谢！</p>
+<p>官网链接：<a href="https://docs.azure.cn/zh-cn/virtual-network/virtual-network-nsg-manage-log" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-network/virtual-network-nsg-manage-log</a></p>
+<p>Xin Yuefeng | WATS</p></article>

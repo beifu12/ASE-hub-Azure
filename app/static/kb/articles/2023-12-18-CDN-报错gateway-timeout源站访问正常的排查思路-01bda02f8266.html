@@ -1,0 +1,54 @@
+<article class="kb-article" data-title="CDN 报错gateway timeout源站访问正常的排查思路"><h1>CDN 报错gateway timeout源站访问正常的排查思路</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-12-18 17:28:09</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>对于该报错初步判断可能有以下两种因素导致：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>对于该报错初步判断可能有以下两种因素导致：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>A 在源站上传完整的证书链证书</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1、可排查azure CDN回源的协议，然后根据该回源协议测试源站是否访问正常。若通过https访问，而默认回源选项则会是跟随，若源站不支持https则会访问失败。</li>
+</ul>
+<ul>
+<li>B 联系PG修改供应商为其他，例如腾讯则不验证完整证书链，只要有服务器证书即可</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>若当前供应商为百度的话，需要源站的证书必须是完整的证书链才能正常回源，确认源站是否是完整证书链必须通过linux openssl命令来确认，windows浏览器会自动补全，所以不能确认是否完整。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>证书不完整的情况解决方法可以有以下方式:</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>2、通过后台工具查询加速域名的当前供应商 <a href="https://dashboard.cdn.azure.cn/DbEndpoint" target="_blank" rel="noopener">https://dashboard.cdn.azure.cn/DbEndpoint</a> ,</li>
+</ul>
+<ul>
+<li>openssl s_client -connect 52.131.209.153:443 -servername www.schott-ceran.cn -showcerts</li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>对于该报错初步判断可能有以下两种因素导致：</p>
+<p>1、可排查azure CDN回源的协议，然后根据该回源协议测试源站是否访问正常。若通过https访问，而默认回源选项则会是跟随，若源站不支持https则会访问失败。</p>
+<p>2、通过后台工具查询加速域名的当前供应商 <a href="https://dashboard.cdn.azure.cn/DbEndpoint" target="_blank" rel="noopener">https://dashboard.cdn.azure.cn/DbEndpoint</a> ,</p>
+<p>若当前供应商为百度的话，需要源站的证书必须是完整的证书链才能正常回源，确认源站是否是完整证书链必须通过linux openssl命令来确认，windows浏览器会自动补全，所以不能确认是否完整。</p>
+<p>openssl s_client -connect 52.131.209.153:443 -servername www.schott-ceran.cn -showcerts</p>
+<p>证书不完整的情况解决方法可以有以下方式:</p>
+<p>A 在源站上传完整的证书链证书</p>
+<p>B 联系PG修改供应商为其他，例如腾讯则不验证完整证书链，只要有服务器证书即可</p></article>

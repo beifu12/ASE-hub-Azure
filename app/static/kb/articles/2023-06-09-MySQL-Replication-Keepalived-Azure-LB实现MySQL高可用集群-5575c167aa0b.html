@@ -1,0 +1,706 @@
+<article class="kb-article" data-title="MySQL Replication+Keepalived+Azure LB实现MySQL高可用集群"><h1>MySQL Replication+Keepalived+Azure LB实现MySQL高可用集群</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Third Party App</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-06-09 17:46:12</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>smtp_connect_timeout 30</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>smtp_connect_timeout 30</li>
+</ul>
+<ul>
+<li>用于检测MySQL的复制状态，一旦检测到复制进程异常，keepalived会立即感知到并进行Failover切换</li>
+</ul>
+<ul>
+<li>探测以间隔5s，2次连续失败认为Down以便快速切换</li>
+</ul>
+<ul>
+<li>测试分为两个部分，一个部分是测试MYSQL的主从同步功能，另一个是测试Keepalived实现MYSQL的故障转移</li>
+</ul>
+<ul>
+<li>（2）测试Keepalived实现MySQL故障转移</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>fuzhangliang</li>
+</ul>
+<ul>
+<li>主机</li>
+</ul>
+<ul>
+<li>MySQL版本</li>
+</ul>
+<ul>
+<li>操作系统</li>
+</ul>
+<ul>
+<li>IP地址</li>
+</ul>
+<ul>
+<li>VIP</li>
+</ul>
+<ul>
+<li>DB1(Master)</li>
+</ul>
+<ul>
+<li>Mysql-5.5</li>
+</ul>
+<ul>
+<li>Centos 7.5</li>
+</ul>
+<ul>
+<li>192.168.3.8</li>
+</ul>
+<ul>
+<li>192.168.3.100</li>
+</ul>
+<ul>
+<li>DB2(Slave)</li>
+</ul>
+<ul>
+<li>192.168.3.9</li>
+</ul>
+<ul>
+<li>DB1与DB2位于同一个虚拟网络的子网中，子网网段为192.168.3.0/24。</li>
+</ul>
+<ul>
+<li>1、安装以及配置MySQL</li>
+</ul>
+<ul>
+<li>（1）安装MySQL，版本是5.5。</li>
+</ul>
+<ul>
+<li>（2）配置MySQL，使用MySQL Replication实现双主从复制</li>
+</ul>
+<ul>
+<li>（a）在DB1的/etc/my.cnf配置文件中的[mysqld]段添加如下配置</li>
+</ul>
+<ul>
+<li>DB2的/etc/my.cnf配置文件中的[mysqld]段添加如下配置</li>
+</ul>
+<ul>
+<li>其中，server-id是节点标识，主、从节点不能相同，必须全局唯一。</li>
+</ul>
+<ul>
+<li>mysql-bin&quot;表示日志文件的命名格式，会生成文件名为mysqI-bin.000001、mysqI-bin.000002等的日志文件。</li>
+</ul>
+<ul>
+<li>(b) 如果此时DB1上已经有数据了，那么在执行主主互备之前，需要将DB1 的数据同步到DB2，保持DB1和DB2数据的同步。由于我是测试环境，两台数据库都没有数据，所以就不用同步了。</li>
+</ul>
+<ul>
+<li>(c)配置DB1到DB2的主从复制</li>
+</ul>
+<ul>
+<li>首先在DB1的MySQL库中创建复制用户：</li>
+</ul>
+<ul>
+<li>grant replication slave on *.* to &#39;repl_user&#39;@&#39;192.168.3.9&#39; identified by &#39;copyuser&#39;;</li>
+</ul>
+<ul>
+<li>show master status</li>
+</ul>
+<ul>
+<li>change master to</li>
+</ul>
+<ul>
+<li>-&gt; master_host=&#39;192.168.3.8&#39;,</li>
+</ul>
+<ul>
+<li>-&gt; master_user=&#39;repl_user&#39;,</li>
+</ul>
+<ul>
+<li>-&gt; master_password=&#39;copyuser&#39;,</li>
+</ul>
+<ul>
+<li>(d)配置DB2到DB1 的主从复制</li>
+</ul>
+<ul>
+<li>这个配置过程与DB1到DB2的主从复制过程一样，首先在DB2的MySQL库中创建复制用户：</li>
+</ul>
+<ul>
+<li>grant replication slave on *.* to &#39;repl_user&#39;@&#39;192.168.3.8&#39; identified by &#39;copyuser&#39;;</li>
+</ul>
+<ul>
+<li>-&gt; master_host=&#39;192.168.3.9&#39;,</li>
+</ul>
+<ul>
+<li>然后在DB1上启动Slave服务</li>
+</ul>
+<ul>
+<li>Show slave status\G;</li>
+</ul>
+<ul>
+<li>至此，DB2到DB1的主从复制已经配置完成。</li>
+</ul>
+<ul>
+<li>这样，MYSQL的双主模式的主从复制已经配置完成。</li>
+</ul>
+<ul>
+<li>2、安装以及配置Keepalived</li>
+</ul>
+<ul>
+<li>(1) 安装keepalived</li>
+</ul>
+<ul>
+<li>这里使用的版本是1.3.5</li>
+</ul>
+<ul>
+<li>(2) Keepalived的配置文件如下</li>
+</ul>
+<ul>
+<li>DB1的/etc/keepalived/keepalived.conf</li>
+</ul>
+<ul>
+<li>DB2的/etc/keepalived/keepalived.conf</li>
+</ul>
+<ul>
+<li>global_defs {</li>
+</ul>
+<ul>
+<li>notification_email {</li>
+</ul>
+<ul>
+<li>acassen@firewall.loc</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>notification_email_from Alexandre.Cassen@firewall.loc</li>
+</ul>
+<ul>
+<li>smtp_server 192.168.200.1</li>
+</ul>
+<ul>
+<li>router_id MysqlHA_DEVEL</li>
+</ul>
+<ul>
+<li>vrrp_garp_interval 0</li>
+</ul>
+<ul>
+<li>vrrp_gna_interval 0</li>
+</ul>
+<ul>
+<li>interval 1</li>
+</ul>
+<ul>
+<li>vrrp_instance VI_1 {</li>
+</ul>
+<ul>
+<li>state BACKUP</li>
+</ul>
+<ul>
+<li>interface eth0</li>
+</ul>
+<ul>
+<li>virtual_router_id 51</li>
+</ul>
+<ul>
+<li>priority 100</li>
+</ul>
+<ul>
+<li>advert_int 1</li>
+</ul>
+<ul>
+<li>nopreempt</li>
+</ul>
+<ul>
+<li>authentication {</li>
+</ul>
+<ul>
+<li>auth_type PASS</li>
+</ul>
+<ul>
+<li>auth_pass 1111</li>
+</ul>
+<ul>
+<li>virtual_ipaddress {</li>
+</ul>
+<ul>
+<li>192.168.3.100/32 dev eth0</li>
+</ul>
+<ul>
+<li>unicast_src_ip 192.168.3.8</li>
+</ul>
+<ul>
+<li>unicast_peer {</li>
+</ul>
+<ul>
+<li>track_script {</li>
+</ul>
+<ul>
+<li>notify_master /etc/keepalived/master.sh</li>
+</ul>
+<ul>
+<li>notify_backup /etc/keepalived/backup.sh</li>
+</ul>
+<ul>
+<li>notify_fault /etc/keepalived/fault.sh</li>
+</ul>
+<ul>
+<li>priority 90</li>
+</ul>
+<ul>
+<li>unicast_src_ip 192.168.3.9</li>
+</ul>
+<ul>
+<li>内容</li>
+</ul>
+<ul>
+<li>作用</li>
+</ul>
+<ul>
+<li>#!/bin/bash</li>
+</ul>
+<ul>
+<li>t=$(date +&quot;%Y-%m-%d %H:%M:%S&quot;)</li>
+</ul>
+<ul>
+<li>if [ ${array[0]} == &quot;Yes&quot; ] &amp;&amp; [ ${array[1]} == &quot;Yes&quot; ] &amp;&amp; [ ${array[2]}  == &quot;0&quot; ]; then</li>
+</ul>
+<ul>
+<li>exit 0</li>
+</ul>
+<ul>
+<li>else</li>
+</ul>
+<ul>
+<li>exit 1</li>
+</ul>
+<ul>
+<li>fi</li>
+</ul>
+<ul>
+<li>master.sh</li>
+</ul>
+<ul>
+<li>iptables -t filter -F INPUT</li>
+</ul>
+<ul>
+<li>用于记录keepalived的切换状态。</li>
+</ul>
+<ul>
+<li>其中iptables的作用是当主机切换为master时，清空访问限制，此时LB探测master为UP</li>
+</ul>
+<ul>
+<li>Backup.sh</li>
+</ul>
+<ul>
+<li>用于记录keepalived的切换状态</li>
+</ul>
+<ul>
+<li>其中iptables的作用是当主机切换为backup时，清空访问限制，此时LB探测backup为Down</li>
+</ul>
+<ul>
+<li>fault.sh</li>
+</ul>
+<ul>
+<li>用于记录keepalived的切换状态。进入fault状态将block LB的探测</li>
+</ul>
+<ul>
+<li>(3)关闭selinux</li>
+</ul>
+<ul>
+<li>setenforce 0</li>
+</ul>
+<ul>
+<li>并修改/etc/selinux/config 文件使之永久有效</li>
+</ul>
+<ul>
+<li>(4)分别在DB1上和DB2上启动Keeplived,正常情况下VIP应该在DB1上</li>
+</ul>
+<ul>
+<li>3、配置Azure负载均衡器</li>
+</ul>
+<ul>
+<li>(1)新建Azure内部负载均衡器，这里使用Azure标准负载均衡器，当然也可以使用基本的，负载均衡器的IP使用VIP：192.168.3.100</li>
+</ul>
+<ul>
+<li>由于使用标准负载均衡器，所以需要将NSG关联到虚拟机，同时在NSG中开放相应的访问规则，我这里为测试期间，开放的Any-Any</li>
+</ul>
+<ul>
+<li>4、测试</li>
+</ul>
+<ul>
+<li>（1）测试MYSQL主从同步功能</li>
+</ul>
+<ul>
+<li>(a)在一台客户端机器上访问VIP登录MySQL（请提前在DB1和DB2上做好授权，创建好用户并允许远程登录），客户端的IP是192.168.3.6，执行操作如下</li>
+</ul>
+<ul>
+<li>mysql -uroot -p -h 192.168.3.100</li>
+</ul>
+<ul>
+<li>show variables like &quot;%hostname&quot;;</li>
+</ul>
+<ul>
+<li>show variables like &quot;%server_id%&quot;;</li>
+</ul>
+<ul>
+<li>从输出结果看，此时访问的是DB1</li>
+</ul>
+<ul>
+<li>create database repldb;</li>
+</ul>
+<ul>
+<li>use repldb;</li>
+</ul>
+<ul>
+<li>create table repl_table(id int,email varchar(100), pasword varchar(100) not null);</li>
+</ul>
+<ul>
+<li>insert into repl_table (id, email, pasword) values( 1, &quot;test@123.com&quot;,&quot;testpass&quot;);</li>
+</ul>
+<ul>
+<li>以上过程创建了一个数据库repldb,创建了一张表repl_table并插入数据</li>
+</ul>
+<ul>
+<li>再来测试一下DB2到DB1的数据同步，保持VIP登录的终端和DB2终端不关闭，同理在DB2 的终端中创建数据库和表并插入数据</li>
+</ul>
+<ul>
+<li>create database repldb_2;</li>
+</ul>
+<ul>
+<li>use repldb_2;</li>
+</ul>
+<ul>
+<li>create table repl_table_2(id int,email varchar(100), password varchar(100) not null);</li>
+</ul>
+<ul>
+<li>insert into repl_table_2 (id, email, password) values( 1, &quot;test@123.com&quot;,&quot;testpass&quot;);</li>
+</ul>
+<ul>
+<li>然后在VIP登录的终端中可以看到在DB2上创建的数据</li>
+</ul>
+<ul>
+<li>至此测试MySQL的主从同步功能正常。</li>
+</ul>
+<ul>
+<li>（a）首先在客户端上使用VIP登录MySQL，默认情况是访问的DB1</li>
+</ul>
+<ul>
+<li>此时另起一个连接重连，可以快速连接上，可以看到此时切换到了DB2</li>
+</ul>
+<ul>
+<li>这说明Keepalived的切换过程还是很快的，大概只需要5s左右就切换了（需要结合考虑LB探测为Down的时间）。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>log-bin表示开启MySQL的bin log日志功能（replication技术依赖bin log）。</li>
+</ul>
+<ul>
+<li>-&gt; master_log_file=&#39;mysql-bin.000001&#39;,</li>
+</ul>
+<ul>
+<li>-&gt; master_log_pos=266;</li>
+</ul>
+<ul>
+<li>然后执行 start slave，查看slave 的状态show slave status\G</li>
+</ul>
+<ul>
+<li>通过查看slave的运行状态可知，一切运行正常，这里需要重点关注的是Slave_IO_Running和Slave_IO_Running,确保都是Yes，这两个就是在Slave节点上运行的主从复制线程。正常情况下这两个值都应该为Yes。到此DB1到DB2的主从复制已经完成。</li>
+</ul>
+<ul>
+<li>查看slave状态，确保正常</li>
+</ul>
+<ul>
+<li>vrrp_script check_mysql {</li>
+</ul>
+<ul>
+<li>script /etc/keepalived/check_mysql.sh</li>
+</ul>
+<ul>
+<li>check_mysql</li>
+</ul>
+<ul>
+<li>check_mysql.sh</li>
+</ul>
+<ul>
+<li>echo &quot;$t || $res &quot;&gt;&gt;/etc/keepalived/check_result.log</li>
+</ul>
+<ul>
+<li>echo &quot;$t || $role&quot; &gt;&gt; /etc/keepalived/keepalived-state.log</li>
+</ul>
+<ul>
+<li>iptables -t filter -A INPUT -s 168.0.0.0/8 -d 192.168.3.0/24 -p tcp --dport 3306 -j DROP</li>
+</ul>
+<ul>
+<li>查看DB1的情况，已获得VIP</li>
+</ul>
+<ul>
+<li>查看DB2的情况</li>
+</ul>
+<ul>
+<li>登录到DB2这台主机的MySQL，然后查看数据是否同步过来，从输出可以看出，DB1的数据已经完全同步过来，说明数据复制成功。</li>
+</ul>
+<ul>
+<li>(3)立即在VIP登录的终端中执行查询，由于已经发生切换，所以查询已经无法响应</li>
+</ul>
+<ul>
+<li>原有的VIP登录终端需要等待mysql客户端重试查询，获取不到查询结果后超时，该过程对mysql客户端来说时间需要十几分钟，然后重新发起查询，mysql客户端重连后可以得到数据，且可以看到重连后的服务器是DB2，该过程时间较长。</li>
+</ul>
+<ul>
+<li>在DB2上查看，VIP已经转移到DB2，而且DB2 已经是master了。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>确保启用服务后，两台主机使用mysql命令行能正常连接</li>
+</ul>
+<ul>
+<li>然后在DB2的MySQL库中将DB1设置为自己的主服务器，执行命令如下(需要结合master的show master status的输出)</li>
+</ul>
+<ul>
+<li>然后在DB1的MySQL库中将DB2设置为自己的主服务器，执行命令如下(需要结合上面show master status的输出)</li>
+</ul>
+<ul>
+<li>check_mysql.sh, master.sh,backup.sh,fault.sh脚本内容</li>
+</ul>
+<ul>
+<li>脚本名称</li>
+</ul>
+<ul>
+<li>以上脚本是用于测试情况的脚本，实际情况中，监控MySQL复制状态的脚本可能比较复杂，需要按实际情况编写。</li>
+</ul>
+<ul>
+<li>接着上面的SQL操作来测试数据复制功能，执行如下的命令去创建数据库，创建表并插入数据</li>
+</ul>
+<ul>
+<li>为了实现Keepalived的故障转移功能，需要模拟一些故障，这里使用关闭DB1主机MYSQL主从复制功能来模拟故障，由于在Keepalived的监控脚本中都添加了对MySQL复制功能检测的脚本，因此当关闭DB1主机的复制功能后，keepalived会立即检测到并执行切换操作。测试过程如下：</li>
+</ul>
+<ul>
+<li>（2）保持使用VIP登录的连接，然后在DB1主机上使用mysql命令行登录，执行slave stop关闭DB1的从复制。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>server-id=1</li>
+</ul>
+<ul>
+<li>log-bin=mysql-bin</li>
+</ul>
+<ul>
+<li>relay-log=mysql-relay-bin</li>
+</ul>
+<ul>
+<li>replicate-wild-ignore-table=mysql.%</li>
+</ul>
+<ul>
+<li>replicate-wild-ignore-table=test.%</li>
+</ul>
+<ul>
+<li>replicate-wild-ignore-table=information_schema.%</li>
+</ul>
+<ul>
+<li>server-id=2</li>
+</ul>
+<ul>
+<li>array=( $(/bin/mysql  -e &quot;show slave status\G&quot;|egrep &quot;Running|Seconds_Behind_Master&quot; | awk &#39;{print $2}&#39;) )</li>
+</ul>
+<ul>
+<li>res=&quot;MySQL slave status is ok !&quot;</li>
+</ul>
+<ul>
+<li>res=&quot;MySQL slave status is wrong !&quot;</li>
+</ul>
+<ul>
+<li>role=master</li>
+</ul>
+<ul>
+<li>role=backup</li>
+</ul>
+<ul>
+<li>role=fault</li>
+</ul>
+<ul>
+<li>(2)将虚拟机加入到负载均衡后端池，探测选择的是TCP探测3306端口，并配置负载均衡规则，负载均衡规则配置中启用浮动IP设置。</li>
+</ul>
+<ul>
+<li>用paping在整个过程中对VIP的3306端口进行监控，可以看到整个过程中只丢了5个包</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>主从复制是MySQL自身提供的一种高可用解决方案，数据同步采用的是MySQL Replication技术。MySQL Replication技术在实际应用中有多种实现架构，这里采用主主互备的方式，即两台MySQL server互相将对方作为自己的Master，自己又同时作为对方的Slave来进行复制。主要用于对MySQL写操作要求比较高的环境中，避免了MySQL单点故障。同时为了能实现自动Failover，这里采用Keepalived进行切换。由于是在Azure云端部署，不用于实际线下环境，需要借助Azure LB实现。具体配置环境如下：</li>
+</ul>
+<ul>
+<li>对于已经存在的连接，所以建议在客户端获取不到query结果时，能够快速发起重连，减少等待时间。这在应用层还是比较好实现的。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>fuzhangliang</p>
+<p>主从复制是MySQL自身提供的一种高可用解决方案，数据同步采用的是MySQL Replication技术。MySQL Replication技术在实际应用中有多种实现架构，这里采用主主互备的方式，即两台MySQL server互相将对方作为自己的Master，自己又同时作为对方的Slave来进行复制。主要用于对MySQL写操作要求比较高的环境中，避免了MySQL单点故障。同时为了能实现自动Failover，这里采用Keepalived进行切换。由于是在Azure云端部署，不用于实际线下环境，需要借助Azure LB实现。具体配置环境如下：</p>
+<p>主机</p>
+<p>MySQL版本</p>
+<p>操作系统</p>
+<p>IP地址</p>
+<p>VIP</p>
+<p>DB1(Master)</p>
+<p>Mysql-5.5</p>
+<p>Centos 7.5</p>
+<p>192.168.3.8</p>
+<p>192.168.3.100</p>
+<p>DB2(Slave)</p>
+<p>192.168.3.9</p>
+<p>DB1与DB2位于同一个虚拟网络的子网中，子网网段为192.168.3.0/24。</p>
+<p>1、安装以及配置MySQL</p>
+<p>（1）安装MySQL，版本是5.5。</p>
+<p>确保启用服务后，两台主机使用mysql命令行能正常连接</p>
+<p>（2）配置MySQL，使用MySQL Replication实现双主从复制</p>
+<p>（a）在DB1的/etc/my.cnf配置文件中的[mysqld]段添加如下配置</p>
+<p>server-id=1</p>
+<p>log-bin=mysql-bin</p>
+<p>relay-log=mysql-relay-bin</p>
+<p>replicate-wild-ignore-table=mysql.%</p>
+<p>replicate-wild-ignore-table=test.%</p>
+<p>replicate-wild-ignore-table=information_schema.%</p>
+<p>DB2的/etc/my.cnf配置文件中的[mysqld]段添加如下配置</p>
+<p>server-id=2</p>
+<p>其中，server-id是节点标识，主、从节点不能相同，必须全局唯一。</p>
+<p>log-bin表示开启MySQL的bin log日志功能（replication技术依赖bin log）。</p>
+<p>mysql-bin&quot;表示日志文件的命名格式，会生成文件名为mysqI-bin.000001、mysqI-bin.000002等的日志文件。</p>
+<p>(b) 如果此时DB1上已经有数据了，那么在执行主主互备之前，需要将DB1 的数据同步到DB2，保持DB1和DB2数据的同步。由于我是测试环境，两台数据库都没有数据，所以就不用同步了。</p>
+<p>(c)配置DB1到DB2的主从复制</p>
+<p>首先在DB1的MySQL库中创建复制用户：</p>
+<p>grant replication slave on *.* to &#39;repl_user&#39;@&#39;192.168.3.9&#39; identified by &#39;copyuser&#39;;</p>
+<p>show master status</p>
+<p>然后在DB2的MySQL库中将DB1设置为自己的主服务器，执行命令如下(需要结合master的show master status的输出)</p>
+<p>change master to</p>
+<p>-&gt; master_host=&#39;192.168.3.8&#39;,</p>
+<p>-&gt; master_user=&#39;repl_user&#39;,</p>
+<p>-&gt; master_password=&#39;copyuser&#39;,</p>
+<p>-&gt; master_log_file=&#39;mysql-bin.000001&#39;,</p>
+<p>-&gt; master_log_pos=266;</p>
+<p>然后执行 start slave，查看slave 的状态show slave status\G</p>
+<p>通过查看slave的运行状态可知，一切运行正常，这里需要重点关注的是Slave_IO_Running和Slave_IO_Running,确保都是Yes，这两个就是在Slave节点上运行的主从复制线程。正常情况下这两个值都应该为Yes。到此DB1到DB2的主从复制已经完成。</p>
+<p>(d)配置DB2到DB1 的主从复制</p>
+<p>这个配置过程与DB1到DB2的主从复制过程一样，首先在DB2的MySQL库中创建复制用户：</p>
+<p>grant replication slave on *.* to &#39;repl_user&#39;@&#39;192.168.3.8&#39; identified by &#39;copyuser&#39;;</p>
+<p>然后在DB1的MySQL库中将DB2设置为自己的主服务器，执行命令如下(需要结合上面show master status的输出)</p>
+<p>-&gt; master_host=&#39;192.168.3.9&#39;,</p>
+<p>然后在DB1上启动Slave服务</p>
+<p>查看slave状态，确保正常</p>
+<p>Show slave status\G;</p>
+<p>至此，DB2到DB1的主从复制已经配置完成。</p>
+<p>这样，MYSQL的双主模式的主从复制已经配置完成。</p>
+<p>2、安装以及配置Keepalived</p>
+<p>(1) 安装keepalived</p>
+<p>这里使用的版本是1.3.5</p>
+<p>(2) Keepalived的配置文件如下</p>
+<p>DB1的/etc/keepalived/keepalived.conf</p>
+<p>DB2的/etc/keepalived/keepalived.conf</p>
+<p>global_defs {</p>
+<p>notification_email {</p>
+<p>acassen@firewall.loc</p>
+<p>}</p>
+<p>notification_email_from Alexandre.Cassen@firewall.loc</p>
+<p>smtp_server 192.168.200.1</p>
+<p>smtp_connect_timeout 30</p>
+<p>router_id MysqlHA_DEVEL</p>
+<p>vrrp_garp_interval 0</p>
+<p>vrrp_gna_interval 0</p>
+<p>vrrp_script check_mysql {</p>
+<p>script /etc/keepalived/check_mysql.sh</p>
+<p>interval 1</p>
+<p>vrrp_instance VI_1 {</p>
+<p>state BACKUP</p>
+<p>interface eth0</p>
+<p>virtual_router_id 51</p>
+<p>priority 100</p>
+<p>advert_int 1</p>
+<p>nopreempt</p>
+<p>authentication {</p>
+<p>auth_type PASS</p>
+<p>auth_pass 1111</p>
+<p>virtual_ipaddress {</p>
+<p>192.168.3.100/32 dev eth0</p>
+<p>unicast_src_ip 192.168.3.8</p>
+<p>unicast_peer {</p>
+<p>track_script {</p>
+<p>check_mysql</p>
+<p>notify_master /etc/keepalived/master.sh</p>
+<p>notify_backup /etc/keepalived/backup.sh</p>
+<p>notify_fault /etc/keepalived/fault.sh</p>
+<p>priority 90</p>
+<p>unicast_src_ip 192.168.3.9</p>
+<p>check_mysql.sh, master.sh,backup.sh,fault.sh脚本内容</p>
+<p>脚本名称</p>
+<p>内容</p>
+<p>作用</p>
+<p>check_mysql.sh</p>
+<p>#!/bin/bash</p>
+<p>array=( $(/bin/mysql  -e &quot;show slave status\G&quot;|egrep &quot;Running|Seconds_Behind_Master&quot; | awk &#39;{print $2}&#39;) )</p>
+<p>t=$(date +&quot;%Y-%m-%d %H:%M:%S&quot;)</p>
+<p>if [ ${array[0]} == &quot;Yes&quot; ] &amp;&amp; [ ${array[1]} == &quot;Yes&quot; ] &amp;&amp; [ ${array[2]}  == &quot;0&quot; ]; then</p>
+<p>res=&quot;MySQL slave status is ok !&quot;</p>
+<p>echo &quot;$t || $res &quot;&gt;&gt;/etc/keepalived/check_result.log</p>
+<p>exit 0</p>
+<p>else</p>
+<p>res=&quot;MySQL slave status is wrong !&quot;</p>
+<p>exit 1</p>
+<p>fi</p>
+<p>用于检测MySQL的复制状态，一旦检测到复制进程异常，keepalived会立即感知到并进行Failover切换</p>
+<p>master.sh</p>
+<p>role=master</p>
+<p>echo &quot;$t || $role&quot; &gt;&gt; /etc/keepalived/keepalived-state.log</p>
+<p>iptables -t filter -F INPUT</p>
+<p>用于记录keepalived的切换状态。</p>
+<p>其中iptables的作用是当主机切换为master时，清空访问限制，此时LB探测master为UP</p>
+<p>Backup.sh</p>
+<p>role=backup</p>
+<p>iptables -t filter -A INPUT -s 168.0.0.0/8 -d 192.168.3.0/24 -p tcp --dport 3306 -j DROP</p>
+<p>用于记录keepalived的切换状态</p>
+<p>其中iptables的作用是当主机切换为backup时，清空访问限制，此时LB探测backup为Down</p>
+<p>fault.sh</p>
+<p>role=fault</p>
+<p>用于记录keepalived的切换状态。进入fault状态将block LB的探测</p>
+<p>以上脚本是用于测试情况的脚本，实际情况中，监控MySQL复制状态的脚本可能比较复杂，需要按实际情况编写。</p>
+<p>(3)关闭selinux</p>
+<p>setenforce 0</p>
+<p>并修改/etc/selinux/config 文件使之永久有效</p>
+<p>(4)分别在DB1上和DB2上启动Keeplived,正常情况下VIP应该在DB1上</p>
+<p>查看DB1的情况，已获得VIP</p>
+<p>查看DB2的情况</p>
+<p>3、配置Azure负载均衡器</p>
+<p>(1)新建Azure内部负载均衡器，这里使用Azure标准负载均衡器，当然也可以使用基本的，负载均衡器的IP使用VIP：192.168.3.100</p>
+<p>由于使用标准负载均衡器，所以需要将NSG关联到虚拟机，同时在NSG中开放相应的访问规则，我这里为测试期间，开放的Any-Any</p>
+<p>(2)将虚拟机加入到负载均衡后端池，探测选择的是TCP探测3306端口，并配置负载均衡规则，负载均衡规则配置中启用浮动IP设置。</p>
+<p>探测以间隔5s，2次连续失败认为Down以便快速切换</p>
+<p>4、测试</p>
+<p>测试分为两个部分，一个部分是测试MYSQL的主从同步功能，另一个是测试Keepalived实现MYSQL的故障转移</p>
+<p>（1）测试MYSQL主从同步功能</p>
+<p>(a)在一台客户端机器上访问VIP登录MySQL（请提前在DB1和DB2上做好授权，创建好用户并允许远程登录），客户端的IP是192.168.3.6，执行操作如下</p>
+<p>mysql -uroot -p -h 192.168.3.100</p>
+<p>show variables like &quot;%hostname&quot;;</p>
+<p>show variables like &quot;%server_id%&quot;;</p>
+<p>从输出结果看，此时访问的是DB1</p>
+<p>接着上面的SQL操作来测试数据复制功能，执行如下的命令去创建数据库，创建表并插入数据</p>
+<p>create database repldb;</p>
+<p>use repldb;</p>
+<p>create table repl_table(id int,email varchar(100), pasword varchar(100) not null);</p>
+<p>insert into repl_table (id, email, pasword) values( 1, &quot;test@123.com&quot;,&quot;testpass&quot;);</p>
+<p>以上过程创建了一个数据库repldb,创建了一张表repl_table并插入数据</p>
+<p>登录到DB2这台主机的MySQL，然后查看数据是否同步过来，从输出可以看出，DB1的数据已经完全同步过来，说明数据复制成功。</p>
+<p>再来测试一下DB2到DB1的数据同步，保持VIP登录的终端和DB2终端不关闭，同理在DB2 的终端中创建数据库和表并插入数据</p>
+<p>create database repldb_2;</p>
+<p>use repldb_2;</p>
+<p>create table repl_table_2(id int,email varchar(100), password varchar(100) not null);</p>
+<p>insert into repl_table_2 (id, email, password) values( 1, &quot;test@123.com&quot;,&quot;testpass&quot;);</p>
+<p>然后在VIP登录的终端中可以看到在DB2上创建的数据</p>
+<p>至此测试MySQL的主从同步功能正常。</p>
+<p>（2）测试Keepalived实现MySQL故障转移</p>
+<p>为了实现Keepalived的故障转移功能，需要模拟一些故障，这里使用关闭DB1主机MYSQL主从复制功能来模拟故障，由于在Keepalived的监控脚本中都添加了对MySQL复制功能检测的脚本，因此当关闭DB1主机的复制功能后，keepalived会立即检测到并执行切换操作。测试过程如下：</p>
+<p>（a）首先在客户端上使用VIP登录MySQL，默认情况是访问的DB1</p>
+<p>（2）保持使用VIP登录的连接，然后在DB1主机上使用mysql命令行登录，执行slave stop关闭DB1的从复制。</p>
+<p>(3)立即在VIP登录的终端中执行查询，由于已经发生切换，所以查询已经无法响应</p>
+<p>此时另起一个连接重连，可以快速连接上，可以看到此时切换到了DB2</p>
+<p>原有的VIP登录终端需要等待mysql客户端重试查询，获取不到查询结果后超时，该过程对mysql客户端来说时间需要十几分钟，然后重新发起查询，mysql客户端重连后可以得到数据，且可以看到重连后的服务器是DB2，该过程时间较长。</p>
+<p>对于已经存在的连接，所以建议在客户端获取不到query结果时，能够快速发起重连，减少等待时间。这在应用层还是比较好实现的。</p>
+<p>用paping在整个过程中对VIP的3306端口进行监控，可以看到整个过程中只丢了5个包</p>
+<p>这说明Keepalived的切换过程还是很快的，大概只需要5s左右就切换了（需要结合考虑LB探测为Down的时间）。</p>
+<p>在DB2上查看，VIP已经转移到DB2，而且DB2 已经是master了。</p></article>

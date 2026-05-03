@@ -1,0 +1,146 @@
+<article class="kb-article" data-title="【Share】Appgateway不能访问自定义DNS导致的backend health显示unknown的问题"><h1>【Share】Appgateway不能访问自定义DNS导致的backend health显示unknown的问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2026-03-23 09:40:35</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>用户有一套正常工作的appgateway 生产环境，一切正常。 由于业务扩展需要在同一网络环境中创建了另外一套appgateway，发现在新的环境中appgateway 无法获取backend health 状态。显示unknown，提示：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>用户有一套正常工作的appgateway 生产环境，一切正常。 由于业务扩展需要在同一网络环境中创建了另外一套appgateway，发现在新的环境中appgateway 无法获取backend health 状态。显示unknown，提示：</li>
+</ul>
+<ul>
+<li>4， 结合Gateway manager 的日志可以看到在获取backendserver health 时失败报异常，请求被异常关闭了。</li>
+</ul>
+<ul>
+<li>And this entire issue is happening because this Custom DNS server because this DNS server is not reachable from application gateway instances.  When Gateway Manager calling instances to get backend health, mutual authentication is failing at instance side because instance is not able to reach out to CRL endpoints to get Certificate Revocation List.</li>
+</ul>
+<ul>
+<li>新建appgateway 无法访问自定义DNS 服务器导致Gateway manager 与appgateway 实例通信时的证书无法访问CRL而出现通信失败，从而出现的backend health显示为unknown 的情况。</li>
+</ul>
+<ul>
+<li>针对用户的同样网络环境中生产Appgateway （WAF-CT）可以正常访问自定义DNS 的原因，是因为用户的vnet 之前应用的自定义DNS 是10.108.4.4，在firewall 上有放行规则存在。后来用户调整了vnet 自定义DNS 为10.108.71.88，但并没有对生产环境的appgateway 的实例做重启，因此该实例依然使用旧的10.108.4.4 做为DNS。而新建的appgateway （WAT-CT02）继承了vnet 的自定义DNS 的配置使用了10.108.71.88，Firewall上没有添加放行规则导致失败。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>humingyue</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=========</li>
+</ul>
+<ul>
+<li>网络拓扑：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>From Customer Vnet Side we can see that Customer has configured a Custom DNS Server 10.108.71.88</li>
+</ul>
+<ul>
+<li>7， 我们根据产品组的反馈去查了WAF-CT02 实例到自定义DNS 的连通情况。确实显示不可达的情况。继续根据路由表的配置找到访问自定义DNS 需要走用户的firewall 设备。 进一步查firewall 的日志，发现firewall block了到自定义DNS 的请求。</li>
+</ul>
+<ul>
+<li>最后，用户在firewall中添加了放行规则后问题得到解决。</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>相关：</li>
+</ul>
+<ul>
+<li>ICM：Incident 564796690</li>
+</ul>
+<ul>
+<li>工单：SR_20241111324385</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程</li>
+</ul>
+<ul>
+<li>1，用户根据官网提示的排查方法排查了近两个月没有找到问题原因。 该appgateway 子网应用了NSG，UDR 和自定义DNS。用户根据官网添加了必要的相应的NSG 规则:Azure 应用程序网关基础结构配置 | Azure Docs， 问题没有得到解决。</li>
+</ul>
+<ul>
+<li>2， 在portal 的connection troubleshooting 页面测试了到后端池中目标IP 地址是可达的。</li>
+</ul>
+<ul>
+<li>5，进一步查询了appgateway tenant 日志及相关的event log会发现这个</li>
+</ul>
+<ul>
+<li>5，排查自定义DNS可能带来的影响， 发现用户后端池使用的是IP 地址， 不涉及到自定义DNS 的解析行为。 根据官网说明如果appgateway 无法访问CRL endpoint 也会出现backend health unknown的情况。</li>
+</ul>
+<ul>
+<li>从portal 上测试app gateway 与CRL 域名crl.microsoft.com and crl3.digicert.com.的连通性，也是能正常访问的。</li>
+</ul>
+<ul>
+<li>6，问题升级产品组进行排查，发现问题在于appgateway 无法访问用户的自定义DNS导致无法获取证书的CRL 影响了app gateway 与Gateway manager 的通信。</li>
+</ul>
+<ul>
+<li>Troubleshoot backend health issues in Azure Application Gateway | Microsoft Learn</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>3， 查appgateway 的探测日志发现探测本身失败，原因是后端服务证书链不完整导致。 用户更新了证书链后探测一直正常。但backend health 状态依旧显示unknown。</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>TrustedChainFixedSubjectNameCertificateValidationStrategy在过程中报错无法找证书的CRL：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>error message: Unable to retrieve health status data. Check presence of NSG/UDR blocking access to ports 65503-65534 from Internet to Application Gateway. To learn more visit - <a href="https://aka.ms/UnknownBackendHealth." target="_blank" rel="noopener">https://aka.ms/UnknownBackendHealth.</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-11-13T05:07:00.000Z&amp;offset=-1&amp;offsetUnit=Hours&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=AppGWT&amp;en=BackendServerDiagnosticHistory&amp;conditions=[[&quot;GatewayId&quot;,&quot;contains&quot;,&quot;9c09a5e1-07a0-4322-9170-1f6d8a771ed6&quot;]]&amp;kqlClientQuery=source%0A|%20extend%20health_status%3Diif(tostring(Healthy)%3D%3D&quot;True&quot;,1,0)%0A//|%20where%20ServerAddress%3D%3D&quot;10.1.2.38:80&quot;%0A|%20project%20Healthy,ServerAddress,health_status,PreciseTimeStamp%0A&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;groupby%20PreciseTimeStamp.roundDown(\&quot;PT1M\&quot;)%20as%20X\nlet%20health_status%20%3D%20Average(health_status)&quot;]]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-11-13T05:07:00.000Z&amp;offset=-1&amp;offsetUnit=Hours&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=AppGWT&amp;en=BackendServerDiagnosticHistory&amp;conditions=[[&quot;GatewayId&quot;,&quot;contains&quot;,&quot;9c09a5e1-07a0-4322-9170-1f6d8a771ed6&quot;]]&amp;kqlClientQuery=source%0A|%20extend%20health_status%3Diif(tostring(Healthy)%3D%3D&quot;True&quot;,1,0)%0A//|%20where%20ServerAddress%3D%3D&quot;10.1.2.38:80&quot;%0A|%20project%20Healthy,ServerAddress,health_status,PreciseTimeStamp%0A&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;groupby%20PreciseTimeStamp.roundDown(\&quot;PT1M\&quot;)%20as%20X\nlet%20health_status%20%3D%20Average(health_status)&quot;]]%20</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-11-13T02:39:00.000Z&amp;offset=~5&amp;offsetUnit=Minutes&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=BrkGWM&amp;en=AsyncWorkerLogsTable&amp;conditions=[[&quot;CustomerSubscriptionId&quot;,&quot;contains&quot;,&quot;263b59d7-a47e-401d-9c7c-16ece7588543&quot;]]&amp;clientQuery=//where%20it.any(&quot;5c4d2b0e-ea87-4ef2-80fc-f990ac85a530&quot;)&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-11-13T02:39:00.000Z&amp;offset=~5&amp;offsetUnit=Minutes&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=BrkGWM&amp;en=AsyncWorkerLogsTable&amp;conditions=[[&quot;CustomerSubscriptionId&quot;,&quot;contains&quot;,&quot;263b59d7-a47e-401d-9c7c-16ece7588543&quot;]]&amp;clientQuery=//where%20it.any(&quot;5c4d2b0e-ea87-4ef2-80fc-f990ac85a530&quot;)&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20</a></li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-11-13T02:39:00.000Z&amp;offset=~5&amp;offsetUnit=Minutes&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=AppGWT&amp;en=ApplicationGatewayTenant,ErrorLogEvent,InformationLogEvent&amp;scopingConditions=[[&quot;GatewayId&quot;,&quot;9c09a5e1-07a0-4322-9170-1f6d8a771ed6&quot;]]&amp;conditions=[]&amp;kqlClientQuery=source%0A//%20|%20where%20*%20contains%20&quot;unable%20to%20get%20certificate%20CRL&quot;&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-11-13T02:39:00.000Z&amp;offset=~5&amp;offsetUnit=Minutes&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=AppGWT&amp;en=ApplicationGatewayTenant,ErrorLogEvent,InformationLogEvent&amp;scopingConditions=[[&quot;GatewayId&quot;,&quot;9c09a5e1-07a0-4322-9170-1f6d8a771ed6&quot;]]&amp;conditions=[]&amp;kqlClientQuery=source%0A//%20|%20where%20*%20contains%20&quot;unable%20to%20get%20certificate%20CRL&quot;&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>humingyue</p>
+<p>问题描述：</p>
+<p>=========</p>
+<p>用户有一套正常工作的appgateway 生产环境，一切正常。 由于业务扩展需要在同一网络环境中创建了另外一套appgateway，发现在新的环境中appgateway 无法获取backend health 状态。显示unknown，提示：</p>
+<p>error message: Unable to retrieve health status data. Check presence of NSG/UDR blocking access to ports 65503-65534 from Internet to Application Gateway. To learn more visit - <a href="https://aka.ms/UnknownBackendHealth." target="_blank" rel="noopener">https://aka.ms/UnknownBackendHealth.</a></p>
+<p>网络拓扑：</p>
+<p>排查过程</p>
+<p>========</p>
+<p>1，用户根据官网提示的排查方法排查了近两个月没有找到问题原因。 该appgateway 子网应用了NSG，UDR 和自定义DNS。用户根据官网添加了必要的相应的NSG 规则:Azure 应用程序网关基础结构配置 | Azure Docs， 问题没有得到解决。</p>
+<p>2， 在portal 的connection troubleshooting 页面测试了到后端池中目标IP 地址是可达的。</p>
+<p>3， 查appgateway 的探测日志发现探测本身失败，原因是后端服务证书链不完整导致。 用户更新了证书链后探测一直正常。但backend health 状态依旧显示unknown。</p>
+<p><a href="https://portal.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-11-13T05:07:00.000Z&amp;offset=-1&amp;offsetUnit=Hours&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=AppGWT&amp;en=BackendServerDiagnosticHistory&amp;conditions=[[&quot;GatewayId&quot;,&quot;contains&quot;,&quot;9c09a5e1-07a0-4322-9170-1f6d8a771ed6&quot;]]&amp;kqlClientQuery=source%0A|%20extend%20health_status%3Diif(tostring(Healthy)%3D%3D&quot;True&quot;,1,0)%0A//|%20where%20ServerAddress%3D%3D&quot;10.1.2.38:80&quot;%0A|%20project%20Healthy,ServerAddress,health_status,PreciseTimeStamp%0A&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;groupby%20PreciseTimeStamp.roundDown(\&quot;PT1M\&quot;)%20as%20X\nlet%20health_status%20%3D%20Average(health_status)&quot;]]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-11-13T05:07:00.000Z&amp;offset=-1&amp;offsetUnit=Hours&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=AppGWT&amp;en=BackendServerDiagnosticHistory&amp;conditions=[[&quot;GatewayId&quot;,&quot;contains&quot;,&quot;9c09a5e1-07a0-4322-9170-1f6d8a771ed6&quot;]]&amp;kqlClientQuery=source%0A|%20extend%20health_status%3Diif(tostring(Healthy)%3D%3D&quot;True&quot;,1,0)%0A//|%20where%20ServerAddress%3D%3D&quot;10.1.2.38:80&quot;%0A|%20project%20Healthy,ServerAddress,health_status,PreciseTimeStamp%0A&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;groupby%20PreciseTimeStamp.roundDown(\&quot;PT1M\&quot;)%20as%20X\nlet%20health_status%20%3D%20Average(health_status)&quot;]]%20</a></p>
+<p>4， 结合Gateway manager 的日志可以看到在获取backendserver health 时失败报异常，请求被异常关闭了。</p>
+<p><a href="https://portal.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-11-13T02:39:00.000Z&amp;offset=~5&amp;offsetUnit=Minutes&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=BrkGWM&amp;en=AsyncWorkerLogsTable&amp;conditions=[[&quot;CustomerSubscriptionId&quot;,&quot;contains&quot;,&quot;263b59d7-a47e-401d-9c7c-16ece7588543&quot;]]&amp;clientQuery=//where%20it.any(&quot;5c4d2b0e-ea87-4ef2-80fc-f990ac85a530&quot;)&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-11-13T02:39:00.000Z&amp;offset=~5&amp;offsetUnit=Minutes&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=BrkGWM&amp;en=AsyncWorkerLogsTable&amp;conditions=[[&quot;CustomerSubscriptionId&quot;,&quot;contains&quot;,&quot;263b59d7-a47e-401d-9c7c-16ece7588543&quot;]]&amp;clientQuery=//where%20it.any(&quot;5c4d2b0e-ea87-4ef2-80fc-f990ac85a530&quot;)&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20</a></p>
+<p>5，进一步查询了appgateway tenant 日志及相关的event log会发现这个</p>
+<p>TrustedChainFixedSubjectNameCertificateValidationStrategy在过程中报错无法找证书的CRL：</p>
+<p><a href="https://portal.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-11-13T02:39:00.000Z&amp;offset=~5&amp;offsetUnit=Minutes&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=AppGWT&amp;en=ApplicationGatewayTenant,ErrorLogEvent,InformationLogEvent&amp;scopingConditions=[[&quot;GatewayId&quot;,&quot;9c09a5e1-07a0-4322-9170-1f6d8a771ed6&quot;]]&amp;conditions=[]&amp;kqlClientQuery=source%0A//%20|%20where%20*%20contains%20&quot;unable%20to%20get%20certificate%20CRL&quot;&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/logs/dgrep?be=DGrep&amp;time=2024-11-13T02:39:00.000Z&amp;offset=~5&amp;offsetUnit=Minutes&amp;UTC=false&amp;ep=CA%20Mooncake&amp;ns=AppGWT&amp;en=ApplicationGatewayTenant,ErrorLogEvent,InformationLogEvent&amp;scopingConditions=[[&quot;GatewayId&quot;,&quot;9c09a5e1-07a0-4322-9170-1f6d8a771ed6&quot;]]&amp;conditions=[]&amp;kqlClientQuery=source%0A//%20|%20where%20*%20contains%20&quot;unable%20to%20get%20certificate%20CRL&quot;&amp;chartEditorVisible=true&amp;chartType=line&amp;chartLayers=[[&quot;New%20Layer&quot;,&quot;&quot;]]%20</a></p>
+<p>5，排查自定义DNS可能带来的影响， 发现用户后端池使用的是IP 地址， 不涉及到自定义DNS 的解析行为。 根据官网说明如果appgateway 无法访问CRL endpoint 也会出现backend health unknown的情况。</p>
+<p>从portal 上测试app gateway 与CRL 域名crl.microsoft.com and crl3.digicert.com.的连通性，也是能正常访问的。</p>
+<p>6，问题升级产品组进行排查，发现问题在于appgateway 无法访问用户的自定义DNS导致无法获取证书的CRL 影响了app gateway 与Gateway manager 的通信。</p>
+<p>From Customer Vnet Side we can see that Customer has configured a Custom DNS Server 10.108.71.88</p>
+<p>And this entire issue is happening because this Custom DNS server because this DNS server is not reachable from application gateway instances.  When Gateway Manager calling instances to get backend health, mutual authentication is failing at instance side because instance is not able to reach out to CRL endpoints to get Certificate Revocation List.</p>
+<p>7， 我们根据产品组的反馈去查了WAF-CT02 实例到自定义DNS 的连通情况。确实显示不可达的情况。继续根据路由表的配置找到访问自定义DNS 需要走用户的firewall 设备。 进一步查firewall 的日志，发现firewall block了到自定义DNS 的请求。</p>
+<p>最后，用户在firewall中添加了放行规则后问题得到解决。</p>
+<p>问题原因：</p>
+<p>新建appgateway 无法访问自定义DNS 服务器导致Gateway manager 与appgateway 实例通信时的证书无法访问CRL而出现通信失败，从而出现的backend health显示为unknown 的情况。</p>
+<p>针对用户的同样网络环境中生产Appgateway （WAF-CT）可以正常访问自定义DNS 的原因，是因为用户的vnet 之前应用的自定义DNS 是10.108.4.4，在firewall 上有放行规则存在。后来用户调整了vnet 自定义DNS 为10.108.71.88，但并没有对生产环境的appgateway 的实例做重启，因此该实例依然使用旧的10.108.4.4 做为DNS。而新建的appgateway （WAT-CT02）继承了vnet 的自定义DNS 的配置使用了10.108.71.88，Firewall上没有添加放行规则导致失败。</p>
+<p>相关：</p>
+<p>Troubleshoot backend health issues in Azure Application Gateway | Microsoft Learn</p>
+<p>ICM：Incident 564796690</p>
+<p>工单：SR_20241111324385</p></article>

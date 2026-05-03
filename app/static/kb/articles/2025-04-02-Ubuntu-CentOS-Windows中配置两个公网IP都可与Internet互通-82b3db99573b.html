@@ -1,0 +1,570 @@
+<article class="kb-article" data-title="Ubuntu、CentOS、Windows中配置两个公网IP都可与Internet互通"><h1>Ubuntu、CentOS、Windows中配置两个公网IP都可与Internet互通</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: LinuxNetIssue</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-04-02 11:43:13</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Version</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Version</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Version</li>
+</ul>
+<ul>
+<li>2021.6.20</li>
+</ul>
+<ul>
+<li>增加Windows部分</li>
+</ul>
+<ul>
+<li>2022.7.19</li>
+</ul>
+<ul>
+<li>Update CentOS</li>
+</ul>
+<ul>
+<li>2025.4.2</li>
+</ul>
+<ul>
+<li>配置环境：Azure、Ubuntu 20.04、CentOS7.6</li>
+</ul>
+<ul>
+<li>相关工单：SR_20210611102235_[MS-LED] ubuntu系统添加一块新网卡，没有外网</li>
+</ul>
+<ul>
+<li>配置方法汇总，两种：</li>
+</ul>
+<ul>
+<li>给一块网卡配置两个ipconfig的方式实现。</li>
+</ul>
+<ul>
+<li>给一块网卡配置多个ipconfig的方式：</li>
+</ul>
+<ul>
+<li>Ubuntu：</li>
+</ul>
+<ul>
+<li>VM创建好以后，再申请一个公共IP。</li>
+</ul>
+<ul>
+<li>给该网卡增加一个IP配置，操作方法如下所示，添加好后形成Primary和Secondary两个IP配置，IP分配方式也选择为静态：</li>
+</ul>
+<ul>
+<li>重启VM后才会生效，操作系统层面不需要进行任何人工配置。</li>
+</ul>
+<ul>
+<li>CentOS: 与Ubuntu不同的是CentOS还需要在操作系统层面进行配置：编辑/etc/sysconfig/network-scripts/ifcfg-eth0</li>
+</ul>
+<ul>
+<li>2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP group default qlen 1000</li>
+</ul>
+<ul>
+<li>link/ether 00:17:fa:04:72:5b brd ff:ff:ff:ff:ff:ff</li>
+</ul>
+<ul>
+<li>inet 10.1.0.6/24 brd 10.1.0.255 scope global eth0</li>
+</ul>
+<ul>
+<li>valid_lft forever preferred_lft forever</li>
+</ul>
+<ul>
+<li>inet 10.1.0.8/24 brd 10.1.0.255 scope global secondary eth0</li>
+</ul>
+<ul>
+<li>inet6 fe80::217:faff:fe04:725b/64 scope link</li>
+</ul>
+<ul>
+<li>给虚拟机额外增加网卡，并关联公网IP，最后形成一台虚拟机拥有多块网卡，每块网卡一个公网IP，都可与Internet互通。这种配置方式的要点是配置好策略路由。下面分别介绍两种操作系统下的配置方式：</li>
+</ul>
+<ul>
+<li>Ubuntu:</li>
+</ul>
+<ul>
+<li>a)        VM创建好后，申请好第二个公网IP。</li>
+</ul>
+<ul>
+<li>b)        创建第二块网卡，创建好后修改专用IP分配方式为静态，并关联申请好的公网IP；关关联正确的NSG。</li>
+</ul>
+<ul>
+<li>c)        VM关机，修改初始第一块网卡的专用IP分配方式为静态。</li>
+</ul>
+<ul>
+<li>d)        给VM附加第二块网卡。</li>
+</ul>
+<ul>
+<li>e)        VM开机，稍等片刻，此时可通过初始第一块网卡的公网IP登录上Ubuntu。</li>
+</ul>
+<ul>
+<li>ii.        /etc/iproute2/rt_tables 文件，在最后加入如下2行：</li>
+</ul>
+<ul>
+<li>800 800</li>
+</ul>
+<ul>
+<li>801 801</li>
+</ul>
+<ul>
+<li>iii.        /etc/netplan/50-cloud-init.yaml文件，在其中加入下面红色字体部分，注意IP地址的正确：</li>
+</ul>
+<ul>
+<li>network:</li>
+</ul>
+<ul>
+<li>version: 2</li>
+</ul>
+<ul>
+<li>ethernets:</li>
+</ul>
+<ul>
+<li>eth0:</li>
+</ul>
+<ul>
+<li>dhcp4: true</li>
+</ul>
+<ul>
+<li>dhcp4-overrides:</li>
+</ul>
+<ul>
+<li>route-metric: 100</li>
+</ul>
+<ul>
+<li>dhcp6: false</li>
+</ul>
+<ul>
+<li>match:</li>
+</ul>
+<ul>
+<li>driver: hv_netvsc</li>
+</ul>
+<ul>
+<li>macaddress: 00:17:fa:04:75:90</li>
+</ul>
+<ul>
+<li>routes:</li>
+</ul>
+<ul>
+<li>- to: 0.0.0.0/0</li>
+</ul>
+<ul>
+<li>via: 10.3.0.1</li>
+</ul>
+<ul>
+<li>table: 800</li>
+</ul>
+<ul>
+<li>routing-policy:</li>
+</ul>
+<ul>
+<li>- from: 10.3.0.10</li>
+</ul>
+<ul>
+<li>priority: 300</li>
+</ul>
+<ul>
+<li>eth1:</li>
+</ul>
+<ul>
+<li>route-metric: 200</li>
+</ul>
+<ul>
+<li>macaddress: 00:17:fa:04:86:b0</li>
+</ul>
+<ul>
+<li>table: 801</li>
+</ul>
+<ul>
+<li>- from: 10.3.0.11</li>
+</ul>
+<ul>
+<li>priority: 301</li>
+</ul>
+<ul>
+<li>g)        在Ubuntu中执行：netplan apply</li>
+</ul>
+<ul>
+<li>CentOS</li>
+</ul>
+<ul>
+<li>1.        Azure CentOS VM创建好后，再额外创建一块网卡，并申请一个公网IP。</li>
+</ul>
+<ul>
+<li>2.        修改新建网卡的专用IP分配方式为静态，并关联刚申请的公网IP；并关联适当的NSG。</li>
+</ul>
+<ul>
+<li>4.        将VM开机，此时仍可通过第一块网卡的公共IP登录CentOS。</li>
+</ul>
+<ul>
+<li>5.        登录CentOS后，执行sudo su -切换到root用户。</li>
+</ul>
+<ul>
+<li>6.        cd /etc/sysconfig/network-scripts</li>
+</ul>
+<ul>
+<li>8.        vi ifcfg-eth1:</li>
+</ul>
+<ul>
+<li>9.        vi route-eth0:</li>
+</ul>
+<ul>
+<li>10.1.0.0/24 dev eth0 table table200</li>
+</ul>
+<ul>
+<li>default via 10.1.0.1 dev eth0 table table200</li>
+</ul>
+<ul>
+<li>10.        vi route-eth1:</li>
+</ul>
+<ul>
+<li>10.1.0.0/24 dev eth1 table table201</li>
+</ul>
+<ul>
+<li>default via 10.1.0.1 dev eth1 table table201</li>
+</ul>
+<ul>
+<li>11.        vi rule-eth0:</li>
+</ul>
+<ul>
+<li>from 10.1.0.6 lookup table200</li>
+</ul>
+<ul>
+<li>12.        vi rule-eth1:</li>
+</ul>
+<ul>
+<li>from 10.1.0.9 lookup table201</li>
+</ul>
+<ul>
+<li>13.        vi /etc/iproute2/rt_tables:  在文件最后增加下面2行</li>
+</ul>
+<ul>
+<li>200        table200</li>
+</ul>
+<ul>
+<li>201         table201</li>
+</ul>
+<ul>
+<li>systemctl stop NetworkManager</li>
+</ul>
+<ul>
+<li>15.        重启Network Service，让配置生效：</li>
+</ul>
+<ul>
+<li>systemctl restart network</li>
+</ul>
+<ul>
+<li>[root@test-vm01 network-scripts]# ip rule</li>
+</ul>
+<ul>
+<li>0:        from all lookup local</li>
+</ul>
+<ul>
+<li>32764:        from 10.1.0.9 lookup table201</li>
+</ul>
+<ul>
+<li>32765:        from 10.1.0.6 lookup table200</li>
+</ul>
+<ul>
+<li>32766:        from all lookup main</li>
+</ul>
+<ul>
+<li>32767:        from all lookup default</li>
+</ul>
+<ul>
+<li>Azure VM Windows中配置2块网卡，每块网卡都能与内外网通信的配置方法如下：</li>
+</ul>
+<ul>
+<li>1. Windows (Windows Server 2016 Datacenter).</li>
+</ul>
+<ul>
+<li>3. 在与Windows VM相同的VNet中选择一目标Subnet，创建第二块网卡，先不要给其分配公网IP。</li>
+</ul>
+<ul>
+<li>4. 将Windows VM关机，然后将上一步创建的网卡附加上去。</li>
+</ul>
+<ul>
+<li>5. 将Windows VM重新开机。</li>
+</ul>
+<ul>
+<li>b. 添加第二块网卡的默认路由：2为上面指令中查到的网卡索引号。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>对正在运行中的VM，在Portal中修改VM的网卡配置，修改原有的专用IP分配方式为：静态IP使用原来动态分配的IP即可。</li>
+</ul>
+<ul>
+<li>然后重启网络服务，或者重启VM，验证配置是否生效：</li>
+</ul>
+<ul>
+<li>16.        重启完成，验证ip rule是否有新加的两条ip rule，如有此时两个公网IP应都可以与外网通信了：</li>
+</ul>
+<ul>
+<li>17.        验证两块网卡的公网连通性：</li>
+</ul>
+<ul>
+<li>18.        重启VM，再次验证。</li>
+</ul>
+<ul>
+<li>2. 先在Portal中创建一台Windows VM，并为其配置好公网IP。</li>
+</ul>
+<ul>
+<li>a. 获取第二块网卡的编号，索引号为2，区分第2块网卡的方法可以从Portal中进行查看其IP或者 Mac确认：</li>
+</ul>
+<ul>
+<li>c. 验证两块网卡的路由及内、外网连通性：</li>
+</ul>
+<ul>
+<li>如不放心，可以重启系统后再次验证。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>配置两块网卡，各配置一个公网IP。（以下整理的方法与Azure官网中提到的方法异曲同工，但Azure 官网中的方法过于简单不能固化配置，除非将那几条指令写入开机启动脚本）</li>
+</ul>
+<ul>
+<li>set-name: eth0</li>
+</ul>
+<ul>
+<li>set-name: eth1</li>
+</ul>
+<ul>
+<li>6. 然后以管理员身份打开PowerShell，执行如下指令：</li>
+</ul>
+<ul>
+<li>route add -p 0.0.0.0 MASK 0.0.0.0 10.1.0.1 METRIC 5015 IF 2</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>BOOTPROTO=none</li>
+</ul>
+<ul>
+<li>DEFROUTE=yes</li>
+</ul>
+<ul>
+<li>DEVICE=eth0</li>
+</ul>
+<ul>
+<li>ONBOOT=yes</li>
+</ul>
+<ul>
+<li>STARTMODE=auto</li>
+</ul>
+<ul>
+<li>TYPE=Ethernet</li>
+</ul>
+<ul>
+<li>HWADDR=00:17:fa:02:44:88</li>
+</ul>
+<ul>
+<li>IPADDR1=10.1.0.6</li>
+</ul>
+<ul>
+<li>NETMASK1=255.255.255.0</li>
+</ul>
+<ul>
+<li>GATEWAY=10.1.0.1</li>
+</ul>
+<ul>
+<li>DNS1=168.63.129.16</li>
+</ul>
+<ul>
+<li>IPADDR2=10.1.0.8</li>
+</ul>
+<ul>
+<li>NETMASK2=255.255.255.0</li>
+</ul>
+<ul>
+<li>HWADDR=00:17:fa:04:72:5b</li>
+</ul>
+<ul>
+<li>IPADDR=10.1.0.6</li>
+</ul>
+<ul>
+<li>NETMASK=255.255.255.0</li>
+</ul>
+<ul>
+<li>DEFROUTE=no</li>
+</ul>
+<ul>
+<li>HWADDR=00:17:fa:04:72:5c</li>
+</ul>
+<ul>
+<li>IPADDR=10.1.0.9</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>f)        在Ubuntu中编辑，建议先切换到root账户（sudo su -）:</li>
+</ul>
+<ul>
+<li>i.        /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg，文件中写入下面的行：</li>
+</ul>
+<ul>
+<li>network: {config: disabled}</li>
+</ul>
+<ul>
+<li>h)        建议重启一下VM，再次测试双网卡公网IP连通性，从公网登录，或者以不同的网卡ping公网都可以。</li>
+</ul>
+<ul>
+<li>3.        将VM关机，修改其第一块网卡的专有IP分配方式为静态；将新建网卡附加到VM上；在此过程中可以查看一下两块网卡的Mac地址。</li>
+</ul>
+<ul>
+<li>7.        vi ifcfg-eth0:   一个系统只能设置一个默认网关，这里为第一块网卡eth0设置网关  #7、8两步不做应该也可以，只在Azure Portal中将Nic Private IP分配方式设置为静态。</li>
+</ul>
+<ul>
+<li>14.        停掉NetworkManager服务，并禁用其自启动：如果使用NetworkManager，需要安装与其相配套的程序包并启用相应的服务，不然总会有些奇怪的行为发生； 没有特殊需求建议禁用它。</li>
+</ul>
+<ul>
+<li>systemctl disable NetworkManager</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>参考文档： <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/windows/multiple-nics#configure-guest-os-for-multiple-nics" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/windows/multiple-nics#configure-guest-os-for-multiple-nics</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Version</p>
+<p>2021.6.20</p>
+<p>增加Windows部分</p>
+<p>2022.7.19</p>
+<p>Update CentOS</p>
+<p>2025.4.2</p>
+<p>配置环境：Azure、Ubuntu 20.04、CentOS7.6</p>
+<p>相关工单：SR_20210611102235_[MS-LED] ubuntu系统添加一块新网卡，没有外网</p>
+<p>配置方法汇总，两种：</p>
+<p>给一块网卡配置两个ipconfig的方式实现。</p>
+<p>配置两块网卡，各配置一个公网IP。（以下整理的方法与Azure官网中提到的方法异曲同工，但Azure 官网中的方法过于简单不能固化配置，除非将那几条指令写入开机启动脚本）</p>
+<p>给一块网卡配置多个ipconfig的方式：</p>
+<p>Ubuntu：</p>
+<p>VM创建好以后，再申请一个公共IP。</p>
+<p>对正在运行中的VM，在Portal中修改VM的网卡配置，修改原有的专用IP分配方式为：静态IP使用原来动态分配的IP即可。</p>
+<p>给该网卡增加一个IP配置，操作方法如下所示，添加好后形成Primary和Secondary两个IP配置，IP分配方式也选择为静态：</p>
+<p>重启VM后才会生效，操作系统层面不需要进行任何人工配置。</p>
+<p>CentOS: 与Ubuntu不同的是CentOS还需要在操作系统层面进行配置：编辑/etc/sysconfig/network-scripts/ifcfg-eth0</p>
+<p>BOOTPROTO=none</p>
+<p>DEFROUTE=yes</p>
+<p>DEVICE=eth0</p>
+<p>ONBOOT=yes</p>
+<p>STARTMODE=auto</p>
+<p>TYPE=Ethernet</p>
+<p>HWADDR=00:17:fa:02:44:88</p>
+<p>IPADDR1=10.1.0.6</p>
+<p>NETMASK1=255.255.255.0</p>
+<p>GATEWAY=10.1.0.1</p>
+<p>DNS1=168.63.129.16</p>
+<p>IPADDR2=10.1.0.8</p>
+<p>NETMASK2=255.255.255.0</p>
+<p>然后重启网络服务，或者重启VM，验证配置是否生效：</p>
+<p>2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP group default qlen 1000</p>
+<p>link/ether 00:17:fa:04:72:5b brd ff:ff:ff:ff:ff:ff</p>
+<p>inet 10.1.0.6/24 brd 10.1.0.255 scope global eth0</p>
+<p>valid_lft forever preferred_lft forever</p>
+<p>inet 10.1.0.8/24 brd 10.1.0.255 scope global secondary eth0</p>
+<p>inet6 fe80::217:faff:fe04:725b/64 scope link</p>
+<p>给虚拟机额外增加网卡，并关联公网IP，最后形成一台虚拟机拥有多块网卡，每块网卡一个公网IP，都可与Internet互通。这种配置方式的要点是配置好策略路由。下面分别介绍两种操作系统下的配置方式：</p>
+<p>Ubuntu:</p>
+<p>a)        VM创建好后，申请好第二个公网IP。</p>
+<p>b)        创建第二块网卡，创建好后修改专用IP分配方式为静态，并关联申请好的公网IP；关关联正确的NSG。</p>
+<p>c)        VM关机，修改初始第一块网卡的专用IP分配方式为静态。</p>
+<p>d)        给VM附加第二块网卡。</p>
+<p>e)        VM开机，稍等片刻，此时可通过初始第一块网卡的公网IP登录上Ubuntu。</p>
+<p>f)        在Ubuntu中编辑，建议先切换到root账户（sudo su -）:</p>
+<p>i.        /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg，文件中写入下面的行：</p>
+<p>network: {config: disabled}</p>
+<p>ii.        /etc/iproute2/rt_tables 文件，在最后加入如下2行：</p>
+<p>800 800</p>
+<p>801 801</p>
+<p>iii.        /etc/netplan/50-cloud-init.yaml文件，在其中加入下面红色字体部分，注意IP地址的正确：</p>
+<p>network:</p>
+<p>version: 2</p>
+<p>ethernets:</p>
+<p>eth0:</p>
+<p>dhcp4: true</p>
+<p>dhcp4-overrides:</p>
+<p>route-metric: 100</p>
+<p>dhcp6: false</p>
+<p>match:</p>
+<p>driver: hv_netvsc</p>
+<p>macaddress: 00:17:fa:04:75:90</p>
+<p>set-name: eth0</p>
+<p>routes:</p>
+<ul>
+<li>to: 0.0.0.0/0</li>
+</ul>
+<p>via: 10.3.0.1</p>
+<p>table: 800</p>
+<p>routing-policy:</p>
+<ul>
+<li>from: 10.3.0.10</li>
+</ul>
+<p>priority: 300</p>
+<p>eth1:</p>
+<p>route-metric: 200</p>
+<p>macaddress: 00:17:fa:04:86:b0</p>
+<p>set-name: eth1</p>
+<p>table: 801</p>
+<ul>
+<li>from: 10.3.0.11</li>
+</ul>
+<p>priority: 301</p>
+<p>g)        在Ubuntu中执行：netplan apply</p>
+<p>h)        建议重启一下VM，再次测试双网卡公网IP连通性，从公网登录，或者以不同的网卡ping公网都可以。</p>
+<p>CentOS</p>
+<p>1.        Azure CentOS VM创建好后，再额外创建一块网卡，并申请一个公网IP。</p>
+<p>2.        修改新建网卡的专用IP分配方式为静态，并关联刚申请的公网IP；并关联适当的NSG。</p>
+<p>3.        将VM关机，修改其第一块网卡的专有IP分配方式为静态；将新建网卡附加到VM上；在此过程中可以查看一下两块网卡的Mac地址。</p>
+<p>4.        将VM开机，此时仍可通过第一块网卡的公共IP登录CentOS。</p>
+<p>5.        登录CentOS后，执行sudo su -切换到root用户。</p>
+<p>6.        cd /etc/sysconfig/network-scripts</p>
+<p>7.        vi ifcfg-eth0:   一个系统只能设置一个默认网关，这里为第一块网卡eth0设置网关  #7、8两步不做应该也可以，只在Azure Portal中将Nic Private IP分配方式设置为静态。</p>
+<p>HWADDR=00:17:fa:04:72:5b</p>
+<p>IPADDR=10.1.0.6</p>
+<p>NETMASK=255.255.255.0</p>
+<p>8.        vi ifcfg-eth1:</p>
+<p>DEFROUTE=no</p>
+<p>HWADDR=00:17:fa:04:72:5c</p>
+<p>IPADDR=10.1.0.9</p>
+<p>9.        vi route-eth0:</p>
+<p>10.1.0.0/24 dev eth0 table table200</p>
+<p>default via 10.1.0.1 dev eth0 table table200</p>
+<p>10.        vi route-eth1:</p>
+<p>10.1.0.0/24 dev eth1 table table201</p>
+<p>default via 10.1.0.1 dev eth1 table table201</p>
+<p>11.        vi rule-eth0:</p>
+<p>from 10.1.0.6 lookup table200</p>
+<p>12.        vi rule-eth1:</p>
+<p>from 10.1.0.9 lookup table201</p>
+<p>13.        vi /etc/iproute2/rt_tables:  在文件最后增加下面2行</p>
+<p>200        table200</p>
+<p>201         table201</p>
+<p>14.        停掉NetworkManager服务，并禁用其自启动：如果使用NetworkManager，需要安装与其相配套的程序包并启用相应的服务，不然总会有些奇怪的行为发生； 没有特殊需求建议禁用它。</p>
+<p>systemctl stop NetworkManager</p>
+<p>systemctl disable NetworkManager</p>
+<p>15.        重启Network Service，让配置生效：</p>
+<p>systemctl restart network</p>
+<p>16.        重启完成，验证ip rule是否有新加的两条ip rule，如有此时两个公网IP应都可以与外网通信了：</p>
+<p>[root@test-vm01 network-scripts]# ip rule</p>
+<p>0:        from all lookup local</p>
+<p>32764:        from 10.1.0.9 lookup table201</p>
+<p>32765:        from 10.1.0.6 lookup table200</p>
+<p>32766:        from all lookup main</p>
+<p>32767:        from all lookup default</p>
+<p>17.        验证两块网卡的公网连通性：</p>
+<p>18.        重启VM，再次验证。</p>
+<p>Azure VM Windows中配置2块网卡，每块网卡都能与内外网通信的配置方法如下：</p>
+<p>1. Windows (Windows Server 2016 Datacenter).</p>
+<p>2. 先在Portal中创建一台Windows VM，并为其配置好公网IP。</p>
+<p>3. 在与Windows VM相同的VNet中选择一目标Subnet，创建第二块网卡，先不要给其分配公网IP。</p>
+<p>4. 将Windows VM关机，然后将上一步创建的网卡附加上去。</p>
+<p>5. 将Windows VM重新开机。</p>
+<p>6. 然后以管理员身份打开PowerShell，执行如下指令：</p>
+<p>a. 获取第二块网卡的编号，索引号为2，区分第2块网卡的方法可以从Portal中进行查看其IP或者 Mac确认：</p>
+<p>b. 添加第二块网卡的默认路由：2为上面指令中查到的网卡索引号。</p>
+<p>route add -p 0.0.0.0 MASK 0.0.0.0 10.1.0.1 METRIC 5015 IF 2</p>
+<p>c. 验证两块网卡的路由及内、外网连通性：</p>
+<p>如不放心，可以重启系统后再次验证。</p>
+<p>参考文档： <a href="https://docs.microsoft.com/en-us/azure/virtual-machines/windows/multiple-nics#configure-guest-os-for-multiple-nics" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/virtual-machines/windows/multiple-nics#configure-guest-os-for-multiple-nics</a></p></article>

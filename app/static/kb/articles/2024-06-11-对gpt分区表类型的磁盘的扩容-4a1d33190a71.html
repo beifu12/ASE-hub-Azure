@@ -1,0 +1,239 @@
+<article class="kb-article" data-title="对gpt分区表类型的磁盘的扩容"><h1>对gpt分区表类型的磁盘的扩容</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Linux</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-06-11 15:50:26</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Notes:</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Notes:</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Notes:</li>
+</ul>
+<ul>
+<li>创建了CentOS 7.7机器，发现其是使用的gpt分区表类型</li>
+</ul>
+<ul>
+<li>对gpt分区表类型的磁盘的扩容操作，请参考如下说明：</li>
+</ul>
+<ul>
+<li>2&gt;关机完成后，导航到磁盘页面对其执行磁盘Size的调整，如我在Lab下调整为了100GB</li>
+</ul>
+<ul>
+<li>[root@hlmcen77n1-t1 ~]# gdisk /dev/sda</li>
+</ul>
+<ul>
+<li>GPT fdisk (gdisk) version 0.8.10</li>
+</ul>
+<ul>
+<li>Partition table scan:</li>
+</ul>
+<ul>
+<li>MBR: protective</li>
+</ul>
+<ul>
+<li>BSD: not present</li>
+</ul>
+<ul>
+<li>APM: not present</li>
+</ul>
+<ul>
+<li>GPT: present</li>
+</ul>
+<ul>
+<li>Found valid GPT with protective MBR; using GPT.</li>
+</ul>
+<ul>
+<li>Command (? for help): p</li>
+</ul>
+<ul>
+<li>Disk /dev/sda: 209715200 sectors, 100.0 GiB</li>
+</ul>
+<ul>
+<li>Disk identifier (GUID): 78CDF84D-9C8E-4B9F-8978-8C496A1BEC83</li>
+</ul>
+<ul>
+<li>Partition table holds up to 128 entries</li>
+</ul>
+<ul>
+<li>First usable sector is 34, last usable sector is 209715166</li>
+</ul>
+<ul>
+<li>Partitions will be aligned on 2048-sector boundaries</li>
+</ul>
+<ul>
+<li>Total free space is 4061 sectors (2.0 MiB)</li>
+</ul>
+<ul>
+<li>Number  Start (sector)    End (sector)  Size       Code  Name</li>
+</ul>
+<ul>
+<li>1         1026048         2050047   500.0 MiB   0700</li>
+</ul>
+<ul>
+<li>2         2050048       209715166   99.0 GiB    8300  Linux filesystem</li>
+</ul>
+<ul>
+<li>14            2048           10239   4.0 MiB     EF02</li>
+</ul>
+<ul>
+<li>15           10240         1024000   495.0 MiB   EF00  EFI System Partition</li>
+</ul>
+<ul>
+<li>Command (? for help): d</li>
+</ul>
+<ul>
+<li>Partition number (1-15): 2</li>
+</ul>
+<ul>
+<li>Total free space is 207669180 sectors (99.0 GiB)</li>
+</ul>
+<ul>
+<li>Number  Start (sector)    End (sector)  Size       Code  Name</li>
+</ul>
+<ul>
+<li>15           10240         1024000   495.0 MiB   EF00  EFI System Partition</li>
+</ul>
+<ul>
+<li>Command (? for help): n</li>
+</ul>
+<ul>
+<li>Partition number (2-128, default 2): 2</li>
+</ul>
+<ul>
+<li>First sector (34-209715166, default = 2050048) or {+-}size{KMGTP}:</li>
+</ul>
+<ul>
+<li>Last sector (2050048-209715166, default = 209715166) or {+-}size{KMGTP}:</li>
+</ul>
+<ul>
+<li>Current type is &#39;Linux filesystem&#39;</li>
+</ul>
+<ul>
+<li>Hex code or GUID (L to show codes, Enter = 8300):</li>
+</ul>
+<ul>
+<li>Changed type of partition to &#39;Linux filesystem&#39;</li>
+</ul>
+<ul>
+<li>Command (? for help): w</li>
+</ul>
+<ul>
+<li>PARTITIONS!!</li>
+</ul>
+<ul>
+<li>Do you want to proceed? (Y/N): Y</li>
+</ul>
+<ul>
+<li>OK; writing new GUID partition table (GPT) to /dev/sda.</li>
+</ul>
+<ul>
+<li>Warning: The kernel is still using the old partition table.</li>
+</ul>
+<ul>
+<li>The new table will be used at the next reboot.</li>
+</ul>
+<ul>
+<li>The operation has completed successfully.</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>1&gt;在Azure Portal对当前机器执行关机操作</li>
+</ul>
+<ul>
+<li>3&gt;调整磁盘Size完成后，通过Azure Portal开启机器</li>
+</ul>
+<ul>
+<li>Logical sector size: 512 bytes</li>
+</ul>
+<ul>
+<li>Final checks complete. About to write GPT data. THIS WILL OVERWRITE EXISTING</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>4&gt;启动完成后，登陆机器执行命令：parted /dev/sda，然后执行print。如果有报错，请输命令：Fix，进行修复，直到输出分区信息后，输入命令：quit，退出。</li>
+</ul>
+<ul>
+<li>5&gt;继续执行命令：gdisk /dev/sda ，输入参数：d，删除分区sda2。然后输入参数：n，新建分区sda2，并对其扩容大小。</li>
+</ul>
+<ul>
+<li>6&gt;执行命令：reboot，重启虚拟机，使系统重新读取分区表。</li>
+</ul>
+<ul>
+<li>7&gt;重启完成后，登陆机器，执行命令：xfs_growfs /dev/sda2，扩展分区的文件系统。</li>
+</ul>
+<ul>
+<li>8&gt;继续执行命令：df -h，查看到分区扩容已经成功。并且原磁盘下的测试数据文件也都会正常保留着。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>由于扩容根分区的操作非同小可，一旦哪一步出现问题，就会导致分区损坏，虚拟机无法启动，数据丢失等一系列严重的问题。因此建议您：在进行虚拟机根分区扩容之前，一定要备份虚拟机的OS磁盘（请对OS磁盘进行快照以实现备份的目的）。 最好是先在测试环境中验证上述操作运行成功后，再应用到生产环境中。</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020-09-14</p>
+<p>Notes:</p>
+<p>由于扩容根分区的操作非同小可，一旦哪一步出现问题，就会导致分区损坏，虚拟机无法启动，数据丢失等一系列严重的问题。因此建议您：在进行虚拟机根分区扩容之前，一定要备份虚拟机的OS磁盘（请对OS磁盘进行快照以实现备份的目的）。 最好是先在测试环境中验证上述操作运行成功后，再应用到生产环境中。</p>
+<p>创建了CentOS 7.7机器，发现其是使用的gpt分区表类型</p>
+<p>对gpt分区表类型的磁盘的扩容操作，请参考如下说明：</p>
+<p>1&gt;在Azure Portal对当前机器执行关机操作</p>
+<p>2&gt;关机完成后，导航到磁盘页面对其执行磁盘Size的调整，如我在Lab下调整为了100GB</p>
+<p>3&gt;调整磁盘Size完成后，通过Azure Portal开启机器</p>
+<p>4&gt;启动完成后，登陆机器执行命令：parted /dev/sda，然后执行print。如果有报错，请输命令：Fix，进行修复，直到输出分区信息后，输入命令：quit，退出。</p>
+<p>5&gt;继续执行命令：gdisk /dev/sda ，输入参数：d，删除分区sda2。然后输入参数：n，新建分区sda2，并对其扩容大小。</p>
+<p>[root@hlmcen77n1-t1 ~]# gdisk /dev/sda</p>
+<p>GPT fdisk (gdisk) version 0.8.10</p>
+<p>Partition table scan:</p>
+<p>MBR: protective</p>
+<p>BSD: not present</p>
+<p>APM: not present</p>
+<p>GPT: present</p>
+<p>Found valid GPT with protective MBR; using GPT.</p>
+<p>Command (? for help): p</p>
+<p>Disk /dev/sda: 209715200 sectors, 100.0 GiB</p>
+<p>Logical sector size: 512 bytes</p>
+<p>Disk identifier (GUID): 78CDF84D-9C8E-4B9F-8978-8C496A1BEC83</p>
+<p>Partition table holds up to 128 entries</p>
+<p>First usable sector is 34, last usable sector is 209715166</p>
+<p>Partitions will be aligned on 2048-sector boundaries</p>
+<p>Total free space is 4061 sectors (2.0 MiB)</p>
+<p>Number  Start (sector)    End (sector)  Size       Code  Name</p>
+<p>1         1026048         2050047   500.0 MiB   0700</p>
+<p>2         2050048       209715166   99.0 GiB    8300  Linux filesystem</p>
+<p>14            2048           10239   4.0 MiB     EF02</p>
+<p>15           10240         1024000   495.0 MiB   EF00  EFI System Partition</p>
+<p>Command (? for help): d</p>
+<p>Partition number (1-15): 2</p>
+<p>Total free space is 207669180 sectors (99.0 GiB)</p>
+<p>Number  Start (sector)    End (sector)  Size       Code  Name</p>
+<p>15           10240         1024000   495.0 MiB   EF00  EFI System Partition</p>
+<p>Command (? for help): n</p>
+<p>Partition number (2-128, default 2): 2</p>
+<p>First sector (34-209715166, default = 2050048) or {+-}size{KMGTP}:</p>
+<p>Last sector (2050048-209715166, default = 209715166) or {+-}size{KMGTP}:</p>
+<p>Current type is &#39;Linux filesystem&#39;</p>
+<p>Hex code or GUID (L to show codes, Enter = 8300):</p>
+<p>Changed type of partition to &#39;Linux filesystem&#39;</p>
+<p>Command (? for help): w</p>
+<p>Final checks complete. About to write GPT data. THIS WILL OVERWRITE EXISTING</p>
+<p>PARTITIONS!!</p>
+<p>Do you want to proceed? (Y/N): Y</p>
+<p>OK; writing new GUID partition table (GPT) to /dev/sda.</p>
+<p>Warning: The kernel is still using the old partition table.</p>
+<p>The new table will be used at the next reboot.</p>
+<p>The operation has completed successfully.</p>
+<p>6&gt;执行命令：reboot，重启虚拟机，使系统重新读取分区表。</p>
+<p>7&gt;重启完成后，登陆机器，执行命令：xfs_growfs /dev/sda2，扩展分区的文件系统。</p>
+<p>8&gt;继续执行命令：df -h，查看到分区扩容已经成功。并且原磁盘下的测试数据文件也都会正常保留着。</p></article>

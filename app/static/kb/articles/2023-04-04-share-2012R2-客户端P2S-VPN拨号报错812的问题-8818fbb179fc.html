@@ -1,0 +1,159 @@
+<article class="kb-article" data-title="【share】2012R2 客户端P2S VPN拨号报错812的问题"><h1>【share】2012R2 客户端P2S VPN拨号报错812的问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2023-04-04 10:57:44</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>分享一个关于2012R2 客户端P2S VPN拨号报错812的问题解决办法。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>分享一个关于2012R2 客户端P2S VPN拨号报错812的问题解决办法。</li>
+</ul>
+<ul>
+<li>用户的P2S VPN 在win10 客户端上正常拨号连接， 但在win2012R2上报错812问题。需要协助解决问题。</li>
+</ul>
+<ul>
+<li>1，查P2S VPN 的协商日志会显示EAP authentication failed.</li>
+</ul>
+<ul>
+<li>[ERR] [default] [IKEv2_93b704e5-a1fc-404b-af47-4bbe3ad0c187] EAP authentication failed. Username=p2swangxinxin EapType=13 Error=0x4DC =&gt; The operation being requested was not performed because the user has not been authenticated.</li>
+</ul>
+<ul>
+<li>参考案例：SR_20211105130370_[S500]windows 客户端连接点到站点的VPN连接失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Owner  Miya</li>
+</ul>
+<ul>
+<li>Hi all，</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>2，搭建环境可以复现用户的问题</li>
+</ul>
+<ul>
+<li>3， 尝试调整azure VPN gateway的P2S 协商协议， 没有解决问题。</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>Windows2012R2的拨号出现812问题怀疑是服务端认证方法跟客户端不匹配导致。</li>
+</ul>
+<ul>
+<li>根据这个文档提供的方法操作解决了这个问题：</li>
+</ul>
+<ul>
+<li>在开启了管理员权限的CMD 窗口中运行</li>
+</ul>
+<ul>
+<li>reg add HKLM\SYSTEM\CurrentControlSet\Services\RasMan\PPP\EAP\13 /v TlsVersion /t REG_DWORD /d 0xfc0</li>
+</ul>
+<ul>
+<li>重启服务器再连接就可以了。</li>
+</ul>
+<ul>
+<li>另外, 如果以上仍未解决您的问题，请安装如下两个补丁并重启尝试一下。</li>
+</ul>
+<ul>
+<li>KB3140245</li>
+</ul>
+<ul>
+<li>KB2977292</li>
+</ul>
+<ul>
+<li>另外附上：</li>
+</ul>
+<ul>
+<li>Azure VPN 网关常见问题解答 | Azure Docs</li>
+</ul>
+<ul>
+<li>Miya Hu（胡明月）| Azure Technical support Engineer |Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查过程：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>reg add &quot;HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp&quot; /v DefaultSecureProtocols /t REG_DWORD /d 0xaa0</li>
+</ul>
+<ul>
+<li>if %PROCESSOR_ARCHITECTURE% EQU AMD64 reg add &quot;HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp&quot; /v DefaultSecureProtocols /t REG_DWORD /d 0xaa0</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方法：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://social.technet.microsoft.com/Forums/en-US/b8489bc2-e64b-4b5d-a8bb-0f63ced99fcc/connection-problem-on-vpn-due-to-rasvpn-policy-error-812?forum=winserveressentials" target="_blank" rel="noopener">https://social.technet.microsoft.com/Forums/en-US/b8489bc2-e64b-4b5d-a8bb-0f63ced99fcc/connection-problem-on-vpn-due-to-rasvpn-policy-error-812?forum=winserveressentials</a></li>
+</ul>
+<ul>
+<li><a href="https://www.catalog.update.microsoft.com/search.aspx?q=kb3140245" target="_blank" rel="noopener">https://www.catalog.update.microsoft.com/search.aspx?q=kb3140245</a></li>
+</ul>
+<ul>
+<li><a href="https://www.catalog.update.microsoft.com/Search.aspx?q=KB2977292" target="_blank" rel="noopener">https://www.catalog.update.microsoft.com/Search.aspx?q=KB2977292</a></li>
+</ul>
+<ul>
+<li>Support direct line: 010-56060226  Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></li>
+</ul>
+<ul>
+<li>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Owner  Miya</p>
+<p>2021-11-11</p>
+<p>Hi all，</p>
+<p>分享一个关于2012R2 客户端P2S VPN拨号报错812的问题解决办法。</p>
+<p>问题描述：</p>
+<p>==========</p>
+<p>用户的P2S VPN 在win10 客户端上正常拨号连接， 但在win2012R2上报错812问题。需要协助解决问题。</p>
+<p>排查过程：</p>
+<p>==============</p>
+<p>1，查P2S VPN 的协商日志会显示EAP authentication failed.</p>
+<p>[ERR] [default] [IKEv2_93b704e5-a1fc-404b-af47-4bbe3ad0c187] EAP authentication failed. Username=p2swangxinxin EapType=13 Error=0x4DC =&gt; The operation being requested was not performed because the user has not been authenticated.</p>
+<p>2，搭建环境可以复现用户的问题</p>
+<p>3， 尝试调整azure VPN gateway的P2S 协商协议， 没有解决问题。</p>
+<p>问题原因：</p>
+<p>Windows2012R2的拨号出现812问题怀疑是服务端认证方法跟客户端不匹配导致。</p>
+<p>解决方法：</p>
+<p>根据这个文档提供的方法操作解决了这个问题：</p>
+<p><a href="https://social.technet.microsoft.com/Forums/en-US/b8489bc2-e64b-4b5d-a8bb-0f63ced99fcc/connection-problem-on-vpn-due-to-rasvpn-policy-error-812?forum=winserveressentials" target="_blank" rel="noopener">https://social.technet.microsoft.com/Forums/en-US/b8489bc2-e64b-4b5d-a8bb-0f63ced99fcc/connection-problem-on-vpn-due-to-rasvpn-policy-error-812?forum=winserveressentials</a></p>
+<p>在开启了管理员权限的CMD 窗口中运行</p>
+<p>reg add HKLM\SYSTEM\CurrentControlSet\Services\RasMan\PPP\EAP\13 /v TlsVersion /t REG_DWORD /d 0xfc0</p>
+<p>reg add &quot;HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp&quot; /v DefaultSecureProtocols /t REG_DWORD /d 0xaa0</p>
+<p>if %PROCESSOR_ARCHITECTURE% EQU AMD64 reg add &quot;HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\WinHttp&quot; /v DefaultSecureProtocols /t REG_DWORD /d 0xaa0</p>
+<p>重启服务器再连接就可以了。</p>
+<p>另外, 如果以上仍未解决您的问题，请安装如下两个补丁并重启尝试一下。</p>
+<p>KB3140245</p>
+<p>KB2977292</p>
+<p><a href="https://www.catalog.update.microsoft.com/search.aspx?q=kb3140245" target="_blank" rel="noopener">https://www.catalog.update.microsoft.com/search.aspx?q=kb3140245</a></p>
+<p><a href="https://www.catalog.update.microsoft.com/Search.aspx?q=KB2977292" target="_blank" rel="noopener">https://www.catalog.update.microsoft.com/Search.aspx?q=KB2977292</a></p>
+<p>另外附上：</p>
+<p>Azure VPN 网关常见问题解答 | Azure Docs</p>
+<p>参考案例：SR_20211105130370_[S500]windows 客户端连接点到站点的VPN连接失败</p>
+<p>Miya Hu（胡明月）| Azure Technical support Engineer |Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060226  Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></p>
+<p>Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>If you have any feedback about my work, please contact me or my manager Wang Ruifeng on wang.ruifeng@oe.21vianet.com</p></article>

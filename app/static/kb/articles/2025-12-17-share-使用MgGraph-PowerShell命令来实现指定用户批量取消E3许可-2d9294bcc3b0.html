@@ -1,0 +1,223 @@
+<article class="kb-article" data-title="[share]使用MgGraph PowerShell命令来实现指定用户批量取消E3许可"><h1>[share]使用MgGraph PowerShell命令来实现指定用户批量取消E3许可</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-12-17 13:21:47</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>$user = Get-MgUser -UserId $UserUPN -ErrorAction Stop</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>$user = Get-MgUser -UserId $UserUPN -ErrorAction Stop</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Create</li>
+</ul>
+<ul>
+<li>Reviewer</li>
+</ul>
+<ul>
+<li>#Microsoft Graph模块安装</li>
+</ul>
+<ul>
+<li>Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force</li>
+</ul>
+<ul>
+<li>#如果没有可以新建一个应用注册，进入Microsoft Entra ID，应用注册，新注册：</li>
+</ul>
+<ul>
+<li>创建客户端密码，该值在第一次创建后可见如果刷新页面将隐藏，请创建后及时保存</li>
+</ul>
+<ul>
+<li>#添加应用注册移除用户许可需要的API权限“User.ReadWrite.All, Organization.Read.All”</li>
+</ul>
+<ul>
+<li>#设置使用应用注册app登录用户及密码变量</li>
+</ul>
+<ul>
+<li>$appId = &quot;xxxx&quot;</li>
+</ul>
+<ul>
+<li>$password = &quot;xxxx&quot; | ConvertTo-SecureString -AsPlainText -Force</li>
+</ul>
+<ul>
+<li>$ClientSecretCredential = New-Object System.Management.Automation.PSCredential($appId, $password)</li>
+</ul>
+<ul>
+<li># $appId为下面截图中应用程序ID</li>
+</ul>
+<ul>
+<li># $password密码为证书和密码中客户端密码的值</li>
+</ul>
+<ul>
+<li># 登录</li>
+</ul>
+<ul>
+<li>Connect-MgGraph -TenantId &quot;xxxxxxxxxxx&quot; -ClientSecretCredential $ClientSecretCredential -Environment China</li>
+</ul>
+<ul>
+<li># 替换为您环境已知仅分配 E3 许可证的用户 UPN</li>
+</ul>
+<ul>
+<li>$userUPN = &quot;xxxxxxxxxxxxxx&quot;</li>
+</ul>
+<ul>
+<li># 获取该用户的对象</li>
+</ul>
+<ul>
+<li>$user = Get-MgUser -UserId $userUPN</li>
+</ul>
+<ul>
+<li>$userLicenseDetails = Get-MgUserLicenseDetail -UserId $user.Id</li>
+</ul>
+<ul>
+<li>例如我的测试环境M365 E3许可是如下信息：</li>
+</ul>
+<ul>
+<li>在C盘下创建一个txt文件，每行包括了需要取消E3许可用户的upn：</li>
+</ul>
+<ul>
+<li>$UserListPath = &quot;C:\UsersToRemovee3.txt&quot;</li>
+</ul>
+<ul>
+<li># 从文件中读取用户UPN列表</li>
+</ul>
+<ul>
+<li>$Users = Get-Content -Path $UserListPath</li>
+</ul>
+<ul>
+<li>foreach ($UserUPN in $Users) {</li>
+</ul>
+<ul>
+<li>try {</li>
+</ul>
+<ul>
+<li># 获取用户对象</li>
+</ul>
+<ul>
+<li># 执行移除操作</li>
+</ul>
+<ul>
+<li>Write-Host &quot;成功移除用户 $($UserUPN) 的 E3 许可证。&quot; -ForegroundColor Green</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>catch {</li>
+</ul>
+<ul>
+<li>Write-Host &quot;处理用户 $UserUPN 时出错: $($_.Exception.Message)&quot; -ForegroundColor Red</li>
+</ul>
+<ul>
+<li>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</li>
+</ul>
+<ul>
+<li>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</li>
+</ul>
+<ul>
+<li>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</li>
+</ul>
+<ul>
+<li>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Microsoft Graph目前在中国区无法直接使用用户、密码的方式登录，测试验证可使用应用注册来登录：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>验证可以正常登陆，命令详细信息可以参考：Using Microsoft Graph PowerShell authentication commands | Microsoft Learn</li>
+</ul>
+<ul>
+<li>使用下面命令批量取消用户E3许可：</li>
+</ul>
+<ul>
+<li>Set-MgUserLicense -UserId $user.Id -AddLicenses @() -RemoveLicenses @($e3SkuId) -ErrorAction Stop</li>
+</ul>
+<ul>
+<li>#脚本免责声明#</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>查询您环境中E3许可的skuid</li>
+</ul>
+<ul>
+<li># 获取该用户的许可证详细信息，其中包含 SkuId 和 SkuPartNumber</li>
+</ul>
+<ul>
+<li># 显示该用户的所有许可证信息，从中查找 E3 相关的 SkuId</li>
+</ul>
+<ul>
+<li>$userLicenseDetails | Format-List SkuId, SkuPartNumber</li>
+</ul>
+<ul>
+<li># 指定文件路径和许可证SkuId</li>
+</ul>
+<ul>
+<li>$e3SkuId = &quot;xxxxxxxxxxx&quot; # 替换为你的实际E3 SkuId GUID</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>有关移除用户许可PowerShell命令详细信息可以参考： <a href="https://learn.microsoft.com/en-us/microsoft-365/enterprise/remove-licenses-from-user-accounts-with-microsoft-365-powershell?view=o365-worldwide#removing-licenses-from-user-accounts" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/microsoft-365/enterprise/remove-licenses-from-user-accounts-with-microsoft-365-powershell?view=o365-worldwide#removing-licenses-from-user-accounts</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Create</p>
+<p>2025-12-8</p>
+<p>Reviewer</p>
+<p>Microsoft Graph目前在中国区无法直接使用用户、密码的方式登录，测试验证可使用应用注册来登录：</p>
+<p>#Microsoft Graph模块安装</p>
+<p>Install-Module Microsoft.Graph -Scope AllUsers -Repository PSGallery -Force</p>
+<p>#如果没有可以新建一个应用注册，进入Microsoft Entra ID，应用注册，新注册：</p>
+<p>创建客户端密码，该值在第一次创建后可见如果刷新页面将隐藏，请创建后及时保存</p>
+<p>#添加应用注册移除用户许可需要的API权限“User.ReadWrite.All, Organization.Read.All”</p>
+<p>#设置使用应用注册app登录用户及密码变量</p>
+<p>$appId = &quot;xxxx&quot;</p>
+<p>$password = &quot;xxxx&quot; | ConvertTo-SecureString -AsPlainText -Force</p>
+<p>$ClientSecretCredential = New-Object System.Management.Automation.PSCredential($appId, $password)</p>
+<h1>$appId为下面截图中应用程序ID</h1>
+<h1>$password密码为证书和密码中客户端密码的值</h1>
+<h1>登录</h1>
+<p>Connect-MgGraph -TenantId &quot;xxxxxxxxxxx&quot; -ClientSecretCredential $ClientSecretCredential -Environment China</p>
+<p>验证可以正常登陆，命令详细信息可以参考：Using Microsoft Graph PowerShell authentication commands | Microsoft Learn</p>
+<p>查询您环境中E3许可的skuid</p>
+<h1>替换为您环境已知仅分配 E3 许可证的用户 UPN</h1>
+<p>$userUPN = &quot;xxxxxxxxxxxxxx&quot;</p>
+<h1>获取该用户的对象</h1>
+<p>$user = Get-MgUser -UserId $userUPN</p>
+<h1>获取该用户的许可证详细信息，其中包含 SkuId 和 SkuPartNumber</h1>
+<p>$userLicenseDetails = Get-MgUserLicenseDetail -UserId $user.Id</p>
+<h1>显示该用户的所有许可证信息，从中查找 E3 相关的 SkuId</h1>
+<p>$userLicenseDetails | Format-List SkuId, SkuPartNumber</p>
+<p>例如我的测试环境M365 E3许可是如下信息：</p>
+<p>在C盘下创建一个txt文件，每行包括了需要取消E3许可用户的upn：</p>
+<p>使用下面命令批量取消用户E3许可：</p>
+<h1>指定文件路径和许可证SkuId</h1>
+<p>$UserListPath = &quot;C:\UsersToRemovee3.txt&quot;</p>
+<p>$e3SkuId = &quot;xxxxxxxxxxx&quot; # 替换为你的实际E3 SkuId GUID</p>
+<h1>从文件中读取用户UPN列表</h1>
+<p>$Users = Get-Content -Path $UserListPath</p>
+<p>foreach ($UserUPN in $Users) {</p>
+<p>try {</p>
+<h1>获取用户对象</h1>
+<p>$user = Get-MgUser -UserId $UserUPN -ErrorAction Stop</p>
+<h1>执行移除操作</h1>
+<p>Set-MgUserLicense -UserId $user.Id -AddLicenses @() -RemoveLicenses @($e3SkuId) -ErrorAction Stop</p>
+<p>Write-Host &quot;成功移除用户 $($UserUPN) 的 E3 许可证。&quot; -ForegroundColor Green</p>
+<p>}</p>
+<p>catch {</p>
+<p>Write-Host &quot;处理用户 $UserUPN 时出错: $($_.Exception.Message)&quot; -ForegroundColor Red</p>
+<p>有关移除用户许可PowerShell命令详细信息可以参考： <a href="https://learn.microsoft.com/en-us/microsoft-365/enterprise/remove-licenses-from-user-accounts-with-microsoft-365-powershell?view=o365-worldwide#removing-licenses-from-user-accounts" target="_blank" rel="noopener">https://learn.microsoft.com/en-us/microsoft-365/enterprise/remove-licenses-from-user-accounts-with-microsoft-365-powershell?view=o365-worldwide#removing-licenses-from-user-accounts</a></p>
+<p>#脚本免责声明#</p>
+<p>声明：样例代码旨在为客户举例说明某个API的使用方法，仅供测试使用，不能将其用于生产环境。该样例代码和相关信息不能作为任何商业用途的依据，也不保证对特定业务需求或特定用途的适用性。我们允许您复制、查阅、转发该样例代码到您的软件产品中，前提是您已经同意以下几点：</p>
+<p>（1）不在您的软件产品中使用我们的名称（如微软、世纪互联等）、商标来说明该段样例代码的出处。</p>
+<p>（2）您的软件产品的著作权声明中明确表明其中包含一部分样例代码。</p>
+<p>（3）为我们（微软、世纪互联等）因样例代码的使用和转发引起的任何索赔或诉讼提供辩护，并对我们所遭受的损失或任何不良后果承担包括律师费在内的赔偿责任。</p></article>

@@ -1,0 +1,151 @@
+<article class="kb-article" data-title="VPN连接显示已连接实际不通"><h1>VPN连接显示已连接实际不通</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-12-11 20:51:24</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象描述：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象描述：</li>
+</ul>
+<ul>
+<li>云上与云下无法互通。</li>
+</ul>
+<ul>
+<li>VPN connection建立后云上云下仍然不通：</li>
+</ul>
+<ul>
+<li>当PA侧于8号下午1点20左右完成这一调整后；应当Phase 2是可以协商成功的，但用户依然反馈还是不通：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>关联工单：20221206202669</li>
+</ul>
+<ul>
+<li>Azure VPN connection配置：</li>
+</ul>
+<ul>
+<li>用户资源：</li>
+</ul>
+<ul>
+<li>VPN连接： IKEv2, no bgp, no active-active, route based</li>
+</ul>
+<ul>
+<li>/subscriptions/72ec2130-a97c-45ab-9430-8f4773493b3f/resourceGroups/HCH-VNET/providers/Microsoft.Network/connections/HCHAVDVPN</li>
+</ul>
+<ul>
+<li>测试VM: /subscriptions/72ec2130-a97c-45ab-9430-8f4773493b3f/resourceGroups/hch-vnet/providers/Microsoft.Compute/virtualMachines/HCH-AD01</li>
+</ul>
+<ul>
+<li>问题原因：Azure VNet地址空间配置错误，扰乱了平台VPN GW的正常运转。用户在创建完Azure Local Network Gateway并填入了on-premises侧的内网IP段后，在隧道调试期间其出于测试目的，对Azure VPN GW所处VNet地址空间进行了修改，在其中加入了10.0.0.0/8，并创建了相应的Subnet使用这一10.0.0.0/8。而其Local Network Gateway中已经填入两个10.97和10.98开头的IP网段。</li>
+</ul>
+<ul>
+<li>解决办法：</li>
+</ul>
+<ul>
+<li>调整on-premises VPN device IPSec加密配置文件DH组由group2调整为no-pfs，与Azure VPN connection custome IPSec\IKE policy Phase 2 PfsGroup None保持一致。</li>
+</ul>
+<ul>
+<li>删除Azure VNet中错误的地址空间及Subnet。</li>
+</ul>
+<ul>
+<li>让用户提供on-premises VPN Device上Phase 1和Phase 2的参数 配置：</li>
+</ul>
+<ul>
+<li>对端为PA的硬件防火墙设备：</li>
+</ul>
+<ul>
+<li>和推断一致，PA侧Phase 2 配置了DH组 Group2，未能和Azure Phase 2 PfsGroup None保持一致。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Azure Portal中查看连接状态显示为“已连接”。</li>
+</ul>
+<ul>
+<li>排查过程：</li>
+</ul>
+<ul>
+<li>排查Azure VPN GW的IKE日志和Dashboard发现，IKE tunnel已建立成功：</li>
+</ul>
+<ul>
+<li>让用户开启长ping测试，然后后台通过ASC中的VPN Gateway的Brooklyn Diagnostics功能同时抓取VPN instance的数据包，以及众多的配置信息，发现该Azure VPN GW上无一任意方向的ESP报文，然后进一步查找对应时间点的IKE日志，发现该VPN连接的Phase 2并没有协商成功，一直在重复如下日志信息：</li>
+</ul>
+<ul>
+<li>从日志中可以看到，当Azure VPn GW主动去协商IPSec SA（Create Child QM SA)时，其没有使用PfsGroup（符合预期，因为用户在connection中使用了自定义的Phase 2 PfsGroup为None)；而后由于Data Triggered发出自己的Traffic Slector提议，但明显收到对端On-premises VPN Device发送来的“Invalid Syntax&quot;通知消息，而且该VPN连接一直在重复上述日志；据此推断，on-premises VPN Device使用了与Azure端不同的PfsGroup设置，导致Phase 2 QM SA并没有协商成功。</li>
+</ul>
+<ul>
+<li>进一步排查Azure VPN GW的IKE日志和Dashboard发现：</li>
+</ul>
+<ul>
+<li>Jarvis中搜索不到新的IKE日志、Dashboard看到8号下午1点20左右IKE隧道即关闭，原因为RPC call删除；而通过后面排查注意到Portal中该VPN连接仍然显示为“已连接”。</li>
+</ul>
+<ul>
+<li>在排查用户提供的Azure VM Nic的有效路由时注意到，其中并没有学到指向on-premises Network，下一跳为VPN GW的路由。</li>
+</ul>
+<ul>
+<li>经和用户确认，其出于测试目的在Azure VPN GW所处VNet地址空间中添加 了10.0.0.0/8这一地址空间及Subnet；而这一地址段与该VPN连接中Local Network Gateway地址空间10.97.x.x和10.98.x.x相冲突。</li>
+</ul>
+<ul>
+<li>明确告知用户这种地址冲突是不允许存在的，于是让其删除了这一Subnet和地址空间；然后再次查看其网卡有效路由，发现已有去往10.97和10.98那两条经Azure VPN GW的路由：</li>
+</ul>
+<ul>
+<li>再次测试云上与云下的连通性：仍然不通，同时on-premises PA侧工程师反馈，其PA上并没有去往Azure VNet地址段的路由。下一步需要PA侧工程师解决这一路由问题，然后再次确认。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>于是建议用户修改PA侧IPSec加密配置文件：DH组选择为”no-pfs&quot;：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal-east.microsoftgeneva.com/s/8ACDA1F7" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/8ACDA1F7</a></li>
+</ul>
+<ul>
+<li><a href="https://portal-east.microsoftgeneva.com/s/AB58415C" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/AB58415C</a></li>
+</ul>
+<ul>
+<li><a href="https://portal-east.microsoftgeneva.com/s/8243BD59" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/8243BD59</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>关联工单：20221206202669</p>
+<p>问题现象描述：</p>
+<p>Azure Portal中查看连接状态显示为“已连接”。</p>
+<p>云上与云下无法互通。</p>
+<p>Azure VPN connection配置：</p>
+<p>用户资源：</p>
+<p>VPN连接： IKEv2, no bgp, no active-active, route based</p>
+<p>/subscriptions/72ec2130-a97c-45ab-9430-8f4773493b3f/resourceGroups/HCH-VNET/providers/Microsoft.Network/connections/HCHAVDVPN</p>
+<p>测试VM: /subscriptions/72ec2130-a97c-45ab-9430-8f4773493b3f/resourceGroups/hch-vnet/providers/Microsoft.Compute/virtualMachines/HCH-AD01</p>
+<p>问题原因：Azure VNet地址空间配置错误，扰乱了平台VPN GW的正常运转。用户在创建完Azure Local Network Gateway并填入了on-premises侧的内网IP段后，在隧道调试期间其出于测试目的，对Azure VPN GW所处VNet地址空间进行了修改，在其中加入了10.0.0.0/8，并创建了相应的Subnet使用这一10.0.0.0/8。而其Local Network Gateway中已经填入两个10.97和10.98开头的IP网段。</p>
+<p>解决办法：</p>
+<p>调整on-premises VPN device IPSec加密配置文件DH组由group2调整为no-pfs，与Azure VPN connection custome IPSec\IKE policy Phase 2 PfsGroup None保持一致。</p>
+<p>删除Azure VNet中错误的地址空间及Subnet。</p>
+<p>排查过程：</p>
+<p>VPN connection建立后云上云下仍然不通：</p>
+<p>排查Azure VPN GW的IKE日志和Dashboard发现，IKE tunnel已建立成功：</p>
+<p><a href="https://portal-east.microsoftgeneva.com/s/8ACDA1F7" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/8ACDA1F7</a></p>
+<p>让用户开启长ping测试，然后后台通过ASC中的VPN Gateway的Brooklyn Diagnostics功能同时抓取VPN instance的数据包，以及众多的配置信息，发现该Azure VPN GW上无一任意方向的ESP报文，然后进一步查找对应时间点的IKE日志，发现该VPN连接的Phase 2并没有协商成功，一直在重复如下日志信息：</p>
+<p><a href="https://portal-east.microsoftgeneva.com/s/AB58415C" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/AB58415C</a></p>
+<p>从日志中可以看到，当Azure VPn GW主动去协商IPSec SA（Create Child QM SA)时，其没有使用PfsGroup（符合预期，因为用户在connection中使用了自定义的Phase 2 PfsGroup为None)；而后由于Data Triggered发出自己的Traffic Slector提议，但明显收到对端On-premises VPN Device发送来的“Invalid Syntax&quot;通知消息，而且该VPN连接一直在重复上述日志；据此推断，on-premises VPN Device使用了与Azure端不同的PfsGroup设置，导致Phase 2 QM SA并没有协商成功。</p>
+<p>让用户提供on-premises VPN Device上Phase 1和Phase 2的参数 配置：</p>
+<p>对端为PA的硬件防火墙设备：</p>
+<p>和推断一致，PA侧Phase 2 配置了DH组 Group2，未能和Azure Phase 2 PfsGroup None保持一致。</p>
+<p>于是建议用户修改PA侧IPSec加密配置文件：DH组选择为”no-pfs&quot;：</p>
+<p>当PA侧于8号下午1点20左右完成这一调整后；应当Phase 2是可以协商成功的，但用户依然反馈还是不通：</p>
+<p><a href="https://portal-east.microsoftgeneva.com/s/8243BD59" target="_blank" rel="noopener">https://portal-east.microsoftgeneva.com/s/8243BD59</a></p>
+<p>进一步排查Azure VPN GW的IKE日志和Dashboard发现：</p>
+<p>Jarvis中搜索不到新的IKE日志、Dashboard看到8号下午1点20左右IKE隧道即关闭，原因为RPC call删除；而通过后面排查注意到Portal中该VPN连接仍然显示为“已连接”。</p>
+<p>在排查用户提供的Azure VM Nic的有效路由时注意到，其中并没有学到指向on-premises Network，下一跳为VPN GW的路由。</p>
+<p>经和用户确认，其出于测试目的在Azure VPN GW所处VNet地址空间中添加 了10.0.0.0/8这一地址空间及Subnet；而这一地址段与该VPN连接中Local Network Gateway地址空间10.97.x.x和10.98.x.x相冲突。</p>
+<p>明确告知用户这种地址冲突是不允许存在的，于是让其删除了这一Subnet和地址空间；然后再次查看其网卡有效路由，发现已有去往10.97和10.98那两条经Azure VPN GW的路由：</p>
+<p>再次测试云上与云下的连通性：仍然不通，同时on-premises PA侧工程师反馈，其PA上并没有去往Azure VNet地址段的路由。下一步需要PA侧工程师解决这一路由问题，然后再次确认。</p></article>

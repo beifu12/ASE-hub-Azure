@@ -1,0 +1,135 @@
+<article class="kb-article" data-title="在Firewall上使用Powershell批量添加规则"><h1>在Firewall上使用Powershell批量添加规则</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AzureFW</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-01-04 18:12:25</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>2、不能一次添加太多的规则，比如一次添加1000个会报错，加500个也报错，加100个是可以的，一次加太多规则导致FW处于失败状态</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>2、不能一次添加太多的规则，比如一次添加1000个会报错，加500个也报错，加100个是可以的，一次加太多规则导致FW处于失败状态</li>
+</ul>
+<ul>
+<li>此时报错，更新的时间太长。</li>
+</ul>
+<ul>
+<li>FW实际是支持10000条规则。只是添加的时候一次添加太多，会造成更新时间太长，导致失败。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>#创建一个规则集并添加一个规则，如果有规则集的话，则不用创建了规则集了</li>
+</ul>
+<ul>
+<li>$ruleCollection = New-AzureRMFirewallNatRuleCollection -Name &quot;MyNatRuleCollection&quot; -Priority 100 -Rule $rule1</li>
+</ul>
+<ul>
+<li>$fw=Get-AzureRmFirewall -Name fw -ResourceGroupName fuzlrg</li>
+</ul>
+<ul>
+<li>#向规则集中添加规则</li>
+</ul>
+<ul>
+<li>foreach($port in $ports)</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>$name=&quot;dnat&quot;+$port</li>
+</ul>
+<ul>
+<li>#添加规则</li>
+</ul>
+<ul>
+<li>$ruleCollection.AddRule($rule)</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>#向FW添加规则集并保存配置</li>
+</ul>
+<ul>
+<li>$fw.AddNatRuleCollection($ruleCollection)</li>
+</ul>
+<ul>
+<li>注:</li>
+</ul>
+<ul>
+<li>1、如果向现有的规则集中添加rule</li>
+</ul>
+<ul>
+<li>$fw.NatRuleCollections[0].Rules.Add( $rule)</li>
+</ul>
+<ul>
+<li>#0表示规则集的下表标</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Set-AzureRmFirewall -AzureFirewall $fw</li>
+</ul>
+<ul>
+<li>0、命令参考：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>#定义添加的端口，这里定义100个NAT规则，</li>
+</ul>
+<ul>
+<li>$ports=30001..30100 #端口范围</li>
+</ul>
+<ul>
+<li>$rule1 = New-AzureRMFirewallNatRule -Name R1 -Protocol &quot;UDP&quot;,&quot;TCP&quot; -SourceAddress &quot;*&quot; -DestinationAddress &quot;40.73.110.69&quot; -DestinationPort &quot;30000&quot; -TranslatedAddress &quot;10.100.128.4&quot; -TranslatedPort &quot;30000&quot;</li>
+</ul>
+<ul>
+<li>$rule = New-AzureRMFirewallNatRule -Name $name  -Protocol &quot;TCP&quot;,&quot;UDP&quot; -SourceAddress &quot;*&quot; -DestinationAddress &quot;40.73.110.69&quot; -DestinationPort $port -TranslatedAddress &quot;10.100.128.4&quot; -TranslatedPort $port</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>所以建议一次少添加点，保存配置，然后多添加几次，</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/powershell/module/az.network/new-azfirewallnatrulecollection?view=azps-3.1.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/az.network/new-azfirewallnatrulecollection?view=azps-3.1.0</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/azure/azure-subscription-service-limits#azure-firewall-limits" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/azure-subscription-service-limits#azure-firewall-limits</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2019-12-02</p>
+<p>#定义添加的端口，这里定义100个NAT规则，</p>
+<p>$ports=30001..30100 #端口范围</p>
+<p>#创建一个规则集并添加一个规则，如果有规则集的话，则不用创建了规则集了</p>
+<p>$rule1 = New-AzureRMFirewallNatRule -Name R1 -Protocol &quot;UDP&quot;,&quot;TCP&quot; -SourceAddress &quot;*&quot; -DestinationAddress &quot;40.73.110.69&quot; -DestinationPort &quot;30000&quot; -TranslatedAddress &quot;10.100.128.4&quot; -TranslatedPort &quot;30000&quot;</p>
+<p>$ruleCollection = New-AzureRMFirewallNatRuleCollection -Name &quot;MyNatRuleCollection&quot; -Priority 100 -Rule $rule1</p>
+<p>$fw=Get-AzureRmFirewall -Name fw -ResourceGroupName fuzlrg</p>
+<p>#向规则集中添加规则</p>
+<p>foreach($port in $ports)</p>
+<p>{</p>
+<p>$name=&quot;dnat&quot;+$port</p>
+<p>#添加规则</p>
+<p>$rule = New-AzureRMFirewallNatRule -Name $name  -Protocol &quot;TCP&quot;,&quot;UDP&quot; -SourceAddress &quot;*&quot; -DestinationAddress &quot;40.73.110.69&quot; -DestinationPort $port -TranslatedAddress &quot;10.100.128.4&quot; -TranslatedPort $port</p>
+<p>$ruleCollection.AddRule($rule)</p>
+<p>}</p>
+<p>#向FW添加规则集并保存配置</p>
+<p>$fw.AddNatRuleCollection($ruleCollection)</p>
+<p>Set-AzureRmFirewall -AzureFirewall $fw</p>
+<p>注:</p>
+<p>0、命令参考：</p>
+<p><a href="https://docs.microsoft.com/en-us/powershell/module/az.network/new-azfirewallnatrulecollection?view=azps-3.1.0" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/powershell/module/az.network/new-azfirewallnatrulecollection?view=azps-3.1.0</a></p>
+<p>1、如果向现有的规则集中添加rule</p>
+<p>$fw.NatRuleCollections[0].Rules.Add( $rule)</p>
+<p>#0表示规则集的下表标</p>
+<p>2、不能一次添加太多的规则，比如一次添加1000个会报错，加500个也报错，加100个是可以的，一次加太多规则导致FW处于失败状态</p>
+<p>此时报错，更新的时间太长。</p>
+<p>FW实际是支持10000条规则。只是添加的时候一次添加太多，会造成更新时间太长，导致失败。</p>
+<p>所以建议一次少添加点，保存配置，然后多添加几次，</p>
+<p><a href="https://docs.microsoft.com/en-us/azure/azure-subscription-service-limits#azure-firewall-limits" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/azure-subscription-service-limits#azure-firewall-limits</a></p></article>

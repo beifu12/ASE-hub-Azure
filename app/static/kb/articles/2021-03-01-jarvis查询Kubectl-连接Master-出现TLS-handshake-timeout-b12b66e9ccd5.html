@@ -1,0 +1,56 @@
+<article class="kb-article" data-title="jarvis查询Kubectl 连接Master 出现TLS handshake timeout"><h1>jarvis查询Kubectl 连接Master 出现TLS handshake timeout</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: 查询-排查工具</li>
+<li>最近修改: 2021-03-01 14:33:07</li>
+<li>JD 相关性: 售后排障; 自动化/命令工具; AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>工单：120091321000025/NET/BMW CHINA AUTOMOTIVE TRADING LTD./SR_2020091251583_[S500]Kubectl command error that Unable to connect to the server: net/http: TLS handshake timeout</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>工单：120091321000025/NET/BMW CHINA AUTOMOTIVE TRADING LTD./SR_2020091251583_[S500]Kubectl command error that Unable to connect to the server: net/http: TLS handshake timeout</li>
+</ul>
+<h2>背景信息</h2>
+<p>未从原文中明确识别。</p>
+<h2>排查思路</h2>
+<ul>
+<li>jarvis查询Kubectl 连接Master 出现TLS handshake timeout</li>
+</ul>
+<ul>
+<li>09-13-2020 15:35:49{&quot;log&quot;:&quot;I0913 07:35:49.722489       1 log.go:172] http: TLS handshake error from 172.31.16.1:42859: remote error: tls: bad certificate\n&quot;,&quot;stream&quot;:&quot;stderr&quot;,&quot;pod&quot;:&quot;kube-apiserver-5f57695bf5-l7wc8&quot;,&quot;containerID&quot;:&quot;67079c9120791aa9bd84a6e28454c45622e0bcf9bcf0de4c86b579cc120f6381&quot;}</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>建议您可以尝试如下命令更新cluster和api server的证书：</li>
+</ul>
+<ul>
+<li>az aks rotate-certs -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li>我们可以在Jarvis Link: <a href="https://jarvis-west.dc.ad.msft.net/12A62C86（AKSCustomerData" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/12A62C86（AKSCustomerData</a> – ControlPlaneEvents / ControlPlaneEventsNonShoebox）看到类似的信息：</li>
+</ul>
+<ul>
+<li>参考文档：<a href="https://docs.microsoft.com/en-us/azure/aks/certificate-rotation" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/certificate-rotation</a></li>
+</ul>
+<ul>
+<li>来自 &lt;<a href="https://azul.21vbluecloud.com/Azul/_controls/emailbody/msgBody.aspx?CRMWRPCToken=Mz%2fLJHcMEeuA9QAVXYRRAKl2RuxLcoTBiizE8rULZEujvKZUXoBQqgsDtJl3T%2bSr&amp;CRMWRPCTokenTimeStamp=637501585145463120&amp;entityType=email&amp;id=%7b3A1DB788-8800-EB11-80F4-00155D845100%7d&amp;unblockContent=1&gt;" target="_blank" rel="noopener">https://azul.21vbluecloud.com/Azul/_controls/emailbody/msgBody.aspx?CRMWRPCToken=Mz%2fLJHcMEeuA9QAVXYRRAKl2RuxLcoTBiizE8rULZEujvKZUXoBQqgsDtJl3T%2bSr&amp;CRMWRPCTokenTimeStamp=637501585145463120&amp;entityType=email&amp;id=%7b3A1DB788-8800-EB11-80F4-00155D845100%7d&amp;unblockContent=1&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>jarvis查询Kubectl 连接Master 出现TLS handshake timeout</p>
+<p>工单：120091321000025/NET/BMW CHINA AUTOMOTIVE TRADING LTD./SR_2020091251583_[S500]Kubectl command error that Unable to connect to the server: net/http: TLS handshake timeout</p>
+<p>我们可以在Jarvis Link: <a href="https://jarvis-west.dc.ad.msft.net/12A62C86（AKSCustomerData" target="_blank" rel="noopener">https://jarvis-west.dc.ad.msft.net/12A62C86（AKSCustomerData</a> – ControlPlaneEvents / ControlPlaneEventsNonShoebox）看到类似的信息：</p>
+<p>09-13-2020 15:35:49{&quot;log&quot;:&quot;I0913 07:35:49.722489       1 log.go:172] http: TLS handshake error from 172.31.16.1:42859: remote error: tls: bad certificate\n&quot;,&quot;stream&quot;:&quot;stderr&quot;,&quot;pod&quot;:&quot;kube-apiserver-5f57695bf5-l7wc8&quot;,&quot;containerID&quot;:&quot;67079c9120791aa9bd84a6e28454c45622e0bcf9bcf0de4c86b579cc120f6381&quot;}</p>
+<p>建议您可以尝试如下命令更新cluster和api server的证书：</p>
+<p>az aks rotate-certs -g $RESOURCE_GROUP_NAME -n $CLUSTER_NAME</p>
+<p>参考文档：<a href="https://docs.microsoft.com/en-us/azure/aks/certificate-rotation" target="_blank" rel="noopener">https://docs.microsoft.com/en-us/azure/aks/certificate-rotation</a></p>
+<p>来自 &lt;<a href="https://azul.21vbluecloud.com/Azul/_controls/emailbody/msgBody.aspx?CRMWRPCToken=Mz%2fLJHcMEeuA9QAVXYRRAKl2RuxLcoTBiizE8rULZEujvKZUXoBQqgsDtJl3T%2bSr&amp;CRMWRPCTokenTimeStamp=637501585145463120&amp;entityType=email&amp;id=%7b3A1DB788-8800-EB11-80F4-00155D845100%7d&amp;unblockContent=1&gt;" target="_blank" rel="noopener">https://azul.21vbluecloud.com/Azul/_controls/emailbody/msgBody.aspx?CRMWRPCToken=Mz%2fLJHcMEeuA9QAVXYRRAKl2RuxLcoTBiizE8rULZEujvKZUXoBQqgsDtJl3T%2bSr&amp;CRMWRPCTokenTimeStamp=637501585145463120&amp;entityType=email&amp;id=%7b3A1DB788-8800-EB11-80F4-00155D845100%7d&amp;unblockContent=1&gt;</a></p></article>

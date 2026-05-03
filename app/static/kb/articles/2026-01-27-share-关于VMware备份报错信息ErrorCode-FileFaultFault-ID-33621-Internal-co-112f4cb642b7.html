@@ -1,0 +1,124 @@
+<article class="kb-article" data-title="【share】关于VMware备份报错信息ErrorCode - FileFaultFault (ID 33621, Internal code: 0x80990EF3)"><h1>【share】关于VMware备份报错信息ErrorCode - FileFaultFault (ID 33621, Internal code: 0x80990EF3)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-01-27 16:34:34</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题描述：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>关于vmware的备份流程，可以参考此文档：使用 Azure 备份服务器备份 VMware VM - Azure Backup | Azure Docs</li>
+</ul>
+<ul>
+<li>收集了客户MABS的日志信息，相关日志路径：</li>
+</ul>
+<ul>
+<li>C:\Program Files\Microsoft Azure Backup Server\DPM\DPM\Temp</li>
+</ul>
+<ul>
+<li>关闭目标虚拟机</li>
+</ul>
+<ul>
+<li>右键点击虚拟机 → 选择&quot;编辑设置&quot;→“高级配置”</li>
+</ul>
+<ul>
+<li>找到虚拟硬盘选项，取消CTK设置</li>
+</ul>
+<ul>
+<li>点击确定保存配置</li>
+</ul>
+<ul>
+<li>再次编辑设置，重新启用CTK变更块跟踪</li>
+</ul>
+<ul>
+<li>启动虚拟机</li>
+</ul>
+<ul>
+<li>启动目标虚拟机，然后关闭。</li>
+</ul>
+<ul>
+<li>关于这个案例实际上在微软的论坛上也有描述到，参考文档：Change Block Tracking needs to be reset if another backup product has protected a VMWare VM prior to DPM | Microsoft Community Hub</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>该问题主要是针对vmware备份时出现一致性检查问题报FileFaultFault (ID 33621）的问题，关于该报错实际上Azure文档中也有提及(对 Azure 备份服务器进行故障排除 - Azure Backup | Azure Docs)，其中的方法1能够解决客户的问题，但是需要客户很熟悉VMware了解这个CTK的配置流程。</li>
+</ul>
+<ul>
+<li>根据公网上的一些分析，部分 VMware 虚拟机备份失败，经分析需检查 CBT（Changed Block Tracking）状态并重置 CTK 元数据。同时同步 Azure Backup Server (MABS/DPM) 的配置要求。以下是关键操作指南：</li>
+</ul>
+<ul>
+<li>CBT 功能状态 在 vSphere Client 中确认磁盘已启用 &quot;Change Block Tracking&quot; 具体方式：编辑磁盘设置 → 高级选项</li>
+</ul>
+<ul>
+<li>快照链一致性 确认所有残留快照（避免早期部分的 snapshot-XXXX 文件残留）         存储浏览器检查虚拟机目录</li>
+</ul>
+<ul>
+<li>存储兼容性     确认磁盘类型为 Thin Provision 或 Thick (Lazy)       虚拟机属性 → 硬盘类型</li>
+</ul>
+<ul>
+<li>其中很多问题都是指向该vmware服务器(lippovcenter01.victoriagc.cn)的问题，根据MABS的日志其实并没有太多details能够描述这个问题，需要结合vmware的相关日志信息进行确认。</li>
+</ul>
+<ul>
+<li>进行虚拟机的CTK重置，操作步骤参考：</li>
+</ul>
+<ul>
+<li>尝试MABS进行一致性检查。</li>
+</ul>
+<ul>
+<li>通过以上的方案发现检查一致性恢复正常，对于这一点实际上客户很多也不是很了解VMware这个机制，需要启动虚拟机使这个配置生效。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>结合以上的信息，建议客户进行方法1的设置，起初的解决方案没有成功解决客户的服务，因为修改了CTK之后需要启动虚拟机，再关闭进行修改回来，再次启动。</li>
+</ul>
+<ul>
+<li>起初解决方案：</li>
+</ul>
+<ul>
+<li>后续解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/08/26</p>
+<p>问题描述：</p>
+<p>该问题主要是针对vmware备份时出现一致性检查问题报FileFaultFault (ID 33621）的问题，关于该报错实际上Azure文档中也有提及(对 Azure 备份服务器进行故障排除 - Azure Backup | Azure Docs)，其中的方法1能够解决客户的问题，但是需要客户很熟悉VMware了解这个CTK的配置流程。</p>
+<p>根据公网上的一些分析，部分 VMware 虚拟机备份失败，经分析需检查 CBT（Changed Block Tracking）状态并重置 CTK 元数据。同时同步 Azure Backup Server (MABS/DPM) 的配置要求。以下是关键操作指南：</p>
+<p>CBT 功能状态 在 vSphere Client 中确认磁盘已启用 &quot;Change Block Tracking&quot; 具体方式：编辑磁盘设置 → 高级选项</p>
+<p>快照链一致性 确认所有残留快照（避免早期部分的 snapshot-XXXX 文件残留）         存储浏览器检查虚拟机目录</p>
+<p>存储兼容性     确认磁盘类型为 Thin Provision 或 Thick (Lazy)       虚拟机属性 → 硬盘类型</p>
+<p>关于vmware的备份流程，可以参考此文档：使用 Azure 备份服务器备份 VMware VM - Azure Backup | Azure Docs</p>
+<p>收集了客户MABS的日志信息，相关日志路径：</p>
+<p>C:\Program Files\Microsoft Azure Backup Server\DPM\DPM\Temp</p>
+<p>其中很多问题都是指向该vmware服务器(lippovcenter01.victoriagc.cn)的问题，根据MABS的日志其实并没有太多details能够描述这个问题，需要结合vmware的相关日志信息进行确认。</p>
+<p>结合以上的信息，建议客户进行方法1的设置，起初的解决方案没有成功解决客户的服务，因为修改了CTK之后需要启动虚拟机，再关闭进行修改回来，再次启动。</p>
+<p>起初解决方案：</p>
+<p>进行虚拟机的CTK重置，操作步骤参考：</p>
+<p>关闭目标虚拟机</p>
+<p>右键点击虚拟机 → 选择&quot;编辑设置&quot;→“高级配置”</p>
+<p>找到虚拟硬盘选项，取消CTK设置</p>
+<p>点击确定保存配置</p>
+<p>再次编辑设置，重新启用CTK变更块跟踪</p>
+<p>启动虚拟机</p>
+<p>尝试MABS进行一致性检查。</p>
+<p>后续解决方案：</p>
+<p>启动目标虚拟机，然后关闭。</p>
+<p>通过以上的方案发现检查一致性恢复正常，对于这一点实际上客户很多也不是很了解VMware这个机制，需要启动虚拟机使这个配置生效。</p>
+<p>关于这个案例实际上在微软的论坛上也有描述到，参考文档：Change Block Tracking needs to be reset if another backup product has protected a VMWare VM prior to DPM | Microsoft Community Hub</p></article>

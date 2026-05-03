@@ -1,0 +1,313 @@
+<article class="kb-article" data-title="AKS排查因亲和力配置导致PV部署失败"><h1>AKS排查因亲和力配置导致PV部署失败</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-13 16:18:33</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>报错内容如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>报错内容如下：</li>
+</ul>
+<ul>
+<li>通过对用户的失败pv的yaml进行分析，发现用户的pv也配置了与node的亲和力.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>WangZhaoqing</li>
+</ul>
+<ul>
+<li>Case: 20241112324615</li>
+</ul>
+<ul>
+<li>status:</li>
+</ul>
+<ul>
+<li>conditions:</li>
+</ul>
+<ul>
+<li>- lastProbeTime: null</li>
+</ul>
+<ul>
+<li>lastTransitionTime: &quot;2024-11-12T13:30:20Z&quot;</li>
+</ul>
+<ul>
+<li>message: &#39;0/21 nodes are available: 12 node(s) didn&#39;&#39;t match Pod&#39;&#39;s node affinity/selector,</li>
+</ul>
+<ul>
+<li>4 node(s) had volume node affinity conflict, 5 node(s) were unschedulable. preemption:</li>
+</ul>
+<ul>
+<li>0/21 nodes are available: 21 Preemption is not helpful for scheduling..&#39;</li>
+</ul>
+<ul>
+<li>reason: Unschedulable</li>
+</ul>
+<ul>
+<li>status: &quot;False&quot;</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>PV 内容如下：</li>
+</ul>
+<ul>
+<li>PS C:\Users\ZCMATHMA\repos\ZDP-Templates&gt; kubectl get pv pvc-47ce64e5-a2e5-47a8-8816-325565a84155 -o yaml</li>
+</ul>
+<ul>
+<li>apiVersion: v1</li>
+</ul>
+<ul>
+<li>kind: PersistentVolume</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>annotations:</li>
+</ul>
+<ul>
+<li>pv.kubernetes.io/provisioned-by: disk.csi.azure.com</li>
+</ul>
+<ul>
+<li>creationTimestamp: &quot;2023-02-13T14:38:54Z&quot;</li>
+</ul>
+<ul>
+<li>finalizers:</li>
+</ul>
+<ul>
+<li>- kubernetes.io/pv-protection</li>
+</ul>
+<ul>
+<li>- external-attacher/disk-csi-azure-com</li>
+</ul>
+<ul>
+<li>- external-provisioner.volume.kubernetes.io/finalizer</li>
+</ul>
+<ul>
+<li>name: pvc-47ce64e5-a2e5-47a8-8816-325565a84155</li>
+</ul>
+<ul>
+<li>resourceVersion: &quot;433149051&quot;</li>
+</ul>
+<ul>
+<li>uid: 825ff510-e2b1-49a4-962f-651add38eb9f</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>accessModes:</li>
+</ul>
+<ul>
+<li>- ReadWriteOnce</li>
+</ul>
+<ul>
+<li>capacity:</li>
+</ul>
+<ul>
+<li>storage: 15Gi</li>
+</ul>
+<ul>
+<li>claimRef:</li>
+</ul>
+<ul>
+<li>kind: PersistentVolumeClaim</li>
+</ul>
+<ul>
+<li>name: data-mysql-primary-0</li>
+</ul>
+<ul>
+<li>namespace: common</li>
+</ul>
+<ul>
+<li>resourceVersion: &quot;1742342&quot;</li>
+</ul>
+<ul>
+<li>uid: 47ce64e5-a2e5-47a8-8816-325565a84155</li>
+</ul>
+<ul>
+<li>csi:</li>
+</ul>
+<ul>
+<li>driver: disk.csi.azure.com</li>
+</ul>
+<ul>
+<li>volumeAttributes:</li>
+</ul>
+<ul>
+<li>csi.storage.k8s.io/pv/name: pvc-47ce64e5-a2e5-47a8-8816-325565a84155</li>
+</ul>
+<ul>
+<li>csi.storage.k8s.io/pvc/name: data-mysql-primary-0</li>
+</ul>
+<ul>
+<li>csi.storage.k8s.io/pvc/namespace: common</li>
+</ul>
+<ul>
+<li>requestedsizegib: &quot;15&quot;</li>
+</ul>
+<ul>
+<li>storage.kubernetes.io/csiProvisionerIdentity: 1675828171580-8081-disk.csi.azure.com</li>
+</ul>
+<ul>
+<li>volumeHandle: /subscriptions/5a684d47-1a42-4578-b57a-5457a578c9a5/resourceGroups/mc_czcn57r01n3-p-javaplatform_czcn57r01aks001p_chinanorth3/providers/Microsoft.Compute/disks/pvc-47ce64e5-a2e5-47a8-8816-325565a84155</li>
+</ul>
+<ul>
+<li>nodeAffinity:</li>
+</ul>
+<ul>
+<li>required:</li>
+</ul>
+<ul>
+<li>nodeSelectorTerms:</li>
+</ul>
+<ul>
+<li>- matchExpressions:</li>
+</ul>
+<ul>
+<li>operator: In</li>
+</ul>
+<ul>
+<li>values:</li>
+</ul>
+<ul>
+<li>- &quot;&quot;</li>
+</ul>
+<ul>
+<li>根据您目前PV的yaml来看您的yaml中的node亲和性配置为以下信息，vaules部分为空。</li>
+</ul>
+<ul>
+<li>看到您当前集群的可用性区域支持是1,2,3全部支持。当部署PV亲和时vaules部分需要指定一个或者多个值来匹配node上的标签。</li>
+</ul>
+<ul>
+<li>- &quot;1&quot;</li>
+</ul>
+<ul>
+<li>- &quot;2&quot;</li>
+</ul>
+<ul>
+<li>- &quot;3&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>- key: topology.disk.csi.azure.com/zone</li>
+</ul>
+<ul>
+<li>例如可以写成以下形式，这表示# 表示node标签存在topology.disk.csi.azure.com/zone=1或topology.disk.csi.azure.com/zone=2或topology.disk.csi.azure.com/zone=3当满足任意条件时即可进行部署</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>skuname: StandardSSD_LRS</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>问题现象，客户发现大量已经配置好了亲和力的pod无法启动，原因是这些pod使用的Azure Disk的PV无法部署成功。此时从kusto调查用户集群状态都是正常的，集群并未出现任何报错。</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>问题现背景：用户升级AKS集群版本控制层面，通过创建新节点池，然后再手动驱逐旧节点pod的方式达到对业务最短的影响范围。客户提前将相关标签和镜像都已在新节点中配置。</li>
+</ul>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024-11-13</p>
+<p>WangZhaoqing</p>
+<p>Case: 20241112324615</p>
+<p>问题现背景：用户升级AKS集群版本控制层面，通过创建新节点池，然后再手动驱逐旧节点pod的方式达到对业务最短的影响范围。客户提前将相关标签和镜像都已在新节点中配置。</p>
+<p>问题现象，客户发现大量已经配置好了亲和力的pod无法启动，原因是这些pod使用的Azure Disk的PV无法部署成功。此时从kusto调查用户集群状态都是正常的，集群并未出现任何报错。</p>
+<p>报错内容如下：</p>
+<p>status:</p>
+<p>conditions:</p>
+<ul>
+<li>lastProbeTime: null</li>
+</ul>
+<p>lastTransitionTime: &quot;2024-11-12T13:30:20Z&quot;</p>
+<p>message: &#39;0/21 nodes are available: 12 node(s) didn&#39;&#39;t match Pod&#39;&#39;s node affinity/selector,</p>
+<p>4 node(s) had volume node affinity conflict, 5 node(s) were unschedulable. preemption:</p>
+<p>0/21 nodes are available: 21 Preemption is not helpful for scheduling..&#39;</p>
+<p>reason: Unschedulable</p>
+<p>status: &quot;False&quot;</p>
+<p>问题原因：</p>
+<p>通过对用户的失败pv的yaml进行分析，发现用户的pv也配置了与node的亲和力.</p>
+<p>PV 内容如下：</p>
+<p>PS C:\Users\ZCMATHMA\repos\ZDP-Templates&gt; kubectl get pv pvc-47ce64e5-a2e5-47a8-8816-325565a84155 -o yaml</p>
+<p>apiVersion: v1</p>
+<p>kind: PersistentVolume</p>
+<p>metadata:</p>
+<p>annotations:</p>
+<p>pv.kubernetes.io/provisioned-by: disk.csi.azure.com</p>
+<p>creationTimestamp: &quot;2023-02-13T14:38:54Z&quot;</p>
+<p>finalizers:</p>
+<ul>
+<li>kubernetes.io/pv-protection</li>
+</ul>
+<ul>
+<li>external-attacher/disk-csi-azure-com</li>
+</ul>
+<ul>
+<li>external-provisioner.volume.kubernetes.io/finalizer</li>
+</ul>
+<p>name: pvc-47ce64e5-a2e5-47a8-8816-325565a84155</p>
+<p>resourceVersion: &quot;433149051&quot;</p>
+<p>uid: 825ff510-e2b1-49a4-962f-651add38eb9f</p>
+<p>spec:</p>
+<p>accessModes:</p>
+<ul>
+<li>ReadWriteOnce</li>
+</ul>
+<p>capacity:</p>
+<p>storage: 15Gi</p>
+<p>claimRef:</p>
+<p>kind: PersistentVolumeClaim</p>
+<p>name: data-mysql-primary-0</p>
+<p>namespace: common</p>
+<p>resourceVersion: &quot;1742342&quot;</p>
+<p>uid: 47ce64e5-a2e5-47a8-8816-325565a84155</p>
+<p>csi:</p>
+<p>driver: disk.csi.azure.com</p>
+<p>volumeAttributes:</p>
+<p>csi.storage.k8s.io/pv/name: pvc-47ce64e5-a2e5-47a8-8816-325565a84155</p>
+<p>csi.storage.k8s.io/pvc/name: data-mysql-primary-0</p>
+<p>csi.storage.k8s.io/pvc/namespace: common</p>
+<p>requestedsizegib: &quot;15&quot;</p>
+<p>skuname: StandardSSD_LRS</p>
+<p>storage.kubernetes.io/csiProvisionerIdentity: 1675828171580-8081-disk.csi.azure.com</p>
+<p>volumeHandle: /subscriptions/5a684d47-1a42-4578-b57a-5457a578c9a5/resourceGroups/mc_czcn57r01n3-p-javaplatform_czcn57r01aks001p_chinanorth3/providers/Microsoft.Compute/disks/pvc-47ce64e5-a2e5-47a8-8816-325565a84155</p>
+<p>nodeAffinity:</p>
+<p>required:</p>
+<p>nodeSelectorTerms:</p>
+<ul>
+<li>matchExpressions:</li>
+</ul>
+<ul>
+<li>key: topology.disk.csi.azure.com/zone</li>
+</ul>
+<p>operator: In</p>
+<p>values:</p>
+<ul>
+<li>&quot;&quot;</li>
+</ul>
+<p>解决方案：</p>
+<p>根据您目前PV的yaml来看您的yaml中的node亲和性配置为以下信息，vaules部分为空。</p>
+<p>看到您当前集群的可用性区域支持是1,2,3全部支持。当部署PV亲和时vaules部分需要指定一个或者多个值来匹配node上的标签。</p>
+<p>例如可以写成以下形式，这表示# 表示node标签存在topology.disk.csi.azure.com/zone=1或topology.disk.csi.azure.com/zone=2或topology.disk.csi.azure.com/zone=3当满足任意条件时即可进行部署</p>
+<ul>
+<li>&quot;1&quot;</li>
+</ul>
+<ul>
+<li>&quot;2&quot;</li>
+</ul>
+<ul>
+<li>&quot;3&quot;</li>
+</ul></article>

@@ -1,0 +1,66 @@
+<article class="kb-article" data-title="VNET Peering架构下&amp;ER混合VPN的情况下如何配置转发实现两个Spoke VNET之间的互通"><h1>VNET Peering架构下&amp;ER混合VPN的情况下如何配置转发实现两个Spoke VNET之间的互通</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2024-09-06 10:03:44</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>20210625</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>20210625</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20210625</li>
+</ul>
+<ul>
+<li>从最新的测试来看，在ER混合VPN 的环境中如果启用了网关传输，Spoke Vnet （使用远程网络网关）通过UDR下一跳是虚拟网关网关，两个spokeVnet的虚拟机是可以正常通信的</li>
+</ul>
+<ul>
+<li>VNET Peering架构下，ER混合VPN的情况下如何配置转发：</li>
+</ul>
+<ul>
+<li>在如上网络拓扑中，IDC和Hub VNET之间有VPN和ER混合VPN的两种情况下，测试结果是不同的。</li>
+</ul>
+<ul>
+<li>spoke VNET之间如果指定UDR下一跳到虚拟网络网关，在VPN环境下是可以通信的。在ER混合VPN的环境下测试是不能通的。如果把UDR的下一跳改成VPN网关的内网IP（测试两个网关实例的内网IP均可以），则spoke  VNET之间是可以通信的。</li>
+</ul>
+<ul>
+<li>Azure Virtual Network peering | Microsoft Docs</li>
+</ul>
+<ul>
+<li>You can&#39;t route between virtual networks with a user-defined route that specifies an Azure ExpressRoute gateway as the next hop type</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>Hub-spoke network topology in Azure - Azure Reference Architectures | Microsoft Docs</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>由于VPN网关为双实例，如果想实现高可用，需要测试VM到VPN网关实例IP之间的连通性，如果不通，通过脚本切换UDR的下一跳为另外一个VPN网关实例的内网IP</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>原因是ER GW不能够作为UDR中的下一跳，ER混合VPN的情况下，ER网关优先，所以如果Spoke VNET如果指定URD下一跳是虚拟网络网关，那么会把流量默认扔到ER网关上，ER GW不支持作为UDR的下一跳。</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20210625</p>
+<p>从最新的测试来看，在ER混合VPN 的环境中如果启用了网关传输，Spoke Vnet （使用远程网络网关）通过UDR下一跳是虚拟网关网关，两个spokeVnet的虚拟机是可以正常通信的</p>
+<p>VNET Peering架构下，ER混合VPN的情况下如何配置转发：</p>
+<p>Hub-spoke network topology in Azure - Azure Reference Architectures | Microsoft Docs</p>
+<p>在如上网络拓扑中，IDC和Hub VNET之间有VPN和ER混合VPN的两种情况下，测试结果是不同的。</p>
+<p>spoke VNET之间如果指定UDR下一跳到虚拟网络网关，在VPN环境下是可以通信的。在ER混合VPN的环境下测试是不能通的。如果把UDR的下一跳改成VPN网关的内网IP（测试两个网关实例的内网IP均可以），则spoke  VNET之间是可以通信的。</p>
+<p>原因是ER GW不能够作为UDR中的下一跳，ER混合VPN的情况下，ER网关优先，所以如果Spoke VNET如果指定URD下一跳是虚拟网络网关，那么会把流量默认扔到ER网关上，ER GW不支持作为UDR的下一跳。</p>
+<p>Azure Virtual Network peering | Microsoft Docs</p>
+<p>You can&#39;t route between virtual networks with a user-defined route that specifies an Azure ExpressRoute gateway as the next hop type</p>
+<p>由于VPN网关为双实例，如果想实现高可用，需要测试VM到VPN网关实例IP之间的连通性，如果不通，通过脚本切换UDR的下一跳为另外一个VPN网关实例的内网IP</p></article>

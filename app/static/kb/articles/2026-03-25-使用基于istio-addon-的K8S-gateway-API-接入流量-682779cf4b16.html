@@ -1,0 +1,267 @@
+<article class="kb-article" data-title="使用基于istio addon 的K8S gateway API 接入流量"><h1>使用基于istio addon 的K8S gateway API 接入流量</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2026-03-25 17:50:54</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>作为知名的服务网格产品，istio具有强大的流量管理功能，而Istio addon具有和原生istio类似的功能，istio也支持支持原生K8S Gateway API发布流量。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>作为知名的服务网格产品，istio具有强大的流量管理功能，而Istio addon具有和原生istio类似的功能，istio也支持支持原生K8S Gateway API发布流量。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>作为知名的服务网格产品，istio具有强大的流量管理功能，而Istio addon具有和原生istio类似的功能，istio也支持支持原生K8S Gateway API发布流量。</li>
+</ul>
+<ul>
+<li>Kubernetes Gateway API Ingress for Istio Service Mesh Add-on for Azure Kubernetes Service (AKS) (preview) - Azure Kubernetes Service | Microsoft Learn</li>
+</ul>
+<ul>
+<li>1、安装istio addon</li>
+</ul>
+<ul>
+<li>#这里使用CN3区域示例.注意addon与AKS版本的对应关系</li>
+</ul>
+<ul>
+<li>(2) 安装Istio addon</li>
+</ul>
+<ul>
+<li>确保安装成功</li>
+</ul>
+<ul>
+<li>2，安装Managed  Gateway  Api  CRDs</li>
+</ul>
+<ul>
+<li>3、使用基于Istio addon 的K8S gateway API 发布服务</li>
+</ul>
+<ul>
+<li>(1) 安装后端服务，default namespace 中安装httpbin服务</li>
+</ul>
+<ul>
+<li>(2)使用K8S Gateway API 发布服务</li>
+</ul>
+<ul>
+<li>apiVersion: gateway.networking.k8s.io/v1</li>
+</ul>
+<ul>
+<li>kind: Gateway</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: httpbin-gateway</li>
+</ul>
+<ul>
+<li>spec:</li>
+</ul>
+<ul>
+<li>gatewayClassName: istio</li>
+</ul>
+<ul>
+<li>listeners:</li>
+</ul>
+<ul>
+<li>- name: http</li>
+</ul>
+<ul>
+<li>port: 80</li>
+</ul>
+<ul>
+<li>allowedRoutes:</li>
+</ul>
+<ul>
+<li>namespaces:</li>
+</ul>
+<ul>
+<li>from: Same</li>
+</ul>
+<ul>
+<li>---</li>
+</ul>
+<ul>
+<li>kind: HTTPRoute</li>
+</ul>
+<ul>
+<li>name: http</li>
+</ul>
+<ul>
+<li>namespace: default</li>
+</ul>
+<ul>
+<li>parentRefs:</li>
+</ul>
+<ul>
+<li>- name: httpbin-gateway</li>
+</ul>
+<ul>
+<li>hostnames: [&quot;fuzlgatewayapi.azurecn.cn&quot;]</li>
+</ul>
+<ul>
+<li>rules:</li>
+</ul>
+<ul>
+<li>- matches:</li>
+</ul>
+<ul>
+<li>- path:</li>
+</ul>
+<ul>
+<li>type: PathPrefix</li>
+</ul>
+<ul>
+<li>value: /get</li>
+</ul>
+<ul>
+<li>backendRefs:</li>
+</ul>
+<ul>
+<li>- name: httpbin</li>
+</ul>
+<ul>
+<li>port: 8000</li>
+</ul>
+<ul>
+<li>然后做好DNS解析，测试访问</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>(1) 添加Az  AKS  extension ,并查看istio mesh add-on版本</li>
+</ul>
+<ul>
+<li># 确认Istio  Pod能正常运行</li>
+</ul>
+<ul>
+<li>确认crds安装成功：</li>
+</ul>
+<ul>
+<li>（3）确认可以接入流量</li>
+</ul>
+<ul>
+<li>#查看对外发布的external service IP</li>
+</ul>
+<ul>
+<li>或者从门户查看对外的LB service</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az extension add --name aks-preview</li>
+</ul>
+<ul>
+<li>az extension update --name aks-preview</li>
+</ul>
+<ul>
+<li>az aks mesh get-revisions --location &lt;location&gt; -o table</li>
+</ul>
+<ul>
+<li>az aks mesh enable -g aks-20251117  -n aks20251117-2  --revision asm-1-26</li>
+</ul>
+<ul>
+<li>az aks show -g aks-20251117  -n aks20251117-2   --query &#39;serviceMeshProfile.mode&#39;</li>
+</ul>
+<ul>
+<li>kubectl get pods -n aks-istio-system</li>
+</ul>
+<ul>
+<li>az feature register --namespace &quot;Microsoft.ContainerService&quot; --name &quot;ManagedGatewayAPIPreview&quot;</li>
+</ul>
+<ul>
+<li>az aks update -g aks-20251117  -n aks20251117-2   --enable-gateway-api</li>
+</ul>
+<ul>
+<li>kubectl get crds | grep &quot;gateway.networking.k8s.io&quot;</li>
+</ul>
+<ul>
+<li>kubectl get service httpbin-gateway-istio</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>protocol: HTTP</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>（docker.io的镜像在国内可能不能访问，如不能访问，建议要将docker.io的镜像导入到自己的ACR）</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>kubectl apply -f <a href="https://raw.githubusercontent.com/istio/istio/release-1.26/samples/httpbin/httpbin.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/istio/istio/release-1.26/samples/httpbin/httpbin.yaml</a></li>
+</ul>
+<ul>
+<li><a href="http://fuzlgatewayapi.azurecn.cn/get" target="_blank" rel="noopener">http://fuzlgatewayapi.azurecn.cn/get</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2025/12/01</p>
+<p>作为知名的服务网格产品，istio具有强大的流量管理功能，而Istio addon具有和原生istio类似的功能，istio也支持支持原生K8S Gateway API发布流量。</p>
+<p>Kubernetes Gateway API Ingress for Istio Service Mesh Add-on for Azure Kubernetes Service (AKS) (preview) - Azure Kubernetes Service | Microsoft Learn</p>
+<p>1、安装istio addon</p>
+<p>(1) 添加Az  AKS  extension ,并查看istio mesh add-on版本</p>
+<p>az extension add --name aks-preview</p>
+<p>az extension update --name aks-preview</p>
+<p>az aks mesh get-revisions --location &lt;location&gt; -o table</p>
+<p>#这里使用CN3区域示例.注意addon与AKS版本的对应关系</p>
+<p>(2) 安装Istio addon</p>
+<p>az aks mesh enable -g aks-20251117  -n aks20251117-2  --revision asm-1-26</p>
+<p>az aks show -g aks-20251117  -n aks20251117-2   --query &#39;serviceMeshProfile.mode&#39;</p>
+<p>确保安装成功</p>
+<h1>确认Istio  Pod能正常运行</h1>
+<p>kubectl get pods -n aks-istio-system</p>
+<p>2，安装Managed  Gateway  Api  CRDs</p>
+<p>az feature register --namespace &quot;Microsoft.ContainerService&quot; --name &quot;ManagedGatewayAPIPreview&quot;</p>
+<p>az aks update -g aks-20251117  -n aks20251117-2   --enable-gateway-api</p>
+<p>确认crds安装成功：</p>
+<p>kubectl get crds | grep &quot;gateway.networking.k8s.io&quot;</p>
+<p>3、使用基于Istio addon 的K8S gateway API 发布服务</p>
+<p>(1) 安装后端服务，default namespace 中安装httpbin服务</p>
+<p>kubectl apply -f <a href="https://raw.githubusercontent.com/istio/istio/release-1.26/samples/httpbin/httpbin.yaml" target="_blank" rel="noopener">https://raw.githubusercontent.com/istio/istio/release-1.26/samples/httpbin/httpbin.yaml</a></p>
+<p>（docker.io的镜像在国内可能不能访问，如不能访问，建议要将docker.io的镜像导入到自己的ACR）</p>
+<p>(2)使用K8S Gateway API 发布服务</p>
+<p>apiVersion: gateway.networking.k8s.io/v1</p>
+<p>kind: Gateway</p>
+<p>metadata:</p>
+<p>name: httpbin-gateway</p>
+<p>spec:</p>
+<p>gatewayClassName: istio</p>
+<p>listeners:</p>
+<ul>
+<li>name: http</li>
+</ul>
+<p>port: 80</p>
+<p>protocol: HTTP</p>
+<p>allowedRoutes:</p>
+<p>namespaces:</p>
+<p>from: Same</p>
+<p>---</p>
+<p>kind: HTTPRoute</p>
+<p>name: http</p>
+<p>namespace: default</p>
+<p>parentRefs:</p>
+<ul>
+<li>name: httpbin-gateway</li>
+</ul>
+<p>hostnames: [&quot;fuzlgatewayapi.azurecn.cn&quot;]</p>
+<p>rules:</p>
+<ul>
+<li>matches:</li>
+</ul>
+<ul>
+<li>path:</li>
+</ul>
+<p>type: PathPrefix</p>
+<p>value: /get</p>
+<p>backendRefs:</p>
+<ul>
+<li>name: httpbin</li>
+</ul>
+<p>port: 8000</p>
+<p>（3）确认可以接入流量</p>
+<p>kubectl get service httpbin-gateway-istio</p>
+<p>#查看对外发布的external service IP</p>
+<p>或者从门户查看对外的LB service</p>
+<p>然后做好DNS解析，测试访问</p>
+<p><a href="http://fuzlgatewayapi.azurecn.cn/get" target="_blank" rel="noopener">http://fuzlgatewayapi.azurecn.cn/get</a></p></article>

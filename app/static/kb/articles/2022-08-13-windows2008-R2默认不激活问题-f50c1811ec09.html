@@ -1,0 +1,98 @@
+<article class="kb-article" data-title="windows2008 R2默认不激活问题"><h1>windows2008 R2默认不激活问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Windows</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-08-13 01:53:12</li>
+<li>JD 相关性: Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>LiYue</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>LiYue</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>LiYue</li>
+</ul>
+<ul>
+<li>wangruifeng</li>
+</ul>
+<ul>
+<li>slmgr.vbs /ipk 74YFP-3QFB3-KQT8W-PMXWJ-7M648</li>
+</ul>
+<ul>
+<li>slmgr.vbs /skms kms.core.chinacloudapi.cn</li>
+</ul>
+<ul>
+<li>slmgr.vbs /ato</li>
+</ul>
+<ul>
+<li>=========================================================================================</li>
+</ul>
+<ul>
+<li>通过我测试新建了一台windows2008 R2的虚拟机。</li>
+</ul>
+<ul>
+<li>可以复现您的问题，也是不激活的。</li>
+</ul>
+<ul>
+<li>我尝试使用以下链接的方法成功激活了虚拟机：</li>
+</ul>
+<ul>
+<li>重启后激活成功，请您尝试一下。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>120041425000102] POD VM/Neusoft Cloud Technology Co.,Ltd. /SR_2020041419714_[MS-LED]创建 Windows Server 2008 R2 虚拟机后 操作系统没有激活。</li>
+</ul>
+<ul>
+<li>步骤1时请现在windows 2008 data center 的安装key：</li>
+</ul>
+<ul>
+<li>步骤2 我测试过程：</li>
+</ul>
+<ul>
+<li>注册表查看KMS服务器地址：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>输入以一下三个命令激活：</li>
+</ul>
+<ul>
+<li>如果出现问题，请运行以下命令：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>产品组正在修复中：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/virtual-machines/troubleshooting/troubleshoot-activation-problems" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/troubleshooting/troubleshoot-activation-problems</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>LiYue</p>
+<p>2020/04/15</p>
+<p>wangruifeng</p>
+<p>输入以一下三个命令激活：</p>
+<p>slmgr.vbs /ipk 74YFP-3QFB3-KQT8W-PMXWJ-7M648</p>
+<p>slmgr.vbs /skms kms.core.chinacloudapi.cn</p>
+<p>slmgr.vbs /ato</p>
+<p>产品组正在修复中：</p>
+<p>120041425000102] POD VM/Neusoft Cloud Technology Co.,Ltd. /SR_2020041419714_[MS-LED]创建 Windows Server 2008 R2 虚拟机后 操作系统没有激活。</p>
+<p>=========================================================================================</p>
+<p>通过我测试新建了一台windows2008 R2的虚拟机。</p>
+<p>可以复现您的问题，也是不激活的。</p>
+<p>我尝试使用以下链接的方法成功激活了虚拟机：</p>
+<p><a href="https://docs.azure.cn/zh-cn/virtual-machines/troubleshooting/troubleshoot-activation-problems" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/virtual-machines/troubleshooting/troubleshoot-activation-problems</a></p>
+<p>步骤1时请现在windows 2008 data center 的安装key：</p>
+<p>步骤2 我测试过程：</p>
+<p>重启后激活成功，请您尝试一下。</p>
+<p>如果出现问题，请运行以下命令：</p>
+<p>注册表查看KMS服务器地址：</p></article>

@@ -1,0 +1,49 @@
+<article class="kb-article" data-title="AKS 在service 中通过添加pod IP 关联POD"><h1>AKS 在service 中通过添加pod IP 关联POD</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2021-10-22 13:00:40</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>相关工单:2019120366453_[MS-LED]k8s无法修改ep代理的ip</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>相关工单:2019120366453_[MS-LED]k8s无法修改ep代理的ip</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>wangshuwen</li>
+</ul>
+<ul>
+<li>此操作只用于service 中没有定义标签选择器，需要手动关联POD的场景</li>
+</ul>
+<ul>
+<li>客户修改了endpoint 的IP后发现地址会自动被修改，通过修改service 的设定解决了此问题，方式如下：</li>
+</ul>
+<ul>
+<li>在matadata 中 annotations 添加 faild.cattle.io/ipAddresses   后边的值是pod IP</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>Kubectl edit svc serviname</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>wangshuwen</p>
+<p>此操作只用于service 中没有定义标签选择器，需要手动关联POD的场景</p>
+<p>相关工单:2019120366453_[MS-LED]k8s无法修改ep代理的ip</p>
+<p>客户修改了endpoint 的IP后发现地址会自动被修改，通过修改service 的设定解决了此问题，方式如下：</p>
+<p>Kubectl edit svc serviname</p>
+<p>在matadata 中 annotations 添加 faild.cattle.io/ipAddresses   后边的值是pod IP</p></article>

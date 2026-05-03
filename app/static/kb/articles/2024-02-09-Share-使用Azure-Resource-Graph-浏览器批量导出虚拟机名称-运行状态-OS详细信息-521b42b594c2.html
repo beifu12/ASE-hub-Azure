@@ -1,0 +1,44 @@
+<article class="kb-article" data-title="[Share]使用Azure Resource Graph 浏览器批量导出虚拟机名称、运行状态、OS详细信息"><h1>[Share]使用Azure Resource Graph 浏览器批量导出虚拟机名称、运行状态、OS详细信息</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Others</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-02-09 16:16:16</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>进入Azure Resource Graph 浏览器</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>进入Azure Resource Graph 浏览器</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>进入Azure Resource Graph 浏览器</li>
+</ul>
+<ul>
+<li>where type == &quot;microsoft.compute/virtualmachines&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>复制运行下面命令，等待查询出结果以CSV格式导出数据</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>| project name,properties.extended.instanceView.powerState.code,properties.storageProfile.imageReference.offer,properties.storageProfile.imageReference.sku</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2024/02/9</p>
+<p>进入Azure Resource Graph 浏览器</p>
+<p>复制运行下面命令，等待查询出结果以CSV格式导出数据</p>
+<p>where type == &quot;microsoft.compute/virtualmachines&quot;</p>
+<p>| project name,properties.extended.instanceView.powerState.code,properties.storageProfile.imageReference.offer,properties.storageProfile.imageReference.sku</p></article>

@@ -1,0 +1,164 @@
+<article class="kb-article" data-title="【share】Move SQL vm to a new resource group 报错和解决方案"><h1>【share】Move SQL vm to a new resource group 报错和解决方案</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: AzureResourceMover</li>
+<li>Section: Azure Resource Mover</li>
+<li>最近修改: 2024-11-29 18:13:25</li>
+<li>JD 相关性: 迁移/实施; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>&quot;code&quot;: &quot;ResourceMoveProviderValidationFailed&quot;,</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>&quot;code&quot;: &quot;ResourceMoveProviderValidationFailed&quot;,</li>
+</ul>
+<ul>
+<li>1，根据报错来看，怀疑跟 vm 状态，或数据完整性/资源依赖等校验有关。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>案例：20241122326493</li>
+</ul>
+<ul>
+<li>{</li>
+</ul>
+<ul>
+<li>&quot;name&quot;: &quot;008bec95-bc6f-49fd-9b93-f7c62ef38015&quot;,</li>
+</ul>
+<ul>
+<li>&quot;status&quot;: 409</li>
+</ul>
+<ul>
+<li>}</li>
+</ul>
+<ul>
+<li>【分析思路】</li>
+</ul>
+<ul>
+<li>初步分析：</li>
+</ul>
+<ul>
+<li>进一步核实：</li>
+</ul>
+<ul>
+<li>1，了解到建sql vm 时会建出如下信息：</li>
+</ul>
+<ul>
+<li>IaaS层VM</li>
+</ul>
+<ul>
+<li>SQL VM 实例</li>
+</ul>
+<ul>
+<li>网络接口、安全组、磁盘等</li>
+</ul>
+<ul>
+<li>2，有在vm 开机，和关机状态下，分别从vm 页面和 sql vm实例页面做move resource group操作，都会报上述错误（具体资源位置移动资源组时只包括当前资源自身）。</li>
+</ul>
+<ul>
+<li>A: Vm 页面move group 截图：</li>
+</ul>
+<ul>
+<li>B: SQL VM 页面move group 截图：</li>
+</ul>
+<ul>
+<li>移除操作：</li>
+</ul>
+<ul>
+<li>添加操作：</li>
+</ul>
+<ul>
+<li>与DB同事沟通，sql vm与底层vm 主要是SqlIaasExtension代理扩展来做桥梁，SQL VM依赖于SqlIaasExtension扩展，负责管理SQL Server的自动化任务和配置，</li>
+</ul>
+<ul>
+<li>大致工作逻辑文档和草图参考如下：</li>
+</ul>
+<ul>
+<li>有关SQL vm:</li>
+</ul>
+<ul>
+<li>有关SqlIaasExtension扩展：</li>
+</ul>
+<ul>
+<li>草图：</li>
+</ul>
+<ul>
+<li>【结论】</li>
+</ul>
+<ul>
+<li>从sql vm 移动资源组角度：sql vm 移动资源组，需将依赖的Iaas 层vm 一并移动。</li>
+</ul>
+<ul>
+<li>从sql 的Iaas vm 移动资源组角度：移动SQL的Iaas层vm时，在不删除扩展SqlIaasExtension或SQL vm实例情况下，需将SQL vm实例一并移动。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>【问题现象】用户在vm 门户页面操作 sql vm  move resource group 验证失败，报如下错误：</li>
+</ul>
+<ul>
+<li>&quot;message&quot;: &quot;资源移动验证失败。请查看详细信息。诊断信息: 时间戳“20241126T113552Z”、订阅 ID“dfd49f47-6adb-4de5-b48c-b30587985eb5”、跟踪 ID“43d019ef-684d-47db-82ce-127ec9a05c0b”、请求关系 ID“06399515-40f6-49a5-a748-845b6e1e733d”。 (代码: ResourceMoveProviderValidationFailed) Cannot move resource(s) because following resources /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/N3-group/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/lmh-sql02 need to be included in move request to target resource group as well. Please include these and try again. (代码: MissingMoveResources，目标: Microsoft.SqlVirtualMachine/SqlVirtualMachines)&quot;,</li>
+</ul>
+<ul>
+<li>2，查看到用户vm 确实是关机状态，但测试普通vm 关机时可以校验通过，错误中提示的是sql 的vm，可能跟普通vm move resource group有一定区别。</li>
+</ul>
+<ul>
+<li>3，尝试清除移动资源组列表（校验列表有个移除的按钮可以点击），将Iaas 层vm 和sql vm 都添加进去，或将创建时涉及的资源都加入移动资源组列表，重新验证是ok的，测试结果都可以move group 成功。</li>
+</ul>
+<ul>
+<li>（在vm 验证失败后，直接添加它上面的sql vm实例（点击“添加资源”），点击下一步，这里会将两个实例重新验证，保证实例维度能够重新验证即可。）</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>【share】Move SQL vm to a new resource group 报错和解决方案</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management?tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management?tabs=azure-portal</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>【share】Move SQL vm to a new resource group 报错和解决方案</p>
+<p>2024/11/26</p>
+<p>案例：20241122326493</p>
+<p>【问题现象】用户在vm 门户页面操作 sql vm  move resource group 验证失败，报如下错误：</p>
+<p>{</p>
+<p>&quot;message&quot;: &quot;资源移动验证失败。请查看详细信息。诊断信息: 时间戳“20241126T113552Z”、订阅 ID“dfd49f47-6adb-4de5-b48c-b30587985eb5”、跟踪 ID“43d019ef-684d-47db-82ce-127ec9a05c0b”、请求关系 ID“06399515-40f6-49a5-a748-845b6e1e733d”。 (代码: ResourceMoveProviderValidationFailed) Cannot move resource(s) because following resources /subscriptions/dfd49f47-6adb-4de5-b48c-b30587985eb5/resourceGroups/N3-group/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/lmh-sql02 need to be included in move request to target resource group as well. Please include these and try again. (代码: MissingMoveResources，目标: Microsoft.SqlVirtualMachine/SqlVirtualMachines)&quot;,</p>
+<p>&quot;code&quot;: &quot;ResourceMoveProviderValidationFailed&quot;,</p>
+<p>&quot;name&quot;: &quot;008bec95-bc6f-49fd-9b93-f7c62ef38015&quot;,</p>
+<p>&quot;status&quot;: 409</p>
+<p>}</p>
+<p>【分析思路】</p>
+<p>初步分析：</p>
+<p>1，根据报错来看，怀疑跟 vm 状态，或数据完整性/资源依赖等校验有关。</p>
+<p>2，查看到用户vm 确实是关机状态，但测试普通vm 关机时可以校验通过，错误中提示的是sql 的vm，可能跟普通vm move resource group有一定区别。</p>
+<p>进一步核实：</p>
+<p>1，了解到建sql vm 时会建出如下信息：</p>
+<p>IaaS层VM</p>
+<p>SQL VM 实例</p>
+<p>网络接口、安全组、磁盘等</p>
+<p>2，有在vm 开机，和关机状态下，分别从vm 页面和 sql vm实例页面做move resource group操作，都会报上述错误（具体资源位置移动资源组时只包括当前资源自身）。</p>
+<p>A: Vm 页面move group 截图：</p>
+<p>B: SQL VM 页面move group 截图：</p>
+<p>3，尝试清除移动资源组列表（校验列表有个移除的按钮可以点击），将Iaas 层vm 和sql vm 都添加进去，或将创建时涉及的资源都加入移动资源组列表，重新验证是ok的，测试结果都可以move group 成功。</p>
+<p>（在vm 验证失败后，直接添加它上面的sql vm实例（点击“添加资源”），点击下一步，这里会将两个实例重新验证，保证实例维度能够重新验证即可。）</p>
+<p>移除操作：</p>
+<p>添加操作：</p>
+<p>与DB同事沟通，sql vm与底层vm 主要是SqlIaasExtension代理扩展来做桥梁，SQL VM依赖于SqlIaasExtension扩展，负责管理SQL Server的自动化任务和配置，</p>
+<p>大致工作逻辑文档和草图参考如下：</p>
+<p>有关SQL vm:</p>
+<p><a href="https://docs.azure.cn/zh-cn/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview</a></p>
+<p>有关SqlIaasExtension扩展：</p>
+<p><a href="https://docs.azure.cn/zh-cn/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management?tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management?tabs=azure-portal</a></p>
+<p>草图：</p>
+<p>【结论】</p>
+<p>从sql vm 移动资源组角度：sql vm 移动资源组，需将依赖的Iaas 层vm 一并移动。</p>
+<p>从sql 的Iaas vm 移动资源组角度：移动SQL的Iaas层vm时，在不删除扩展SqlIaasExtension或SQL vm实例情况下，需将SQL vm实例一并移动。</p></article>

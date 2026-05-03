@@ -1,0 +1,98 @@
+<article class="kb-article" data-title="Bastion无法登录AKS Node节点"><h1>Bastion无法登录AKS Node节点</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Bastion</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-08-25 15:13:47</li>
+<li>JD 相关性:</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>分析发现bastion在发起ssh 的协商会话中（猜想ssh服务使用的加密参数/版本较老）加密协商无法匹配，导致协商没有成功。</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>分析发现bastion在发起ssh 的协商会话中（猜想ssh服务使用的加密参数/版本较老）加密协商无法匹配，导致协商没有成功。</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>[MS-LED]通过Bastion SSH访问AKS后端节点</li>
+</ul>
+<ul>
+<li>2020072942726</li>
+</ul>
+<ul>
+<li>node的发包</li>
+</ul>
+<ul>
+<li>bastion的发包</li>
+</ul>
+<ul>
+<li>通过查找相关ssh文档，如下是SSH会话建立的过程：</li>
+</ul>
+<ul>
+<li>Service_host_key_algorithms是服务器主机密钥算法，这里的加密算法有sha, rsa,dss之类的，这些有公钥和私钥的说法。</li>
+</ul>
+<ul>
+<li>Encryption_algorithms_client_to_server 是对称加密算法，常用aes128-cbc,3des-cbc ，而gcb一般比较老。</li>
+</ul>
+<ul>
+<li>Mac_algorithms_client_to_server 是MAC算法，主要用于保证数据完整性。</li>
+</ul>
+<ul>
+<li>修改sshd配置文件，添加受支持的密钥交换参数。</li>
+</ul>
+<ul>
+<li>之后再尝试bastion登录即可成功登录。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>处理一个Bastion 的case，用户期望使用azure堡垒机登录aks 虚拟机集中的实例。但在配置完成后点击bastion连接提示error,导致portal无法使用bastion登录。</li>
+</ul>
+<ul>
+<li>经过排查当前aks的node主机系统是ubuntu系统16.04 ，抓包分析查看到node接收ssh加密协商会话参数不匹配。</li>
+</ul>
+<ul>
+<li>进一步查看两端发起的ssh会话参数</li>
+</ul>
+<ul>
+<li>之后在node节点上查看ssh 的访问log，报错信息截图如下</li>
+</ul>
+<ul>
+<li>Service_host_key是服务器主机支持的key算法，用于ssh-Trans 传输协议进行服务器验证，说白了就是客户端去验证服务器用的。</li>
+</ul>
+<ul>
+<li>密钥协商过程从客户端和服务器互相发出 key Exchange Init 请求开始（抓包可见，只有该过程），主要是告诉对方，自己支持的相关加密算法列表，MAC 算法列表等。</li>
+</ul>
+<ul>
+<li>由抓包可见，kex_algorithms 密钥交互算法里没有匹配成功，我们在之下会添加他们支持的算法配置。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>2020/08/04</p>
+<p>处理一个Bastion 的case，用户期望使用azure堡垒机登录aks 虚拟机集中的实例。但在配置完成后点击bastion连接提示error,导致portal无法使用bastion登录。</p>
+<p>[MS-LED]通过Bastion SSH访问AKS后端节点</p>
+<p>2020072942726</p>
+<p>经过排查当前aks的node主机系统是ubuntu系统16.04 ，抓包分析查看到node接收ssh加密协商会话参数不匹配。</p>
+<p>进一步查看两端发起的ssh会话参数</p>
+<p>node的发包</p>
+<p>bastion的发包</p>
+<p>分析发现bastion在发起ssh 的协商会话中（猜想ssh服务使用的加密参数/版本较老）加密协商无法匹配，导致协商没有成功。</p>
+<p>之后在node节点上查看ssh 的访问log，报错信息截图如下</p>
+<p>通过查找相关ssh文档，如下是SSH会话建立的过程：</p>
+<p>Service_host_key是服务器主机支持的key算法，用于ssh-Trans 传输协议进行服务器验证，说白了就是客户端去验证服务器用的。</p>
+<p>密钥协商过程从客户端和服务器互相发出 key Exchange Init 请求开始（抓包可见，只有该过程），主要是告诉对方，自己支持的相关加密算法列表，MAC 算法列表等。</p>
+<p>由抓包可见，kex_algorithms 密钥交互算法里没有匹配成功，我们在之下会添加他们支持的算法配置。</p>
+<p>Service_host_key_algorithms是服务器主机密钥算法，这里的加密算法有sha, rsa,dss之类的，这些有公钥和私钥的说法。</p>
+<p>Encryption_algorithms_client_to_server 是对称加密算法，常用aes128-cbc,3des-cbc ，而gcb一般比较老。</p>
+<p>Mac_algorithms_client_to_server 是MAC算法，主要用于保证数据完整性。</p>
+<p>修改sshd配置文件，添加受支持的密钥交换参数。</p>
+<p>之后再尝试bastion登录即可成功登录。</p></article>

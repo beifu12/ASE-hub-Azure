@@ -1,0 +1,117 @@
+<article class="kb-article" data-title="[share] AMA agent 1.35 安装不成功 只在ubuntu上复现"><h1>[share] AMA agent 1.35 安装不成功 只在ubuntu上复现</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Powershell</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-05-30 17:09:45</li>
+<li>JD 相关性: 自动化/命令工具; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>但旧版本的AMA中没有azuremonitor-kqlextension.service，导致升级时执行stop azuremonitor-kqlextension.service 报错</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>但旧版本的AMA中没有azuremonitor-kqlextension.service，导致升级时执行stop azuremonitor-kqlextension.service 报错</li>
+</ul>
+<ul>
+<li>2025/05/22 09:24:43 ERROR:Preparing to unpack .../azuremonitoragent_1.35.4-971_x86_64.deb ...</li>
+</ul>
+<ul>
+<li>2025/05/22 09:24:43 ERROR:PRE-RM: [upgrade 1.35.4-971] [ubuntu 22.04 systemd]</li>
+</ul>
+<ul>
+<li>2025/05/22 09:24:43 ERROR:PRE-INSTALL: [upgrade 1.31.1-build.master.500] [ubuntu 22.04]</li>
+</ul>
+<ul>
+<li>2025/05/22 09:24:43 ERROR:Failed to stop azuremonitor-kqlextension.service: Unit azuremonitor-kqlextension.service not loaded.</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Hi team，</li>
+</ul>
+<ul>
+<li>sudo tee /etc/systemd/system/azuremonitor-kqlextension.service &gt; /dev/null &lt;&lt;EOF</li>
+</ul>
+<ul>
+<li>[Unit]</li>
+</ul>
+<ul>
+<li>[Service]</li>
+</ul>
+<ul>
+<li>[Install]</li>
+</ul>
+<ul>
+<li>EOF</li>
+</ul>
+<ul>
+<li>sudo systemctl daemon-reload</li>
+</ul>
+<ul>
+<li>我们新建一个Fake的azuremonitor-kqlextension.service 就可以绕过此问题，使得新版本的AMA代理正常安装</li>
+</ul>
+<ul>
+<li>同时我也在github上看到有人提交了相似的问题，我也在上面加了comment</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>需要在vm中执行以下脚本</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Description=Fake Azure Monitor KQL Extension</li>
+</ul>
+<ul>
+<li>After=network.target</li>
+</ul>
+<ul>
+<li>Type=simple</li>
+</ul>
+<ul>
+<li>ExecStart=/bin/bash -c &#39;echo &quot;Fake service started&quot;; sleep infinity&#39;</li>
+</ul>
+<ul>
+<li>Restart=always</li>
+</ul>
+<ul>
+<li>WantedBy=multi-user.target</li>
+</ul>
+<h2>根因 / 结论</h2>
+<ul>
+<li>原因是ubuntu上新的AMA代理检查到vm上已有AMA代理，升级时会检测 service azuremonitor-kqlextension.service</li>
+</ul>
+<h2>解决方案</h2>
+<ul>
+<li>sudo systemctl enable azuremonitor-kqlextension.service</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/Azure/azure-linux-extensions/issues/1994" target="_blank" rel="noopener">https://github.com/Azure/azure-linux-extensions/issues/1994</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Hi team，</p>
+<p>需要在vm中执行以下脚本</p>
+<p>sudo tee /etc/systemd/system/azuremonitor-kqlextension.service &gt; /dev/null &lt;&lt;EOF</p>
+<p>[Unit]</p>
+<p>Description=Fake Azure Monitor KQL Extension</p>
+<p>After=network.target</p>
+<p>[Service]</p>
+<p>Type=simple</p>
+<p>ExecStart=/bin/bash -c &#39;echo &quot;Fake service started&quot;; sleep infinity&#39;</p>
+<p>Restart=always</p>
+<p>[Install]</p>
+<p>WantedBy=multi-user.target</p>
+<p>EOF</p>
+<p>sudo systemctl daemon-reload</p>
+<p>sudo systemctl enable azuremonitor-kqlextension.service</p>
+<p>原因是ubuntu上新的AMA代理检查到vm上已有AMA代理，升级时会检测 service azuremonitor-kqlextension.service</p>
+<p>但旧版本的AMA中没有azuremonitor-kqlextension.service，导致升级时执行stop azuremonitor-kqlextension.service 报错</p>
+<p>我们新建一个Fake的azuremonitor-kqlextension.service 就可以绕过此问题，使得新版本的AMA代理正常安装</p>
+<p>2025/05/22 09:24:43 ERROR:Preparing to unpack .../azuremonitoragent_1.35.4-971_x86_64.deb ...</p>
+<p>2025/05/22 09:24:43 ERROR:PRE-RM: [upgrade 1.35.4-971] [ubuntu 22.04 systemd]</p>
+<p>2025/05/22 09:24:43 ERROR:PRE-INSTALL: [upgrade 1.31.1-build.master.500] [ubuntu 22.04]</p>
+<p>2025/05/22 09:24:43 ERROR:Failed to stop azuremonitor-kqlextension.service: Unit azuremonitor-kqlextension.service not loaded.</p>
+<p>同时我也在github上看到有人提交了相似的问题，我也在上面加了comment</p>
+<p><a href="https://github.com/Azure/azure-linux-extensions/issues/1994" target="_blank" rel="noopener">https://github.com/Azure/azure-linux-extensions/issues/1994</a></p></article>

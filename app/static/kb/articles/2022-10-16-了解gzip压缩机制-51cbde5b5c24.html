@@ -1,0 +1,698 @@
+<article class="kb-article" data-title="了解gzip压缩机制"><h1>了解gzip压缩机制</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: CDN</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2022-10-16 13:13:22</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>SR_2019081445235_[MS-LED]开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>SR_2019081445235_[MS-LED]开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>==========</li>
+</ul>
+<ul>
+<li>具体配置信息如下：</li>
+</ul>
+<ul>
+<li>压缩对象</li>
+</ul>
+<ul>
+<li>js; html; css; xml; json; shtml; htm; jpg; png</li>
+</ul>
+<ul>
+<li>文件范围：</li>
+</ul>
+<ul>
+<li>256B ~ 2048KB</li>
+</ul>
+<ul>
+<li>压缩方式</li>
+</ul>
+<ul>
+<li>Gzip</li>
+</ul>
+<ul>
+<li>任何疑问，可以联系我们。谢谢。</li>
+</ul>
+<ul>
+<li>张先生：</li>
+</ul>
+<ul>
+<li>您好！</li>
+</ul>
+<ul>
+<li>以下为您提供本次案例的总结，供您参考：</li>
+</ul>
+<ul>
+<li>案例总结如下：</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<ul>
+<li>您同意关闭工单。</li>
+</ul>
+<ul>
+<li>温馨提示：</li>
+</ul>
+<ul>
+<li>===========</li>
+</ul>
+<ul>
+<li>·         您也可以参阅常用操作指南，快速了解Azure 支持中的热点话题，进行自助定位与解决问题。</li>
+</ul>
+<ul>
+<li>·         如果您想快速咨询，请点击 &quot;在线客服&quot;，获取即时解答。</li>
+</ul>
+<ul>
+<li>稍后您会收到一封服务质量反馈邮件（完成仅需1-2分钟）。我们期待您提供真实客观的反馈意见，以便我们持续提升Azure平台和技术支持水平。感谢您的理解和支持，祝您工作顺利！</li>
+</ul>
+<ul>
+<li>Johnny Lee (李岳) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>If you have any feedback about my work, please contact me or my manager Han Xu on han.xu3@oe.21vianet.com</li>
+</ul>
+<ul>
+<li>From: Hui Zhang [mailto:hui.zhang@bespinglobal.cn]</li>
+</ul>
+<ul>
+<li>Sent: Thursday, August 22, 2019 11:52 AM</li>
+</ul>
+<ul>
+<li>To: Johnny Lee &lt;li.yue3@oe.21vianet.com&gt;; Wang Ruifeng &lt;wang.ruifeng@oe.21vianet.com&gt;</li>
+</ul>
+<ul>
+<li>Cc: vm &lt;vm@oe.21vianet.com&gt;</li>
+</ul>
+<ul>
+<li>Hi Johnny,</li>
+</ul>
+<ul>
+<li>没有了，工单关闭吧。</li>
+</ul>
+<ul>
+<li>-</li>
+</ul>
+<ul>
+<li>Peter Zhang  张辉  |  BESPIN GLOBAL  |  Linux Engineer</li>
+</ul>
+<ul>
+<li>北京 | 上海 | 杭州 | 广州 | 珠海 | 福州</li>
+</ul>
+<ul>
+<li>上海市徐汇区港汇恒隆广场1座4808-09室，邮编200030</li>
+</ul>
+<ul>
+<li>4808-09, Block 1, Grand Gateway 66, Xuhui District, Shanghai 200030</li>
+</ul>
+<ul>
+<li>----------------------------------------------------------------------------------------------------------------------------------------------------------</li>
+</ul>
+<ul>
+<li>发件人: Johnny Lee</li>
+</ul>
+<ul>
+<li>发送时间: 2019年8月22日 11:35</li>
+</ul>
+<ul>
+<li>收件人: Wang Ruifeng; Hui Zhang</li>
+</ul>
+<ul>
+<li>抄送: vm</li>
+</ul>
+<ul>
+<li>张先生，您好：</li>
+</ul>
+<ul>
+<li>请问您那里测试关于cdn的图片压缩生效了吗？</li>
+</ul>
+<ul>
+<li>还有什么需要我们协助的吗？</li>
+</ul>
+<ul>
+<li>如有问题请反馈。</li>
+</ul>
+<ul>
+<li>谢谢！</li>
+</ul>
+<ul>
+<li>From: Wang Ruifeng</li>
+</ul>
+<ul>
+<li>Sent: Tuesday, August 20, 2019 4:37 PM</li>
+</ul>
+<ul>
+<li>To: Hui Zhang &lt;hui.zhang@bespinglobal.cn&gt;</li>
+</ul>
+<ul>
+<li>Cc: vm &lt;vm@oe.21vianet.com&gt;; Johnny Lee &lt;li.yue3@oe.21vianet.com&gt;</li>
+</ul>
+<ul>
+<li>张工，您好</li>
+</ul>
+<ul>
+<li>·         压缩对象</li>
+</ul>
+<ul>
+<li>·         文件范围：</li>
+</ul>
+<ul>
+<li>·         压缩方式</li>
+</ul>
+<ul>
+<li>Wang Ruifeng (王瑞丰) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</li>
+</ul>
+<ul>
+<li>Sent: Tuesday, August 20, 2019 3:47 PM</li>
+</ul>
+<ul>
+<li>To: &#39;Hui Zhang&#39; &lt;hui.zhang@bespinglobal.cn&gt;</li>
+</ul>
+<ul>
+<li>Cc: &#39;vm&#39; &lt;vm@oe.21vianet.com&gt;; &#39;Johnny Lee&#39; &lt;li.yue3@oe.21vianet.com&gt;</li>
+</ul>
+<ul>
+<li>张先生，您好</li>
+</ul>
+<ul>
+<li>Sent: Tuesday, August 20, 2019 3:28 PM</li>
+</ul>
+<ul>
+<li>To: Johnny Lee &lt;li.yue3@oe.21vianet.com&gt;</li>
+</ul>
+<ul>
+<li>--</li>
+</ul>
+<ul>
+<li>发送时间: 2019年8月19日 13:16</li>
+</ul>
+<ul>
+<li>收件人: Hui Zhang</li>
+</ul>
+<ul>
+<li>跟进一下这个工单。</li>
+</ul>
+<ul>
+<li>是否需要我们为 m.innisfree.cn  配置上基于图片的压缩？</li>
+</ul>
+<ul>
+<li>From: Johnny Lee</li>
+</ul>
+<ul>
+<li>Sent: Thursday, August 15, 2019 10:40 AM</li>
+</ul>
+<ul>
+<li>感谢您的回复。</li>
+</ul>
+<ul>
+<li>那么工单先帮您保留。</li>
+</ul>
+<ul>
+<li>如有疑问，请您反馈。</li>
+</ul>
+<ul>
+<li>Sent: Thursday, August 15, 2019 10:37 AM</li>
+</ul>
+<ul>
+<li>Best Regards，</li>
+</ul>
+<ul>
+<li>发送时间: 2019年8月15日 10:17</li>
+</ul>
+<ul>
+<li>我们cdn后线团队反馈如下：</li>
+</ul>
+<ul>
+<li>==============================</li>
+</ul>
+<ul>
+<li>图片本身就是压缩过的，再次压缩的话可能压缩率不一定那么高了，后台暂时没有具体的压缩比的指标。</li>
+</ul>
+<ul>
+<li>=======================</li>
+</ul>
+<ul>
+<li>源站：</li>
+</ul>
+<ul>
+<li>加速后：</li>
+</ul>
+<ul>
+<li>No1.png   : 4993/7014=0.71</li>
+</ul>
+<ul>
+<li>No2.png  12045/13799=0.87</li>
+</ul>
+<ul>
+<li>感觉压缩比不是很高。</li>
+</ul>
+<ul>
+<li>Sent: Wednesday, August 14, 2019 5:43 PM</li>
+</ul>
+<ul>
+<li>这个问题我已经反馈给了我们的cdn后线团队。</li>
+</ul>
+<ul>
+<li>如有反馈会立即同步给您。</li>
+</ul>
+<ul>
+<li>Sent: Wednesday, August 14, 2019 5:31 PM</li>
+</ul>
+<ul>
+<li>嗯，看到了。测试下来整体才优化了不到4s，请问当前的压缩率是多少，还是因为图片文件压缩率本身就不高。</li>
+</ul>
+<ul>
+<li>发送时间: 2019年8月14日 17:23</li>
+</ul>
+<ul>
+<li>感谢刚才的电话沟通。</li>
+</ul>
+<ul>
+<li>我又与我们的后线cdn团队沟通了一下。</li>
+</ul>
+<ul>
+<li>目前关于图片的png和jpg压缩已经配置完成了。</li>
+</ul>
+<ul>
+<li>我测试可以显示gzip：</li>
+</ul>
+<ul>
+<li>请您测试一下，如有问题请反馈。</li>
+</ul>
+<ul>
+<li>Sent: Wednesday, August 14, 2019 4:57 PM</li>
+</ul>
+<ul>
+<li>什么啊？？？你们有看问题吗？</li>
+</ul>
+<ul>
+<li>截图里哪里来的site.cdnmaster.cn</li>
+</ul>
+<ul>
+<li>我知道js是gzip的，但是发工单是要求你们开启对.jpg 和.png 的图片压缩。</li>
+</ul>
+<ul>
+<li>请电话联系我。</li>
+</ul>
+<ul>
+<li>发送时间: 2019年8月14日 16:08</li>
+</ul>
+<ul>
+<li>我们后台反馈如下，请您知晓：</li>
+</ul>
+<ul>
+<li>=====================================</li>
+</ul>
+<ul>
+<li>·         这是绑定源站测试的，文件长度是93636</li>
+</ul>
+<ul>
+<li>2. 这是经过cdn通过浏览器访问的，文件长度是33479</li>
+</ul>
+<ul>
+<li>Sent: Wednesday, August 14, 2019 3:29 PM</li>
+</ul>
+<ul>
+<li>请参照如下情况：</li>
+</ul>
+<ul>
+<li>Innisfree.cn 没有经过CDN，且没有开启css的gzip。</li>
+</ul>
+<ul>
+<li>经过压缩后的Content-Length也会变小，这样才是gzip的作用，使网络传输的数据量降低。</li>
+</ul>
+<ul>
+<li>发送时间: 2019年8月14日 15:10</li>
+</ul>
+<ul>
+<li>您好：</li>
+</ul>
+<ul>
+<li>我这里访问测试了一下可以看到：</li>
+</ul>
+<ul>
+<li>谢谢</li>
+</ul>
+<ul>
+<li>Sent: Wednesday, August 14, 2019 2:23 PM</li>
+</ul>
+<ul>
+<li>发送时间: 2019年8月14日 14:01</li>
+</ul>
+<ul>
+<li>通过升级我们的cdn后线团队。</li>
+</ul>
+<ul>
+<li>他们已经为您配置的cdn 图片的gzip压缩。</li>
+</ul>
+<ul>
+<li>请您测试，看一下效果。</li>
+</ul>
+<ul>
+<li>如有问题，请反馈。</li>
+</ul>
+<ul>
+<li>Sent: Wednesday, August 14, 2019 11:22 AM</li>
+</ul>
+<ul>
+<li>To: &#39;hui.zhang@bespinglobal.cn&#39; &lt;hui.zhang@bespinglobal.cn&gt;</li>
+</ul>
+<ul>
+<li>张辉  先生：</li>
+</ul>
+<ul>
+<li>感谢您联系世纪互联Microsoft Azure技术支持中心，我是Microsoft Azure技术支持工程师Johnny，很高兴有机会协助您处理问题。您可以随时通过邮件标题中的十三位数字案例号码与我们联系。（为了更好的保证技术支持工作的质量，在您回复邮件时，请选择“回复所有人”）</li>
+</ul>
+<ul>
+<li>为准确地定位问题，现提供以下问题定义及处理范围，如果您对此有任何异议，请及时告知我们。</li>
+</ul>
+<ul>
+<li>问题定义：</li>
+</ul>
+<ul>
+<li>处理范围：</li>
+</ul>
+<ul>
+<li>帮助客户配置cdn的gzip压缩</li>
+</ul>
+<ul>
+<li>*初步调查反馈：</li>
+</ul>
+<ul>
+<li>您好:</li>
+</ul>
+<ul>
+<li>配置cdn 图片Gzip压缩需要通过我们的cdn后线团队进行配置。</li>
+</ul>
+<ul>
+<li>我马上升级这个问题给我们的cdn后线团队，帮您配置。</li>
+</ul>
+<ul>
+<li>如有更新会反馈给您。</li>
+</ul>
+<ul>
+<li>感谢您的理解和支持，祝您工作顺利！</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>后台反馈，已配置完成，请稍等5分钟后进行测试验证。</li>
+</ul>
+<ul>
+<li>经过您几天的观察，又帮您开启对 加速域名 m.innisfree.cn 的gzip功能。</li>
+</ul>
+<ul>
+<li>经您验证图片的gzip功能都已经生效。</li>
+</ul>
+<ul>
+<li>·         如果您有其他任何关于Azure的技术问题，欢迎通过在线方式便捷地提交或者查询工单进展情况。</li>
+</ul>
+<ul>
+<li>请问您观察效果如何？</li>
+</ul>
+<ul>
+<li>m.innisfree.cn 暂时先不做，我们这边先观察两天，再做决定，所以暂时不关闭工单。</li>
+</ul>
+<ul>
+<li>所以请再次确认，谢谢</li>
+</ul>
+<ul>
+<li>我们后线确认已经配置生效了：</li>
+</ul>
+<ul>
+<li>我再和后线确认一下。</li>
+</ul>
+<ul>
+<li>我这边验证测试，并没有效果，请确认配置是否生效。经过压缩的在headers信息里也应该能体现出来。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<ul>
+<li>感谢您的确认，我们将会把本次技术支持案例关闭并归档。</li>
+</ul>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<ul>
+<li>·         如果您对我们的产品和服务有任何意见或建议，可以发送邮件至 feedback@oe.21vianet.com 。我们的客服专员将会尽快与您联系，为您提供反馈信息并协商解决方案。</li>
+</ul>
+<ul>
+<li>邮件收到，我将协调后线团队进行配置，任何更新将同步给您。谢谢。</li>
+</ul>
+<ul>
+<li>m.innisfree.cn 需要配置的，还请帮忙配置。 谢谢。</li>
+</ul>
+<ul>
+<li>您可以通过cdn拿到的文件大小对比源站的同一文件的大小大致计算一下压缩的比例。</li>
+</ul>
+<ul>
+<li>那请问您  m.innisfree.cn   还需要配置基于图片的加速吗？</li>
+</ul>
+<ul>
+<li>·         您的服务请求的严重级别为B级，在对问题进行调查分析期间，我们将至少每个工作日向您报告一次最新进展。在问题解决以后，我们会与您联系并跟您确认是否可以关闭此案例。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>SR_2019081445235_[MS-LED]开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</li>
+</ul>
+<ul>
+<li>开启对 加速域名 www.innisfree.cn 的图片资源的gzip功能</li>
+</ul>
+<ul>
+<li>开启对 加速域名 www.innisfree.cn 的图片资源的gzip功能</li>
+</ul>
+<ul>
+<li>通过升级cdn后线团队，帮您开启了加速域名 www.innisfree.cn 的gzip功能。</li>
+</ul>
+<ul>
+<li>Support direct line: 010-56060233   Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></li>
+</ul>
+<ul>
+<li>Cloud solution consulting: 400-085-0139   Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<ul>
+<li>Subject: 答复: SR_2019081445235_[MS-LED]开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</li>
+</ul>
+<ul>
+<li>M 130-7508-5639 |  E hui.zhang@bespinglobal.cn |  W www.bespinglobal.cn  |  Hotline：4006 686 005</li>
+</ul>
+<ul>
+<li>主题: RE: SR_2019081445235_[MS-LED]开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</li>
+</ul>
+<ul>
+<li>Cloud solution consulting: 400-085-0139   Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></li>
+</ul>
+<ul>
+<li>Subject: RE: SR_2019081445235_[MS-LED]开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</li>
+</ul>
+<ul>
+<li>Support direct line: 010-56060234   Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></li>
+</ul>
+<ul>
+<li>我这里对比了一下您源站innis-web.chinaeast2.cloudapp.chinacloudapi.cn和cdn加速后的域名www.innisfree.cn 中的no1.png和no2.png简单计算了一下压缩比例：</li>
+</ul>
+<ul>
+<li>我测试了<a href="https://www.innisfree.cn/cn_resources/js/jquery-1.8.3.min.js这个URL，gzip压缩是生效的。" target="_blank" rel="noopener">https://www.innisfree.cn/cn_resources/js/jquery-1.8.3.min.js这个URL，gzip压缩是生效的。</a></li>
+</ul>
+<ul>
+<li>补充下，之前要求开启gzip压缩的加速域名是www.innisfree.cn，您截图中的域名site.cdnmaster.cn并没有在我们这边加速，因此该域名是没有gzip压缩的。</li>
+</ul>
+<ul>
+<li>www.innisfree.cn 是经过CDN，并且cdn开启了css文件的gzip，这个css没有配置，应该是默认配置gzip。</li>
+</ul>
+<ul>
+<li>Subject: SR_2019081445235_[MS-LED]开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</li>
+</ul>
+<ul>
+<li>开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</li>
+</ul>
+<ul>
+<li>From &lt;<a href="https://azul.21vbluecloud.com/Azul/_controls/emailbody/msgBody.aspx?id={2C8E0D33-57C5-E911-80E6-00155DC8F102}&amp;entityType=email&gt;" target="_blank" rel="noopener">https://azul.21vbluecloud.com/Azul/_controls/emailbody/msgBody.aspx?id={2C8E0D33-57C5-E911-80E6-00155DC8F102}&amp;entityType=email&gt;</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>SR_2019081445235_[MS-LED]开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</p>
+<p>问题描述：</p>
+<p>==========</p>
+<p>开启对 加速域名 www.innisfree.cn 的图片资源的gzip功能</p>
+<p>解决方案：</p>
+<p>后台反馈，已配置完成，请稍等5分钟后进行测试验证。</p>
+<p>具体配置信息如下：</p>
+<p>压缩对象</p>
+<p>js; html; css; xml; json; shtml; htm; jpg; png</p>
+<p>文件范围：</p>
+<p>256B ~ 2048KB</p>
+<p>压缩方式</p>
+<p>Gzip</p>
+<p>任何疑问，可以联系我们。谢谢。</p>
+<p>张先生：</p>
+<p>您好！</p>
+<p>感谢您的确认，我们将会把本次技术支持案例关闭并归档。</p>
+<p>以下为您提供本次案例的总结，供您参考：</p>
+<p>案例总结如下：</p>
+<p>开启对 加速域名 www.innisfree.cn 的图片资源的gzip功能</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>通过升级cdn后线团队，帮您开启了加速域名 www.innisfree.cn 的gzip功能。</p>
+<p>经过您几天的观察，又帮您开启对 加速域名 m.innisfree.cn 的gzip功能。</p>
+<p>经您验证图片的gzip功能都已经生效。</p>
+<p>您同意关闭工单。</p>
+<p>温馨提示：</p>
+<p>===========</p>
+<p>·         如果您有其他任何关于Azure的技术问题，欢迎通过在线方式便捷地提交或者查询工单进展情况。</p>
+<p>·         您也可以参阅常用操作指南，快速了解Azure 支持中的热点话题，进行自助定位与解决问题。</p>
+<p>·         如果您对我们的产品和服务有任何意见或建议，可以发送邮件至 feedback@oe.21vianet.com 。我们的客服专员将会尽快与您联系，为您提供反馈信息并协商解决方案。</p>
+<p>·         如果您想快速咨询，请点击 &quot;在线客服&quot;，获取即时解答。</p>
+<p>稍后您会收到一封服务质量反馈邮件（完成仅需1-2分钟）。我们期待您提供真实客观的反馈意见，以便我们持续提升Azure平台和技术支持水平。感谢您的理解和支持，祝您工作顺利！</p>
+<p>Johnny Lee (李岳) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060233   Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></p>
+<p>Cloud solution consulting: 400-085-0139   Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>If you have any feedback about my work, please contact me or my manager Han Xu on han.xu3@oe.21vianet.com</p>
+<p>From: Hui Zhang [mailto:hui.zhang@bespinglobal.cn]</p>
+<p>Sent: Thursday, August 22, 2019 11:52 AM</p>
+<p>To: Johnny Lee &lt;li.yue3@oe.21vianet.com&gt;; Wang Ruifeng &lt;wang.ruifeng@oe.21vianet.com&gt;</p>
+<p>Cc: vm &lt;vm@oe.21vianet.com&gt;</p>
+<p>Subject: 答复: SR_2019081445235_[MS-LED]开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</p>
+<p>Hi Johnny,</p>
+<p>没有了，工单关闭吧。</p>
+<p>-</p>
+<p>Peter Zhang  张辉  |  BESPIN GLOBAL  |  Linux Engineer</p>
+<p>M 130-7508-5639 |  E hui.zhang@bespinglobal.cn |  W www.bespinglobal.cn  |  Hotline：4006 686 005</p>
+<p>北京 | 上海 | 杭州 | 广州 | 珠海 | 福州</p>
+<p>上海市徐汇区港汇恒隆广场1座4808-09室，邮编200030</p>
+<p>4808-09, Block 1, Grand Gateway 66, Xuhui District, Shanghai 200030</p>
+<p>----------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+<p>发件人: Johnny Lee</p>
+<p>发送时间: 2019年8月22日 11:35</p>
+<p>收件人: Wang Ruifeng; Hui Zhang</p>
+<p>抄送: vm</p>
+<p>主题: RE: SR_2019081445235_[MS-LED]开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</p>
+<p>张先生，您好：</p>
+<p>请问您那里测试关于cdn的图片压缩生效了吗？</p>
+<p>还有什么需要我们协助的吗？</p>
+<p>如有问题请反馈。</p>
+<p>谢谢！</p>
+<p>Cloud solution consulting: 400-085-0139   Website: <a href="http://www.21vbluecloud.com" target="_blank" rel="noopener">http://www.21vbluecloud.com</a></p>
+<p>From: Wang Ruifeng</p>
+<p>Sent: Tuesday, August 20, 2019 4:37 PM</p>
+<p>To: Hui Zhang &lt;hui.zhang@bespinglobal.cn&gt;</p>
+<p>Cc: vm &lt;vm@oe.21vianet.com&gt;; Johnny Lee &lt;li.yue3@oe.21vianet.com&gt;</p>
+<p>Subject: RE: SR_2019081445235_[MS-LED]开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</p>
+<p>张工，您好</p>
+<p>·         压缩对象</p>
+<p>·         文件范围：</p>
+<p>·         压缩方式</p>
+<p>Wang Ruifeng (王瑞丰) | WATS Engineer | Microsoft Azure Technical Support, Blue Cloud, 21ViaNet Group, Inc.</p>
+<p>Support direct line: 010-56060234   Case submission &amp; history: <a href="https://support.azure.cn/support/support-azure" target="_blank" rel="noopener">https://support.azure.cn/support/support-azure</a></p>
+<p>Sent: Tuesday, August 20, 2019 3:47 PM</p>
+<p>To: &#39;Hui Zhang&#39; &lt;hui.zhang@bespinglobal.cn&gt;</p>
+<p>Cc: &#39;vm&#39; &lt;vm@oe.21vianet.com&gt;; &#39;Johnny Lee&#39; &lt;li.yue3@oe.21vianet.com&gt;</p>
+<p>张先生，您好</p>
+<p>邮件收到，我将协调后线团队进行配置，任何更新将同步给您。谢谢。</p>
+<p>Sent: Tuesday, August 20, 2019 3:28 PM</p>
+<p>To: Johnny Lee &lt;li.yue3@oe.21vianet.com&gt;</p>
+<p>m.innisfree.cn 需要配置的，还请帮忙配置。 谢谢。</p>
+<p>--</p>
+<p>发送时间: 2019年8月19日 13:16</p>
+<p>收件人: Hui Zhang</p>
+<p>跟进一下这个工单。</p>
+<p>请问您观察效果如何？</p>
+<p>是否需要我们为 m.innisfree.cn  配置上基于图片的压缩？</p>
+<p>From: Johnny Lee</p>
+<p>Sent: Thursday, August 15, 2019 10:40 AM</p>
+<p>感谢您的回复。</p>
+<p>那么工单先帮您保留。</p>
+<p>如有疑问，请您反馈。</p>
+<p>Sent: Thursday, August 15, 2019 10:37 AM</p>
+<p>m.innisfree.cn 暂时先不做，我们这边先观察两天，再做决定，所以暂时不关闭工单。</p>
+<p>Best Regards，</p>
+<p>发送时间: 2019年8月15日 10:17</p>
+<p>我们cdn后线团队反馈如下：</p>
+<p>==============================</p>
+<p>图片本身就是压缩过的，再次压缩的话可能压缩率不一定那么高了，后台暂时没有具体的压缩比的指标。</p>
+<p>您可以通过cdn拿到的文件大小对比源站的同一文件的大小大致计算一下压缩的比例。</p>
+<p>=======================</p>
+<p>我这里对比了一下您源站innis-web.chinaeast2.cloudapp.chinacloudapi.cn和cdn加速后的域名www.innisfree.cn 中的no1.png和no2.png简单计算了一下压缩比例：</p>
+<p>源站：</p>
+<p>加速后：</p>
+<p>No1.png   : 4993/7014=0.71</p>
+<p>No2.png  12045/13799=0.87</p>
+<p>感觉压缩比不是很高。</p>
+<p>那请问您  m.innisfree.cn   还需要配置基于图片的加速吗？</p>
+<p>Sent: Wednesday, August 14, 2019 5:43 PM</p>
+<p>这个问题我已经反馈给了我们的cdn后线团队。</p>
+<p>如有反馈会立即同步给您。</p>
+<p>Sent: Wednesday, August 14, 2019 5:31 PM</p>
+<p>嗯，看到了。测试下来整体才优化了不到4s，请问当前的压缩率是多少，还是因为图片文件压缩率本身就不高。</p>
+<p>发送时间: 2019年8月14日 17:23</p>
+<p>感谢刚才的电话沟通。</p>
+<p>我又与我们的后线cdn团队沟通了一下。</p>
+<p>目前关于图片的png和jpg压缩已经配置完成了。</p>
+<p>我测试可以显示gzip：</p>
+<p>请您测试一下，如有问题请反馈。</p>
+<p>Sent: Wednesday, August 14, 2019 4:57 PM</p>
+<p>什么啊？？？你们有看问题吗？</p>
+<p>截图里哪里来的site.cdnmaster.cn</p>
+<p>我知道js是gzip的，但是发工单是要求你们开启对.jpg 和.png 的图片压缩。</p>
+<p>请电话联系我。</p>
+<p>发送时间: 2019年8月14日 16:08</p>
+<p>我们后台反馈如下，请您知晓：</p>
+<p>=====================================</p>
+<p>我测试了<a href="https://www.innisfree.cn/cn_resources/js/jquery-1.8.3.min.js这个URL，gzip压缩是生效的。" target="_blank" rel="noopener">https://www.innisfree.cn/cn_resources/js/jquery-1.8.3.min.js这个URL，gzip压缩是生效的。</a></p>
+<p>·         这是绑定源站测试的，文件长度是93636</p>
+<p>2. 这是经过cdn通过浏览器访问的，文件长度是33479</p>
+<p>补充下，之前要求开启gzip压缩的加速域名是www.innisfree.cn，您截图中的域名site.cdnmaster.cn并没有在我们这边加速，因此该域名是没有gzip压缩的。</p>
+<p>Sent: Wednesday, August 14, 2019 3:29 PM</p>
+<p>请参照如下情况：</p>
+<p>Innisfree.cn 没有经过CDN，且没有开启css的gzip。</p>
+<p>www.innisfree.cn 是经过CDN，并且cdn开启了css文件的gzip，这个css没有配置，应该是默认配置gzip。</p>
+<p>经过压缩后的Content-Length也会变小，这样才是gzip的作用，使网络传输的数据量降低。</p>
+<p>所以请再次确认，谢谢</p>
+<p>发送时间: 2019年8月14日 15:10</p>
+<p>您好：</p>
+<p>我们后线确认已经配置生效了：</p>
+<p>我这里访问测试了一下可以看到：</p>
+<p>我再和后线确认一下。</p>
+<p>谢谢</p>
+<p>Sent: Wednesday, August 14, 2019 2:23 PM</p>
+<p>我这边验证测试，并没有效果，请确认配置是否生效。经过压缩的在headers信息里也应该能体现出来。</p>
+<p>发送时间: 2019年8月14日 14:01</p>
+<p>通过升级我们的cdn后线团队。</p>
+<p>他们已经为您配置的cdn 图片的gzip压缩。</p>
+<p>请您测试，看一下效果。</p>
+<p>如有问题，请反馈。</p>
+<p>Sent: Wednesday, August 14, 2019 11:22 AM</p>
+<p>To: &#39;hui.zhang@bespinglobal.cn&#39; &lt;hui.zhang@bespinglobal.cn&gt;</p>
+<p>Subject: SR_2019081445235_[MS-LED]开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</p>
+<p>张辉  先生：</p>
+<p>感谢您联系世纪互联Microsoft Azure技术支持中心，我是Microsoft Azure技术支持工程师Johnny，很高兴有机会协助您处理问题。您可以随时通过邮件标题中的十三位数字案例号码与我们联系。（为了更好的保证技术支持工作的质量，在您回复邮件时，请选择“回复所有人”）</p>
+<p>为准确地定位问题，现提供以下问题定义及处理范围，如果您对此有任何异议，请及时告知我们。</p>
+<p>问题定义：</p>
+<p>开启对 加速域名 www.innisfree.cn 的部分资源的gzip功能</p>
+<p>处理范围：</p>
+<p>帮助客户配置cdn的gzip压缩</p>
+<p>*初步调查反馈：</p>
+<p>您好:</p>
+<p>配置cdn 图片Gzip压缩需要通过我们的cdn后线团队进行配置。</p>
+<p>我马上升级这个问题给我们的cdn后线团队，帮您配置。</p>
+<p>如有更新会反馈给您。</p>
+<p>·         您的服务请求的严重级别为B级，在对问题进行调查分析期间，我们将至少每个工作日向您报告一次最新进展。在问题解决以后，我们会与您联系并跟您确认是否可以关闭此案例。</p>
+<p>感谢您的理解和支持，祝您工作顺利！</p>
+<p>From &lt;<a href="https://azul.21vbluecloud.com/Azul/_controls/emailbody/msgBody.aspx?id={2C8E0D33-57C5-E911-80E6-00155DC8F102}&amp;entityType=email&gt;" target="_blank" rel="noopener">https://azul.21vbluecloud.com/Azul/_controls/emailbody/msgBody.aspx?id={2C8E0D33-57C5-E911-80E6-00155DC8F102}&amp;entityType=email&gt;</a></p></article>

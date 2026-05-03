@@ -1,0 +1,204 @@
+<article class="kb-article" data-title="P2s VPN for rocky linux 8.5"><h1>P2s VPN for rocky linux 8.5</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: VPN</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-10-17 14:37:26</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>strongswan pki --pub --in &quot;${USERNAME}Key.pem&quot; | strongswan pki --issue --cacert caCert.pem --cakey caKey.pem --dn &quot;CN=${USERNAME}&quot; --san &quot;${USERNAME}&quot; --flag clientAuth --outform pem &gt; &quot;${USERNAME}Cert.pem&quot;</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>strongswan pki --pub --in &quot;${USERNAME}Key.pem&quot; | strongswan  pki --issue --cacert caCert.pem --cakey caKey.pem --dn &quot;CN=${USERNAME}&quot; --san &quot;${USERNAME}&quot; --flag clientAuth --outform pem &gt; &quot;${USERNAME}Cert.pem&quot;</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Oct 10, 2025</li>
+</ul>
+<ul>
+<li>#Install strongswan and dependency packages</li>
+</ul>
+<ul>
+<li>dnf install epel-release</li>
+</ul>
+<ul>
+<li>dnf install strongswan</li>
+</ul>
+<ul>
+<li>dnf install tpm2*</li>
+</ul>
+<ul>
+<li># generate CA RSA Key pairs</li>
+</ul>
+<ul>
+<li>strongswan pki --gen rsa  --outform pem &gt; caKey.pem</li>
+</ul>
+<ul>
+<li>strongswan  pki --self --in caKey.pem --dn &quot;CN=VPN CA&quot; --ca --outform pem &gt; caCert.pem</li>
+</ul>
+<ul>
+<li># export cer file of CA and upload to Azure VPN gateway</li>
+</ul>
+<ul>
+<li>openssl x509 -in caCert.pem -outform der | base64 -w0 ; echo</li>
+</ul>
+<ul>
+<li># genarate vpn client key pairs</li>
+</ul>
+<ul>
+<li>strongswan  pki --gen --outform pem &gt; &quot;${USERNAME}Key.pem&quot;</li>
+</ul>
+<ul>
+<li>openssl pkcs12 -in &quot;${USERNAME}Cert.pem&quot; -inkey &quot;${USERNAME}Key.pem&quot; -certfile caCert.pem -export -out &quot;${USERNAME}.p12&quot; -password &quot;pass:${PASSWORD}&quot;</li>
+</ul>
+<ul>
+<li>cp $(USERNAME).p12 /etc/strongswan/ipsec.d/private/</li>
+</ul>
+<ul>
+<li>#download VPN client configuration file, after decompression, upload  VpnServerRoot.cer_0 to the local device</li>
+</ul>
+<ul>
+<li>cp VpnServerRoot.cer_0  /etc/strongswan/ipsec.d/cacerts/</li>
+</ul>
+<ul>
+<li># edit the ipsec configuration file and add the new IPSEC connction</li>
+</ul>
+<ul>
+<li>vi /etc/strongswan/ipsec.conf</li>
+</ul>
+<ul>
+<li>conn azure</li>
+</ul>
+<ul>
+<li># add the auth file,type the P12 file name and password</li>
+</ul>
+<ul>
+<li>vi /etc/strongswan/ipsec.secrets</li>
+</ul>
+<ul>
+<li>: P12 $(USERNAME).p12  &#39;password&#39; # replase by value of variable USRENAME</li>
+</ul>
+<ul>
+<li>#initial connection</li>
+</ul>
+<ul>
+<li>strongswan restart</li>
+</ul>
+<ul>
+<li>strongswan up azure</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#IKE logs view:</li>
+</ul>
+<ul>
+<li>swanctl  --log   --debug 0</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>export PASSWORD=&quot;password&quot;  # replace with the real password</li>
+</ul>
+<ul>
+<li>export USERNAME=$(hostnamectl --static)</li>
+</ul>
+<ul>
+<li>keyexchange=ikev2</li>
+</ul>
+<ul>
+<li>type=tunnel</li>
+</ul>
+<ul>
+<li>leftfirewall=yes</li>
+</ul>
+<ul>
+<li>left=%any</li>
+</ul>
+<ul>
+<li>leftcert=$(USRENAME)Cert.pem   #replase by value of variable USRENAME</li>
+</ul>
+<ul>
+<li>leftauth=eap-tls</li>
+</ul>
+<ul>
+<li>leftid=%$(USERNAME)  #replase by value of variable USRENAME</li>
+</ul>
+<ul>
+<li>right=azuregateway-3dfe0023-a199-4d19-a19a-331e4cf5449a-87b9da247488.vpn.chinacloudapi.cn  #replcace by VPN gateway FQDN</li>
+</ul>
+<ul>
+<li>rightid=%azuregateway-3dfe0023-a199-4d19-a19a-331e4cf5449a-87b9da247488.vpn.chinacloudapi.cn    #replcace by VPN gateway FQDN</li>
+</ul>
+<ul>
+<li>rightsubnet=10.0.0.0/16,172.25.0.0/16  #replcas by Azure network address range</li>
+</ul>
+<ul>
+<li>leftsourceip=%config</li>
+</ul>
+<ul>
+<li>auto=start</li>
+</ul>
+<ul>
+<li>auto=route</li>
+</ul>
+<ul>
+<li>keyingtries=%forever</li>
+</ul>
+<ul>
+<li>esp=aes256gcm16</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Oct 10, 2025</p>
+<p>#Install strongswan and dependency packages</p>
+<p>dnf install epel-release</p>
+<p>dnf install strongswan</p>
+<p>dnf install tpm2*</p>
+<h1>generate CA RSA Key pairs</h1>
+<p>strongswan pki --gen rsa  --outform pem &gt; caKey.pem</p>
+<p>strongswan  pki --self --in caKey.pem --dn &quot;CN=VPN CA&quot; --ca --outform pem &gt; caCert.pem</p>
+<h1>export cer file of CA and upload to Azure VPN gateway</h1>
+<p>openssl x509 -in caCert.pem -outform der | base64 -w0 ; echo</p>
+<h1>genarate vpn client key pairs</h1>
+<p>export PASSWORD=&quot;password&quot;  # replace with the real password</p>
+<p>export USERNAME=$(hostnamectl --static)</p>
+<p>strongswan  pki --gen --outform pem &gt; &quot;${USERNAME}Key.pem&quot;</p>
+<p>strongswan pki --pub --in &quot;${USERNAME}Key.pem&quot; | strongswan  pki --issue --cacert caCert.pem --cakey caKey.pem --dn &quot;CN=${USERNAME}&quot; --san &quot;${USERNAME}&quot; --flag clientAuth --outform pem &gt; &quot;${USERNAME}Cert.pem&quot;</p>
+<p>openssl pkcs12 -in &quot;${USERNAME}Cert.pem&quot; -inkey &quot;${USERNAME}Key.pem&quot; -certfile caCert.pem -export -out &quot;${USERNAME}.p12&quot; -password &quot;pass:${PASSWORD}&quot;</p>
+<p>cp $(USERNAME).p12 /etc/strongswan/ipsec.d/private/</p>
+<p>#download VPN client configuration file, after decompression, upload  VpnServerRoot.cer_0 to the local device</p>
+<p>cp VpnServerRoot.cer_0  /etc/strongswan/ipsec.d/cacerts/</p>
+<h1>edit the ipsec configuration file and add the new IPSEC connction</h1>
+<p>vi /etc/strongswan/ipsec.conf</p>
+<p>conn azure</p>
+<p>keyexchange=ikev2</p>
+<p>type=tunnel</p>
+<p>leftfirewall=yes</p>
+<p>left=%any</p>
+<p>leftcert=$(USRENAME)Cert.pem   #replase by value of variable USRENAME</p>
+<p>leftauth=eap-tls</p>
+<p>leftid=%$(USERNAME)  #replase by value of variable USRENAME</p>
+<p>right=azuregateway-3dfe0023-a199-4d19-a19a-331e4cf5449a-87b9da247488.vpn.chinacloudapi.cn  #replcace by VPN gateway FQDN</p>
+<p>rightid=%azuregateway-3dfe0023-a199-4d19-a19a-331e4cf5449a-87b9da247488.vpn.chinacloudapi.cn    #replcace by VPN gateway FQDN</p>
+<p>rightsubnet=10.0.0.0/16,172.25.0.0/16  #replcas by Azure network address range</p>
+<p>leftsourceip=%config</p>
+<p>auto=start</p>
+<p>auto=route</p>
+<p>keyingtries=%forever</p>
+<p>esp=aes256gcm16</p>
+<h1>add the auth file,type the P12 file name and password</h1>
+<p>vi /etc/strongswan/ipsec.secrets</p>
+<p>: P12 $(USERNAME).p12  &#39;password&#39; # replase by value of variable USRENAME</p>
+<p>#initial connection</p>
+<p>strongswan restart</p>
+<p>strongswan up azure</p>
+<p>#IKE logs view:</p>
+<p>swanctl  --log   --debug 0</p></article>

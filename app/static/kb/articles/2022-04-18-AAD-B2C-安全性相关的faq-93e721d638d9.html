@@ -1,0 +1,138 @@
+<article class="kb-article" data-title="AAD B2C 安全性相关的faq"><h1>AAD B2C 安全性相关的faq</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: Azure AD</li>
+<li>Section: KB</li>
+<li>最近修改: 2022-04-18 14:54:56</li>
+<li>JD 相关性: Azure AD</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>johnny</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>johnny</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>johnny</li>
+</ul>
+<ul>
+<li>Azure AD B2C用户密码策略和AAD 用户密码策略是一致的：</li>
+</ul>
+<ul>
+<li>1. 通过Azure AD B2C注册的用户，对密码过期周期可以设置吗？</li>
+</ul>
+<ul>
+<li>2. 通过Azure AD B2C注册的用户，是否可以设置在尝试几次错误密码登录后，锁定该用户一段时间，禁止其再次尝试登录？</li>
+</ul>
+<ul>
+<li>有默认的策略：</li>
+</ul>
+<ul>
+<li>3. 是否能提供一些Azure AD B2C安全性设置的最佳实践来参考, 以帮助提升应用程序整体的安全性？</li>
+</ul>
+<ul>
+<li>没有专门的安全性设置的最佳实践文档，您可以考虑设置B2C的MFA：</li>
+</ul>
+<ul>
+<li>这个中国区是可以配置的，是针对B2C的本地用户的密码策略（不能限制第三方应用账号的密码强度）：</li>
+</ul>
+<ul>
+<li>运行用户流之后配置密码时，会按照您配置的密码强度要求才能设置成功：</li>
+</ul>
+<ul>
+<li>且这个密码策略是针对AAD local account：</li>
+</ul>
+<ul>
+<li>您可以参考如下文档：</li>
+</ul>
+<ul>
+<li>这个local account的邮件地址，实际就是aad中的一个账号，所以符合默认策略，会Azure AD密码90天默认过期周期，以及10次错误尝试会被锁定等：</li>
+</ul>
+<ul>
+<li>您在用户流中注册的邮件就会生成这个aad 用户：</li>
+</ul>
+<ul>
+<li>另外，Azure AD B2C中，对于用户流添加条件访问，目前中国区还没有对应的文档：</li>
+</ul>
+<ul>
+<li>没有您global文档中“安全性”那个大项对应的文档：</li>
+</ul>
+<ul>
+<li>关于token生存期的疑问：</li>
+</ul>
+<ul>
+<li>关于中国区B2C的文档，您可以参考如下链接，有很多国际版的链接文档，中国区还没有：</li>
+</ul>
+<ul>
+<li>中国区文档：</li>
+</ul>
+<ul>
+<li>国际版文档：</li>
+</ul>
+<ul>
+<li>目前中国区没有专门的安全性设置的最佳实践文档，还是如之前与您沟通所说，您可以考虑设置B2C的MFA：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>关于您的疑问，请查看如下测试：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>可以修改，使用PowerShell设置密码过期策略：</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy#set-password-expiration-policies-in-azure-ad" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy#set-password-expiration-policies-in-azure-ad</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/active-directory-b2c/multi-factor-authentication" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/multi-factor-authentication</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/active-directory-b2c/password-complexity?pivots=b2c-user-flow" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/password-complexity?pivots=b2c-user-flow</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.azure.cn/zh-cn/active-directory-b2c/add-sign-up-and-sign-in-policy?pivots=b2c-user-flow" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/add-sign-up-and-sign-in-policy?pivots=b2c-user-flow</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.microsoft.com/zh-cn/azure/active-directory-b2c/configure-tokens?pivots=b2c-user-flow" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/active-directory-b2c/configure-tokens?pivots=b2c-user-flow</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>johnny</p>
+<p>Azure AD B2C用户密码策略和AAD 用户密码策略是一致的：</p>
+<p>1. 通过Azure AD B2C注册的用户，对密码过期周期可以设置吗？</p>
+<p>可以修改，使用PowerShell设置密码过期策略：</p>
+<p><a href="https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy#set-password-expiration-policies-in-azure-ad" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy#set-password-expiration-policies-in-azure-ad</a></p>
+<p>2. 通过Azure AD B2C注册的用户，是否可以设置在尝试几次错误密码登录后，锁定该用户一段时间，禁止其再次尝试登录？</p>
+<p>有默认的策略：</p>
+<p><a href="https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory/authentication/concept-sspr-policy</a></p>
+<p>3. 是否能提供一些Azure AD B2C安全性设置的最佳实践来参考, 以帮助提升应用程序整体的安全性？</p>
+<p>没有专门的安全性设置的最佳实践文档，您可以考虑设置B2C的MFA：</p>
+<p><a href="https://docs.azure.cn/zh-cn/active-directory-b2c/multi-factor-authentication" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/multi-factor-authentication</a></p>
+<p>关于您的疑问，请查看如下测试：</p>
+<p><a href="https://docs.azure.cn/zh-cn/active-directory-b2c/password-complexity?pivots=b2c-user-flow" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/password-complexity?pivots=b2c-user-flow</a></p>
+<p>这个中国区是可以配置的，是针对B2C的本地用户的密码策略（不能限制第三方应用账号的密码强度）：</p>
+<p>运行用户流之后配置密码时，会按照您配置的密码强度要求才能设置成功：</p>
+<p>且这个密码策略是针对AAD local account：</p>
+<p>您可以参考如下文档：</p>
+<p><a href="https://docs.azure.cn/zh-cn/active-directory-b2c/add-sign-up-and-sign-in-policy?pivots=b2c-user-flow" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/active-directory-b2c/add-sign-up-and-sign-in-policy?pivots=b2c-user-flow</a></p>
+<p>这个local account的邮件地址，实际就是aad中的一个账号，所以符合默认策略，会Azure AD密码90天默认过期周期，以及10次错误尝试会被锁定等：</p>
+<p>您在用户流中注册的邮件就会生成这个aad 用户：</p>
+<p>另外，Azure AD B2C中，对于用户流添加条件访问，目前中国区还没有对应的文档：</p>
+<p>没有您global文档中“安全性”那个大项对应的文档：</p>
+<p>关于token生存期的疑问：</p>
+<p><a href="https://docs.microsoft.com/zh-cn/azure/active-directory-b2c/configure-tokens?pivots=b2c-user-flow" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/azure/active-directory-b2c/configure-tokens?pivots=b2c-user-flow</a></p>
+<p>关于中国区B2C的文档，您可以参考如下链接，有很多国际版的链接文档，中国区还没有：</p>
+<p>中国区文档：</p>
+<p>国际版文档：</p>
+<p>目前中国区没有专门的安全性设置的最佳实践文档，还是如之前与您沟通所说，您可以考虑设置B2C的MFA：</p></article>

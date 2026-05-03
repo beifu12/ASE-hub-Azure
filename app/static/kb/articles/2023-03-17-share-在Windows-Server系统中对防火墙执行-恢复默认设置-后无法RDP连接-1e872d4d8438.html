@@ -1,0 +1,91 @@
+<article class="kb-article" data-title="【share 】| 在Windows Server系统中对防火墙执行“恢复默认设置”后无法RDP连接"><h1>【share 】| 在Windows Server系统中对防火墙执行“恢复默认设置”后无法RDP连接</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Vnet</li>
+<li>Section: 【Share】Azure平台Node上抓包</li>
+<li>最近修改: 2023-03-17 13:14:07</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>Windows虚拟机无法从内网连接登录</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>Windows虚拟机无法从内网连接登录</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Update</li>
+</ul>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>=======</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>========</li>
+</ul>
+<ul>
+<li>用户在系统中，对防火墙执行了“Restore settings”的操作，而进一步比较执行“Restore default setting”前后的防火墙策略，我发现：</li>
+</ul>
+<ul>
+<li>使用平台镜像创建的虚拟机，启用的防火墙策略有118条；执行恢复默认设置后，启用的防火墙策略为78条；</li>
+</ul>
+<ul>
+<li>#1</li>
+</ul>
+<ul>
+<li>#2</li>
+</ul>
+<ul>
+<li>#2恢复默认设置后：</li>
+</ul>
+<ul>
+<li>==============</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>#1 未执行“恢复默认设置”时（通过Powershell命令“Get-NetFirewallRule -Enabled True &gt; FirewallRules.txt”获取防火墙策略）：</li>
+</ul>
+<ul>
+<li>在Azure portal的虚拟机“运行命令”下，通过powershell命令将系统防火墙关闭后，虚拟机恢复连接登录。</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>对比防火墙策略中包含“Remote”字段的策略，可以发现，恢复默认设置后，防火墙缺少了放行RDP 3389端口等策略，详见下方截图：</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案*：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Update</p>
+<p>Jia.Xiaolei</p>
+<p>问题描述：</p>
+<p>=======</p>
+<p>Windows虚拟机无法从内网连接登录</p>
+<p>问题原因：</p>
+<p>========</p>
+<p>用户在系统中，对防火墙执行了“Restore settings”的操作，而进一步比较执行“Restore default setting”前后的防火墙策略，我发现：</p>
+<p>使用平台镜像创建的虚拟机，启用的防火墙策略有118条；执行恢复默认设置后，启用的防火墙策略为78条；</p>
+<p>#1</p>
+<p>#2</p>
+<p>对比防火墙策略中包含“Remote”字段的策略，可以发现，恢复默认设置后，防火墙缺少了放行RDP 3389端口等策略，详见下方截图：</p>
+<p>#1 未执行“恢复默认设置”时（通过Powershell命令“Get-NetFirewallRule -Enabled True &gt; FirewallRules.txt”获取防火墙策略）：</p>
+<p>#2恢复默认设置后：</p>
+<p>解决方案*：</p>
+<p>==============</p>
+<p>在Azure portal的虚拟机“运行命令”下，通过powershell命令将系统防火墙关闭后，虚拟机恢复连接登录。</p></article>

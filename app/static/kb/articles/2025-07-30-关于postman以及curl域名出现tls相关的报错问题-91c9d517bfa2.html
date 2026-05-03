@@ -1,0 +1,226 @@
+<article class="kb-article" data-title="关于postman以及curl域名出现tls相关的报错问题"><h1>关于postman以及curl域名出现tls相关的报错问题</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: KB</li>
+<li>最近修改: 2025-07-30 17:24:34</li>
+<li>JD 相关性: Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>客户反馈请求application gateway服务报错，报错信息如下：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>客户反馈请求application gateway服务报错，报错信息如下：</li>
+</ul>
+<ul>
+<li>根据客户反馈只有在curl或postman等工具的请求下会出现这个异常问题，同时连接这个服务的工具也会报同样的错误，经过测试有多种不一样的错误情况，</li>
+</ul>
+<ul>
+<li>* error:1408F10B:SSL routines:ssl3_get_record:wrong version number</li>
+</ul>
+<ul>
+<li>curl: (35) error:1408F10B:SSL routines:ssl3_get_record:wrong version number</li>
+</ul>
+<ul>
+<li>Error: write EPROTO 814344:error:100000f7:SSL routines:OPENSSL_internal:WRONG_VERSION_NUMBER:..\..\..\..\src\third_party\boringssl\src\ssl\tls_record.cc:242:</li>
+</ul>
+<ul>
+<li>由于以上的报错均为客户的设备进行出现的，我通过自己的本地测试以及虚拟机测试，均无法复现客户的问题，同时在浏览器上进行访问是没有问题的。</li>
+</ul>
+<ul>
+<li>尝试复现客户问题，由于通过我的postman无法复现出客户的问题，尝试进行其他工具的测试，直到复现问题的出现，</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>20240829</li>
+</ul>
+<ul>
+<li>关联工单：20240605297287_WAF can&#39;t forward api request to application</li>
+</ul>
+<ul>
+<li>问题描述：</li>
+</ul>
+<ul>
+<li>*</li>
+</ul>
+<ul>
+<li>Trying 143.64.59.96:443...</li>
+</ul>
+<ul>
+<li>* Connected to service.payoneer.com.cn (143.64.59.96) port 443</li>
+</ul>
+<ul>
+<li>* ALPN: curl offers h2, http/1.1</li>
+</ul>
+<ul>
+<li>* (304) (OUT), TLS handshake, Client hello (1) :</li>
+</ul>
+<ul>
+<li>CAfile: /etc/ss1/cert.pem</li>
+</ul>
+<ul>
+<li>CApath: none</li>
+</ul>
+<ul>
+<li>绕过application gateway，内网curl没问题，从而判断是应用程序网关的影响。</li>
+</ul>
+<ul>
+<li>客户错误1：</li>
+</ul>
+<ul>
+<li>SCIM的推送界面错误</li>
+</ul>
+<ul>
+<li>客户错误2：</li>
+</ul>
+<ul>
+<li>*   Trying 143.64.59.96:443...</li>
+</ul>
+<ul>
+<li>* TCP_NODELAY set</li>
+</ul>
+<ul>
+<li>* Connected to service.payoneer.com.cn (143.64.59.96) port 443 (#0)</li>
+</ul>
+<ul>
+<li>* ALPN, offering h2</li>
+</ul>
+<ul>
+<li>* ALPN, offering http/1.1</li>
+</ul>
+<ul>
+<li>*   CAfile: /etc/ssl/certs/ca-certificates.crt</li>
+</ul>
+<ul>
+<li>CApath: /etc/ssl/certs</li>
+</ul>
+<ul>
+<li>* TLSv1.3 (OUT), TLS handshake, Client hello (1):</li>
+</ul>
+<ul>
+<li>* Closing connection 0</li>
+</ul>
+<ul>
+<li>客户错误3：</li>
+</ul>
+<ul>
+<li>根据客户反馈，在备案信息完成之后，客户的接口恢复访问，且恢复了tls策略。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>经过排查应用程序网关配置无任何异常的情况，通过浏览器访问发现是正常可以访问的。</li>
+</ul>
+<ul>
+<li>* successfully set certificate verify locations:</li>
+</ul>
+<ul>
+<li>根据报错判断都是基于SSL的情况下，同时排查客户ssl配置，通过网页查询发现异常。</li>
+</ul>
+<ul>
+<li>通过ip，确认客户的ssl policy情况，</li>
+</ul>
+<ul>
+<li>再通过域名进一步确认，</li>
+</ul>
+<ul>
+<li>问题排查原因：</li>
+</ul>
+<ul>
+<li>通过工具发现连接出现SSL的报错情况，基于这个请求进行抓包的查看，</li>
+</ul>
+<ul>
+<li>抓包发现出现了拦截页的问题，根据这一点判断是域名ICP备案问题造成。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>* LibreSSL/3.3.6: error:1404B42E:SSL routines:ST_CONNECT:tlsv1 alert protocol version</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>curl -v --tlsv1.1 <a href="https://service.payoneer.com.cn/wecom/rest/SCIM/Users/0c56af6d-1238-43ee-82d8-46e6270224dd" target="_blank" rel="noopener">https://service.payoneer.com.cn/wecom/rest/SCIM/Users/0c56af6d-1238-43ee-82d8-46e6270224dd</a></li>
+</ul>
+<ul>
+<li>brightsea_lai_gmail_com@instance-1:~$ curl -v <a href="https://service.payoneer.com.cn/wecom/rest/SCIM/Users/0c56af6d-1238-43ee-82d8-46e6270224dd" target="_blank" rel="noopener">https://service.payoneer.com.cn/wecom/rest/SCIM/Users/0c56af6d-1238-43ee-82d8-46e6270224dd</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>20240829</p>
+<p>关联工单：20240605297287_WAF can&#39;t forward api request to application</p>
+<p>问题描述：</p>
+<p>客户反馈请求application gateway服务报错，报错信息如下：</p>
+<p>curl -v --tlsv1.1 <a href="https://service.payoneer.com.cn/wecom/rest/SCIM/Users/0c56af6d-1238-43ee-82d8-46e6270224dd" target="_blank" rel="noopener">https://service.payoneer.com.cn/wecom/rest/SCIM/Users/0c56af6d-1238-43ee-82d8-46e6270224dd</a></p>
+<p>*</p>
+<p>Trying 143.64.59.96:443...</p>
+<ul>
+<li>Connected to service.payoneer.com.cn (143.64.59.96) port 443</li>
+</ul>
+<ul>
+<li>ALPN: curl offers h2, http/1.1</li>
+</ul>
+<ul>
+<li>(304) (OUT), TLS handshake, Client hello (1) :</li>
+</ul>
+<p>CAfile: /etc/ss1/cert.pem</p>
+<p>CApath: none</p>
+<ul>
+<li>LibreSSL/3.3.6: error:1404B42E:SSL routines:ST_CONNECT:tlsv1 alert protocol version</li>
+</ul>
+<p>绕过application gateway，内网curl没问题，从而判断是应用程序网关的影响。</p>
+<p>经过排查应用程序网关配置无任何异常的情况，通过浏览器访问发现是正常可以访问的。</p>
+<p>根据客户反馈只有在curl或postman等工具的请求下会出现这个异常问题，同时连接这个服务的工具也会报同样的错误，经过测试有多种不一样的错误情况，</p>
+<p>客户错误1：</p>
+<p>SCIM的推送界面错误</p>
+<p>客户错误2：</p>
+<p>brightsea_lai_gmail_com@instance-1:~$ curl -v <a href="https://service.payoneer.com.cn/wecom/rest/SCIM/Users/0c56af6d-1238-43ee-82d8-46e6270224dd" target="_blank" rel="noopener">https://service.payoneer.com.cn/wecom/rest/SCIM/Users/0c56af6d-1238-43ee-82d8-46e6270224dd</a></p>
+<ul>
+<li>Trying 143.64.59.96:443...</li>
+</ul>
+<ul>
+<li>TCP_NODELAY set</li>
+</ul>
+<ul>
+<li>Connected to service.payoneer.com.cn (143.64.59.96) port 443 (#0)</li>
+</ul>
+<ul>
+<li>ALPN, offering h2</li>
+</ul>
+<ul>
+<li>ALPN, offering http/1.1</li>
+</ul>
+<ul>
+<li>successfully set certificate verify locations:</li>
+</ul>
+<ul>
+<li>CAfile: /etc/ssl/certs/ca-certificates.crt</li>
+</ul>
+<p>CApath: /etc/ssl/certs</p>
+<ul>
+<li>TLSv1.3 (OUT), TLS handshake, Client hello (1):</li>
+</ul>
+<ul>
+<li>error:1408F10B:SSL routines:ssl3_get_record:wrong version number</li>
+</ul>
+<ul>
+<li>Closing connection 0</li>
+</ul>
+<p>curl: (35) error:1408F10B:SSL routines:ssl3_get_record:wrong version number</p>
+<p>客户错误3：</p>
+<p>Error: write EPROTO 814344:error:100000f7:SSL routines:OPENSSL_internal:WRONG_VERSION_NUMBER:..\..\..\..\src\third_party\boringssl\src\ssl\tls_record.cc:242:</p>
+<p>由于以上的报错均为客户的设备进行出现的，我通过自己的本地测试以及虚拟机测试，均无法复现客户的问题，同时在浏览器上进行访问是没有问题的。</p>
+<p>根据报错判断都是基于SSL的情况下，同时排查客户ssl配置，通过网页查询发现异常。</p>
+<p>通过ip，确认客户的ssl policy情况，</p>
+<p>再通过域名进一步确认，</p>
+<p>问题排查原因：</p>
+<p>尝试复现客户问题，由于通过我的postman无法复现出客户的问题，尝试进行其他工具的测试，直到复现问题的出现，</p>
+<p>通过工具发现连接出现SSL的报错情况，基于这个请求进行抓包的查看，</p>
+<p>抓包发现出现了拦截页的问题，根据这一点判断是域名ICP备案问题造成。</p>
+<p>解决方案：</p>
+<p>根据客户反馈，在备案信息完成之后，客户的接口恢复访问，且恢复了tls策略。</p></article>

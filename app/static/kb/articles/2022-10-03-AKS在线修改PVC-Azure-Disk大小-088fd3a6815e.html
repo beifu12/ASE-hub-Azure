@@ -1,0 +1,103 @@
+<article class="kb-article" data-title="AKS在线修改PVC/Azure Disk大小"><h1>AKS在线修改PVC/Azure Disk大小</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: K8S</li>
+<li>最近修改: 2022-10-03 13:39:33</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题描述：Azure disk在线修改PVC大小失败</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题描述：Azure disk在线修改PVC大小失败</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Lu Yitong</li>
+</ul>
+<ul>
+<li>问题原因：Azure Disk目前暂不支持在线修改pvc大小</li>
+</ul>
+<ul>
+<li>离线修改：需要按照如下方法scale down 应用replica为0，等disk 处于detach状态才可以resize:</li>
+</ul>
+<ul>
+<li>azuredisk-csi-driver/sizegrow.md at master · kubernetes-sigs/azuredisk-csi-driver (github.com)</li>
+</ul>
+<ul>
+<li>另外，针对在线修改的需求，您也可以在Azure网站上对此需求进行投票：</li>
+</ul>
+<ul>
+<li>Note：</li>
+</ul>
+<ul>
+<li>Azure Disk CSI driver 已经GA了, 目前in-tree &amp; CSI driver都支持resize的</li>
+</ul>
+<ul>
+<li>Storage class需要加上“allowVolumeExpansion: true”，对应的pvc 才能支持resize，aks上默认创建的所有storage class目前都加上了这个选项。</li>
+</ul>
+<ul>
+<li>kind: StorageClass</li>
+</ul>
+<ul>
+<li>apiVersion: storage.k8s.io/v1</li>
+</ul>
+<ul>
+<li>metadata:</li>
+</ul>
+<ul>
+<li>name: hdd</li>
+</ul>
+<ul>
+<li>provisioner: kubernetes.io/azure-disk</li>
+</ul>
+<ul>
+<li>parameters:</li>
+</ul>
+<ul>
+<li>allowVolumeExpansion: true</li>
+</ul>
+<h2>排查思路</h2>
+<p>未从原文中明确识别。</p>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>skuname: Standard_LRS</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>·         需求投票：<a href="https://feedback.azure.com/forums/914020-azure-kubernetes-service-aks/suggestions/39681535-online-resize-of-the-pv-pvc-for-the-kubernetes" target="_blank" rel="noopener">https://feedback.azure.com/forums/914020-azure-kubernetes-service-aks/suggestions/39681535-online-resize-of-the-pv-pvc-for-the-kubernetes</a></li>
+</ul>
+<ul>
+<li>·         Github相似问题：<a href="https://github.com/Azure/AKS/issues/1477" target="_blank" rel="noopener">https://github.com/Azure/AKS/issues/1477</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Lu Yitong</p>
+<p>问题描述：Azure disk在线修改PVC大小失败</p>
+<p>问题原因：Azure Disk目前暂不支持在线修改pvc大小</p>
+<p>解决方案：</p>
+<p>离线修改：需要按照如下方法scale down 应用replica为0，等disk 处于detach状态才可以resize:</p>
+<p>azuredisk-csi-driver/sizegrow.md at master · kubernetes-sigs/azuredisk-csi-driver (github.com)</p>
+<p>另外，针对在线修改的需求，您也可以在Azure网站上对此需求进行投票：</p>
+<p>·         需求投票：<a href="https://feedback.azure.com/forums/914020-azure-kubernetes-service-aks/suggestions/39681535-online-resize-of-the-pv-pvc-for-the-kubernetes" target="_blank" rel="noopener">https://feedback.azure.com/forums/914020-azure-kubernetes-service-aks/suggestions/39681535-online-resize-of-the-pv-pvc-for-the-kubernetes</a></p>
+<p>·         Github相似问题：<a href="https://github.com/Azure/AKS/issues/1477" target="_blank" rel="noopener">https://github.com/Azure/AKS/issues/1477</a></p>
+<p>Note：</p>
+<p>Azure Disk CSI driver 已经GA了, 目前in-tree &amp; CSI driver都支持resize的</p>
+<p>Storage class需要加上“allowVolumeExpansion: true”，对应的pvc 才能支持resize，aks上默认创建的所有storage class目前都加上了这个选项。</p>
+<p>kind: StorageClass</p>
+<p>apiVersion: storage.k8s.io/v1</p>
+<p>metadata:</p>
+<p>name: hdd</p>
+<p>provisioner: kubernetes.io/azure-disk</p>
+<p>parameters:</p>
+<p>skuname: Standard_LRS</p>
+<p>allowVolumeExpansion: true</p></article>

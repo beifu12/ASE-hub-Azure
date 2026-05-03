@@ -1,0 +1,71 @@
+<article class="kb-article" data-title="使用Azure AD账户运行scp上传文件至虚拟机"><h1>使用Azure AD账户运行scp上传文件至虚拟机</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-07-03 17:54:42</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>参考文档 Export the SSH configuration for use with SSH clients that support OpenSSH</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>参考文档 Export the SSH configuration for use with SSH clients that support OpenSSH</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>参考文档 Export the SSH configuration for use with SSH clients that support OpenSSH</li>
+</ul>
+<ul>
+<li>#Install SSH extension</li>
+</ul>
+<ul>
+<li>#test scp command</li>
+</ul>
+<ul>
+<li>scp -F C:\Users\zuo.xiaojing\.ssh\config blob-nfs-sc.yaml 159.27.187.169:~/temp</li>
+</ul>
+<ul>
+<li>More reference document az ssh config command</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>#test login with AAD account</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<ul>
+<li>az extension add --name ssh</li>
+</ul>
+<ul>
+<li>az cloud set -n AzureChinaCloud</li>
+</ul>
+<ul>
+<li>az login</li>
+</ul>
+<ul>
+<li>az ssh vm --ip 159.27.187.169</li>
+</ul>
+<ul>
+<li>az ssh config --file C:\Users\zuo.xiaojing\.ssh\config -n aadauth -g aadauth</li>
+</ul>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>参考文档 Export the SSH configuration for use with SSH clients that support OpenSSH</p>
+<p>#Install SSH extension</p>
+<p>az extension add --name ssh</p>
+<p>#test login with AAD account</p>
+<p>az cloud set -n AzureChinaCloud</p>
+<p>az login</p>
+<p>az ssh vm --ip 159.27.187.169</p>
+<p>#test scp command</p>
+<p>az ssh config --file C:\Users\zuo.xiaojing\.ssh\config -n aadauth -g aadauth</p>
+<p>scp -F C:\Users\zuo.xiaojing\.ssh\config blob-nfs-sc.yaml 159.27.187.169:~/temp</p>
+<p>More reference document az ssh config command</p></article>

@@ -1,0 +1,89 @@
+<article class="kb-article" data-title="在虚拟机页面搜索提示报错"><h1>在虚拟机页面搜索提示报错</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2023-03-21 13:40:22</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：</li>
+</ul>
+<ul>
+<li>客户在虚拟机页面搜索虚拟机时会提示以下报错。</li>
+</ul>
+<ul>
+<li>报错信息：</li>
+</ul>
+<ul>
+<li>An error occured when trying to fetch resources. Additional details from the underlying API that might be helpful: Please provide below info when asking for support: timestamp = 2022-12-06T00:56:56.0805411Z, correlationId = ac4c08ee-6ebc-4480-ba41-c0e698486334. (Code: BadRequest) Query is invalid. Please refer to the documentation for the Azure Resource Graph service and fix the error before retrying. (Code: InvalidQuery) The query has 129 path expression, which exceeds the limit of 128. A path expression is a object accessor, e.g., properties[&#39;foo&#39;]. (Code: TooManyPathExpressions)</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Liu Huan</li>
+</ul>
+<ul>
+<li>Zhang Lihong Update</li>
+</ul>
+<ul>
+<li>问题原因：</li>
+</ul>
+<ul>
+<li>通过管理视图à编辑列删除掉多于128的N列后，可以正常搜索。</li>
+</ul>
+<ul>
+<li>更多信息：</li>
+</ul>
+<ul>
+<li>发现是由于客户视图的列中保存了多于一个的标签列，删除多于的标签列，问题解决。供大家参考。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>分享一个工单，SR_20230128209106_Portal无法搜索VM。</li>
+</ul>
+<ul>
+<li>根据报错的提示，path expression (个人认为可以理解为查询的列)的上限为128。而客户的查询中有”128+N”个path expression。</li>
+</ul>
+<ul>
+<li>如果需要进行超过128列的查询，可以尝试通过打开查询，然后运行查询，进入到Azure Resource Graph Explorer 中查看。</li>
+</ul>
+<ul>
+<li>注：Azure Resource Graph Explorer 默认会查询账户下所有订阅的信息，如需筛选特定的订阅，可以在查询语句的最后加上一行通过订阅名称或订阅ID筛选特定的订阅。</li>
+</ul>
+<ul>
+<li>接着Hana的分享，今天遇到的工单SR_20230321219203_vm的查询功能无法使用，查询条件输入后就报错，报了同样的错误，</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案：</li>
+</ul>
+<h2>参考链接</h2>
+<p>未从原文中明确识别。</p>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Liu Huan</p>
+<p>2023-03-21</p>
+<p>Zhang Lihong Update</p>
+<p>分享一个工单，SR_20230128209106_Portal无法搜索VM。</p>
+<p>问题现象：</p>
+<p>客户在虚拟机页面搜索虚拟机时会提示以下报错。</p>
+<p>报错信息：</p>
+<p>An error occured when trying to fetch resources. Additional details from the underlying API that might be helpful: Please provide below info when asking for support: timestamp = 2022-12-06T00:56:56.0805411Z, correlationId = ac4c08ee-6ebc-4480-ba41-c0e698486334. (Code: BadRequest) Query is invalid. Please refer to the documentation for the Azure Resource Graph service and fix the error before retrying. (Code: InvalidQuery) The query has 129 path expression, which exceeds the limit of 128. A path expression is a object accessor, e.g., properties[&#39;foo&#39;]. (Code: TooManyPathExpressions)</p>
+<p>问题原因：</p>
+<p>根据报错的提示，path expression (个人认为可以理解为查询的列)的上限为128。而客户的查询中有”128+N”个path expression。</p>
+<p>解决方案：</p>
+<p>通过管理视图à编辑列删除掉多于128的N列后，可以正常搜索。</p>
+<p>更多信息：</p>
+<p>如果需要进行超过128列的查询，可以尝试通过打开查询，然后运行查询，进入到Azure Resource Graph Explorer 中查看。</p>
+<p>注：Azure Resource Graph Explorer 默认会查询账户下所有订阅的信息，如需筛选特定的订阅，可以在查询语句的最后加上一行通过订阅名称或订阅ID筛选特定的订阅。</p>
+<p>接着Hana的分享，今天遇到的工单SR_20230321219203_vm的查询功能无法使用，查询条件输入后就报错，报了同样的错误，</p>
+<p>发现是由于客户视图的列中保存了多于一个的标签列，删除多于的标签列，问题解决。供大家参考。</p></article>

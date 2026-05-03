@@ -1,0 +1,102 @@
+<article class="kb-article" data-title="[Share]查看 Microsoft Defender for Cloud 中与AKS相关的策略是否下发到集群"><h1>[Share]查看 Microsoft Defender for Cloud 中与AKS相关的策略是否下发到集群</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: AKS</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-06 22:42:06</li>
+<li>JD 相关性: AKS/容器</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>update</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>update</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>update</li>
+</ul>
+<ul>
+<li>Song Weiqin</li>
+</ul>
+<ul>
+<li>参考工单： SR_20240509292700</li>
+</ul>
+<ul>
+<li>用户问题描述：</li>
+</ul>
+<ul>
+<li>======================</li>
+</ul>
+<ul>
+<li>Defender-推荐中关于”应只从受信任的注册表中部署容器映像“，从说明：从“运行不正常的资源”选项卡中选择群集。此时，Defender for Clouds 列出了正在运行来自不受信任的注册表的映像的 Pod”</li>
+</ul>
+<ul>
+<li>问题：我们点击后直接跳转到了对应的资源，并没有弹窗列出不符合规范的Pod</li>
+</ul>
+<ul>
+<li>====================</li>
+</ul>
+<ul>
+<li>kubectl连接到AKS</li>
+</ul>
+<ul>
+<li>运行 &#39;kubectl get constraints&#39;获取所有由Azure 策略订阅的约束</li>
+</ul>
+<ul>
+<li>找到策略的名字包括&#39;azurepolicy-k8sazurev2containerallowedimag-&#39; (例如k8sazurev2containerallowedimages.constraints.gatekeeper.sh/azurepolicy-k8sazurev2containerallowedimag-f87dd5b6293fd3cd04bf)</li>
+</ul>
+<ul>
+<li>运行&#39;kubectl describe [name of the policy step3]&#39;</li>
+</ul>
+<ul>
+<li>如 kubectl describe k8sazurev2containerallowedimages.constraints.gatekeeper.sh/azurepolicy-k8sazurev2containerallowedimag-f87dd5b6293fd3cd04bf</li>
+</ul>
+<ul>
+<li>如下，有9个pod违法策略&quot;应只从受信任的注册表中部署容器映像&quot;</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>排查：</li>
+</ul>
+<ul>
+<li>确认  Microsoft Defender for Cloud 中aks相关策略分配已应用于你的集群： kubectl get constrainttemplat</li>
+</ul>
+<ul>
+<li>内置策略”应只从受信任的注册表中部署容器映像“对应于  &#39;azurepolicy-k8sazurev2containerallowedimag-&#39; ，具体查看方法如下：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>可以按照如下步骤查看具体不符合规范的pod，作为workaround。</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>确认集群安装Azure Policy加载项： <a href="https://docs.azure.cn/zh-cn/governance/policy/concepts/policy-for-kubernetes#install-azure-policy-add-on-for-aks" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/governance/policy/concepts/policy-for-kubernetes#install-azure-policy-add-on-for-aks</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>update</p>
+<p>Song Weiqin</p>
+<p>参考工单： SR_20240509292700</p>
+<p>用户问题描述：</p>
+<p>======================</p>
+<p>Defender-推荐中关于”应只从受信任的注册表中部署容器映像“，从说明：从“运行不正常的资源”选项卡中选择群集。此时，Defender for Clouds 列出了正在运行来自不受信任的注册表的映像的 Pod”</p>
+<p>问题：我们点击后直接跳转到了对应的资源，并没有弹窗列出不符合规范的Pod</p>
+<p>排查：</p>
+<p>====================</p>
+<p>可以按照如下步骤查看具体不符合规范的pod，作为workaround。</p>
+<p>确认集群安装Azure Policy加载项： <a href="https://docs.azure.cn/zh-cn/governance/policy/concepts/policy-for-kubernetes#install-azure-policy-add-on-for-aks" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/governance/policy/concepts/policy-for-kubernetes#install-azure-policy-add-on-for-aks</a></p>
+<p>确认  Microsoft Defender for Cloud 中aks相关策略分配已应用于你的集群： kubectl get constrainttemplat</p>
+<p>内置策略”应只从受信任的注册表中部署容器映像“对应于  &#39;azurepolicy-k8sazurev2containerallowedimag-&#39; ，具体查看方法如下：</p>
+<p>kubectl连接到AKS</p>
+<p>运行 &#39;kubectl get constraints&#39;获取所有由Azure 策略订阅的约束</p>
+<p>找到策略的名字包括&#39;azurepolicy-k8sazurev2containerallowedimag-&#39; (例如k8sazurev2containerallowedimages.constraints.gatekeeper.sh/azurepolicy-k8sazurev2containerallowedimag-f87dd5b6293fd3cd04bf)</p>
+<p>运行&#39;kubectl describe [name of the policy step3]&#39;</p>
+<p>如 kubectl describe k8sazurev2containerallowedimages.constraints.gatekeeper.sh/azurepolicy-k8sazurev2containerallowedimag-f87dd5b6293fd3cd04bf</p>
+<p>如下，有9个pod违法策略&quot;应只从受信任的注册表中部署容器映像&quot;</p></article>

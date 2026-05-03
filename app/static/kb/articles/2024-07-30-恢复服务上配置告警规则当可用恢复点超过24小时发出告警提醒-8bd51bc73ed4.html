@@ -1,0 +1,127 @@
+<article class="kb-article" data-title="恢复服务上配置告警规则当可用恢复点超过24小时发出告警提醒"><h1>恢复服务上配置告警规则当可用恢复点超过24小时发出告警提醒</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: Backup</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-07-30 15:41:09</li>
+<li>JD 相关性: 迁移/实施</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>对应的工单： SR_20240312282354_咨询关于恢复服务上配置如何配置告警规则当可用恢复点超过24小时发出告警提醒</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>对应的工单：  SR_20240312282354_咨询关于恢复服务上配置如何配置告警规则当可用恢复点超过24小时发出告警提醒</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>update</li>
+</ul>
+<ul>
+<li>Luolianhong</li>
+</ul>
+<ul>
+<li>//使用当前的时间点减去最新的可用恢复点的时间</li>
+</ul>
+<ul>
+<li>AzureDiagnostics</li>
+</ul>
+<ul>
+<li>| where ResourceProvider == &quot;MICROSOFT.RECOVERYSERVICES&quot; and Category == &quot;AzureSiteRecoveryRecoveryPoints&quot;</li>
+</ul>
+<ul>
+<li>| extend timeSinceLastRecoveryPoint = TimeGenerated - lastRecoveryPoint_t</li>
+</ul>
+<ul>
+<li>| project TimeGenerated, timeSinceLastRecoveryPoint,CorrelationId</li>
+</ul>
+<ul>
+<li>|join  (</li>
+</ul>
+<ul>
+<li>| where Category == &quot;AzureSiteRecoveryReplicatedItems&quot;</li>
+</ul>
+<ul>
+<li>|project name_s,CorrelationId</li>
+</ul>
+<ul>
+<li>) on CorrelationId</li>
+</ul>
+<ul>
+<li>| where timeSinceLastRecoveryPoint &gt; 24h</li>
+</ul>
+<ul>
+<li>| summarize arg_max(TimeGenerated, *) by CorrelationId</li>
+</ul>
+<ul>
+<li>| project TimeGenerated, timeSinceLastRecoveryPoint,name_s</li>
+</ul>
+<ul>
+<li>测试结果参考：收到对应的警报：</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>在对应的恢复访问保管库处配置诊断设置并将日志发送到log A</li>
+</ul>
+<ul>
+<li>使用logA进行查询，并配置对应的警报规则</li>
+</ul>
+<ul>
+<li>查询日志参考：</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>解决方案参考如下：</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>创建一个logA工作区： <a href="https://docs.azure.cn/zh-cn/azure-monitor/logs/quick-create-workspace?tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/logs/quick-create-workspace?tabs=azure-portal</a></li>
+</ul>
+<ul>
+<li>Log A参考文档： <a href="https://docs.azure.cn/zh-cn/azure-monitor/logs/log-analytics-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/logs/log-analytics-overview</a></li>
+</ul>
+<ul>
+<li>请参考： <a href="https://docs.azure.cn/zh-cn/site-recovery/monitor-log-analytics" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/monitor-log-analytics</a></li>
+</ul>
+<ul>
+<li>警报规则请参考： <a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-create-new-alert-rule?tabs=metric" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-create-new-alert-rule?tabs=metric</a></li>
+</ul>
+<ul>
+<li>操作组参考文档： <a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/action-groups" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/action-groups</a></li>
+</ul>
+<ul>
+<li>查询语句的编写请参考： <a href="https://docs.azure.cn/zh-cn/azure-monitor/logs/get-started-queries" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/logs/get-started-queries</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>update</p>
+<p>Luolianhong</p>
+<p>对应的工单：  SR_20240312282354_咨询关于恢复服务上配置如何配置告警规则当可用恢复点超过24小时发出告警提醒</p>
+<p>解决方案参考如下：</p>
+<p>创建一个logA工作区： <a href="https://docs.azure.cn/zh-cn/azure-monitor/logs/quick-create-workspace?tabs=azure-portal" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/logs/quick-create-workspace?tabs=azure-portal</a></p>
+<p>Log A参考文档： <a href="https://docs.azure.cn/zh-cn/azure-monitor/logs/log-analytics-overview" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/logs/log-analytics-overview</a></p>
+<p>在对应的恢复访问保管库处配置诊断设置并将日志发送到log A</p>
+<p>请参考： <a href="https://docs.azure.cn/zh-cn/site-recovery/monitor-log-analytics" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/site-recovery/monitor-log-analytics</a></p>
+<p>使用logA进行查询，并配置对应的警报规则</p>
+<p>警报规则请参考： <a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-create-new-alert-rule?tabs=metric" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/alerts-create-new-alert-rule?tabs=metric</a></p>
+<p>操作组参考文档： <a href="https://docs.azure.cn/zh-cn/azure-monitor/alerts/action-groups" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/alerts/action-groups</a></p>
+<p>查询语句的编写请参考： <a href="https://docs.azure.cn/zh-cn/azure-monitor/logs/get-started-queries" target="_blank" rel="noopener">https://docs.azure.cn/zh-cn/azure-monitor/logs/get-started-queries</a></p>
+<p>查询日志参考：</p>
+<p>//使用当前的时间点减去最新的可用恢复点的时间</p>
+<p>AzureDiagnostics</p>
+<p>| where ResourceProvider == &quot;MICROSOFT.RECOVERYSERVICES&quot; and Category == &quot;AzureSiteRecoveryRecoveryPoints&quot;</p>
+<p>| extend timeSinceLastRecoveryPoint = TimeGenerated - lastRecoveryPoint_t</p>
+<p>| project TimeGenerated, timeSinceLastRecoveryPoint,CorrelationId</p>
+<p>|join  (</p>
+<p>| where Category == &quot;AzureSiteRecoveryReplicatedItems&quot;</p>
+<p>|project name_s,CorrelationId</p>
+<p>) on CorrelationId</p>
+<p>| where timeSinceLastRecoveryPoint &gt; 24h</p>
+<p>| summarize arg_max(TimeGenerated, *) by CorrelationId</p>
+<p>| project TimeGenerated, timeSinceLastRecoveryPoint,name_s</p>
+<p>测试结果参考：收到对应的警报：</p></article>

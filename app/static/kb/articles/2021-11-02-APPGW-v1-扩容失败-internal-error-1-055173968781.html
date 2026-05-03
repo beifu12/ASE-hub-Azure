@@ -1,0 +1,115 @@
+<article class="kb-article" data-title="APPGW  v1 扩容失败(internal error)"><h1>APPGW  v1 扩容失败(internal error)</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: NET</li>
+<li>服务: App GW</li>
+<li>Section: Trouble Shooting</li>
+<li>最近修改: 2021-11-02 17:11:28</li>
+<li>JD 相关性: 售后排障; Azure IaaS 网络</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>问题现象：客户扩容网关实例，从2-6 出现internal error，10/24 22:41开始操作，10/25 00:30左右得到报错</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>问题现象：客户扩容网关实例，从2-6 出现internal error，10/24  22:41开始操作，10/25 00:30左右得到报错</li>
+</ul>
+<ul>
+<li>Deployment Service (HostedService:7dcbff3f-04db-400d-acb9-d5221d3e0c1d): OperationID: d67d137d-293f-49f9-afc9-208104fb00cc, Status: Failed, ExtensionData: System.Runtime.Serialization.ExtensionDataObject, HttpStatusCode: 500, ErrorCode: InternalError, ErrorDescription: The server encountered an internal error. Please retry the</li>
+</ul>
+<ul>
+<li>Failed to produce an allocation for the service.</li>
+</ul>
+<ul>
+<li>可以看到是分配失败，升级CSS确定是容量不足导致的异常</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Fuzhangliang/duanboyue</li>
+</ul>
+<ul>
+<li>参考工单：SR_20211025128002_升级应用程序网管的instance数量之后状态一直显示更新</li>
+</ul>
+<ul>
+<li>网关实例需要和控制层面通信，同步新的配置</li>
+</ul>
+<ul>
+<li>request.</li>
+</ul>
+<ul>
+<li>所以目前怀疑问题应该不在网络层面。</li>
+</ul>
+<ul>
+<li>===============================================</li>
+</ul>
+<ul>
+<li>筛选条件可以可以用Gateway Id        7dcbff3f-04db-400d-acb9-d5221d3e0c1d 或者deploymentID等等</li>
+</ul>
+<ul>
+<li>工单总结：</li>
+</ul>
+<ul>
+<li>在26日，Azure 负责Datacenter Capacity的同事已监控到Capacity不足的问题，并及时对集群的Capacity进行了扩容以保障用户的可能的扩容需求。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>通过对后台日志进行排查，控制层面在22:41左右收到扩容实例2-&gt;6的请求</li>
+</ul>
+<ul>
+<li>目前怀疑问题在平台控制层面，我将和您电话沟通做进一步排查，谢谢！</li>
+</ul>
+<ul>
+<li>根据上面报错信息：rdfe deployment的error。查询rdfe部署的日志</li>
+</ul>
+<ul>
+<li>经后线排查确认，AppGW扩容失败是由于AppGW所在的集群Capacity不足导致。</li>
+</ul>
+<ul>
+<li>27日，微软技术后线在收到我们的升级请求后，第一时间和Capacity Team进行了确认，在确认我们Capacity已足够的条件下，第一时间联系了您并成功进行了扩容操作。</li>
+</ul>
+<ul>
+<li>后续我们也和Capacity Team进行了确认，目前数据中心的集群的capacity良好，对于后续的扩容操作还有足够冗余空间。</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<p>未从原文中明确识别。</p>
+<h2>根因 / 结论</h2>
+<ul>
+<li>但是该过程没有成功，一直在重试，最后达到重试时间，超时失败。报错的原因是internal error .</li>
+</ul>
+<h2>解决方案</h2>
+<p>未从原文中明确识别。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/F084960" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/F084960</a></li>
+</ul>
+<ul>
+<li>我们查询了网关所在子网的路由和NSG的配置情况，并未发现路由和NSG配置异常的情况，同时在网关实例上进行测试，网关是可以正常连接到其配置文件所在的<a href="https://nfvmcmainsha.blob.core.chinacloudapi.cn/" target="_blank" rel="noopener">https://nfvmcmainsha.blob.core.chinacloudapi.cn/</a> 链接。</li>
+</ul>
+<ul>
+<li><a href="https://portal.microsoftgeneva.com/s/93ED06F8" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/93ED06F8</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Fuzhangliang/duanboyue</p>
+<p>参考工单：SR_20211025128002_升级应用程序网管的instance数量之后状态一直显示更新</p>
+<p>问题现象：客户扩容网关实例，从2-6 出现internal error，10/24  22:41开始操作，10/25 00:30左右得到报错</p>
+<p>通过对后台日志进行排查，控制层面在22:41左右收到扩容实例2-&gt;6的请求</p>
+<p>网关实例需要和控制层面通信，同步新的配置</p>
+<p>但是该过程没有成功，一直在重试，最后达到重试时间，超时失败。报错的原因是internal error .</p>
+<p>Deployment Service (HostedService:7dcbff3f-04db-400d-acb9-d5221d3e0c1d): OperationID: d67d137d-293f-49f9-afc9-208104fb00cc, Status: Failed, ExtensionData: System.Runtime.Serialization.ExtensionDataObject, HttpStatusCode: 500, ErrorCode: InternalError, ErrorDescription: The server encountered an internal error. Please retry the</p>
+<p>request.</p>
+<p><a href="https://portal.microsoftgeneva.com/s/F084960" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/F084960</a></p>
+<p>我们查询了网关所在子网的路由和NSG的配置情况，并未发现路由和NSG配置异常的情况，同时在网关实例上进行测试，网关是可以正常连接到其配置文件所在的<a href="https://nfvmcmainsha.blob.core.chinacloudapi.cn/" target="_blank" rel="noopener">https://nfvmcmainsha.blob.core.chinacloudapi.cn/</a> 链接。</p>
+<p>所以目前怀疑问题应该不在网络层面。</p>
+<p>目前怀疑问题在平台控制层面，我将和您电话沟通做进一步排查，谢谢！</p>
+<p>===============================================</p>
+<p>根据上面报错信息：rdfe deployment的error。查询rdfe部署的日志</p>
+<p>Failed to produce an allocation for the service.</p>
+<p><a href="https://portal.microsoftgeneva.com/s/93ED06F8" target="_blank" rel="noopener">https://portal.microsoftgeneva.com/s/93ED06F8</a></p>
+<p>筛选条件可以可以用Gateway Id        7dcbff3f-04db-400d-acb9-d5221d3e0c1d 或者deploymentID等等</p>
+<p>可以看到是分配失败，升级CSS确定是容量不足导致的异常</p>
+<p>工单总结：</p>
+<p>经后线排查确认，AppGW扩容失败是由于AppGW所在的集群Capacity不足导致。</p>
+<p>在26日，Azure 负责Datacenter Capacity的同事已监控到Capacity不足的问题，并及时对集群的Capacity进行了扩容以保障用户的可能的扩容需求。</p>
+<p>27日，微软技术后线在收到我们的升级请求后，第一时间和Capacity Team进行了确认，在确认我们Capacity已足够的条件下，第一时间联系了您并成功进行了扩容操作。</p>
+<p>后续我们也和Capacity Team进行了确认，目前数据中心的集群的capacity良好，对于后续的扩容操作还有足够冗余空间。</p></article>

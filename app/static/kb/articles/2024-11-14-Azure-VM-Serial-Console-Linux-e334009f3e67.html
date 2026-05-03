@@ -1,0 +1,127 @@
+<article class="kb-article" data-title="Azure VM Serial Console --Linux"><h1>Azure VM Serial Console --Linux</h1>
+<h2>适用范围 / 服务</h2>
+<ul>
+<li>分类: VM</li>
+<li>服务: VM Operations</li>
+<li>Section: KB</li>
+<li>最近修改: 2024-11-14 17:29:13</li>
+<li>JD 相关性: Azure IaaS 网络; Azure IaaS</li>
+</ul>
+<h2>一句话摘要</h2>
+<p>###注释掉报错的挂载项</p>
+<h2>问题现象 / 场景</h2>
+<ul>
+<li>###注释掉报错的挂载项</li>
+</ul>
+<ul>
+<li>###此时已无法SSH连接</li>
+</ul>
+<ul>
+<li>因SSH配置问题，导致Linux虚拟机无法SSH连接登录，此时可通过Serial Console登入虚拟机，更新SSH配置文件/etc/ssh/sshd_config</li>
+</ul>
+<ul>
+<li>内核升级失败，使用Serial Console更改系统启动时的内核引导顺序</li>
+</ul>
+<h2>背景信息</h2>
+<ul>
+<li>Azure VM Serial Console --Linux</li>
+</ul>
+<ul>
+<li>Azure Serial Console</li>
+</ul>
+<ul>
+<li>--Linux篇</li>
+</ul>
+<ul>
+<li>Jia.Xiaolei</li>
+</ul>
+<ul>
+<li>/etc/fstab 中的配置项不正确，看到类似于以下示例导致紧急模式状态的日志条目：</li>
+</ul>
+<ul>
+<li>###提供root账户密码，进入救援模式，使用vi打开并编辑/etc/fstab</li>
+</ul>
+<ul>
+<li>###保存后重启虚拟机，发现虚拟机已可正常启动</li>
+</ul>
+<ul>
+<li>###按“ESC”，然后根据提示使用上、下键，选择未升级前的内核进行加载启动</li>
+</ul>
+<ul>
+<li>进单用户模式，本例中使用CentOS 7做测试</li>
+</ul>
+<ul>
+<li>###按esc</li>
+</ul>
+<ul>
+<li>接下来分两种情况：</li>
+</ul>
+<ul>
+<li>###1）如果之前已经启用了root用户，并设置了密码，则找到以linux或linux16开头的行，在行的末尾添加systemd.unit=rescue.target 或者 systemd.unit=emergency.target ，然后按Ctrl+X退出，并使用应用的设置重新启动</li>
+</ul>
+<ul>
+<li>###2）如果之前未启用root用户，或不知道root账户密码，则找到以linux或linux16开头的行，在行的末尾添加rd.break ，然后按Ctrl+X退出，并使用应用的设置重新启动。在 shell 中，输入 mount -o remount,rw /sysroot 以重新装载具有读/写权限的根文件系统。启动到单用户模式后，输入 chroot /sysroot 以切换到 sysroot“监狱”。</li>
+</ul>
+<h2>排查思路</h2>
+<ul>
+<li>待虚拟机正常启动后，通过SSH连接登录虚拟机，然后再进一步排查文件系统分区挂载失败的原因并进行修正。</li>
+</ul>
+<ul>
+<li>###重启SSH服务后，查看服务状态</li>
+</ul>
+<ul>
+<li>###在Azure portal的“Serial console”处点击“Restart VM”重启</li>
+</ul>
+<h2>操作步骤 / 命令</h2>
+<p>未从原文中明确识别。</p>
+<h2>关键参数 / 状态码</h2>
+<ul>
+<li>Linux操作系统内防火墙规则不正确，这里以iptables为例，如禁止了SSH端口访问</li>
+</ul>
+<ul>
+<li>###通过Serial Console登入系统，在防火墙中放开SSH的22端口或临时关闭下iptables服务，再次查看SSH连接已经恢复正常</li>
+</ul>
+<h2>根因 / 结论</h2>
+<p>未从原文中明确识别。</p>
+<h2>解决方案</h2>
+<ul>
+<li>万众期待的Azure China VM/VMSS Serial Console已经正式上线，将为我们排查和修复Azure虚拟机启动、连接等故障提供强大助力，本篇会为大家介绍Serial Console在Linux VM排查方面的一些方法。</li>
+</ul>
+<ul>
+<li>联机修复文件系统损坏。如在启动日志中遇到类似下方报错时，除了有1中提到的/etc/fstab配置问题外，还有可能遇到了文件系统损坏</li>
+</ul>
+<ul>
+<li>###此时可考虑进入救援模式，对文件系统进行联机排查和修复</li>
+</ul>
+<h2>参考链接</h2>
+<ul>
+<li>###更多信息，请参考文档：<a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/linux-recovery-cannot-start-file-system-errors" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/linux-recovery-cannot-start-file-system-errors</a></li>
+</ul>
+<h2>原始内容清洗稿（保留备查）</h2>
+<p>Azure VM Serial Console --Linux</p>
+<p>Azure Serial Console</p>
+<p>--Linux篇</p>
+<p>Jia.Xiaolei</p>
+<p>2023-11-19</p>
+<p>万众期待的Azure China VM/VMSS Serial Console已经正式上线，将为我们排查和修复Azure虚拟机启动、连接等故障提供强大助力，本篇会为大家介绍Serial Console在Linux VM排查方面的一些方法。</p>
+<p>/etc/fstab 中的配置项不正确，看到类似于以下示例导致紧急模式状态的日志条目：</p>
+<p>###提供root账户密码，进入救援模式，使用vi打开并编辑/etc/fstab</p>
+<p>###注释掉报错的挂载项</p>
+<p>###保存后重启虚拟机，发现虚拟机已可正常启动</p>
+<p>待虚拟机正常启动后，通过SSH连接登录虚拟机，然后再进一步排查文件系统分区挂载失败的原因并进行修正。</p>
+<p>Linux操作系统内防火墙规则不正确，这里以iptables为例，如禁止了SSH端口访问</p>
+<p>###此时已无法SSH连接</p>
+<p>###通过Serial Console登入系统，在防火墙中放开SSH的22端口或临时关闭下iptables服务，再次查看SSH连接已经恢复正常</p>
+<p>联机修复文件系统损坏。如在启动日志中遇到类似下方报错时，除了有1中提到的/etc/fstab配置问题外，还有可能遇到了文件系统损坏</p>
+<p>###此时可考虑进入救援模式，对文件系统进行联机排查和修复</p>
+<p>###更多信息，请参考文档：<a href="https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/linux-recovery-cannot-start-file-system-errors" target="_blank" rel="noopener">https://learn.microsoft.com/zh-cn/troubleshoot/azure/virtual-machines/linux-recovery-cannot-start-file-system-errors</a></p>
+<p>因SSH配置问题，导致Linux虚拟机无法SSH连接登录，此时可通过Serial Console登入虚拟机，更新SSH配置文件/etc/ssh/sshd_config</p>
+<p>###重启SSH服务后，查看服务状态</p>
+<p>内核升级失败，使用Serial Console更改系统启动时的内核引导顺序</p>
+<p>###在Azure portal的“Serial console”处点击“Restart VM”重启</p>
+<p>###按“ESC”，然后根据提示使用上、下键，选择未升级前的内核进行加载启动</p>
+<p>进单用户模式，本例中使用CentOS 7做测试</p>
+<p>###按esc</p>
+<p>接下来分两种情况：</p>
+<p>###1）如果之前已经启用了root用户，并设置了密码，则找到以linux或linux16开头的行，在行的末尾添加systemd.unit=rescue.target 或者 systemd.unit=emergency.target ，然后按Ctrl+X退出，并使用应用的设置重新启动</p>
+<p>###2）如果之前未启用root用户，或不知道root账户密码，则找到以linux或linux16开头的行，在行的末尾添加rd.break ，然后按Ctrl+X退出，并使用应用的设置重新启动。在 shell 中，输入 mount -o remount,rw /sysroot 以重新装载具有读/写权限的根文件系统。启动到单用户模式后，输入 chroot /sysroot 以切换到 sysroot“监狱”。</p></article>
