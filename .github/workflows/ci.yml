@@ -17,6 +17,10 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+      - name: Setup test data
+        run: |
+          mkdir -p app/data
+          echo '{"availability":{"cn":"可用性","scene":"计算→可靠性","phonetic":""}}' > app/data/azure_glossary.json
       - name: Run tests
         run: |
           cd app && python -m pytest tests/ -v
