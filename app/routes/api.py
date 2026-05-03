@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, Request, HTTPException
 from app.services import pricing, docs, updates, health, reports, meetings, snippets, migration
+from app.services import translator  # Azure glossary
 from app.auth import (
     get_current_user, get_optional_user,
     get_user_by_username, create_user, authenticate_user, create_access_token,
@@ -129,7 +130,7 @@ async def api_health(db: AsyncSession = Depends(get_db)):
         "status": "healthy" if db_ok else "degraded",
         "database": "ok" if db_ok else "error",
         "service": "ASE Hub",
-        "version": "2.1.0"
+        "version": "2.2.0"
     }
 
 
@@ -269,3 +270,47 @@ async def api_create_bookmark(
     await db.commit()
     await db.refresh(bm)
     return _serialize_bookmark(bm)
+
+
+# ═══════════ AZURE GLOSSARY & TTS ═══════════
+
+@router.get("/translate")
+async def api_translate(q: str = ""):
+    """Translate an English term using the built-in Azure glossary."""
+    if not q.strip():
+        return {"error": "Query parameter 'q' required"}
+    return translator.translate(q.strip())
+
+
+@router.get("/glossary")
+async def api_glossary(keyword: str = "", category: str = "", limit: int = 50):
+    """Browse the Azure glossary with optional keyword/category filter."""
+    return translator.search_glossary(keyword=keyword, category=category, limit=limit)
+
+
+@router.get("/glossary/categories")
+async def api_glossary_categories():
+    """List all glossary categories."""
+    return {"categories": translator.get_categories()}
+
+
+@router.post("/tts")
+async def api_tts(request: Request):
+    """Generate TTS audio for text. POST body: {"text": "...", "voice": "en-US-JennyNeural"}."""
+    from app.services import tts_service
+    try:
+        body = await request.json()
+    except Exception:
+        return {"error": "Invalid JSON body"}
+    text = body.get("text", "")
+    voice = body.get("voice", "en-US-JennyNeural")
+    if not text.strip():
+        return {"error": "Text field required"}
+    return await tts_service.generate_audio(text, voice=voice)
+
+
+@router.get("/tts/voices")
+async def api_tts_voices():
+    """List available TTS voices."""
+    from app.services import tts_service
+    return {"voices": tts_service.get_tts_voices()}
