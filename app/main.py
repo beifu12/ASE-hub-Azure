@@ -45,7 +45,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="ASE Hub", version="2.5.0", lifespan=lifespan)
+app = FastAPI(title="ASE Hub", version="2.6.0", lifespan=lifespan)
 
 # ═══════════ Security ═══════════
 

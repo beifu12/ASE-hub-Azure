@@ -7,9 +7,6 @@
     <link rel="stylesheet" href="/static/css/style.css?v=2">
 </head>
 <body>
-    <!-- Mobile Menu Button -->
-    <button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
-
     <!-- Toast Container -->
     <div class="toast-container" id="toast-container"></div>
 
@@ -20,56 +17,135 @@
         }
     </script>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo">ASE<span>Hub</span></div>
-            <div class="user-info" id="sidebar-user">
-                <span class="user-avatar">👤</span>
-                <span class="user-name" id="user-name-display">...</span>
+    <!-- Topbar -->
+    <header class="topbar">
+        <button class="topbar__hamburger" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
+        <a class="topbar__brand" href="#" onclick="navigateTo('dashboard')">ASE Hub</a>
+        <div class="topbar__search">
+            <input type="text" id="global-search" placeholder="Search resources, tools, docs... (Cmd+K)" autocomplete="off">
+        </div>
+        <div class="topbar__actions">
+            <button class="topbar__action" title="Notifications">🔔</button>
+            <button class="topbar__action" title="Settings">⚙️</button>
+            <div class="topbar__user">
+                <span id="topbar-username">admin</span>
+                <button class="topbar__action" onclick="handleLogout()" title="Logout">▾</button>
             </div>
         </div>
-        <nav class="sidebar-nav">
-            <button class="nav-item active" data-section="dashboard">
-                <span class="icon">📊</span> <span data-i18n="dashboard">Dashboard</span>
-            </button>
-            <button class="nav-item" data-section="pricing">
-                <span class="icon">💰</span> <span data-i18n="pricing">Pricing</span>
-            </button>
-            <button class="nav-item" data-section="docs">
-                <span class="icon">📚</span> <span data-i18n="docs">Docs</span>
-            </button>
-            <button class="nav-item" data-section="updates">
-                <span class="icon">📡</span> <span data-i18n="updates">Updates</span>
-            </button>
-            <button class="nav-item" data-section="reports">
-                <span class="icon">📝</span> <span data-i18n="reports">Reports</span>
-            </button>
-            <button class="nav-item" data-section="meetings">
-                <span class="icon">🤝</span> <span data-i18n="meetings">Meetings</span>
-            </button>
-            <button class="nav-item" data-section="glossary">
-                <span class="icon">📖</span> <span data-i18n="glossary">Glossary</span>
-            </button>
-            <button class="nav-item" data-section="snippets">
-                <span class="icon">⚡</span> <span data-i18n="snippets">Snippets</span>
-            </button>
-            <button class="nav-item" data-section="migration">
-                <span class="icon">🔄</span> <span>Migration</span>
-            </button>
-        </nav>
-        <div class="sidebar-footer">
+    </header>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Favorites -->
+        <div class="sidebar__section">
+            <div class="sidebar__section-title" data-i18n="favorites">⭐ Favorites</div>
+            <nav class="sidebar__nav" id="fav-nav">
+                <a class="nav-item active" data-section="dashboard" onclick="navigateTo('dashboard')">
+                    <span class="icon">📊</span> <span data-i18n="dashboard">Dashboard</span>
+                </a>
+                <a class="nav-item" data-section="glossary" onclick="navigateTo('glossary')">
+                    <span class="icon">📖</span> <span data-i18n="glossary">Glossary</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Recent -->
+        <div class="sidebar__section">
+            <div class="sidebar__section-title">📋 Recent</div>
+            <nav class="sidebar__nav" id="recent-nav">
+                <!-- JS dynamically generates recent items -->
+            </nav>
+        </div>
+
+        <!-- Group: Tools -->
+        <div class="sidebar__section">
+            <div class="sidebar__group-header" onclick="toggleGroup('tools')">
+                <span>📂 <span data-i18n="group_tools">Pre-sales Tools</span></span>
+                <span class="sidebar__chevron">▾</span>
+            </div>
+            <nav class="sidebar__nav" id="group-tools">
+                <a class="nav-item" data-section="dashboard" onclick="navigateTo('dashboard')">
+                    <span class="icon">📊</span> <span data-i18n="dashboard">Dashboard</span>
+                </a>
+                <a class="nav-item" data-section="updates" onclick="navigateTo('updates')">
+                    <span class="icon">📡</span> <span data-i18n="updates">Updates</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Group: Knowledge -->
+        <div class="sidebar__section">
+            <div class="sidebar__group-header" onclick="toggleGroup('knowledge')">
+                <span>📂 <span data-i18n="group_knowledge">Knowledge Base</span></span>
+                <span class="sidebar__chevron">▸</span>
+            </div>
+            <nav class="sidebar__nav sidebar__nav--collapsed" id="group-knowledge">
+                <a class="nav-item" data-section="glossary" onclick="navigateTo('glossary')">
+                    <span class="icon">📖</span> <span data-i18n="glossary">Glossary</span>
+                </a>
+                <a class="nav-item" data-section="pricing" onclick="navigateTo('pricing')">
+                    <span class="icon">💰</span> <span data-i18n="pricing">Pricing</span>
+                </a>
+                <a class="nav-item" data-section="docs" onclick="navigateTo('docs')">
+                    <span class="icon">📚</span> <span data-i18n="docs">Docs</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Group: Workspace -->
+        <div class="sidebar__section">
+            <div class="sidebar__group-header" onclick="toggleGroup('workspace')">
+                <span>📂 <span data-i18n="group_workspace">Workspace</span></span>
+                <span class="sidebar__chevron">▸</span>
+            </div>
+            <nav class="sidebar__nav sidebar__nav--collapsed" id="group-workspace">
+                <a class="nav-item" data-section="reports" onclick="navigateTo('reports')">
+                    <span class="icon">📝</span> <span data-i18n="reports">Reports</span>
+                </a>
+                <a class="nav-item" data-section="meetings" onclick="navigateTo('meetings')">
+                    <span class="icon">🤝</span> <span data-i18n="meetings">Meetings</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Group: Admin -->
+        <div class="sidebar__section">
+            <div class="sidebar__group-header" onclick="toggleGroup('admin')">
+                <span>📂 <span data-i18n="group_admin">Admin</span></span>
+                <span class="sidebar__chevron">▸</span>
+            </div>
+            <nav class="sidebar__nav sidebar__nav--collapsed" id="group-admin">
+                <a class="nav-item" data-section="snippets" onclick="navigateTo('snippets')">
+                    <span class="icon">⚡</span> <span data-i18n="snippets">Snippets</span>
+                </a>
+                <a class="nav-item" data-section="migration" onclick="navigateTo('migration')">
+                    <span class="icon">🔄</span> <span data-i18n="migration">Migration</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Footer -->
+        <div class="sidebar__footer">
             <div class="lang-toggle">
                 <span>🌐</span>
                 <button class="lang-btn active" data-lang="en">EN</button>
                 <button class="lang-btn" data-lang="zh">中文</button>
             </div>
-            <button class="logout-btn" onclick="handleLogout()" title="退出登录">🚪</button>
+            <button class="btn btn-sm" onclick="handleLogout()" data-i18n="logout">Logout</button>
         </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="main-content" id="main-content">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb" id="breadcrumb">
+            <span class="breadcrumb__item" data-i18n="dashboard">Dashboard</span>
+            <span class="breadcrumb__sep">›</span>
+            <span class="breadcrumb__item breadcrumb__item--active">Overview</span>
+        </div>
 
         <!-- === DASHBOARD === -->
         <section class="section active" id="section-dashboard">
@@ -345,6 +421,7 @@
         </section>
     </main>
 
+    <script src="/static/js/nav.js?v=2"></script>
     <script src="/static/js/app.js?v=2"></script>
     <script src="/static/js/dashboard.js?v=2"></script>
     <script src="/static/js/pricing.js?v=2"></script>

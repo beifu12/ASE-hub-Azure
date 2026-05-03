@@ -12,6 +12,14 @@ const I18N = {
         recent_updates: "Recent Updates",
         bookmarks: "Bookmarks",
         quick_links: "Quick Links",
+        favorites: "Favorites",
+        group_tools: "Pre-sales Tools",
+        group_knowledge: "Knowledge Base",
+        group_workspace: "Workspace",
+        group_admin: "Admin",
+        logout: "Logout",
+        overview: "Overview",
+        admin: "Admin",
         search: "Search",
         refresh: "Refresh",
         results: "Results",
@@ -77,6 +85,14 @@ const I18N = {
         recent_updates: "最近更新",
         bookmarks: "书签",
         quick_links: "快速链接",
+        favorites: "收藏夹",
+        group_tools: "售前工具",
+        group_knowledge: "知识库",
+        group_workspace: "工作区",
+        group_admin: "管理",
+        logout: "登出",
+        overview: "概览",
+        admin: "管理",
         search: "搜索",
         refresh: "刷新",
         results: "结果",
@@ -148,31 +164,7 @@ function applyI18n() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Navigation
-    document.querySelectorAll('.nav-item').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const section = btn.getAttribute('data-section');
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            const target = document.getElementById('section-' + section);
-            if (target) {
-                target.classList.add('active');
-                // Load section data
-                if (section === 'dashboard') { loadDashboard(); }
-                if (section === 'updates') { loadUpdates(); }
-                if (section === 'snippets') { loadSnippets(); }
-                if (section === 'reports') { loadReports(); }
-                if (section === 'meetings') { loadMeetings(); }
-                if (section === 'migration') { loadMigrationStats(); }
-            }
-            // Close sidebar on mobile
-            if (window.innerWidth < 768) {
-                document.querySelector('.sidebar').classList.remove('open');
-            }
-        });
-    });
-
+    // Navigation delegated to nav.js navigateTo()
     // Language toggle
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -185,6 +177,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize
     initUserInfo();
+    const topbarName = document.getElementById('topbar-username');
+    const user = JSON.parse(localStorage.getItem('ase_user') || '{}');
+    if (topbarName) {
+        topbarName.textContent = user.display_name || user.username || 'admin';
+    }
     loadDashboard();
 
     // Set default date for forms
